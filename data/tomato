@@ -1,0 +1,48 @@
+export const crops = [
+  {
+    slug: "tomato",
+    cropName: "Tomato",
+
+    overview: {
+      yield: "180-220 Quintals",
+    },
+
+    basalDoseManagement: {
+      organicManure: "4-5 Ton",
+      dap: "50 Kg",
+      mop: "25 Kg",
+      neemCake: "50 Kg",
+    },
+
+    fertigationSchedule: [
+      {
+        stage: "10-12 DAT",
+        fertilizer: "19:19:19",
+        quantity: "2 Kg",
+      },
+      {
+        stage: "20-25 DAT",
+        fertilizer: "19:19:19",
+        quantity: "2 Kg",
+      },
+    ],
+
+    pests: [
+      "Whitefly",
+      "Thrips",
+      "Fruit Borer",
+    ],
+
+    diseases: [
+      "Early Blight",
+      "Late Blight",
+      "Leaf Curl Virus",
+    ],
+
+    agronomyTips: [
+      "Use quality seedlings",
+      "Maintain drainage",
+      "Use sticky traps",
+    ],
+  }
+]
