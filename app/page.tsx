@@ -45,7 +45,6 @@ const modules = [
 export default function Home() {
   return (
     <>
-      <Navbar />
 
       <main className="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-900 to-black text-white">
         <section className="mx-auto max-w-7xl px-6 py-10">

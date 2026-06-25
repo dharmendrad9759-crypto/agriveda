@@ -8,11 +8,11 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: "होम", path: "/" },
-    { name: "क्रॉप इंजन", path: "/crops" },
-    { name: "वेदर इंटेलिजेंस", path: "/weather" },
-    { name: "AI डॉक्टर", path: "/ai-doctor" },
-    { name: "मंडी भाव", path: "/mandi" },
+    { name: "HOME", path: "/" },
+    { name: "CROPS", path: "/crops" },
+    { name: "WEATHER", path: "/weather" },
+    { name: "AI DOCTOR", path: "/ai-doctor" },
+    { name: "MANDI PRICES", path: "/mandi" },
   ];
 
   return (
