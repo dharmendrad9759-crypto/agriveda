@@ -3,7 +3,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+// Google Translate के लिए विंडो इंटरफेस सेट करना
+declare global {
+  interface Window {
+    googleTranslateElementInit: () => void;
+    google: any;
+  }
+}
 export default function Navbar() {
   const pathname = usePathname();
 
