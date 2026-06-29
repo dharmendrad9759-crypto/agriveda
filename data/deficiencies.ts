@@ -1,0 +1,452 @@
+import type { NutrientDeficiencyData } from "@/types/deficiency";
+
+export const deficiencies: NutrientDeficiencyData[] = [
+  {
+    slug: "nitrogen",
+    name: "Nitrogen",
+    symbol: "N",
+    role: "Drives chlorophyll formation, leaf growth, protein building, and vegetative vigor.",
+    mobility: "Mobile",
+    summary: "Nitrogen deficiency causes pale older leaves, slow canopy expansion, and reduced biomass across cereals, vegetables, and pulses.",
+    quickFacts: ["Most common deficiency", "Older leaves show symptoms first", "High demand during vegetative growth"],
+    icon: "🌿",
+    severity: "High",
+    generalSymptoms: ["Older leaves turn pale green to yellow", "Plants stay short and thin", "Tillering, branching, and leaf area are reduced", "Flowering and fruiting are delayed"],
+    visualSymptoms: ["Uniform yellowing from the leaf tip downward", "Sparse canopy and weak shoot growth", "Premature drying of lower leaves"],
+    whyItHappens: ["Low soil organic matter", "Leaching in sandy soils", "Waterlogging and poor root activity", "Heavy crop removal and high biomass demand"],
+    fieldConditions: ["Sandy, light soils", "Frequent heavy rainfall", "Waterlogged root zones", "Very high nitrogen-demand crops"],
+    confirmation: ["Yellowing begins on older leaves", "Soil test shows low available nitrogen", "Leaf tissue nitrogen is below sufficiency range"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use 2% urea at early morning", "Repeat once if symptom persistence is visible"] },
+      { title: "Soil correction", details: ["Apply split N doses based on soil test results"] },
+      { title: "Fertigation", details: ["Supply nitrate or ammonium sources in small repeated applications"] }
+    ],
+    foliar: "Use 2% urea foliar spray at early morning, repeating after 7–10 days when needed.",
+    soilApplication: "Apply nitrogen in split doses through soil to reduce losses and maintain steady growth.",
+    fertigation: "Deliver nitrate-based nitrogen in frequent small doses through drip irrigation.",
+    recoveryTimeline: "Visible recovery usually starts within 7–14 days after correction.",
+    prevention: ["Maintain soil organic matter", "Use split applications", "Match nitrogen dose to vegetative stage", "Avoid excess waterlogging"],
+    cropExamples: ["Rice", "Wheat", "Maize", "Tomato"],
+    cropSpecificData: [
+      { cropName: "Tomato", symptoms: ["Pale older leaves and reduced leaf size"], stage: "Early vegetative growth", cause: "Rapid growth and low soil nitrogen", correction: "Apply split urea and composted manure", prevention: "Keep N supply steady during early growth", notes: "Nitrogen is critical for strong canopy formation before flowering" },
+      { cropName: "Rice", symptoms: ["Yellowing of lower leaves and weak tillering"], stage: "Tillering to panicle initiation", cause: "Leaching and high biomass demand", correction: "Use split urea and basal organic matter", prevention: "Avoid excessive flooding and maintain balanced nutrition", notes: "Deficiency quickly reduces tiller number and grain potential" },
+      { cropName: "Maize", symptoms: ["Pale lower leaves and slow development"], stage: "Vegetative growth", cause: "Poor soil fertility and water stress", correction: "Apply balanced N through soil and foliar support", prevention: "Maintain continuous N supply until flowering", notes: "Nitrogen deficiency is visible early in leaf color and plant height" }
+    ]
+  },
+  {
+    slug: "phosphorus",
+    name: "Phosphorus",
+    symbol: "P",
+    role: "Supports root development, energy transfer, flowering, and seed formation.",
+    mobility: "Partially mobile",
+    summary: "Phosphorus deficiency weakens rooting, delays maturity, and causes dark green or purplish foliage.",
+    quickFacts: ["Critical for root growth", "Often limited in acidic or alkaline soils", "Strong effect on flowering and seed set"],
+    icon: "🪴",
+    severity: "High",
+    generalSymptoms: ["Plants remain stunted with restricted root growth", "Older leaves may show dull green or purplish tint", "Delayed flowering and poor seed formation", "Poor tillering and weak early vigor"],
+    visualSymptoms: ["Purpling or deep green leaf appearance", "Short internodes and poor root system", "Late maturity and reduced reproductive vigor"],
+    whyItHappens: ["Low available P in soil", "High pH locking phosphorus", "Acidic soils with low P availability", "Poor root growth and cool soil conditions"],
+    fieldConditions: ["Acidic or calcareous soils", "Cold and poorly aerated soils", "Dense root zones and low organic matter", "High fixation by calcium or iron"],
+    confirmation: ["Purple tint in older leaves and stunted roots", "Soil test shows low available phosphorus", "Leaf P concentration is below threshold"],
+    corrections: [
+      { title: "Soil correction", details: ["Apply SSP, DAP, or rock phosphate depending on soil pH"] },
+      { title: "Foliar support", details: ["Use phosphite or P-based foliar feed in early growth"] },
+      { title: "Fertigation", details: ["Use water-soluble P during early root establishment"] }
+    ],
+    foliar: "Apply a light phosphorous foliar feed during early root and vegetative stages.",
+    soilApplication: "Use basal phosphorus carefully placed near the root zone for best uptake.",
+    fertigation: "Supply soluble phosphorus early, especially around transplanting or emergence.",
+    recoveryTimeline: "Improved root growth is often visible within 2–3 weeks after correction.",
+    prevention: ["Use soil test-based P application", "Maintain good root health", "Avoid over-liming", "Build organic matter"],
+    cropExamples: ["Wheat", "Potato", "Groundnut", "Cotton"],
+    cropSpecificData: [
+      { cropName: "Potato", symptoms: ["Stunted plants and weak tuber initiation"], stage: "Early vegetative stage", cause: "Low available P and cool soil", correction: "Apply basal SSP and support with starter P", prevention: "Ensure adequate P at planting", notes: "Phosphorus strongly influences early tuber set" },
+      { cropName: "Groundnut", symptoms: ["Poor root growth and delayed flowering"], stage: "Seedling to flowering", cause: "Low soil P and poor rooting", correction: "Use basal P at sowing and root-zone placement", prevention: "Avoid low-P soils for groundnut", notes: "Phosphorus improves pod initiation and filling" },
+      { cropName: "Cotton", symptoms: ["Slow growth with dark foliage and weak boll setting"], stage: "Early vegetative to flowering", cause: "P fixation and cool root zone", correction: "Use starter P and balanced fertigation", prevention: "Avoid high-pH fixation zones", notes: "P supports early boll development and vigor" }
+    ]
+  },
+  {
+    slug: "potassium",
+    name: "Potassium",
+    symbol: "K",
+    role: "Regulates water balance, stomatal control, sugar transport, and stress tolerance.",
+    mobility: "Mobile",
+    summary: "Potassium deficiency causes yellowing and scorching at leaf margins, weak stems, and poor stress tolerance.",
+    quickFacts: ["Strongly linked to drought tolerance", "Leaf margins often scorch first", "Important in fruit fill and quality"],
+    icon: "⚡",
+    severity: "High",
+    generalSymptoms: ["Leaf edges turn yellow and then brown", "Weak stems and lower drought tolerance", "Poor sugar transport and less fruit fill", "Leaf tips and margins become scorched"],
+    visualSymptoms: ["Marginal scorching and tip burn", "Leaf curling under severe stress", "General weakness under dry or hot conditions"],
+    whyItHappens: ["Low exchangeable K in soil", "High leaching in sandy soils", "Excessive N and poor K balance", "High crop removal in intensive systems"],
+    fieldConditions: ["Sandy and highly leached soils", "Very high N application", "Frequent irrigation and runoff", "Dry spells and heat stress"],
+    confirmation: ["Leaf margins burn first", "Soil test indicates low K", "Leaf K is below sufficiency range"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use KNO3 or K2SO4 foliar feed during stress periods"] },
+      { title: "Soil correction", details: ["Apply MOP or SOP based on soil test and crop demand"] },
+      { title: "Fertigation", details: ["Use potassium in split doses through the drip line"] }
+    ],
+    foliar: "Use potassium nitrate or sulfate-based foliar sprays during stress windows.",
+    soilApplication: "Apply potassium through soil as basal and top-dress split doses.",
+    fertigation: "Supply potassium regularly through fertigation during fruiting and grain filling.",
+    recoveryTimeline: "Leaf edge recovery is often noticed within 10–15 days after correction.",
+    prevention: ["Maintain balanced N:K ratio", "Use soil tests before top dressing", "Avoid excessive sodium build-up", "Prevent drought stress"],
+    cropExamples: ["Banana", "Citrus", "Potato", "Tomato"],
+    cropSpecificData: [
+      { cropName: "Banana", symptoms: ["Tip and margin scorch on leaves"], stage: "Active vegetative growth and fruiting", cause: "High K removal and low soil K", correction: "Use soil K plus foliar K during bunch development", prevention: "Maintain steady K supply through growth", notes: "K is critical for bunch fill and plant resilience" },
+      { cropName: "Tomato", symptoms: ["Leaf margin burn and poor fruit quality"], stage: "Flowering and fruit set", cause: "Heavy fruit load and poor K balance", correction: "Apply KNO3 during flowering and fruiting", prevention: "Prevent K deficiency during high-yield stages", notes: "Tomato quality and shelf life improve with adequate K" },
+      { cropName: "Potato", symptoms: ["Scorching of leaf margins and lower vigor"], stage: "Tuber bulking", cause: "High K demand during bulking", correction: "Use K through soil and fertigation", prevention: "Keep K steady during bulking", notes: "Potassium strongly supports tuber bulking" }
+    ]
+  },
+  {
+    slug: "calcium",
+    name: "Calcium",
+    symbol: "Ca",
+    role: "Builds cell walls, strengthens tissues, and supports root and fruit integrity.",
+    mobility: "Immobile",
+    summary: "Calcium deficiency causes distorted new growth, blossom-end issues, and weak root tips.",
+    quickFacts: ["Immobile nutrient", "Affects new tissues first", "Very important for fruit quality"],
+    icon: "🧱",
+    severity: "Moderate",
+    generalSymptoms: ["Young leaves become distorted or deformed", "Growing points die back", "Fruit disorders such as blossom-end rot appear", "Roots remain weak and poorly branched"],
+    visualSymptoms: ["Hooked or misshapen new leaves", "Tip death in meristems", "Fruit quality issues and softness"],
+    whyItHappens: ["Low Ca availability in soil", "High salt and high sodium", "Irregular moisture and dry topsoil", "Poor root uptake due to root damage"],
+    fieldConditions: ["High salinity", "Alternating dry and wet cycles", "Heavy irrigation with low Ca", "Root stress or compacted soils"],
+    confirmation: ["Symptoms occur on new tissues first", "Soil and leaf Ca are below target", "Water movement to fruit is restricted"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use calcium nitrate or chelated Ca for fast tissue support"] },
+      { title: "Soil correction", details: ["Apply gypsum or lime based on soil test and pH"] },
+      { title: "Fertigation", details: ["Supply calcium through drip during high-demand periods"] }
+    ],
+    foliar: "Calcium nitrate or chelated calcium spray can help protect new tissue in active growth.",
+    soilApplication: "Use gypsum or lime to correct low Ca where pH and soil test justify it.",
+    fertigation: "Apply Ca through fertigation during flowering and fruit development to reduce disorders.",
+    recoveryTimeline: "Recovery depends on root health and may take 2–4 weeks for new growth improvement.",
+    prevention: ["Maintain steady moisture", "Avoid root damage", "Balance salinity", "Use calcium sources at the correct stage"],
+    cropExamples: ["Tomato", "Cabbage", "Capsicum", "Apple"],
+    cropSpecificData: [
+      { cropName: "Tomato", symptoms: ["Blossom-end rot and deformed young leaves"], stage: "Flowering and fruit set", cause: "Irregular water and low Ca movement", correction: "Use calcium nitrate and consistent irrigation", prevention: "Maintain uniform moisture and root health", notes: "Calcium deficiency is strongly linked to fruit quality disorders" },
+      { cropName: "Cabbage", symptoms: ["Tip burn and distorted new leaves"], stage: "Head formation", cause: "Low Ca and high salinity", correction: "Add Ca through soil and fertigation", prevention: "Avoid salt stress and dry periods", notes: "Head quality and shelf life are affected" },
+      { cropName: "Capsicum", symptoms: ["Poor fruit set and blossom-end damage"], stage: "Fruit development", cause: "Restricted Ca movement into fruit", correction: "Correct with foliar Ca and steady irrigation", prevention: "Keep irrigation uniform", notes: "Ca deficiency commonly shows as blossom-end issues" }
+    ]
+  },
+  {
+    slug: "magnesium",
+    name: "Magnesium",
+    symbol: "Mg",
+    role: "Central part of chlorophyll and essential for enzyme activity and energy transfer.",
+    mobility: "Mobile",
+    summary: "Magnesium deficiency causes interveinal chlorosis on older leaves and weak photosynthesis.",
+    quickFacts: ["Mobile nutrient", "Older leaves show symptoms first", "Closely linked to chlorophyll"],
+    icon: "🍃",
+    severity: "Moderate",
+    generalSymptoms: ["Interveinal chlorosis on older leaves", "Leaf veins stay green while the rest yellows", "Reduced photosynthesis and slower growth", "Leaf edge burn may follow severe deficiency"],
+    visualSymptoms: ["Yellowing between veins", "Green veins on yellow background", "Leaf curling in advanced stages"],
+    whyItHappens: ["Low soil Mg", "High K or Ca antagonism", "Leaching in sandy soils", "Acidic or highly weathered soils"],
+    fieldConditions: ["Sandy and highly weathered soils", "Excess K or Ca supply", "Heavy leaching and low organic matter", "High rainfall and low base saturation"],
+    confirmation: ["Interveinal chlorosis starts on older leaves", "Soil or leaf Mg is low", "Symptoms are more severe under high K conditions"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use MgSO4 foliar feed during active growth"] },
+      { title: "Soil correction", details: ["Apply magnesium sulfate or dolomite where needed"] },
+      { title: "Fertigation", details: ["Include magnesium in the nutrient program during crop growth"] }
+    ],
+    foliar: "Magnesium sulfate foliar sprays help when symptoms are visible and quick correction is needed.",
+    soilApplication: "Use magnesium sulfate or dolomitic lime where soil tests confirm low Mg.",
+    fertigation: "Include magnesium in fertigation for continuous correction and improved chlorophyll production.",
+    recoveryTimeline: "Green-up often appears within 7–10 days after correction under good conditions.",
+    prevention: ["Avoid imbalance with K and Ca", "Maintain soil organic matter", "Use regular soil testing", "Prevent leaching losses"],
+    cropExamples: ["Citrus", "Banana", "Tomato", "Potato"],
+    cropSpecificData: [
+      { cropName: "Citrus", symptoms: ["Yellowing between leaf veins and reduced fruit quality"], stage: "Active vegetative growth", cause: "Low Mg and high K demand", correction: "Use MgSO4 foliar and soil Mg", prevention: "Avoid excessive K-heavy fertilization", notes: "Mg deficiency reduces photosynthetic efficiency and fruit color" },
+      { cropName: "Tomato", symptoms: ["Interveinal chlorosis in older leaves"], stage: "Vegetative to early flowering", cause: "Low soil Mg and antagonism", correction: "Use foliar Mg sulfate and adjust nutrition", prevention: "Keep Mg balanced in the program", notes: "Leaf greenness and fruit set improve with correction" },
+      { cropName: "Banana", symptoms: ["Interveinal yellowing and weak leaf function"], stage: "Active growth and bunch development", cause: "High crop demand and low exchangeable Mg", correction: "Use Mg sulfate via soil and foliar", prevention: "Maintain steady Mg supply during growth", notes: "Mg deficiency reduces bunch development and leaf health" }
+    ]
+  },
+  {
+    slug: "sulphur",
+    name: "Sulphur",
+    symbol: "S",
+    role: "Supports protein formation, enzyme activity, and oil synthesis.",
+    mobility: "Partially mobile",
+    summary: "Sulphur deficiency causes pale young leaves, poor protein formation, and low oil content in crops.",
+    quickFacts: ["Often mistaken for nitrogen deficiency", "Younger leaves are affected first", "Important in oilseeds and pulses"],
+    icon: "🧪",
+    severity: "Moderate",
+    generalSymptoms: ["Younger leaves turn pale first", "Plant growth slows while older leaves stay greener", "Protein and oil formation are reduced", "Plants look uniformly pale under severe deficiency"],
+    visualSymptoms: ["Pale new growth and narrow leaves", "Stunting in young plants", "Reduced leaf thickness and low vigor"],
+    whyItHappens: ["Low soil sulfate", "High crop removal", "Leaching in sandy soils", "Low organic matter and reduced sulfur deposition"],
+    fieldConditions: ["Sandy and low-organic-matter soils", "High crop removal and intensive systems", "Low atmospheric sulfur in modern areas", "High-yield oilseed cultivation"],
+    confirmation: ["New leaves pale while older leaves remain greener", "Soil sulfur is low", "Leaf tissue sulfur is below sufficiency"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use elemental sulfur or sulfate spray where needed"] },
+      { title: "Soil correction", details: ["Apply gypsum or elemental sulfur based on soil test"] },
+      { title: "Fertigation", details: ["Use soluble sulfate sources during early growth"] }
+    ],
+    foliar: "Use sulfate-based foliar sprays when new growth is pale and correction is urgent.",
+    soilApplication: "Apply elemental sulfur or sulfate fertilizers based on testing and crop need.",
+    fertigation: "Use soluble sulfate sources periodically for steady crop nutrition.",
+    recoveryTimeline: "Improvement appears over 1–2 weeks after correction.",
+    prevention: ["Include sulfur in balanced nutrition", "Maintain organic matter", "Use sulfur-rich amendments where needed", "Monitor oilseed and pulse crops closely"],
+    cropExamples: ["Mustard", "Soybean", "Onion", "Garlic"],
+    cropSpecificData: [
+      { cropName: "Mustard", symptoms: ["Pale young leaves and reduced vigor"], stage: "Vegetative growth", cause: "Low sulfate and high crop demand", correction: "Use gypsum or sulfur fertilizer", prevention: "Keep sulfur in the nutrient plan", notes: "Sulfur is central to oil and protein formation in mustard" },
+      { cropName: "Soybean", symptoms: ["Pale upper leaves and poor protein development"], stage: "Early vegetative to flowering", cause: "Low sulfur supply", correction: "Apply sulfur through soil and foliar feed", prevention: "Do not rely only on NPK", notes: "Sulfur strongly supports nodulation and protein quality" },
+      { cropName: "Onion", symptoms: ["Pale new leaves and reduced bulb quality"], stage: "Bulbing", cause: "Low sulfur availability", correction: "Use sulfate-based nutrient support", prevention: "Monitor sulfur during bulb development", notes: "Sulfur influences bulb pungency and quality" }
+    ]
+  },
+  {
+    slug: "iron",
+    name: "Iron",
+    symbol: "Fe",
+    role: "Essential for chlorophyll synthesis, respiration, and enzyme activity.",
+    mobility: "Immobile",
+    summary: "Iron deficiency causes yellowing of young leaves, especially under high pH or waterlogged conditions.",
+    quickFacts: ["Immobile nutrient", "Young leaves are affected first", "Common under alkaline soils"],
+    icon: "🪙",
+    severity: "High",
+    generalSymptoms: ["Young leaves turn yellow while veins stay green", "Interveinal chlorosis on new growth", "Leaves may become pale and weak", "Growth slows in severe deficiency"],
+    visualSymptoms: ["Bright yellowing of new leaves", "Green veins with pale interveinal tissue", "Severe cases show white or bleached tissue"],
+    whyItHappens: ["High soil pH", "Calcareous and alkaline soils", "Waterlogging and poor root aeration", "Excess phosphorus and bicarbonate"],
+    fieldConditions: ["Alkaline soils", "Waterlogged root zones", "High bicarbonate and poor drainage", "Cold and compacted soils"],
+    confirmation: ["Symptoms appear on young leaves", "Soil pH is high and available Fe is low", "Leaf tissue Fe is deficient"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use chelated iron foliar spray for rapid rescue"] },
+      { title: "Soil correction", details: ["Apply chelated Fe or iron sulfate where soil conditions support it"] },
+      { title: "Fertigation", details: ["Use soluble chelated iron through irrigation systems"] }
+    ],
+    foliar: "Chelated iron foliar sprays provide fast correction for young leaf chlorosis.",
+    soilApplication: "Use chelated iron or iron sulfate to improve availability in alkaline or calcareous soils.",
+    fertigation: "Chelated iron through fertigation can correct deficiency more consistently than soil-only applications.",
+    recoveryTimeline: "Visible greening often begins within 5–10 days after treatment.",
+    prevention: ["Manage soil pH", "Improve drainage", "Avoid excess phosphorus", "Use chelated Fe when needed"],
+    cropExamples: ["Citrus", "Banana", "Grape", "Chilli"],
+    cropSpecificData: [
+      { cropName: "Citrus", symptoms: ["Young leaves become yellow and weak"], stage: "Active growth", cause: "High pH and poor Fe availability", correction: "Use chelated Fe foliar and soil application", prevention: "Manage pH and root-zone aeration", notes: "Iron deficiency is a common issue in citrus under calcareous conditions" },
+      { cropName: "Grape", symptoms: ["Interveinal chlorosis of young leaves"], stage: "Spring growth", cause: "Calcareous soil and bicarbonate", correction: "Apply chelated Fe support", prevention: "Correct root-zone pH and drainage", notes: "Grapes are highly sensitive to Fe chlorosis" },
+      { cropName: "Chilli", symptoms: ["Pale upper leaves and poor growth"], stage: "Vegetative stage", cause: "Alkaline soils and poor Fe uptake", correction: "Use foliar and fertigation Fe", prevention: "Use balanced and pH-aware nutrition", notes: "Fe deficiency quickly reduces vigor and leaf color" }
+    ]
+  },
+  {
+    slug: "zinc",
+    name: "Zinc",
+    symbol: "Zn",
+    role: "Supports enzyme function, growth hormone production, and leaf development.",
+    mobility: "Immobile",
+    summary: "Zinc deficiency causes short internodes, smaller leaves, and interveinal chlorosis on young growth.",
+    quickFacts: ["Immobile nutrient", "Young leaves and shoots are affected", "Common on high-pH and calcareous soils"],
+    icon: "🌱",
+    severity: "High",
+    generalSymptoms: ["Short internodes and rosetting", "Small, narrow leaves", "Interveinal chlorosis on younger leaves", "Reduced flowering and poor seed set"],
+    visualSymptoms: ["Little leaves with shortened growth", "Mottled or banded chlorosis", "Bushy or clustered shoot appearance"],
+    whyItHappens: ["Low Zn availability", "High pH and calcareous soils", "Excess phosphorus and flooding", "Sandy and depleted soils"],
+    fieldConditions: ["Calcareous and alkaline soils", "Waterlogged or compacted areas", "High P application", "Highly weathered soils"],
+    confirmation: ["Symptoms occur on new leaves and shoots", "Soil or tissue Zn is low", "Plants show stunted growth with small leaves"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use zinc sulfate or chelated zinc as a rescue spray"] },
+      { title: "Soil correction", details: ["Apply ZnSO4 or zinc-enriched fertilizer where soil tests confirm low Zn"] },
+      { title: "Fertigation", details: ["Use soluble Zn in drip programs for continuous correction"] }
+    ],
+    foliar: "Zinc sulfate or chelated zinc foliar sprays can quickly restore new growth.",
+    soilApplication: "Apply zinc sulfate or zinc-enriched fertilizer in a band or near the root zone.",
+    fertigation: "Use chelated or soluble Zn in fertigation for repeatable correction.",
+    recoveryTimeline: "New growth often improves within 1–2 weeks after correction.",
+    prevention: ["Use soil and tissue testing", "Avoid excess phosphate", "Maintain balanced nutrition", "Correct high-pH issues"],
+    cropExamples: ["Rice", "Wheat", "Maize", "Citrus"],
+    cropSpecificData: [
+      { cropName: "Rice", symptoms: ["Stunted plants with small leaves and chlorosis"], stage: "Seedling to tillering", cause: "Low Zn availability in flooded soils", correction: "Apply ZnSO4 and use foliar rescue", prevention: "Ensure Zn nutrition early in the season", notes: "Zinc deficiency is very common in rice on low-Zn soils" },
+      { cropName: "Wheat", symptoms: ["Rosetting and narrow leaves"], stage: "Early vegetative growth", cause: "Low Zn and high pH", correction: "Use soil Zn and foliar zinc sulfate", prevention: "Keep Zn balanced in the fertilizer schedule", notes: "Zinc deficiency reduces leaf size and tillering" },
+      { cropName: "Maize", symptoms: ["Short internodes and banded chlorosis"], stage: "Vegetative growth", cause: "Low Zn and high P", correction: "Apply Zn and manage P balance", prevention: "Avoid high P dominance in early nutrition", notes: "Maize responds strongly to Zn correction" }
+    ]
+  },
+  {
+    slug: "boron",
+    name: "Boron",
+    symbol: "B",
+    role: "Supports cell division, pollen viability, fruit set, and transport of sugars.",
+    mobility: "Immobile",
+    summary: "Boron deficiency causes brittle tissues, poor flowering, deformed fruits, and hollow stems in sensitive crops.",
+    quickFacts: ["Immobile nutrient", "Critical at flowering and fruit set", "Deficiency often occurs in dry and light soils"],
+    icon: "🧬",
+    severity: "High",
+    generalSymptoms: ["Growing points become brittle and stunted", "Flowering and pollen viability decline", "Fruit and pod malformation appear", "Terminal buds may die back"],
+    visualSymptoms: ["Cracked stems or hollow structures", "Brittle and deformed young leaves", "Poor fruit set and malformed fruit"],
+    whyItHappens: ["Low available boron", "Drought and low soil moisture", "Light and calcareous soils", "High pH and low organic matter"],
+    fieldConditions: ["Dry, light soils", "High pH and calcareous conditions", "Low organic matter", "High rainfall causing leaching"],
+    confirmation: ["Symptoms appear in new growth and reproductive structures", "Leaf or soil B is low", "Flowering and fruit set are poor"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use boron foliar spray at low dose during flowering"] },
+      { title: "Soil correction", details: ["Apply boron cautiously based on soil test and crop sensitivity"] },
+      { title: "Fertigation", details: ["Use soluble B in small amounts through fertigation"] }
+    ],
+    foliar: "Use low-dose boron foliar sprays at flowering and early fruit set when symptoms appear.",
+    soilApplication: "Apply boron carefully, since over-application can be toxic.",
+    fertigation: "Use small and repeated boron doses through fertigation to protect reproductive structures.",
+    recoveryTimeline: "Flowering and fruit set improvement may be visible after a short period, but structural issues may persist.",
+    prevention: ["Apply boron only as needed", "Protect against drought stress", "Use soil testing before application", "Avoid excess B"],
+    cropExamples: ["Cauliflower", "Broccoli", "Tomato", "Cotton"],
+    cropSpecificData: [
+      { cropName: "Cauliflower", symptoms: ["Poor curd formation and hollow stems"], stage: "Curd initiation and development", cause: "Low B under dry conditions", correction: "Use boron foliar and soil application", prevention: "Monitor B during curd initiation", notes: "B is critical for curd quality and heading" },
+      { cropName: "Tomato", symptoms: ["Poor fruit set and deformed fruits"], stage: "Flowering and fruit set", cause: "Low B and dry weather", correction: "Apply low-dose boron spray", prevention: "Maintain moisture and correct B early", notes: "Boron directly affects pollen viability and fruit quality" },
+      { cropName: "Cotton", symptoms: ["Square shedding and malformed growth points"], stage: "Flowering and boll development", cause: "Low B and stress", correction: "Use small repeated boron applications", prevention: "Prevent drought and apply B at the right stage", notes: "B deficiency reduces boll retention and quality" }
+    ]
+  },
+  {
+    slug: "copper",
+    name: "Copper",
+    symbol: "Cu",
+    role: "Supports enzyme function, lignin formation, and reproductive growth.",
+    mobility: "Immobile",
+    summary: "Copper deficiency causes dieback, pale young leaves, and poor reproductive performance in sensitive crops.",
+    quickFacts: ["Immobile nutrient", "Often seen in organic and high-pH soils", "Important for lignin and stress defense"],
+    icon: "🛡️",
+    severity: "Moderate",
+    generalSymptoms: ["Young leaves become pale and distorted", "Stem dieback and weak growth", "Poor tillering or branching", "Reduced reproductive output"],
+    visualSymptoms: ["Distorted tender growth", "Pale tips and weak new shoots", "Dieback in severe cases"],
+    whyItHappens: ["Low soil copper", "Organic and peaty soils", "High pH and heavy phosphorus", "Excessive liming or low organic matter"],
+    fieldConditions: ["Peaty or organic soils", "High pH and over-limed fields", "High phosphorus and low soil organic matter", "Very sandy and low-base soils"],
+    confirmation: ["Symptoms on new growth and terminal shoots", "Soil or tissue Cu is low", "Weakness and dieback are observed"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use chelated copper in low dose when needed"] },
+      { title: "Soil correction", details: ["Apply copper sulfate carefully based on test results"] },
+      { title: "Fertigation", details: ["Use small soluble copper doses through fertigation"] }
+    ],
+    foliar: "Chelated copper foliar sprays can support new growth and reduce dieback.",
+    soilApplication: "Apply copper sulfate or copper-based amendments carefully and only when justified by soil tests.",
+    fertigation: "Use soluble copper at low rates if deficiency is confirmed and crop is sensitive.",
+    recoveryTimeline: "Improvement is gradual and requires consistent correction.",
+    prevention: ["Use soil tests", "Avoid over-liming", "Maintain balanced micronutrients", "Monitor sensitive crops"],
+    cropExamples: ["Wheat", "Rice", "Citrus", "Grapes"],
+    cropSpecificData: [
+      { cropName: "Citrus", symptoms: ["Dieback and weak new shoots"], stage: "Active vegetative growth", cause: "Low Cu and high pH", correction: "Use chelated Cu foliar and soil treatment", prevention: "Monitor Cu in high-pH orchards", notes: "Copper is important for healthy shoot growth and disease tolerance" },
+      { cropName: "Wheat", symptoms: ["Weak tillering and distorted new leaves"], stage: "Early growth", cause: "Low Cu in light soils", correction: "Correct with Cu in a balanced micronutrient program", prevention: "Avoid one-sided fertilizer programs", notes: "Cu deficiency can limit stand vigor" },
+      { cropName: "Grapes", symptoms: ["Poor shoot growth and weak new tissue"], stage: "Spring growth", cause: "Low Cu and high soil pH", correction: "Use small and regular Cu support", prevention: "Keep a balanced micronutrient plan", notes: "Copper supports healthy vine growth and stress resilience" }
+    ]
+  },
+  {
+    slug: "manganese",
+    name: "Manganese",
+    symbol: "Mn",
+    role: "Supports photosynthesis, enzyme systems, and nitrogen metabolism.",
+    mobility: "Immobile",
+    summary: "Manganese deficiency produces interveinal chlorosis on newer leaves and weak photosynthetic performance.",
+    quickFacts: ["Immobile nutrient", "Symptoms are visible on young leaves", "Common in alkaline and poorly drained soils"],
+    icon: "🟢",
+    severity: "Moderate",
+    generalSymptoms: ["Young leaves become pale with green veins", "Interveinal chlorosis develops", "Leaf growth becomes slow and weak", "Severe deficiency may cause necrotic spots"],
+    visualSymptoms: ["Green veins with pale leaf tissue", "Streaked or speckled chlorosis", "Leaf browning in severe cases"],
+    whyItHappens: ["High pH and calcareous soils", "Waterlogging and poor aeration", "Low Mn availability", "High organic matter and low redox conditions"],
+    fieldConditions: ["Alkaline soil", "Waterlogged or compacted fields", "Cold and wet periods", "High organic matter"],
+    confirmation: ["Young leaves show chlorosis first", "Soil or leaf Mn is low", "Symptoms worsen in poorly aerated conditions"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use manganese sulfate foliar feed for quick correction"] },
+      { title: "Soil correction", details: ["Apply Mn sulfate or chelated Mn where needed"] },
+      { title: "Fertigation", details: ["Use small repeated Mn doses in fertigation programs"] }
+    ],
+    foliar: "Manganese sulfate foliar sprays can quickly restore green color in young leaves.",
+    soilApplication: "Use manganese sulfate or chelated Mn where soil tests confirm deficiency.",
+    fertigation: "Incorporate Mn in fertigation for steadier correction under alkaline conditions.",
+    recoveryTimeline: "Leaf color can improve within 1–2 weeks after treatment.",
+    prevention: ["Manage pH and drainage", "Avoid over-liming", "Use balanced micronutrient programs", "Monitor sensitive crops"],
+    cropExamples: ["Wheat", "Soybean", "Sugarcane", "Citrus"],
+    cropSpecificData: [
+      { cropName: "Sugarcane", symptoms: ["Young leaf yellowing and reduced growth"], stage: "Active vegetative growth", cause: "Low Mn and waterlogging", correction: "Use Mn sulfate and improve drainage", prevention: "Maintain good root aeration", notes: "Mn supports green leaf function and growth rate" },
+      { cropName: "Soybean", symptoms: ["Interveinal chlorosis on upper leaves"], stage: "Vegetative growth", cause: "Alkaline soil and low Mn", correction: "Apply foliar Mn and correct pH", prevention: "Monitor Mn on high-pH fields", notes: "Mn is important for photosynthesis and vigor" },
+      { cropName: "Wheat", symptoms: ["Pale young leaves with green veins"], stage: "Early growth", cause: "Low Mn availability", correction: "Use Mn foliar and soil correction", prevention: "Avoid poor drainage and over-liming", notes: "Mn deficiency decreases vigor and biomass build-up" }
+    ]
+  },
+  {
+    slug: "molybdenum",
+    name: "Molybdenum",
+    symbol: "Mo",
+    role: "Supports nitrogen fixation and nitrate reduction in plants.",
+    mobility: "Partially mobile",
+    summary: "Molybdenum deficiency causes pale older leaves, poor nodulation in legumes, and weak nitrogen metabolism.",
+    quickFacts: ["Needed in very small amounts", "Critical for legumes", "Symptoms can resemble nitrogen deficiency"],
+    icon: "🧬",
+    severity: "Low",
+    generalSymptoms: ["Pale leaves and weak nitrogen use", "Older leaves show chlorosis", "Legumes show poor nodulation and reduced fixation", "Plants may appear N-deficient"],
+    visualSymptoms: ["Leaf yellowing similar to N deficiency", "Poor growth and low vigor", "Reduced nodulation in legumes"],
+    whyItHappens: ["Low soil Mo", "Very acidic or very alkaline soils", "Poor root uptake", "High soil manganese and strong acidity"],
+    fieldConditions: ["Strongly acidic soils", "Very alkaline and calcareous soils", "Poor nodulation conditions", "Low organic matter"],
+    confirmation: ["Symptoms resemble N deficiency", "Soil or tissue Mo is low", "Legumes have poor nodulation"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use very low-dose molybdate spray where needed"] },
+      { title: "Soil correction", details: ["Apply molybdenum in very small rates based on soil test"] },
+      { title: "Fertigation", details: ["Use soluble molybdate in carefully controlled amounts"] }
+    ],
+    foliar: "Very low-dose molybdate foliar sprays can correct deficiency where legumes are affected.",
+    soilApplication: "Apply molybdenum at very low rates only where evidence points to deficiency.",
+    fertigation: "Use carefully controlled molybdate in fertigation to support nitrogen metabolism.",
+    recoveryTimeline: "Improvement is gradual and often linked to improved nodulation and N use.",
+    prevention: ["Avoid strongly acidic or alkaline soils", "Support legume nodulation", "Use soil testing", "Maintain balanced micronutrients"],
+    cropExamples: ["Soybean", "Groundnut", "Cabbage", "Cauliflower"],
+    cropSpecificData: [
+      { cropName: "Soybean", symptoms: ["Poor nodulation and pale foliage"], stage: "Early vegetative growth", cause: "Low Mo and poor N fixation", correction: "Use molybdate treatment and improve nodulation", prevention: "Monitor Mo in legume systems", notes: "Mo is essential for biological nitrogen fixation" },
+      { cropName: "Groundnut", symptoms: ["Pale older leaves and weak growth"], stage: "Vegetative to flowering", cause: "Low soil Mo", correction: "Use low-dose Mo treatment", prevention: "Maintain balanced nutrition for legumes", notes: "Mo deficiency weakens N use efficiency" },
+      { cropName: "Cauliflower", symptoms: ["Pale leaves and weak growth"], stage: "Vegetative growth", cause: "Low soil Mo and low N metabolism", correction: "Use very small Mo application", prevention: "Avoid over-reliance on N fertilizers", notes: "Mo helps overall nitrogen metabolism in brassicas" }
+    ]
+  },
+  {
+    slug: "chlorine",
+    name: "Chlorine",
+    symbol: "Cl",
+    role: "Supports osmotic balance, photosynthesis, and water regulation.",
+    mobility: "Mobile",
+    summary: "Chlorine deficiency is rare but can cause wilting, chlorosis, and reduced growth under very low chloride conditions.",
+    quickFacts: ["Mostly rare in field crops", "Important for water regulation", "Deficiency is uncommon under normal fertilization"],
+    icon: "💧",
+    severity: "Low",
+    generalSymptoms: ["Wilting and reduced growth", "Chlorosis in young leaves", "Poor water regulation and leaf droop", "Lower vigor in severe cases"],
+    visualSymptoms: ["General wilting and dull leaf color", "Reduced turgor and poor leaf expansion", "Weakness under stress conditions"],
+    whyItHappens: ["Very low chloride in soil", "Highly leached and low-salt systems", "High-purity water use", "Unbalanced nutrient programs"],
+    fieldConditions: ["Leached low-salt soils", "Very low chloride input", "High-purity irrigation water", "Intensive nutrient management"],
+    confirmation: ["Deficiency is uncommon and usually confirmed by soil analysis", "Symptoms are mild and often confused with water stress", "Leaf chloride is below sufficiency"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use chloride-based nutrient support only if deficiency is confirmed"] },
+      { title: "Soil correction", details: ["Incorporate chloride where soil tests justify it"] },
+      { title: "Fertigation", details: ["Use chloride in small, controlled amounts"] }
+    ],
+    foliar: "Chloride-based correction is rarely required and should be used only when deficiency is confirmed.",
+    soilApplication: "Apply chloride carefully where soil tests indicate a deficiency and crop response is likely.",
+    fertigation: "Small controlled chloride supply can help if the crop is a known chloride-responsive system.",
+    recoveryTimeline: "Recovery is usually rapid once chloride levels are restored.",
+    prevention: ["Avoid overly strict chloride exclusion", "Use balanced fertilizer sources", "Monitor leaf and soil data"],
+    cropExamples: ["Cotton", "Tomato", "Cereals", "Potato"],
+    cropSpecificData: [
+      { cropName: "Cotton", symptoms: ["Wilting and weak growth under low chloride"], stage: "Early growth", cause: "Very low chloride availability", correction: "Use chloride-based nutrition if needed", prevention: "Avoid over-restricting chloride in nutrient planning", notes: "Chlorine is rarely limiting but matters in specific systems" },
+      { cropName: "Tomato", symptoms: ["Poor leaf turgor and general weakness"], stage: "Active growth", cause: "Low chloride and high-purity water", correction: "Correct only after confirmation", prevention: "Maintain balanced nutrient sources", notes: "Chlorine deficiency is uncommon but can appear in very low-salt systems" },
+      { cropName: "Potato", symptoms: ["Weak growth and wilt-like symptoms"], stage: "Vegetative growth", cause: "Very low Cl availability", correction: "Use controlled chloride support", prevention: "Keep nutrient programs balanced", notes: "Chloride deficiency is unusual but may appear in ultra-low chloride systems" }
+    ]
+  },
+  {
+    slug: "nickel",
+    name: "Nickel",
+    symbol: "Ni",
+    role: "Supports urease activity and proper nitrogen metabolism in plants.",
+    mobility: "Partially mobile",
+    summary: "Nickel deficiency is rare but can reduce nitrogen use efficiency and cause severe metabolic weakness in sensitive crops.",
+    quickFacts: ["Needed in trace amounts", "Important for urease activity", "Rare but important in specific systems"],
+    icon: "⚙️",
+    severity: "Low",
+    generalSymptoms: ["Leaf tip necrosis may appear", "Poor nitrogen metabolism and reduced vigor", "Urea accumulation and leaf distortion can occur", "Plants may look weak and underfed"],
+    visualSymptoms: ["Leaf tip burn and poor growth", "General weakness and low vigor", "Metabolic stress signs in severe cases"],
+    whyItHappens: ["Extremely low soil Ni", "Highly leached and low-organic soils", "Poor root uptake", "Unbalanced micronutrient nutrition"],
+    fieldConditions: ["Highly weathered and low-base soils", "Intensive fertilizer systems", "Very low trace nutrient supply", "Poor root health"],
+    confirmation: ["Deficiency is rare and should be confirmed by tissue or soil tests", "Symptoms resemble general nutrient stress", "Leaf Ni is below sufficiency range"],
+    corrections: [
+      { title: "Foliar spray", details: ["Use very low-dose nickel in special cases only"] },
+      { title: "Soil correction", details: ["Apply nickel only when soil and tissue data justify it"] },
+      { title: "Fertigation", details: ["Use controlled trace nickel when a confirmed deficiency exists"] }
+    ],
+    foliar: "Nickel correction is only appropriate in very specific and confirmed cases.",
+    soilApplication: "Apply nickel cautiously and only when deficiency is verified by testing.",
+    fertigation: "Trace nickel in fertigation should be used very carefully and sparingly.",
+    recoveryTimeline: "Recovery is usually slow and depends on practical correction of the underlying metabolic stress.",
+    prevention: ["Maintain trace nutrient balance", "Avoid one-sided fertility programs", "Use periodic tissue testing", "Keep root systems healthy"],
+    cropExamples: ["Soybean", "Pineapple", "Cereals", "Legumes"],
+    cropSpecificData: [
+      { cropName: "Soybean", symptoms: ["Weak growth and poor nitrogen use"], stage: "Vegetative growth", cause: "Very low nickel availability", correction: "Use corrected micronutrient support", prevention: "Maintain trace nutrient balance", notes: "Nickel supports urease activity and nitrogen metabolism" },
+      { cropName: "Cereals", symptoms: ["General weakness and poor growth"], stage: "Early growth", cause: "Low Ni and poor root function", correction: "Correct only after testing", prevention: "Avoid severe micronutrient imbalance", notes: "Nickel deficiency is rare but can affect metabolism" },
+      { cropName: "Legumes", symptoms: ["Metabolic weakness and poor vigor"], stage: "Vegetative growth", cause: "Low Ni and weak N metabolism", correction: "Use controlled trace nutrient correction", prevention: "Support balanced nutrition", notes: "Nickel helps maintain proper N metabolism in legumes" }
+    ]
+  }
+];

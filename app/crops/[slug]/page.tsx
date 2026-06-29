@@ -1,186 +1,276 @@
-// app/crops/[slug]/page.tsx
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cropsData } from "@/data/crops";
+import { Leaf, Sprout, FlaskConical, Droplets, ShieldCheck, Tractor, PackageCheck, Wheat, ChevronRight } from "lucide-react";
+import cropsData, { type Crop as CropData } from "@/data/crops";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
+const sectionMeta = [
+  { key: "overview", title: "Crop Overview", description: "Quick farm-friendly snapshot", icon: <Leaf className="h-5 w-5" /> },
+  { key: "sowing", title: "Sowing Guide", description: "Best practices for establishment", icon: <Sprout className="h-5 w-5" /> },
+  { key: "fertilizer", title: "Fertilizer Schedule", description: "Balanced nutrition by stage", icon: <FlaskConical className="h-5 w-5" /> },
+  { key: "irrigation", title: "Irrigation Management", description: "Water planning and timing", icon: <Droplets className="h-5 w-5" /> },
+  { key: "protection", title: "Crop Protection", description: "Pests, diseases, weeds and control", icon: <ShieldCheck className="h-5 w-5" /> },
+  { key: "deficiency", title: "Nutrient Deficiency", description: "Key symptoms and remedies", icon: <Wheat className="h-5 w-5" /> },
+  { key: "harvest", title: "Harvest & Yield", description: "Harvesting, maturity and storage", icon: <Tractor className="h-5 w-5" /> },
+  { key: "market", title: "Market Information", description: "Demand, MSP and price outlook", icon: <PackageCheck className="h-5 w-5" /> },
+] as const;
+
+function toSlug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export default async function CropDetailPage({ params }: Props) {
-  // Next.js 15 के नियम के अनुसार params को await किया
   const resolvedParams = await params;
-  
-  // डेटाबेस से सही फसल को ढूंढा
-  const crop = cropsData.find((item) => item.slug === resolvedParams.slug);
+  const crop = cropsData.find((item): item is CropData => item.slug === resolvedParams.slug);
 
   if (!crop) {
     return notFound();
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white px-4 py-12 font-sans selection:bg-emerald-500/30">
-      <div className="mx-auto max-w-6xl space-y-12">
-        
-        {/* ================= HERO SECTION (Premium Top Card) ================= */}
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-emerald-950/40 to-slate-900/40 p-8 md:p-12 backdrop-blur-xl shadow-2xl">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl"></div>
-          
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.15),_transparent_25%),linear-gradient(135deg,_#020617,_#0f172a_50%,_#020617)] px-4 py-8 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6">
+        <section className="relative overflow-hidden rounded-[32px] border border-emerald-400/20 bg-slate-900/75 p-6 shadow-[0_20px_90px_rgba(16,185,129,0.16)] backdrop-blur-2xl sm:p-8 lg:p-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(34,197,94,0.2),_transparent_18%),radial-gradient(circle_at_80%_0%,_rgba(56,189,248,0.16),_transparent_20%)]" />
           <div className="relative z-10 space-y-4">
-            <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-400 border border-emerald-500/20">
-              {crop.category} • AGRIVEDA ENGINE
-            </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              {crop.name}
-            </h1>
-            <p className="text-lg md:text-xl italic text-slate-400 font-serif">
-              {crop.scientificName}
-            </p>
-            <p className="max-w-3xl text-base md:text-lg leading-relaxed text-slate-300">
-              {crop.overview}
-            </p>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-200">
+              <Leaf className="h-3.5 w-3.5" />
+              {crop.category} • AGRIVEDA FARM GUIDE
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">{crop.name}</h1>
+              <p className="text-base italic text-slate-400 sm:text-lg">{crop.scientificName}</p>
+            </div>
+            <p className="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">{crop.overview}</p>
           </div>
-        </div>
+        </section>
 
-        {/* ================= AGRONOMY QUICK STATS ================= */}
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: "फसल की अवधि", value: crop.durationDays },
-            { label: "अनुमानित पैदावार", value: crop.estimatedYield },
-            { label: "बीज दर (प्रति एकड़)", value: crop.seedRate },
-            { label: "पौधों की दूरी (Spacing)", value: crop.spacing },
-          ].map((stat, i) => (
-            <div key={i} className="rounded-2xl border border-white/5 bg-slate-900/40 p-5 backdrop-blur-md">
-              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{stat.label}</p>
-              <p className="mt-2 text-base md:text-lg font-bold text-white tracking-tight">{stat.value}</p>
+            { label: "Duration", value: crop.durationDays },
+            { label: "Expected yield", value: crop.estimatedYield },
+            { label: "Seed rate", value: crop.seedRate },
+            { label: "Spacing", value: crop.spacing },
+          ].map((item) => (
+            <div key={item.label} className="rounded-[24px] border border-white/10 bg-slate-900/70 p-4 shadow-[0_10px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">{item.label}</p>
+              <p className="mt-2 text-base font-semibold text-white">{item.value}</p>
             </div>
           ))}
-        </div>
+        </section>
 
-        {/* ================= CLIMATE & SOIL SECTION ================= */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-xl transition-all hover:border-emerald-500/30">
-            <h2 className="text-xl font-bold text-emerald-400 flex items-center gap-2 mb-3">
-              <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-              मौसम और जलवायु (Climate)
-            </h2>
-            <p className="text-slate-300 leading-relaxed text-sm md:text-base">{crop.climate}</p>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-xl transition-all hover:border-emerald-500/30">
-            <h2 className="text-xl font-bold text-emerald-400 flex items-center gap-2 mb-3">
-              <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-              मिट्टी का चयन (Soil Requirements)
-            </h2>
-            <p className="text-slate-300 leading-relaxed text-sm md:text-base">{crop.soil}</p>
-          </div>
-        </div>
-
-        {/* ================= BASAL DOSE (बुवाई की मुख्य खाद) ================= */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-6 md:p-8 backdrop-blur-md">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold tracking-tight text-white">खेत की तैयारी एवं बेसल डोज (Basal Dose)</h2>
-            <p className="text-sm text-slate-400 mt-1">आखिरी जुताई के समय जमीन के अंदर दी जाने वाली तगड़ी खुराक</p>
-          </div>
-          
-          <div className="overflow-hidden rounded-xl border border-white/5 bg-black/20">
-            <div className="grid grid-cols-2 bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-              <div>खाद / फर्टिलाइजर का नाम</div>
-              <div className="text-right">मात्रा (प्रति एकड़)</div>
-            </div>
-            <div className="divide-y divide-white/5">
-              {crop.basalDose.map((dose, index) => (
-                <div key={index} className="grid grid-cols-2 px-4 py-3.5 text-sm transition-colors hover:bg-white/[0.02]">
-                  <div className="font-medium text-slate-200">{dose.name}</div>
-                  <div className="text-right font-semibold text-emerald-400">{dose.dosage}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ================= STAGE WISE SCHEDULE (FARMING BLUEPRINT) ================= */}
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-white">स्टेज-वाइज फर्टिगेशन एवं स्प्रे शेड्यूल</h2>
-            <p className="text-sm text-slate-400 mt-1">पौधे के विकास के अनुसार वैज्ञानिक और सटीक प्रबंधन की समय सारणी</p>
-          </div>
-
-          <div className="space-y-8">
-            {crop.stageWiseSchedule.map((stage, sIdx) => (
-              <div key={sIdx} className="relative rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-950 p-6 md:p-8 shadow-xl">
-                
-                {/* Stage Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-4 mb-6 gap-2">
-                  <div>
-                    <h3 className="text-xl font-bold text-white tracking-tight">{stage.stageName}</h3>
-                    <p className="text-sm text-slate-400 mt-1">{stage.description}</p>
+        <div className="space-y-4">
+          {sectionMeta.map((section) => {
+            const isOverview = section.key === "overview";
+            return (
+              <details key={section.key} open={isOverview} className="group rounded-[28px] border border-white/10 bg-slate-900/70 p-5 shadow-[0_10px_45px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-2 text-emerald-300">
+                      {section.icon}
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold text-white">{section.title}</h2>
+                      <p className="text-sm text-slate-400">{section.description}</p>
+                    </div>
                   </div>
-                  <span className="inline-block shrink-0 rounded-md bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20 align-self-start md:align-self-center">
-                    अवधि: {stage.durationDays}
-                  </span>
-                </div>
+                  <ChevronRight className="h-5 w-5 text-slate-400 transition-transform duration-300 group-open:rotate-90" />
+                </summary>
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  {/* Fertilizers Inside Stage */}
-                  {stage.fertilizers && stage.fertilizers.length > 0 && (
-                    <div className="space-y-3">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 bg-blue-400 rounded-full"></span>
-                        पोषण प्रबंधन (Nutrient via Drip/Soil)
-                      </h4>
-                      <div className="rounded-xl border border-white/5 bg-black/40 p-4 space-y-3">
-                        {stage.fertilizers.map((fert, fIdx) => (
-                          <div key={fIdx} className="flex justify-between items-start text-sm border-b border-white/5 last:border-none pb-2 last:pb-0">
-                            <div>
-                              <p className="font-medium text-slate-200">{fert.name}</p>
-                              <p className="text-xs text-slate-400 mt-0.5">{fert.frequency}</p>
-                            </div>
-                            <span className="font-semibold text-blue-400 shrink-0 ml-2">{fert.dosage}</span>
+                <div className="mt-5 space-y-4">
+                  {section.key === "overview" && (
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                      {[
+                        { label: "Introduction", value: crop.overview },
+                        { label: "Scientific Name", value: crop.scientificName },
+                        { label: "Duration", value: crop.durationDays },
+                        { label: "Suitable Season", value: crop.suitableSeason },
+                        { label: "Suitable Soil", value: crop.suitableSoil },
+                        { label: "Climate", value: crop.climate },
+                        { label: "Expected Yield", value: crop.estimatedYield },
+                      ].map((item) => (
+                        <div key={item.label} className="rounded-[22px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">{item.label}</p>
+                          <p className="mt-2 text-sm leading-6 text-slate-200">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {section.key === "sowing" && (
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+                      {[
+                        { label: "Best Sowing Time", value: crop.sowingGuide.bestSowingTime },
+                        { label: "Seed Rate", value: crop.sowingGuide.seedRate },
+                        { label: "Seed Treatment", value: crop.sowingGuide.seedTreatment },
+                        { label: "Spacing", value: crop.sowingGuide.spacing },
+                        { label: "Sowing Method", value: crop.sowingGuide.sowingMethod },
+                      ].map((item) => (
+                        <div key={item.label} className="rounded-[22px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">{item.label}</p>
+                          <p className="mt-2 text-sm leading-6 text-slate-200">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {section.key === "fertilizer" && (
+                    <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+                      <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Basal Dose</p>
+                        <ul className="mt-3 space-y-2">
+                          {crop.fertilizerSchedule.basalDose.map((item) => (
+                            <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Stage-wise Schedule</p>
+                          <div className="mt-3 space-y-2">
+                            {crop.fertilizerSchedule.stageWise.map((stage) => (
+                              <div key={stage.stage} className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                                <p className="text-sm font-semibold text-white">{stage.stage}</p>
+                                <ul className="mt-2 space-y-1">
+                                  {stage.details.map((detail) => (
+                                    <li key={detail} className="text-sm leading-6 text-slate-300">• {detail}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
+                        <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Micronutrients</p>
+                          <ul className="mt-3 space-y-2">
+                            {crop.fertilizerSchedule.micronutrients.map((item) => (
+                              <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Foliar Spray</p>
+                          <ul className="mt-3 space-y-2">
+                            {crop.fertilizerSchedule.foliarSpray.map((item) => (
+                              <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   )}
 
-                  {/* Sprays Inside Stage */}
-                  {stage.sprays && stage.sprays.length > 0 && (
-                    <div className="space-y-3">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 bg-amber-400 rounded-full"></span>
-                        फसल सुरक्षा (Parallel Spray Schedule)
-                      </h4>
-                      <div className="rounded-xl border border-white/5 bg-black/40 p-4 space-y-4">
-                        {stage.sprays.map((spray, spIdx) => (
-                          <div key={spIdx} className="space-y-1.5 text-sm border-b border-white/5 last:border-none pb-3 last:pb-0">
-                            <div className="flex justify-between items-start">
-                              <p className="font-medium text-slate-200"><span className="text-amber-400 font-semibold">लक्ष्य:</span> {spray.target}</p>
-                              <span className="text-xs font-bold text-amber-400 shrink-0 ml-2 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">{spray.dosage}</span>
-                            </div>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {spray.chemicals.map((chem, cIdx) => (
-                                <span key={cIdx} className="text-xs bg-white/5 border border-white/10 rounded px-2 py-0.5 text-slate-300 font-mono">
-                                  {chem}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
+                  {section.key === "irrigation" && (
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                      <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Water Requirement</p>
+                        <p className="mt-2 text-sm leading-6 text-slate-200">{crop.irrigationManagement.waterRequirement}</p>
+                      </div>
+                      <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Critical Stages</p>
+                        <ul className="mt-3 space-y-2">
+                          {crop.irrigationManagement.criticalStages.map((item) => (
+                            <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Irrigation Schedule</p>
+                        <ul className="mt-3 space-y-2">
+                          {crop.irrigationManagement.schedule.map((item) => (
+                            <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
                   )}
+
+                  {section.key === "protection" && (
+                    <div className="grid gap-4 xl:grid-cols-2">
+                      <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Major Pests</p>
+                        <ul className="mt-3 space-y-2">{crop.cropProtection.majorPests.map((item) => <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>)}</ul>
+                      </div>
+                      <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Major Diseases</p>
+                        <ul className="mt-3 space-y-2">{crop.cropProtection.majorDiseases.map((item) => <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>)}</ul>
+                      </div>
+                      <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Weed Management</p>
+                        <ul className="mt-3 space-y-2">{crop.cropProtection.weedManagement.map((item) => <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>)}</ul>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Symptoms</p>
+                          <ul className="mt-3 space-y-2">{crop.cropProtection.symptoms.map((item) => <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>)}</ul>
+                        </div>
+                        <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Prevention & Control</p>
+                          <ul className="mt-3 space-y-2">{crop.cropProtection.prevention.map((item) => <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">{item}</li>)}</ul>
+                          <ul className="mt-2 space-y-2">{crop.cropProtection.control.map((item) => <li key={item} className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">{item}</li>)}</ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {section.key === "deficiency" && (
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                      {crop.nutrientDeficiencies.map((item) => (
+                        <div key={item.nutrient} className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-base font-semibold text-white">{item.nutrient}</p>
+                          <div className="mt-3 space-y-2 text-sm text-slate-300">
+                            <p><span className="font-semibold text-slate-100">Symptoms:</span> {item.symptoms}</p>
+                            <p><span className="font-semibold text-slate-100">Cause:</span> {item.cause}</p>
+                            <p><span className="font-semibold text-slate-100">Solution:</span> {item.solution}</p>
+                          </div>
+                          <Link href={`/deficiencies/${toSlug(item.nutrient)}`} className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-1.5 text-sm font-semibold text-emerald-200">
+                            Read More
+                            <ChevronRight className="h-4 w-4" />
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {section.key === "harvest" && (
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                      {[
+                        { label: "Harvesting Time", value: crop.harvestAndYield.harvestingTime },
+                        { label: "Maturity Signs", value: crop.harvestAndYield.maturitySigns.join(" • ") },
+                        { label: "Yield", value: crop.harvestAndYield.yield },
+                        { label: "Storage Tips", value: crop.harvestAndYield.storageTips.join(" • ") },
+                      ].map((item) => (
+                        <div key={item.label} className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">{item.label}</p>
+                          <p className="mt-2 text-sm leading-6 text-slate-200">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {section.key === "market" && (
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                      {[
+                        { label: "Major Markets", value: crop.marketInformation.majorMarkets.join(" • ") },
+                        { label: "Demand", value: crop.marketInformation.demand },
+                        { label: "MSP", value: crop.marketInformation.msp },
+                        { label: "Price Trend", value: crop.marketInformation.priceTrend },
+                      ].map((item) => (
+                        <div key={item.label} className="rounded-[24px] border border-white/10 bg-black/20 p-4">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">{item.label}</p>
+                          <p className="mt-2 text-sm leading-6 text-slate-200">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-
-              </div>
-            ))}
-          </div>
+              </details>
+            );
+          })}
         </div>
-
-        {/* ================= MARKET INTELLIGENCE ================= */}
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 to-slate-950 p-6 md:p-8">
-          <h2 className="text-xl font-bold text-white mb-2">मार्केट इंटेलिजेंस (Market Info)</h2>
-          <p className="text-slate-300 text-sm md:text-base leading-relaxed">{crop.marketInfo}</p>
-        </div>
-
       </div>
     </main>
   );

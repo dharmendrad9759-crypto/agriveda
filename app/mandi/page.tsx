@@ -1,8 +1,12 @@
 // app/mandi/page.tsx
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 export default function MandiPage() {
-  // अभी हम रीयल-टाइम लुकिंग स्टेटिक प्रीमियम डेटा रख रहे हैं, जिसे बाद में Mandi API से कनेक्ट करेंगे
+  const [searchTerm, setSearchTerm] = useState("");
+
   const mandiPrices = [
     { crop: "टमाटर (Tomato)", mandi: "जयपुर (राज.)", price: "₹2,400 - ₹3,200", unit: "क्विंटल", trend: "up", change: "+₹250" },
     { crop: "धान (Paddy - Basmati)", mandi: "करनाल (हरियाणा)", price: "₹3,800 - ₹4,500", unit: "क्विंटल", trend: "up", change: "+₹120" },
@@ -11,27 +15,46 @@ export default function MandiPage() {
     { crop: "आलू (Potato)", mandi: "आगरा (उ.प्र.)", price: "₹1,200 - ₹1,600", unit: "क्विंटल", trend: "stable", change: "₹0" },
   ];
 
+  // लाइव सर्च फिल्टरिंग लॉजिक
+  const filteredPrices = mandiPrices.filter((item) =>
+    item.crop.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.mandi.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white px-4 py-12 selection:bg-emerald-500/30">
       <div className="mx-auto max-w-5xl space-y-10">
         
         {/* ऊपर का हेडर */}
-        <div className="space-y-2 border-b border-white/5 pb-6">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400">
-            AGRIVEDA MARKET INTELLIGENCE
-          </span>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
-            मंडी भाव लाइव ट्रैकर
-          </h1>
-          <p className="text-sm md:text-base text-slate-400 max-w-xl">
-            देश की प्रमुख कृषि मंडियों के ताजा और सटीक भाव। स्मार्ट एल्गोरिदम के साथ दाम के उतार-चढ़ाव का विश्लेषण।
-          </p>
+        <div className="space-y-2 border-b border-white/5 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400">
+              AGRIVEDA MARKET INTELLIGENCE
+            </span>
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mt-1">
+              मंडी भाव लाइव ट्रैकर
+            </h1>
+            <p className="text-sm md:text-base text-slate-400 max-w-xl">
+              देश की प्रमुख कृषि मंडियों के ताजा और सटीक भाव। स्मार्ट एल्गोरिदम के साथ दाम के उतार-चढ़ाव का विश्लेषण।
+            </p>
+          </div>
+
+          {/* लाइव सर्च बॉक्स */}
+          <div className="w-full md:w-72">
+            <input
+              type="text"
+              placeholder="🔍 फसल या मंडी खोजें..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-amber-500/50 text-slate-200 placeholder-slate-500 transition-all"
+            />
+          </div>
         </div>
 
         {/* ================= MARKET OVERVIEW CARDS ================= */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
-            { label: "आज का मार्केट सेंटिमेंट", value: "तेज (Bullish)", desc: "कपास और टमाटर में भारी मांग", color: "text-emerald-400" },
+            { label: "आज का充 मार्केट सेंटिमेंट", value: "तेज (Bullish)", desc: "कपास और टमाटर में भारी मांग", color: "text-emerald-400" },
             { label: "सर्वाधिक उछाल वाली फसल", value: "कपास (+₹400)", desc: "झाबुआ मंडी में रिकॉर्ड आवक", color: "text-emerald-400" },
             { label: "अपडेट का समय", value: "आज, 11:30 AM", desc: "AGMARKNET डेटा सोर्स आधारित", color: "text-amber-400" },
           ].map((stat, i) => (
@@ -43,9 +66,11 @@ export default function MandiPage() {
           ))}
         </div>
 
-        {/* ================= MANDI PRICES TABLE (Premium SaaS Style) ================= */}
+        {/* ================= MANDI PRICES DISPLAY ================= */}
         <div className="rounded-2xl border border-white/10 bg-slate-900/20 overflow-hidden shadow-2xl backdrop-blur-sm">
-          <div className="overflow-x-auto">
+          
+          {/* 1. Desktop View (Table) - बड़ी स्क्रीन्स के लिए */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-white/5 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-white/5">
@@ -56,33 +81,73 @@ export default function MandiPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-sm">
-                {mandiPrices.map((item, idx) => (
-                  <tr key={idx} className="transition-colors hover:bg-white/[0.02]">
-                    <td className="px-6 py-4 font-bold text-white">{item.crop}</td>
-                    <td className="px-6 py-4 text-slate-300">{item.mandi}</td>
-                    <td className="px-6 py-4 font-mono font-semibold text-emerald-400">{item.price}</td>
-                    <td className="px-6 py-4 text-right font-mono font-medium">
-                      {item.trend === "up" && (
-                        <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs text-emerald-400 border border-emerald-500/20">
-                          ▲ {item.change}
-                        </span>
-                      )}
-                      {item.trend === "down" && (
-                        <span className="inline-flex items-center rounded-full bg-red-500/10 px-2.5 py-0.5 text-xs text-red-400 border border-red-500/20">
-                          ▼ {item.change}
-                        </span>
-                      )}
-                      {item.trend === "stable" && (
-                        <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2.5 py-0.5 text-xs text-slate-400 border border-slate-500/20">
-                          ● स्थिर
-                        </span>
-                      )}
-                    </td>
+                {filteredPrices.length > 0 ? (
+                  filteredPrices.map((item, idx) => (
+                    <tr key={idx} className="transition-colors hover:bg-white/[0.02]">
+                      <td className="px-6 py-4 font-bold text-white">{item.crop}</td>
+                      <td className="px-6 py-4 text-slate-300">{item.mandi}</td>
+                      <td className="px-6 py-4 font-mono font-semibold text-emerald-400">{item.price}</td>
+                      <td className="px-6 py-4 text-right font-mono font-medium">
+                        {item.trend === "up" && (
+                          <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs text-emerald-400 border border-emerald-500/20">
+                            ▲ {item.change}
+                          </span>
+                        )}
+                        {item.trend === "down" && (
+                          <span className="inline-flex items-center rounded-full bg-red-500/10 px-2.5 py-0.5 text-xs text-red-400 border border-red-500/20">
+                            ▼ {item.change}
+                          </span>
+                        )}
+                        {item.trend === "stable" && (
+                          <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2.5 py-0.5 text-xs text-slate-400 border border-slate-500/20">
+                            ● स्थिर
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-10 text-center text-slate-500 text-sm">❌ कोई डेटा नहीं मिला।</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
+
+          {/* 2. Mobile View (Cards) - छोटे स्क्रीन्स पर टेबल की जगह सुंदर कार्ड्स दिखेंगे */}
+          <div className="block md:hidden divide-y divide-white/5">
+            {filteredPrices.length > 0 ? (
+              filteredPrices.map((item, idx) => (
+                <div key={idx} className="p-4 space-y-2 bg-slate-950/40">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-bold text-white text-base">{item.crop}</h4>
+                      <p className="text-xs text-slate-400 mt-0.5">📍 {item.mandi}</p>
+                    </div>
+                    <div>
+                      {item.trend === "up" && (
+                        <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-400 border border-emerald-500/20">▲ {item.change}</span>
+                      )}
+                      {item.trend === "down" && (
+                        <span className="inline-flex items-center rounded-full bg-red-500/10 px-2 py-0.5 text-xs text-red-400 border border-red-500/20">▼ {item.change}</span>
+                      )}
+                      {item.trend === "stable" && (
+                        <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2 py-0.5 text-xs text-slate-400 border border-slate-500/20">● स्थिर</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                    <span className="text-xs text-slate-500">मूल्य सीमा ({item.unit})</span>
+                    <span className="text-sm font-mono font-bold text-emerald-400">{item.price}</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-slate-500 text-xs">❌ कोई डेटा नहीं मिला।</div>
+            )}
+          </div>
+
         </div>
 
         {/* पीछे जाने का बटन */}

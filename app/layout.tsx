@@ -26,6 +26,20 @@ export default function RootLayout({
         
         {/* ग्लोबल फूटर */}
         <Footer />
+        <script
+  dangerouslySetInnerHTML={{
+    __html: `
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'en,hi',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+      }
+    `,
+  }}
+/>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
       </body>
     </html>
   );

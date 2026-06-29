@@ -1,35 +1,3 @@
-// types/crop.ts
-
-export interface StageSchedule {
-  stageName: string;
-  durationDays: string;
-  description: string;
-  fertilizers?: {
-    name: string;
-    dosage: string;
-    frequency: string;
-  }[];
-  sprays?: {
-    target: string;
-    chemicals: string[];
-    dosage: string;
-  }[];
-}
-
-export interface ProblemEntity {
-  id: string;
-  name: string;
-  scientificName?: string;
-  symptoms: string[];
-  severity: "low" | "medium" | "high";
-  controlChemicals: {
-    technical: string;
-    brandExample?: string;
-    dosage: string;
-  }[];
-  images: string[];
-}
-
 export interface Crop {
   slug: string;
   name: string;
@@ -37,16 +5,55 @@ export interface Crop {
   category: "Cereals" | "Vegetables" | "Pulses" | "Millets" | "Cash-Crops";
   image: string;
   overview: string;
-  climate: string;
-  soil: string;
+  durationDays: string;
+  estimatedYield: string;
   seedRate: string;
   spacing: string;
-  durationDays: string; // ध्यान दें: यहाँ durationDays होना जरूरी है
-  basalDose: { name: string; dosage: string }[];
-  stageWiseSchedule: StageSchedule[];
-  pests: ProblemEntity[];
-  diseases: ProblemEntity[];
-  deficiencies: ProblemEntity[];
-  estimatedYield: string;
-  marketInfo: string;
+  suitableSeason: string;
+  suitableSoil: string;
+  climate: string;
+  sowingGuide: {
+    bestSowingTime: string;
+    seedRate: string;
+    seedTreatment: string;
+    spacing: string;
+    sowingMethod: string;
+  };
+  fertilizerSchedule: {
+    basalDose: string[];
+    stageWise: { stage: string; details: string[] }[];
+    micronutrients: string[];
+    foliarSpray: string[];
+  };
+  irrigationManagement: {
+    waterRequirement: string;
+    criticalStages: string[];
+    schedule: string[];
+  };
+  cropProtection: {
+    majorPests: string[];
+    majorDiseases: string[];
+    weedManagement: string[];
+    symptoms: string[];
+    prevention: string[];
+    control: string[];
+  };
+  nutrientDeficiencies: {
+    nutrient: string;
+    symptoms: string;
+    cause: string;
+    solution: string;
+  }[];
+  harvestAndYield: {
+    harvestingTime: string;
+    maturitySigns: string[];
+    yield: string;
+    storageTips: string[];
+  };
+  marketInformation: {
+    majorMarkets: string[];
+    demand: string;
+    msp: string;
+    priceTrend: string;
+  };
 }
