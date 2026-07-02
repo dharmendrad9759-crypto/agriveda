@@ -14,8 +14,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="hi" className="scroll-smooth">
-      <body className="bg-slate-950 antialiased flex flex-col min-h-screen text-white">
+    <html lang="hi" className="scroll-smooth" suppressHydrationWarning>
+      <body
+        className="bg-slate-950 antialiased flex flex-col min-h-screen text-white"
+        suppressHydrationWarning
+      >
         {/* ग्लोबल नेविगेशन बार */}
         <Navbar />
         
