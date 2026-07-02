@@ -1,28 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --agri-primary: #047857;
+  --agri-primary-dark: #065f46;
+  --agri-accent: #10b981;
+  --agri-surface: rgba(255, 255, 255, 0.72);
+  --agri-border: rgba(255, 255, 255, 0.6);
+  --agri-text: #0f172a;
+  --agri-muted: #64748b;
+  --background: #f0fdf4;
+  --foreground: #0f172a;
 }
 
 :root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .scrollbar-hide {
@@ -32,4 +31,69 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.agriveda-page {
+  min-height: 100vh;
+  background: linear-gradient(165deg, #ecfdf5 0%, #f8fafc 35%, #f0fdf4 70%, #ecfdf5 100%);
+}
+
+.agriveda-glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 4px 24px -4px rgba(6, 95, 70, 0.08),
+    0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.agriveda-glass-strong {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 8px 32px -8px rgba(6, 95, 70, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.agriveda-gradient-text {
+  background: linear-gradient(135deg, #065f46 0%, #059669 50%, #047857 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.agriveda-shimmer {
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 45%,
+    rgba(255, 255, 255, 0) 90%
+  );
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-sheet-up {
+  animation: sheet-up 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out;
 }

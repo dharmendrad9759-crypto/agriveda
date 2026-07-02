@@ -6,9 +6,14 @@ import { notFound } from "next/navigation";
 import { Plus, AlertCircle, ChevronRight } from "lucide-react";
 import PageHeader from "@/components/layout/PageHeader";
 import BottomNav from "@/components/layout/BottomNav";
+import PageBackground from "@/components/ui/PageBackground";
+import GlassCard from "@/components/ui/GlassCard";
+import SectionHeading from "@/components/ui/SectionHeading";
 import CropTimeline from "@/components/crop/CropTimeline";
+import AgronomicAccordion from "@/components/crop/AgronomicAccordion";
 import ExpertAdviceCard from "@/components/query/ExpertAdviceCard";
-import { getCropDashboard, myCrops } from "@/data/crop-dashboard";
+import { getCropDashboard } from "@/data/crop-dashboard";
+import { useMyCrops } from "@/hooks/useMyCrops";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -17,99 +22,134 @@ interface Props {
 export default function CropDetailsPage({ params }: Props) {
   const { slug } = use(params);
   const crop = getCropDashboard(slug);
+  const { crops, hydrated } = useMyCrops();
 
   if (!crop) {
     notFound();
   }
 
+  const agronomicSections = [
+    crop.sowingGuide,
+    crop.fertilizerSchedule,
+    crop.irrigationManagement,
+    crop.nutrientDeficiency,
+    crop.harvestingYield,
+    crop.marketInformation,
+  ];
+
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-24">
-      <PageHeader title="" backHref="/" />
+    <div className="agriveda-page relative pb-28">
+      <PageBackground />
+      <PageHeader title={crop.name} subtitle={`Current stage: ${crop.currentStage}`} backHref="/" />
 
       {/* Crop selector strip */}
-      <div className="border-b border-gray-100 bg-white px-4 py-3">
-        <div className="mx-auto flex max-w-lg items-center gap-3 overflow-x-auto scrollbar-hide">
-          {myCrops.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/crop-details/${c.slug}`}
-              className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-xl transition-all ${
-                c.slug === slug
-                  ? "bg-white shadow-md ring-2 ring-[#006432]"
-                  : "bg-gray-100 hover:bg-gray-50"
-              }`}
-            >
-              {c.emoji}
-            </Link>
-          ))}
+      <div className="relative border-b border-white/40 bg-white/40 backdrop-blur-md">
+        <div className="mx-auto flex max-w-lg items-center gap-2.5 overflow-x-auto px-4 py-3 scrollbar-hide">
+          {hydrated &&
+            crops.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/crop-details/${c.slug}`}
+                className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl text-xl transition-all ${
+                  c.slug === slug
+                    ? "agriveda-glass-strong scale-110 ring-2 ring-emerald-500 shadow-md"
+                    : "bg-white/60 hover:bg-white/80"
+                }`}
+              >
+                {c.emoji}
+              </Link>
+            ))}
           <Link
-            href="/crops"
-            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#006432] text-white transition-transform hover:scale-105"
+            href="/"
+            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-green-700 text-white shadow-md transition-transform hover:scale-105"
           >
             <Plus className="h-5 w-5" />
           </Link>
         </div>
       </div>
 
-      <div className="mx-auto max-w-lg space-y-6 px-4 py-5">
-        <h1 className="text-2xl font-extrabold text-gray-900">{crop.name}</h1>
+      <div className="relative mx-auto max-w-lg space-y-7 px-4 py-6">
+        {/* Hero card */}
+        <GlassCard strong className="overflow-hidden p-5">
+          <div className="flex items-center gap-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-100 to-green-50 text-4xl shadow-inner">
+              {crop.emoji}
+            </div>
+            <div>
+              <h1 className="text-xl font-black text-slate-900">{crop.name}</h1>
+              <p className="mt-0.5 text-sm font-semibold text-emerald-700">
+                Stage: {crop.currentStage}
+              </p>
+            </div>
+          </div>
+        </GlassCard>
 
-        {/* Growth stages */}
+        {/* Growth stages — DAS */}
         <section>
-          <h2 className="mb-3 text-base font-bold text-gray-900">Crop growth stages.</h2>
+          <SectionHeading
+            title="Crop growth stages."
+            subtitle="Days After Sowing (DAS)"
+          />
           <CropTimeline stages={crop.growthStages} />
         </section>
 
         {/* Pests and diseases */}
         <section>
-          <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-base font-bold text-gray-900">Pests and diseases.</h2>
-            <Link href={`/crops/${slug}`} className="text-sm font-semibold text-[#2D8A5B]">
-              View all
-            </Link>
-          </div>
-          <p className="mb-3 text-xs text-gray-500">
-            Showing results for <span className="font-semibold">{crop.currentStage}</span> stage
-          </p>
+          <SectionHeading
+            title="Pests and diseases."
+            subtitle={`Showing results for ${crop.currentStage} stage`}
+            action={
+              <Link href={`/crops/${slug}`} className="text-sm font-bold text-emerald-600">
+                View all
+              </Link>
+            }
+          />
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {crop.pestsAndDiseases.map((pest) => (
-              <div key={pest.id} className="flex w-28 flex-shrink-0 flex-col">
-                <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={pest.image}
-                    alt={pest.name}
-                    className="h-24 w-full object-cover"
-                  />
-                </div>
-                <p className="mt-2 text-center text-xs font-semibold text-gray-800">{pest.name}</p>
-              </div>
+              <GlassCard key={pest.id} hover className="w-32 flex-shrink-0 overflow-hidden p-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={pest.image} alt={pest.name} className="h-24 w-full object-cover" />
+                <p className="px-2 py-2.5 text-center text-xs font-bold text-slate-800">
+                  {pest.name}
+                </p>
+              </GlassCard>
             ))}
           </div>
         </section>
 
+        {/* Agronomic best practices — accordions */}
+        <section>
+          <SectionHeading
+            title="Best practices."
+            subtitle="Tap each section for detailed guidance"
+          />
+          <AgronomicAccordion sections={agronomicSections} />
+        </section>
+
         {/* Videos placeholder */}
         <section>
-          <h2 className="mb-3 text-base font-bold text-gray-900">Videos.</h2>
-          <div className="flex flex-col items-center rounded-2xl border border-gray-100 bg-white px-6 py-10 text-center shadow-sm">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-50">
+          <SectionHeading title="Videos." />
+          <GlassCard strong className="flex flex-col items-center px-6 py-10 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-100 to-amber-50">
               <AlertCircle className="h-7 w-7 text-orange-500" />
             </div>
-            <p className="mt-4 text-base font-bold text-gray-900">No data available.</p>
-            <p className="mt-1 text-sm text-gray-500">
-              Currently there is no data to show on this page.
+            <p className="mt-4 text-base font-extrabold text-slate-900">No data available.</p>
+            <p className="mt-1 text-sm font-medium text-slate-500">
+              Video guides for this crop will appear here soon.
             </p>
-          </div>
+          </GlassCard>
         </section>
 
         {/* Expert advice */}
         <section>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-base font-bold text-gray-900">Expert advice.</h2>
-            <Link href="/community" className="text-sm font-semibold text-[#2D8A5B]">
-              View all
-            </Link>
-          </div>
+          <SectionHeading
+            title="Expert advice."
+            action={
+              <Link href="/community" className="text-sm font-bold text-emerald-600">
+                View all
+              </Link>
+            }
+          />
           {crop.expertAdvice.length > 0 ? (
             <div className="space-y-3">
               {crop.expertAdvice.map((advice) => (
@@ -117,55 +157,19 @@ export default function CropDetailsPage({ params }: Props) {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-center">
-              <p className="text-sm text-gray-500">No expert advice yet for this crop.</p>
-            </div>
+            <GlassCard className="p-6 text-center">
+              <p className="text-sm font-medium text-slate-500">
+                No expert advice yet for this crop.
+              </p>
+            </GlassCard>
           )}
           <Link
             href="/ask-query"
-            className="mt-3 flex w-full items-center justify-center rounded-xl border-2 border-[#2D8A5B] py-3 text-sm font-bold text-[#2D8A5B] transition-colors hover:bg-emerald-50"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-emerald-500/30 bg-white/60 py-3.5 text-sm font-bold text-emerald-700 backdrop-blur-sm transition-colors hover:bg-emerald-50"
           >
             Ask query
+            <ChevronRight className="h-4 w-4" />
           </Link>
-        </section>
-
-        {/* Best practices */}
-        <section>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-base font-bold text-gray-900">Best practices.</h2>
-            <Link href={`/crops/${slug}`} className="text-sm font-semibold text-[#2D8A5B]">
-              View all
-            </Link>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {crop.bestPractices.map((practice) => (
-              <div
-                key={practice.id}
-                className="relative h-32 w-40 flex-shrink-0 overflow-hidden rounded-2xl bg-gray-200 shadow-sm"
-              >
-                {practice.image ? (
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={practice.image}
-                      alt={practice.title}
-                      className="h-full w-full object-cover"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                      <p className="text-xs font-bold text-white">{practice.title}</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex h-full flex-col items-center justify-center gap-2 bg-gray-100">
-                    <span className="text-3xl">{practice.emoji}</span>
-                    <p className="px-2 text-center text-xs font-semibold text-gray-700">
-                      {practice.title}
-                    </p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
         </section>
       </div>
 
