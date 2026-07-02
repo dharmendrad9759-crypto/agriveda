@@ -20,14 +20,8 @@ export default function AddCropSheet({ open, onClose, isSelected, onToggle }: Ad
   const grouped = getCropsByCategory();
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
   if (!open) return null;
@@ -36,27 +30,26 @@ export default function AddCropSheet({ open, onClose, isSelected, onToggle }: Ad
     <div className="fixed inset-0 z-[100] flex items-end justify-center">
       <button
         type="button"
-        aria-label="Close"
+        aria-label="Close overlay"
         onClick={onClose}
-        className="absolute inset-0 animate-fade-in bg-slate-900/40 backdrop-blur-sm"
+        className="absolute inset-0 animate-fade-in bg-black/70 backdrop-blur-md"
       />
 
       <div className="relative z-10 w-full max-w-lg animate-sheet-up">
-        <div className="agriveda-glass-strong rounded-t-[2rem] px-5 pb-8 pt-3 shadow-2xl">
-          {/* Handle */}
-          <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-300" />
+        <div className="agriveda-glass-strong rounded-t-[2rem] border-t border-emerald-500/20 px-5 pb-8 pt-3 shadow-[0_-8px_40px_rgba(0,255,136,0.15)]">
+          <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-emerald-500/40" />
 
           <div className="mb-5 flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-extrabold text-slate-900">Manage My Crops</h3>
-              <p className="mt-0.5 text-xs font-medium text-slate-500">
-                Tap to add or remove crops from your home screen
+              <h3 className="agriveda-gradient-text text-xl font-black">Crop Matrix</h3>
+              <p className="mt-0.5 text-xs font-medium text-emerald-400/60">
+                Select crops to deploy on your farm dashboard
               </p>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition-colors hover:border-emerald-500/30 hover:text-emerald-400"
             >
               <X className="h-4 w-4" />
             </button>
@@ -66,10 +59,9 @@ export default function AddCropSheet({ open, onClose, isSelected, onToggle }: Ad
             {categoryOrder.map((category) => {
               const crops = grouped[category];
               if (!crops.length) return null;
-
               return (
                 <div key={category}>
-                  <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-700">
+                  <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
                     {category}
                   </p>
                   <div className="grid grid-cols-4 gap-3">
@@ -90,9 +82,9 @@ export default function AddCropSheet({ open, onClose, isSelected, onToggle }: Ad
           <button
             type="button"
             onClick={onClose}
-            className="mt-6 w-full rounded-2xl bg-gradient-to-r from-emerald-600 to-green-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-900/20 transition-transform active:scale-[0.98]"
+            className="mt-6 w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-green-500 py-3.5 text-sm font-black text-white shadow-[0_0_24px_rgba(0,255,136,0.3)] transition-transform active:scale-[0.98]"
           >
-            Done
+            Deploy Selection
           </button>
         </div>
       </div>
@@ -100,43 +92,25 @@ export default function AddCropSheet({ open, onClose, isSelected, onToggle }: Ad
   );
 }
 
-function CropTile({
-  crop,
-  selected,
-  onToggle,
-}: {
-  crop: CatalogCrop;
-  selected: boolean;
-  onToggle: () => void;
-}) {
+function CropTile({ crop, selected, onToggle }: { crop: CatalogCrop; selected: boolean; onToggle: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="group relative flex flex-col items-center gap-1.5"
-    >
+    <button type="button" onClick={onToggle} className="group relative flex flex-col items-center gap-1.5">
       <div
         className={cn(
-          "relative flex h-[72px] w-full items-center justify-center rounded-2xl bg-gradient-to-br text-3xl shadow-sm transition-all duration-200",
-          crop.gradient,
+          "relative flex h-[72px] w-full items-center justify-center rounded-2xl border text-3xl transition-all duration-200",
           selected
-            ? "ring-2 ring-emerald-500 ring-offset-2 scale-105"
-            : "hover:scale-105 hover:shadow-md opacity-90 hover:opacity-100"
+            ? "border-emerald-400/60 bg-emerald-500/15 shadow-[0_0_16px_rgba(0,255,136,0.25)] scale-105"
+            : "border-white/8 bg-black/30 hover:border-emerald-500/30 hover:scale-105"
         )}
       >
         {crop.emoji}
         {selected && (
-          <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md">
+          <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-400 text-black shadow-[0_0_8px_rgba(0,255,136,0.8)]">
             <Check className="h-3 w-3" strokeWidth={3} />
           </div>
         )}
       </div>
-      <span
-        className={cn(
-          "max-w-full truncate text-center text-[10px] font-bold leading-tight",
-          selected ? "text-emerald-700" : "text-slate-600"
-        )}
-      >
+      <span className={cn("max-w-full truncate text-center text-[10px] font-bold", selected ? "text-emerald-400" : "text-slate-500")}>
         {crop.name}
       </span>
     </button>
