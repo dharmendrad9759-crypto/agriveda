@@ -20,7 +20,8 @@ export default function BottomNav() {
     pathname.startsWith("/select-crops") ||
     pathname.startsWith("/pest-diseases") ||
     pathname.startsWith("/ai-doctor") ||
-    pathname.startsWith("/profile");
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/spray-rotation");
 
   if (!showNav) return null;
 

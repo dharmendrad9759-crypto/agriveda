@@ -11,6 +11,7 @@ import {
   Sprout,
   ChevronRight,
   User,
+  Droplets,
 } from "lucide-react";
 import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
@@ -43,9 +44,9 @@ const keyFeatures = [
 ];
 
 const quickAccess = [
+  { title: "Spray log", icon: Droplets, href: "/spray-rotation" },
   { title: "Crops", icon: Sprout, href: "/crops" },
   { title: "Weather", icon: CloudSun, href: "/weather" },
-  { title: "Profile", icon: User, href: "/profile" },
 ];
 
 export default function Home() {
