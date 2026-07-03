@@ -21,7 +21,8 @@ export default function BottomNav() {
     pathname.startsWith("/pest-diseases") ||
     pathname.startsWith("/ai-doctor") ||
     pathname.startsWith("/profile") ||
-    pathname.startsWith("/spray-rotation");
+    pathname.startsWith("/spray-rotation") ||
+    pathname.startsWith("/pest-outbreak-radar");
 
   if (!showNav) return null;
 

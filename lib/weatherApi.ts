@@ -117,6 +117,8 @@ async function fetchFromApi(params: URLSearchParams): Promise<WeatherViewModel> 
 
 export async function fetchWeatherByCity(city: string): Promise<WeatherViewModel> {
   const params = new URLSearchParams({ city: city.trim() });
+  const { saveWeatherLocation } = await import("@/lib/sprayWeatherApi");
+  saveWeatherLocation({ type: "city", city: city.trim() });
   return fetchFromApi(params);
 }
 
@@ -125,6 +127,8 @@ export async function fetchWeatherByCoords(lat: number, lon: number): Promise<We
     lat: String(lat),
     lon: String(lon),
   });
+  const { saveWeatherLocation } = await import("@/lib/sprayWeatherApi");
+  saveWeatherLocation({ type: "gps", lat, lon });
   return fetchFromApi(params);
 }
 

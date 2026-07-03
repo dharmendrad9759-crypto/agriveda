@@ -20,6 +20,7 @@ import {
 import BottomNav from "@/components/layout/BottomNav";
 import GlassCard from "@/components/ui/GlassCard";
 import { analyzePlantImage, type DiagnosisResult } from "@/lib/aiDiagnosis";
+import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useToast } from "@/components/ui/Toast";
@@ -264,6 +265,12 @@ export default function AIDoctorPage() {
                 >
                   विशेषज्ञ से पुष्टि करें →
                 </Link>
+
+                <ShareOutbreakPrompt
+                  result={result}
+                  cropSlug={selectedCrop}
+                  photoUrl={previewUrl}
+                />
               </div>
             )}
           </GlassCard>

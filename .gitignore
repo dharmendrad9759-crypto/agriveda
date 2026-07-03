@@ -38,4 +38,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+# user-submitted outbreak data (local dev store)
+/data/outbreak-reports.json

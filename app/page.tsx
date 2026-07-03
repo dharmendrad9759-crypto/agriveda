@@ -10,16 +10,24 @@ import {
   CloudSun,
   Sprout,
   ChevronRight,
-  User,
   Droplets,
+  Radar,
 } from "lucide-react";
 import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
+import SprayWindowCard from "@/components/spray-window/SprayWindowCard";
 import { useMyCrops } from "@/hooks/useMyCrops";
 
 const keyFeatures = [
+  {
+    title: "Outbreak Radar",
+    icon: Radar,
+    href: "/pest-outbreak-radar",
+    glow: "shadow-[0_0_20px_rgba(239,68,68,0.35)]",
+    gradient: "from-rose-500/20 to-red-500/10 border-rose-500/30",
+  },
   {
     title: "Pest & diseases",
     icon: Bug,
@@ -74,6 +82,8 @@ export default function Home() {
             AgriChat AI
           </Link>
         </header>
+
+        <SprayWindowCard />
 
         <section>
           <SectionHeading title="My crops." subtitle="Tap to open crop intelligence" />
