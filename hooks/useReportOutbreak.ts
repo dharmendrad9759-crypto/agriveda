@@ -4,6 +4,9 @@ import { useCallback, useState } from "react";
 import type { OutbreakSeverity, OutbreakThreatType } from "@/types/outbreak";
 import { submitOutbreakReport, imageUrlToDataUrl } from "@/lib/outbreakApi";
 import { useFarmerId } from "@/hooks/useFarmerId";
+import { getDeviceId } from "@/lib/deviceId";
+import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import { requestUserLocation } from "@/lib/weatherApi";
 
 export interface ReportOutbreakParams {
@@ -23,7 +26,6 @@ export function useReportOutbreak() {
 
   const submit = useCallback(
     async (params: ReportOutbreakParams) => {
-      if (!farmerId) return null;
       setSubmitting(true);
       setError(null);
       try {
@@ -41,8 +43,13 @@ export function useReportOutbreak() {
           photoUrl = await imageUrlToDataUrl(photoUrl);
         }
 
+        let fid = farmerId;
+        if (!fid && isSupabaseConfigured()) {
+          fid = (await ensureFarmerRecord(getDeviceId())) ?? "";
+        }
+
         const result = await submitOutbreakReport({
-          farmerId,
+          farmerId: fid,
           cropId: params.cropId,
           threatType: params.threatType,
           pestOrDiseaseId: params.pestOrDiseaseId,

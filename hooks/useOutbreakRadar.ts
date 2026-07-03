@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { OutbreakCluster, OutbreakListSummary, PublicOutbreakReport } from "@/types/outbreak";
 import { fetchNearbyOutbreaks } from "@/lib/outbreakApi";
+import { trySyncPendingOutbreaks } from "@/lib/outbreakSync";
 import { getSavedWeatherLocation } from "@/lib/sprayWeatherApi";
 import { requestUserLocation } from "@/lib/weatherApi";
 import { readStorage, writeStorage } from "@/lib/storage";
@@ -112,7 +113,15 @@ export function useOutbreakRadar() {
   useEffect(() => {
     if (!hydrated) return;
     initLocation();
-  }, [hydrated, initLocation]);
+
+    const onOnline = () => {
+      trySyncPendingOutbreaks().then(() => {
+        if (lat != null && lon != null) loadNearby(lat, lon);
+      });
+    };
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [hydrated, initLocation, lat, lon, loadNearby]);
 
   return {
     lat,

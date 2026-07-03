@@ -1,0 +1,63 @@
+[
+  {
+    "slug": "tomato",
+    "name": "Tomato (टमाटर)",
+    "image": "",
+    "category": "Vegetables",
+    "scientificName": "Solanum lycopersicum",
+    "overview": "A high-value vegetable crop that responds well to balanced nutrition, regular irrigation and early pest control.",
+    "durationDays": "90-100 Days",
+    "estimatedYield": "180-220 Quintals per Acre",
+    "seedRate": "12000-15000 plants/acre",
+    "spacing": "75 × 45 cm",
+    "suitableSeason": "Rabi and spring",
+    "suitableSoil": "Well-drained loam with good organic matter",
+    "climate": "Warm and sunny weather, avoid frost and waterlogging",
+    "sowingGuide": {
+      "bestSowingTime": "Nursery in late summer; transplant in early autumn",
+      "seedRate": "12000-15000 seedlings/acre",
+      "seedTreatment": "Treat seed with fungicide and Trichoderma",
+      "spacing": "75 × 45 cm",
+      "sowingMethod": "Transplant healthy seedlings in ridges"
+    },
+    "fertilizerSchedule": {
+      "basalDose": ["DAP 50 kg/acre", "MOP 25 kg/acre", "Compost 4-5 t/acre"],
+      "stageWise": [
+        { "stage": "Vegetative stage", "details": ["Apply 19:19:19 at 1 kg/acre weekly"] },
+        { "stage": "Flowering stage", "details": ["Apply MKP 2 kg/acre and boron 250 g/acre"] }
+      ],
+      "micronutrients": ["Zinc sulfate 2-3 kg/acre", "Boron 250 g/acre"],
+      "foliarSpray": ["Calcium nitrate spray during fruit set", "Micronutrient mix every 15 days"]
+    },
+    "irrigationManagement": {
+      "waterRequirement": "Frequent light irrigation in early growth and fruiting",
+      "criticalStages": ["Transplanting", "Flowering", "Fruit enlargement"],
+      "schedule": ["Irrigate every 3-4 days in dry weather", "Avoid waterlogging"]
+    },
+    "cropProtection": {
+      "majorPests": ["Whitefly", "Thrips", "Fruit borer"],
+      "majorDiseases": ["Early blight", "Late blight", "Root rot"],
+      "weedManagement": ["Mulching and hand weeding"],
+      "symptoms": ["Leaf yellowing", "Fruit rot", "Curling leaves"],
+      "prevention": ["Use disease-free seedlings", "Maintain spacing and airflow"],
+      "control": ["Use recommended insecticides and fungicides", "Remove infected leaves"]
+    },
+    "nutrientDeficiencies": [
+      { "nutrient": "Nitrogen", "symptoms": "Older leaves turn pale", "cause": "Low nitrogen supply", "solution": "Apply urea in split doses" },
+      { "nutrient": "Zinc", "symptoms": "White streaks on leaves", "cause": "Low zinc in soil", "solution": "Use zinc sulfate foliar feed" },
+      { "nutrient": "Boron", "symptoms": "Flower drop and poor fruit set", "cause": "Boron deficiency", "solution": "Apply boron spray" }
+    ],
+    "harvestAndYield": {
+      "harvestingTime": "75-90 Days after transplanting",
+      "maturitySigns": ["Color change to red", "Firm fruit texture"],
+      "yield": "180-220 q/acre",
+      "storageTips": ["Harvest at full color", "Store in cool shaded place"]
+    },
+    "marketInformation": {
+      "majorMarkets": ["Local mandi", "Processing units", "Vegetable wholesalers"],
+      "demand": "Strong demand in fresh market",
+      "msp": "No fixed MSP",
+      "priceTrend": "Seasonal and market dependent"
+    }
+  }
+]

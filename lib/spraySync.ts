@@ -1,18 +1,23 @@
 import type { SprayLog } from "@/types/spray-rotation";
 import { readStorage, writeStorage } from "@/lib/storage";
+import { getDeviceId } from "@/lib/deviceId";
+import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
+import { insertSprayLogToSupabase } from "@/lib/supabaseSprayLogs";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 const LOGS_KEY = "agriveda-spray-logs";
-const SYNC_QUEUE_KEY = "agriveda-spray-sync-queue";
 
-export function queueSpraySync(log: SprayLog): void {
-  const queue = readStorage<string[]>(SYNC_QUEUE_KEY, []);
-  if (!queue.includes(log.id)) {
-    writeStorage(SYNC_QUEUE_KEY, [...queue, log.id]);
-  }
+export function queueSpraySync(_log: SprayLog): void {
+  /* sync handled in trySyncPendingSprays via synced flag on each log */
 }
 
 export async function trySyncPendingSprays(): Promise<number> {
   if (typeof window === "undefined" || !navigator.onLine) return 0;
+  if (!isSupabaseConfigured()) return 0;
+
+  const deviceId = getDeviceId();
+  const farmerId = await ensureFarmerRecord(deviceId);
+  if (!farmerId) return 0;
 
   const logs = readStorage<SprayLog[]>(LOGS_KEY, []);
   let synced = 0;
@@ -23,14 +28,16 @@ export async function trySyncPendingSprays(): Promise<number> {
       updated.push(log);
       continue;
     }
+
     try {
-      const res = await fetch("/api/spray-logs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(log),
-      });
-      if (res.ok) {
-        updated.push({ ...log, synced: true });
+      const saved = await insertSprayLogToSupabase(farmerId, log);
+      if (saved) {
+        updated.push({
+          ...saved,
+          pestId: log.pestId,
+          diseaseId: log.diseaseId,
+          synced: true,
+        });
         synced++;
       } else {
         updated.push(log);
@@ -40,12 +47,9 @@ export async function trySyncPendingSprays(): Promise<number> {
     }
   }
 
-  if (synced > 0) {
+  if (synced > 0 || updated.length !== logs.length) {
     writeStorage(LOGS_KEY, updated);
   }
-  writeStorage(
-    SYNC_QUEUE_KEY,
-    updated.filter((l) => !l.synced).map((l) => l.id)
-  );
+
   return synced;
 }

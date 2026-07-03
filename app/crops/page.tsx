@@ -1,5 +1,4 @@
 // app/crops/page.tsx
-import type { ComponentProps } from "react";
 import { crops } from "@/data/crops";
 import CropCard from "@/components/CropCard";
 
@@ -24,7 +23,7 @@ export default function CropsPage() {
         {/* CROPS GRID LIST */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {crops.map((crop) => (
-            <CropCard key={crop.slug} crop={crop as unknown as ComponentProps<typeof CropCard>["crop"]} />
+            <CropCard key={crop.slug} crop={crop} />
           ))}
         </div>
 

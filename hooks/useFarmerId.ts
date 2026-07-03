@@ -1,21 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { readStorage, writeStorage } from "@/lib/storage";
+import { getDeviceId } from "@/lib/deviceId";
+import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
-const FARMER_ID_KEY = "agriveda-farmer-id";
-
+/**
+ * Returns Supabase farmers.id (UUID) for the current device.
+ * Creates farmers row on first use when Supabase is configured.
+ */
 export function useFarmerId(): string {
   const [farmerId, setFarmerId] = useState("");
 
   useEffect(() => {
-    let id = readStorage<string | null>(FARMER_ID_KEY, null);
-    if (!id) {
-      id = crypto.randomUUID();
-      writeStorage(FARMER_ID_KEY, id);
-    }
-    setFarmerId(id);
+    if (!isSupabaseConfigured()) return;
+
+    const deviceId = getDeviceId();
+    ensureFarmerRecord(deviceId).then((id) => {
+      if (id) setFarmerId(id);
+    });
   }, []);
 
   return farmerId;
 }
+
+export { getDeviceId } from "@/lib/deviceId";
