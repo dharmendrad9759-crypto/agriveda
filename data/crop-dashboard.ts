@@ -73,10 +73,12 @@ export const cropDashboardData: Record<string, CropDashboardData> = {
       { id: "7", name: "Maturity", das: "105–130 DAS", status: "upcoming", emoji: "✅" },
     ],
     pestsAndDiseases: [
-      { id: "1", name: "Army worm", image: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=200&h=200&fit=crop", stage: "Tillering" },
-      { id: "2", name: "Ear cutting caterpillar", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop", stage: "Tillering" },
-      { id: "3", name: "Brown planthopper", image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=200&h=200&fit=crop", stage: "Tillering" },
-      { id: "4", name: "Blast disease", image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200&h=200&fit=crop", stage: "Tillering" },
+      { id: "p1", name: "Brown Planthopper", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop", stage: "Tillering–heading" },
+      { id: "p2", name: "Yellow Stem Borer", image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=200&h=200&fit=crop", stage: "Vegetative–PI" },
+      { id: "p4", name: "Leaf Folder", image: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=200&h=200&fit=crop", stage: "Panicle initiation" },
+      { id: "d1", name: "Rice Blast", image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200&h=200&fit=crop", stage: "Tillering–heading" },
+      { id: "d2", name: "Sheath Blight", image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=200&h=200&fit=crop", stage: "Panicle initiation" },
+      { id: "d3", name: "Bacterial Leaf Blight", image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200&h=200&fit=crop", stage: "Max tillering" },
     ],
     expertAdvice: [
       {

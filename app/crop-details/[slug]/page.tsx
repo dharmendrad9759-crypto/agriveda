@@ -98,15 +98,26 @@ export default function CropDetailsPage({ params }: Props) {
             }
           />
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {crop.pestsAndDiseases.map((pest) => (
-              <Link key={pest.id} href={`/pest-diseases?crop=${slug}`}>
-                <GlassCard hover className="w-32 flex-shrink-0 overflow-hidden p-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={pest.image} alt={pest.name} className="h-24 w-full object-cover opacity-90" />
-                  <p className="px-2 py-2.5 text-center text-xs font-bold text-emerald-300">{pest.name}</p>
-                </GlassCard>
-              </Link>
-            ))}
+            {crop.pestsAndDiseases.map((pest) => {
+              const threatType = pest.id.startsWith("d")
+                ? "disease"
+                : pest.id.startsWith("w")
+                  ? "weed"
+                  : "pest";
+              const detailHref =
+                /^[pdw]\d+$/.test(pest.id)
+                  ? `/pest-diseases/${slug}/${threatType}/${pest.id}`
+                  : `/pest-diseases?crop=${slug}`;
+              return (
+                <Link key={pest.id} href={detailHref}>
+                  <GlassCard hover className="w-32 flex-shrink-0 overflow-hidden p-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={pest.image} alt={pest.name} className="h-24 w-full object-cover opacity-90" />
+                    <p className="px-2 py-2.5 text-center text-xs font-bold text-emerald-300">{pest.name}</p>
+                  </GlassCard>
+                </Link>
+              );
+            })}
           </div>
         </section>
 

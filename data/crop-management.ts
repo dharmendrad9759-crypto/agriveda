@@ -2,6 +2,8 @@ import type { Crop as LegacyCrop } from "@/types/crop";
 import type { CropManagementProfile } from "@/types/crop-management";
 import { cropsData as legacyCrops } from "@/data/crops";
 import { maizeProfile } from "@/data/maize-profile";
+import { paddyProfile } from "@/data/paddy-profile";
+import { chilliProfile } from "@/data/chilli-profile";
 
 const tomatoProfile: CropManagementProfile = {
   slug: "tomato",
@@ -328,198 +330,6 @@ const potatoProfile: CropManagementProfile = {
   ],
 };
 
-const paddyProfile: CropManagementProfile = {
-  slug: "paddy",
-  name: "Paddy (Transplanted)",
-  scientificName: "Oryza sativa L.",
-  category: "Cereals",
-  image: "/images/paddy.png",
-  summary: "Staple cereal crop requiring precise water management, balanced NPK and IPM during tillering and panicle initiation.",
-  overview:
-    "Transplanted paddy is the dominant rice cultivation system in India. Critical growth stages include tillering (15–45 DAS), panicle initiation (45–60 DAS), and grain filling (75–105 DAS).",
-  climate: "Hot humid tropical/sub-tropical; 20–35°C during growth; 1000–2000 mm rainfall or irrigation.",
-  soil: "Clay loam to loam; pH 5.5–7.0; good water retention capacity.",
-  landPreparation: [
-    "Deep ploughing and puddling for transplanted rice.",
-    "Level field for uniform water depth (2–5 cm).",
-    "Apply 10–12 t FYM/ha during final puddling.",
-  ],
-  seedSelection: [
-    "Use certified seeds of high-yielding varieties (HYV) or hybrids.",
-    "Select seeds with >80% germination from authorized sources.",
-  ],
-  seedTreatment: [
-    "Seed treatment with Carbendazim 2 g/kg seed.",
-    "Trichoderma viride 10 g/kg for soil-borne disease suppression.",
-  ],
-  sowingTime: [
-    "Nursery sowing: May–June (Kharif); Nov–Dec (Rabi in some regions).",
-    "Transplanting: 25–30 days after nursery sowing at 2–3 leaf stage.",
-    "Optimal transplanting window: June–July for Kharif season.",
-  ],
-  seedRate: "40–50 kg/ha (nursery); 2–3 seedlings/hill in main field",
-  spacing: "20 × 15 cm (transplanted); 20 × 10 cm for high density",
-  nursery: [
-    "Raise nursery on raised beds 1.0 m wide with drainage channels.",
-    "Apply 2 kg urea + 2 kg SSP per 100 m² nursery area.",
-  ],
-  transplanting: [
-    "Transplant 25–30 day old seedlings with 2–3 seedlings per hill.",
-    "Maintain 2–3 cm standing water immediately after transplanting.",
-    "Avoid deep planting — root collar at soil surface.",
-  ],
-  irrigationSchedule: [
-    "0–7 DAS: Maintain 2–3 cm standing water after transplanting.",
-    "15–45 DAS (Tillering): Shallow flooding 5 cm; critical for tiller production.",
-    "45–60 DAS (Panicle initiation): Most critical stage — no moisture stress allowed.",
-    "60–75 DAS (Flowering): Continuous shallow submergence.",
-    "75–105 DAS (Grain filling): Gradual water reduction.",
-    "105+ DAS: Drain field 7–10 days before harvest.",
-  ],
-  fertilizerSchedule: [
-    "Basal (at transplanting): N 60 + P₂O₅ 30 + K₂O 30 kg/ha + full FYM.",
-    "1st top-dress (25 DAS): Urea 50 kg/ha — supports tillering.",
-    "2nd top-dress (45 DAS): Urea 50 kg/ha — at panicle initiation.",
-    "Micronutrient: ZnSO₄ 25 kg/ha at tillering in deficient soils.",
-    "Foliar: 2% DAP spray at panicle initiation for grain set.",
-  ],
-  micronutrients: [
-    "Zinc sulphate 25 kg/ha (Khaira disease prevention)",
-    "Iron sulphate foliar 0.5% in iron-deficient soils",
-    "Boron 0.2% foliar at flowering if deficiency suspected",
-  ],
-  growthStages: [
-    { title: "Transplanting", period: "0–7 DAS", keyPoints: ["Establish seedlings", "Maintain standing water"] },
-    { title: "Tillering", period: "15–45 DAS", keyPoints: ["Maximum tiller production", "1st N top-dress"] },
-    { title: "Panicle Initiation", period: "45–60 DAS", keyPoints: ["Critical moisture stage", "2nd N top-dress"] },
-    { title: "Grain Filling", period: "75–105 DAS", keyPoints: ["Grain weight determination", "Reduce irrigation gradually"] },
-  ],
-  interculturalOperations: [
-    "Gap filling within 7–10 days of transplanting.",
-    "Hand weeding at 20 and 40 DAS or use recommended herbicide.",
-  ],
-  weedManagement: [
-    {
-      weedName: "Barnyard grass",
-      scientificName: "Echinochloa crus-galli",
-      type: "Grassy weed",
-      criticalPeriod: "0–30 DAS",
-      preEmergenceHerbicide: "Pretilachlor 0.75 kg/ha at 3 DAS",
-      postEmergenceHerbicide: "Bispyribac-sodium 25 g/ha at 15–20 DAS",
-      hracGroup: "HRAC B",
-      dose: "As per label within 15–20 DAS",
-    },
-  ],
-  pestManagement: [
-    {
-      pestName: "Brown Planthopper",
-      scientificName: "Nilaparvata lugens",
-      identification: "Brown insects at base of tillers; hopperburn in severe infestation",
-      symptoms: ["Circular yellow patches", "Hopperburn", "Graining failure"],
-      etl: "5 hoppers per hill (vegetative); 10 per hill (reproductive)",
-      biologicalControl: ["Release Cyrtorhinus lividipennis", "Avoid broad-spectrum insecticides"],
-      chemicalControl: ["Buprofezin 1 ml/L (IRAC 16)", "Pymetrozine 0.75 g/L (IRAC 9B)"],
-      iracGroup: "IRAC 16 / 9B",
-      activeIngredient: "Buprofezin",
-      dose: "1.0 ml/L; PHI 14 days",
-    },
-    {
-      pestName: "Stem Borer",
-      scientificName: "Scirpophaga incertulas",
-      identification: "Dead hearts in vegetative stage; white ears in reproductive stage",
-      symptoms: ["Dead heart", "White ear head", "Reduced panicle emergence"],
-      etl: "5% dead hearts (vegetative); 1 egg mass/m²",
-      biologicalControl: ["Trichogramma japonicum release @ 50,000/ha weekly × 6"],
-      chemicalControl: ["Cartap hydrochloride 1 kg/ha granules at tillering"],
-      iracGroup: "IRAC 14",
-      activeIngredient: "Cartap hydrochloride",
-      dose: "1 kg/ha granules; PHI 21 days",
-    },
-  ],
-  diseaseManagement: [
-    {
-      diseaseName: "Blast",
-      pathogen: "Magnaporthe oryzae (Pyricularia oryzae)",
-      type: "Fungal (Ascomycete)",
-      symptoms: ["Diamond-shaped leaf lesions with grey center", "Neck blast on panicle", "Node rot"],
-      favourableConditions: ["High humidity >90%", "Cool nights 20–25°C", "Excess nitrogen"],
-      integratedManagement: ["Use resistant varieties (e.g., Pusa Basmati 1121 with moderate resistance)", "Avoid excess N", "Silicon application 200 kg/ha"],
-      biologicalControl: ["Pseudomonas fluorescens seed treatment 10 g/kg"],
-      chemicalControl: ["Tricyclazole 0.6 g/L (FRAC 3) at boot leaf stage", "Isoprothiolane 1.5 ml/L"],
-      fracGroup: "FRAC 3",
-      activeIngredient: "Tricyclazole",
-      dose: "0.6 g/L foliar; repeat at 10-day interval if needed",
-      waitingPeriod: "21 days",
-    },
-    {
-      diseaseName: "Sheath Blight",
-      pathogen: "Rhizoctonia solani AG-1 IA",
-      type: "Fungal (Basidiomycete)",
-      symptoms: ["Oval greenish-grey lesions on leaf sheath", "Lesions coalesce causing sheath rot", "Unfilled grains"],
-      favourableConditions: ["High humidity", "Dense canopy", "Excess nitrogen", "25–32°C"],
-      integratedManagement: ["Wider spacing for airflow", "Balanced fertilization", "Remove infected debris"],
-      biologicalControl: ["Trichoderma harzianum soil application 2.5 kg/ha"],
-      chemicalControl: ["Validamycin 2.5 ml/L (FRAC 32)", "Hexaconazole 1 ml/L (FRAC 3)"],
-      fracGroup: "FRAC 32",
-      activeIngredient: "Validamycin",
-      dose: "2.5 ml/L at first symptom; PHI 15 days",
-      waitingPeriod: "15 days",
-    },
-  ],
-  physiologicalDisorders: [
-    "Akiochi (straighthead): zinc deficiency + organic matter interaction in drained soils.",
-    "Chalky grain: potassium deficiency during grain filling.",
-  ],
-  nutrientDeficiencies: [
-    {
-      name: "Nitrogen",
-      role: "Primary driver of tiller number, leaf area, and grain protein",
-      deficiencySymptoms: ["Uniform pale yellowing of older leaves", "Reduced tiller count", "Stunted growth"],
-      excessSymptoms: ["Dark green lush growth", "Increased blast susceptibility", "Lodging"],
-      management: ["Split N application at 25 and 45 DAS", "Use LCC (Leaf Colour Chart) for N management"],
-      recommendedFertilizers: ["Urea", "Neem-coated urea", "DAP as basal"],
-    },
-    {
-      name: "Zinc",
-      role: "Enzyme activation; critical for tillering and grain set",
-      deficiencySymptoms: ["Khaira disease: brown rusty spots on midrib", "Dusty brown patches in field", "Stunted plants"],
-      excessSymptoms: ["Iron deficiency induced", "Reduced phosphorus uptake"],
-      management: ["Apply ZnSO₄ 25 kg/ha at transplanting in alkaline soils", "Foliar 0.5% ZnSO₄ at tillering"],
-      recommendedFertilizers: ["Zinc sulphate heptahydrate", "Zinc-enriched NPK"],
-    },
-    {
-      name: "Iron",
-      role: "Chlorophyll synthesis; electron transport in photosynthesis",
-      deficiencySymptoms: ["Interveinal chlorosis on young leaves", "Severe cases: entire leaf bleached white"],
-      excessSymptoms: ["Rare in paddy; may cause manganese deficiency"],
-      management: ["Foliar FeSO₄ 0.5–1.0% in calcareous soils", "Improve drainage in waterlogged conditions"],
-      recommendedFertilizers: ["Ferrous sulphate foliar", "Fe-EDDHA chelate in severe cases"],
-    },
-  ],
-  harvesting: [
-    "Harvest when 80% grains turn golden yellow and moisture is 20–22%.",
-    "Cut at 10–15 cm above ground using sickle or combine harvester.",
-    "Thresh within 24–48 hours to prevent grain discoloration.",
-  ],
-  yield: "40–55 quintals/ha (transplanted HYV); 60+ q/ha with SRI methods",
-  storage: [
-    "Dry grains to 14% moisture before storage.",
-    "Use hermetic storage or treat with phosphine fumigation for long-term.",
-  ],
-  marketInformation: {
-    majorMarkets: ["Karnal (Haryana)", "Ludhiana (Punjab)", "Delhi Azadpur", "Kolkata", "Hyderabad"],
-    demand: "Stable staple demand; basmati commands export premium",
-    msp: "₹2,300/quintal (Common Grade, 2025-26)",
-    priceTrend: "Moderate upward in Kharif; basmati peaks Oct–Dec",
-  },
-  faqs: [
-    {
-      question: "When is the critical irrigation stage for paddy?",
-      answer: "Panicle initiation (45–60 DAS) is the most critical — moisture stress here can reduce yield by 30–50%.",
-    },
-  ],
-};
-
 function mapLegacyCrop(crop: LegacyCrop): CropManagementProfile {
   return {
     slug: crop.slug,
@@ -630,13 +440,14 @@ function mapLegacyCrop(crop: LegacyCrop): CropManagementProfile {
   };
 }
 
-const CUSTOM_PROFILE_SLUGS = new Set(["tomato", "potato", "paddy", "maize"]);
+const CUSTOM_PROFILE_SLUGS = new Set(["tomato", "potato", "paddy", "maize", "chilli"]);
 
 export const cropManagementCatalog: CropManagementProfile[] = [
   tomatoProfile,
   potatoProfile,
   paddyProfile,
   maizeProfile,
+  chilliProfile,
   ...legacyCrops.filter((c) => !CUSTOM_PROFILE_SLUGS.has(c.slug)).map(mapLegacyCrop),
 ];
 
