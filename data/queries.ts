@@ -11,6 +11,7 @@ export interface CommunityQuery {
     expertName: string;
     date: string;
     preview: string;
+    fullAnswer?: string;
   };
   isMine?: boolean;
 }
@@ -28,7 +29,9 @@ export const communityQueries: CommunityQuery[] = [
     expertResponse: {
       expertName: "Agriveda Expert",
       date: "13 May 2025",
-      preview: "Namaste farmer Ji, from the photo this looks like leaf curl virus combined with thrips damage. Remove severely affected plants and spray recommended insecticide...",
+      preview: "Namaste farmer Ji, from the photo this looks like leaf curl virus combined with thrips damage...",
+      fullAnswer:
+        "Namaste farmer Ji, from the photo this looks like leaf curl virus (Begomovirus) combined with thrips (Scirtothrips dorsalis) damage. The upward curling and yellowing from leaf edges is classic virus symptom — thrips are the vector. Immediate steps: (1) Remove and destroy severely affected plants to reduce virus source. (2) Spray Fipronil 0.3 ml/L or Diafenthiuron 1 g/L for thrips control — repeat after 10 days. (3) Apply balanced nutrition — avoid excess nitrogen which makes plants more susceptible. (4) Use yellow sticky traps @ 20/acre for monitoring. For virus-affected fields, use resistant varieties next season (e.g., Arka Gaurav for chilli).",
     },
   },
   {
@@ -85,4 +88,4 @@ export const queryCrops = [
   { id: "paddy-d", name: "Paddy (Dry Seeded)", emoji: "🌾" },
 ];
 
-export const filterCrops = ["Potato", "Tomato", "Paddy", "Chilli", "Wheat"];
+export const filterCrops = ["Potato", "Tomato", "Paddy", "Maize", "Chilli", "Wheat"];

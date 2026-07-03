@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
   Bug,
@@ -11,19 +10,19 @@ import {
   CloudSun,
   Sprout,
   ChevronRight,
+  User,
 } from "lucide-react";
 import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
-import AddCropSheet from "@/components/home/AddCropSheet";
 import { useMyCrops } from "@/hooks/useMyCrops";
 
 const keyFeatures = [
   {
     title: "Pest & diseases",
     icon: Bug,
-    href: "/crop-details/paddy",
+    href: "/pest-diseases",
     glow: "shadow-[0_0_20px_rgba(239,68,68,0.3)]",
     gradient: "from-red-500/20 to-orange-500/10 border-red-500/30",
   },
@@ -46,12 +45,11 @@ const keyFeatures = [
 const quickAccess = [
   { title: "Crops", icon: Sprout, href: "/crops" },
   { title: "Weather", icon: CloudSun, href: "/weather" },
-  { title: "AI Doctor", icon: Sparkles, href: "/ai-doctor" },
+  { title: "Profile", icon: User, href: "/profile" },
 ];
 
 export default function Home() {
-  const { crops, hydrated, isSelected, toggleCrop } = useMyCrops();
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const { crops, hydrated } = useMyCrops();
 
   return (
     <div className="agriveda-page relative pb-28">
@@ -60,8 +58,8 @@ export default function Home() {
       <div className="relative mx-auto max-w-lg px-5 pt-7 space-y-8">
         <header className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-400/80">
-              Agriveda Nexus
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600">
+              Agriveda Pro
             </p>
             <h1 className="agriveda-gradient-text text-3xl font-black tracking-tight animate-float">
               My Farm
@@ -99,9 +97,8 @@ export default function Home() {
                 </Link>
               ))}
 
-            <button
-              type="button"
-              onClick={() => setSheetOpen(true)}
+            <Link
+              href="/select-crops"
               className="group flex flex-shrink-0 flex-col items-center gap-2"
             >
               <div className="flex h-[92px] w-[92px] items-center justify-center rounded-3xl border-2 border-dashed border-emerald-500/30 bg-emerald-500/5 transition-all hover:border-emerald-400/60 hover:bg-emerald-500/10 hover:shadow-[0_0_20px_rgba(0,255,136,0.15)]">
@@ -110,7 +107,7 @@ export default function Home() {
                 </div>
               </div>
               <span className="text-xs font-bold text-emerald-400/70">Add / Remove</span>
-            </button>
+            </Link>
           </div>
         </section>
 
@@ -212,13 +209,6 @@ export default function Home() {
         </div>
         AgriChat AI
       </Link>
-
-      <AddCropSheet
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
-        isSelected={isSelected}
-        onToggle={toggleCrop}
-      />
 
       <BottomNav />
     </div>

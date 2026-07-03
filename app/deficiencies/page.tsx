@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Leaf, Droplets, ShieldCheck, Sparkles, FlaskConical, Sprout } from "lucide-react";
 import { deficiencies } from "@/data/deficiencies";
 import NutrientCard from "@/components/deficiency/NutrientCard";
@@ -34,12 +33,7 @@ export default function DeficienciesPage() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.15),_transparent_30%),linear-gradient(135deg,_#020617,_#0f172a_55%,_#020617)] px-4 py-8 text-white sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-8">
-        <motion.section
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-          className="relative overflow-hidden rounded-[36px] border border-emerald-400/20 bg-slate-900/70 p-6 shadow-[0_20px_90px_rgba(16,185,129,0.18)] backdrop-blur-2xl sm:p-8 lg:p-10"
-        >
+        <section className="relative overflow-hidden rounded-[36px] border border-emerald-400/20 bg-slate-900/70 p-6 shadow-[0_20px_90px_rgba(16,185,129,0.18)] backdrop-blur-2xl sm:p-8 lg:p-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(34,197,94,0.2),_transparent_22%),radial-gradient(circle_at_80%_0%,_rgba(56,189,248,0.18),_transparent_20%)]" />
           <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl space-y-5">
@@ -66,7 +60,7 @@ export default function DeficienciesPage() {
               <SearchBar query={query} onChange={setQuery} />
             </div>
           </div>
-        </motion.section>
+        </section>
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {stats.map((stat) => (
@@ -75,11 +69,7 @@ export default function DeficienciesPage() {
         </section>
 
         {filtered.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-[28px] border border-dashed border-emerald-400/30 bg-slate-900/70 p-10 text-center shadow-[0_10px_45px_rgba(0,0,0,0.25)] backdrop-blur-xl"
-          >
+          <div className="rounded-[28px] border border-dashed border-emerald-400/30 bg-slate-900/70 p-10 text-center shadow-[0_10px_45px_rgba(0,0,0,0.25)] backdrop-blur-xl">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-300">
               <Sprout className="h-6 w-6" />
             </div>
@@ -87,18 +77,11 @@ export default function DeficienciesPage() {
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
               Try another term like nitrogen, potassium, magnesium, or a crop name to refine the search.
             </p>
-          </motion.div>
+          </div>
         ) : (
           <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((nutrient, index) => (
-              <motion.div
-                key={nutrient.slug}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.04 }}
-              >
-                <NutrientCard nutrient={nutrient} />
-              </motion.div>
+            {filtered.map((nutrient) => (
+              <NutrientCard key={nutrient.slug} nutrient={nutrient} />
             ))}
           </section>
         )}

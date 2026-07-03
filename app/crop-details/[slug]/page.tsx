@@ -92,18 +92,20 @@ export default function CropDetailsPage({ params }: Props) {
             title="Pests and diseases."
             subtitle={`Stage: ${crop.currentStage}`}
             action={
-              <Link href={`/crops/${slug}`} className="text-sm font-bold text-emerald-400">
+              <Link href={`/pest-diseases?crop=${slug}`} className="text-sm font-bold text-emerald-400">
                 View all
               </Link>
             }
           />
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {crop.pestsAndDiseases.map((pest) => (
-              <GlassCard key={pest.id} hover className="w-32 flex-shrink-0 overflow-hidden p-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={pest.image} alt={pest.name} className="h-24 w-full object-cover opacity-90" />
-                <p className="px-2 py-2.5 text-center text-xs font-bold text-emerald-300">{pest.name}</p>
-              </GlassCard>
+              <Link key={pest.id} href={`/pest-diseases?crop=${slug}`}>
+                <GlassCard hover className="w-32 flex-shrink-0 overflow-hidden p-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={pest.image} alt={pest.name} className="h-24 w-full object-cover opacity-90" />
+                  <p className="px-2 py-2.5 text-center text-xs font-bold text-emerald-300">{pest.name}</p>
+                </GlassCard>
+              </Link>
             ))}
           </div>
         </section>

@@ -1,6 +1,5 @@
 // app/layout.tsx
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/footer";
+import ClientProviders from "@/components/ClientProviders";
 import "./globals.css";
 
 export const metadata = {
@@ -15,34 +14,32 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hi" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("agriveda-theme");document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`,
+          }}
+        />
+      </head>
       <body
-        className="bg-slate-950 antialiased flex flex-col min-h-screen text-white"
+        className="antialiased flex flex-col min-h-screen"
         suppressHydrationWarning
       >
-        {/* ग्लोबल नेविगेशन बार */}
-        <Navbar />
-        
-        {/* सभी पेजों का कंटेंट */}
-        <div className="flex-grow">
-          {children}
-        </div>
-        
-        {/* ग्लोबल फूटर */}
-        <Footer />
+        <ClientProviders>{children}</ClientProviders>
         <script
-  dangerouslySetInnerHTML={{
-    __html: `
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-          pageLanguage: 'en',
-          includedLanguages: 'en,hi',
-          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-      }
-    `,
-  }}
-/>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+          dangerouslySetInnerHTML={{
+            __html: `
+              function googleTranslateElementInit() {
+                new google.translate.TranslateElement({
+                  pageLanguage: 'en',
+                  includedLanguages: 'en,hi',
+                  layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                }, 'google_translate_element');
+              }
+            `,
+          }}
+        />
+        <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer />
       </body>
     </html>
   );

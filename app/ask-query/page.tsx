@@ -11,20 +11,22 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import CropSelector from "@/components/query/CropSelector";
 import VoiceRecorderMock from "@/components/query/VoiceRecorderMock";
 import { useMyCrops } from "@/hooks/useMyCrops";
+import { useQueryHistory } from "@/hooks/useQueryHistory";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useToast } from "@/components/ui/Toast";
 import { cropCatalog } from "@/data/crop-catalog";
 
 const MAX_CHARS = 256;
 
 export default function AskQueryPage() {
   const { crops, hydrated } = useMyCrops();
+  const { addQuery } = useQueryHistory();
+  const { profile } = useFarmerProfile();
+  const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const availableCrops = hydrated
-    ? crops.map((c) => ({
-        id: c.slug,
-        name: c.name,
-        emoji: c.emoji,
-      }))
+    ? crops.map((c) => ({ id: c.slug, name: c.name, emoji: c.emoji }))
     : cropCatalog.slice(0, 4).map((c) => ({
         id: c.slug,
         name: c.name,
@@ -50,13 +52,24 @@ export default function AskQueryPage() {
       const reader = new FileReader();
       reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
       reader.readAsDataURL(file);
+      showToast("Photo attached ✓");
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
+
+    const cropName = availableCrops.find((c) => c.id === selectedCrop)?.name ?? selectedCrop;
+    addQuery({
+      crop: selectedCrop,
+      cropName,
+      query: query.trim(),
+      image: photoPreview ?? undefined,
+      farmerName: profile.name || "You",
+    });
     setSubmitted(true);
+    showToast("Query भेजी गई ✓");
   };
 
   if (submitted) {
@@ -67,15 +80,15 @@ export default function AskQueryPage() {
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/40 bg-emerald-500/15 shadow-[0_0_24px_rgba(0,255,136,0.3)]">
             <Check className="h-8 w-8 text-emerald-400" />
           </div>
-          <h2 className="mt-4 text-xl font-black text-white">Query transmitted!</h2>
-          <p className="mt-2 text-sm text-slate-400">
-            Agriveda Expert will analyze your query and respond soon.
+          <h2 className="mt-4 text-xl font-black theme-text-primary">Query भेज दी गई!</h2>
+          <p className="mt-2 text-sm theme-text-muted">
+            Agriveda Expert 24–48 घंटे में जवाब देगा। Community feed में देखें।
           </p>
           <Link
             href="/community"
             className="mt-6 inline-block rounded-2xl border border-emerald-500/40 bg-emerald-500/15 px-8 py-3 text-sm font-black text-emerald-400"
           >
-            View community feed
+            Community feed देखें
           </Link>
         </div>
       </div>
@@ -97,16 +110,10 @@ export default function AskQueryPage() {
               onSelect={setSelectedCrop}
             />
           ) : (
-            <GlassCard className="p-4 text-center text-sm text-slate-400">
+            <GlassCard className="p-4 text-center text-sm theme-text-muted">
               Add crops from home screen first.
             </GlassCard>
           )}
-          <Link
-            href="/"
-            className="mt-2 flex items-center justify-end gap-0.5 text-sm font-bold text-emerald-400"
-          >
-            Manage my crops <ChevronRight className="h-4 w-4" />
-          </Link>
         </section>
 
         <section>
@@ -115,11 +122,11 @@ export default function AskQueryPage() {
             <textarea
               value={query}
               onChange={(e) => setQuery(e.target.value.slice(0, MAX_CHARS))}
-              placeholder="Write the issue you're facing with the crops."
+              placeholder="फसल की समस्या विस्तार से लिखें..."
               rows={5}
-              className="w-full resize-none rounded-2xl border border-emerald-500/20 bg-black/40 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none backdrop-blur-sm transition-all focus:border-emerald-400/50 focus:shadow-[0_0_16px_rgba(0,255,136,0.1)]"
+              className="w-full resize-none rounded-2xl border border-emerald-500/20 bg-white px-4 py-3 text-sm theme-text-primary placeholder-gray-400 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-white/10 dark:bg-black/40"
             />
-            <span className="absolute bottom-3 right-3 text-[11px] text-slate-500 tabular-nums">
+            <span className="absolute bottom-3 right-3 text-[11px] theme-text-muted tabular-nums">
               {query.length}/{MAX_CHARS}
             </span>
           </div>
@@ -129,35 +136,7 @@ export default function AskQueryPage() {
         </section>
 
         <section>
-          <SectionHeading title="Upload guide." />
-          <div className="grid grid-cols-2 gap-3">
-            <div className="relative overflow-hidden rounded-2xl border border-red-500/20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=200&h=200&fit=crop"
-                alt="Incorrect photo example"
-                className="h-28 w-full object-cover opacity-60 blur-[1px]"
-              />
-              <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]">
-                <X className="h-3.5 w-3.5 text-white" />
-              </div>
-            </div>
-            <div className="relative overflow-hidden rounded-2xl border border-emerald-500/20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200&h=200&fit=crop"
-                alt="Correct photo example"
-                className="h-28 w-full object-cover"
-              />
-              <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(0,255,136,0.6)]">
-                <Check className="h-3.5 w-3.5 text-white" />
-              </div>
-            </div>
-          </div>
-          <p className="mt-2 text-xs text-slate-500">
-            Take clear photo of the damaged crop from a closer distance.
-          </p>
-
+          <SectionHeading title="Upload photo (optional)." />
           <input
             ref={fileInputRef}
             type="file"
@@ -168,11 +147,11 @@ export default function AskQueryPage() {
           />
 
           {photoPreview && (
-            <div className="mt-3 overflow-hidden rounded-2xl border border-emerald-500/20">
+            <div className="mb-3 overflow-hidden rounded-2xl border border-emerald-500/20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photoPreview} alt="Uploaded crop damage" className="h-40 w-full object-cover" />
+              <img src={photoPreview} alt="Upload" className="h-40 w-full object-cover" />
               {photoName && (
-                <p className="px-3 py-2 text-xs font-medium text-emerald-400">{photoName}</p>
+                <p className="px-3 py-2 text-xs font-medium text-emerald-600">{photoName}</p>
               )}
             </div>
           )}
@@ -180,11 +159,7 @@ export default function AskQueryPage() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3.5 text-sm font-bold transition-all ${
-              photoPreview
-                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
-                : "border-emerald-500/20 bg-black/30 text-emerald-400 hover:border-emerald-400/40 hover:shadow-[0_0_16px_rgba(0,255,136,0.1)]"
-            }`}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3.5 text-sm font-bold text-emerald-600"
           >
             <Camera className="h-4 w-4" />
             {photoPreview ? "Change photo" : "Upload photo"}
@@ -194,7 +169,7 @@ export default function AskQueryPage() {
         <button
           type="submit"
           disabled={!query.trim()}
-          className="fixed bottom-20 left-4 right-4 mx-auto max-w-lg rounded-2xl border border-emerald-500/40 bg-emerald-500/20 py-4 text-center text-sm font-black text-emerald-400 shadow-[0_0_24px_rgba(0,255,136,0.15)] transition-all hover:shadow-[0_0_32px_rgba(0,255,136,0.25)] disabled:cursor-not-allowed disabled:opacity-40 md:bottom-8"
+          className="fixed bottom-20 left-4 right-4 mx-auto max-w-lg rounded-2xl bg-[#006432] py-4 text-center text-sm font-black text-white shadow-lg disabled:opacity-40 md:bottom-8"
         >
           Submit query
         </button>

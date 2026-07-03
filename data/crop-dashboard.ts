@@ -1,3 +1,5 @@
+import { buildDashboardFromCatalog } from "@/lib/dashboardFactory";
+
 export interface GrowthStageItem {
   id: string;
   name: string;
@@ -53,10 +55,6 @@ export interface CropDashboardData {
   nutrientDeficiency: AgronomicSection;
   harvestingYield: AgronomicSection;
   marketInformation: AgronomicSection;
-}
-
-export function getCropDashboard(slug: string): CropDashboardData {
-  return cropDashboardData[slug] ?? cropDashboardData.paddy;
 }
 
 export const cropDashboardData: Record<string, CropDashboardData> = {
@@ -430,4 +428,133 @@ export const cropDashboardData: Record<string, CropDashboardData> = {
       tips: ["Direct marketing to retailers improves margins"],
     },
   },
+
+  maize: {
+    slug: "maize",
+    name: "Maize (Makka)",
+    emoji: "🌽",
+    currentStage: "Vegetative (V6–V8)",
+    growthStages: [
+      { id: "1", name: "Sowing", das: "0 DAS", status: "completed", emoji: "🌱" },
+      { id: "2", name: "Emergence", das: "0–10 DAS", status: "completed", emoji: "🍃" },
+      { id: "3", name: "Vegetative", das: "15–45 DAS", status: "current", emoji: "🌿" },
+      { id: "4", name: "Tasseling & silking", das: "50–65 DAS", status: "upcoming", emoji: "🌽" },
+      { id: "5", name: "Grain fill", das: "65–95 DAS", status: "upcoming", emoji: "🫘" },
+      { id: "6", name: "Maturity", das: "95–110 DAS", status: "upcoming", emoji: "✅" },
+    ],
+    pestsAndDiseases: [
+      { id: "1", name: "Fall Armyworm", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop", stage: "Whorl stage" },
+      { id: "2", name: "Stem borer", image: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=200&h=200&fit=crop", stage: "Vegetative" },
+      { id: "3", name: "Turcicum leaf blight", image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200&h=200&fit=crop", stage: "Grand growth" },
+    ],
+    expertAdvice: [],
+    sowingGuide: {
+      id: "sowing",
+      title: "Sowing Guide",
+      emoji: "🌱",
+      summary: "Hybrid maize establishment",
+      fields: [
+        { label: "Kharif sowing", value: "June–July with monsoon" },
+        { label: "Seed rate", value: "20–25 kg/ha (hybrids)" },
+        { label: "Spacing", value: "60 × 20 cm" },
+        { label: "Depth", value: "5–6 cm on ridges" },
+        { label: "Seed treatment", value: "Carbendazim 2 g/kg + Imidacloprid FS" },
+      ],
+      tips: [
+        "Use certified hybrid suited to your maturity group",
+        "Apply Atrazine pre-emergence within 3 DAS",
+        "Ensure soil moisture at sowing for uniform emergence",
+      ],
+    },
+    fertilizerSchedule: {
+      id: "fertilizer",
+      title: "Fertilizer Schedule",
+      emoji: "🧪",
+      summary: "Split-dose N for maximum grain yield",
+      fields: [
+        { label: "Basal (sowing)", value: "90 kg N + 60 kg P₂O₅ + 40 kg K₂O/ha" },
+        { label: "Knee-high (~35 DAS)", value: "Urea 55 kg/ha (25% N)" },
+        { label: "Pre-tasseling (~55 DAS)", value: "Urea 55 kg/ha (25% N)" },
+        { label: "Zinc", value: "ZnSO₄ 25 kg/ha basal in deficient soils" },
+        { label: "Boron", value: "1 kg/ha at pre-tasseling if poor tip fill" },
+      ],
+      tips: [
+        "Never apply all nitrogen at sowing — causes lodging",
+        "Silking stage needs adequate K — apply MOP if leaf firing seen",
+        "Fertigation via drip allows 4-way N split for best NUE",
+      ],
+    },
+    irrigationManagement: {
+      id: "irrigation",
+      title: "Irrigation Management",
+      emoji: "💧",
+      summary: "Silking is the most critical stage",
+      fields: [
+        { label: "Total water", value: "500–800 mm/season" },
+        { label: "Critical stages", value: "Tasseling, silking, grain fill (R1–R3)" },
+        { label: "Moisture stress impact", value: "40–50% yield loss if dry at silking" },
+        { label: "Method", value: "Furrow or drip — avoid waterlogging" },
+      ],
+      tips: [
+        "Irrigate within 24 hours if wilting seen at silking",
+        "Alternate furrow saves 25% water without yield penalty",
+        "Stop irrigation 15 days before harvest for uniform maturity",
+      ],
+    },
+    nutrientDeficiency: {
+      id: "deficiency",
+      title: "Nutrient Deficiency",
+      emoji: "🔬",
+      summary: "Common maize deficiencies",
+      fields: [
+        { label: "Nitrogen", value: "V-shaped yellowing from leaf tip; pale field patches" },
+        { label: "Zinc", value: "White/yellow stripes; shortened internodes (rosetting)" },
+        { label: "Potassium", value: "Scorched leaf margins (firing); weak stalks" },
+        { label: "Sulphur", value: "General yellowing similar to N but on young leaves first" },
+      ],
+      tips: [
+        "Zinc deficiency common in sandy alkaline soils — foliar 0.5% ZnSO₄ at V6",
+        "Soil test before season — maize is a heavy nutrient feeder",
+      ],
+    },
+    harvestingYield: {
+      id: "harvest",
+      title: "Harvesting & Yield",
+      emoji: "🌾",
+      summary: "Harvest at physiological maturity",
+      fields: [
+        { label: "Maturity sign", value: "Black layer at kernel base (R6)" },
+        { label: "Harvest moisture", value: "20–25%; dry to 14% for storage" },
+        { label: "Average yield", value: "50–80 quintals/ha (irrigated hybrid)" },
+        { label: "MSP", value: "₹2,225/quintal (2025-26)" },
+      ],
+      tips: [
+        "Harvest in dry weather to reduce drying cost",
+        "Shell and dry within 48 hours to prevent aflatoxin",
+      ],
+    },
+    marketInformation: {
+      id: "market",
+      title: "Market Information",
+      emoji: "📈",
+      summary: "Feed and food demand",
+      fields: [
+        { label: "Major buyers", value: "Poultry feed mills, starch industry, mandis" },
+        { label: "Price trend", value: "Peaks pre-monsoon; dips at Kharif harvest" },
+        { label: "MSP", value: "₹2,225/quintal" },
+        { label: "QPM premium", value: "Quality Protein Maize fetches feed industry premium" },
+      ],
+      tips: [
+        "Register on e-NAM for price discovery",
+        "Store at 14% moisture — sell when prices rise post-harvest dip",
+      ],
+    },
+  },
 };
+
+export function getCropDashboard(slug: string): CropDashboardData {
+  if (cropDashboardData[slug]) return cropDashboardData[slug];
+  const built = buildDashboardFromCatalog(slug);
+  if (built) return built;
+  return cropDashboardData.paddy;
+}

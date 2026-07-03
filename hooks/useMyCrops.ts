@@ -5,6 +5,7 @@ import { defaultMyCrops, type MyCropItem } from "@/data/crop-catalog";
 import { cropCatalog } from "@/data/crop-catalog";
 
 const STORAGE_KEY = "agriveda-my-crops";
+export const MAX_MY_CROPS = 4;
 
 export function useMyCrops() {
   const [crops, setCrops] = useState<MyCropItem[]>(defaultMyCrops);
@@ -14,7 +15,8 @@ export function useMyCrops() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        setCrops(JSON.parse(stored) as MyCropItem[]);
+        const parsed = JSON.parse(stored) as MyCropItem[];
+        setCrops(parsed.slice(0, MAX_MY_CROPS));
       }
     } catch {
       /* use defaults */
@@ -39,15 +41,20 @@ export function useMyCrops() {
       if (exists) {
         return prev.filter((c) => c.slug !== slug);
       }
+      if (prev.length >= MAX_MY_CROPS) {
+        return prev;
+      }
       const catalog = cropCatalog.find((c) => c.slug === slug);
       if (!catalog) return prev;
       return [...prev, { slug: catalog.slug, name: catalog.name, emoji: catalog.emoji }];
     });
   }, []);
 
+  const canAddMore = crops.length < MAX_MY_CROPS;
+
   const removeCrop = useCallback((slug: string) => {
     setCrops((prev) => prev.filter((c) => c.slug !== slug));
   }, []);
 
-  return { crops, hydrated, isSelected, toggleCrop, removeCrop, setCrops };
+  return { crops, hydrated, isSelected, toggleCrop, removeCrop, setCrops, canAddMore, maxCrops: MAX_MY_CROPS };
 }

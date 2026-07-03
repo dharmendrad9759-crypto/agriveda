@@ -10,12 +10,14 @@ import { CropManagementCropProtection } from "@/components/crop-management/CropM
 import CropManagementNutrientDeficiencies from "@/components/crop-management/CropManagementNutrientDeficiencies";
 import CropManagementHarvesting from "@/components/crop-management/CropManagementHarvesting";
 import CropManagementMarketInformation from "@/components/crop-management/CropManagementMarketInformation";
+import CropManagementWeedManagement from "@/components/crop-management/CropManagementWeedManagement";
 
 const TABS = [
   { id: "sowing", label: "Sowing" },
   { id: "fertilizer", label: "Fertilizer" },
   { id: "irrigation", label: "Irrigation" },
   { id: "protection", label: "Protection" },
+  { id: "weeds", label: "Weeds" },
   { id: "nutrition", label: "Nutrition" },
   { id: "harvest", label: "Harvest" },
   { id: "market", label: "Market" },
@@ -58,6 +60,7 @@ export default function CropIntelTabs({ profile }: CropIntelTabsProps) {
         {activeTab === "fertilizer" && <CropManagementFertilizerSchedule profile={profile} />}
         {activeTab === "irrigation" && <CropManagementIrrigation profile={profile} />}
         {activeTab === "protection" && <CropManagementCropProtection profile={profile} />}
+        {activeTab === "weeds" && <CropManagementWeedManagement profile={profile} />}
         {activeTab === "nutrition" && <CropManagementNutrientDeficiencies profile={profile} />}
         {activeTab === "harvest" && <CropManagementHarvesting profile={profile} />}
         {activeTab === "market" && <CropManagementMarketInformation profile={profile} />}

@@ -1,243 +1,305 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   Bot,
   Camera,
-  CheckCircle2,
-  Droplets,
+  ChevronDown,
+  ChevronUp,
+  History,
   Leaf,
   Microscope,
   ShieldCheck,
   Sparkles,
   Stethoscope,
-  TimerReset,
+  Upload,
+  Loader2,
 } from "lucide-react";
+import BottomNav from "@/components/layout/BottomNav";
+import GlassCard from "@/components/ui/GlassCard";
+import { analyzePlantImage, type DiagnosisResult } from "@/lib/aiDiagnosis";
+import { useAIHistory } from "@/hooks/useAIHistory";
+import { useMyCrops } from "@/hooks/useMyCrops";
+import { useToast } from "@/components/ui/Toast";
+import { cropCatalog } from "@/data/crop-catalog";
+
+const SCAN_STEPS = [
+  "पत्ती की बनावट विश्लेषण...",
+  "रंग और धब्बे पैटर्न मैच...",
+  "मौसम-संबंधित जोखिम जाँच...",
+  "उपचार योजना तैयार...",
+];
 
 export default function AIDoctorPage() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { addEntry, history } = useAIHistory();
+  const { crops, hydrated } = useMyCrops();
+  const { showToast } = useToast();
+
+  const [selectedCrop, setSelectedCrop] = useState("tomato");
   const [isScanning, setIsScanning] = useState(false);
-  const [scanComplete, setScanComplete] = useState(false);
+  const [scanStep, setScanStep] = useState(0);
+  const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState("No file selected");
+  const [fileName, setFileName] = useState("");
+  const [showWhy, setShowWhy] = useState(true);
+  const [showHistory, setShowHistory] = useState(false);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const cropOptions = hydrated && crops.length > 0
+    ? crops.map((c) => ({ slug: c.slug, name: c.name }))
+    : cropCatalog.slice(0, 6).map((c) => ({ slug: c.slug, name: c.name }));
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file?.type.startsWith("image/")) {
+      showToast("सिर्फ़ image file चुनें", "error");
+      return;
+    }
     setFileName(file.name);
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
-    setScanComplete(false);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(URL.createObjectURL(file));
+    setResult(null);
   };
 
-  const handleStartScan = () => {
+  const handleScan = async () => {
     if (!previewUrl) return;
     setIsScanning(true);
-    setTimeout(() => {
+    setScanStep(0);
+    const stepInterval = setInterval(() => {
+      setScanStep((s) => Math.min(s + 1, SCAN_STEPS.length - 1));
+    }, 600);
+
+    try {
+      const diagnosis = await analyzePlantImage(previewUrl, selectedCrop);
+      setResult(diagnosis);
+      addEntry({
+        fileName: fileName || "scan.jpg",
+        thumbnailUrl: previewUrl,
+        result: diagnosis,
+      });
+      showToast("विश्लेषण पूर्ण ✓");
+    } catch {
+      showToast("विश्लेषण विफल — फिर कोशिश करें", "error");
+    } finally {
+      clearInterval(stepInterval);
       setIsScanning(false);
-      setScanComplete(true);
-    }, 2600);
+    }
+  };
+
+  const handleReset = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    setFileName("");
+    setResult(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.35),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(168,85,247,0.25),_transparent_35%),linear-gradient(135deg,_#020617_0%,_#111827_45%,_#020617_100%)] px-4 py-10 text-white sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8">
-        <section className="overflow-hidden rounded-[32px] border border-emerald-400/20 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-emerald-950/70 p-6 shadow-[0_20px_90px_rgba(16,185,129,0.18)] backdrop-blur-2xl sm:p-8 lg:p-10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-purple-400/30 bg-purple-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-purple-200 shadow-[0_0_24px_rgba(168,85,247,0.2)]">
-                <Sparkles className="h-3.5 w-3.5" />
-                AGRIVEDA AI ENGINE
-              </div>
-              <div className="space-y-3">
-                <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
-                  AI Plant Doctor
-                </h1>
-                <p className="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                  Upload a leaf image and receive a premium diagnostic report with disease risk, confidence score, and field-ready treatment guidance.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/15 p-4 text-sm text-emerald-100 shadow-[0_0_20px_rgba(16,185,129,0.12)]">
-              <div className="flex items-center gap-2 font-semibold">
-                <ShieldCheck className="h-4 w-4" />
-                Clinical-style diagnosis preview
-              </div>
-              <p className="mt-1 text-xs text-emerald-300/80">
-                Built for farmers, agronomists, and agri-students.
-              </p>
-            </div>
+    <main className="agriveda-page min-h-screen px-4 py-8 pb-28 sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6">
+        <section className="agriveda-glass-strong rounded-[28px] p-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-emerald-500">
+            <Sparkles className="h-3.5 w-3.5" />
+            AGRIVEDA AI DOCTOR v2
           </div>
+          <h1 className="mt-3 text-3xl font-black theme-text-primary">AI Plant Doctor</h1>
+          <p className="mt-2 text-sm theme-text-muted">
+            Photo upload करें — AI बताएगा <strong>क्या</strong> है, <strong>क्यों</strong> हुआ, और <strong>क्या करें</strong>.
+          </p>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="rounded-[28px] border border-white/10 bg-slate-900/70 p-5 shadow-[0_10px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                  Image intake
-                </p>
-                <h2 className="mt-1 text-xl font-bold text-white">Upload crop symptom image</h2>
-              </div>
-              <div className="rounded-full border border-emerald-500/20 bg-emerald-500/10 p-2 text-emerald-400">
-                <Camera className="h-5 w-5" />
-              </div>
-            </div>
+        <div className="flex flex-wrap gap-2">
+          <span className="text-xs font-bold theme-text-muted">फसल चुनें:</span>
+          {cropOptions.map((c) => (
+            <button
+              key={c.slug}
+              type="button"
+              onClick={() => setSelectedCrop(c.slug)}
+              className={`rounded-full px-3 py-1 text-xs font-bold transition ${
+                selectedCrop === c.slug
+                  ? "bg-emerald-600 text-white"
+                  : "border border-gray-200 theme-text-muted dark:border-white/10"
+              }`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
 
-            <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-emerald-400/25 bg-gradient-to-br from-black/30 to-emerald-950/20 p-6 text-center transition hover:border-purple-400/50 hover:bg-white/10">
+        <section className="grid gap-6 lg:grid-cols-2">
+          <GlassCard className="p-5">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleFileSelect}
+              className="sr-only"
+            />
+            <div className="rounded-2xl border border-dashed border-emerald-500/30 p-4 text-center">
               {previewUrl ? (
-                <div className="w-full space-y-4">
-                  <img
-                    src={previewUrl}
-                    alt="Selected plant sample"
-                    className="mx-auto h-56 w-full rounded-2xl object-cover"
-                  />
-                  <div className="text-sm text-slate-300">
-                    <p className="font-semibold text-white">{fileName}</p>
-                    <p className="mt-1 text-xs text-slate-400">Preview ready for AI analysis</p>
-                  </div>
-                </div>
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={previewUrl} alt="Sample" className="mx-auto h-52 w-full rounded-xl object-cover" />
               ) : (
-                <div className="space-y-3">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-purple-500/10 text-purple-400">
-                    <Microscope className="h-7 w-7" />
-                  </div>
-                  <div>
-                    <p className="text-base font-semibold text-white">Click to upload a leaf image</p>
-                    <p className="mt-1 text-sm text-slate-400">PNG, JPG, WEBP up to 10MB</p>
-                  </div>
+                <div className="py-8">
+                  <Microscope className="mx-auto h-12 w-12 text-emerald-500" />
+                  <p className="mt-2 font-bold theme-text-primary">पत्ती की साफ़ photo लें</p>
                 </div>
               )}
-              <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
-            </label>
-
-            <div className="mt-5 flex flex-wrap items-center gap-3">
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
               <button
-                onClick={handleStartScan}
-                disabled={isScanning || !previewUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(168,85,247,0.25)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/40 px-4 py-2 text-sm font-bold text-emerald-600"
               >
-                {isScanning ? "Scanning..." : "Run AI diagnosis"}
-                <ArrowRight className="h-4 w-4" />
+                <Upload className="h-4 w-4" />
+                {previewUrl ? "बदलें" : "Upload"}
               </button>
               <button
-                onClick={() => {
-                  setPreviewUrl(null);
-                  setFileName("No file selected");
-                  setScanComplete(false);
-                }}
-                className="rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/15"
+                type="button"
+                onClick={handleScan}
+                disabled={!previewUrl || isScanning}
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
               >
+                {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+                {isScanning ? "Analyzing..." : "Run diagnosis"}
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <button type="button" onClick={handleReset} className="rounded-xl px-4 py-2 text-sm theme-text-muted">
                 Reset
               </button>
             </div>
+          </GlassCard>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm shadow-inner">
-                <div className="flex items-center gap-2 text-emerald-300">
-                  <Leaf className="h-4 w-4" />
-                  Crop aware
-                </div>
-                <p className="mt-1 text-xs text-slate-400">Leaf, stem, and fruit symptoms</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-3 text-sm">
-                <div className="flex items-center gap-2 text-sky-300">
-                  <Droplets className="h-4 w-4" />
-                  Weather context
-                </div>
-                <p className="mt-1 text-xs text-slate-400">Moisture and climate insights</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-3 text-sm">
-                <div className="flex items-center gap-2 text-amber-300">
-                  <TimerReset className="h-4 w-4" />
-                  Fast triage
-                </div>
-                <p className="mt-1 text-xs text-slate-400">Results in seconds</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-[28px] border border-white/10 bg-slate-900/70 p-5 shadow-[0_10px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                  Diagnosis report
-                </p>
-                <h2 className="mt-1 text-xl font-bold text-white">AI-generated field summary</h2>
-              </div>
-              <div className="rounded-full border border-purple-500/20 bg-purple-500/10 p-2 text-purple-400">
-                <Bot className="h-5 w-5" />
-              </div>
-            </div>
-
-            {!previewUrl && !isScanning && !scanComplete && (
-              <div className="mt-8 rounded-[24px] border border-dashed border-white/10 bg-gradient-to-br from-black/25 to-slate-900/40 p-8 text-center shadow-inner">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-slate-300">
-                  <Stethoscope className="h-6 w-6" />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-200">Upload an image to activate the AI doctor</p>
-                <p className="mt-2 text-sm text-slate-400">Your diagnosis report will appear here instantly.</p>
-              </div>
-            )}
-
+          <GlassCard className="p-5">
             {isScanning && (
-              <div className="mt-8 rounded-[24px] border border-purple-400/25 bg-gradient-to-br from-purple-500/15 to-emerald-500/10 p-8 text-center shadow-[0_0_30px_rgba(168,85,247,0.12)]">
-                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-purple-300/30 border-t-purple-400" />
-                <p className="mt-4 text-base font-semibold text-purple-200">Analyzing leaf texture, color changes, and disease signatures...</p>
-                <p className="mt-2 text-sm text-purple-300/80">Cross-checking with agronomic pattern libraries.</p>
+              <div className="py-10 text-center">
+                <Loader2 className="mx-auto h-10 w-10 animate-spin text-emerald-500" />
+                <p className="mt-4 font-semibold text-emerald-600">{SCAN_STEPS[scanStep]}</p>
               </div>
             )}
 
-            {scanComplete && (
-              <div className="mt-6 space-y-5">
-                <div className="rounded-[22px] border border-red-400/25 bg-gradient-to-r from-red-500/15 to-orange-500/10 p-4 shadow-[0_0_20px_rgba(248,113,113,0.12)]">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-red-300">
-                    <CheckCircle2 className="h-4 w-4" />
-                    High-risk pattern detected
-                  </div>
-                  <h3 className="mt-2 text-2xl font-bold text-white">Early Blight</h3>
-                  <p className="mt-1 text-sm text-slate-300">
-                    Likely pathogen: <span className="font-semibold text-amber-300">Alternaria solani</span>
+            {!isScanning && !result && (
+              <div className="py-10 text-center">
+                <Stethoscope className="mx-auto h-10 w-10 theme-text-muted" />
+                <p className="mt-3 text-sm theme-text-muted">रिपोर्ट यहाँ दिखेगी</p>
+              </div>
+            )}
+
+            {result && !isScanning && (
+              <div className="space-y-4 animate-fade-in">
+                <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
+                  <p className="text-xs font-bold text-red-500">{result.riskLevel}</p>
+                  <h3 className="text-2xl font-black theme-text-primary">{result.diseaseName}</h3>
+                  <p className="text-sm theme-text-muted">
+                    Pathogen: <span className="font-semibold text-amber-600">{result.pathogen}</span>
                   </p>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-3 shadow-inner">
-                    <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Confidence</p>
-                    <p className="mt-1 text-lg font-bold text-white">92%</p>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="rounded-xl bg-black/5 p-2 dark:bg-white/5">
+                    <p className="text-[10px] theme-text-muted">Confidence</p>
+                    <p className="font-black theme-text-primary">{result.confidence}%</p>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-3 shadow-inner">
-                    <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Severity</p>
-                    <p className="mt-1 text-lg font-bold text-red-300">High</p>
+                  <div className="rounded-xl bg-black/5 p-2 dark:bg-white/5">
+                    <p className="text-[10px] theme-text-muted">Severity</p>
+                    <p className="font-black text-red-500">{result.severity}</p>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-3 shadow-inner">
-                    <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Stage</p>
-                    <p className="mt-1 text-lg font-bold text-white">Early</p>
+                  <div className="rounded-xl bg-black/5 p-2 dark:bg-white/5">
+                    <p className="text-[10px] theme-text-muted">Stage</p>
+                    <p className="font-black theme-text-primary">{result.stage}</p>
                   </div>
                 </div>
 
-                <div className="rounded-[22px] border border-white/10 bg-gradient-to-br from-black/30 to-slate-900/40 p-4 shadow-inner">
-                  <p className="text-sm font-semibold text-emerald-300">Recommended treatment</p>
-                  <ul className="mt-3 space-y-2 text-sm text-slate-300">
-                    <li>• Apply copper-based fungicide at the recommended field dose.</li>
-                    <li>• Improve airflow and avoid excess leaf wetness.</li>
-                    <li>• Remove severely infected leaves and monitor every 3 days.</li>
+                <button
+                  type="button"
+                  onClick={() => setShowWhy(!showWhy)}
+                  className="flex w-full items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-left"
+                >
+                  <span className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                    <ShieldCheck className="h-4 w-4" />
+                    यह क्यों हुआ? (Root cause)
+                  </span>
+                  {showWhy ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </button>
+                {showWhy && (
+                  <ul className="space-y-2 text-sm theme-text-muted">
+                    {result.whyItHappens.map((w, i) => (
+                      <li key={i} className="rounded-lg bg-black/5 p-2 dark:bg-white/5">
+                        • {w}
+                      </li>
+                    ))}
+                    <li className="text-xs font-semibold text-sky-600">
+                      मौसम: {result.environmentalFactors.join(" • ")}
+                    </li>
                   </ul>
+                )}
+
+                <div className="rounded-xl border border-white/10 p-4">
+                  <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
+                    <Leaf className="h-4 w-4" />
+                    Recommended treatment
+                  </p>
+                  <ul className="mt-2 space-y-1 text-sm theme-text-muted">
+                    {result.treatments.map((t, i) => (
+                      <li key={i}>• {t}</li>
+                    ))}
+                  </ul>
+                  <div className="mt-3 space-y-2">
+                    {result.activeIngredients.map((ai, i) => (
+                      <div key={i} className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs">
+                        <span className="font-bold text-emerald-700 dark:text-emerald-300">{ai.name}</span>
+                        <span className="theme-text-muted"> — {ai.dose} ({ai.fracIrac})</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                <Link
+                  href="/ask-query"
+                  className="block rounded-xl bg-orange-500 py-3 text-center text-sm font-bold text-white"
+                >
+                  विशेषज्ञ से पुष्टि करें →
+                </Link>
               </div>
             )}
-          </div>
+          </GlassCard>
         </section>
 
-        <div className="text-center text-sm text-slate-500 sm:text-left">
-          <Link href="/" className="transition hover:text-emerald-400">
-            ← Back to dashboard
-          </Link>
-        </div>
+        {history.length > 0 && (
+          <section>
+            <button
+              type="button"
+              onClick={() => setShowHistory(!showHistory)}
+              className="flex items-center gap-2 text-sm font-bold text-emerald-600"
+            >
+              <History className="h-4 w-4" />
+              Recent scans ({history.length})
+            </button>
+            {showHistory && (
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {history.slice(0, 6).map((h) => (
+                  <GlassCard key={h.id} className="flex gap-3 p-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={h.thumbnailUrl} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                    <div>
+                      <p className="text-xs font-bold theme-text-primary">{h.result.diseaseName}</p>
+                      <p className="text-[10px] theme-text-muted">
+                        {new Date(h.timestamp).toLocaleDateString("en-IN")} • {h.result.confidence}%
+                      </p>
+                    </div>
+                  </GlassCard>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </div>
+
+      <BottomNav />
     </main>
   );
 }

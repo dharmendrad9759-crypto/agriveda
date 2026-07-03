@@ -1,19 +1,32 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { deficiencies } from "@/data/deficiencies";
 import DeficiencyHero from "@/components/deficiency/DeficiencyHero";
 import InfoSection from "@/components/deficiency/InfoSection";
 import CropAccordion from "@/components/deficiency/CropAccordion";
 import { Leaf, Microscope, Droplets, ShieldCheck, Sparkles } from "lucide-react";
+import { use } from "react";
 
 interface Props {
   params: Promise<{ nutrient: string }>;
 }
 
-export default async function NutrientDetailPage({ params }: Props) {
-  const resolvedParams = await params;
-  const nutrient = deficiencies.find((item) => item.slug === resolvedParams.nutrient);
+export default function NutrientDetailPage({ params }: Props) {
+  const { nutrient: slug } = use(params);
+  const nutrient = deficiencies.find((item) => item.slug === slug);
 
-  if (!nutrient) return notFound();
+  if (!nutrient) {
+    return (
+      <main className="min-h-screen px-4 py-10 text-center">
+        <p className="text-white">Nutrient not found.</p>
+        <Link href="/deficiencies" className="mt-4 inline-block text-emerald-400">
+          Back to deficiencies
+        </Link>
+      </main>
+    );
+  }
 
   const roleItems = nutrient.quickFacts.length > 0 ? nutrient.quickFacts : nutrient.generalSymptoms;
   const symptomItems = Array.from(new Set([...(nutrient.generalSymptoms || []), ...(nutrient.visualSymptoms || [])]));
@@ -21,6 +34,14 @@ export default async function NutrientDetailPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black px-4 py-10 text-white sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
+        <Link
+          href="/deficiencies"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-400 hover:text-emerald-300"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to all nutrients
+        </Link>
+
         <DeficiencyHero nutrient={nutrient} />
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">

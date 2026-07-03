@@ -1,6 +1,7 @@
 import type { Crop as LegacyCrop } from "@/types/crop";
 import type { CropManagementProfile } from "@/types/crop-management";
 import { cropsData as legacyCrops } from "@/data/crops";
+import { maizeProfile } from "@/data/maize-profile";
 
 const tomatoProfile: CropManagementProfile = {
   slug: "tomato",
@@ -629,11 +630,14 @@ function mapLegacyCrop(crop: LegacyCrop): CropManagementProfile {
   };
 }
 
+const CUSTOM_PROFILE_SLUGS = new Set(["tomato", "potato", "paddy", "maize"]);
+
 export const cropManagementCatalog: CropManagementProfile[] = [
   tomatoProfile,
   potatoProfile,
   paddyProfile,
-  ...legacyCrops.map(mapLegacyCrop),
+  maizeProfile,
+  ...legacyCrops.filter((c) => !CUSTOM_PROFILE_SLUGS.has(c.slug)).map(mapLegacyCrop),
 ];
 
 export function getCropManagementProfile(slug: string): CropManagementProfile | null {
