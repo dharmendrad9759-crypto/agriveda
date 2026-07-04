@@ -1,9 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   Bug,
-  FlaskConical,
   TrendingUp,
   Plus,
   Sparkles,
@@ -12,12 +12,14 @@ import {
   ChevronRight,
   Droplets,
   Radar,
+  LayoutGrid,
 } from "lucide-react";
 import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import SprayWindowCard from "@/components/spray-window/SprayWindowCard";
+import ServicesHubSheet from "@/components/home/ServicesHubSheet";
 import { useMyCrops } from "@/hooks/useMyCrops";
 
 const keyFeatures = [
@@ -36,13 +38,6 @@ const keyFeatures = [
     gradient: "from-red-500/20 to-orange-500/10 border-red-500/30",
   },
   {
-    title: "Deficiencies",
-    icon: FlaskConical,
-    href: "/deficiencies",
-    glow: "shadow-[0_0_20px_rgba(251,191,36,0.3)]",
-    gradient: "from-amber-500/20 to-yellow-500/10 border-amber-500/30",
-  },
-  {
     title: "Mandi Prices",
     icon: TrendingUp,
     href: "/mandi",
@@ -59,16 +54,18 @@ const quickAccess = [
 
 export default function Home() {
   const { crops, hydrated } = useMyCrops();
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   return (
     <div className="agriveda-page relative pb-28">
       <PageBackground />
+      <ServicesHubSheet open={servicesOpen} onClose={() => setServicesOpen(false)} />
 
       <div className="relative mx-auto max-w-lg px-5 pt-7 space-y-8">
-        <header className="flex items-center justify-between">
+        <header className="flex items-center justify-between gap-2">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600">
-              Agriveda Pro
+              Agriveda
             </p>
             <h1 className="agriveda-gradient-text text-3xl font-black tracking-tight animate-float">
               My Farm
@@ -76,7 +73,7 @@ export default function Home() {
           </div>
           <Link
             href="/ai-doctor"
-            className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-[11px] font-black text-emerald-400 shadow-[0_0_16px_rgba(0,255,136,0.15)] transition-all hover:border-emerald-400/50 hover:shadow-[0_0_24px_rgba(0,255,136,0.25)]"
+            className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-black text-emerald-400 shadow-[0_0_16px_rgba(0,255,136,0.15)] transition-all hover:border-emerald-400/50"
           >
             <Sparkles className="h-3.5 w-3.5" />
             AgriChat AI
@@ -86,7 +83,7 @@ export default function Home() {
         <SprayWindowCard />
 
         <section>
-          <SectionHeading title="My crops." subtitle="Tap to open crop intelligence" />
+          <SectionHeading title="My crops" subtitle="Tap a crop to open guide" />
           <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
             {hydrated &&
               crops.map((crop) => (
@@ -142,7 +139,7 @@ export default function Home() {
         </section>
 
         <section>
-          <SectionHeading title="Key features." />
+          <SectionHeading title="Key features" subtitle="Most used tools" />
           <div className="flex justify-around gap-2">
             {keyFeatures.map((feature) => {
               const Icon = feature.icon;
@@ -163,11 +160,24 @@ export default function Home() {
                 </Link>
               );
             })}
+
+            <button
+              type="button"
+              onClick={() => setServicesOpen(true)}
+              className="group flex flex-col items-center gap-2.5"
+            >
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-cyan-500/20 to-emerald-500/10 shadow-[0_0_20px_rgba(0,229,255,0.25)] transition-all duration-300 group-hover:scale-110 group-active:scale-95">
+                <LayoutGrid className="h-7 w-7 text-cyan-300" strokeWidth={1.75} />
+              </div>
+              <span className="max-w-[80px] text-center text-[11px] font-bold leading-tight text-cyan-200/90">
+                Explore all
+              </span>
+            </button>
           </div>
         </section>
 
         <section>
-          <SectionHeading title="Quick access." />
+          <SectionHeading title="Quick access" />
           <div className="flex justify-around gap-2">
             {quickAccess.map((item) => {
               const Icon = item.icon;
@@ -208,18 +218,6 @@ export default function Home() {
           </div>
         </GlassCard>
       </div>
-
-      <Link
-        href="/ai-doctor"
-        className="fixed bottom-24 right-4 z-40 flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-5 py-3 text-sm font-black text-emerald-400 shadow-[0_0_24px_rgba(0,255,136,0.2)] backdrop-blur-md transition-all hover:scale-105 hover:shadow-[0_0_32px_rgba(0,255,136,0.35)] md:bottom-8"
-      >
-        <div className="grid grid-cols-2 gap-0.5">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-1.5 w-1.5 rounded-full bg-emerald-400 agriveda-glow-dot" />
-          ))}
-        </div>
-        AgriChat AI
-      </Link>
 
       <BottomNav />
     </div>

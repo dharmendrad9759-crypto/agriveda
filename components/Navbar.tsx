@@ -17,19 +17,16 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
+    <nav className="agriveda-topbar sticky top-0 z-50 w-full border-b border-emerald-500/10 bg-[var(--background)]/95 backdrop-blur-xl">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 items-center justify-between gap-3">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-lg font-black tracking-widest agriveda-gradient-text">
+        <div className="flex h-12 items-center justify-between gap-3 sm:h-14">
+          <Link href="/" className="flex items-center">
+            <span className="text-base font-black tracking-widest agriveda-gradient-text sm:text-lg">
               AGRIVEDA
-            </span>
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[8px] font-black text-emerald-400">
-              PRO
             </span>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="hidden items-center gap-1 md:flex">
               {navItems.map((item) => {
                 const isActive = pathname === item.path;
@@ -39,8 +36,8 @@ export default function Navbar() {
                     href={item.path}
                     className={`rounded-lg px-2.5 py-1.5 text-[10px] font-bold tracking-wider transition-all ${
                       isActive
-                        ? "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30"
-                        : "theme-text-muted hover:text-emerald-400"
+                        ? "bg-emerald-500/15 text-emerald-500 ring-1 ring-emerald-500/30"
+                        : "theme-text-muted hover:text-emerald-500"
                     }`}
                   >
                     {item.name}
@@ -50,10 +47,10 @@ export default function Navbar() {
             </div>
             <Link
               href="/profile"
-              className={`rounded-lg p-2 transition ${
+              className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
                 pathname === "/profile"
-                  ? "bg-emerald-500/15 text-emerald-400"
-                  : "theme-text-muted hover:text-emerald-400"
+                  ? "bg-emerald-500/15 text-emerald-500"
+                  : "theme-text-muted hover:bg-emerald-500/10 hover:text-emerald-500"
               }`}
               aria-label="Profile"
             >

@@ -35,7 +35,7 @@ export const chilliProfile: CropManagementProfile = {
     "Transplant 30–35 day seedlings at 4–5 leaf stage.",
     "Avoid transplanting into waterlogged or very hot dry soil.",
   ],
-  seedRate: "200–250 g/acre nursery seed (≈500–600 g/ha)",
+  seedRate: "200–250 g/acre (nursery seed)",
   spacing: "60 × 45 cm (transplanted); 45 × 45 cm for compact hybrids",
   nursery: [
     "Raised nursery beds 1 m wide with drainage.",

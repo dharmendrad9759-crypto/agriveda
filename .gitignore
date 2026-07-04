@@ -41,3 +41,13 @@ yarn-error.log*
 *.tsbuildinfo
 # user-submitted outbreak data (local dev store)
 /data/outbreak-reports.json
+
+# Android local build outputs (keep android/ source)
+/android/app/build/
+/android/.gradle/
+/android/build/
+/android/captures/
+/android/local.properties
+*.apk
+*.aab
+*.ap_

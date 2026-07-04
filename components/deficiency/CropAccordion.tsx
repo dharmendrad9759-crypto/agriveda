@@ -8,57 +8,61 @@ export default function CropAccordion({ crops }: { crops: CropSpecificDeficiency
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {crops.map((crop, index) => {
         const isOpen = openIndex === index;
         return (
-          <div key={crop.cropName} className="overflow-hidden rounded-[24px] border border-white/10 bg-slate-900/70 shadow-inner">
+          <div
+            key={crop.cropName}
+            className="overflow-hidden rounded-2xl border border-emerald-500/15 bg-emerald-500/5"
+          >
             <button
+              type="button"
               onClick={() => setOpenIndex(isOpen ? null : index)}
-              className="flex w-full items-center justify-between px-5 py-4 text-left"
+              className="flex w-full items-center justify-between px-3 py-3 text-left"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-400/25 bg-emerald-500/10 text-emerald-300">
-                  <Sprout className="h-5 w-5" />
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                  <Sprout className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="font-semibold text-white">{crop.cropName}</p>
-                  <p className="text-sm text-slate-400">{crop.stage}</p>
+                  <p className="text-sm font-bold theme-text-primary">{crop.cropName}</p>
+                  <p className="text-[11px] theme-text-muted">{crop.stage}</p>
                 </div>
               </div>
-              <ChevronDown className={`h-5 w-5 text-slate-400 transition ${isOpen ? "rotate-180" : ""}`} />
+              <ChevronDown
+                className={`h-4 w-4 theme-text-muted transition ${isOpen ? "rotate-180" : ""}`}
+              />
             </button>
 
-            {isOpen ? (
-              <div className="border-t border-white/10 bg-black/20 px-5 py-4 text-sm text-slate-300">
-                <div className="grid gap-4 lg:grid-cols-2">
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Nutrient role</p>
-                      <p className="mt-1 text-sm text-slate-200">{crop.notes}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Symptoms</p>
-                      <p className="mt-1 text-sm text-slate-200">{crop.symptoms[0]}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Field trigger</p>
-                      <p className="mt-1 text-sm text-slate-200">{crop.cause}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Correction</p>
-                      <p className="mt-1 text-sm text-slate-200">{crop.correction}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-slate-300">
-                  <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Prevention</p>
-                  <p className="mt-1">{crop.prevention}</p>
-                </div>
+            {isOpen && (
+              <div className="space-y-2 border-t border-emerald-500/10 px-3 py-3 text-xs theme-text-muted">
+                {crop.notes && (
+                  <p>
+                    <span className="font-bold theme-text-primary">Note: </span>
+                    {crop.notes}
+                  </p>
+                )}
+                {crop.symptoms?.length > 0 && (
+                  <p>
+                    <span className="font-bold theme-text-primary">Symptoms: </span>
+                    {crop.symptoms.join("; ")}
+                  </p>
+                )}
+                {crop.correction && (
+                  <p>
+                    <span className="font-bold theme-text-primary">Fix: </span>
+                    {crop.correction}
+                  </p>
+                )}
+                {crop.prevention && (
+                  <p>
+                    <span className="font-bold theme-text-primary">Prevent: </span>
+                    {crop.prevention}
+                  </p>
+                )}
               </div>
-            ) : null}
+            )}
           </div>
         );
       })}

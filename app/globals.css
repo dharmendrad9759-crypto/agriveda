@@ -1,15 +1,33 @@
 @import "tailwindcss";
 
+/* Shared tokens — both themes use the same futuristic emerald system */
 :root {
   --neon-green: #00ff88;
   --neon-green-dim: #00cc6a;
   --neon-cyan: #00e5ff;
-  --deep-bg: #030712;
-  --panel-bg: rgba(15, 23, 42, 0.65);
-  --panel-border: rgba(0, 255, 136, 0.15);
   --glow-green: 0 0 20px rgba(0, 255, 136, 0.25);
   --background: #030712;
   --foreground: #f1f5f9;
+  --panel-bg: rgba(15, 23, 42, 0.72);
+  --panel-border: rgba(0, 255, 136, 0.16);
+  --page-glow-a: rgba(0, 255, 136, 0.12);
+  --page-glow-b: rgba(0, 229, 255, 0.06);
+  --page-base-start: #030712;
+  --page-base-mid: #0f172a;
+  --page-base-end: #020617;
+}
+
+[data-theme="light"] {
+  --background: #f4faf6;
+  --foreground: #0f172a;
+  --glow-green: 0 4px 20px rgba(4, 120, 87, 0.12);
+  --panel-bg: rgba(255, 255, 255, 0.82);
+  --panel-border: rgba(4, 120, 87, 0.14);
+  --page-glow-a: rgba(16, 185, 129, 0.14);
+  --page-glow-b: rgba(6, 182, 212, 0.08);
+  --page-base-start: #f0fdf6;
+  --page-base-mid: #f8fafc;
+  --page-base-end: #ecfdf5;
 }
 
 body {
@@ -27,34 +45,40 @@ body {
   display: none;
 }
 
-/* ─── Futuristic page shell ─── */
+/* Top bar sits below status bar / notch on phones (Capacitor + mobile browsers) */
+.agriveda-topbar {
+  padding-top: max(0.75rem, calc(env(safe-area-inset-top, 0px) + 0.35rem));
+  padding-bottom: 0.25rem;
+}
+
+/* ─── Futuristic page shell (same structure both themes) ─── */
 .agriveda-page {
   min-height: 100vh;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 255, 136, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(0, 229, 255, 0.06), transparent),
-    linear-gradient(180deg, #030712 0%, #0f172a 40%, #020617 100%);
+    radial-gradient(ellipse 80% 50% at 50% -20%, var(--page-glow-a), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 50%, var(--page-glow-b), transparent),
+    linear-gradient(180deg, var(--page-base-start) 0%, var(--page-base-mid) 45%, var(--page-base-end) 100%);
 }
 
 /* ─── Glass panels ─── */
 .agriveda-glass {
-  background: rgba(15, 23, 42, 0.55);
+  background: var(--panel-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 255, 136, 0.12);
-  box-shadow: 0 4px 32px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .agriveda-glass-strong {
-  background: rgba(15, 23, 42, 0.78);
+  background: var(--panel-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(0, 255, 136, 0.2);
-  box-shadow: 0 8px 40px -12px rgba(0, 255, 136, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--glow-green), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .agriveda-neon-border {
-  border: 1px solid rgba(0, 255, 136, 0.3);
+  border: 1px solid var(--panel-border);
   box-shadow: var(--glow-green), inset 0 0 20px rgba(0, 255, 136, 0.03);
 }
 
@@ -65,8 +89,58 @@ body {
   background-clip: text;
 }
 
+[data-theme="light"] .agriveda-gradient-text {
+  background: linear-gradient(135deg, #047857 0%, #0d9488 50%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .agriveda-glow-dot {
   box-shadow: 0 0 8px rgba(0, 255, 136, 0.8);
+}
+
+[data-theme="light"] .agriveda-glow-dot {
+  box-shadow: 0 0 8px rgba(4, 120, 87, 0.45);
+}
+
+/* Text colors — shared names, theme-specific values */
+.theme-text-primary {
+  color: #f1f5f9;
+}
+.theme-text-muted {
+  color: #94a3b8;
+}
+.theme-text-accent {
+  color: #34d399;
+}
+
+[data-theme="light"] .theme-text-primary {
+  color: #0f172a;
+}
+[data-theme="light"] .theme-text-muted {
+  color: #64748b;
+}
+[data-theme="light"] .theme-text-accent {
+  color: #047857;
+}
+
+/*
+ * Do NOT globally override .text-white / .bg-slate-900 — that breaks
+ * intentional dark modals (Services Hub, Translator) on light theme.
+ * Pages should use theme-text-* / agriveda-glass instead.
+ */
+
+/* Force-dark overlays stay readable in both app themes */
+.agriveda-force-dark,
+.agriveda-force-dark * {
+  color-scheme: dark;
+}
+.agriveda-force-dark {
+  --background: #030712;
+  --foreground: #f1f5f9;
+  --panel-bg: rgba(15, 23, 42, 0.92);
+  color: #f1f5f9;
 }
 
 /* ─── Animations ─── */
@@ -97,61 +171,25 @@ body {
   transform-origin: bottom;
 }
 
-@keyframes scan-line {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
 .animate-float { animation: float 4s ease-in-out infinite; }
 
-@keyframes neon-flicker {
-  0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.85; }
-  94% { opacity: 1; }
+/* Hide default Google Translate chrome — we use TranslatorFab */
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-tooltip,
+.goog-te-spinner-pos,
+body > .skiptranslate {
+  display: none !important;
 }
-
-/* ─── Light theme (clean white — reference app style) ─── */
-[data-theme="light"] {
-  --background: #ffffff;
-  --foreground: #111827;
-  --glow-green: 0 2px 12px rgba(0, 100, 50, 0.08);
+body {
+  top: 0 !important;
 }
-
-[data-theme="light"] body {
-  background: #ffffff;
-  color: var(--foreground);
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
 }
-
-[data-theme="light"] .agriveda-page {
-  background: #ffffff;
-}
-
-[data-theme="light"] .agriveda-glass {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="light"] .agriveda-glass-strong {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .agriveda-gradient-text {
-  background: linear-gradient(135deg, #047857 0%, #059669 50%, #0d9488 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-
-[data-theme="light"] .theme-text-primary { color: #0f172a; }
-[data-theme="dark"] .theme-text-primary { color: #f1f5f9; }
-[data-theme="light"] .theme-text-muted { color: #64748b; }
-[data-theme="dark"] .theme-text-muted { color: #94a3b8; }
-[data-theme="light"] .theme-text-accent { color: #047857; }
-[data-theme="dark"] .theme-text-accent { color: #34d399; }

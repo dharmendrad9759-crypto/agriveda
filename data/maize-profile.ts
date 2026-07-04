@@ -29,7 +29,7 @@ export const maizeProfile: CropManagementProfile = {
     "Kharif: With monsoon onset (June–July) in North India.",
     "Rabi/Spring: November–February in irrigated areas (UP, Bihar, Punjab).",
   ],
-  seedRate: "20–25 kg/ha (hybrids); 15–18 kg/ha (composites)",
+  seedRate: "8–10 kg/acre (hybrids); 6–8 kg/acre (composites)",
   spacing: "60 × 20 cm (33,333 plants/ha) — adjust for hybrid vigour",
   nursery: ["Direct seeded — no nursery required for grain maize."],
   transplanting: ["Not applicable for grain maize; sweet corn may use plugs."],

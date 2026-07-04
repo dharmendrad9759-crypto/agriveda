@@ -16,10 +16,10 @@ export default function CropManagementSowingTime({ profile }: Props) {
     >
       <div className="space-y-4">
         <div className="grid gap-3 sm:grid-cols-2">
-          <DataRow label="Seed Rate" value={profile.seedRate} highlight />
+          <DataRow label="Seed rate (per acre)" value={profile.seedRate} highlight />
           <DataRow label="Spacing" value={profile.spacing} highlight />
-          <DataRow label="Climate" value={profile.climate} />
-          <DataRow label="Soil Requirement" value={profile.soil} />
+          <DataRow label="Weather need" value={profile.climate} />
+          <DataRow label="Soil" value={profile.soil} />
         </div>
 
         <div>

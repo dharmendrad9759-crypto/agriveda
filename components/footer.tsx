@@ -9,7 +9,7 @@ export default function Footer() {
         {/* लेफ्ट साइड: कॉपीराइट */}
         <div className="flex items-center gap-2">
           <span className="font-bold tracking-wider bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-            AGRIVEDA PRO
+            AGRIVEDA
           </span>
           <span>© 2026 सर्वाधिकार सुरक्षित।</span>
         </div>

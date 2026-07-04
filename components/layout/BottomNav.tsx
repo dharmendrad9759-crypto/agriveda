@@ -22,7 +22,9 @@ export default function BottomNav() {
     pathname.startsWith("/ai-doctor") ||
     pathname.startsWith("/profile") ||
     pathname.startsWith("/spray-rotation") ||
-    pathname.startsWith("/pest-outbreak-radar");
+    pathname.startsWith("/pest-outbreak-radar") ||
+    pathname.startsWith("/deficiencies") ||
+    pathname.startsWith("/services");
 
   if (!showNav) return null;
 

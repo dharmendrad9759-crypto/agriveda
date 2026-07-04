@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Camera, Check, X, ChevronRight } from "lucide-react";
+import { Camera, Check, ImagePlus, X, ChevronRight } from "lucide-react";
 import PageHeader from "@/components/layout/PageHeader";
 import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
@@ -23,7 +23,8 @@ export default function AskQueryPage() {
   const { addQuery } = useQueryHistory();
   const { profile } = useFarmerProfile();
   const { showToast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const availableCrops = hydrated
     ? crops.map((c) => ({ id: c.slug, name: c.name, emoji: c.emoji }))
@@ -47,13 +48,21 @@ export default function AskQueryPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setPhotoName(file.name);
-      const reader = new FileReader();
-      reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
-      reader.readAsDataURL(file);
-      showToast("Photo attached ✓");
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showToast("Please choose a photo file", "error");
+      return;
     }
+    setPhotoName(file.name);
+    const reader = new FileReader();
+    reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+    showToast("Photo attached ✓");
+  };
+
+  const openGallery = () => {
+    showToast("Allow Photos / Files when your phone asks — then pick from gallery", "info");
+    galleryInputRef.current?.click();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -69,7 +78,7 @@ export default function AskQueryPage() {
       farmerName: profile.name || "You",
     });
     setSubmitted(true);
-    showToast("Query भेजी गई ✓");
+    showToast("Query sent ✓");
   };
 
   if (submitted) {
@@ -77,18 +86,18 @@ export default function AskQueryPage() {
       <div className="agriveda-page flex min-h-screen flex-col items-center justify-center px-6 text-center">
         <PageBackground />
         <div className="relative">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/40 bg-emerald-500/15 shadow-[0_0_24px_rgba(0,255,136,0.3)]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/40 bg-emerald-500/15">
             <Check className="h-8 w-8 text-emerald-400" />
           </div>
-          <h2 className="mt-4 text-xl font-black theme-text-primary">Query भेज दी गई!</h2>
+          <h2 className="mt-4 text-xl font-black theme-text-primary">Query sent!</h2>
           <p className="mt-2 text-sm theme-text-muted">
-            Agriveda Expert 24–48 घंटे में जवाब देगा। Community feed में देखें।
+            Expert will reply in 1–2 days. Check Community feed.
           </p>
           <Link
             href="/community"
-            className="mt-6 inline-block rounded-2xl border border-emerald-500/40 bg-emerald-500/15 px-8 py-3 text-sm font-black text-emerald-400"
+            className="mt-6 inline-block rounded-2xl bg-[#006432] px-8 py-3 text-sm font-black text-white"
           >
-            Community feed देखें
+            View community
           </Link>
         </div>
       </div>
@@ -98,11 +107,11 @@ export default function AskQueryPage() {
   return (
     <div className="agriveda-page relative pb-28">
       <PageBackground />
-      <PageHeader title="Ask query" subtitle="Field diagnostic submission" backHref="/" />
+      <PageHeader title="Ask expert" subtitle="Describe your field problem" backHref="/" />
 
       <form onSubmit={handleSubmit} className="relative mx-auto max-w-lg space-y-6 px-4 py-5">
         <section>
-          <SectionHeading title="Select crop for query." />
+          <SectionHeading title="Select crop" />
           {availableCrops.length > 0 ? (
             <CropSelector
               crops={availableCrops}
@@ -111,18 +120,18 @@ export default function AskQueryPage() {
             />
           ) : (
             <GlassCard className="p-4 text-center text-sm theme-text-muted">
-              Add crops from home screen first.
+              Add crops from home first.
             </GlassCard>
           )}
         </section>
 
         <section>
-          <SectionHeading title="Write your query." />
+          <SectionHeading title="Write your problem" />
           <div className="relative">
             <textarea
               value={query}
               onChange={(e) => setQuery(e.target.value.slice(0, MAX_CHARS))}
-              placeholder="फसल की समस्या विस्तार से लिखें..."
+              placeholder="Describe the crop problem in simple words..."
               rows={5}
               className="w-full resize-none rounded-2xl border border-emerald-500/20 bg-white px-4 py-3 text-sm theme-text-primary placeholder-gray-400 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-white/10 dark:bg-black/40"
             />
@@ -136,9 +145,20 @@ export default function AskQueryPage() {
         </section>
 
         <section>
-          <SectionHeading title="Upload photo (optional)." />
+          <SectionHeading title="Add photo (optional)" />
+          <p className="mb-3 text-xs leading-relaxed theme-text-muted">
+            Your phone will ask for Photos / Files permission so you can pick from gallery.
+          </p>
+
           <input
-            ref={fileInputRef}
+            ref={galleryInputRef}
+            type="file"
+            accept="image/*,.jpg,.jpeg,.png,.webp"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <input
+            ref={cameraInputRef}
             type="file"
             accept="image/*"
             capture="environment"
@@ -147,23 +167,44 @@ export default function AskQueryPage() {
           />
 
           {photoPreview && (
-            <div className="mb-3 overflow-hidden rounded-2xl border border-emerald-500/20">
+            <div className="relative mb-3 overflow-hidden rounded-2xl border border-emerald-500/20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={photoPreview} alt="Upload" className="h-40 w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => {
+                  setPhotoPreview(null);
+                  setPhotoName(null);
+                }}
+                className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white"
+                aria-label="Remove photo"
+              >
+                <X className="h-4 w-4" />
+              </button>
               {photoName && (
                 <p className="px-3 py-2 text-xs font-medium text-emerald-600">{photoName}</p>
               )}
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3.5 text-sm font-bold text-emerald-600"
-          >
-            <Camera className="h-4 w-4" />
-            {photoPreview ? "Change photo" : "Upload photo"}
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={openGallery}
+              className="flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-3.5 text-xs font-bold text-emerald-700 dark:text-emerald-400"
+            >
+              <ImagePlus className="h-4 w-4" />
+              {photoPreview ? "Change photo" : "From gallery"}
+            </button>
+            <button
+              type="button"
+              onClick={() => cameraInputRef.current?.click()}
+              className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 px-3 py-3.5 text-xs font-bold theme-text-muted dark:border-white/10"
+            >
+              <Camera className="h-4 w-4" />
+              Take photo
+            </button>
+          </div>
         </section>
 
         <button
@@ -171,7 +212,7 @@ export default function AskQueryPage() {
           disabled={!query.trim()}
           className="fixed bottom-20 left-4 right-4 mx-auto max-w-lg rounded-2xl bg-[#006432] py-4 text-center text-sm font-black text-white shadow-lg disabled:opacity-40 md:bottom-8"
         >
-          Submit query
+          Send query
         </button>
       </form>
 

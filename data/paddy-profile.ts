@@ -35,7 +35,7 @@ export const paddyProfile: CropManagementProfile = {
     "Transplant 25–30 day seedlings at 2–3 leaf stage.",
     "Kharif transplanting window: June–July.",
   ],
-  seedRate: "40–50 kg/ha (nursery); 2–3 seedlings/hill in main field",
+  seedRate: "16–20 kg/acre (nursery seed); main field 2–3 seedlings/hill",
   spacing: "20 × 15 cm (transplanted); 20 × 10 cm for high density",
   nursery: [
     "Raised beds 1.0 m wide with drainage channels.",
