@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, Wifi, WifiOff, Droplets } from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import GlassCard from "@/components/ui/GlassCard";
 import SprayTimeline from "@/components/spray-rotation/SprayTimeline";
 import RiskBanner from "@/components/spray-rotation/RiskBanner";
@@ -184,7 +183,7 @@ export default function SprayRotationPage() {
                 setDiseaseId("");
               }
             }}
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm dark:border-white/10 dark:bg-black/30"
+            className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
           >
             <option value="">— {t(locale, "targetPest")} —</option>
             {cropThreats.pests.map((p) => (
@@ -209,8 +208,6 @@ export default function SprayRotationPage() {
           emptyMessage={t(locale, "recommendDifferent")}
         />
       </div>
-
-      <BottomNav />
     </div>
   );
 }

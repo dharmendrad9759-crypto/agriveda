@@ -31,7 +31,7 @@ export default function TranslatorFab() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-36 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/50 bg-emerald-600 shadow-lg transition hover:scale-105 md:bottom-24"
+        className="fixed bottom-36 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/50 bg-emerald-600 shadow-lg transition hover:scale-105 md:bottom-8 md:right-8"
         style={{ color: "#ffffff" }}
         aria-label="Translate page"
       >

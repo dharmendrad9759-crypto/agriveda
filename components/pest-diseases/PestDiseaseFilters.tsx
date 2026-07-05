@@ -38,7 +38,7 @@ export default function PestDiseaseFilters({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search pest, disease, pathogen..."
-          className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm theme-text-primary outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-white/10 dark:bg-black/30"
+          className="theme-input w-full rounded-2xl border py-3 pl-10 pr-4 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
         />
       </div>
 

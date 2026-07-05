@@ -5,7 +5,6 @@ import { ArrowLeft } from "lucide-react";
 import { deficiencies } from "@/data/deficiencies";
 import CropAccordion from "@/components/deficiency/CropAccordion";
 import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import GlassCard from "@/components/ui/GlassCard";
 import { use } from "react";
 
@@ -123,7 +122,6 @@ export default function NutrientDetailPage({ params }: Props) {
         )}
       </div>
 
-      <BottomNav />
     </main>
   );
 }

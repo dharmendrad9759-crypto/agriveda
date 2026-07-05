@@ -75,7 +75,7 @@ export function useOutbreakRadar() {
       await loadNearby(saved.lat, saved.lon);
       return;
     }
-    setError("Set location via GPS or Weather page");
+    setError("पहले मौसम या GPS से अपनी लोकेशन सेट करें");
   }, [loadNearby]);
 
   const requestGps = useCallback(async () => {

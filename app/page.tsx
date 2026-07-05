@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Bug,
@@ -13,77 +13,132 @@ import {
   Droplets,
   Radar,
   LayoutGrid,
+  MessageCircleQuestion,
 } from "lucide-react";
-import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import SprayWindowCard from "@/components/spray-window/SprayWindowCard";
 import ServicesHubSheet from "@/components/home/ServicesHubSheet";
+import EmptyCropsCard from "@/components/home/EmptyCropsCard";
 import { useMyCrops } from "@/hooks/useMyCrops";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 
-const keyFeatures = [
+type ToolDef = {
+  titleKey: FarmerUiKey;
+  icon: typeof Radar;
+  href: string;
+  tone: string;
+  action?: "services";
+};
+
+const TOOL_DEFS: ToolDef[] = [
   {
-    title: "Outbreak Radar",
+    titleKey: "toolOutbreak",
     icon: Radar,
     href: "/pest-outbreak-radar",
-    glow: "shadow-[0_0_20px_rgba(239,68,68,0.35)]",
-    gradient: "from-rose-500/20 to-red-500/10 border-rose-500/30",
+    tone: "from-rose-500/20 to-red-500/10 border-rose-500/30 text-rose-600",
   },
   {
-    title: "Pest & diseases",
+    titleKey: "toolPest",
     icon: Bug,
     href: "/pest-diseases",
-    glow: "shadow-[0_0_20px_rgba(239,68,68,0.3)]",
-    gradient: "from-red-500/20 to-orange-500/10 border-red-500/30",
+    tone: "from-orange-500/20 to-amber-500/10 border-orange-500/30 text-orange-600",
   },
   {
-    title: "Mandi Prices",
+    titleKey: "toolAi",
+    icon: Sparkles,
+    href: "/ai-doctor",
+    tone: "from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-600",
+  },
+  {
+    titleKey: "toolWeather",
+    icon: CloudSun,
+    href: "/weather",
+    tone: "from-sky-500/20 to-cyan-500/10 border-sky-500/30 text-sky-600",
+  },
+  {
+    titleKey: "toolMandi",
     icon: TrendingUp,
     href: "/mandi",
-    glow: "shadow-[0_0_20px_rgba(0,255,136,0.3)]",
-    gradient: "from-emerald-500/20 to-cyan-500/10 border-emerald-500/30",
+    tone: "from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-700",
   },
-];
-
-const quickAccess = [
-  { title: "Spray log", icon: Droplets, href: "/spray-rotation" },
-  { title: "Crops", icon: Sprout, href: "/crops" },
-  { title: "Weather", icon: CloudSun, href: "/weather" },
+  {
+    titleKey: "toolCrops",
+    icon: Sprout,
+    href: "/crops",
+    tone: "from-lime-500/20 to-green-500/10 border-lime-500/30 text-lime-700",
+  },
+  {
+    titleKey: "toolSpray",
+    icon: Droplets,
+    href: "/spray-rotation",
+    tone: "from-blue-500/20 to-indigo-500/10 border-blue-500/30 text-blue-600",
+  },
+  {
+    titleKey: "toolAllServices",
+    icon: LayoutGrid,
+    href: "#services",
+    tone: "from-cyan-500/20 to-emerald-500/10 border-cyan-500/30 text-cyan-700",
+    action: "services",
+  },
 ];
 
 export default function Home() {
   const { crops, hydrated } = useMyCrops();
+  const { profile, hydrated: profileReady } = useFarmerProfile();
+  const { t } = useLocale();
   const [servicesOpen, setServicesOpen] = useState(false);
 
+  const greeting = profile.name.trim()
+    ? t("homeGreetingNamed").replace("{name}", profile.name.trim())
+    : t("homeGreeting");
+
+  const locationHint =
+    profileReady && (profile.village || profile.district)
+      ? t("homeLocationHint")
+          .replace("{village}", profile.village || "")
+          .replace("{district}", profile.district || "")
+          .replace(/^\s*•\s*|\s*•\s*$/g, "")
+          .trim()
+      : null;
+
+  const tools = useMemo(
+    () => TOOL_DEFS.map((tool) => ({ ...tool, title: t(tool.titleKey) })),
+    [t]
+  );
+
   return (
-    <div className="agriveda-page relative pb-28">
+    <div className="agriveda-page relative">
       <PageBackground />
       <ServicesHubSheet open={servicesOpen} onClose={() => setServicesOpen(false)} />
 
-      <div className="relative mx-auto max-w-lg px-5 pt-7 space-y-8">
-        <header className="flex items-center justify-between gap-2">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600">
-              Agriveda
-            </p>
-            <h1 className="agriveda-gradient-text text-3xl font-black tracking-tight animate-float">
-              My Farm
-            </h1>
-          </div>
-          <Link
-            href="/ai-doctor"
-            className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-black text-emerald-400 shadow-[0_0_16px_rgba(0,255,136,0.15)] transition-all hover:border-emerald-400/50"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            AgriChat AI
-          </Link>
+      <div className="relative mx-auto max-w-lg space-y-7 px-5 pt-6">
+        <header className="animate-slide-up-soft">
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-600">
+            Agriveda · {t("smartKisan")}
+          </p>
+          <h1 className="agriveda-gradient-text mt-1 text-3xl font-black tracking-tight">
+            {t("myFarm")}
+          </h1>
+          <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-400">{greeting}</p>
+          {locationHint && (
+            <p className="text-xs theme-text-muted">📍 {locationHint}</p>
+          )}
+          <p className="mt-0.5 text-sm theme-text-muted">{t("homeSubtitle")}</p>
         </header>
 
-        <SprayWindowCard />
+        <div className="animate-slide-up-soft" style={{ animationDelay: "60ms" }}>
+          <SprayWindowCard />
+        </div>
 
-        <section>
-          <SectionHeading title="My crops" subtitle="Tap a crop to open guide" />
+        <section className="animate-slide-up-soft" style={{ animationDelay: "100ms" }}>
+          <SectionHeading title={t("myCrops")} subtitle={t("tapCropGuideSubtitle")} />
+          {hydrated && crops.length === 0 ? (
+            <EmptyCropsCard />
+          ) : (
           <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
             {hydrated &&
               crops.map((crop) => (
@@ -95,131 +150,80 @@ export default function Home() {
                   <GlassCard
                     hover
                     neon
-                    className="flex h-[92px] w-[92px] items-center justify-center text-4xl transition-transform group-hover:scale-105"
+                    className="flex h-[88px] w-[88px] items-center justify-center text-4xl transition-transform duration-300 group-active:scale-95"
                   >
                     {crop.emoji}
                   </GlassCard>
-                  <span className="max-w-[92px] text-center text-xs font-bold text-emerald-300/80 leading-tight">
+                  <span className="max-w-[88px] text-center text-xs font-bold theme-text-accent leading-tight">
                     {crop.name}
                   </span>
                 </Link>
               ))}
-
-            <Link
-              href="/select-crops"
-              className="group flex flex-shrink-0 flex-col items-center gap-2"
-            >
-              <div className="flex h-[92px] w-[92px] items-center justify-center rounded-3xl border-2 border-dashed border-emerald-500/30 bg-emerald-500/5 transition-all hover:border-emerald-400/60 hover:bg-emerald-500/10 hover:shadow-[0_0_20px_rgba(0,255,136,0.15)]">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-500/40 bg-emerald-500/15 text-emerald-400 transition-transform group-hover:scale-110 group-hover:shadow-[0_0_16px_rgba(0,255,136,0.3)]">
-                  <Plus className="h-5 w-5" strokeWidth={2.5} />
-                </div>
+            <Link href="/select-crops" className="group flex flex-shrink-0 flex-col items-center gap-2">
+              <div className="flex h-[88px] w-[88px] items-center justify-center rounded-3xl border-2 border-dashed border-emerald-500/35 bg-[var(--accent-soft)] transition-all duration-300 group-active:scale-95">
+                <Plus className="h-6 w-6 text-emerald-600" strokeWidth={2.5} />
               </div>
-              <span className="text-xs font-bold text-emerald-400/70">Add / Remove</span>
+              <span className="text-xs font-bold theme-text-muted">{t("addCrop")}</span>
             </Link>
           </div>
+          )}
         </section>
 
-        <section>
-          <SectionHeading title="AgriChat AI." subtitle="Neural crop diagnostics" />
-          <Link href="/ai-doctor">
-            <GlassCard hover neon className="flex items-center gap-4 px-4 py-4">
-              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_12px_rgba(0,255,136,0.2)]">
-                <div className="grid grid-cols-2 gap-1">
-                  {[...Array(4)].map((_, i) => (
-                    <div key={i} className="h-1.5 w-1.5 rounded-full bg-emerald-400 agriveda-glow-dot" />
-                  ))}
-                </div>
-              </div>
-              <span className="flex-1 text-sm font-medium text-slate-400">
-                Click to ask about crops.
-              </span>
-              <ChevronRight className="h-4 w-4 text-emerald-400" />
-            </GlassCard>
-          </Link>
-        </section>
-
-        <section>
-          <SectionHeading title="Key features" subtitle="Most used tools" />
-          <div className="flex justify-around gap-2">
-            {keyFeatures.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <Link
-                  key={feature.title}
-                  href={feature.href}
-                  className="group flex flex-col items-center gap-2.5"
-                >
+        <section className="animate-slide-up-soft" style={{ animationDelay: "140ms" }}>
+          <SectionHeading title={t("mainServices")} subtitle={t("servicesNote")} />
+          <div className="grid grid-cols-4 gap-3">
+            {tools.map((tool) => {
+              const Icon = tool.icon;
+              const inner = (
+                <>
                   <div
-                    className={`flex h-16 w-16 items-center justify-center rounded-2xl border bg-gradient-to-br ${feature.gradient} ${feature.glow} transition-all duration-300 group-hover:scale-110 group-active:scale-95`}
+                    className={`flex h-14 w-14 items-center justify-center rounded-2xl border bg-gradient-to-br transition-all duration-300 hover:scale-105 active:scale-95 ${tool.tone}`}
                   >
-                    <Icon className="h-7 w-7 text-emerald-400" strokeWidth={1.75} />
-                  </div>
-                  <span className="max-w-[80px] text-center text-[11px] font-bold text-slate-300 leading-tight">
-                    {feature.title}
-                  </span>
-                </Link>
-              );
-            })}
-
-            <button
-              type="button"
-              onClick={() => setServicesOpen(true)}
-              className="group flex flex-col items-center gap-2.5"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-cyan-500/20 to-emerald-500/10 shadow-[0_0_20px_rgba(0,229,255,0.25)] transition-all duration-300 group-hover:scale-110 group-active:scale-95">
-                <LayoutGrid className="h-7 w-7 text-cyan-300" strokeWidth={1.75} />
-              </div>
-              <span className="max-w-[80px] text-center text-[11px] font-bold leading-tight text-cyan-200/90">
-                Explore all
-              </span>
-            </button>
-          </div>
-        </section>
-
-        <section>
-          <SectionHeading title="Quick access" />
-          <div className="flex justify-around gap-2">
-            {quickAccess.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.title}
-                  href={item.href}
-                  className="group flex flex-col items-center gap-2"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-black/30 text-emerald-400 transition-all duration-300 group-hover:border-emerald-500/30 group-hover:shadow-[0_0_16px_rgba(0,255,136,0.15)] group-hover:scale-105">
                     <Icon className="h-6 w-6" strokeWidth={1.75} />
                   </div>
-                  <span className="text-[11px] font-bold text-slate-500">{item.title}</span>
+                  <span className="mt-2 line-clamp-2 text-center text-[10px] font-bold leading-tight theme-text-primary">
+                    {tool.title}
+                  </span>
+                </>
+              );
+
+              if (tool.action === "services") {
+                return (
+                  <button
+                    key={tool.titleKey}
+                    type="button"
+                    onClick={() => setServicesOpen(true)}
+                    className="flex flex-col items-center"
+                  >
+                    {inner}
+                  </button>
+                );
+              }
+
+              return (
+                <Link key={tool.titleKey} href={tool.href} className="flex flex-col items-center">
+                  {inner}
                 </Link>
               );
             })}
           </div>
         </section>
 
-        <GlassCard neon className="overflow-hidden p-5">
-          <h3 className="text-base font-extrabold text-white">Need expert help?</h3>
-          <p className="mt-1 text-sm font-medium text-slate-400">
-            Ask our Agriveda Expert about crop issues, pests, or diseases.
-          </p>
-          <div className="mt-4 flex gap-3">
+        <div className="animate-slide-up-soft" style={{ animationDelay: "180ms" }}>
+          <GlassCard neon className="overflow-hidden p-5">
+            <h3 className="text-base font-extrabold theme-text-primary">{t("expertHelpTitle")}</h3>
+            <p className="mt-1 text-sm theme-text-muted">{t("expertHelpDesc")}</p>
             <Link
               href="/ask-query"
-              className="flex-1 rounded-2xl border border-emerald-500/40 bg-emerald-500/15 py-3 text-center text-sm font-black text-emerald-400 shadow-[0_0_16px_rgba(0,255,136,0.1)] transition-all hover:shadow-[0_0_24px_rgba(0,255,136,0.2)]"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white shadow-[0_8px_24px_rgba(0,100,50,0.25)] transition-transform active:scale-[0.98]"
             >
-              Ask query
+              <MessageCircleQuestion className="h-4 w-4" />
+              {t("askQuestion")}
+              <ChevronRight className="h-4 w-4" />
             </Link>
-            <Link
-              href="/community"
-              className="flex-1 rounded-2xl border border-white/10 bg-black/30 py-3 text-center text-sm font-bold text-slate-300 transition-colors hover:border-emerald-500/20 hover:text-emerald-400"
-            >
-              View feed
-            </Link>
-          </div>
-        </GlassCard>
+          </GlassCard>
+        </div>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

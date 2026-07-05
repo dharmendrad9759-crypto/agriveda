@@ -1,4 +1,5 @@
 import { readStorage, writeStorage } from "@/lib/storage";
+import { randomId } from "@/lib/randomId";
 
 const DEVICE_ID_KEY = "agriveda-device-id";
 
@@ -8,7 +9,7 @@ export function getDeviceId(): string {
 
   let id = readStorage<string | null>(DEVICE_ID_KEY, null);
   if (!id) {
-    id = crypto.randomUUID();
+    id = randomId();
     writeStorage(DEVICE_ID_KEY, id);
   }
   return id;

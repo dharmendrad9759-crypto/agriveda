@@ -1,53 +1,43 @@
 "use client";
 
-import { Languages, X } from "lucide-react";
+import { Languages, X, Check } from "lucide-react";
 import { useState } from "react";
-import { useAppLocale } from "@/hooks/useAppLocale";
-import { t } from "@/lib/i18n/farmer-ui";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
+import type { AppLocale } from "@/lib/i18n/farmer-ui";
 
-interface LanguageSwitcherProps {
-  /** Floating button (home) vs header chip */
-  variant?: "fab" | "chip";
-}
+const OPTIONS: { locale: AppLocale; label: string; hintKey: "langHindiHint" | "langEnglishHint" }[] = [
+  { locale: "en", label: "English", hintKey: "langEnglishHint" },
+  { locale: "hi", label: "सरल हिंदी", hintKey: "langHindiHint" },
+];
 
-export default function LanguageSwitcher({ variant = "chip" }: LanguageSwitcherProps) {
-  const { locale, setLocale } = useAppLocale();
+export default function LanguageSwitcher() {
+  const { locale, setLocale, t } = useLocale();
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      {variant === "fab" ? (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="fixed bottom-48 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-500/40 bg-emerald-600 text-white shadow-lg transition hover:scale-105 md:bottom-32"
-          aria-label={t(locale, "language")}
-        >
-          <Languages className="h-5 w-5" />
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="flex items-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-black text-emerald-400"
-        >
-          <Languages className="h-3.5 w-3.5" />
-          {locale === "hi" ? "हिंदी" : "EN"}
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="fixed bottom-36 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/50 bg-emerald-600 text-white shadow-lg transition hover:scale-105 md:bottom-8 md:right-8"
+        aria-label={t("translateFabHint")}
+      >
+        <Languages className="h-5 w-5" />
+      </button>
 
       {open && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-4 sm:items-center">
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/60 p-4 sm:items-center">
           <div
             role="dialog"
-            aria-label={t(locale, "chooseLanguage")}
-            className="w-full max-w-sm rounded-3xl border border-emerald-500/20 bg-[var(--background)] p-5 shadow-2xl"
+            aria-label={t("chooseLanguage")}
+            className="w-full max-w-sm overflow-hidden rounded-3xl border border-emerald-500/25 bg-[var(--background)] shadow-2xl"
           >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base font-extrabold theme-text-primary">
-                {t(locale, "chooseLanguage")}
-              </h2>
+            <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
+              <div>
+                <h2 className="text-base font-extrabold theme-text-primary">{t("chooseLanguage")}</h2>
+                <p className="text-[11px] theme-text-muted">{t("langSwitchNote")}</p>
+              </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -58,40 +48,33 @@ export default function LanguageSwitcher({ variant = "chip" }: LanguageSwitcherP
               </button>
             </div>
 
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setLocale("hi");
-                  setOpen(false);
-                }}
-                className={cn(
-                  "flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-sm font-bold",
-                  locale === "hi"
-                    ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-                    : "border-gray-200 theme-text-primary dark:border-white/10"
-                )}
-              >
-                <span>सरल हिंदी</span>
-                <span className="text-xs theme-text-muted">किसान भाषा</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setLocale("en");
-                  setOpen(false);
-                }}
-                className={cn(
-                  "flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-sm font-bold",
-                  locale === "en"
-                    ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-                    : "border-gray-200 theme-text-primary dark:border-white/10"
-                )}
-              >
-                <span>English</span>
-                <span className="text-xs theme-text-muted">Simple English</span>
-              </button>
-            </div>
+            <ul className="space-y-2 p-3">
+              {OPTIONS.map((opt) => (
+                <li key={opt.locale}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocale(opt.locale);
+                      setOpen(false);
+                    }}
+                    className={cn(
+                      "flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-sm font-bold transition",
+                      locale === opt.locale
+                        ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                        : "border-transparent theme-text-primary hover:bg-emerald-500/10"
+                    )}
+                  >
+                    <span>
+                      {opt.label}
+                      <span className="mt-0.5 block text-[10px] font-medium theme-text-muted">
+                        {t(opt.hintKey)}
+                      </span>
+                    </span>
+                    {locale === opt.locale && <Check className="h-4 w-4 text-emerald-500" />}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       )}

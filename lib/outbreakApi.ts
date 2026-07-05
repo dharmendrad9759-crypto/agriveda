@@ -14,6 +14,7 @@ import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import { insertOutbreakReportToSupabase } from "@/lib/supabaseOutbreak";
 import { toPublicOutbreakReport } from "@/lib/outbreakPublic";
 import { detectOutbreakCluster } from "@/lib/outbreakCluster";
+import { OUTBREAK_SEED_REPORTS } from "@/data/outbreak-seed";
 
 const CACHE_KEY = "agriveda-outbreak-cache";
 const CACHE_TTL_MS = 30 * 60 * 1000;
@@ -69,7 +70,16 @@ export async function fetchNearbyOutbreaks(
   }
 
   if (!isSupabaseConfigured()) {
-    throw new Error("Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+    const demoReports = OUTBREAK_SEED_REPORTS.map((r, i) => ({
+      ...r,
+      id: `demo-${r.id}`,
+      latitude: lat + ((i % 3) - 1) * 0.012,
+      longitude: lon + (Math.floor(i / 3) - 1) * 0.01,
+      reportDate: new Date(Date.now() - (i + 1) * 6 * 60 * 60 * 1000).toISOString(),
+    }));
+    const payload = buildOutbreakRadarPayload(demoReports, lat, lon, radiusKm, days);
+    setOutbreakCache({ lat, lon, ...payload });
+    return { ...payload, fromCache: false };
   }
 
   await trySyncPendingOutbreaks();

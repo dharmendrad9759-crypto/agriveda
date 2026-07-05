@@ -43,7 +43,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("agriveda-theme");document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`,
+            __html: `(function(){try{var t=localStorage.getItem("agriveda-theme");document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");var l=localStorage.getItem("agriveda-app-locale");if(!l){l=localStorage.getItem("agriveda-translate-lang");}document.documentElement.lang=l==="hi"?"hi":"en";}catch(e){document.documentElement.setAttribute("data-theme","light");document.documentElement.lang="en";}})();`,
           }}
         />
       </head>
@@ -52,21 +52,6 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ClientProviders>{children}</ClientProviders>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              function googleTranslateElementInit() {
-                new google.translate.TranslateElement({
-                  pageLanguage: 'en',
-                  includedLanguages: 'en,hi,pa,gu,mr,bn,ta,te,kn,ml,or,ur',
-                  autoDisplay: false,
-                  layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                }, 'google_translate_element');
-              }
-            `,
-          }}
-        />
-        <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer />
       </body>
     </html>
   );

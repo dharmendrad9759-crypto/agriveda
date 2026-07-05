@@ -12,6 +12,10 @@ import {
   Waves,
   Calculator,
   FlaskConical,
+  TrendingUp,
+  MessageCircleQuestion,
+  Users,
+  User,
   type LucideIcon,
 } from "lucide-react";
 
@@ -102,6 +106,37 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         href: "/deficiencies",
         icon: FlaskConical,
         glow: "shadow-[0_0_18px_rgba(251,191,36,0.35)] border-amber-400/30",
+      },
+    ],
+  },
+  {
+    id: "community",
+    titleHi: "मदद और बाज़ार",
+    titleEn: "Help & Market",
+    items: [
+      {
+        title: "Ask Expert",
+        href: "/ask-query",
+        icon: MessageCircleQuestion,
+        glow: "shadow-[0_0_18px_rgba(52,211,153,0.35)] border-emerald-400/30",
+      },
+      {
+        title: "Community",
+        href: "/community",
+        icon: Users,
+        glow: "shadow-[0_0_18px_rgba(96,165,250,0.35)] border-blue-400/30",
+      },
+      {
+        title: "Mandi Prices",
+        href: "/mandi",
+        icon: TrendingUp,
+        glow: "shadow-[0_0_18px_rgba(251,191,36,0.35)] border-amber-400/30",
+      },
+      {
+        title: "My Profile",
+        href: "/profile",
+        icon: User,
+        glow: "shadow-[0_0_18px_rgba(167,139,250,0.35)] border-violet-400/30",
       },
     ],
   },

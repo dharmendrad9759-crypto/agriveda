@@ -4,7 +4,6 @@ import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus, ChevronRight, ArrowLeft } from "lucide-react";
-import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -15,6 +14,8 @@ import ExpertAdviceCard from "@/components/query/ExpertAdviceCard";
 import { getCropDashboard } from "@/data/crop-dashboard";
 import { useCropManagement } from "@/lib/useCropManagement";
 import { useMyCrops } from "@/hooks/useMyCrops";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { applySowingToStages } from "@/lib/cropGrowthStage";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -25,10 +26,15 @@ export default function CropDetailsPage({ params }: Props) {
   const crop = getCropDashboard(slug);
   const profile = useCropManagement(slug);
   const { crops, hydrated } = useMyCrops();
+  const { profile: farmerProfile } = useFarmerProfile();
 
   if (!crop) {
     notFound();
   }
+
+  const sowingDate = farmerProfile.sowingDates[slug];
+  const growth = applySowingToStages(crop.growthStages, sowingDate);
+  const displayStage = growth.currentStageName ?? crop.currentStage;
 
   return (
     <div className="agriveda-page relative pb-28">
@@ -82,14 +88,25 @@ export default function CropDetailsPage({ params }: Props) {
             {profile && (
               <p className="text-[11px] italic theme-text-muted">{profile.scientificName}</p>
             )}
-            <p className="mt-0.5 text-xs font-bold text-emerald-600">Now: {crop.currentStage}</p>
+            <p className="mt-0.5 text-xs font-bold text-emerald-600">
+              Now: {displayStage}
+              {growth.das !== null && ` · ${growth.das} DAS`}
+            </p>
           </div>
         </GlassCard>
 
         <section>
           <SectionHeading title="Growth stages" subtitle="Days after sowing" />
+          {!sowingDate && (
+            <Link
+              href="/profile"
+              className="mb-3 block rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-800 dark:text-amber-200"
+            >
+              📅 Profile में बुवाई की तारीख डालें — सही stage दिखेगा
+            </Link>
+          )}
           <CropTimeline
-            stages={crop.growthStages}
+            stages={growth.stages}
             labels={{ current: "Now", done: "Done", upcoming: "Next" }}
           />
         </section>
@@ -172,7 +189,6 @@ export default function CropDetailsPage({ params }: Props) {
         </section>
       </div>
 
-      <BottomNav />
     </div>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useState } from "react";
-import { MapPin, Navigation, Search, Loader2, CloudSun } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { MapPin, Navigation, Search, Loader2, CloudSun, RefreshCw, Share2 } from "lucide-react";
 import {
   fetchWeatherByCity,
   fetchWeatherByCoords,
@@ -10,14 +10,20 @@ import {
   geolocationErrorMessage,
   type WeatherViewModel,
 } from "@/lib/weatherApi";
+import { getSavedWeatherLocation } from "@/lib/sprayWeatherApi";
+import { shareText } from "@/lib/shareText";
+import { useToast } from "@/components/ui/Toast";
 
 export default function WeatherPage() {
+  const { showToast } = useToast();
   const [weatherData, setWeatherData] = useState<WeatherViewModel | null>(null);
   const [loading, setLoading] = useState(false);
   const [locLoading, setLocLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [manualCity, setManualCity] = useState("");
   const [locationMode, setLocationMode] = useState<"gps" | "manual" | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const autoLoaded = useRef(false);
 
   const loadWeather = useCallback(async (loader: () => Promise<WeatherViewModel>) => {
     try {
@@ -25,6 +31,7 @@ export default function WeatherPage() {
       setError(null);
       const data = await loader();
       setWeatherData(data);
+      setLastUpdated(new Date());
     } catch (err) {
       setError(err instanceof Error ? err.message : "मौसम लोड नहीं हो सका।");
       setWeatherData(null);
@@ -60,10 +67,55 @@ export default function WeatherPage() {
     await loadWeather(() => fetchWeatherByCity(city));
   }, [manualCity, loadWeather]);
 
+  const refreshWeather = useCallback(async () => {
+    const saved = getSavedWeatherLocation();
+    if (saved?.type === "gps") {
+      setLocationMode("gps");
+      await loadWeather(() => fetchWeatherByCoords(saved.lat, saved.lon));
+      return;
+    }
+    if (saved?.type === "city") {
+      setLocationMode("manual");
+      setManualCity(saved.city);
+      await loadWeather(() => fetchWeatherByCity(saved.city));
+    }
+  }, [loadWeather]);
+
+  useEffect(() => {
+    if (autoLoaded.current) return;
+    const saved = getSavedWeatherLocation();
+    if (!saved) return;
+    autoLoaded.current = true;
+    if (saved.type === "gps") {
+      setLocationMode("gps");
+      loadWeather(() => fetchWeatherByCoords(saved.lat, saved.lon));
+    } else {
+      setLocationMode("manual");
+      setManualCity(saved.city);
+      loadWeather(() => fetchWeatherByCity(saved.city));
+    }
+  }, [loadWeather]);
+
+  const shareWeather = async () => {
+    if (!weatherData) return;
+    const text = [
+      `🌾 Agriveda Weather — ${weatherData.location}`,
+      `${weatherData.temp} · ${weatherData.condition}`,
+      weatherData.rainfallAlert,
+      "",
+      "अगले घंटे:",
+      ...weatherData.hourlyForecast.slice(0, 6).map(
+        (h) => `${h.time}: ${h.temp}, बारिश ${h.rainChancePercent}%`
+      ),
+    ].join("\n");
+    const ok = await shareText("Agriveda Weather", text);
+    showToast(ok ? "मौसम साझा / कॉपी हो गया ✓" : "Share नहीं हो सका", ok ? "success" : "error");
+  };
+
   const showWelcome = !loading && !weatherData && !error;
 
   return (
-    <main className="agriveda-page min-h-screen px-4 py-8 pb-12">
+    <main className="agriveda-page min-h-screen px-4 py-8 pb-28">
       <div className="mx-auto max-w-6xl space-y-8">
         <div className="space-y-4 border-b border-gray-200/20 pb-6">
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
@@ -108,7 +160,7 @@ export default function WeatherPage() {
                     }
                   }}
                   placeholder="शहर लिखें — Delhi, Aligarh, Jaipur..."
-                  className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm theme-text-primary outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-white/10 dark:bg-black/30"
+                  className="theme-input w-full rounded-2xl border py-3 pl-10 pr-4 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
                 />
               </div>
               <button
@@ -145,7 +197,7 @@ export default function WeatherPage() {
             <CloudSun className="mx-auto h-14 w-14 text-emerald-500" />
             <p className="mt-4 text-lg font-bold theme-text-primary">अपनी लोकेशन चुनें</p>
             <p className="mt-2 text-sm theme-text-muted">
-              ऊपर &quot;मेरी सटीक लोकेशन&quot; बटन दबाएँ — browser permission popup आएगा।
+              ऊपर &quot;मेरी सटीक लोकेशन&quot; बटन दबाएँ — phone पर location permission मांगी जाएगी।
               <br />
               या नीचे शहर का नाम लिखकर खोजें बटन दबाएँ।
             </p>
@@ -178,7 +230,39 @@ export default function WeatherPage() {
           <>
             <div className="grid gap-6 lg:grid-cols-3">
               <div className="agriveda-glass-strong lg:col-span-2 rounded-3xl p-6 md:p-8">
-                <p className="text-sm font-semibold text-emerald-600">{weatherData.location}</p>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-emerald-600">{weatherData.location}</p>
+                    {lastUpdated && (
+                      <p className="text-[10px] theme-text-muted">
+                        अपडेट:{" "}
+                        {lastUpdated.toLocaleTimeString("hi-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={refreshWeather}
+                      disabled={loading}
+                      className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-500/10 disabled:opacity-50"
+                      aria-label="Refresh weather"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={shareWeather}
+                      className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-500/10"
+                      aria-label="Share weather"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
                 <h2 className="mt-2 text-6xl font-black theme-text-primary">{weatherData.temp}</h2>
                 <p className="mt-1 text-lg capitalize theme-text-muted">{weatherData.condition}</p>
                 <div className="mt-6 grid grid-cols-2 gap-4 border-t border-gray-100 pt-6 dark:border-white/10">
@@ -191,20 +275,48 @@ export default function WeatherPage() {
                     <p className="text-lg font-bold theme-text-primary">{weatherData.windSpeed}</p>
                   </div>
                 </div>
-                <p className="mt-4 rounded-xl bg-emerald-50 px-3 py-2 text-xs text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <p
+                  className={`mt-4 rounded-xl px-3 py-2 text-xs ${
+                    weatherData.rainfallAlert.includes("बारिश") &&
+                    !weatherData.rainfallAlert.includes("कम")
+                      ? "bg-sky-100 text-sky-900 dark:bg-sky-500/15 dark:text-sky-200"
+                      : "bg-emerald-50 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300"
+                  }`}
+                >
                   {weatherData.rainfallAlert}
                 </p>
               </div>
 
-              <div className="agriveda-glass rounded-3xl p-6">
+              <div className="agriveda-glass rounded-3xl p-6 lg:col-span-1">
                 <h3 className="text-xs font-bold uppercase tracking-wider theme-text-muted">
-                  अगले घंटे
+                  अगले 24 घंटे (प्रति घंटा)
                 </h3>
-                <div className="mt-4 divide-y divide-gray-100 dark:divide-white/10">
+                <p className="mt-1 text-[10px] theme-text-muted">
+                  🌧 % = बारिश की संभावना · mm = 3 घंटे की अवधि में
+                </p>
+                <div className="mt-4 max-h-[420px] divide-y divide-gray-100 overflow-y-auto dark:divide-white/10">
                   {weatherData.hourlyForecast.map((hour, idx) => (
-                    <div key={idx} className="flex items-center justify-between py-3 text-sm">
-                      <span className="theme-text-muted">{hour.time}</span>
-                      <span>{hour.icon}</span>
+                    <div
+                      key={idx}
+                      className={`grid grid-cols-[minmax(4.5rem,auto)_1fr_auto] items-center gap-2 py-3 text-sm ${
+                        hour.isRainLikely ? "bg-sky-50/80 dark:bg-sky-500/10" : ""
+                      }`}
+                    >
+                      <span className={hour.isRainLikely ? "font-bold text-sky-800 dark:text-sky-200" : "theme-text-muted"}>
+                        {hour.time}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span>{hour.icon}</span>
+                        <span
+                          className={`text-[11px] ${
+                            hour.isRainLikely
+                              ? "font-bold text-sky-700 dark:text-sky-300"
+                              : "theme-text-muted"
+                          }`}
+                        >
+                          🌧 {hour.rainChancePercent}% · {hour.rainMm} mm
+                        </span>
+                      </div>
                       <span className="font-bold theme-text-primary">{hour.temp}</span>
                     </div>
                   ))}

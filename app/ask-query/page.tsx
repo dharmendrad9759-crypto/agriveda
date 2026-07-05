@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Camera, Check, ImagePlus, X, ChevronRight } from "lucide-react";
 import PageHeader from "@/components/layout/PageHeader";
-import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -133,7 +132,7 @@ export default function AskQueryPage() {
               onChange={(e) => setQuery(e.target.value.slice(0, MAX_CHARS))}
               placeholder="Describe the crop problem in simple words..."
               rows={5}
-              className="w-full resize-none rounded-2xl border border-emerald-500/20 bg-white px-4 py-3 text-sm theme-text-primary placeholder-gray-400 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-white/10 dark:bg-black/40"
+              className="theme-input w-full resize-none rounded-2xl border border-emerald-500/20 px-4 py-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
             />
             <span className="absolute bottom-3 right-3 text-[11px] theme-text-muted tabular-nums">
               {query.length}/{MAX_CHARS}
@@ -215,8 +214,6 @@ export default function AskQueryPage() {
           Send query
         </button>
       </form>
-
-      <BottomNav />
     </div>
   );
 }

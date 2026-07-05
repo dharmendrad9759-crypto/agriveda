@@ -16,8 +16,8 @@ import {
   WifiOff,
 } from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import GlassCard from "@/components/ui/GlassCard";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import OutbreakListView from "@/components/outbreak-radar/OutbreakListView";
 import { useOutbreakRadar } from "@/hooks/useOutbreakRadar";
 import { cn } from "@/lib/cn";
@@ -52,7 +52,7 @@ export default function PestOutbreakRadarPage() {
   if (!hydrated) return null;
 
   return (
-    <div className="agriveda-page relative min-h-screen pb-28">
+    <div className="agriveda-page relative min-h-screen">
       <PageBackground />
 
       <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
@@ -65,7 +65,7 @@ export default function PestOutbreakRadarPage() {
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div>
-              <h1 className="text-base font-extrabold theme-text-primary">Pest Outbreak Radar</h1>
+              <h1 className="text-base font-extrabold theme-text-primary">प्रकोप रडार</h1>
               <p className="text-[10px] theme-text-muted">नज़दीकी कीट/रोग चेतावनी</p>
             </div>
           </div>
@@ -106,6 +106,12 @@ export default function PestOutbreakRadarPage() {
               </Link>
             ))}
           </div>
+        )}
+
+        {!isSupabaseConfigured() && (
+          <p className="rounded-xl border border-sky-500/25 bg-sky-500/10 px-3 py-2 text-center text-[11px] font-semibold text-sky-800 dark:text-sky-200">
+            डेमो मोड — आस-पास की sample चेतावनी दिख रही है। Live data ke liye Supabase setup karein.
+          </p>
         )}
 
         {error && (
@@ -194,8 +200,6 @@ export default function PestOutbreakRadarPage() {
           )}
         </button>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

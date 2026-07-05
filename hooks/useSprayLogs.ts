@@ -11,6 +11,7 @@ import {
   mergeSprayLogs,
 } from "@/lib/supabaseSprayLogs";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { randomId } from "@/lib/randomId";
 
 const KEY = "agriveda-spray-logs";
 
@@ -82,7 +83,7 @@ export function useSprayLogs() {
     (input: Omit<SprayLog, "id" | "farmerId" | "synced" | "createdAt">) => {
       const log: SprayLog = {
         ...input,
-        id: `local-${crypto.randomUUID()}`,
+        id: randomId("local-"),
         farmerId: farmerId ?? "",
         synced: false,
         createdAt: new Date().toISOString(),

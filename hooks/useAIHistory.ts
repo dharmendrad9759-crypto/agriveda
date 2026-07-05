@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { DiagnosisResult } from "@/lib/aiDiagnosis";
 import { readStorage, writeStorage } from "@/lib/storage";
+import { randomId } from "@/lib/randomId";
 
 export interface AIHistoryEntry {
   id: string;
@@ -27,7 +28,7 @@ export function useAIHistory() {
   const addEntry = useCallback((entry: Omit<AIHistoryEntry, "id" | "timestamp">) => {
     const full: AIHistoryEntry = {
       ...entry,
-      id: crypto.randomUUID(),
+      id: randomId(),
       timestamp: new Date().toISOString(),
     };
     setHistory((prev) => {

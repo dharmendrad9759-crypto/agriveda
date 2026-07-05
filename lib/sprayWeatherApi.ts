@@ -1,5 +1,6 @@
 import type { SprayForecastHour, SprayWeatherBundle, SprayWeatherSnapshot } from "@/types/spray-window";
 import { SPRAY_WINDOW_CONFIG } from "@/lib/sprayWindow";
+import { maxPopInWindow } from "@/lib/weatherForecast";
 
 interface ForecastItem {
   dt: number;
@@ -52,13 +53,7 @@ function msToKmh(speedMs: number): number {
 }
 
 function maxRainNext3h(forecastList: ForecastItem[], fromMs: number): number {
-  const end = fromMs + SPRAY_WINDOW_CONFIG.rain.lookaheadHours * 60 * 60 * 1000;
-  return forecastList
-    .filter((item) => {
-      const t = item.dt * 1000;
-      return t >= fromMs && t < end;
-    })
-    .reduce((max, item) => Math.max(max, item.pop ?? 0), 0);
+  return maxPopInWindow(forecastList, fromMs, SPRAY_WINDOW_CONFIG.rain.lookaheadHours);
 }
 
 /** Expand 3-hour OpenWeather blocks into hourly slots */

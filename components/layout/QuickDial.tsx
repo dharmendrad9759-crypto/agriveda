@@ -3,26 +3,9 @@
 import { Phone, X } from "lucide-react";
 import { useState } from "react";
 
-const HELPLINES = [
-  {
-    name: "Kisan Call Centre",
-    number: "1800-180-1551",
-    tel: "18001801551",
-    desc: "24×7 — सभी फसल सवाल",
-  },
-  {
-    name: "Agriveda Expert",
-    number: "1800-572-1551",
-    tel: "18005721551",
-    desc: "कीट-रोग सलाह",
-  },
-  {
-    name: "Soil Health Helpline",
-    number: "1800-267-6768",
-    tel: "18002676768",
-    desc: "मिट्टी परीक्षण",
-  },
-];
+import { KISAN_HELPLINES } from "@/lib/helplines";
+
+const HELPLINES = KISAN_HELPLINES.filter((h) => h.tel !== "1551").slice(0, 3);
 
 export default function QuickDial() {
   const [open, setOpen] = useState(false);

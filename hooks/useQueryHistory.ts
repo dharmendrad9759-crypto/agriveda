@@ -54,5 +54,10 @@ export function useQueryHistory() {
     []
   );
 
-  return { queries, hydrated, addQuery };
+  const clearQueries = useCallback(() => {
+    writeStorage(KEY, []);
+    setQueries([]);
+  }, []);
+
+  return { queries, hydrated, addQuery, clearQueries };
 }

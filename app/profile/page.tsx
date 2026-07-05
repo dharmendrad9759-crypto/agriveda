@@ -1,25 +1,52 @@
 "use client";
 
 import Link from "next/link";
-import { User, MapPin, Phone, Calendar, Save, ChevronRight } from "lucide-react";
-import BottomNav from "@/components/layout/BottomNav";
+import {
+  User,
+  MapPin,
+  Phone,
+  Calendar,
+  Save,
+  ChevronRight,
+  PhoneCall,
+  Trash2,
+  RotateCcw,
+  Info,
+  Languages,
+} from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
+import SearchableSelect from "@/components/ui/SearchableSelect";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useToast } from "@/components/ui/Toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import {
+  getDistrictsForState,
+  INDIAN_STATES,
+  isValidDistrict,
+  isValidState,
+} from "@/lib/india-locations";
+import { KISAN_HELPLINES } from "@/lib/helplines";
+import { resetAppAndReload } from "@/lib/appReset";
+import { APP_NAME, APP_VERSION } from "@/lib/appMeta";
 
 export default function ProfilePage() {
   const { profile, hydrated, saveProfile, setSowingDate } = useFarmerProfile();
   const { crops } = useMyCrops();
-  const { history } = useAIHistory();
-  const { queries } = useQueryHistory();
+  const { history, clearHistory } = useAIHistory();
+  const { queries, clearQueries } = useQueryHistory();
   const { showToast } = useToast();
 
   const [form, setForm] = useState(profile);
+
+  const districtOptions = useMemo(
+    () => (isValidState(form.state) ? getDistrictsForState(form.state) : []),
+    [form.state]
+  );
 
   useEffect(() => {
     if (hydrated) setForm(profile);
@@ -28,6 +55,24 @@ export default function ProfilePage() {
   const handleSave = () => {
     saveProfile(form);
     showToast("प्रोफ़ाइल सेव हो गई ✓");
+  };
+
+  const handleClearHistory = () => {
+    if (!window.confirm("AI scan history और queries हटा दें?")) return;
+    clearHistory();
+    clearQueries();
+    showToast("इतिहास साफ़ हो गया ✓");
+  };
+
+  const handleResetApp = () => {
+    if (
+      !window.confirm(
+        "सारा डेटा मिट जाएगा (फसल, profile, spray log) और दोबारा registration होगा। जारी रखें?"
+      )
+    ) {
+      return;
+    }
+    resetAppAndReload();
   };
 
   return (
@@ -63,7 +108,7 @@ export default function ProfilePage() {
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm theme-text-primary outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-black/30"
+                className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
                 placeholder="आपका नाम"
               />
             </label>
@@ -71,24 +116,33 @@ export default function ProfilePage() {
               <span className="mb-1 flex items-center gap-1 text-xs font-bold theme-text-muted">
                 <MapPin className="h-3.5 w-3.5" /> गाँव / ज़िला / राज्य
               </span>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-3">
                 <input
                   value={form.village}
                   onChange={(e) => setForm({ ...form, village: e.target.value })}
                   placeholder="गाँव"
-                  className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-black/30"
+                  className="theme-input w-full rounded-xl border px-3 py-2 text-sm outline-none focus:border-emerald-500"
                 />
-                <input
-                  value={form.district}
-                  onChange={(e) => setForm({ ...form, district: e.target.value })}
-                  placeholder="ज़िला"
-                  className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-black/30"
-                />
-                <input
+                <SearchableSelect
+                  label="राज्य"
+                  placeholder="राज्य search करें"
                   value={form.state}
-                  onChange={(e) => setForm({ ...form, state: e.target.value })}
-                  placeholder="राज्य"
-                  className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-black/30"
+                  onChange={(state) => {
+                    const district =
+                      isValidState(state) && isValidDistrict(state, form.district)
+                        ? form.district
+                        : "";
+                    setForm({ ...form, state, district });
+                  }}
+                  options={INDIAN_STATES}
+                />
+                <SearchableSelect
+                  label="ज़िला"
+                  placeholder={form.state ? "ज़िला search करें" : "पहले राज्य चुनें"}
+                  value={form.district}
+                  onChange={(district) => setForm({ ...form, district })}
+                  options={districtOptions}
+                  disabled={!isValidState(form.state)}
                 />
               </div>
             </label>
@@ -100,7 +154,7 @@ export default function ProfilePage() {
                 type="tel"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-black/30"
+                className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
                 placeholder="10 अंकों का नंबर"
               />
             </label>
@@ -132,7 +186,7 @@ export default function ProfilePage() {
                     type="date"
                     value={profile.sowingDates[crop.slug] ?? ""}
                     onChange={(e) => setSowingDate(crop.slug, e.target.value)}
-                    className="rounded-lg border border-gray-200 px-2 py-1 text-xs dark:border-white/10 dark:bg-black/30"
+                    className="theme-input rounded-lg border px-2 py-1 text-xs"
                   />
                 </GlassCard>
               ))}
@@ -165,9 +219,66 @@ export default function ProfilePage() {
           Manage my crops
           <ChevronRight className="h-4 w-4" />
         </Link>
-      </div>
 
-      <BottomNav />
+        <section>
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-extrabold theme-text-primary">
+            <PhoneCall className="h-4 w-4 text-orange-500" />
+            कृषि हेल्पलाइन (फ़ोन)
+          </h2>
+          <div className="space-y-2">
+            {KISAN_HELPLINES.map((h) => (
+              <a
+                key={h.tel}
+                href={`tel:${h.tel}`}
+                className="flex items-center justify-between rounded-2xl border border-orange-500/20 bg-orange-500/5 px-4 py-3 transition hover:bg-orange-500/10"
+              >
+                <div>
+                  <p className="text-sm font-bold theme-text-primary">{h.name}</p>
+                  <p className="text-[11px] theme-text-muted">{h.desc}</p>
+                </div>
+                <span className="text-sm font-black text-orange-600">{h.number}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <GlassCard className="space-y-4 p-5">
+          <h2 className="text-sm font-extrabold theme-text-primary">सेटिंग्स</h2>
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2 text-sm theme-text-muted">
+              <Languages className="h-4 w-4" /> भाषा
+            </span>
+            <span className="text-xs theme-text-muted">नीचे दाएँ 🌐 बटन</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm theme-text-muted">थीम</span>
+            <ThemeToggle />
+          </div>
+          {(history.length > 0 || queries.length > 0) && (
+            <button
+              type="button"
+              onClick={handleClearHistory}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 px-3 py-2.5 text-xs font-bold theme-text-muted hover:border-red-300 hover:text-red-600 dark:border-white/10"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              AI / Query इतिहास साफ़ करें
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleResetApp}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/5 px-3 py-2.5 text-xs font-bold text-red-600"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            App reset / दोबारा पंजीकरण
+          </button>
+        </GlassCard>
+
+        <p className="flex items-center justify-center gap-1.5 pb-4 text-center text-[11px] theme-text-muted">
+          <Info className="h-3.5 w-3.5" />
+          {APP_NAME} v{APP_VERSION} · Made for Indian farmers 🌾
+        </p>
+      </div>
     </div>
   );
 }

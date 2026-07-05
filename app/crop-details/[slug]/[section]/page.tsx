@@ -4,7 +4,6 @@ import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import BottomNav from "@/components/layout/BottomNav";
 import PageBackground from "@/components/ui/PageBackground";
 import { useCropManagement } from "@/lib/useCropManagement";
 import {
@@ -66,7 +65,6 @@ export default function CropSectionPage({ params }: Props) {
         {section === "market" && <CropManagementMarketInformation profile={profile} />}
       </div>
 
-      <BottomNav />
     </div>
   );
 }

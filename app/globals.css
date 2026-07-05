@@ -1,13 +1,45 @@
 @import "tailwindcss";
 
-/* Shared tokens — both themes use the same futuristic emerald system */
-:root {
+/* App theme drives Tailwind `dark:` — NOT phone system dark mode */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Light theme (default) */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --neon-green: #059669;
+  --neon-green-dim: #047857;
+  --neon-cyan: #0d9488;
+  --glow-green: 0 4px 20px rgba(4, 120, 87, 0.12);
+  --background: #f4faf6;
+  --foreground: #0f172a;
+  --muted-foreground: #475569;
+  --input-bg: #ffffff;
+  --input-border: rgba(15, 23, 42, 0.14);
+  --input-placeholder: #64748b;
+  --panel-bg: rgba(255, 255, 255, 0.95);
+  --panel-border: rgba(4, 120, 87, 0.16);
+  --page-glow-a: rgba(16, 185, 129, 0.12);
+  --page-glow-b: rgba(6, 182, 212, 0.08);
+  --page-base-start: #f0fdf6;
+  --page-base-mid: #f8fafc;
+  --page-base-end: #ecfdf5;
+  --accent: #047857;
+  --accent-soft: rgba(4, 120, 87, 0.1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
   --neon-green: #00ff88;
   --neon-green-dim: #00cc6a;
   --neon-cyan: #00e5ff;
   --glow-green: 0 0 20px rgba(0, 255, 136, 0.25);
   --background: #030712;
   --foreground: #f1f5f9;
+  --muted-foreground: #94a3b8;
+  --input-bg: rgba(15, 23, 42, 0.55);
+  --input-border: rgba(255, 255, 255, 0.12);
+  --input-placeholder: #94a3b8;
   --panel-bg: rgba(15, 23, 42, 0.72);
   --panel-border: rgba(0, 255, 136, 0.16);
   --page-glow-a: rgba(0, 255, 136, 0.12);
@@ -15,19 +47,8 @@
   --page-base-start: #030712;
   --page-base-mid: #0f172a;
   --page-base-end: #020617;
-}
-
-[data-theme="light"] {
-  --background: #f4faf6;
-  --foreground: #0f172a;
-  --glow-green: 0 4px 20px rgba(4, 120, 87, 0.12);
-  --panel-bg: rgba(255, 255, 255, 0.82);
-  --panel-border: rgba(4, 120, 87, 0.14);
-  --page-glow-a: rgba(16, 185, 129, 0.14);
-  --page-glow-b: rgba(6, 182, 212, 0.08);
-  --page-base-start: #f0fdf6;
-  --page-base-mid: #f8fafc;
-  --page-base-end: #ecfdf5;
+  --accent: #34d399;
+  --accent-soft: rgba(52, 211, 153, 0.12);
 }
 
 body {
@@ -104,25 +125,50 @@ body {
   box-shadow: 0 0 8px rgba(4, 120, 87, 0.45);
 }
 
-/* Text colors — shared names, theme-specific values */
+/* Text colors — theme via data-theme on html */
 .theme-text-primary {
-  color: #f1f5f9;
+  color: var(--foreground);
 }
 .theme-text-muted {
-  color: #94a3b8;
+  color: var(--muted-foreground);
 }
 .theme-text-accent {
-  color: #34d399;
+  color: var(--accent);
 }
 
-[data-theme="light"] .theme-text-primary {
-  color: #0f172a;
+/* Form fields — always match app theme (fixes invisible text in light mode) */
+.theme-input {
+  color: var(--foreground);
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  -webkit-text-fill-color: var(--foreground);
 }
-[data-theme="light"] .theme-text-muted {
-  color: #64748b;
+.theme-input::placeholder {
+  color: var(--input-placeholder);
+  opacity: 1;
 }
-[data-theme="light"] .theme-text-accent {
-  color: #047857;
+.theme-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+textarea,
+select {
+  color: var(--foreground);
+  -webkit-text-fill-color: var(--foreground);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--input-placeholder);
+  opacity: 1;
+}
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground);
 }
 
 /*
@@ -171,6 +217,21 @@ body {
   transform-origin: bottom;
 }
 
+@keyframes slide-up-soft {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up-soft { animation: slide-up-soft 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.agriveda-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.08), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }

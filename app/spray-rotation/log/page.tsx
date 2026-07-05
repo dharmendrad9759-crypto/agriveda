@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Search } from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import GlassCard from "@/components/ui/GlassCard";
 import { useSprayLogs } from "@/hooks/useSprayLogs";
 import { useSprayFields } from "@/hooks/useSprayFields";
@@ -124,7 +123,7 @@ export default function LogSprayPage() {
               setPestId("");
               setDiseaseId("");
             }}
-            className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm dark:border-white/10 dark:bg-black/30"
+            className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
           >
             {SPRAY_CROPS.map((c) => (
               <option key={c.slug} value={c.slug}>
@@ -139,7 +138,7 @@ export default function LogSprayPage() {
           <select
             value={activeFieldId}
             onChange={(e) => setFieldId(e.target.value)}
-            className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm dark:border-white/10 dark:bg-black/30"
+            className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
           >
             {fields.map((f) => (
               <option key={f.id} value={f.id}>
@@ -153,7 +152,7 @@ export default function LogSprayPage() {
                 value={newFieldName}
                 onChange={(e) => setNewFieldName(e.target.value)}
                 placeholder={t(locale, "fieldName")}
-                className="flex-1 rounded-xl border px-3 py-2 text-sm"
+                className="theme-input flex-1 rounded-xl border px-3 py-2 text-sm"
               />
               <button type="button" onClick={handleAddField} className="rounded-xl bg-emerald-600 px-3 text-sm font-bold text-white">
                 OK
@@ -180,11 +179,11 @@ export default function LogSprayPage() {
                 setProductQuery(e.target.value);
                 setSelectedProduct(null);
               }}
-              className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm dark:border-white/10 dark:bg-black/30"
+              className="theme-input w-full rounded-xl border py-2.5 pl-10 pr-3 text-sm"
             />
           </div>
           {!selectedProduct && productResults.length > 0 && (
-            <ul className="mt-1 max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900">
+            <ul className="mt-1 max-h-48 overflow-y-auto rounded-xl border border-[var(--input-border)] bg-[var(--panel-bg)] py-1 shadow-lg">
               {productResults.map((prod) => (
                 <li key={prod.id}>
                   <button
@@ -193,7 +192,7 @@ export default function LogSprayPage() {
                       setSelectedProduct(prod);
                       setProductQuery(prod.productName);
                     }}
-                    className="w-full px-3 py-2.5 text-left text-sm hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
+                    className="theme-text-primary w-full px-3 py-2.5 text-left text-sm hover:bg-emerald-500/10"
                   >
                     <span className="font-bold">{prod.productName}</span>
                     <span className="ml-2 text-[10px] theme-text-muted">
@@ -254,7 +253,7 @@ export default function LogSprayPage() {
               type="date"
               value={sprayDate}
               onChange={(e) => setSprayDate(e.target.value)}
-              className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
+              className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
             />
           </label>
           <label className="block">
@@ -263,7 +262,7 @@ export default function LogSprayPage() {
               value={growthStage}
               onChange={(e) => setGrowthStage(e.target.value)}
               placeholder="e.g. Tillering"
-              className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
+              className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
             />
           </label>
         </div>
@@ -286,8 +285,6 @@ export default function LogSprayPage() {
           {t(locale, "save")}
         </button>
       </div>
-
-      <BottomNav />
     </div>
   );
 }
