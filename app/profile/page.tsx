@@ -23,6 +23,7 @@ import { useMyCrops } from "@/hooks/useMyCrops";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useToast } from "@/components/ui/Toast";
+import { APP_NAME, APP_VERSION } from "@/lib/appMeta";
 import { useState, useEffect, useMemo } from "react";
 import {
   getDistrictsForState,

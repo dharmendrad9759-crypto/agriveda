@@ -4,6 +4,10 @@ import { cropsData as legacyCrops } from "@/data/crops";
 import { maizeProfile } from "@/data/maize-profile";
 import { paddyProfile } from "@/data/paddy-profile";
 import { chilliProfile } from "@/data/chilli-profile";
+import { cottonProfile } from "@/data/cotton-profile";
+import { soybeanProfile } from "@/data/soybean-profile";
+import { bajraProfile } from "@/data/bajra-profile";
+import { moongfaliProfile } from "@/data/moongfali-profile";
 
 const tomatoProfile: CropManagementProfile = {
   slug: "tomato",
@@ -440,7 +444,17 @@ function mapLegacyCrop(crop: LegacyCrop): CropManagementProfile {
   };
 }
 
-const CUSTOM_PROFILE_SLUGS = new Set(["tomato", "potato", "paddy", "maize", "chilli"]);
+const CUSTOM_PROFILE_SLUGS = new Set([
+  "tomato",
+  "potato",
+  "paddy",
+  "maize",
+  "chilli",
+  "cotton",
+  "soybean",
+  "bajra",
+  "moongfali",
+]);
 
 export const cropManagementCatalog: CropManagementProfile[] = [
   tomatoProfile,
@@ -448,9 +462,16 @@ export const cropManagementCatalog: CropManagementProfile[] = [
   paddyProfile,
   maizeProfile,
   chilliProfile,
+  cottonProfile,
+  soybeanProfile,
+  bajraProfile,
+  moongfaliProfile,
   ...legacyCrops.filter((c) => !CUSTOM_PROFILE_SLUGS.has(c.slug)).map(mapLegacyCrop),
 ];
 
+import { getEnrichedCropProfile } from "@/lib/knowledge/merge";
+
 export function getCropManagementProfile(slug: string): CropManagementProfile | null {
-  return cropManagementCatalog.find((crop) => crop.slug === slug) ?? null;
+  const base = cropManagementCatalog.find((crop) => crop.slug === slug) ?? null;
+  return getEnrichedCropProfile(base);
 }

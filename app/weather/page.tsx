@@ -13,6 +13,7 @@ import {
 import { getSavedWeatherLocation } from "@/lib/sprayWeatherApi";
 import { shareText } from "@/lib/shareText";
 import { useToast } from "@/components/ui/Toast";
+import FarmWeatherDashboard from "@/components/weather/FarmWeatherDashboard";
 
 export default function WeatherPage() {
   const { showToast } = useToast();
@@ -227,115 +228,31 @@ export default function WeatherPage() {
         )}
 
         {!loading && !error && weatherData && (
-          <>
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="agriveda-glass-strong lg:col-span-2 rounded-3xl p-6 md:p-8">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-sm font-semibold text-emerald-600">{weatherData.location}</p>
-                    {lastUpdated && (
-                      <p className="text-[10px] theme-text-muted">
-                        अपडेट:{" "}
-                        {lastUpdated.toLocaleTimeString("hi-IN", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={refreshWeather}
-                      disabled={loading}
-                      className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-500/10 disabled:opacity-50"
-                      aria-label="Refresh weather"
-                    >
-                      <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={shareWeather}
-                      className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-500/10"
-                      aria-label="Share weather"
-                    >
-                      <Share2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-                <h2 className="mt-2 text-6xl font-black theme-text-primary">{weatherData.temp}</h2>
-                <p className="mt-1 text-lg capitalize theme-text-muted">{weatherData.condition}</p>
-                <div className="mt-6 grid grid-cols-2 gap-4 border-t border-gray-100 pt-6 dark:border-white/10">
-                  <div>
-                    <p className="text-xs uppercase theme-text-muted">नमी</p>
-                    <p className="text-lg font-bold theme-text-primary">{weatherData.humidity}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase theme-text-muted">हवा</p>
-                    <p className="text-lg font-bold theme-text-primary">{weatherData.windSpeed}</p>
-                  </div>
-                </div>
-                <p
-                  className={`mt-4 rounded-xl px-3 py-2 text-xs ${
-                    weatherData.rainfallAlert.includes("बारिश") &&
-                    !weatherData.rainfallAlert.includes("कम")
-                      ? "bg-sky-100 text-sky-900 dark:bg-sky-500/15 dark:text-sky-200"
-                      : "bg-emerald-50 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300"
-                  }`}
+          <div className="rounded-3xl bg-[#f5f5f7] p-4 shadow-sm md:p-6">
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-emerald-700">{weatherData.location}</p>
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={refreshWeather}
+                  disabled={loading}
+                  className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-500/10 disabled:opacity-50"
+                  aria-label="Refresh weather"
                 >
-                  {weatherData.rainfallAlert}
-                </p>
-              </div>
-
-              <div className="agriveda-glass rounded-3xl p-6 lg:col-span-1">
-                <h3 className="text-xs font-bold uppercase tracking-wider theme-text-muted">
-                  अगले 24 घंटे (प्रति घंटा)
-                </h3>
-                <p className="mt-1 text-[10px] theme-text-muted">
-                  🌧 % = बारिश की संभावना · mm = 3 घंटे की अवधि में
-                </p>
-                <div className="mt-4 max-h-[420px] divide-y divide-gray-100 overflow-y-auto dark:divide-white/10">
-                  {weatherData.hourlyForecast.map((hour, idx) => (
-                    <div
-                      key={idx}
-                      className={`grid grid-cols-[minmax(4.5rem,auto)_1fr_auto] items-center gap-2 py-3 text-sm ${
-                        hour.isRainLikely ? "bg-sky-50/80 dark:bg-sky-500/10" : ""
-                      }`}
-                    >
-                      <span className={hour.isRainLikely ? "font-bold text-sky-800 dark:text-sky-200" : "theme-text-muted"}>
-                        {hour.time}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span>{hour.icon}</span>
-                        <span
-                          className={`text-[11px] ${
-                            hour.isRainLikely
-                              ? "font-bold text-sky-700 dark:text-sky-300"
-                              : "theme-text-muted"
-                          }`}
-                        >
-                          🌧 {hour.rainChancePercent}% · {hour.rainMm} mm
-                        </span>
-                      </div>
-                      <span className="font-bold theme-text-primary">{hour.temp}</span>
-                    </div>
-                  ))}
-                </div>
+                  <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                </button>
+                <button
+                  type="button"
+                  onClick={shareWeather}
+                  className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-500/10"
+                  aria-label="Share weather"
+                >
+                  <Share2 className="h-4 w-4" />
+                </button>
               </div>
             </div>
-
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold theme-text-primary">फसल सलाह</h2>
-              <div className="grid gap-4 md:grid-cols-3">
-                {weatherData.recommendations.map((rec, i) => (
-                  <div key={i} className="agriveda-glass rounded-2xl p-5">
-                    <h3 className="font-bold text-emerald-700 dark:text-emerald-400">{rec.title}</h3>
-                    <p className="mt-2 text-sm theme-text-muted leading-relaxed">{rec.advice}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
+            <FarmWeatherDashboard weather={weatherData} lastUpdated={lastUpdated} />
+          </div>
         )}
 
         <Link href="/" className="text-sm font-semibold text-emerald-600 hover:underline">

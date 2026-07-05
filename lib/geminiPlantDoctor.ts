@@ -1,5 +1,6 @@
 import type { DiagnosisResult } from "@/lib/aiDiagnosis";
 import { AI_DOCTOR_CROPS } from "@/data/ai-doctor-crops";
+import { buildKnowledgeContext } from "@/lib/knowledge/retrieve";
 
 /** Ordered fallbacks — older 2.0/1.5 models were shut down June 2026 */
 const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-3.5-flash", "gemini-3.1-flash-lite"] as const;
@@ -73,9 +74,14 @@ const RESPONSE_SCHEMA = {
 
 function buildPrompt(cropSlug: string): string {
   const crop = cropLabel(cropSlug);
+  const knowledge = buildKnowledgeContext({ cropSlug, maxChunks: 5 });
+  const knowledgeBlock = knowledge
+    ? `\n\nREFERENCE KNOWLEDGE (ICAR PoP / diagnostic guides — use for doses and disease names):\n${knowledge.slice(0, 2500)}`
+    : "";
+
   return `You are Agriveda AI Plant Doctor — an expert agronomist helping Indian farmers.
 
-The farmer selected crop: ${crop}
+The farmer selected crop: ${crop}${knowledgeBlock}
 
 Analyze the uploaded photo carefully. Your answer MUST be based on what you ACTUALLY SEE in this specific image — not a generic template.
 

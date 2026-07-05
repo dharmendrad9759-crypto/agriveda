@@ -6,6 +6,8 @@ import type { EnrichedThreat } from "@/types/pest-disease-ui";
 import { CATEGORY_COLORS, CATEGORY_LABELS } from "@/types/pest-disease-ui";
 import { threatDetailPath } from "@/lib/pest-disease-catalog";
 import ThreatImage from "@/components/ui/ThreatImage";
+import GlassCard from "@/components/ui/GlassCard";
+import FarmerPhotoUpload from "@/components/pest-diseases/FarmerPhotoUpload";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
 interface ThreatCardProps {

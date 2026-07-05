@@ -8,7 +8,6 @@ import { cropsData, type Crop as CropData } from "@/data/crops";
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // सर्च क्वेरी के आधार पर फसलों को फिल्टर करने वाला तगड़ा लॉजिक
   const filteredResults = cropsData.filter((crop: CropData) => {
     const query = searchQuery.toLowerCase();
     return (
