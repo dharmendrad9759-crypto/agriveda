@@ -294,6 +294,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                   emptyHint="राज्य नहीं मिला — English में नाम लिखकर search करें"
                 />
                 <SearchableSelect
+                  key={`onboard-district-${state}`}
                   label="ज़िला"
                   placeholder={
                     state ? "ज़िला search करें (जैसे Aligarh)" : "पहले राज्य चुनें"

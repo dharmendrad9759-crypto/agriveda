@@ -32,7 +32,7 @@ import {
 } from "@/lib/india-locations";
 import { KISAN_HELPLINES } from "@/lib/helplines";
 import { resetAppAndReload } from "@/lib/appReset";
-import { APP_NAME, APP_VERSION } from "@/lib/appMeta";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function ProfilePage() {
   const { profile, hydrated, saveProfile, setSowingDate } = useFarmerProfile();
@@ -40,6 +40,7 @@ export default function ProfilePage() {
   const { history, clearHistory } = useAIHistory();
   const { queries, clearQueries } = useQueryHistory();
   const { showToast } = useToast();
+  const { t } = useLocale();
 
   const [form, setForm] = useState(profile);
 
@@ -124,8 +125,9 @@ export default function ProfilePage() {
                   className="theme-input w-full rounded-xl border px-3 py-2 text-sm outline-none focus:border-emerald-500"
                 />
                 <SearchableSelect
-                  label="राज्य"
-                  placeholder="राज्य search करें"
+                  key={`state-${form.state}`}
+                  label={t("stateLabel")}
+                  placeholder={t("statePlaceholder")}
                   value={form.state}
                   onChange={(state) => {
                     const district =
@@ -137,8 +139,11 @@ export default function ProfilePage() {
                   options={INDIAN_STATES}
                 />
                 <SearchableSelect
-                  label="ज़िला"
-                  placeholder={form.state ? "ज़िला search करें" : "पहले राज्य चुनें"}
+                  key={`district-${form.state}`}
+                  label={t("districtLabel")}
+                  placeholder={
+                    form.state ? t("districtPlaceholder") : t("districtSelectStateFirst")
+                  }
                   value={form.district}
                   onChange={(district) => setForm({ ...form, district })}
                   options={districtOptions}

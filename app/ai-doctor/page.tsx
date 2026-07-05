@@ -22,6 +22,8 @@ import { analyzePlantImage, checkAiDoctorConfigured, type DiagnosisResult } from
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useToast } from "@/components/ui/Toast";
+import SafeThumbnail from "@/components/ui/SafeThumbnail";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { AI_DOCTOR_CROPS } from "@/data/ai-doctor-crops";
 
 const SCAN_STEPS = [
@@ -36,6 +38,7 @@ export default function AIDoctorPage() {
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const { addEntry, history, clearHistory } = useAIHistory();
   const { showToast } = useToast();
+  const { t } = useLocale();
 
   const [selectedCrop, setSelectedCrop] = useState("tomato");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -335,7 +338,7 @@ export default function AIDoctorPage() {
                 className="flex items-center gap-2 text-sm font-bold text-emerald-600"
               >
                 <History className="h-4 w-4" />
-                Recent scans ({history.length})
+                {t("recentScans")} ({history.length})
               </button>
               <button
                 type="button"
@@ -348,15 +351,18 @@ export default function AIDoctorPage() {
                 }}
                 className="text-xs font-bold text-red-500"
               >
-                Clear
+                {t("clearHistory")}
               </button>
             </div>
             {showHistory && (
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {history.slice(0, 6).map((h) => (
                   <GlassCard key={h.id} className="flex gap-3 p-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={h.thumbnailUrl} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                    <SafeThumbnail
+                      src={h.thumbnailUrl}
+                      alt={h.fileName}
+                      className="h-14 w-14 rounded-lg"
+                    />
                     <div>
                       <p className="text-xs font-bold theme-text-primary">{h.result.diseaseName}</p>
                       <p className="text-[10px] theme-text-muted">

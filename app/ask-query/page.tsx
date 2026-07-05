@@ -13,6 +13,7 @@ import { useMyCrops } from "@/hooks/useMyCrops";
 import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cropCatalog } from "@/data/crop-catalog";
 
 const MAX_CHARS = 256;
@@ -22,6 +23,7 @@ export default function AskQueryPage() {
   const { addQuery } = useQueryHistory();
   const { profile } = useFarmerProfile();
   const { showToast } = useToast();
+  const { t } = useLocale();
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -88,15 +90,13 @@ export default function AskQueryPage() {
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/40 bg-emerald-500/15">
             <Check className="h-8 w-8 text-emerald-400" />
           </div>
-          <h2 className="mt-4 text-xl font-black theme-text-primary">Query sent!</h2>
-          <p className="mt-2 text-sm theme-text-muted">
-            Expert will reply in 1–2 days. Check Community feed.
-          </p>
+          <h2 className="mt-4 text-xl font-black theme-text-primary">{t("querySent")}</h2>
+          <p className="mt-2 text-sm theme-text-muted">{t("querySentSubtitle")}</p>
           <Link
             href="/community"
             className="mt-6 inline-block rounded-2xl bg-[#006432] px-8 py-3 text-sm font-black text-white"
           >
-            View community
+            {t("viewCommunity")}
           </Link>
         </div>
       </div>
@@ -106,11 +106,11 @@ export default function AskQueryPage() {
   return (
     <div className="agriveda-page relative pb-28">
       <PageBackground />
-      <PageHeader title="Ask expert" subtitle="Describe your field problem" backHref="/" />
+      <PageHeader title={t("askExpertTitle")} subtitle={t("askExpertSubtitle")} backHref="/" />
 
       <form onSubmit={handleSubmit} className="relative mx-auto max-w-lg space-y-6 px-4 py-5">
         <section>
-          <SectionHeading title="Select crop" />
+          <SectionHeading title={t("selectCrop")} />
           {availableCrops.length > 0 ? (
             <CropSelector
               crops={availableCrops}
@@ -119,18 +119,18 @@ export default function AskQueryPage() {
             />
           ) : (
             <GlassCard className="p-4 text-center text-sm theme-text-muted">
-              Add crops from home first.
+              {t("addCropsFirst")}
             </GlassCard>
           )}
         </section>
 
         <section>
-          <SectionHeading title="Write your problem" />
+          <SectionHeading title={t("writeQuery")} />
           <div className="relative">
             <textarea
               value={query}
               onChange={(e) => setQuery(e.target.value.slice(0, MAX_CHARS))}
-              placeholder="Describe the crop problem in simple words..."
+              placeholder={t("queryPlaceholder")}
               rows={5}
               className="theme-input w-full resize-none rounded-2xl border border-emerald-500/20 px-4 py-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
             />
@@ -144,10 +144,8 @@ export default function AskQueryPage() {
         </section>
 
         <section>
-          <SectionHeading title="Add photo (optional)" />
-          <p className="mb-3 text-xs leading-relaxed theme-text-muted">
-            Your phone will ask for Photos / Files permission so you can pick from gallery.
-          </p>
+          <SectionHeading title={t("addPhotoOptional")} />
+          <p className="mb-3 text-xs leading-relaxed theme-text-muted">{t("photoPermission")}</p>
 
           <input
             ref={galleryInputRef}
@@ -193,7 +191,7 @@ export default function AskQueryPage() {
               className="flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-3.5 text-xs font-bold text-emerald-700 dark:text-emerald-400"
             >
               <ImagePlus className="h-4 w-4" />
-              {photoPreview ? "Change photo" : "From gallery"}
+              {photoPreview ? t("changePhoto") : t("fromGallery")}
             </button>
             <button
               type="button"
@@ -201,7 +199,7 @@ export default function AskQueryPage() {
               className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 px-3 py-3.5 text-xs font-bold theme-text-muted dark:border-white/10"
             >
               <Camera className="h-4 w-4" />
-              Take photo
+              {t("takePhoto")}
             </button>
           </div>
         </section>
@@ -211,7 +209,7 @@ export default function AskQueryPage() {
           disabled={!query.trim()}
           className="fixed bottom-20 left-4 right-4 mx-auto max-w-lg rounded-2xl bg-[#006432] py-4 text-center text-sm font-black text-white shadow-lg disabled:opacity-40 md:bottom-8"
         >
-          Send query
+          {t("submitQuery")}
         </button>
       </form>
     </div>

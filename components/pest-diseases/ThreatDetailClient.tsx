@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ArrowLeft, Bug, FlaskConical, Leaf, ShieldAlert, Sparkles } from "lucide-react";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
 import { CATEGORY_COLORS, CATEGORY_LABELS } from "@/types/pest-disease-ui";
+import ThreatImage from "@/components/ui/ThreatImage";
 import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import GlassCard from "@/components/ui/GlassCard";
 import FarmerPhotoUpload from "@/components/pest-diseases/FarmerPhotoUpload";
 import { readStorage } from "@/lib/storage";
@@ -49,12 +49,21 @@ export default function ThreatDetailClient({ threat }: ThreatDetailClientProps) 
 
       <article className="relative mx-auto max-w-lg space-y-5 px-4 py-5">
         <div className="overflow-hidden rounded-2xl">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={userPhoto ?? threat.image}
-            alt={threat.name}
-            className="h-56 w-full object-cover"
-          />
+          {userPhoto ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={userPhoto}
+              alt={threat.name}
+              className="h-56 w-full object-cover"
+            />
+          ) : (
+            <ThreatImage
+              src={threat.image}
+              alt={threat.name}
+              category={threat.category}
+              className="h-56 w-full"
+            />
+          )}
           {userPhoto && (
             <p className="bg-emerald-500/10 px-3 py-1.5 text-center text-[10px] font-bold text-emerald-600">
               Your uploaded field photo
@@ -154,8 +163,6 @@ export default function ThreatDetailClient({ threat }: ThreatDetailClientProps) 
           AI Doctor से confirm करें
         </Link>
       </article>
-
-      <BottomNav />
     </div>
   );
 }

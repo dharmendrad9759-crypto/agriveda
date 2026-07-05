@@ -5,8 +5,8 @@ import Link from "next/link";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
 import { CATEGORY_COLORS, CATEGORY_LABELS } from "@/types/pest-disease-ui";
 import { threatDetailPath } from "@/lib/pest-disease-catalog";
-import GlassCard from "@/components/ui/GlassCard";
-import FarmerPhotoUpload from "./FarmerPhotoUpload";
+import ThreatImage from "@/components/ui/ThreatImage";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 interface ThreatCardProps {
   threat: EnrichedThreat;
@@ -14,18 +14,18 @@ interface ThreatCardProps {
 
 export default function ThreatCard({ threat }: ThreatCardProps) {
   const router = useRouter();
+  const { t } = useLocale();
   const href = threatDetailPath(threat.cropSlug, threat.type, threat.id);
   const storageKey = `agriveda-threat-photo-${threat.cropSlug}-${threat.type}-${threat.id}`;
 
   return (
     <GlassCard hover className="flex flex-col overflow-hidden p-0">
       <Link href={href} className="block">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <ThreatImage
           src={threat.image}
           alt={threat.name}
-          className="h-32 w-full object-cover"
-          loading="lazy"
+          category={threat.category}
+          className="h-32 w-full"
         />
         <div className="p-3">
           <div className="flex items-start justify-between gap-2">
@@ -41,7 +41,7 @@ export default function ThreatCard({ threat }: ThreatCardProps) {
           </p>
           <p className="mt-1.5 text-[10px] theme-text-muted line-clamp-2">{threat.description}</p>
           <span className="mt-2 inline-block text-[10px] font-bold text-emerald-600">
-            View details →
+            {t("viewDetails")} →
           </span>
         </div>
       </Link>

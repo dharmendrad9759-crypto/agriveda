@@ -172,7 +172,9 @@ export default function Home() {
         <section className="animate-slide-up-soft" style={{ animationDelay: "140ms" }}>
           <SectionHeading title={t("mainServices")} subtitle={t("servicesNote")} />
           <div className="grid grid-cols-4 gap-3">
-            {tools.map((tool) => {
+            {tools
+              .filter((tool) => tool.action !== "services")
+              .map((tool) => {
               const Icon = tool.icon;
               const inner = (
                 <>
@@ -187,19 +189,6 @@ export default function Home() {
                 </>
               );
 
-              if (tool.action === "services") {
-                return (
-                  <button
-                    key={tool.titleKey}
-                    type="button"
-                    onClick={() => setServicesOpen(true)}
-                    className="flex flex-col items-center"
-                  >
-                    {inner}
-                  </button>
-                );
-              }
-
               return (
                 <Link key={tool.titleKey} href={tool.href} className="flex flex-col items-center">
                   {inner}
@@ -207,6 +196,22 @@ export default function Home() {
               );
             })}
           </div>
+          <button
+            type="button"
+            onClick={() => setServicesOpen(true)}
+            className="mt-3 flex w-full items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-cyan-500/40 bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 px-4 py-3.5 transition active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-cyan-500/30 bg-cyan-500/15 text-cyan-700">
+                <LayoutGrid className="h-6 w-6" strokeWidth={1.75} />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-black theme-text-primary">{t("toolAllServices")}</p>
+                <p className="text-[10px] theme-text-muted">{t("servicesHubTitle")}</p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-cyan-600" />
+          </button>
         </section>
 
         <div className="animate-slide-up-soft" style={{ animationDelay: "180ms" }}>

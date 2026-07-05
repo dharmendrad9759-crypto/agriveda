@@ -1,7 +1,18 @@
 import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/data/pest-disease";
 import { getCropPestDisease } from "@/data/pest-disease";
-import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
+import { THREAT_DETAIL_OVERRIDES } from "@/data/pest-disease-details";
 import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-disease-ui";
+
+const GENERIC_STOCK = /unsplash\.com|placeholder|picsum|loremflickr/i;
+
+function resolveThreatImage(
+  overrideImage: string | undefined,
+  itemImage: string | undefined
+): string | undefined {
+  const candidate = overrideImage ?? itemImage;
+  if (candidate && !GENERIC_STOCK.test(candidate)) return candidate;
+  return undefined;
+}
 
 function inferDiseaseCategory(pathogen: string, name: string): ThreatCategory {
   const p = `${pathogen} ${name}`.toLowerCase();
@@ -37,19 +48,6 @@ function inferDiseaseCategory(pathogen: string, name: string): ThreatCategory {
   return "other";
 }
 
-function defaultImage(category: ThreatCategory, cropSlug: string): string {
-  if (cropSlug === "potato") return THREAT_IMAGES.potato;
-  if (cropSlug === "tomato") return THREAT_IMAGES.tomato;
-  if (cropSlug === "maize") return THREAT_IMAGES.maize;
-  if (cropSlug === "soybean") return THREAT_IMAGES.soybean;
-  if (cropSlug === "paddy") return THREAT_IMAGES.paddy;
-  if (category === "insect") return THREAT_IMAGES.insect;
-  if (category === "viral") return THREAT_IMAGES.viralPlant;
-  if (category === "bacterial") return THREAT_IMAGES.bacterialLeaf;
-  if (category === "weed") return THREAT_IMAGES.weed;
-  return THREAT_IMAGES.fungalLeaf;
-}
-
 function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
   const key = `${crop.slug}-pest-${pest.id}`;
   const override = THREAT_DETAIL_OVERRIDES[key];
@@ -63,7 +61,7 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
     category,
     name: pest.name,
     scientificName: pest.scientificName,
-    image: override?.image ?? pest.image ?? defaultImage(category, crop.slug),
+    image: resolveThreatImage(override?.image, pest.image) ?? "",
     stage: pest.stage,
     description:
       override?.description ??
@@ -99,7 +97,7 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
     name: disease.name,
     scientificName: disease.pathogen,
     pathogen: disease.pathogen,
-    image: override?.image ?? disease.image ?? defaultImage(category, crop.slug),
+    image: resolveThreatImage(override?.image, disease.image) ?? "",
     stage: disease.stage,
     description:
       override?.description ??
@@ -130,7 +128,7 @@ function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
     category: "weed",
     name: weed.name,
     scientificName: weed.scientificName,
-    image: weed.image ?? THREAT_IMAGES.weed,
+    image: resolveThreatImage(undefined, weed.image) ?? "",
     stage: weed.criticalPeriod,
     description: `${weed.scientificName} (${weed.type} weed) competes with ${crop.name} for nutrients, water, and light. Critical competition period is ${weed.criticalPeriod}. Timely weed management is essential for protecting yield.`,
     symptoms: [

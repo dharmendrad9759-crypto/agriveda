@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ThreatCard from "@/components/pest-diseases/ThreatCard";
 import PestDiseaseFilters from "@/components/pest-diseases/PestDiseaseFilters";
 import { pestDiseaseCropList } from "@/data/pest-disease";
 import { getEnrichedCropThreats, filterThreats } from "@/lib/pest-disease-catalog";
 import type { ThreatCategory } from "@/types/pest-disease-ui";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 
 export default function PestDiseasesContent() {
@@ -21,6 +21,7 @@ export default function PestDiseasesContent() {
   const [selectedSlug, setSelectedSlug] = useState(initialCrop);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<ThreatCategory | "all">("all");
+  const { t } = useLocale();
 
   const allThreats = useMemo(() => getEnrichedCropThreats(selectedSlug), [selectedSlug]);
   const filtered = useMemo(
@@ -43,15 +44,15 @@ export default function PestDiseasesContent() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-base font-extrabold theme-text-primary">Pest & Diseases</h1>
-            <p className="text-[11px] theme-text-muted">Search • Filter • Detailed guides</p>
+            <h1 className="text-base font-extrabold theme-text-primary">{t("pestDiseasesTitle")}</h1>
+            <p className="text-[11px] theme-text-muted">{t("pestsDiseases")}</p>
           </div>
         </div>
       </header>
 
       <div className="relative mx-auto max-w-lg space-y-5 px-4 py-5">
         <section>
-          <SectionHeading title="Select crop." />
+          <SectionHeading title={t("selectCropPrompt")} />
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {pestDiseaseCropList.map((crop) => (
               <button
@@ -115,8 +116,6 @@ export default function PestDiseasesContent() {
           AI Doctor से photo diagnosis करें →
         </Link>
       </div>
-
-      <BottomNav />
     </div>
   );
 }
