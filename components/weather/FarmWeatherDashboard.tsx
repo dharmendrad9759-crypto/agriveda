@@ -234,7 +234,7 @@ export default function FarmWeatherDashboard({
             {sprayAdvice.length > 120 ? `${sprayAdvice.slice(0, 117)}…` : sprayAdvice}
           </p>
           <Link
-            href="/spray-rotation"
+            href="/weather/spray-advisory"
             className="mt-4 inline-block rounded-full bg-white px-5 py-2 text-sm font-semibold text-gray-900 shadow-md transition hover:bg-gray-50"
           >
             Learn more

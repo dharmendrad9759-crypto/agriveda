@@ -51,6 +51,21 @@ export default function PestDiseasesContent() {
       </header>
 
       <div className="relative mx-auto max-w-lg space-y-5 px-4 py-5">
+        <Link
+          href="/pest-solver"
+          className="flex items-center justify-between rounded-2xl border-2 border-emerald-500/30 bg-emerald-50 px-4 py-3 shadow-sm dark:bg-emerald-500/10"
+        >
+          <div>
+            <p className="text-sm font-extrabold text-emerald-900 dark:text-emerald-300">
+              Not sure what it is?
+            </p>
+            <p className="text-xs font-medium text-emerald-800/80 dark:text-emerald-400/90">
+              Identify by symptom → Pest &amp; Disease Solver
+            </p>
+          </div>
+          <span className="text-lg font-bold text-emerald-600">→</span>
+        </Link>
+
         <section>
           <SectionHeading title={t("selectCropPrompt")} />
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">

@@ -25,6 +25,10 @@ import { useToast } from "@/components/ui/Toast";
 import SafeThumbnail from "@/components/ui/SafeThumbnail";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { AI_DOCTOR_CROPS } from "@/data/ai-doctor-crops";
+import {
+  consumePendingAiScan,
+  dataUrlToFile,
+} from "@/lib/pendingAiScan";
 
 const SCAN_STEPS = [
   "Gemini AI photo dekh raha hai...",
@@ -55,6 +59,62 @@ export default function AIDoctorPage() {
 
   useEffect(() => {
     checkAiDoctorConfigured().then(setAiConfigured);
+  }, []);
+
+  useEffect(() => {
+    const pending = consumePendingAiScan();
+    if (!pending) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const file = await dataUrlToFile(pending.dataUrl, pending.fileName);
+        if (cancelled) return;
+        setSelectedCrop(pending.cropSlug);
+        setSelectedFile(file);
+        setFileName(pending.fileName);
+        setPreviewUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return pending.dataUrl;
+        });
+        setResult(null);
+
+        if (pending.autoScan) {
+          setIsScanning(true);
+          setScanStep(0);
+          const stepInterval = setInterval(() => {
+            setScanStep((s) => Math.min(s + 1, SCAN_STEPS.length - 1));
+          }, 900);
+          try {
+            const diagnosis = await analyzePlantImage(file, pending.cropSlug);
+            if (!cancelled) {
+              setResult(diagnosis);
+              addEntry({
+                fileName: pending.fileName,
+                thumbnailUrl: pending.dataUrl,
+                result: diagnosis,
+              });
+              showToast("Gemini AI analysis complete ✓");
+            }
+          } catch (err) {
+            if (!cancelled) {
+              showToast(err instanceof Error ? err.message : "Analysis failed", "error");
+            }
+          } finally {
+            clearInterval(stepInterval);
+            if (!cancelled) setIsScanning(false);
+          }
+        }
+      } catch {
+        if (!cancelled) showToast("Could not load scanned photo", "error");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount for pending scan handoff
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
