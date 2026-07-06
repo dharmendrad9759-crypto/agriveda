@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { FlaskConical } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MapPin, Navigation, Search, Loader2, CloudSun, RefreshCw, Share2 } from "lucide-react";
 import {
@@ -127,7 +128,24 @@ export default function WeatherPage() {
           </h1>
           <p className="text-sm theme-text-muted">
             पहले लोकेशन चुनें — GPS permission सिर्फ़ बटन दबाने पर मांगी जाएगी।
+            डैशबोर्ड लोकेशन लोड होने के बाद नीचे दिखेगा।
           </p>
+
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/weather/spray-advisory"
+              className="inline-flex items-center gap-2 rounded-xl border border-indigo-300 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800 dark:bg-indigo-500/10 dark:text-indigo-300"
+            >
+              <FlaskConical className="h-4 w-4" />
+              स्प्रे सलाह (Tank-mix)
+            </Link>
+            <Link
+              href="/pest-solver"
+              className="inline-flex items-center gap-2 rounded-xl border border-fuchsia-300 bg-fuchsia-50 px-3 py-2 text-xs font-bold text-fuchsia-800 dark:bg-fuchsia-500/10 dark:text-fuchsia-300"
+            >
+              लक्षण से पहचान
+            </Link>
+          </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
             <button

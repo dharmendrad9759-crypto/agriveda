@@ -14,6 +14,7 @@
     "android:sync": "npx cap sync android",
     "android:open": "npx cap open android",
     "android:prepare": "powershell -ExecutionPolicy Bypass -File scripts/sync-android.ps1",
+    "android:fix": "powershell -ExecutionPolicy Bypass -File scripts/fix-android-url.ps1",
     "android:build": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1 assembleDebug",
     "android:gradle": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1"
   },

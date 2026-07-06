@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2, Phone, ShieldCheck, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -20,6 +20,16 @@ import {
 } from "@/lib/firebase/phoneAuth";
 
 type Step = "phone" | "otp" | "profile";
+
+const SKIP_ONBOARDING = process.env.NEXT_PUBLIC_SKIP_ONBOARDING === "true";
+
+const DEMO_PROFILE = {
+  phone: "9999999999",
+  name: "Demo Kisan",
+  village: "Demo Village",
+  district: "Aligarh",
+  state: "Uttar Pradesh",
+};
 
 export default function FarmerOnboardingGate({ children }: { children: React.ReactNode }) {
   const { profile, hydrated, completeOnboarding } = useFarmerProfile();
@@ -49,6 +59,16 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       setDistrict("");
     }
   };
+
+  const skipForDev = () => {
+    completeOnboarding(DEMO_PROFILE);
+    showToast("Demo mode — dashboard khula hai 🌾");
+  };
+
+  useEffect(() => {
+    if (!hydrated || profile.onboardingComplete || !SKIP_ONBOARDING) return;
+    completeOnboarding(DEMO_PROFILE);
+  }, [hydrated, profile.onboardingComplete, completeOnboarding]);
 
   if (!hydrated || profile.onboardingComplete) {
     return <>{children}</>;
@@ -319,6 +339,16 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
               <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm font-semibold text-red-600 dark:text-red-400">
                 {error}
               </p>
+            )}
+
+            {process.env.NODE_ENV === "development" && (
+              <button
+                type="button"
+                onClick={skipForDev}
+                className="w-full rounded-2xl border border-dashed border-gray-300 py-2.5 text-xs font-bold theme-text-muted hover:border-emerald-500 hover:text-emerald-700 dark:border-white/20"
+              >
+                बाद में — पहले dashboard देखें (dev skip)
+              </button>
             )}
           </div>
         </div>

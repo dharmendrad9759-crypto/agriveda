@@ -17,6 +17,11 @@ import {
   MessageCircleQuestion,
   Users,
   User,
+  Stethoscope,
+  LayoutDashboard,
+  Calendar,
+  Brain,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -38,6 +43,55 @@ export interface ServiceCategory {
 
 export const SERVICE_CATEGORIES: ServiceCategory[] = [
   {
+    id: "agriveda2",
+    titleKey: "toolDashboard",
+    subtitleKey: "homeSubtitle",
+    items: [
+      {
+        titleKey: "toolDashboard",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+        glow: "shadow-[0_0_18px_rgba(16,185,129,0.35)] border-emerald-400/30",
+      },
+      {
+        titleKey: "toolSeedCalc",
+        href: "/services/seed-calculator",
+        icon: Calculator,
+        glow: "shadow-[0_0_18px_rgba(251,191,36,0.35)] border-amber-400/30",
+      },
+      {
+        titleKey: "toolSowing",
+        href: "/sowing-window",
+        icon: Calendar,
+        glow: "shadow-[0_0_18px_rgba(56,189,248,0.35)] border-sky-400/30",
+      },
+      {
+        titleKey: "toolSmartCrop",
+        href: "/smart-crop",
+        icon: Brain,
+        glow: "shadow-[0_0_18px_rgba(139,92,246,0.35)] border-violet-400/30",
+      },
+      {
+        titleKey: "toolCropProblem",
+        href: "/crop-problem",
+        icon: Stethoscope,
+        glow: "shadow-[0_0_18px_rgba(217,70,239,0.35)] border-fuchsia-400/30",
+      },
+      {
+        titleKey: "toolKisanSaathi",
+        href: "/kisan-saathi",
+        icon: Sparkles,
+        glow: "shadow-[0_0_18px_rgba(0,255,136,0.35)] border-emerald-400/30",
+      },
+      {
+        titleKey: "toolAlerts",
+        href: "/alerts",
+        icon: Bell,
+        glow: "shadow-[0_0_18px_rgba(244,63,94,0.35)] border-rose-400/30",
+      },
+    ],
+  },
+  {
     id: "protection",
     titleKey: "svcProtectionHi",
     subtitleKey: "svcProtectionEn",
@@ -47,6 +101,12 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         href: "/pest-diseases",
         icon: Bug,
         glow: "shadow-[0_0_18px_rgba(239,68,68,0.35)] border-red-400/30",
+      },
+      {
+        titleKey: "toolPestSolver",
+        href: "/pest-solver",
+        icon: Stethoscope,
+        glow: "shadow-[0_0_18px_rgba(217,70,239,0.35)] border-fuchsia-400/30",
       },
       {
         titleKey: "toolOutbreak",
@@ -84,6 +144,12 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         href: "/weather",
         icon: CloudSun,
         glow: "shadow-[0_0_18px_rgba(250,204,21,0.3)] border-amber-400/30",
+      },
+      {
+        titleKey: "toolSprayAdvisory",
+        href: "/weather/spray-advisory",
+        icon: FlaskConical,
+        glow: "shadow-[0_0_18px_rgba(99,102,241,0.35)] border-indigo-400/30",
       },
     ],
   },

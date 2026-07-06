@@ -14,10 +14,15 @@ import {
   Radar,
   LayoutGrid,
   MessageCircleQuestion,
+  Stethoscope,
+  FlaskConical,
+  LayoutDashboard,
 } from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
+import FarmDashboard from "@/components/agriveda2/FarmDashboard";
+import Agriveda2Hub from "@/components/agriveda2/Agriveda2Hub";
 import SprayWindowCard from "@/components/spray-window/SprayWindowCard";
 import ServicesHubSheet from "@/components/home/ServicesHubSheet";
 import EmptyCropsCard from "@/components/home/EmptyCropsCard";
@@ -36,16 +41,28 @@ type ToolDef = {
 
 const TOOL_DEFS: ToolDef[] = [
   {
-    titleKey: "toolOutbreak",
-    icon: Radar,
-    href: "/pest-outbreak-radar",
-    tone: "from-rose-500/20 to-red-500/10 border-rose-500/30 text-rose-600",
+    titleKey: "toolDashboard",
+    icon: LayoutDashboard,
+    href: "/dashboard",
+    tone: "from-emerald-500/25 to-teal-500/10 border-emerald-500/40 text-emerald-700",
   },
   {
     titleKey: "toolPest",
     icon: Bug,
     href: "/pest-diseases",
     tone: "from-orange-500/20 to-amber-500/10 border-orange-500/30 text-orange-600",
+  },
+  {
+    titleKey: "toolPestSolver",
+    icon: Stethoscope,
+    href: "/pest-solver",
+    tone: "from-fuchsia-500/20 to-pink-500/10 border-fuchsia-500/30 text-fuchsia-700",
+  },
+  {
+    titleKey: "toolOutbreak",
+    icon: Radar,
+    href: "/pest-outbreak-radar",
+    tone: "from-rose-500/20 to-red-500/10 border-rose-500/30 text-rose-600",
   },
   {
     titleKey: "toolAi",
@@ -58,6 +75,12 @@ const TOOL_DEFS: ToolDef[] = [
     icon: CloudSun,
     href: "/weather",
     tone: "from-sky-500/20 to-cyan-500/10 border-sky-500/30 text-sky-600",
+  },
+  {
+    titleKey: "toolSprayAdvisory",
+    icon: FlaskConical,
+    href: "/weather/spray-advisory",
+    tone: "from-indigo-500/20 to-violet-500/10 border-indigo-500/30 text-indigo-700",
   },
   {
     titleKey: "toolMandi",
@@ -129,6 +152,14 @@ export default function Home() {
           )}
           <p className="mt-0.5 text-sm theme-text-muted">{t("homeSubtitle")}</p>
         </header>
+
+        <div className="animate-slide-up-soft" style={{ animationDelay: "40ms" }}>
+          <Agriveda2Hub />
+        </div>
+
+        <div className="animate-slide-up-soft" style={{ animationDelay: "50ms" }}>
+          <FarmDashboard compact />
+        </div>
 
         <div className="animate-slide-up-soft" style={{ animationDelay: "60ms" }}>
           <SprayWindowCard />
