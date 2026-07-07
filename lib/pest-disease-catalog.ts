@@ -1,6 +1,7 @@
 import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/data/pest-disease";
 import { getCropPestDisease } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES } from "@/data/pest-disease-details";
+import { findStageGuideForThreat } from "@/lib/cropProtectionGuide";
 import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-disease-ui";
 
 const GENERIC_STOCK = /unsplash\.com|placeholder|picsum|loremflickr/i;
@@ -48,12 +49,50 @@ function inferDiseaseCategory(pathogen: string, name: string): ThreatCategory {
   return "other";
 }
 
+function mergeStageGuide(
+  threat: EnrichedThreat,
+  threatType: ThreatType
+): EnrichedThreat {
+  const overrideKey = `${threat.cropSlug}-${threatType}-${threat.id}`;
+  const override = THREAT_DETAIL_OVERRIDES[overrideKey];
+
+  if (override?.stageSprays?.length) {
+    return {
+      ...threat,
+      stageSprays: override.stageSprays,
+      rotationNotes: override.rotationNotes ?? threat.rotationNotes,
+      stageExtraNotes: override.stageExtraNotes ?? threat.stageExtraNotes,
+      continuousHarvest: override.continuousHarvest ?? threat.continuousHarvest,
+    };
+  }
+
+  const guide = findStageGuideForThreat(
+    threat.cropSlug,
+    threatType,
+    threat.name,
+    threat.id
+  );
+  if (!guide?.stages.length) return threat;
+
+  const early = guide.stages.find((s) => s.stage === "early") ?? guide.stages[0];
+
+  return {
+    ...threat,
+    symptoms: guide.symptoms?.length ? guide.symptoms : threat.symptoms,
+    stageSprays: guide.stages,
+    rotationNotes: guide.rotationNotes,
+    stageExtraNotes: guide.extraNotes,
+    continuousHarvest: guide.continuousHarvest,
+    activeIngredient: threat.activeIngredient ?? `${early.chemistry} — ${early.dose}`,
+  };
+}
+
 function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
   const key = `${crop.slug}-pest-${pest.id}`;
   const override = THREAT_DETAIL_OVERRIDES[key];
   const category: ThreatCategory = "insect";
 
-  return {
+  const base: EnrichedThreat = {
     id: pest.id,
     cropSlug: crop.slug,
     cropName: crop.name,
@@ -81,6 +120,8 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
     activeIngredient: override?.activeIngredient ?? pest.control,
     etl: override?.etl,
   };
+
+  return mergeStageGuide(base, "pest");
 }
 
 function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): EnrichedThreat {
@@ -88,7 +129,7 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
   const override = THREAT_DETAIL_OVERRIDES[key];
   const category = override?.category ?? inferDiseaseCategory(disease.pathogen, disease.name);
 
-  return {
+  const base: EnrichedThreat = {
     id: disease.id,
     cropSlug: crop.slug,
     cropName: crop.name,
@@ -117,10 +158,12 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
     fracGroup: disease.fracGroup,
     activeIngredient: override?.activeIngredient ?? disease.control,
   };
+
+  return mergeStageGuide(base, "disease");
 }
 
 function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
-  return {
+  const base: EnrichedThreat = {
     id: weed.id,
     cropSlug: crop.slug,
     cropName: crop.name,
@@ -143,6 +186,8 @@ function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
       "Maintain weed-free field for first 45 days after sowing/transplanting",
     ],
   };
+
+  return mergeStageGuide(base, "weed");
 }
 
 export function getEnrichedCropThreats(slug: string): EnrichedThreat[] {

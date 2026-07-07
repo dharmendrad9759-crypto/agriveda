@@ -1,3 +1,4 @@
+import type { StageSprayRecommendation } from "@/types/crop-protection";
 import type { ThreatCategory } from "@/types/pest-disease-ui";
 
 /** Curated agricultural imagery — relevant stock photos per threat type */
@@ -29,6 +30,10 @@ export interface ThreatDetailOverride {
   remediation?: string[];
   activeIngredient?: string;
   etl?: string;
+  stageSprays?: StageSprayRecommendation[];
+  rotationNotes?: string;
+  stageExtraNotes?: string[];
+  continuousHarvest?: boolean;
 }
 
 /** Key: cropSlug-threatType-id e.g. potato-disease-d1 */

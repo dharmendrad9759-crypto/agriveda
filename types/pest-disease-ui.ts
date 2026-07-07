@@ -1,3 +1,5 @@
+import type { StageSprayRecommendation } from "@/types/crop-protection";
+
 export type ThreatCategory = "fungal" | "bacterial" | "viral" | "insect" | "weed" | "other";
 
 export type ThreatType = "pest" | "disease" | "weed";
@@ -20,6 +22,11 @@ export interface EnrichedThreat {
   fracGroup?: string;
   activeIngredient?: string;
   etl?: string;
+  /** Stage-wise spray ladder from Agriveda crop protection guide */
+  stageSprays?: StageSprayRecommendation[];
+  rotationNotes?: string;
+  stageExtraNotes?: string[];
+  continuousHarvest?: boolean;
 }
 
 export const CATEGORY_LABELS: Record<ThreatCategory, string> = {

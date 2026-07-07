@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import AppLink from "@/components/ui/AppLink";
 import { ArrowLeft, Bug, FlaskConical, Leaf, ShieldAlert, Sparkles } from "lucide-react";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
 import { CATEGORY_COLORS, CATEGORY_LABELS } from "@/types/pest-disease-ui";
@@ -9,6 +9,7 @@ import ThreatImage from "@/components/ui/ThreatImage";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
 import FarmerPhotoUpload from "@/components/pest-diseases/FarmerPhotoUpload";
+import StageWiseSprayCard from "@/components/pest-diseases/StageWiseSprayCard";
 import { readStorage } from "@/lib/storage";
 
 interface ThreatDetailClientProps {
@@ -26,18 +27,27 @@ export default function ThreatDetailClient({ threat }: ThreatDetailClientProps) 
   const TypeIcon =
     threat.type === "pest" ? Bug : threat.type === "disease" ? ShieldAlert : Leaf;
 
+  const stageGuide = threat.stageSprays?.length
+    ? {
+        stages: threat.stageSprays,
+        rotationNotes: threat.rotationNotes,
+        extraNotes: threat.stageExtraNotes,
+        continuousHarvest: threat.continuousHarvest,
+      }
+    : null;
+
   return (
     <div className="agriveda-page relative min-h-screen pb-28">
       <PageBackground />
 
       <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
-          <Link
+          <AppLink
             href={`/pest-diseases?crop=${threat.cropSlug}`}
             className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-emerald-600"
           >
             <ArrowLeft className="h-5 w-5" />
-          </Link>
+          </AppLink>
           <div className="min-w-0">
             <p className="truncate text-sm font-extrabold theme-text-primary">{threat.name}</p>
             <p className="text-[11px] theme-text-muted">
@@ -118,6 +128,25 @@ export default function ThreatDetailClient({ threat }: ThreatDetailClientProps) 
           </ul>
         </GlassCard>
 
+        {stageGuide && (
+          <GlassCard className="border-violet-500/20 bg-violet-500/5 p-4">
+            <h2 className="text-sm font-extrabold text-violet-900 dark:text-violet-200">
+              Stage-wise spray guide
+            </h2>
+            <p className="mt-1 text-[11px] theme-text-muted">
+              Early → Advanced escalation — CIB&RC label se verify karein
+            </p>
+            <div className="mt-3">
+              <StageWiseSprayCard
+                stages={stageGuide.stages}
+                rotationNotes={stageGuide.rotationNotes}
+                extraNotes={stageGuide.extraNotes}
+                continuousHarvest={stageGuide.continuousHarvest}
+              />
+            </div>
+          </GlassCard>
+        )}
+
         <GlassCard className="border-emerald-500/20 bg-emerald-500/5 p-4">
           <h2 className="text-sm font-extrabold text-emerald-800 dark:text-emerald-300">
             Remediation — actionable steps
@@ -155,13 +184,13 @@ export default function ThreatDetailClient({ threat }: ThreatDetailClientProps) 
           onUpload={setUserPhoto}
         />
 
-        <Link
+        <AppLink
           href={`/ai-doctor`}
           className="flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 py-3.5 text-sm font-bold text-emerald-700 dark:text-emerald-400"
         >
           <Sparkles className="h-4 w-4" />
           AI Doctor से confirm करें
-        </Link>
+        </AppLink>
       </article>
     </div>
   );
