@@ -39,7 +39,7 @@ export function useOutbreakRadar() {
       const key = `${cluster.cropId}:${cluster.threatType}:${cluster.pestOrDiseaseId}`;
       if (seenSet.has(key)) continue;
 
-      new Notification("⚠️ AgriVeda Outbreak Alert", {
+      new Notification("⚠️ Agriveda — outbreak alert", {
         body: `${cluster.threatName} outbreak reported nearby — check your ${cluster.cropName} fields. Tap for advisory.`,
         icon: "/favicon.ico",
         tag: `outbreak-${key}`,

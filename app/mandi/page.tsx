@@ -3,16 +3,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { BRAND } from "@/lib/brand";
 
 export default function MandiPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const mandiPrices = [
+    { crop: "गेहूँ (Wheat)", mandi: "मेरठ (उ.प्र.)", price: "₹2,275 - ₹2,400", unit: "क्विंटल", trend: "stable", change: "MSP" },
+    { crop: "सरसों (Mustard)", mandi: "बुलंदशहर (उ.प्र.)", price: "₹5,200 - ₹5,650", unit: "क्विंटल", trend: "up", change: "+₹180" },
     { crop: "टमाटर (Tomato)", mandi: "जयपुर (राज.)", price: "₹2,400 - ₹3,200", unit: "क्विंटल", trend: "up", change: "+₹250" },
     { crop: "धान (Paddy - Basmati)", mandi: "करनाल (हरियाणा)", price: "₹3,800 - ₹4,500", unit: "क्विंटल", trend: "up", change: "+₹120" },
     { crop: "मक्का (Maize)", mandi: "अलीगढ़ (उ.प्र.)", price: "₹1,950 - ₹2,200", unit: "क्विंटल", trend: "down", change: "-₹40" },
+    { crop: "सोयाबीन (Soybean)", mandi: "इंदौर (म.प्र.)", price: "₹4,100 - ₹4,450", unit: "क्विंटल", trend: "up", change: "+₹90" },
     { crop: "कपास (Cotton)", mandi: "झाबुआ (म.प्र.)", price: "₹6,800 - ₹7,500", unit: "क्विंटल", trend: "up", change: "+₹400" },
     { crop: "आलू (Potato)", mandi: "आगरा (उ.प्र.)", price: "₹1,200 - ₹1,600", unit: "क्विंटल", trend: "stable", change: "₹0" },
+    { crop: "चना (Gram)", mandi: "भोपाल (म.प्र.)", price: "₹5,400 - ₹5,800", unit: "क्विंटल", trend: "up", change: "+₹110" },
   ];
 
   // लाइव सर्च फिल्टरिंग लॉजिक
@@ -28,14 +33,14 @@ export default function MandiPage() {
         {/* ऊपर का हेडर */}
         <div className="space-y-2 border-b border-white/5 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400">
-              AGRIVEDA MARKET INTELLIGENCE
+            <span className="text-xs font-bold text-amber-400">
+              {BRAND}
             </span>
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mt-1">
-              मंडी भाव लाइव ट्रैकर
+              मंडी भाव
             </h1>
             <p className="text-sm md:text-base text-slate-400 max-w-xl">
-              देश की प्रमुख कृषि मंडियों के ताजा और सटीक भाव। स्मार्ट एल्गोरिदम के साथ दाम के उतार-चढ़ाव का विश्लेषण।
+              उत्तर भारत की प्रमुख मंडियों के ताज़ा भाव — फसल बेचने से पहले देखें।
             </p>
           </div>
 

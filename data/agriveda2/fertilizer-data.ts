@@ -200,6 +200,22 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     Fe: { dose: "FeSO4 10 kg/acre basal ya foliar agar chlorosis ho" },
     Si: { note: "Silica application (200 kg slag/acre) se stem borer resistance badhti hai" },
   },
+
+  "Bajra (Pearl Millet)": {
+    N: { total: 40, split: "Basal: 20 kg | 30 DAS: 20 kg" },
+    P: { total: 16, basal: 16 },
+    K: { total: 8, basal: 8 },
+    Zn: { total: 5, source: "ZnSO4 5 kg/acre basal" },
+    fertilizer_bags: { DAP: "35 kg", Urea: "44 kg (2 split)", MOP: "13 kg", ZnSO4_21: "5 kg" },
+  },
+
+  "Moong (Green Gram)": {
+    N: { total: 8, basal: 8, note: "Starter only — Rhizobium se baki N" },
+    P: { total: 16, basal: 16 },
+    K: { total: 8, basal: 8 },
+    Rhizobium: { essential: true, note: "Rhizobium culture 200g/10kg beej — zaroor" },
+    fertilizer_bags: { DAP: "35 kg", Urea: "18 kg", MOP: "13 kg" },
+  },
 };
 
 export const FERTILIZER_SOURCES = {

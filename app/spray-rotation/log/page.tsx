@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useAppNavigate } from "@/hooks/useAppNavigate";
 import { ArrowLeft, Plus, Search } from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
 import GlassCard from "@/components/ui/GlassCard";
@@ -22,7 +22,7 @@ const SPRAY_CROPS = cropCatalog.filter((c) =>
 );
 
 export default function LogSprayPage() {
-  const router = useRouter();
+  const navigate = useAppNavigate();
   const { locale, setLocale } = useSprayLocale();
   const { fields, addField } = useSprayFields();
   const { addLog, isOnline } = useSprayLogs();
@@ -67,7 +67,7 @@ export default function LogSprayPage() {
     });
     showToast(t(locale, "saved"));
     if (!isOnline) showToast(t(locale, "offlineNote"), "info");
-    router.push("/spray-rotation");
+    navigate("/spray-rotation");
   };
 
   const handleAddField = () => {

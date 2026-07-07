@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * AgriVeda loads the Next.js app inside a native WebView.
+ * Agriveda loads the Next.js app inside a native WebView.
  *
  * Set CAPACITOR_SERVER_URL to your running app:
  *  - Local phone test: http://YOUR_PC_LAN_IP:3000  (same Wi‑Fi)

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import AppLink from "@/components/ui/AppLink";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   X,
@@ -282,7 +282,7 @@ export default function ServicesHubSheet({ open, onClose }: ServicesHubSheetProp
                     {category.items.map((item) => {
                       const Icon = item.icon;
                       return (
-                        <Link
+                        <AppLink
                           key={item.href}
                           href={item.href}
                           onClick={onClose}
@@ -296,7 +296,7 @@ export default function ServicesHubSheet({ open, onClose }: ServicesHubSheetProp
                           <span className="max-w-[5.5rem] text-center text-[11px] font-bold leading-tight text-slate-100">
                             {t(item.titleKey)}
                           </span>
-                        </Link>
+                        </AppLink>
                       );
                     })}
                   </div>

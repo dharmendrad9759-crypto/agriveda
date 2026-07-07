@@ -14,6 +14,11 @@ export const THREAT_IMAGES = {
   soybean: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&h=400&fit=crop&q=80",
   paddy: "https://images.unsplash.com/photo-1536304575081-ff8c827fd69f?w=600&h=400&fit=crop&q=80",
   rust: "https://images.unsplash.com/photo-1622205313162-b1e0aafd392f?w=600&h=400&fit=crop&q=80",
+  wilting: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop&q=80",
+  fruitDamage: "https://images.unsplash.com/photo-1592921453113-2fdceb6e3c9f?w=600&h=400&fit=crop&q=80",
+  rootRot: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&h=400&fit=crop&q=80",
+  stemBorer: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&q=80",
+  aphid: "https://images.unsplash.com/photo-1592840067980-057d97d26f4a?w=600&h=400&fit=crop&q=80",
 } as const;
 
 export interface ThreatDetailOverride {

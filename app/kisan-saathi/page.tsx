@@ -7,7 +7,6 @@ export default function KisanSaathiPage() {
       title="Kisan Saathi"
       subtitle="मेरी फ़सल, मेरा डॉक्टर — 24/7 AI expert"
       backHref="/crop-problem"
-      badge="KISAN SAATHI"
     >
       <KisanSaathiChat />
     </Agriveda2Shell>

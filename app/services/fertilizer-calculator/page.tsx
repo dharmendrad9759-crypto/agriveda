@@ -3,70 +3,124 @@
 import { useMemo, useState } from "react";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
 import GlassCard from "@/components/ui/GlassCard";
-import { FERTILIZER_SLUGS } from "@/data/agriveda2/crop-slug-map";
 import { cropCatalog } from "@/data/crop-catalog";
-import { buildFertilizerPlan } from "@/lib/agriveda2/fertilizerEngine";
+import { buildFertilizerPlan, listFertilizerCrops } from "@/lib/agriveda2/fertilizerEngine";
 import { FERTILIZER_SOURCES } from "@/data/agriveda2/fertilizer-data";
+import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { getBighaInfo } from "@/lib/bighaConversion";
+
+const UNIT_LABELS: Record<AreaUnit, string> = {
+  acre: "एकड़ (Acre)",
+  bigha: "बीघा (Bigha)",
+  hectare: "हेक्टेयर (Hectare)",
+};
 
 export default function FertilizerCalculatorPage() {
-  const verified = cropCatalog.filter((c) =>
-    (FERTILIZER_SLUGS as readonly string[]).includes(c.slug)
+  const { profile } = useFarmerProfile();
+  const slugs = useMemo(() => listFertilizerCrops(), []);
+  const crops = cropCatalog.filter((c) => slugs.includes(c.slug));
+
+  const [slug, setSlug] = useState(crops[0]?.slug ?? "wheat");
+  const [area, setArea] = useState("1");
+  const [unit, setUnit] = useState<AreaUnit>("acre");
+
+  const bighaInfo = useMemo(
+    () => (unit === "bigha" ? getBighaInfo(profile.state, profile.district) : null),
+    [unit, profile.state, profile.district]
   );
-  const [slug, setSlug] = useState(verified[0]?.slug ?? "wheat");
-  const [acres, setAcres] = useState("1");
+
+  const acres = useMemo(() => {
+    const n = parseFloat(area);
+    if (!n || n <= 0) return 0;
+    return convertToAcres(n, unit, bighaInfo?.acresPerBigha);
+  }, [area, unit, bighaInfo?.acresPerBigha]);
 
   const plan = useMemo(() => {
-    const a = parseFloat(acres);
-    if (!a || a <= 0) return null;
-    return buildFertilizerPlan(slug, a);
+    if (!acres) return null;
+    return buildFertilizerPlan(slug, acres);
   }, [slug, acres]);
+
+  const selected = cropCatalog.find((c) => c.slug === slug);
 
   return (
     <Agriveda2Shell
       title="खाद कैलकुलेटर"
-      subtitle="N, P, K, Ca, Mg, S, Zn, Fe, B — ICAR verified"
+      subtitle="N, P, K, Ca, Mg, S, Zn, Fe, B — fasal ke hisaab se"
       backHref="/dashboard"
     >
       <GlassCard className="space-y-4 p-4">
+        <label className="block text-xs font-bold theme-text-muted">फसल</label>
         <select
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
-          className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm"
+          className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm font-semibold"
         >
-          {verified.map((c) => (
+          {crops.map((c) => (
             <option key={c.slug} value={c.slug}>
               {c.emoji} {c.name}
             </option>
           ))}
         </select>
-        <div>
-          <label className="text-xs font-bold theme-text-muted">Acres</label>
-          <input
-            type="number"
-            min="0.1"
-            step="0.1"
-            value={acres}
-            onChange={(e) => setAcres(e.target.value)}
-            className="theme-input mt-1 w-full rounded-xl border px-3 py-2 text-sm"
-          />
+
+        {selected && (
+          <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-800">
+            {selected.emoji} {selected.name} — niche poora poshan schedule
+          </p>
+        )}
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs font-bold theme-text-muted">खेत area</label>
+            <input
+              type="number"
+              min="0.1"
+              step="0.1"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+              className="theme-input mt-1 w-full rounded-xl border px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-bold theme-text-muted">Unit</label>
+            <select
+              value={unit}
+              onChange={(e) => setUnit(e.target.value as AreaUnit)}
+              className="theme-input mt-1 w-full rounded-xl border px-3 py-2 text-sm"
+            >
+              {(Object.keys(UNIT_LABELS) as AreaUnit[]).map((u) => (
+                <option key={u} value={u}>
+                  {UNIT_LABELS[u]}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+
+        {bighaInfo && (
+          <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200">
+            {profile.district ? `${profile.district}: ` : ""}
+            {bighaInfo.label} = {bighaInfo.acresPerBigha} एकड़
+          </p>
+        )}
 
         {plan && (
           <>
             <p className="rounded-lg bg-emerald-500/10 p-2 text-[10px] theme-text-muted">
               {plan.unitNote}
+              {plan.source === "guide" && " · ICAR crop guide (verified data jald add hoga)"}
             </p>
 
             <div>
               <p className="text-xs font-extrabold theme-text-primary">
-                🌱 Poshan — {plan.cropKey} ({plan.acres} acre)
+                🌱 Poshan — {plan.cropKey} ({area} {unit} ≈ {plan.acres} acre)
               </p>
               <div className="mt-2 overflow-x-auto">
                 <table className="w-full text-left text-[11px]">
                   <thead>
                     <tr className="border-b theme-text-muted">
                       <th className="py-1 pr-2">Nutrient</th>
-                      <th className="py-1">Detail (per acre basis)</th>
+                      <th className="py-1">Detail</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -108,24 +162,30 @@ export default function FertilizerCalculatorPage() {
               </div>
             )}
 
-            <details className="text-[10px] theme-text-muted">
-              <summary className="cursor-pointer font-bold theme-text-primary">
-                Conversion formulas
-              </summary>
-              <ul className="mt-2 space-y-2">
-                {Object.entries(FERTILIZER_SOURCES).map(([group, formulas]) => (
-                  <li key={group}>
-                    <span className="font-semibold">{group}:</span>
-                    {Object.entries(formulas).map(([name, formula]) => (
-                      <p key={name} className="ml-2">
-                        {name}: {formula}
-                      </p>
-                    ))}
-                  </li>
-                ))}
-              </ul>
-            </details>
+            {plan.source === "verified" && (
+              <details className="text-[10px] theme-text-muted">
+                <summary className="cursor-pointer font-bold theme-text-primary">
+                  Conversion formulas
+                </summary>
+                <ul className="mt-2 space-y-2">
+                  {Object.entries(FERTILIZER_SOURCES).map(([group, formulas]) => (
+                    <li key={group}>
+                      <span className="font-semibold">{group}:</span>
+                      {Object.entries(formulas).map(([name, formula]) => (
+                        <p key={name} className="ml-2">
+                          {name}: {formula}
+                        </p>
+                      ))}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
           </>
+        )}
+
+        {!plan && (
+          <p className="text-center text-sm theme-text-muted">Area daalein — khad plan yahan aayega</p>
         )}
       </GlassCard>
     </Agriveda2Shell>

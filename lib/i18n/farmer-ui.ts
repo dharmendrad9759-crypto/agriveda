@@ -1,4 +1,4 @@
-export type AppLocale = "en" | "hi";
+export type AppLocale = "en" | "hi" | "hinglish";
 
 /** Simple farmer-friendly UI strings (Hindi is plain spoken, not formal). */
 const STRINGS = {
@@ -288,6 +288,19 @@ const STRINGS = {
 
 export type FarmerUiKey = keyof (typeof STRINGS)["en"];
 
+const HINGLISH_OVERRIDES: Partial<Record<FarmerUiKey, string>> = {
+  chooseLanguage: "Language chunein",
+  langSwitchNote: "Hindi, English ya Hinglish — app ki bhasha badlegi",
+  langHindiHint: "Seedhi Hindi (Devanagari)",
+  langEnglishHint: "Simple English",
+  translateFabHint: "Bhasha badlein",
+  recentScans: "Haal ki scan",
+  clearHistory: "Saaf karein",
+};
+
 export function t(locale: AppLocale, key: FarmerUiKey): string {
-  return STRINGS[locale][key] ?? STRINGS.en[key];
+  if (locale === "hinglish") {
+    return HINGLISH_OVERRIDES[key] ?? STRINGS.hi[key] ?? STRINGS.en[key];
+  }
+  return STRINGS[locale as "en" | "hi"][key] ?? STRINGS.en[key];
 }

@@ -1,5 +1,6 @@
 import { getCropManagementProfile } from "@/data/crop-management";
-import { getSeedRateForSlug } from "@/data/agriveda2/seed-rate-data";
+import { getBighaInfo } from "@/lib/bighaConversion";
+import { resolveSeedRateEntry } from "@/lib/agriveda2/seedRateFallback";
 import { dataKeyForSlug, SLUG_TO_DATA_KEY } from "@/data/agriveda2/crop-slug-map";
 import { SEED_RATE_DATA } from "@/data/agriveda2/seed-rate-data";
 
@@ -34,35 +35,53 @@ export interface SeedCalculatorResult {
   availableMethods: { id: string; label: string }[];
 }
 
-export function convertToAcres(value: number, unit: AreaUnit): number {
-  return Math.round(value * UNIT_TO_ACRE[unit] * 100) / 100;
+export function convertToAcres(
+  value: number,
+  unit: AreaUnit,
+  bighaAcresPerUnit?: number
+): number {
+  const factor =
+    unit === "bigha" ? (bighaAcresPerUnit ?? UNIT_TO_ACRE.bigha) : UNIT_TO_ACRE[unit];
+  return Math.round(value * factor * 100) / 100;
 }
 
 export function buildSeedCalculatorResult(
   cropSlug: string,
   areaValue: number,
   unit: AreaUnit,
-  methodId?: string
+  methodId?: string,
+  location?: { state?: string; district?: string }
 ): SeedCalculatorResult | null {
-  const seedData = getSeedRateForSlug(cropSlug);
+  const seedData = resolveSeedRateEntry(cropSlug);
   const profile = getCropManagementProfile(cropSlug);
-  const cropKey = dataKeyForSlug(cropSlug);
-  if (!seedData || !cropKey) return null;
+  const cropKey = dataKeyForSlug(cropSlug) ?? profile?.name ?? cropSlug;
+  if (!seedData) return null;
 
   const method =
     seedData.methods.find((m) => m.id === methodId) ?? seedData.methods[0];
   if (!method) return null;
 
-  const areaAcres = convertToAcres(areaValue, unit);
+  const bighaInfo =
+    unit === "bigha" ? getBighaInfo(location?.state, location?.district) : null;
+  const areaAcres = convertToAcres(
+    areaValue,
+    unit,
+    bighaInfo?.acresPerBigha
+  );
   const mid = (method.min + method.max) / 2;
   const round = (n: number) => Math.round(n * 10) / 10;
+
+  const areaDisplay =
+    unit === "bigha" && bighaInfo
+      ? `${areaValue} bigha (≈ ${areaAcres} acre) — ${bighaInfo.label}`
+      : `${areaValue} ${unit} (≈ ${areaAcres} acre)`;
 
   return {
     cropName: profile?.name ?? cropKey,
     cropDataKey: cropKey,
     varietyHint: profile?.seedSelection?.[0] ?? "Certified hybrid / improved variety",
     areaAcres,
-    areaDisplay: `${areaValue} ${unit} (≈ ${areaAcres} acre)`,
+    areaDisplay,
     methodId: method.id,
     methodLabel: method.label,
     perAcreMin: method.min,
@@ -118,6 +137,10 @@ export function parseVoiceArea(text: string): { value: number; unit: AreaUnit; c
   }
 
   return { value, unit, cropHint };
+}
+
+export function getDefaultMethodId(cropSlug: string): string | undefined {
+  return resolveSeedRateEntry(cropSlug)?.methods[0]?.id;
 }
 
 export function cropsWithSeedData(): string[] {

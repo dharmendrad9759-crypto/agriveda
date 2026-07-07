@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cropsData, type Crop as CropData } from "@/data/crops";
+import { BRAND } from "@/lib/brand";
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,14 +25,14 @@ export default function SearchPage() {
         
         {/* हेडर सेक्शन */}
         <div className="space-y-2 text-center">
-          <span className="inline-flex items-center rounded-full bg-blue-500/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-blue-400 border border-blue-500/20">
-            AGRIVEDA CORE ENGINE
+          <span className="inline-flex items-center rounded-full bg-blue-500/10 px-3 py-1 text-xs font-bold text-blue-400 border border-blue-500/20">
+            {BRAND}
           </span>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mt-2">
-            ग्लोबल सर्च इंजन
+            फसल खोजें
           </h1>
           <p className="text-sm md:text-base text-slate-400 max-w-xl mx-auto">
-            फसल, बीमारी, कीट, पोषक तत्वों की कमी या विशिष्ट रसायनों (Chemicals) को एक क्लिक में खोजें।
+            फसल, बीमारी, कीट या खाद — नाम लिखकर तुरंत खोजें।
           </p>
         </div>
 

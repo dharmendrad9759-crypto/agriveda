@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import AppLink from "@/components/ui/AppLink";
 import { usePathname } from "next/navigation";
 import { User } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
+import { BRAND } from "@/lib/brand";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -20,18 +21,18 @@ export default function Navbar() {
     <nav className="agriveda-topbar sticky top-0 z-50 w-full border-b border-emerald-500/10 bg-[var(--background)]/95 backdrop-blur-xl">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-12 items-center justify-between gap-3 sm:h-14">
-          <Link href="/" className="flex items-center">
-            <span className="text-base font-black tracking-widest agriveda-gradient-text sm:text-lg">
-              AGRIVEDA
+          <AppLink href="/" className="flex items-center">
+            <span className="text-base font-black tracking-wide agriveda-gradient-text sm:text-lg">
+              {BRAND}
             </span>
-          </Link>
+          </AppLink>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="hidden items-center gap-1 md:flex">
               {navItems.map((item) => {
                 const isActive = pathname === item.path;
                 return (
-                  <Link
+                  <AppLink
                     key={item.path}
                     href={item.path}
                     className={`rounded-lg px-2.5 py-1.5 text-[10px] font-bold tracking-wider transition-all ${
@@ -41,11 +42,11 @@ export default function Navbar() {
                     }`}
                   >
                     {item.name}
-                  </Link>
+                  </AppLink>
                 );
               })}
             </div>
-            <Link
+            <AppLink
               href="/profile"
               className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
                 pathname === "/profile"
@@ -55,7 +56,7 @@ export default function Navbar() {
               aria-label="Profile"
             >
               <User className="h-5 w-5" />
-            </Link>
+            </AppLink>
             <ThemeToggle />
           </div>
         </div>

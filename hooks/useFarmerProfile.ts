@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
 import { readStorage, writeStorage } from "@/lib/storage";
 
 export interface FarmerProfile {
@@ -39,12 +40,27 @@ function normalizeProfile(raw: Partial<FarmerProfile>): FarmerProfile {
   };
 }
 
+function loadProfileFromStorage(): FarmerProfile {
+  if (typeof window === "undefined") return DEFAULT;
+
+  const stored = normalizeProfile(readStorage(KEY, DEFAULT));
+  if (stored.onboardingComplete) return stored;
+
+  if (shouldAutoSkipOnboarding()) {
+    const demo = normalizeProfile({ ...stored, ...DEMO_FARMER_PROFILE });
+    writeStorage(KEY, demo);
+    return demo;
+  }
+
+  return stored;
+}
+
 export function useFarmerProfile() {
   const [profile, setProfile] = useState<FarmerProfile>(DEFAULT);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setProfile(normalizeProfile(readStorage(KEY, DEFAULT)));
+    setProfile(loadProfileFromStorage());
     setHydrated(true);
   }, []);
 

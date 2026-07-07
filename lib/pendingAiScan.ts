@@ -16,16 +16,46 @@ export function savePendingAiScan(payload: PendingAiScan): void {
   }
 }
 
-export function consumePendingAiScan(): PendingAiScan | null {
+export function peekPendingAiScan(): PendingAiScan | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    sessionStorage.removeItem(STORAGE_KEY);
     return JSON.parse(raw) as PendingAiScan;
   } catch {
     return null;
   }
+}
+
+export function clearPendingAiScan(): void {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(STORAGE_KEY);
+}
+
+const SCAN_LOCK_KEY = "agriveda-pending-scan-lock";
+
+/** Claim pending scan once (safe under React Strict Mode double-mount). */
+export function claimPendingAiScan(): PendingAiScan | null {
+  const pending = peekPendingAiScan();
+  if (!pending) return null;
+  if (typeof window !== "undefined" && sessionStorage.getItem(SCAN_LOCK_KEY)) {
+    return null;
+  }
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem(SCAN_LOCK_KEY, "1");
+  }
+  clearPendingAiScan();
+  return pending;
+}
+
+export function releasePendingScanLock(): void {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(SCAN_LOCK_KEY);
+}
+
+/** @deprecated Use claimPendingAiScan — kept for compatibility */
+export function consumePendingAiScan(): PendingAiScan | null {
+  return claimPendingAiScan();
 }
 
 export async function fileToDataUrl(file: File): Promise<string> {

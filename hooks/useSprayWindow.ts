@@ -44,7 +44,7 @@ export function useSprayWindow() {
       );
 
       if (prev === "AVOID" && nextStatus === "GOOD" && !notifiedRef.current) {
-        new Notification("AgriVeda Spray Window", {
+        new Notification("Agriveda — spray window", {
           body: "Conditions improved — it may be safe to spray now. Open the app to confirm.",
           icon: "/favicon.ico",
           tag: "spray-window-good",

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import AppLink from "@/components/ui/AppLink";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   AlertTriangle,
@@ -68,12 +68,12 @@ export default function FarmDashboard({ compact = false }: { compact?: boolean }
           <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">
             मेरा खेत
           </p>
-          <h2 className="text-lg font-extrabold theme-text-primary">Farm Command Center</h2>
+          <h2 className="text-lg font-extrabold theme-text-primary">मेरा खेत</h2>
         </div>
         {!compact && (
-          <Link href="/alerts" className="text-xs font-bold text-emerald-600">
+          <AppLink href="/alerts" className="text-xs font-bold text-emerald-600">
             {totalAlerts} alerts →
-          </Link>
+          </AppLink>
         )}
       </div>
 
@@ -92,12 +92,12 @@ export default function FarmDashboard({ compact = false }: { compact?: boolean }
                   {field.areaAcres ? ` · ${field.areaAcres} acre` : ""}
                 </p>
               </div>
-              <Link
+              <AppLink
                 href={`/crop-details/${field.cropSlug}`}
                 className="rounded-lg bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-700"
               >
                 Guide
-              </Link>
+              </AppLink>
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
@@ -129,10 +129,10 @@ export default function FarmDashboard({ compact = false }: { compact?: boolean }
 
       {!compact && (
         <div className="grid grid-cols-2 gap-2">
-          <QuickLink href="/services/seed-calculator" icon={<Sprout className="h-4 w-4" />} label="बीज कैलकुलेटर" />
-          <QuickLink href="/sowing-window" icon={<Droplets className="h-4 w-4" />} label="बुआई समय" />
-          <QuickLink href="/smart-crop" icon={<Sprout className="h-4 w-4" />} label="Smart crop" />
-          <QuickLink href="/crop-problem" icon={<AlertTriangle className="h-4 w-4" />} label="समस्या → समाधान" />
+          <QuickAppLink href="/services/seed-calculator" icon={<Sprout className="h-4 w-4" />} label="बीज कैलकुलेटर" />
+          <QuickAppLink href="/sowing-window" icon={<Droplets className="h-4 w-4" />} label="बुआई समय" />
+          <QuickAppLink href="/smart-crop" icon={<Sprout className="h-4 w-4" />} label="Smart crop" />
+          <QuickAppLink href="/crop-problem" icon={<AlertTriangle className="h-4 w-4" />} label="समस्या → समाधान" />
         </div>
       )}
     </div>
@@ -159,12 +159,12 @@ function AlertRow({ alert }: { alert: FarmAlert }) {
   );
 
   if (alert.actionHref) {
-    return <Link href={alert.actionHref}>{inner}</Link>;
+    return <AppLink href={alert.actionHref}>{inner}</AppLink>;
   }
   return inner;
 }
 
-function QuickLink({
+function QuickAppLink({
   href,
   icon,
   label,
@@ -174,12 +174,12 @@ function QuickLink({
   label: string;
 }) {
   return (
-    <Link
+    <AppLink
       href={href}
       className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-3 text-xs font-bold text-emerald-800"
     >
       {icon}
       {label}
-    </Link>
+    </AppLink>
   );
 }

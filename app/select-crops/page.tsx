@@ -1,16 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useAppNavigate } from "@/hooks/useAppNavigate";
+import AppLink from "@/components/ui/AppLink";
 import { Check, ArrowLeft } from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import { cn } from "@/lib/cn";
 import { categoryOrder, getCropsByCategory, type CatalogCrop } from "@/data/crop-catalog";
 import { useMyCrops, MAX_MY_CROPS } from "@/hooks/useMyCrops";
 
 export default function SelectCropsPage() {
-  const router = useRouter();
+  const navigate = useAppNavigate();
   const { crops, isSelected, toggleCrop, canAddMore } = useMyCrops();
   const grouped = getCropsByCategory();
 
@@ -20,12 +19,12 @@ export default function SelectCropsPage() {
 
       <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
-          <Link
+          <AppLink
             href="/"
             className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-emerald-400"
           >
             <ArrowLeft className="h-5 w-5" />
-          </Link>
+          </AppLink>
           <div className="flex-1">
             <h1 className="text-base font-extrabold theme-text-primary">Select Your Crops</h1>
             <p className="text-[11px] theme-text-muted">
@@ -67,14 +66,12 @@ export default function SelectCropsPage() {
 
         <button
           type="button"
-          onClick={() => router.push("/")}
+          onClick={() => navigate("/")}
           className="w-full rounded-2xl border border-emerald-500/40 bg-emerald-500/15 py-4 text-sm font-black text-emerald-400 shadow-[0_0_20px_rgba(0,255,136,0.15)] transition-all hover:shadow-[0_0_28px_rgba(0,255,136,0.25)]"
         >
           Save & Go to Home ({crops.length} selected)
         </button>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

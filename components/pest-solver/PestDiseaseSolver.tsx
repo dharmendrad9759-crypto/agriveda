@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useAppNavigate } from "@/hooks/useAppNavigate";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, type ChangeEvent } from "react";
 import {
@@ -28,6 +29,7 @@ import { useToast } from "@/components/ui/Toast";
 type View = "categories" | "list" | "detail";
 
 export default function PestDiseaseSolver() {
+  const navigate = useAppNavigate();
   const router = useRouter();
   const { showToast } = useToast();
   const { crops } = useMyCrops();
@@ -89,7 +91,7 @@ export default function PestDiseaseSolver() {
         cropSlug,
         autoScan: true,
       });
-      router.push("/ai-doctor");
+      navigate("/ai-doctor");
     } catch {
       showToast("Could not process photo", "error");
     } finally {

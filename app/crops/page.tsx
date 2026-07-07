@@ -1,6 +1,7 @@
 // app/crops/page.tsx
 import { crops } from "@/data/crops";
 import CropCard from "@/components/CropCard";
+import { BRAND } from "@/lib/brand";
 
 export default function CropsPage() {
   return (
@@ -9,8 +10,8 @@ export default function CropsPage() {
         
         {/* HEADER SECTION */}
         <div className="border-b border-white/5 pb-6">
-          <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-400 border border-emerald-500/20">
-            AGRIVEDA CROP ENGINE
+          <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
+            {BRAND}
           </span>
           <h1 className="mt-2 text-3xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
             सभी वैज्ञानिक फसल प्रणालियाँ

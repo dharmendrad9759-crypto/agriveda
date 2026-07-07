@@ -11,7 +11,7 @@ export const metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "AgriVeda",
+    title: "Agriveda",
   },
   icons: {
     icon: [

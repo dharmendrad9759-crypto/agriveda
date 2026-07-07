@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import AppLink from "@/components/ui/AppLink";
 import {
   Bell,
   Brain,
@@ -12,62 +12,63 @@ import {
   Stethoscope,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import { BRAND } from "@/lib/brand";
 
 const MODULES = [
   {
     href: "/dashboard",
     icon: LayoutDashboard,
     title: "मेरा खेत",
-    desc: "सभी खेत · alerts · stage",
+    desc: "फसल, stage, alerts",
     glow: "from-emerald-500/25 to-teal-500/10 border-emerald-400/40",
   },
   {
     href: "/services/seed-calculator",
     icon: Calculator,
     title: "बीज कैलकुलेटर",
-    desc: "Area → exact seed kg",
+    desc: "ज़िले के हिसाब से बीघा → kg",
     glow: "from-amber-500/20 to-yellow-500/10 border-amber-400/40",
   },
   {
     href: "/sowing-window",
     icon: Calendar,
     title: "बुआई समय",
-    desc: "Green Window Alert",
+    desc: "सही समय — हरा/पीला/लाल",
     glow: "from-sky-500/20 to-cyan-500/10 border-sky-400/40",
   },
   {
     href: "/smart-crop",
     icon: Brain,
     title: "Smart Crop",
-    desc: "5-layer profit ranking",
+    desc: "ज़िले में किस फसल में फायदा",
     glow: "from-violet-500/20 to-indigo-500/10 border-violet-400/40",
   },
   {
     href: "/crop-problem",
     icon: Stethoscope,
     title: "समस्या → समाधान",
-    desc: "Photo · Voice · Symptoms",
+    desc: "Photo · लक्षण · Chat",
     glow: "from-fuchsia-500/20 to-pink-500/10 border-fuchsia-400/40",
   },
   {
     href: "/kisan-saathi",
     icon: Sparkles,
     title: "Kisan Saathi",
-    desc: "24/7 AI chat doctor",
+    desc: "छोटे, सटीक AI जवाब",
     glow: "from-emerald-500/20 to-lime-500/10 border-lime-400/40",
   },
   {
     href: "/alerts",
     icon: Bell,
-    title: "Predictive Alerts",
-    desc: "3–5 दिन पहले warning",
+    title: "खेत अलर्ट",
+    desc: "3–5 दिन पहले चेतावनी",
     glow: "from-rose-500/20 to-red-500/10 border-rose-400/40",
   },
   {
     href: "/services/fertilizer-calculator",
     icon: Sprout,
     title: "खाद कैलकुलेटर",
-    desc: "NPK by acre",
+    desc: "NPK — एकड़/बीघा के हिसाब",
     glow: "from-lime-500/20 to-green-500/10 border-lime-400/40",
   },
 ];
@@ -77,24 +78,24 @@ export default function Agriveda2Hub() {
     <section>
       <div className="mb-3 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-500">
-            AGRIVEDA 2.0
+          <p className="text-[10px] font-bold tracking-wide text-emerald-500">
+            {BRAND}
           </p>
           <h2 className="text-lg font-extrabold theme-text-primary">
             मेरी फ़सल, मेरा डॉक्टर
           </h2>
-          <p className="text-xs theme-text-muted">Reactive नहीं — Predictive</p>
+          <p className="text-xs theme-text-muted">फसल, मौसम, कीट — सब एक जगह</p>
         </div>
-        <Link href="/dashboard" className="text-xs font-bold text-emerald-600">
+        <AppLink href="/dashboard" className="text-xs font-bold text-emerald-600">
           Full dashboard →
-        </Link>
+        </AppLink>
       </div>
 
       <div className="grid grid-cols-2 gap-2.5">
         {MODULES.map((m) => {
           const Icon = m.icon;
           return (
-            <Link key={m.href} href={m.href}>
+            <AppLink key={m.href} href={m.href}>
               <GlassCard
                 hover
                 className={`h-full border bg-gradient-to-br p-3.5 ${m.glow}`}
@@ -105,7 +106,7 @@ export default function Agriveda2Hub() {
                 </p>
                 <p className="mt-0.5 text-[10px] theme-text-muted">{m.desc}</p>
               </GlassCard>
-            </Link>
+            </AppLink>
           );
         })}
       </div>

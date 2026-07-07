@@ -15,6 +15,7 @@ import { getSavedWeatherLocation } from "@/lib/sprayWeatherApi";
 import { shareText } from "@/lib/shareText";
 import { useToast } from "@/components/ui/Toast";
 import FarmWeatherDashboard from "@/components/weather/FarmWeatherDashboard";
+import { BRAND } from "@/lib/brand";
 
 export default function WeatherPage() {
   const { showToast } = useToast();
@@ -120,8 +121,8 @@ export default function WeatherPage() {
     <main className="agriveda-page min-h-screen px-4 py-8 pb-28">
       <div className="mx-auto max-w-6xl space-y-8">
         <div className="space-y-4 border-b border-gray-200/20 pb-6">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
-            AGRIVEDA WEATHER
+          <span className="text-xs font-bold text-emerald-600">
+            {BRAND}
           </span>
           <h1 className="text-3xl font-extrabold theme-text-primary md:text-4xl">
             मौसम पूर्वानुमान

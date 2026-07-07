@@ -9,6 +9,8 @@ export interface SaathiMessage {
   content: string;
 }
 
+export type ReplyLanguage = "en" | "hi" | "hinglish";
+
 export interface SaathiContext {
   cropSlug?: string;
   cropName?: string;
@@ -16,6 +18,21 @@ export interface SaathiContext {
   state?: string;
   village?: string;
   lastDiagnosis?: string;
+  replyLanguage?: ReplyLanguage;
+}
+
+function languageRules(lang: ReplyLanguage = "hinglish"): string {
+  switch (lang) {
+    case "hi":
+      return `LANGUAGE: Jawab SIRF seedhi Devanagari Hindi mein do.
+STYLE: Bahut chhota — max 5 bullet points, har point 1 line. Lambi kahani, paragraph ya greeting mat do. Sirf kaam ki baat — dose, samay, product naam.`;
+    case "en":
+      return `LANGUAGE: Reply ONLY in simple English for farmers.
+STYLE: Very short — max 5 bullet points, one line each. No long chat. Only actionable facts — dose, timing, product name.`;
+    default:
+      return `LANGUAGE: Jawab Roman Hinglish mein do (Hindi + English mix, jaise kisan bolte hain).
+STYLE: Bahut chhota — max 5 bullet points. Lambi chat mat likho. Seedha point — dose, samay, dawai naam.`;
+  }
 }
 
 export async function chatWithKisanSaathi(
@@ -35,7 +52,10 @@ export async function chatWithKisanSaathi(
       })
     : "";
 
+  const lang = context.replyLanguage ?? "hinglish";
   const system = `${KISAN_SAATHI_SYSTEM_PROMPT}
+
+${languageRules(lang)}
 
 Farmer context (use for location-sensitive advice):
 - Crop: ${context.cropName ?? context.cropSlug ?? "not specified"}
@@ -62,7 +82,7 @@ ${knowledge ? `Knowledge base excerpts:\n${knowledge}` : ""}`;
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents,
-            generationConfig: { temperature: 0.65, maxOutputTokens: 2048 },
+            generationConfig: { temperature: 0.55, maxOutputTokens: 512 },
           }),
         }
       );

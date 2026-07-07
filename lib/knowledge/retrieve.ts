@@ -24,7 +24,7 @@ export function buildKnowledgeContext(input: {
     )
     .join("\n\n");
 
-  return `AGRIVEDA KNOWLEDGE BASE (ICAR PoP, NFSM, IRAC/HRAC guides — use for accurate doses):\n\n${body}`;
+  return `Agriveda knowledge base (ICAR PoP, NFSM, IRAC/HRAC guides — use for accurate doses):\n\n${body}`;
 }
 
 export function retrieveTopChunks(input: {

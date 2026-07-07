@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Leaf, Sprout, FlaskConical, Droplets, ShieldCheck, Tractor, PackageCheck, Wheat, ChevronRight } from "lucide-react";
 import cropsData, { type Crop as CropData } from "@/data/crops";
+import { BRAND } from "@/lib/brand";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -38,7 +39,7 @@ export default async function CropDetailPage({ params }: Props) {
           <div className="relative z-10 space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-200">
               <Leaf className="h-3.5 w-3.5" />
-              {crop.category} • AGRIVEDA FARM GUIDE
+              {crop.category} • {BRAND}
             </div>
             <div className="space-y-2">
               <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">{crop.name}</h1>

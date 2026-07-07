@@ -26,7 +26,7 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 function readInitialLocale(): AppLocale {
   const stored = readStorage<AppLocale | null>(LOCALE_KEY, null);
-  if (stored === "en" || stored === "hi") return stored;
+  if (stored === "en" || stored === "hi" || stored === "hinglish") return stored;
 
   try {
     const legacy = localStorage.getItem(LEGACY_TRANSLATE_KEY);
@@ -39,34 +39,23 @@ function readInitialLocale(): AppLocale {
   return "en";
 }
 
-function clearGoogleTranslateCookies() {
-  const expire = "expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-  document.cookie = `googtrans=; ${expire}`;
-  const host = window.location.hostname;
-  if (host && host !== "localhost") {
-    document.cookie = `googtrans=; ${expire}; domain=${host}`;
-  }
-}
-
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<AppLocale>("en");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setLocaleState(readInitialLocale());
-    clearGoogleTranslateCookies();
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    document.documentElement.lang = locale === "hi" ? "hi" : "en";
+    document.documentElement.lang = locale === "en" ? "en" : "hi";
   }, [locale, hydrated]);
 
   const setLocale = useCallback((next: AppLocale) => {
     setLocaleState(next);
     writeStorage(LOCALE_KEY, next);
-    clearGoogleTranslateCookies();
   }, []);
 
   const value = useMemo(

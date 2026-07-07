@@ -1,4 +1,4 @@
-/** Map app crop slugs ↔ verified AGRIVEDA 2.1 dataset keys */
+/** Map app crop slugs ↔ verified dataset keys */
 export const SLUG_TO_DATA_KEY: Record<string, string> = {
   paddy: "Dhan (Paddy)",
   wheat: "Gehun (Wheat)",
@@ -47,6 +47,8 @@ export const FERTILIZER_SLUGS = [
   "mustard",
   "pulses",
   "soybean",
+  "bajra",
+  "moong",
   "potato",
   "tomato",
   "brinjal",

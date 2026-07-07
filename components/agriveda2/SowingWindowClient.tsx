@@ -65,11 +65,15 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
       </select>
 
       <GlassCard className={`border-2 p-5 ${STATUS_STYLE[result.status]}`}>
-        <p className="text-xs font-black uppercase tracking-wider">Buwai Ka Samay — v2.1</p>
+        <p className="text-xs font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+          बुआई का सही समय
+        </p>
         <h2 className="mt-2 text-xl font-black">{result.title}</h2>
         <p className="mt-2 flex items-center gap-1 text-xs font-bold">
           <MapPin className="h-3.5 w-3.5" />
-          Region: {result.regionKey}
+          {profile.district && profile.state
+            ? `${profile.district}, ${profile.state}`
+            : result.regionKey}
           {result.season ? ` · ${result.season}` : ""}
         </p>
         <p className="mt-2 text-sm leading-relaxed">{result.messageHi}</p>

@@ -3,10 +3,9 @@
 import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useAppNavigate } from "@/hooks/useAppNavigate";
 import { ArrowLeft, Camera, Loader2, Upload } from "lucide-react";
 import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import { cropCatalog } from "@/data/crop-catalog";
 import { getCropPestDisease } from "@/data/pest-disease";
 import { useReportOutbreak } from "@/hooks/useReportOutbreak";
@@ -20,7 +19,7 @@ const OutbreakMap = dynamic(() => import("@/components/outbreak-radar/OutbreakMa
 });
 
 export default function ReportOutbreakPage() {
-  const router = useRouter();
+  const navigate = useAppNavigate();
   const { showToast } = useToast();
   const { submit, submitting } = useReportOutbreak();
 
@@ -87,7 +86,7 @@ export default function ReportOutbreakPage() {
 
     if (res) {
       showToast("Outbreak report submitted ✓");
-      router.push("/pest-outbreak-radar");
+      navigate("/pest-outbreak-radar");
     }
   };
 
@@ -223,8 +222,6 @@ export default function ReportOutbreakPage() {
           Submit report
         </button>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

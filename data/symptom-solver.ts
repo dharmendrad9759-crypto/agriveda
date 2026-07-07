@@ -585,6 +585,139 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
       },
     ],
   },
+  {
+    id: "wilting-drooping",
+    label: "Wilting / Drooping",
+    description: "Paudha murjha gaya, stem soft, root problem",
+    icon: TrendingDown,
+    accent: "from-orange-100 to-red-50 border-orange-200",
+    issues: [
+      {
+        id: "root-rot",
+        name: "Root Rot / Damping Off",
+        severity: "high",
+        image: THREAT_IMAGES.rootRot,
+        diagnosis:
+          "Over-watering, poor drainage, or fungal pathogens (Pythium, Rhizoctonia) cause roots to turn brown and plants to wilt even with wet soil.",
+        immediateActions: [
+          "Stop irrigation for 2–3 days; improve drainage channels.",
+          "Drench with Metalaxyl-M + Mancozeb or Validamycin as per label.",
+          "Remove severely affected plants to stop spread.",
+        ],
+        prevention: [
+          "Treat seeds with Trichoderma before sowing.",
+          "Avoid waterlogging — especially in nursery and early stage.",
+        ],
+      },
+      {
+        id: "wilt-bacterial",
+        name: "Bacterial Wilt",
+        severity: "high",
+        image: THREAT_IMAGES.wilting,
+        cropSlugs: ["tomato", "bhindi", "chilli"],
+        diagnosis:
+          "Sudden wilting of entire plant with no leaf yellowing first. Cut stem — white bacterial ooze may appear in water.",
+        immediateActions: [
+          "Uproot and destroy affected plants — do not compost.",
+          "Spray Streptocycline 0.05% on nearby healthy plants.",
+          "Rotate crop — avoid solanaceous crops in same field next season.",
+        ],
+        prevention: [
+          "Use wilt-resistant varieties where available.",
+          "Soil solarization before transplanting in problem fields.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "fruit-flower-damage",
+    label: "Fruit / Flower Damage",
+    description: "Fruit pe daag, flower girta hai, size kam",
+    icon: CircleDot,
+    accent: "from-pink-100 to-rose-50 border-pink-200",
+    issues: [
+      {
+        id: "fruit-borer",
+        name: "Fruit Borer",
+        severity: "high",
+        image: THREAT_IMAGES.fruitDamage,
+        cropSlugs: ["tomato", "bhindi", "chilli"],
+        diagnosis:
+          "Holes in fruits with frass, premature fruit drop, or internal feeding damage — common in tomato, okra, and chilli.",
+        immediateActions: [
+          "Collect and destroy damaged fruits.",
+          "Spray Emamectin benzoate 5% SG @ 0.4 g/L or Spinosad as per label.",
+          "Spray in evening; repeat after 10 days if needed.",
+        ],
+        prevention: [
+          "Install pheromone traps (5/acre) before flowering.",
+          "Remove crop residue after harvest.",
+        ],
+      },
+      {
+        id: "blossom-end-rot",
+        name: "Blossom End Rot",
+        severity: "medium",
+        image: THREAT_IMAGES.tomato,
+        cropSlugs: ["tomato"],
+        diagnosis:
+          "Dark sunken patch at blossom end of tomato — calcium imbalance, irregular watering, not a fungal disease.",
+        immediateActions: [
+          "Maintain even soil moisture — mulch around plants.",
+          "Foliar spray Calcium nitrate 1% weekly for 2–3 sprays.",
+          "Avoid excess nitrogen which worsens the problem.",
+        ],
+        prevention: [
+          "Soil test and apply gypsum if calcium is low.",
+          "Irrigate regularly during fruit set stage.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "insect-chewing",
+    label: "Insects / Chewing Pests",
+    description: "Patti kaat di, holes, caterpillar dikhe",
+    icon: Target,
+    accent: "from-amber-100 to-yellow-50 border-amber-200",
+    issues: [
+      {
+        id: "aphid-infestation",
+        name: "Aphid Attack",
+        severity: "medium",
+        image: THREAT_IMAGES.aphid,
+        diagnosis:
+          "Clusters of small soft insects under leaves, sticky honeydew, curled leaves, and sooty mould on vegetables and cereals.",
+        immediateActions: [
+          "Spray Imidacloprid 17.8% SL @ 0.3 ml/L or Neem oil 1% in evening.",
+          "Release ladybird beetles if available (IPM).",
+          "Avoid broad-spectrum sprays that kill natural enemies.",
+        ],
+        prevention: [
+          "Yellow sticky traps (5/acre) for early detection.",
+          "Avoid excess nitrogen which attracts aphids.",
+        ],
+      },
+      {
+        id: "stem-borer-maize",
+        name: "Stem Borer (Maize/Cotton)",
+        severity: "high",
+        image: THREAT_IMAGES.stemBorer,
+        cropSlugs: ["maize", "cotton"],
+        diagnosis:
+          "Dead heart in maize centre, bore holes in stem, frass visible — larvae feed inside stem.",
+        immediateActions: [
+          "Apply granular Chlorantraniliprole on leaf whorl in maize.",
+          "Release Trichogramma cards @ 50,000/ha at egg-laying stage.",
+          "Remove and destroy plants with dead heart.",
+        ],
+        prevention: [
+          "Early sowing to escape peak pest population.",
+          "Light trap (1/acre) to monitor adult moths.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getSymptomCategory(id: string): SymptomCategory | undefined {

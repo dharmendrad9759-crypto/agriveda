@@ -6,9 +6,14 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
 
-const OPTIONS: { locale: AppLocale; label: string; hintKey: "langHindiHint" | "langEnglishHint" }[] = [
-  { locale: "en", label: "English", hintKey: "langEnglishHint" },
-  { locale: "hi", label: "सरल हिंदी", hintKey: "langHindiHint" },
+const OPTIONS: {
+  locale: AppLocale;
+  label: string;
+  hint: string;
+}[] = [
+  { locale: "en", label: "English", hint: "Simple English — AI bhi English" },
+  { locale: "hi", label: "सरल हिंदी", hint: "पूरी app + AI जवाब Hindi में" },
+  { locale: "hinglish", label: "Hinglish", hint: "Hindi + English mix — short jawab" },
 ];
 
 export default function LanguageSwitcher() {
@@ -67,7 +72,7 @@ export default function LanguageSwitcher() {
                     <span>
                       {opt.label}
                       <span className="mt-0.5 block text-[10px] font-medium theme-text-muted">
-                        {t(opt.hintKey)}
+                        {opt.hint}
                       </span>
                     </span>
                     {locale === opt.locale && <Check className="h-4 w-4 text-emerald-500" />}

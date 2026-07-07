@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Capacitor } from "@capacitor/core";
 import { Loader2, Phone, ShieldCheck, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -18,23 +19,15 @@ import {
   verifyFirebasePhoneOtp,
   firebaseAuthError,
 } from "@/lib/firebase/phoneAuth";
+import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
 
 type Step = "phone" | "otp" | "profile";
-
-const SKIP_ONBOARDING = process.env.NEXT_PUBLIC_SKIP_ONBOARDING === "true";
-
-const DEMO_PROFILE = {
-  phone: "9999999999",
-  name: "Demo Kisan",
-  village: "Demo Village",
-  district: "Aligarh",
-  state: "Uttar Pradesh",
-};
 
 export default function FarmerOnboardingGate({ children }: { children: React.ReactNode }) {
   const { profile, hydrated, completeOnboarding } = useFarmerProfile();
   const { showToast } = useToast();
   const useFirebase = isFirebaseConfigured();
+  const isNativeApp = Capacitor.isNativePlatform();
 
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
@@ -61,16 +54,16 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   };
 
   const skipForDev = () => {
-    completeOnboarding(DEMO_PROFILE);
+    completeOnboarding(DEMO_FARMER_PROFILE);
     showToast("Demo mode — dashboard khula hai 🌾");
   };
 
   useEffect(() => {
-    if (!hydrated || profile.onboardingComplete || !SKIP_ONBOARDING) return;
-    completeOnboarding(DEMO_PROFILE);
+    if (!hydrated || profile.onboardingComplete || !shouldAutoSkipOnboarding()) return;
+    completeOnboarding(DEMO_FARMER_PROFILE);
   }, [hydrated, profile.onboardingComplete, completeOnboarding]);
 
-  if (!hydrated || profile.onboardingComplete) {
+  if (!hydrated || profile.onboardingComplete || shouldAutoSkipOnboarding()) {
     return <>{children}</>;
   }
 
@@ -171,188 +164,174 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   };
 
   return (
-    <>
-      {children}
-      <div className="fixed inset-0 z-[200] flex items-end justify-center bg-black/70 p-4 sm:items-center">
-        <div
-          role="dialog"
-          aria-modal
-          aria-label="Farmer registration"
-          className="w-full max-w-md overflow-hidden rounded-3xl border border-emerald-500/25 bg-[var(--background)] shadow-2xl"
-        >
-          <div className="border-b border-emerald-500/15 bg-emerald-600 px-6 py-5 text-white">
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-100">
-              Agriveda
-            </p>
-            <h2 className="mt-1 text-xl font-black">किसान पंजीकरण</h2>
-            <p className="mt-1 text-sm text-emerald-50/90">
-              {step === "phone" && "पहले मोबाइल नंबर verify करें"}
-              {step === "otp" && "SMS OTP डालकर verify करें"}
-              {step === "profile" && "अपनी जानकारी भरें"}
-            </p>
-          </div>
+    <div className="fixed inset-0 z-[200] flex items-end justify-center bg-[#030712] p-4 sm:items-center">
+      <div
+        role="dialog"
+        aria-modal
+        aria-label="Farmer registration"
+        className="w-full max-w-md overflow-hidden rounded-3xl border border-emerald-500/25 bg-[var(--background)] shadow-2xl"
+      >
+        <div className="border-b border-emerald-500/15 bg-emerald-600 px-6 py-5 text-white">
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-100">
+            Agriveda
+          </p>
+          <h2 className="mt-1 text-xl font-black">किसान पंजीकरण</h2>
+          <p className="mt-1 text-sm text-emerald-50/90">
+            {step === "phone" && "पहले मोबाइल नंबर verify करें"}
+            {step === "otp" && "SMS OTP डालकर verify करें"}
+            {step === "profile" && "अपनी जानकारी भरें"}
+          </p>
+        </div>
 
-          <div className="space-y-4 p-6">
-            {/* Firebase invisible reCAPTCHA */}
-            <div id={RECAPTCHA_CONTAINER_ID} className="min-h-px" />
+        <div className="space-y-4 p-6">
+          <div id={RECAPTCHA_CONTAINER_ID} className="min-h-px" />
 
-            {step === "phone" && (
-              <>
-                {!useFirebase && (
-                  <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-200">
-                    Firebase config नहीं मिला — टेस्ट OTP mode चलेगा। `.env.local` में Firebase keys
-                    add करें।
-                  </p>
-                )}
-                <label className="block">
-                  <span className="mb-2 flex items-center gap-2 text-xs font-bold theme-text-muted">
-                    <Phone className="h-4 w-4" />
-                    मोबाइल नंबर
-                  </span>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    maxLength={10}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    placeholder="10 अंकों का नंबर"
-                    className="theme-input w-full rounded-2xl border px-4 py-3 text-lg font-bold tracking-widest outline-none focus:border-emerald-500"
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={sendOtp}
-                  disabled={loading || phone.length !== 10}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white disabled:opacity-50"
-                >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  OTP भेजें
-                </button>
-              </>
-            )}
-
-            {step === "otp" && (
-              <>
-                <p className="text-sm theme-text-muted">
-                  +91 {phone} पर OTP भेजा गया
+          {step === "phone" && (
+            <>
+              {!useFirebase && (
+                <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-200">
+                  Firebase config नहीं मिला — टेस्ट OTP mode चलेगा।
                 </p>
-                {demoOtp && (
-                  <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-center text-sm font-bold text-amber-700 dark:text-amber-300">
-                    टेस्ट OTP: {demoOtp}
-                  </p>
-                )}
-                {useFirebase && (
-                  <p className="text-[11px] theme-text-muted">
-                    Firebase test number ho to Console में set kiya hua OTP daalein.
-                  </p>
-                )}
-                <label className="block">
-                  <span className="mb-2 flex items-center gap-2 text-xs font-bold theme-text-muted">
-                    <ShieldCheck className="h-4 w-4" />
-                    6 अंकों का OTP
-                  </span>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="• • • • • •"
-                    className="theme-input w-full rounded-2xl border px-4 py-3 text-center text-2xl font-black tracking-[0.5em] outline-none focus:border-emerald-500"
-                  />
-                </label>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setStep("phone")}
-                    className="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-bold theme-text-muted dark:border-white/10"
-                  >
-                    वापस
-                  </button>
-                  <button
-                    type="button"
-                    onClick={verifyOtp}
-                    disabled={loading || otp.length !== 6}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3 text-sm font-black text-white disabled:opacity-50"
-                  >
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                    Verify करें
-                  </button>
-                </div>
-              </>
-            )}
-
-            {step === "profile" && (
-              <>
-                <label className="block">
-                  <span className="mb-1 flex items-center gap-2 text-xs font-bold theme-text-muted">
-                    <User className="h-4 w-4" />
-                    नाम
-                  </span>
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="आपका नाम"
-                    className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1 text-xs font-bold theme-text-muted">गाँव</span>
-                  <input
-                    value={village}
-                    onChange={(e) => setVillage(e.target.value)}
-                    placeholder="अपने गाँव का नाम"
-                    className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
-                  />
-                </label>
-                <SearchableSelect
-                  label="राज्य"
-                  placeholder="राज्य search करें (जैसे Uttar Pradesh)"
-                  value={state}
-                  onChange={handleStateChange}
-                  options={INDIAN_STATES}
-                  emptyHint="राज्य नहीं मिला — English में नाम लिखकर search करें"
+              )}
+              <label className="block">
+                <span className="mb-2 flex items-center gap-2 text-xs font-bold theme-text-muted">
+                  <Phone className="h-4 w-4" />
+                  मोबाइल नंबर
+                </span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  placeholder="10 अंकों का नंबर"
+                  className="theme-input w-full rounded-2xl border px-4 py-3 text-lg font-bold tracking-widest outline-none focus:border-emerald-500"
                 />
-                <SearchableSelect
-                  key={`onboard-district-${state}`}
-                  label="ज़िला"
-                  placeholder={
-                    state ? "ज़िला search करें (जैसे Aligarh)" : "पहले राज्य चुनें"
-                  }
-                  value={district}
-                  onChange={setDistrict}
-                  options={districtOptions}
-                  disabled={!isValidState(state)}
-                  emptyHint="ज़िला नहीं मिला — English में नाम लिखकर search करें"
-                />
-                <button
-                  type="button"
-                  onClick={finishProfile}
-                  className="w-full rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white"
-                >
-                  शुरू करें
-                </button>
-              </>
-            )}
-
-            {error && (
-              <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm font-semibold text-red-600 dark:text-red-400">
-                {error}
-              </p>
-            )}
-
-            {process.env.NODE_ENV === "development" && (
+              </label>
               <button
                 type="button"
-                onClick={skipForDev}
-                className="w-full rounded-2xl border border-dashed border-gray-300 py-2.5 text-xs font-bold theme-text-muted hover:border-emerald-500 hover:text-emerald-700 dark:border-white/20"
+                onClick={sendOtp}
+                disabled={loading || phone.length !== 10}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white disabled:opacity-50"
               >
-                बाद में — पहले dashboard देखें (dev skip)
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                OTP भेजें
               </button>
-            )}
-          </div>
+            </>
+          )}
+
+          {step === "otp" && (
+            <>
+              <p className="text-sm theme-text-muted">+91 {phone} पर OTP भेजा गया</p>
+              {demoOtp && (
+                <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-center text-sm font-bold text-amber-700 dark:text-amber-300">
+                  टेस्ट OTP: {demoOtp}
+                </p>
+              )}
+              <label className="block">
+                <span className="mb-2 flex items-center gap-2 text-xs font-bold theme-text-muted">
+                  <ShieldCheck className="h-4 w-4" />
+                  6 अंकों का OTP
+                </span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  placeholder="• • • • • •"
+                  className="theme-input w-full rounded-2xl border px-4 py-3 text-center text-2xl font-black tracking-[0.5em] outline-none focus:border-emerald-500"
+                />
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setStep("phone")}
+                  className="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-bold theme-text-muted dark:border-white/10"
+                >
+                  वापस
+                </button>
+                <button
+                  type="button"
+                  onClick={verifyOtp}
+                  disabled={loading || otp.length !== 6}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3 text-sm font-black text-white disabled:opacity-50"
+                >
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  Verify करें
+                </button>
+              </div>
+            </>
+          )}
+
+          {step === "profile" && (
+            <>
+              <label className="block">
+                <span className="mb-1 flex items-center gap-2 text-xs font-bold theme-text-muted">
+                  <User className="h-4 w-4" />
+                  नाम
+                </span>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="आपका नाम"
+                  className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 text-xs font-bold theme-text-muted">गाँव</span>
+                <input
+                  value={village}
+                  onChange={(e) => setVillage(e.target.value)}
+                  placeholder="अपने गाँव का नाम"
+                  className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                />
+              </label>
+              <SearchableSelect
+                label="राज्य"
+                placeholder="राज्य search करें"
+                value={state}
+                onChange={handleStateChange}
+                options={INDIAN_STATES}
+                emptyHint="राज्य नहीं मिला"
+              />
+              <SearchableSelect
+                key={`onboard-district-${state}`}
+                label="ज़िला"
+                placeholder={state ? "ज़िला search करें" : "पहले राज्य चुनें"}
+                value={district}
+                onChange={setDistrict}
+                options={districtOptions}
+                disabled={!isValidState(state)}
+                emptyHint="ज़िला नहीं मिला"
+              />
+              <button
+                type="button"
+                onClick={finishProfile}
+                className="w-full rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white"
+              >
+                शुरू करें
+              </button>
+            </>
+          )}
+
+          {error && (
+            <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm font-semibold text-red-600 dark:text-red-400">
+              {error}
+            </p>
+          )}
+
+          {(process.env.NODE_ENV === "development" || isNativeApp) && (
+            <button
+              type="button"
+              onClick={skipForDev}
+              className="w-full rounded-2xl border border-dashed border-emerald-400/50 py-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-300"
+            >
+              बाद में — पहले app explore करें
+            </button>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

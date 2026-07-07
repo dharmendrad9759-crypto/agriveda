@@ -105,7 +105,10 @@ export function rankCropsForFarmer(options: {
         else if (match === "avoid") score -= 10;
       }
 
-      if (options.district) {
+      if (options.district && options.state) {
+        score += 8;
+        reasons.push(`${options.district}, ${options.state} — aapke ilake ka verified data`);
+      } else if (options.district) {
         score += 5;
         reasons.push(`${options.district} — North India verified data`);
       }

@@ -26,8 +26,9 @@ import SafeThumbnail from "@/components/ui/SafeThumbnail";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { AI_DOCTOR_CROPS } from "@/data/ai-doctor-crops";
 import {
-  consumePendingAiScan,
+  claimPendingAiScan,
   dataUrlToFile,
+  releasePendingScanLock,
 } from "@/lib/pendingAiScan";
 
 const SCAN_STEPS = [
@@ -62,7 +63,7 @@ export default function AIDoctorPage() {
   }, []);
 
   useEffect(() => {
-    const pending = consumePendingAiScan();
+    const pending = claimPendingAiScan();
     if (!pending) return;
 
     let cancelled = false;
@@ -75,10 +76,11 @@ export default function AIDoctorPage() {
         setSelectedFile(file);
         setFileName(pending.fileName);
         setPreviewUrl((prev) => {
-          if (prev) URL.revokeObjectURL(prev);
+          if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
           return pending.dataUrl;
         });
         setResult(null);
+        setShowHistory(false);
 
         if (pending.autoScan) {
           setIsScanning(true);
@@ -104,10 +106,14 @@ export default function AIDoctorPage() {
           } finally {
             clearInterval(stepInterval);
             if (!cancelled) setIsScanning(false);
+            releasePendingScanLock();
           }
+        } else {
+          releasePendingScanLock();
         }
       } catch {
         if (!cancelled) showToast("Could not load scanned photo", "error");
+        releasePendingScanLock();
       }
     })();
 
@@ -116,6 +122,16 @@ export default function AIDoctorPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount for pending scan handoff
   }, []);
+
+  const openHistoryEntry = (entry: (typeof history)[0]) => {
+    setResult(entry.result);
+    setPreviewUrl(entry.thumbnailUrl);
+    setFileName(entry.fileName);
+    setSelectedFile(null);
+    setShowHistory(false);
+    setShowWhy(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -171,14 +187,13 @@ export default function AIDoctorPage() {
     <main className="agriveda-page min-h-screen px-4 py-8 pb-28 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
         <section className="agriveda-glass-strong rounded-[28px] p-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-emerald-500">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-600">
             <Sparkles className="h-3.5 w-3.5" />
-            {aiConfigured ? "GOOGLE GEMINI AI" : "GEMINI SETUP REQUIRED"}
+            {aiConfigured ? "AI सक्रिय" : "AI सेटअप ज़रूरी"}
           </div>
-          <h1 className="mt-3 text-3xl font-black theme-text-primary">AI Plant Doctor</h1>
+          <h1 className="mt-3 text-3xl font-black theme-text-primary">फसल डॉक्टर</h1>
           <p className="mt-2 text-sm theme-text-muted">
-            Photo upload करें — <strong>Google Gemini</strong> asli photo dekhega aur batayega{" "}
-            <strong>क्या</strong> है, <strong>क्यों</strong> hua, aur <strong>क्या करें</strong>.
+            पत्ती या फसल की फोटो डालें — बीमारी की पहचान, कारण और इलाज एक जगह मिलेगा।
           </p>
           {aiConfigured === false && (
             <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-800 dark:text-amber-200">
@@ -417,19 +432,29 @@ export default function AIDoctorPage() {
             {showHistory && (
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {history.slice(0, 6).map((h) => (
-                  <GlassCard key={h.id} className="flex gap-3 p-3">
-                    <SafeThumbnail
-                      src={h.thumbnailUrl}
-                      alt={h.fileName}
-                      className="h-14 w-14 rounded-lg"
-                    />
-                    <div>
-                      <p className="text-xs font-bold theme-text-primary">{h.result.diseaseName}</p>
-                      <p className="text-[10px] theme-text-muted">
-                        {new Date(h.timestamp).toLocaleDateString("en-IN")} • {h.result.confidence}%
-                      </p>
-                    </div>
-                  </GlassCard>
+                  <button
+                    key={h.id}
+                    type="button"
+                    onClick={() => openHistoryEntry(h)}
+                    className="text-left"
+                  >
+                    <GlassCard className="flex gap-3 p-3 transition hover:ring-2 hover:ring-emerald-500/40">
+                      <SafeThumbnail
+                        src={h.thumbnailUrl}
+                        alt={h.fileName}
+                        className="h-14 w-14 rounded-lg"
+                      />
+                      <div>
+                        <p className="text-xs font-bold theme-text-primary">{h.result.diseaseName}</p>
+                        <p className="text-[10px] theme-text-muted">
+                          {new Date(h.timestamp).toLocaleDateString("en-IN")} • {h.result.confidence}%
+                        </p>
+                        <p className="mt-0.5 text-[10px] font-bold text-emerald-600">
+                          Tap karke detail dekhein →
+                        </p>
+                      </div>
+                    </GlassCard>
+                  </button>
                 ))}
               </div>
             )}

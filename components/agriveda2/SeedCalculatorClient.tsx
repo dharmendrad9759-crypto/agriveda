@@ -1,40 +1,67 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Calculator, Mic, Sprout, Info } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Calculator, Mic, Sprout, Info, Leaf } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { cropCatalog } from "@/data/crop-catalog";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
+import { getBighaInfo } from "@/lib/bighaConversion";
+import { resolveSeedRateEntry } from "@/lib/agriveda2/seedRateFallback";
 import {
   buildSeedCalculatorResult,
+  getDefaultMethodId,
   parseVoiceArea,
   type AreaUnit,
 } from "@/lib/agriveda2/seedCalculatorEngine";
-import { SLUG_TO_DATA_KEY } from "@/data/agriveda2/crop-slug-map";
-import { SEED_RATE_DATA } from "@/data/agriveda2/seed-rate-data";
 
-const VERIFIED_SLUGS = Object.keys(SLUG_TO_DATA_KEY).filter(
-  (slug) => SEED_RATE_DATA[SLUG_TO_DATA_KEY[slug]!]
-);
+const UNIT_LABELS: Record<AreaUnit, string> = {
+  acre: "एकड़ (Acre)",
+  bigha: "बीघा (Bigha)",
+  hectare: "हेक्टेयर (Hectare)",
+};
 
 export default function SeedCalculatorClient() {
   const { crops } = useMyCrops();
+  const { profile } = useFarmerProfile();
+  const catalogWithData = useMemo(
+    () => cropCatalog.filter((c) => resolveSeedRateEntry(c.slug)),
+    []
+  );
+
   const defaultSlug =
-    crops.find((c) => VERIFIED_SLUGS.includes(c.slug))?.slug ??
-    VERIFIED_SLUGS[0] ??
+    crops.find((c) => resolveSeedRateEntry(c.slug))?.slug ??
+    catalogWithData[0]?.slug ??
     "wheat";
 
   const [cropSlug, setCropSlug] = useState(defaultSlug);
-  const [methodId, setMethodId] = useState<string | undefined>();
-  const [area, setArea] = useState("2.3");
+  const [methodId, setMethodId] = useState<string | undefined>(() =>
+    getDefaultMethodId(defaultSlug)
+  );
+  const [area, setArea] = useState("2");
   const [unit, setUnit] = useState<AreaUnit>("acre");
   const [voiceText, setVoiceText] = useState("");
+
+  useEffect(() => {
+    setMethodId(getDefaultMethodId(cropSlug));
+  }, [cropSlug]);
+
+  const entry = useMemo(() => resolveSeedRateEntry(cropSlug), [cropSlug]);
+  const activeMethodId = methodId ?? entry?.methods[0]?.id;
 
   const result = useMemo(() => {
     const n = parseFloat(area);
     if (!n || n <= 0) return null;
-    return buildSeedCalculatorResult(cropSlug, n, unit, methodId);
-  }, [cropSlug, area, unit, methodId]);
+    return buildSeedCalculatorResult(cropSlug, n, unit, activeMethodId, {
+      state: profile.state,
+      district: profile.district,
+    });
+  }, [cropSlug, area, unit, activeMethodId, profile.state, profile.district]);
+
+  const bighaInfo = useMemo(
+    () => (unit === "bigha" ? getBighaInfo(profile.state, profile.district) : null),
+    [unit, profile.state, profile.district]
+  );
 
   const applyVoice = () => {
     const parsed = parseVoiceArea(voiceText);
@@ -44,45 +71,59 @@ export default function SeedCalculatorClient() {
     if (parsed.cropHint) setCropSlug(parsed.cropHint);
   };
 
-  const catalogFiltered = cropCatalog.filter((c) => VERIFIED_SLUGS.includes(c.slug));
+  const selectedCrop = cropCatalog.find((c) => c.slug === cropSlug);
 
   return (
     <div className="space-y-5">
       <GlassCard neon className="p-4">
-        <p className="text-sm font-bold theme-text-primary">
-          खेत का area — slider ya voice se
-        </p>
+        <p className="text-sm font-bold theme-text-primary">बीज कैलकुलेटर</p>
         <p className="mt-1 text-xs theme-text-muted">
-          ICAR verified seed rate — kg/acre, gram/acre, quintal/acre
+          फसल चुनें, तरीका और खेत का area — बीज kg अपने आप निकलेगा। बीघा आपके ज़िले के हिसाब से।
         </p>
+
+        {!profile.district && unit === "bigha" && (
+          <p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200">
+            सही बीघा के लिए प्रोफ़ाइल में राज्य/ज़िला सेट करें।
+          </p>
+        )}
 
         <label className="mt-4 block text-xs font-bold theme-text-muted">फसल</label>
         <select
           value={cropSlug}
-          onChange={(e) => {
-            setCropSlug(e.target.value);
-            setMethodId(undefined);
-          }}
-          className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
+          onChange={(e) => setCropSlug(e.target.value)}
+          className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-semibold"
         >
-          {catalogFiltered.map((c) => (
+          {catalogWithData.map((c) => (
             <option key={c.slug} value={c.slug}>
               {c.emoji} {c.name}
             </option>
           ))}
         </select>
 
-        {result && result.availableMethods.length > 1 && (
+        {selectedCrop && entry && (
+          <div className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-2 text-xs">
+            <Leaf className="h-4 w-4 text-emerald-600" />
+            <span className="font-bold theme-text-primary">
+              {selectedCrop.emoji} {selectedCrop.name}
+            </span>
+            <span className="theme-text-muted">— {entry.methods.length} buwai option</span>
+          </div>
+        )}
+
+        {entry && entry.methods.length > 0 && (
           <>
-            <label className="mt-4 block text-xs font-bold theme-text-muted">Buwai method</label>
+            <label className="mt-4 block text-xs font-bold theme-text-muted">
+              बुवाई / बीज का तरीका ({selectedCrop?.name})
+            </label>
             <select
-              value={result.methodId}
+              value={activeMethodId ?? ""}
               onChange={(e) => setMethodId(e.target.value)}
               className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
             >
-              {result.availableMethods.map((m) => (
+              {entry.methods.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.label}
+                  {m.note ? ` — ${m.note}` : ""}
                 </option>
               ))}
             </select>
@@ -91,7 +132,7 @@ export default function SeedCalculatorClient() {
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-bold theme-text-muted">Area</label>
+            <label className="text-xs font-bold theme-text-muted">खेत का area</label>
             <input
               type="number"
               min="0.1"
@@ -108,19 +149,28 @@ export default function SeedCalculatorClient() {
               onChange={(e) => setUnit(e.target.value as AreaUnit)}
               className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
             >
-              <option value="acre">Acre</option>
-              <option value="bigha">Bigha</option>
-              <option value="hectare">Hectare</option>
+              {(Object.keys(UNIT_LABELS) as AreaUnit[]).map((u) => (
+                <option key={u} value={u}>
+                  {UNIT_LABELS[u]}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
+        {bighaInfo && (
+          <p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200">
+            {profile.district ? `${profile.district}: ` : ""}
+            {bighaInfo.label} = {bighaInfo.acresPerBigha} एकड़ — {bighaInfo.note}
+          </p>
+        )}
+
         <input
           type="range"
           min="0.5"
-          max="10"
+          max="15"
           step="0.1"
-          value={Math.min(10, parseFloat(area) || 1)}
+          value={Math.min(15, parseFloat(area) || 1)}
           onChange={(e) => setArea(e.target.value)}
           className="mt-4 w-full accent-emerald-600"
         />
@@ -136,29 +186,31 @@ export default function SeedCalculatorClient() {
           <button
             type="button"
             onClick={applyVoice}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white active:scale-95"
+            aria-label="Voice command"
           >
             <Mic className="h-4 w-4" />
           </button>
         </div>
       </GlassCard>
 
-      {result && (
+      {result ? (
         <GlassCard neon className="space-y-3 p-5">
           <div className="flex items-center gap-2 text-emerald-600">
             <Calculator className="h-5 w-5" />
-            <span className="text-sm font-extrabold">Verified seed package</span>
+            <span className="text-sm font-extrabold">
+              {result.cropName} — {result.methodLabel}
+            </span>
           </div>
           <ul className="space-y-2 text-sm theme-text-primary">
             <li>
               ✅ <strong>Variety:</strong> {result.varietyHint}
             </li>
             <li>
-              ✅ <strong>बीज दर ({result.methodLabel}):</strong> {result.perAcreMin}–{result.perAcreMax}{" "}
-              {result.unit}
+              ✅ <strong>बीज दर:</strong> {result.perAcreMin}–{result.perAcreMax} {result.unit}
             </li>
             <li>
-              ✅ <strong>{result.areaDisplay} ke liye:</strong>{" "}
+              ✅ <strong>{result.areaDisplay} ke liye total:</strong>{" "}
               <span className="text-lg font-black text-emerald-600">
                 {result.totalSeedMin}–{result.totalSeedMax}
               </span>{" "}
@@ -185,10 +237,14 @@ export default function SeedCalculatorClient() {
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
             <p className="flex items-center gap-2 text-xs font-bold text-emerald-700">
               <Sprout className="h-4 w-4" />
-              Seed treatment (verified)
+              Seed treatment
             </p>
             <p className="mt-1 text-xs theme-text-muted">{result.seedTreatment}</p>
           </div>
+        </GlassCard>
+      ) : (
+        <GlassCard className="p-4 text-center text-sm theme-text-muted">
+          Area daalein — result yahan dikhega
         </GlassCard>
       )}
     </div>

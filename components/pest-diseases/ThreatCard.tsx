@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useAppNavigate } from "@/hooks/useAppNavigate";
+import AppLink from "@/components/ui/AppLink";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
 import { CATEGORY_COLORS, CATEGORY_LABELS } from "@/types/pest-disease-ui";
 import { threatDetailPath } from "@/lib/pest-disease-catalog";
@@ -15,14 +15,14 @@ interface ThreatCardProps {
 }
 
 export default function ThreatCard({ threat }: ThreatCardProps) {
-  const router = useRouter();
+  const navigate = useAppNavigate();
   const { t } = useLocale();
   const href = threatDetailPath(threat.cropSlug, threat.type, threat.id);
   const storageKey = `agriveda-threat-photo-${threat.cropSlug}-${threat.type}-${threat.id}`;
 
   return (
     <GlassCard hover className="flex flex-col overflow-hidden p-0">
-      <Link href={href} className="block">
+      <AppLink href={href} className="block">
         <ThreatImage
           src={threat.image}
           alt={threat.name}
@@ -46,12 +46,12 @@ export default function ThreatCard({ threat }: ThreatCardProps) {
             {t("viewDetails")} →
           </span>
         </div>
-      </Link>
+      </AppLink>
       <div className="border-t border-gray-100 px-3 py-2 dark:border-white/10">
         <FarmerPhotoUpload
           storageKey={storageKey}
           currentUrl={null}
-          onUpload={() => router.push(href)}
+          onUpload={() => navigate(href)}
           compact
         />
       </div>

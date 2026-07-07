@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import AppLink from "@/components/ui/AppLink";
 import {
   Bug,
   TrendingUp,
@@ -30,6 +30,7 @@ import { useMyCrops } from "@/hooks/useMyCrops";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
+import { BRAND } from "@/lib/brand";
 
 type ToolDef = {
   titleKey: FarmerUiKey;
@@ -140,8 +141,8 @@ export default function Home() {
 
       <div className="relative mx-auto max-w-lg space-y-7 px-5 pt-6">
         <header className="animate-slide-up-soft">
-          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-600">
-            Agriveda · {t("smartKisan")}
+          <p className="text-[10px] font-bold tracking-wide text-emerald-600">
+            {BRAND} · {t("smartKisan")}
           </p>
           <h1 className="agriveda-gradient-text mt-1 text-3xl font-black tracking-tight">
             {t("myFarm")}
@@ -173,7 +174,7 @@ export default function Home() {
           <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
             {hydrated &&
               crops.map((crop) => (
-                <Link
+                <AppLink
                   key={crop.slug}
                   href={`/crop-details/${crop.slug}`}
                   className="group flex flex-shrink-0 flex-col items-center gap-2"
@@ -188,14 +189,14 @@ export default function Home() {
                   <span className="max-w-[88px] text-center text-xs font-bold theme-text-accent leading-tight">
                     {crop.name}
                   </span>
-                </Link>
+                </AppLink>
               ))}
-            <Link href="/select-crops" className="group flex flex-shrink-0 flex-col items-center gap-2">
+            <AppLink href="/select-crops" className="group flex flex-shrink-0 flex-col items-center gap-2">
               <div className="flex h-[88px] w-[88px] items-center justify-center rounded-3xl border-2 border-dashed border-emerald-500/35 bg-[var(--accent-soft)] transition-all duration-300 group-active:scale-95">
                 <Plus className="h-6 w-6 text-emerald-600" strokeWidth={2.5} />
               </div>
               <span className="text-xs font-bold theme-text-muted">{t("addCrop")}</span>
-            </Link>
+            </AppLink>
           </div>
           )}
         </section>
@@ -221,9 +222,9 @@ export default function Home() {
               );
 
               return (
-                <Link key={tool.titleKey} href={tool.href} className="flex flex-col items-center">
+                <AppLink key={tool.titleKey} href={tool.href} className="flex flex-col items-center">
                   {inner}
-                </Link>
+                </AppLink>
               );
             })}
           </div>
@@ -249,14 +250,14 @@ export default function Home() {
           <GlassCard neon className="overflow-hidden p-5">
             <h3 className="text-base font-extrabold theme-text-primary">{t("expertHelpTitle")}</h3>
             <p className="mt-1 text-sm theme-text-muted">{t("expertHelpDesc")}</p>
-            <Link
+            <AppLink
               href="/ask-query"
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white shadow-[0_8px_24px_rgba(0,100,50,0.25)] transition-transform active:scale-[0.98]"
             >
               <MessageCircleQuestion className="h-4 w-4" />
               {t("askQuestion")}
               <ChevronRight className="h-4 w-4" />
-            </Link>
+            </AppLink>
           </GlassCard>
         </div>
       </div>
