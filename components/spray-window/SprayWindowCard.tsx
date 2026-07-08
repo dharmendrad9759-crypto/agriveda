@@ -1,23 +1,34 @@
 "use client";
 
-import Link from "next/link";
-import { Bell, BellOff, Loader2, MapPin, RefreshCw, Wind } from "lucide-react";
+import AppLink from "@/components/ui/AppLink";
+import { Bell, BellOff, ChevronRight, Loader2, MapPin, RefreshCw, Wind } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SprayWindowTimeline from "@/components/spray-window/SprayWindowTimeline";
 import { useSprayWindow } from "@/hooks/useSprayWindow";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import {
   statusBorder,
   statusTextColor,
 } from "@/lib/sprayWindow";
 import { cn } from "@/lib/cn";
 
-const STATUS_LABEL = {
-  GOOD: { en: "Good to spray", hi: "Spray के लिए अच्छा", dot: "bg-emerald-500" },
-  CAUTION: { en: "Spray with caution", hi: "सावधानी से spray", dot: "bg-amber-400" },
-  AVOID: { en: "Avoid spraying", hi: "Spray न करें", dot: "bg-red-500" },
-} as const;
+type SprayStatus = "GOOD" | "CAUTION" | "AVOID";
 
-export default function SprayWindowCard() {
+const STATUS_KEYS: Record<SprayStatus, "sprayStatusGood" | "sprayStatusCaution" | "sprayStatusAvoid"> = {
+  GOOD: "sprayStatusGood",
+  CAUTION: "sprayStatusCaution",
+  AVOID: "sprayStatusAvoid",
+};
+
+const STATUS_DOT: Record<SprayStatus, string> = {
+  GOOD: "bg-emerald-500",
+  CAUTION: "bg-amber-400",
+  AVOID: "bg-red-500",
+};
+
+export default function SprayWindowCard({ compact = false }: { compact?: boolean }) {
+  const { t, locale } = useLocale();
+  const isEn = locale === "en";
   const {
     bundle,
     analysis,
@@ -35,6 +46,84 @@ export default function SprayWindowCard() {
 
   const status = analysis?.current.status;
 
+  if (compact) {
+    return (
+      <GlassCard className="overflow-hidden p-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <Wind className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+            <div className="min-w-0">
+              <h3 className="truncate text-xs font-extrabold theme-text-primary">{t("sprayAdvisorTitle")}</h3>
+              <p className="truncate text-[9px] theme-text-muted">{t("sprayAdvisorSubtitle")}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => refresh()}
+            disabled={loading}
+            aria-label={t("refreshLabel")}
+            className="shrink-0 rounded-lg p-1 text-emerald-600 hover:bg-emerald-500/10 disabled:opacity-50"
+          >
+            <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+          </button>
+        </div>
+
+        <div className="mt-2.5">
+          {!bundle && !loading && (
+            <div className="flex items-center justify-between gap-2 rounded-xl border border-emerald-500/15 bg-emerald-500/5 px-2.5 py-2">
+              <p className="text-[10px] font-semibold theme-text-muted">{t("sprayNoLocation")}</p>
+              <button
+                type="button"
+                onClick={loadWithGps}
+                className="shrink-0 rounded-lg bg-[#006432] px-2.5 py-1 text-[9px] font-bold text-white"
+              >
+                {t("sprayUseLocation")}
+              </button>
+            </div>
+          )}
+
+          {loading && !analysis && (
+            <div className="flex items-center gap-2 py-2 text-[10px] theme-text-muted">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />
+              {t("sprayLoading")}
+            </div>
+          )}
+
+          {error && (
+            <p className="rounded-lg bg-red-50 px-2 py-1.5 text-[10px] font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">
+              {error}
+            </p>
+          )}
+
+          {analysis && status && (
+            <div className={cn("rounded-xl border px-2.5 py-2", statusBorder(status))}>
+              <div className="flex items-center gap-2">
+                <div className={cn("h-2.5 w-2.5 shrink-0 rounded-full", STATUS_DOT[status])} aria-hidden />
+                <p className={cn("text-xs font-black", statusTextColor(status))}>
+                  {t(STATUS_KEYS[status])}
+                </p>
+              </div>
+              <p className={cn("mt-1 line-clamp-2 text-[10px] leading-snug", statusTextColor(status))}>
+                {isEn ? analysis.current.reasonEn : analysis.current.reasonHi}
+              </p>
+              {bundle && (
+                <p className="mt-1 truncate text-[9px] theme-text-muted">📍 {bundle.location}</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <AppLink
+          href="/weather/spray-advisory"
+          className="mt-2 flex items-center justify-center gap-1 text-[10px] font-bold text-emerald-600"
+        >
+          {t("sprayFullDetails")}
+          <ChevronRight className="h-3 w-3" />
+        </AppLink>
+      </GlassCard>
+    );
+  }
+
   return (
     <GlassCard neon className="overflow-hidden p-0">
       <div className="border-b border-white/10 px-4 py-3">
@@ -42,15 +131,15 @@ export default function SprayWindowCard() {
           <div className="flex items-center gap-2">
             <Wind className="h-4 w-4 text-emerald-500" />
             <div>
-              <h3 className="text-sm font-extrabold theme-text-primary">Spray Window Advisor</h3>
-              <p className="text-[10px] theme-text-muted">मौसम से spray का सही समय</p>
+              <h3 className="text-sm font-extrabold theme-text-primary">{t("sprayAdvisorTitle")}</h3>
+              <p className="text-[10px] theme-text-muted">{t("sprayAdvisorSubtitle")}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={() => refresh()}
             disabled={loading}
-            aria-label="Refresh weather"
+            aria-label={t("refreshLabel")}
             className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-500/10 disabled:opacity-50"
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
@@ -58,28 +147,26 @@ export default function SprayWindowCard() {
         </div>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         {!bundle && !loading && (
           <div className="text-center">
             <MapPin className="mx-auto h-8 w-8 text-emerald-500/70" />
-            <p className="mt-2 text-sm font-bold theme-text-primary">Set location for spray advice</p>
-            <p className="mt-1 text-xs theme-text-muted">
-              GPS या शहर से मौसम लोड करें
-            </p>
+            <p className="mt-2 text-sm font-bold theme-text-primary">{t("sprayNoLocation")}</p>
+            <p className="mt-1 text-xs theme-text-muted">{t("sprayNoLocationHint")}</p>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-center">
               <button
                 type="button"
                 onClick={loadWithGps}
                 className="rounded-xl bg-[#006432] px-4 py-2.5 text-xs font-black text-white"
               >
-                Use my location
+                {t("sprayUseLocation")}
               </button>
-              <Link
+              <AppLink
                 href="/weather"
                 className="rounded-xl border border-emerald-500/30 px-4 py-2.5 text-xs font-bold text-emerald-600"
               >
-                Set city on Weather
-              </Link>
+                {t("spraySetOnWeather")}
+              </AppLink>
             </div>
           </div>
         )}
@@ -87,7 +174,7 @@ export default function SprayWindowCard() {
         {loading && !analysis && (
           <div className="flex items-center justify-center gap-2 py-6 text-sm theme-text-muted">
             <Loader2 className="h-5 w-5 animate-spin text-emerald-500" />
-            Checking spray conditions…
+            {t("sprayLoading")}
           </div>
         )}
 
@@ -99,38 +186,25 @@ export default function SprayWindowCard() {
 
         {analysis && status && (
           <>
-            <div
-              className={cn(
-                "rounded-2xl border p-4",
-                statusBorder(status)
-              )}
-            >
+            <div className={cn("rounded-2xl border p-4", statusBorder(status))}>
               <div className="flex items-center gap-3">
                 <div
                   className={cn(
                     "h-4 w-4 flex-shrink-0 rounded-full shadow-lg",
-                    STATUS_LABEL[status].dot,
+                    STATUS_DOT[status],
                     status === "GOOD" && "shadow-emerald-500/50",
                     status === "CAUTION" && "shadow-amber-400/50",
                     status === "AVOID" && "shadow-red-500/50"
                   )}
                   aria-hidden
                 />
-                <div className="min-w-0 flex-1">
-                  <p className={cn("text-base font-black", statusTextColor(status))}>
-                    {STATUS_LABEL[status].en}
-                  </p>
-                  <p className={cn("text-xs font-bold opacity-90", statusTextColor(status))}>
-                    {STATUS_LABEL[status].hi}
-                  </p>
-                </div>
+                <p className={cn("text-base font-black", statusTextColor(status))}>
+                  {t(STATUS_KEYS[status])}
+                </p>
               </div>
 
               <p className={cn("mt-3 text-sm leading-relaxed", statusTextColor(status))}>
-                {analysis.current.reasonEn}
-              </p>
-              <p className={cn("mt-1 text-xs leading-relaxed opacity-90", statusTextColor(status))}>
-                {analysis.current.reasonHi}
+                {isEn ? analysis.current.reasonEn : analysis.current.reasonHi}
               </p>
 
               {bundle && (
@@ -141,20 +215,15 @@ export default function SprayWindowCard() {
             {analysis.nextGoodWindow && status !== "GOOD" && (
               <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
                 <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                  {analysis.nextGoodWindowLabel}
+                  {isEn ? analysis.nextGoodWindowLabel : nextGoodHi ?? analysis.nextGoodWindowLabel}
                 </p>
-                {nextGoodHi && (
-                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400">
-                    {nextGoodHi}
-                  </p>
-                )}
               </div>
             )}
 
             {analysis.timeline.length > 0 && (
               <div>
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-wider theme-text-muted">
-                  Next 12 hours
+                  {t("sprayNext12Hours")}
                 </p>
                 <SprayWindowTimeline slots={analysis.timeline} />
               </div>
@@ -173,12 +242,12 @@ export default function SprayWindowCard() {
               {alertsEnabled ? (
                 <>
                   <Bell className="h-3.5 w-3.5" />
-                  Alerts on — notify when AVOID → GOOD
+                  {t("sprayAlertsOn")}
                 </>
               ) : (
                 <>
                   <BellOff className="h-3.5 w-3.5" />
-                  Enable spray window alerts
+                  {t("sprayAlertsOff")}
                 </>
               )}
             </button>

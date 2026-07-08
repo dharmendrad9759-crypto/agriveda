@@ -30,11 +30,32 @@ export interface SolverIssue {
 export interface SymptomCategory {
   id: string;
   label: string;
+  labelHi?: string;
   description: string;
   icon: LucideIcon;
   accent: string;
+  coverImage?: string;
   issues: SolverIssue[];
 }
+
+/** Background photo per symptom category — helps farmers recognise the problem */
+export const SYMPTOM_CATEGORY_COVERS: Record<string, string> = {
+  "yellowing-leaves": THREAT_IMAGES.paddy,
+  "stem-holes": THREAT_IMAGES.stemBorer,
+  "white-spots": THREAT_IMAGES.fungalLeaf,
+  "wilting-plants": THREAT_IMAGES.wilting,
+  "holes-in-leaves": THREAT_IMAGES.insectLeaf,
+  "brown-spots": THREAT_IMAGES.rust,
+  "stunted-growth": THREAT_IMAGES.viralPlant,
+  "cottony-growth": THREAT_IMAGES.fungalLeaf,
+  "wilting-drooping": THREAT_IMAGES.wilting,
+  "fruit-flower-damage": THREAT_IMAGES.fruitDamage,
+  "insect-chewing": THREAT_IMAGES.insect,
+  "leaf-curling": THREAT_IMAGES.aphid,
+  "mosaic-virus": THREAT_IMAGES.viralPlant,
+  "sticky-leaves": THREAT_IMAGES.aphid,
+  "purple-blotches": THREAT_IMAGES.bacterialLeaf,
+};
 
 export const SEVERITY_STYLES: Record<
   SymptomSeverity,
@@ -718,7 +739,163 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
       },
     ],
   },
+  {
+    id: "leaf-curling",
+    label: "Leaf Curling",
+    labelHi: "पत्ते मुड़े / सिकुड़े",
+    description: "Leaves curl inward, cup upward, or roll at edges",
+    icon: Leaf,
+    accent: "from-teal-100 to-cyan-50 border-teal-200",
+    issues: [
+      {
+        id: "whitefly-curl",
+        name: "Whitefly (Leaf Curl)",
+        severity: "high",
+        image: THREAT_IMAGES.aphid,
+        cropSlugs: ["tomato", "chilli", "brinjal", "cotton"],
+        diagnosis:
+          "Tiny white flies under leaves cause upward curling, yellowing, and sticky honeydew. TYLCV risk in tomato.",
+        immediateActions: [
+          "Yellow sticky traps 10–15/acre; spray Neem oil 1% + sticker.",
+          "Diafenthiuron 50% WP @ 15 g/15 L pump (IRAC 12A).",
+          "Remove heavily infested leaves; avoid same IRAC twice.",
+        ],
+        prevention: [
+          "Reflective mulch in nursery; resistant varieties in endemic areas.",
+          "Conserve natural enemies — avoid broad-spectrum sprays.",
+        ],
+      },
+      {
+        id: "aphid-curl",
+        name: "Aphid Curl",
+        severity: "medium",
+        image: THREAT_IMAGES.aphid,
+        diagnosis:
+          "Colonies under young leaves cause curling, stunting, and honeydew. Common in wheat heading, vegetables, and cotton.",
+        immediateActions: [
+          "Imidacloprid 17.8% SL @ 0.3 ml/L evening spray.",
+          "Neem oil 1% if population is low.",
+        ],
+        prevention: ["Yellow traps; avoid excess nitrogen.", "Rotate crops; destroy weeds around field."],
+      },
+    ],
+  },
+  {
+    id: "mosaic-virus",
+    label: "Mosaic / Viral",
+    labelHi: "मोज़ेक / वायरस",
+    description: "Mottled green-yellow pattern, mosaic on leaves",
+    icon: Sparkles,
+    accent: "from-violet-100 to-purple-50 border-violet-200",
+    issues: [
+      {
+        id: "tmv",
+        name: "Tobacco Mosaic Virus",
+        severity: "high",
+        image: THREAT_IMAGES.viralPlant,
+        cropSlugs: ["tomato", "chilli", "brinjal"],
+        diagnosis:
+          "Light and dark green mosaic on leaves, leaf distortion, stunted plants. Spreads by contact and tools.",
+        immediateActions: [
+          "Uproot and burn infected plants — no cure.",
+          "Control aphids/whiteflies as vectors; wash hands/tools with soap.",
+        ],
+        prevention: ["Use virus-free seedlings.", "Do not smoke near tomato fields (TMV carrier)."],
+      },
+      {
+        id: "leaf-curl-virus",
+        name: "Chilli Leaf Curl Virus",
+        severity: "high",
+        image: THREAT_IMAGES.viralPlant,
+        cropSlugs: ["chilli", "tomato"],
+        diagnosis:
+          "Severe upward leaf curl, puckering, stunted bushy plants. Spread by whitefly.",
+        immediateActions: [
+          "Remove infected plants; control whitefly vector.",
+          "Imidacloprid soil drench or foliar as per label.",
+        ],
+        prevention: ["Resistant hybrids; reflective mulch in nursery.", "Rogue infected plants early."],
+      },
+    ],
+  },
+  {
+    id: "sticky-leaves",
+    label: "Sticky Leaves",
+    labelHi: "चिपचिपी पत्तियाँ",
+    description: "Honeydew, black sooty mould on leaf surface",
+    icon: Droplets,
+    accent: "from-sky-100 to-blue-50 border-sky-200",
+    issues: [
+      {
+        id: "honeydew-whitefly",
+        name: "Honeydew (Whitefly/Aphid)",
+        severity: "medium",
+        image: THREAT_IMAGES.aphid,
+        diagnosis:
+          "Shiny sticky coating on leaves from sap-sucking insects. Leads to black sooty mould and reduced photosynthesis.",
+        immediateActions: [
+          "Treat underlying insect — Neem 1% or Imidacloprid 0.3 ml/L.",
+          "Wash sooty mould with mild soap water on vegetables if needed.",
+        ],
+        prevention: ["Regular scouting under leaves.", "Yellow traps for early catch."],
+      },
+      {
+        id: "sooty-mold-sticky",
+        name: "Sooty Mould",
+        severity: "low",
+        image: THREAT_IMAGES.fungalLeaf,
+        diagnosis:
+          "Black powdery fungal growth on upper leaf surface — grows on honeydew, not a primary disease.",
+        immediateActions: [
+          "Control sap-sucking insects first.",
+          "Spray Wettable sulphur 2 g/L if mould is heavy.",
+        ],
+        prevention: ["Keep insect population low; improve air flow."],
+      },
+    ],
+  },
+  {
+    id: "purple-blotches",
+    label: "Purple / Red Blotches",
+    labelHi: "बैंगनी / लाल धब्बे",
+    description: "Purple stems, red-orange lesions, purpling of leaves",
+    icon: CircleDot,
+    accent: "from-fuchsia-100 to-pink-50 border-fuchsia-200",
+    issues: [
+      {
+        id: "phosphorus-def",
+        name: "Phosphorus Deficiency",
+        severity: "medium",
+        image: THREAT_IMAGES.paddy,
+        diagnosis:
+          "Purplish-red colour on older leaves and stems, especially in cold weather or acidic soils.",
+        immediateActions: [
+          "Apply DAP 50–75 kg/ha or foliar DAP 2% spray.",
+          "Check soil pH — lime if too acidic.",
+        ],
+        prevention: ["Balanced basal dose at sowing.", "Soil test every 2–3 years."],
+      },
+      {
+        id: "purple-blotch-onion",
+        name: "Purple Blotch (Onion)",
+        severity: "medium",
+        image: THREAT_IMAGES.fungalLeaf,
+        cropSlugs: ["onion"],
+        diagnosis:
+          "Purple sunken lesions with yellow halo on onion leaves — spreads in humid weather.",
+        immediateActions: [
+          "Mancozeb 75% WP @ 2 g/L or Azoxystrobin 250 SC @ 1 ml/L.",
+          "Improve drainage; avoid overhead irrigation late evening.",
+        ],
+        prevention: ["Wider spacing; destroy crop debris.", "Rotate with non-allium crops."],
+      },
+    ],
+  },
 ];
+
+export function getCategoryCoverImage(categoryId: string): string {
+  return SYMPTOM_CATEGORY_COVERS[categoryId] ?? THREAT_IMAGES.insectLeaf;
+}
 
 export function getSymptomCategory(id: string): SymptomCategory | undefined {
   return SYMPTOM_CATEGORIES.find((c) => c.id === id);

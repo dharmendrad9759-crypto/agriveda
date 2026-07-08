@@ -1,18 +1,16 @@
 import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/data/pest-disease";
 import { getCropPestDisease } from "@/data/pest-disease";
-import { THREAT_DETAIL_OVERRIDES } from "@/data/pest-disease-details";
+import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
 import { findStageGuideForThreat } from "@/lib/cropProtectionGuide";
 import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-disease-ui";
 
-const GENERIC_STOCK = /unsplash\.com|placeholder|picsum|loremflickr/i;
+const GENERIC_STOCK = /placeholder|picsum|loremflickr/i;
 
 function resolveThreatImage(
   overrideImage: string | undefined,
   itemImage: string | undefined
 ): string | undefined {
-  const candidate = overrideImage ?? itemImage;
-  if (candidate && !GENERIC_STOCK.test(candidate)) return candidate;
-  return undefined;
+  return overrideImage ?? itemImage;
 }
 
 function inferDiseaseCategory(pathogen: string, name: string): ThreatCategory {
@@ -100,7 +98,7 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
     category,
     name: pest.name,
     scientificName: pest.scientificName,
-    image: resolveThreatImage(override?.image, pest.image) ?? "",
+    image: resolveThreatImage(override?.image, pest.image) ?? THREAT_IMAGES.insect,
     stage: pest.stage,
     description:
       override?.description ??
@@ -138,7 +136,7 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
     name: disease.name,
     scientificName: disease.pathogen,
     pathogen: disease.pathogen,
-    image: resolveThreatImage(override?.image, disease.image) ?? "",
+    image: resolveThreatImage(override?.image, disease.image) ?? THREAT_IMAGES.fungalLeaf,
     stage: disease.stage,
     description:
       override?.description ??
@@ -171,7 +169,7 @@ function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
     category: "weed",
     name: weed.name,
     scientificName: weed.scientificName,
-    image: resolveThreatImage(undefined, weed.image) ?? "",
+    image: resolveThreatImage(undefined, weed.image) ?? THREAT_IMAGES.weed,
     stage: weed.criticalPeriod,
     description: `${weed.scientificName} (${weed.type} weed) competes with ${crop.name} for nutrients, water, and light. Critical competition period is ${weed.criticalPeriod}. Timely weed management is essential for protecting yield.`,
     symptoms: [

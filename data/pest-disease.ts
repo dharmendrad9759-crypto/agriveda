@@ -1,8 +1,11 @@
 import { cropCatalog } from "@/data/crop-catalog";
 
-const IMG = "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=300&h=300&fit=crop";
-const IMG2 = "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=300&h=300&fit=crop";
-const IMG3 = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop";
+const IMG = "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop&q=80";
+const IMG2 = "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&h=400&fit=crop&q=80";
+const IMG3 = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&q=80";
+const IMG_WEED = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop&q=80";
+const IMG_APHID = "https://images.unsplash.com/photo-1592840067980-057d97d26f4a?w=600&h=400&fit=crop&q=80";
+const IMG_RUST = "https://images.unsplash.com/photo-1622205313162-b1e0aafd392f?w=600&h=400&fit=crop&q=80";
 
 export interface PestItem {
   id: string;
@@ -63,7 +66,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d5", name: "False Smut", pathogen: "Ustilaginoidea virens", image: IMG2, stage: "Flowering", fracGroup: "FRAC 3", control: "Propiconazole 25 EC @ 1 ml/L at boot leaf stage" },
     ],
     weeds: [
-      { id: "w1", name: "Barnyard Grass", scientificName: "Echinochloa crus-galli", type: "Grassy", criticalPeriod: "0–45 DAS", preEmergence: "Pretilachlor 50 EC @ 0.6–0.75 kg a.i./ha (HRAC 15) at 3 DAS", postEmergence: "Bispyribac-sodium 10 SC @ 25 g a.i./ha (HRAC 2) at 15–20 DAS", culturalControl: "Stale seedbed, puddling before transplant" },
+      { id: "w1", name: "Barnyard Grass", scientificName: "Echinochloa crus-galli", type: "Grassy", criticalPeriod: "0–45 DAS", preEmergence: "Pretilachlor 50 EC @ 0.6–0.75 kg a.i./ha (HRAC 15) at 3 DAS", postEmergence: "Bispyribac-sodium 10 SC @ 25 g a.i./ha (HRAC 2) at 15–20 DAS", culturalControl: "Stale seedbed, puddling before transplant", image: IMG_WEED },
       { id: "w2", name: "Flat Sedge", scientificName: "Cyperus iria", type: "Sedge", criticalPeriod: "15–60 DAS", preEmergence: "Pretilachlor + Pyrazosulfuron-ethyl 10 WP @ 20 g a.i./ha (HRAC 2)", postEmergence: "Bispyribac-sodium 10 SC @ 25 g a.i./ha", culturalControl: "Maintain 5 cm standing water" },
       { id: "w3", name: "Monochoria (Broadleaf)", scientificName: "Monochoria vaginalis", type: "Broadleaf", criticalPeriod: "20–50 DAS", preEmergence: "Pretilachlor 50 EC @ 0.6 kg a.i./ha", postEmergence: "2,4-D Na salt 80 WP @ 0.5 kg a.i./ha (direct-seeded only; HRAC 4)", culturalControl: "Hand weeding at 20 & 40 DAS" },
     ],

@@ -18,8 +18,8 @@ const MODULES = [
   {
     href: "/dashboard",
     icon: LayoutDashboard,
-    title: "मेरा खेत",
-    desc: "फसल, stage, alerts",
+    title: "खेत Dashboard",
+    desc: "सारी alerts एक जगह",
     glow: "from-emerald-500/25 to-teal-500/10 border-emerald-400/40",
   },
   {
@@ -95,7 +95,7 @@ export default function Agriveda2Hub() {
         {MODULES.map((m) => {
           const Icon = m.icon;
           return (
-            <AppLink key={m.href} href={m.href}>
+            <AppLink key={`${m.href}-${m.title}`} href={m.href}>
               <GlassCard
                 hover
                 className={`h-full border bg-gradient-to-br p-3.5 ${m.glow}`}

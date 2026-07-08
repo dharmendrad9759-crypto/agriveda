@@ -43,7 +43,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("agriveda-theme");document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");var l=localStorage.getItem("agriveda-app-locale");if(!l){l=localStorage.getItem("agriveda-translate-lang");}document.documentElement.lang=l==="hi"?"hi":"en";}catch(e){document.documentElement.setAttribute("data-theme","light");document.documentElement.lang="en";}})();`,
+            __html: `(function(){try{var t=localStorage.getItem("agriveda-theme");document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");var l=localStorage.getItem("agriveda-app-locale");if(!l){l=localStorage.getItem("agriveda-translate-lang");}document.documentElement.lang=l==="hi"?"hi":"en";if(/; wv\\)/.test(navigator.userAgent)||(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())){document.documentElement.setAttribute("data-capacitor-native","true");document.documentElement.setAttribute("data-theme","dark");}}catch(e){document.documentElement.setAttribute("data-theme","light");document.documentElement.lang="en";}})();`,
           }}
         />
       </head>

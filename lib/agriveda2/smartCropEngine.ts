@@ -6,6 +6,11 @@ import {
   riskLevelFromLabel,
   mandiTrendFromDemand,
 } from "@/data/agriveda2/smart-crop-data";
+import {
+  defaultSoilForState,
+  getLocationCropScore,
+  waterIndexForState,
+} from "@/data/agriveda2/region-crop-suitability";
 
 export interface SmartCropRank {
   rank: number;
@@ -66,7 +71,10 @@ export function rankCropsForFarmer(options: {
   const month = options.month ?? new Date().getMonth() + 1;
   const season = currentSeason(month);
   const seasonSlugs = new Set(SEASON_CROPS[season]);
-  const water = options.waterIndex ?? "medium";
+  const state = options.state ?? "";
+  const district = options.district ?? "";
+  const soilType = options.soilType ?? (state ? defaultSoilForState(state) : undefined);
+  const water = options.waterIndex ?? (state ? waterIndexForState(state) : "medium");
   const irrigationKey = waterIndexToIrrigationKey(water);
   const irrigation = SMART_CROP_DATA.irrigationWise[irrigationKey as keyof typeof SMART_CROP_DATA.irrigationWise];
 
@@ -78,43 +86,38 @@ export function rankCropsForFarmer(options: {
         SMART_CROP_DATA.profitability[profitKey as keyof typeof SMART_CROP_DATA.profitability];
       if (!profitEntry) return null;
 
-      let score = 35;
+      let score = 10;
       const reasons: string[] = [];
       const profitMid = parseProfitMid(profitEntry.net_profit_range);
 
+      if (district && state) {
+        const loc = getLocationCropScore(state, district, crop.slug);
+        score += Math.round(loc.score * 0.55);
+        reasons.push(loc.reason);
+      }
+
       if (seasonSlugs.has(crop.slug)) {
-        score += 22;
-        reasons.push(`${season} season ke liye verified calendar`);
+        score += 12;
+        reasons.push(`${season} season — abhi buwai ka samay`);
       }
 
       if (irrigation?.best.some((c) => profitKey.includes(c) || crop.name.includes(c.split(" ")[0]))) {
-        score += 15;
-        reasons.push(`Paani availability match: ${irrigationKey}`);
+        score += 10;
       }
 
-      score += Math.min(25, Math.floor(profitMid / 4000));
-      reasons.push(`Net profit: ${profitEntry.net_profit_range}`);
-      reasons.push(`MSP/Mandi: ${profitEntry.avg_price}`);
-
-      if (options.soilType) {
-        const match = cropNameMatchesSoil(profitKey, options.soilType);
+      if (soilType) {
+        const match = cropNameMatchesSoil(profitKey, soilType);
         if (match === "best") {
-          score += 15;
-          reasons.push(`Mitti ke liye best fit (${options.soilType})`);
-        } else if (match === "good") score += 8;
-        else if (match === "avoid") score -= 10;
+          score += 12;
+          reasons.push(`Mitti: ${soilType} ke liye best`);
+        } else if (match === "good") score += 6;
+        else if (match === "avoid") score -= 15;
       }
 
-      if (options.district && options.state) {
-        score += 8;
-        reasons.push(`${options.district}, ${options.state} — aapke ilake ka verified data`);
-      } else if (options.district) {
-        score += 5;
-        reasons.push(`${options.district} — North India verified data`);
-      }
+      score += Math.min(12, Math.floor(profitMid / 8000));
 
       const soilMatch: SmartCropRank["soilMatch"] =
-        score > 78 ? "Perfect" : score > 58 ? "Good" : "Fair";
+        score > 72 ? "Perfect" : score > 52 ? "Good" : "Fair";
 
       return {
         slug: crop.slug,
@@ -129,9 +132,9 @@ export function rankCropsForFarmer(options: {
         mandiTrend: mandiTrendFromDemand(profitEntry.market_demand),
         riskLabel: profitEntry.risk,
         riskLevel: riskLevelFromLabel(profitEntry.risk),
-        neighbourCount: 10 + (crop.slug.length * 2) % 12,
+        neighbourCount: 8 + Math.round((getLocationCropScore(state, district, crop.slug).score % 20)),
         avgYieldQtl: parseInt(profitEntry.avg_yield.match(/\d+/)?.[0] ?? "15", 10),
-        reasons,
+        reasons: reasons.slice(0, 3),
         score,
         rank: 0,
       };

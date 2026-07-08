@@ -141,6 +141,30 @@ export const SMART_CROP_DATA = {
       market_demand: "Stable",
       note: "Long duration 10-12 months crop",
     },
+    Soybean: {
+      cost_per_acre: 12000,
+      avg_yield: "12-18 q/acre",
+      avg_price: "MSP Rs. 4892/q (2024-25)",
+      net_profit_range: "Rs. 38,000 – 65,000/acre",
+      risk: "Medium (pod borer)",
+      market_demand: "High (oil + feed)",
+    },
+    "Bajra (Pearl Millet)": {
+      cost_per_acre: 8000,
+      avg_yield: "10-15 q/acre",
+      avg_price: "MSP Rs. 2500/q (2024-25)",
+      net_profit_range: "Rs. 18,000 – 32,000/acre",
+      risk: "Low (drought tolerant)",
+      market_demand: "Stable",
+    },
+    "Moong (Green Gram)": {
+      cost_per_acre: 7000,
+      avg_yield: "4-7 q/acre",
+      avg_price: "MSP Rs. 8558/q (2024-25)",
+      net_profit_range: "Rs. 28,000 – 48,000/acre",
+      risk: "Low-Medium",
+      market_demand: "High (dal)",
+    },
   } satisfies Record<string, ProfitabilityEntry>,
 };
 
@@ -156,6 +180,8 @@ export const SLUG_TO_PROFIT_KEY: Record<string, string> = {
   pulses: "Chana (Chickpea)",
   sugarcane: "Ganna (Sugarcane)",
   soybean: "Soybean",
+  bajra: "Bajra (Pearl Millet)",
+  moong: "Moong (Green Gram)",
 };
 
 export function parseProfitMid(range: string): number {

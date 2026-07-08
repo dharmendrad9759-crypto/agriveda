@@ -3,9 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bot, Loader2, Send, User } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
-import { cropCatalog } from "@/data/crop-catalog";
+import { cropCatalog, categoryOrder } from "@/data/crop-catalog";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
-import { useMyCrops } from "@/hooks/useMyCrops";
 import { useToast } from "@/components/ui/Toast";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { clientKisanSaathiFallback } from "@/lib/kisanSaathiClient";
@@ -24,14 +23,14 @@ const STARTERS = [
 
 export default function KisanSaathiChat() {
   const { profile } = useFarmerProfile();
-  const { crops } = useMyCrops();
   const { showToast } = useToast();
   const { locale } = useLocale();
 
-  const cropOptions = crops.length > 0 ? crops : cropCatalog.slice(0, 6).map((c) => ({
+  const cropOptions = cropCatalog.map((c) => ({
     slug: c.slug,
     name: c.name,
     emoji: c.emoji,
+    category: c.category,
   }));
 
   const [cropSlug, setCropSlug] = useState(cropOptions[0]?.slug ?? "paddy");
@@ -115,11 +114,19 @@ export default function KisanSaathiChat() {
         onChange={(e) => setCropSlug(e.target.value)}
         className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm font-semibold"
       >
-        {cropOptions.map((c) => (
-          <option key={c.slug} value={c.slug}>
-            {c.emoji} {c.name}
-          </option>
-        ))}
+        {categoryOrder.map((cat) => {
+          const inCat = cropOptions.filter((c) => c.category === cat);
+          if (!inCat.length) return null;
+          return (
+            <optgroup key={cat} label={cat}>
+              {inCat.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.emoji} {c.name}
+                </option>
+              ))}
+            </optgroup>
+          );
+        })}
       </select>
 
       <GlassCard className="flex max-h-[min(58vh,480px)] flex-col overflow-hidden p-0">

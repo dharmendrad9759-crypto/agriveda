@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:lan": "node scripts/dev-lan.mjs",
+    "dev:stop": "powershell -ExecutionPolicy Bypass -File scripts/dev-stop.ps1",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -15,6 +16,9 @@
     "android:open": "npx cap open android",
     "android:prepare": "powershell -ExecutionPolicy Bypass -File scripts/sync-android.ps1",
     "android:fix": "powershell -ExecutionPolicy Bypass -File scripts/fix-android-url.ps1",
+    "android:usb": "powershell -ExecutionPolicy Bypass -File scripts/android-usb.ps1",
+    "android:firewall": "powershell -ExecutionPolicy Bypass -File scripts/allow-dev-firewall.ps1",
+    "android:run": "powershell -ExecutionPolicy Bypass -File scripts/android-run.ps1",
     "android:build": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1 assembleDebug",
     "android:gradle": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1"
   },

@@ -18,6 +18,7 @@ import {
   getIssueById,
   getIssuesForCrop,
   getSymptomCategory,
+  getCategoryCoverImage,
   issueDetailHref,
   type SolverIssue,
   type SymptomCategory,
@@ -137,23 +138,31 @@ export default function PestDiseaseSolver() {
               {SYMPTOM_CATEGORIES.map((category) => {
                 const Icon = category.icon;
                 const matchCount = getIssuesForCrop(category.id, cropSlug).length;
+                const cover = getCategoryCoverImage(category.id);
                 return (
                   <button
                     key={category.id}
                     type="button"
                     onClick={() => openCategory(category)}
-                    className={`flex flex-col items-start rounded-2xl border-2 bg-gradient-to-br p-4 text-left shadow-md transition active:scale-[0.98] ${category.accent}`}
+                    className={`relative flex min-h-[148px] flex-col items-start overflow-hidden rounded-2xl border-2 bg-gradient-to-br p-4 text-left shadow-md transition active:scale-[0.98] ${category.accent}`}
                   >
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={cover}
+                      alt=""
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25"
+                    />
+                    <span className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-white/90 shadow-sm backdrop-blur-sm">
                       <Icon className="h-6 w-6 text-gray-800" strokeWidth={2.25} />
                     </span>
-                    <span className="mt-3 text-sm font-extrabold leading-tight text-gray-950">
-                      {category.label}
+                    <span className="relative mt-3 text-sm font-extrabold leading-tight text-gray-950">
+                      {category.labelHi ?? category.label}
                     </span>
-                    <span className="mt-1 line-clamp-2 text-[11px] font-medium leading-snug text-gray-700">
+                    <span className="relative mt-1 line-clamp-2 text-[11px] font-medium leading-snug text-gray-800">
                       {category.description}
                     </span>
-                    <span className="mt-2 text-[10px] font-bold uppercase tracking-wide text-gray-600">
+                    <span className="relative mt-2 text-[10px] font-bold uppercase tracking-wide text-gray-700">
                       {matchCount} possible {matchCount === 1 ? "cause" : "causes"}
                     </span>
                   </button>

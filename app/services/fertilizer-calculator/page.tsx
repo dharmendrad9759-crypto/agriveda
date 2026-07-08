@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
 import GlassCard from "@/components/ui/GlassCard";
 import { cropCatalog } from "@/data/crop-catalog";
@@ -9,11 +10,24 @@ import { FERTILIZER_SOURCES } from "@/data/agriveda2/fertilizer-data";
 import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { getBighaInfo } from "@/lib/bighaConversion";
+import { EASE_OUT, staggerContainer, staggerItem } from "@/lib/motion/variants";
 
 const UNIT_LABELS: Record<AreaUnit, string> = {
   acre: "एकड़ (Acre)",
   bigha: "बीघा (Bigha)",
   hectare: "हेक्टेयर (Hectare)",
+};
+
+const NUTRIENT_COLORS: Record<string, string> = {
+  N: "from-lime-400 to-green-500",
+  P: "from-amber-400 to-orange-500",
+  K: "from-violet-400 to-purple-500",
+  Ca: "from-sky-400 to-blue-500",
+  Mg: "from-teal-400 to-cyan-500",
+  S: "from-yellow-400 to-amber-500",
+  Zn: "from-rose-400 to-pink-500",
+  Fe: "from-red-400 to-rose-500",
+  B: "from-indigo-400 to-violet-500",
 };
 
 export default function FertilizerCalculatorPage() {
@@ -64,9 +78,14 @@ export default function FertilizerCalculatorPage() {
         </select>
 
         {selected && (
-          <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-800">
+          <motion.p
+            key={selected.slug}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-800"
+          >
             {selected.emoji} {selected.name} — niche poora poshan schedule
-          </p>
+          </motion.p>
         )}
 
         <div className="grid grid-cols-2 gap-3">
@@ -104,88 +123,128 @@ export default function FertilizerCalculatorPage() {
           </p>
         )}
 
-        {plan && (
-          <>
-            <p className="rounded-lg bg-emerald-500/10 p-2 text-[10px] theme-text-muted">
-              {plan.unitNote}
-              {plan.source === "guide" && " · ICAR crop guide (verified data jald add hoga)"}
-            </p>
-
-            <div>
-              <p className="text-xs font-extrabold theme-text-primary">
-                🌱 Poshan — {plan.cropKey} ({area} {unit} ≈ {plan.acres} acre)
+        {plan ? (
+          <motion.div
+            key={`${slug}-${acres}`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: EASE_OUT }}
+            className="space-y-4"
+          >
+              <p className="rounded-lg bg-emerald-500/10 p-2 text-[10px] theme-text-muted">
+                {plan.unitNote}
+                {plan.source === "guide" && " · ICAR crop guide (verified data jald add hoga)"}
               </p>
-              <div className="mt-2 overflow-x-auto">
-                <table className="w-full text-left text-[11px]">
-                  <thead>
-                    <tr className="border-b theme-text-muted">
-                      <th className="py-1 pr-2">Nutrient</th>
-                      <th className="py-1">Detail</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {plan.nutrients.map((row) => (
-                      <tr key={row.nutrient} className="border-b border-gray-100 dark:border-white/5">
-                        <td className="py-1.5 pr-2 font-bold">{row.nutrient}</td>
-                        <td className="py-1.5 theme-text-muted">{row.detail}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
 
-            {plan.bags.length > 0 && (
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">
-                <p className="font-extrabold text-emerald-800">Total bags ({plan.acres} acre)</p>
-                <ul className="mt-2 space-y-0.5 text-xs">
-                  {plan.bags.map((b) => (
-                    <li key={b.name}>
-                      → {b.name}: {b.amount}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {plan.schedule.length > 0 && (
               <div>
-                <p className="text-xs font-bold theme-text-primary">Schedule</p>
-                <ul className="mt-2 space-y-2 text-xs theme-text-muted">
-                  {plan.schedule.map((s) => (
-                    <li key={s.time} className="rounded-lg border border-gray-200 p-2 dark:border-white/10">
-                      <p className="font-bold theme-text-primary">{s.time}</p>
-                      <p>{s.apply}</p>
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-xs font-extrabold theme-text-primary">
+                  🌱 Poshan — {plan.cropKey} ({area} {unit} ≈ {plan.acres} acre)
+                </p>
+                <motion.div
+                  variants={staggerContainer}
+                  initial="hidden"
+                  animate="show"
+                  className="mt-3 space-y-2"
+                >
+                  {plan.nutrients.map((row) => {
+                    const key = row.nutrient.replace(/[^A-Za-z]/g, "").slice(0, 2);
+                    const grad = NUTRIENT_COLORS[key] ?? "from-emerald-400 to-teal-500";
+                    const pct = Math.min(100, 40 + (row.detail.length % 50));
+                    return (
+                      <motion.div
+                        key={row.nutrient}
+                        variants={staggerItem}
+                        className="rounded-xl border border-gray-200/80 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-black theme-text-primary">{row.nutrient}</span>
+                          <span className="text-[11px] font-semibold theme-text-muted">{row.detail}</span>
+                        </div>
+                        <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200/80 dark:bg-white/10">
+                          <motion.div
+                            className={`h-full rounded-full bg-gradient-to-r ${grad}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${pct}%` }}
+                            transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.05 }}
+                          />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
               </div>
-            )}
 
-            {plan.source === "verified" && (
-              <details className="text-[10px] theme-text-muted">
-                <summary className="cursor-pointer font-bold theme-text-primary">
-                  Conversion formulas
-                </summary>
-                <ul className="mt-2 space-y-2">
-                  {Object.entries(FERTILIZER_SOURCES).map(([group, formulas]) => (
-                    <li key={group}>
-                      <span className="font-semibold">{group}:</span>
-                      {Object.entries(formulas).map(([name, formula]) => (
-                        <p key={name} className="ml-2">
-                          {name}: {formula}
-                        </p>
-                      ))}
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
-          </>
-        )}
+              {plan.bags.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.15 }}
+                  className="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 p-3 text-sm shadow-sm"
+                >
+                  <p className="font-extrabold text-emerald-800">Total bags ({plan.acres} acre)</p>
+                  <ul className="mt-2 space-y-1 text-xs">
+                    {plan.bags.map((b, i) => (
+                      <motion.li
+                        key={b.name}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 + i * 0.05 }}
+                      >
+                        → {b.name}: <strong>{b.amount}</strong>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
 
-        {!plan && (
-          <p className="text-center text-sm theme-text-muted">Area daalein — khad plan yahan aayega</p>
+              {plan.schedule.length > 0 && (
+                <div>
+                  <p className="text-xs font-bold theme-text-primary">Schedule</p>
+                  <motion.ul
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="show"
+                    className="mt-2 space-y-2 text-xs theme-text-muted"
+                  >
+                    {plan.schedule.map((s) => (
+                      <motion.li
+                        key={s.time}
+                        variants={staggerItem}
+                        whileHover={{ scale: 1.01 }}
+                        className="rounded-lg border border-gray-200 bg-gradient-to-r from-white to-emerald-50/50 p-2.5 dark:border-white/10 dark:from-black/20 dark:to-emerald-950/20"
+                      >
+                        <p className="font-bold theme-text-primary">{s.time}</p>
+                        <p>{s.apply}</p>
+                      </motion.li>
+                    ))}
+                  </motion.ul>
+                </div>
+              )}
+
+              {plan.source === "verified" && (
+                <details className="text-[10px] theme-text-muted">
+                  <summary className="cursor-pointer font-bold theme-text-primary">
+                    Conversion formulas
+                  </summary>
+                  <ul className="mt-2 space-y-2">
+                    {Object.entries(FERTILIZER_SOURCES).map(([group, formulas]) => (
+                      <li key={group}>
+                        <span className="font-semibold">{group}:</span>
+                        {Object.entries(formulas).map(([name, formula]) => (
+                          <p key={name} className="ml-2">
+                            {name}: {formula}
+                          </p>
+                        ))}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+          </motion.div>
+        ) : (
+          <p className="text-center text-sm theme-text-muted">
+            Area daalein — khad plan yahan aayega
+          </p>
         )}
       </GlassCard>
     </Agriveda2Shell>

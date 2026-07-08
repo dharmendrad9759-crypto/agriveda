@@ -6,10 +6,7 @@ import { readStorage, writeStorage } from "@/lib/storage";
 
 const KEY = "agriveda-spray-fields";
 
-const DEFAULT_FIELDS: FarmerField[] = [
-  { id: "field-1", name: "Main field", cropSlug: "paddy" },
-  { id: "field-2", name: "North plot", cropSlug: "cotton" },
-];
+const DEFAULT_FIELDS: FarmerField[] = [];
 
 export function useSprayFields() {
   const [fields, setFields] = useState<FarmerField[]>(DEFAULT_FIELDS);

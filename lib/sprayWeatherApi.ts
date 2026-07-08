@@ -159,3 +159,32 @@ export async function fetchSprayWeatherFromSaved(): Promise<SprayWeatherBundle |
   }
   return fetchSprayWeatherByCity(saved.city);
 }
+
+/** Use farmer profile district/state when weather location not saved */
+export async function fetchSprayWeatherForProfile(
+  district?: string,
+  state?: string
+): Promise<SprayWeatherBundle | null> {
+  try {
+    const saved = await fetchSprayWeatherFromSaved();
+    if (saved) return saved;
+  } catch {
+    /* fall through to profile */
+  }
+
+  const city = [district, state].filter(Boolean).join(", ");
+  if (!city.trim()) return null;
+
+  try {
+    return await fetchSprayWeatherByCity(city);
+  } catch {
+    if (state) {
+      try {
+        return await fetchSprayWeatherByCity(state);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+}

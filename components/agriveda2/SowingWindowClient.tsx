@@ -7,7 +7,6 @@ import { cropCatalog } from "@/data/crop-catalog";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { evaluateSowingWindow } from "@/lib/agriveda2/sowingWindowEngine";
-import { fetchSprayWeatherFromSaved } from "@/lib/sprayWeatherApi";
 import { BUWAI_SLUGS } from "@/data/agriveda2/crop-slug-map";
 
 const STATUS_STYLE = {
@@ -24,17 +23,38 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
     BUWAI_SLUGS[0];
 
   const [cropSlug, setCropSlug] = useState(initialCrop ?? verifiedDefault);
-  const [weather, setWeather] = useState<{ tempC?: number; rain?: number }>({});
+  const [weather, setWeather] = useState<{ tempC?: number; rain?: number; loading?: boolean }>({
+    loading: true,
+  });
 
   useEffect(() => {
-    fetchSprayWeatherFromSaved().then((b) => {
-      if (!b) return;
-      setWeather({
-        tempC: Math.round(b.current.temperatureC),
-        rain: Math.round(b.current.rainProbabilityNext3h * 100),
+    let cancelled = false;
+    setWeather((w) => ({ ...w, loading: true }));
+
+    import("@/lib/sprayWeatherApi")
+      .then(({ fetchSprayWeatherForProfile }) =>
+        fetchSprayWeatherForProfile(profile.district, profile.state)
+      )
+      .then((b) => {
+        if (cancelled) return;
+        if (!b) {
+          setWeather({ loading: false });
+          return;
+        }
+        setWeather({
+          tempC: Math.round(b.current.temperatureC),
+          rain: Math.round(b.current.rainProbabilityNext3h * 100),
+          loading: false,
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setWeather({ loading: false });
       });
-    });
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [profile.district, profile.state]);
 
   const result = useMemo(
     () =>
@@ -150,9 +170,22 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
 
       <div className="grid grid-cols-3 gap-2">
         <Metric icon={<Droplets className="h-4 w-4" />} label="Soil moisture" value={`${result.soilMoisturePercent ?? "—"}%`} />
-        <Metric icon={<Thermometer className="h-4 w-4" />} label="Temp" value={weather.tempC != null ? `${weather.tempC}°C` : "—"} />
-        <Metric icon={<CloudRain className="h-4 w-4" />} label="Rain 3h" value={weather.rain != null ? `${weather.rain}%` : "—"} />
+        <Metric
+          icon={<Thermometer className="h-4 w-4" />}
+          label="Temp"
+          value={weather.loading ? "…" : weather.tempC != null ? `${weather.tempC}°C` : "—"}
+        />
+        <Metric
+          icon={<CloudRain className="h-4 w-4" />}
+          label="Rain 3h"
+          value={weather.loading ? "…" : weather.rain != null ? `${weather.rain}%` : "—"}
+        />
       </div>
+      {!weather.loading && weather.tempC == null && (
+        <p className="text-center text-[11px] theme-text-muted">
+          Mausam ke liye profile mein ज़िला/राज्य भरें या Weather page se location set karein.
+        </p>
+      )}
     </div>
   );
 }
