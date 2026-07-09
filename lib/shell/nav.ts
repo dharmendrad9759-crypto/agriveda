@@ -34,7 +34,7 @@ export const SHELL_NAV: ShellNavItem[] = [
   { label: "AI Doctor", href: "/ai-doctor", icon: Stethoscope },
   { label: "Pests", href: "/pest-diseases", icon: Bug, match: (p) => p.includes("/pests") || p.startsWith("/pest-diseases") || p === "/pest-solver" },
   { label: "Diseases", href: "/pest-diseases", icon: ShieldAlert, match: (p) => p.includes("/diseases") },
-  { label: "Weeds", href: "/crop-problem", icon: Wheat },
+  { label: "Weeds", href: "/pest-diseases?type=weed", icon: Wheat, match: (p) => p.includes("type=weed") },
   { label: "Nutrient Deficiency", href: "/deficiencies", icon: Leaf },
   { label: "Fertilizer Schedule", href: "/services/fertilizer-calculator", icon: FlaskConical },
   { label: "Mandi Prices", href: "/mandi", icon: TrendingUp },

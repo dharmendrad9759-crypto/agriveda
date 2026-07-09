@@ -1,104 +1,149 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import PageBackground from "@/components/ui/PageBackground";
-import SectionHeading from "@/components/ui/SectionHeading";
+import AppLink from "@/components/ui/AppLink";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
 import ThreatCard from "@/components/pest-diseases/ThreatCard";
 import PestDiseaseFilters from "@/components/pest-diseases/PestDiseaseFilters";
 import { pestDiseaseCropList } from "@/data/pest-disease";
-import { getEnrichedCropThreats, filterThreats } from "@/lib/pest-disease-catalog";
+import { getEnrichedCropThreats, filterThreats, getAllWeedsAcrossCrops } from "@/lib/pest-disease-catalog";
 import type { ThreatCategory } from "@/types/pest-disease-ui";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
+
+function categoryFromParam(type: string | null): ThreatCategory | "all" {
+  if (type === "weed") return "weed";
+  if (type === "pest" || type === "insect") return "insect";
+  if (type === "disease" || type === "fungal") return "fungal";
+  return "all";
+}
 
 export default function PestDiseasesContent() {
   const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type");
+  const isWeedHub = typeParam === "weed";
   const initialCrop = searchParams.get("crop") ?? pestDiseaseCropList[0]?.slug ?? "paddy";
 
-  const [selectedSlug, setSelectedSlug] = useState(initialCrop);
+  const [selectedSlug, setSelectedSlug] = useState(isWeedHub ? "all" : initialCrop);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<ThreatCategory | "all">("all");
+  const [category, setCategory] = useState<ThreatCategory | "all">(categoryFromParam(typeParam));
   const { t } = useLocale();
 
-  const allThreats = useMemo(() => getEnrichedCropThreats(selectedSlug), [selectedSlug]);
+  useEffect(() => {
+    setCategory(categoryFromParam(typeParam));
+  }, [typeParam]);
+
+  useEffect(() => {
+    if (searchParams.get("crop")) {
+      setSelectedSlug(searchParams.get("crop")!);
+    }
+  }, [searchParams]);
+
+  const allThreats = useMemo(() => {
+    if (isWeedHub && selectedSlug === "all") {
+      return getAllWeedsAcrossCrops();
+    }
+    const threats = getEnrichedCropThreats(selectedSlug);
+    return isWeedHub ? threats.filter((t) => t.type === "weed") : threats;
+  }, [selectedSlug, isWeedHub]);
   const filtered = useMemo(
     () => filterThreats(allThreats, search, category),
     [allThreats, search, category]
   );
 
-  const cropInfo = pestDiseaseCropList.find((c) => c.slug === selectedSlug);
+  const cropInfo = selectedSlug === "all" ? null : pestDiseaseCropList.find((c) => c.slug === selectedSlug);
+  const pageTitle = isWeedHub ? "Weeds" : t("pestDiseasesTitle");
+  const pageSubtitle = isWeedHub
+    ? "Problematic weeds — identification & management by crop"
+    : t("pestsDiseases");
 
   return (
-    <div className="agriveda-page relative min-h-screen pb-28">
-      <PageBackground />
-
-      <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
-          <Link
-            href="/"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-emerald-600"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div>
-            <h1 className="text-base font-extrabold theme-text-primary">{t("pestDiseasesTitle")}</h1>
-            <p className="text-[11px] theme-text-muted">{t("pestsDiseases")}</p>
-          </div>
+    <AppShell
+      title={pageTitle}
+      subtitle={pageSubtitle}
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: isWeedHub ? "Weeds" : "Pests & Diseases" },
+      ]}
+    >
+      {isWeedHub && (
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <DarkCard className="text-center">
+            <p className="text-lg font-bold text-[var(--av-accent)]">{getAllWeedsAcrossCrops().length}</p>
+            <p className={AV.micro}>Weeds catalogued</p>
+          </DarkCard>
+          <DarkCard className="text-center">
+            <p className="text-lg font-bold text-[var(--av-accent)]">{pestDiseaseCropList.length}</p>
+            <p className={AV.micro}>Crops covered</p>
+          </DarkCard>
         </div>
-      </header>
+      )}
 
-      <div className="relative mx-auto max-w-lg space-y-5 px-4 py-5">
-        <Link
-          href="/pest-solver"
-          className="flex items-center justify-between rounded-2xl border-2 border-emerald-500/30 bg-emerald-50 px-4 py-3 shadow-sm dark:bg-emerald-500/10"
-        >
-          <div>
-            <p className="text-sm font-extrabold text-emerald-900 dark:text-emerald-300">
-              Not sure what it is?
-            </p>
-            <p className="text-xs font-medium text-emerald-800/80 dark:text-emerald-400/90">
-              Identify by symptom → Pest &amp; Disease Solver
-            </p>
-          </div>
-          <span className="text-lg font-bold text-emerald-600">→</span>
-        </Link>
+      <AppLink
+        href="/pest-solver"
+        className="av-card av-card-hover flex items-center justify-between p-4"
+      >
+        <div>
+          <p className="text-sm font-semibold text-[var(--av-text-primary)]">Not sure what it is?</p>
+          <p className={`mt-0.5 ${AV.micro}`}>Identify by symptom → Pest &amp; Disease Solver</p>
+        </div>
+        <span className="text-lg font-bold text-[var(--av-accent)]">→</span>
+      </AppLink>
 
-        <section>
-          <SectionHeading title={t("selectCropPrompt")} />
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {pestDiseaseCropList.map((crop) => (
-              <button
-                key={crop.slug}
-                type="button"
-                onClick={() => {
-                  setSelectedSlug(crop.slug);
-                  setSearch("");
-                  setCategory("all");
-                }}
+      <DarkCard className="mt-4" delay={0}>
+        <h3 className={AV.sectionTitle}>{t("selectCropPrompt")}</h3>
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {isWeedHub && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedSlug("all");
+                setSearch("");
+              }}
+              className={cn(
+                "flex shrink-0 flex-col items-center gap-1 rounded-xl border px-3 py-2 transition",
+                selectedSlug === "all"
+                  ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
+                  : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
+              )}
+            >
+              <span className="text-xl">🌿</span>
+              <span className="text-[10px] font-semibold text-[var(--av-accent)]">All Crops</span>
+            </button>
+          )}
+          {pestDiseaseCropList.map((crop) => (
+            <button
+              key={crop.slug}
+              type="button"
+              onClick={() => {
+                setSelectedSlug(crop.slug);
+                setSearch("");
+              }}
+              className={cn(
+                "flex shrink-0 flex-col items-center gap-1 rounded-xl border px-3 py-2 transition",
+                selectedSlug === crop.slug
+                  ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
+                  : "border-[var(--av-border)] bg-[var(--av-surface-inset)] hover:border-[var(--av-accent)]/30"
+              )}
+            >
+              <span className="text-xl">{crop.emoji}</span>
+              <span
                 className={cn(
-                  "flex flex-shrink-0 flex-col items-center gap-1.5 rounded-2xl border px-4 py-3 transition-all",
-                  selectedSlug === crop.slug
-                    ? "border-emerald-500 bg-emerald-500/15 shadow-md"
-                    : "border-gray-200 bg-white dark:border-white/10 dark:bg-black/20"
+                  "text-[10px] font-semibold",
+                  selectedSlug === crop.slug ? "text-[var(--av-accent)]" : "text-[var(--av-text-muted)]"
                 )}
               >
-                <span className="text-2xl">{crop.emoji}</span>
-                <span
-                  className={cn(
-                    "text-[11px] font-bold",
-                    selectedSlug === crop.slug ? "text-emerald-600" : "theme-text-muted"
-                  )}
-                >
-                  {crop.name}
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
+                {crop.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      </DarkCard>
 
+      <div className="mt-4">
         <PestDiseaseFilters
           search={search}
           onSearchChange={setSearch}
@@ -106,31 +151,28 @@ export default function PestDiseasesContent() {
           onCategoryChange={setCategory}
           resultCount={filtered.length}
         />
-
-        {filtered.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map((threat) => (
-              <ThreatCard key={`${threat.type}-${threat.id}`} threat={threat} />
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center dark:border-white/10 dark:bg-black/20">
-            <p className="text-sm font-bold theme-text-primary">कोई परिणाम नहीं</p>
-            <p className="mt-1 text-xs theme-text-muted">
-              {allThreats.length === 0
-                ? `${cropInfo?.name ?? "This crop"} के लिए data उपलब्ध नहीं — दूसरी crop try करें।`
-                : "Search या filter बदलें।"}
-            </p>
-          </div>
-        )}
-
-        <Link
-          href="/ai-doctor"
-          className="block rounded-2xl bg-[#006432] py-3.5 text-center text-sm font-bold text-white"
-        >
-          AI Doctor से photo diagnosis करें →
-        </Link>
       </div>
-    </div>
+
+      {filtered.length > 0 ? (
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+          {filtered.map((threat) => (
+            <ThreatCard key={`${threat.type}-${threat.id}`} threat={threat} />
+          ))}
+        </div>
+      ) : (
+        <DarkCard className="mt-4 text-center" delay={1}>
+          <p className="text-sm font-semibold text-[var(--av-text-primary)]">कोई परिणाम नहीं</p>
+          <p className={`mt-1 ${AV.micro}`}>
+            {allThreats.length === 0
+              ? `${cropInfo?.name ?? "This crop"} के लिए data उपलब्ध नहीं — दूसरी crop try करें।`
+              : "Search या filter बदलें।"}
+          </p>
+        </DarkCard>
+      )}
+
+      <AppLink href="/ai-doctor" className={`mt-4 inline-flex ${AV.btnPrimarySm}`}>
+        AI Doctor से photo diagnosis करें →
+      </AppLink>
+    </AppShell>
   );
 }

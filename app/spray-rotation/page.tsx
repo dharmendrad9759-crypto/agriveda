@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import Link from "next/link";
-import { ArrowLeft, Plus, Wifi, WifiOff, Droplets } from "lucide-react";
-import PageBackground from "@/components/ui/PageBackground";
-import GlassCard from "@/components/ui/GlassCard";
+import AppLink from "@/components/ui/AppLink";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
+import { Plus, Wifi, WifiOff, Droplets } from "lucide-react";
 import SprayTimeline from "@/components/spray-rotation/SprayTimeline";
 import RiskBanner from "@/components/spray-rotation/RiskBanner";
 import SuggestedSprayCard from "@/components/spray-rotation/SuggestedSprayCard";
@@ -21,6 +21,7 @@ import { trySyncPendingSprays } from "@/lib/spraySync";
 import { cropCatalog } from "@/data/crop-catalog";
 import { getCropPestDisease } from "@/data/pest-disease";
 import { cn } from "@/lib/cn";
+import { AV } from "@/lib/design/tokens";
 
 const TRACKER_CROPS = cropCatalog.filter((c) =>
   ["paddy", "cotton", "maize", "moongfali"].includes(c.slug)
@@ -29,7 +30,7 @@ const TRACKER_CROPS = cropCatalog.filter((c) =>
 export default function SprayRotationPage() {
   const { locale, setLocale } = useSprayLocale();
   const { fields } = useSprayFields();
-  const { logs, hydrated, isOnline, pendingCount, getLogsForField } = useSprayLogs();
+  const { hydrated, isOnline, pendingCount, getLogsForField } = useSprayLogs();
 
   const [selectedFieldId, setSelectedFieldId] = useState(fields[0]?.id ?? "");
   const [pestId, setPestId] = useState("");
@@ -64,32 +65,20 @@ export default function SprayRotationPage() {
   if (!hydrated) return null;
 
   return (
-    <div className="agriveda-page relative min-h-screen pb-28">
-      <PageBackground />
+    <AppShell
+      title={t(locale, "title")}
+      subtitle={t(locale, "subtitle")}
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Spray Rotation" }]}
+    >
+      <div className="flex justify-end">
+        {isOnline ? (
+          <Wifi className="h-4 w-4 text-[var(--av-accent)]" />
+        ) : (
+          <WifiOff className="h-4 w-4 text-amber-500" />
+        )}
+      </div>
 
-      <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 text-emerald-600"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <div>
-              <h1 className="text-base font-extrabold theme-text-primary">{t(locale, "title")}</h1>
-              <p className="text-[10px] theme-text-muted">{t(locale, "subtitle")}</p>
-            </div>
-          </div>
-          {isOnline ? (
-            <Wifi className="h-4 w-4 text-emerald-500" />
-          ) : (
-            <WifiOff className="h-4 w-4 text-amber-500" />
-          )}
-        </div>
-      </header>
-
-      <div className="relative mx-auto max-w-lg space-y-5 px-4 py-5">
+      <DarkCard className="mt-2">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           {LOCALE_OPTIONS.map((opt) => (
             <button
@@ -98,116 +87,115 @@ export default function SprayRotationPage() {
               onClick={() => setLocale(opt.code)}
               className={cn(
                 "rounded-full px-3 py-1 text-xs font-bold",
-                locale === opt.code ? "bg-emerald-600 text-white" : "border theme-text-muted"
+                locale === opt.code
+                  ? "bg-[var(--av-accent)] text-[#0a0f1a]"
+                  : "border border-[var(--av-border)] text-[var(--av-text-muted)]"
               )}
             >
               {opt.label}
             </button>
           ))}
         </div>
+      </DarkCard>
 
-        {pendingCount > 0 && (
-          <p className="rounded-xl bg-amber-50 px-3 py-2 text-center text-xs font-bold text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
-            {pendingCount} {t(locale, "syncPending")}
-          </p>
-        )}
+      {pendingCount > 0 && (
+        <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-center text-xs font-bold text-amber-600">
+          {pendingCount} {t(locale, "syncPending")}
+        </p>
+      )}
 
-        <Link
-          href="/spray-rotation/log"
-          className="flex items-center justify-center gap-2 rounded-2xl bg-[#006432] py-4 text-sm font-black text-white shadow-lg"
-        >
-          <Plus className="h-5 w-5" />
-          {t(locale, "logSpray")}
-        </Link>
+      <AppLink href="/spray-rotation/log" className={`mt-4 flex w-full justify-center gap-2 ${AV.btnPrimary}`}>
+        <Plus className="h-5 w-5" />
+        {t(locale, "logSpray")}
+      </AppLink>
 
-        <section>
-          <h2 className="mb-2 flex items-center gap-2 text-sm font-extrabold theme-text-primary">
-            <Droplets className="h-4 w-4 text-emerald-500" />
-            {t(locale, "rotationStatus")}
-          </h2>
+      <DarkCard className="mt-4" delay={1}>
+        <h2 className={`flex items-center gap-2 ${AV.sectionTitle}`}>
+          <Droplets className="h-4 w-4 text-[var(--av-accent)]" />
+          {t(locale, "rotationStatus")}
+        </h2>
 
-          <div className="mb-3 flex gap-2 overflow-x-auto scrollbar-hide">
-            {fields.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => setSelectedFieldId(f.id)}
-                className={cn(
-                  "flex-shrink-0 rounded-xl border px-4 py-2 text-xs font-bold",
-                  selectedFieldId === f.id
-                    ? "border-emerald-500 bg-emerald-500/15 text-emerald-700"
-                    : "border-gray-200 theme-text-muted"
-                )}
-              >
-                {f.name}
-              </button>
-            ))}
-          </div>
+        <div className="mb-3 mt-3 flex gap-2 overflow-x-auto scrollbar-hide">
+          {fields.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => setSelectedFieldId(f.id)}
+              className={cn(
+                "shrink-0 rounded-xl border px-4 py-2 text-xs font-bold",
+                selectedFieldId === f.id
+                  ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)] text-[var(--av-accent)]"
+                  : "border-[var(--av-border)] text-[var(--av-text-muted)]"
+              )}
+            >
+              {f.name}
+            </button>
+          ))}
+        </div>
 
-          <RiskBanner
-            result={risk}
-            labels={{
-              low: t(locale, "riskLow"),
-              medium: t(locale, "riskMedium"),
-              high: t(locale, "riskHigh"),
-              consecutive: t(locale, "consecutiveWarning"),
-            }}
-          />
-
-          <GlassCard className="mt-4 p-4">
-            <p className="text-xs font-extrabold theme-text-primary">{t(locale, "timeline")}</p>
-            {withProducts.length === 0 ? (
-              <p className="mt-4 text-center text-sm theme-text-muted">{t(locale, "noSprays")}</p>
-            ) : (
-              <div className="mt-3">
-                <SprayTimeline sprays={withProducts} />
-              </div>
-            )}
-          </GlassCard>
-        </section>
-
-        <section>
-          <p className="mb-2 text-xs font-bold theme-text-muted">{t(locale, "targetPest")} (for suggestions)</p>
-          <select
-            value={pestId ? `p-${pestId}` : diseaseId ? `d-${diseaseId}` : ""}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v.startsWith("p-")) {
-                setPestId(v.slice(2));
-                setDiseaseId("");
-              } else if (v.startsWith("d-")) {
-                setDiseaseId(v.slice(2));
-                setPestId("");
-              } else {
-                setPestId("");
-                setDiseaseId("");
-              }
-            }}
-            className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
-          >
-            <option value="">— {t(locale, "targetPest")} —</option>
-            {cropThreats.pests.map((p) => (
-              <option key={p.id} value={`p-${p.id}`}>
-                🐛 {p.name}
-              </option>
-            ))}
-            {cropThreats.diseases.map((d) => (
-              <option key={d.id} value={`d-${d.id}`}>
-                🦠 {d.name}
-              </option>
-            ))}
-          </select>
-          <p className="mt-1 text-[10px] theme-text-muted">
-            Crop: {TRACKER_CROPS.find((c) => c.slug === cropId)?.name ?? cropId}
-          </p>
-        </section>
-
-        <SuggestedSprayCard
-          suggestions={suggestions}
-          title={t(locale, "suggestedNext")}
-          emptyMessage={t(locale, "recommendDifferent")}
+        <RiskBanner
+          result={risk}
+          labels={{
+            low: t(locale, "riskLow"),
+            medium: t(locale, "riskMedium"),
+            high: t(locale, "riskHigh"),
+            consecutive: t(locale, "consecutiveWarning"),
+          }}
         />
-      </div>
-    </div>
+
+        <div className="mt-4">
+          <p className={AV.label}>{t(locale, "timeline")}</p>
+          {withProducts.length === 0 ? (
+            <p className="mt-4 text-center text-sm text-[var(--av-text-muted)]">{t(locale, "noSprays")}</p>
+          ) : (
+            <div className="mt-3">
+              <SprayTimeline sprays={withProducts} />
+            </div>
+          )}
+        </div>
+      </DarkCard>
+
+      <DarkCard className="mt-4" delay={2}>
+        <p className={AV.label}>{t(locale, "targetPest")} (for suggestions)</p>
+        <select
+          value={pestId ? `p-${pestId}` : diseaseId ? `d-${diseaseId}` : ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v.startsWith("p-")) {
+              setPestId(v.slice(2));
+              setDiseaseId("");
+            } else if (v.startsWith("d-")) {
+              setDiseaseId(v.slice(2));
+              setPestId("");
+            } else {
+              setPestId("");
+              setDiseaseId("");
+            }
+          }}
+          className="av-input mt-2 w-full"
+        >
+          <option value="">— {t(locale, "targetPest")} —</option>
+          {cropThreats.pests.map((p) => (
+            <option key={p.id} value={`p-${p.id}`}>
+              🐛 {p.name}
+            </option>
+          ))}
+          {cropThreats.diseases.map((d) => (
+            <option key={d.id} value={`d-${d.id}`}>
+              🦠 {d.name}
+            </option>
+          ))}
+        </select>
+        <p className={`mt-1 ${AV.micro}`}>
+          Crop: {TRACKER_CROPS.find((c) => c.slug === cropId)?.name ?? cropId}
+        </p>
+      </DarkCard>
+
+      <SuggestedSprayCard
+        suggestions={suggestions}
+        title={t(locale, "suggestedNext")}
+        emptyMessage={t(locale, "recommendDifferent")}
+      />
+    </AppShell>
   );
 }

@@ -10,6 +10,7 @@ export const PADDY_PESTS = [
     loss: "15-25%",
     attackStage: "Tillering to Panicle",
     monitoring: "Light traps",
+    etl: "5% hills with fresh dead hearts / white ears",
   },
   {
     id: "leaf-folder",
@@ -22,6 +23,7 @@ export const PADDY_PESTS = [
     loss: "5-10%",
     attackStage: "Vegetative",
     monitoring: "Field scouting",
+    etl: "10% folded leaves or 1 larva per hill",
   },
   {
     id: "brown-planthopper",
@@ -34,6 +36,7 @@ export const PADDY_PESTS = [
     loss: "20-40%",
     attackStage: "Tillering to Flowering",
     monitoring: "Yellow pan traps",
+    etl: "5–10 hoppers per hill (ETL varies by variety)",
   },
   {
     id: "gall-midge",
@@ -46,6 +49,7 @@ export const PADDY_PESTS = [
     loss: "10-15%",
     attackStage: "Tillering",
     monitoring: "Gall inspection",
+    etl: "10% hills with silver shoot / gall symptoms",
   },
 ];
 

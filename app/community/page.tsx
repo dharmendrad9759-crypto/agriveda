@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
+import CommunityQueryCard from "@/components/community/CommunityQueryCard";
 import {
   COMMUNITY_STATS,
   COMMUNITY_DISCUSSIONS,
@@ -12,17 +13,72 @@ import {
   TRENDING,
   COMMUNITY_POLL,
 } from "@/data/mock/community";
+import { communityQueries } from "@/data/queries";
+import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useToast } from "@/components/ui/Toast";
+import { readStorage, writeStorage } from "@/lib/storage";
 import { AV } from "@/lib/design/tokens";
 import { Eye, MessageCircle, Flame } from "lucide-react";
 
 const TABS = ["All", "My Questions", "Unanswered", "Following"] as const;
+const POLL_KEY = "agriveda-community-poll";
+const FOLLOWING_KEY = "agriveda-community-following";
+
+const GUIDELINES = [
+  "Crop name aur stage clearly likhein — photo attach karein jahan possible ho.",
+  "Chemical dose hamesha label / CIB&RC registration se verify karein.",
+  "Dusre kisanon ka respect karein — spam ya wrong advice share na karein.",
+  "Personal phone / bank details public post mein na daalein.",
+  "Urgent field emergency ke liye AI Doctor ya local KVK se contact karein.",
+];
 
 export default function CommunityPage() {
   const { showToast } = useToast();
+  const { queries: myQueries, hydrated } = useQueryHistory();
   const [tab, setTab] = useState<(typeof TABS)[number]>("All");
   const [following, setFollowing] = useState<Set<string>>(new Set());
   const [pollVote, setPollVote] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPollVote(readStorage<string | null>(POLL_KEY, null));
+    const saved = readStorage<string[]>(FOLLOWING_KEY, []);
+    setFollowing(new Set(saved));
+  }, []);
+
+  const allQueries = useMemo(() => {
+    if (!hydrated) return communityQueries;
+    const ids = new Set(myQueries.map((q) => q.id));
+    const merged = [...myQueries, ...communityQueries.filter((q) => !ids.has(q.id))];
+    return merged;
+  }, [myQueries, hydrated]);
+
+  const filteredQueries = useMemo(() => {
+    if (tab === "My Questions") return allQueries.filter((q) => q.isMine);
+    if (tab === "Unanswered") return allQueries.filter((q) => q.expertResponse?.date === "Pending review");
+    if (tab === "Following") {
+      const expertNames = new Set(
+        COMMUNITY_EXPERTS.filter((e) => following.has(e.name)).map((e) => e.name)
+      );
+      return allQueries.filter((q) => q.expertResponse && expertNames.has(q.expertResponse.expertName));
+    }
+    return allQueries;
+  }, [allQueries, tab, following]);
+
+  const votePoll = (label: string) => {
+    setPollVote(label);
+    writeStorage(POLL_KEY, label);
+    showToast(`Vote saved: ${label}`);
+  };
+
+  const followExpert = (name: string) => {
+    setFollowing((prev) => {
+      const next = new Set(prev);
+      next.add(name);
+      writeStorage(FOLLOWING_KEY, [...next]);
+      return next;
+    });
+    showToast(`${name} ko follow kiya`);
+  };
 
   return (
     <AppShell
@@ -48,6 +104,18 @@ export default function CommunityPage() {
         ))}
       </div>
 
+      <DarkCard className="mt-4" delay={0}>
+        <h3 className={AV.sectionTitle}>Community guidelines</h3>
+        <ul className={`mt-2 space-y-1 ${AV.micro}`}>
+          {GUIDELINES.map((g) => (
+            <li key={g} className="flex gap-2 text-[var(--av-text-secondary)]">
+              <span className="text-[var(--av-accent)]">•</span>
+              {g}
+            </li>
+          ))}
+        </ul>
+      </DarkCard>
+
       <div className="mt-6 grid gap-4 xl:grid-cols-3">
         <div className="space-y-4 xl:col-span-2">
           <div className="flex gap-1 overflow-x-auto scrollbar-hide">
@@ -65,11 +133,21 @@ export default function CommunityPage() {
             ))}
           </div>
 
-          <DarkCard delay={1}>
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Recent Discussions</h3>
-              <AppLink href="/ask-query" className="text-xs text-[var(--av-accent)]">View All →</AppLink>
-            </div>
+          <div className="space-y-3">
+            {filteredQueries.length > 0 ? (
+              filteredQueries.map((q) => <CommunityQueryCard key={q.id} query={q} />)
+            ) : (
+              <DarkCard className="text-center">
+                <p className="text-sm font-semibold text-[var(--av-text-primary)]">कोई query नहीं</p>
+                <AppLink href="/ask-query" className={`mt-3 inline-flex ${AV.btnPrimarySm}`}>
+                  Ask a Question
+                </AppLink>
+              </DarkCard>
+            )}
+          </div>
+
+          <DarkCard delay={2}>
+            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Recent Discussions</h3>
             <ul className="mt-3 space-y-2">
               {COMMUNITY_DISCUSSIONS.map((d) => (
                 <li key={d.id}>
@@ -120,10 +198,7 @@ export default function CommunityPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => {
-                      setFollowing((prev) => new Set(prev).add(e.name));
-                      showToast(`${e.name} ko follow kiya`);
-                    }}
+                    onClick={() => followExpert(e.name)}
                     className={`text-[10px] font-bold ${following.has(e.name) ? "text-[var(--av-text-muted)]" : "text-[var(--av-accent)]"}`}
                   >
                     {following.has(e.name) ? "Following" : "Follow"}
@@ -156,10 +231,7 @@ export default function CommunityPage() {
                 <button
                   key={o.label}
                   type="button"
-                  onClick={() => {
-                    setPollVote(o.label);
-                    showToast(`Vote: ${o.label}`);
-                  }}
+                  onClick={() => votePoll(o.label)}
                   className={`block w-full rounded-lg border px-2 py-1.5 text-left transition ${
                     pollVote === o.label
                       ? "border-[var(--av-accent)] bg-[var(--av-accent)]/10"

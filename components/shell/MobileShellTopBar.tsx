@@ -1,7 +1,8 @@
 "use client";
 
 import AppLink from "@/components/ui/AppLink";
-import { Bell, CloudSun, MapPin, User } from "lucide-react";
+import WeatherPill from "@/components/weather/WeatherPill";
+import { Bell, MapPin, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
 
@@ -23,10 +24,7 @@ export default function MobileShellTopBar() {
           <MapPin className="h-3 w-3 text-[var(--av-accent)]" />
           {location.split(",")[0]}
         </AppLink>
-        <AppLink href="/weather" className="flex items-center gap-1 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-1 text-[9px] text-[var(--av-text-secondary)]">
-          <CloudSun className="h-3 w-3 text-amber-500" />
-          32°
-        </AppLink>
+        <WeatherPill compact />
         <AppLink href="/alerts" className={`relative ${iconBtn}`}>
           <Bell className="h-3.5 w-3.5" />
           <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">

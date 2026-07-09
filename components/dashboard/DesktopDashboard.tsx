@@ -7,19 +7,16 @@ import {
   Leaf,
   Bell,
   CloudSun,
-  Droplets,
-  Wind,
-  Sun,
-  MessageCircle,
-  TrendingUp,
-  TrendingDown,
-  Heart,
   Brain,
   Stethoscope,
   Bug,
   FlaskConical,
   IndianRupee,
   LineChart,
+  MessageCircle,
+  TrendingUp,
+  TrendingDown,
+  Heart,
   type LucideIcon,
 } from "lucide-react";
 import DarkCard from "@/components/shell/DarkCard";
@@ -28,18 +25,18 @@ import PageHero from "@/components/shell/PageHero";
 import SectionHeader from "@/components/shell/SectionHeader";
 import { DonutChart } from "@/components/shell/charts";
 import { ShellCtaBanner } from "@/components/shell/AppShell";
+import DashboardWeatherCard from "@/components/dashboard/DashboardWeatherCard";
 import { AV } from "@/lib/design/tokens";
 import {
-  DASHBOARD_METRICS,
   DASHBOARD_ALERTS,
-  DASHBOARD_ACTIVITIES,
-  DASHBOARD_FIELDS,
   DASHBOARD_MANDI,
   EXPERT_TIP,
   CROP_HEALTH_SEGMENTS,
   COMMUNITY_POST,
 } from "@/data/mock/dashboard";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useFarmData } from "@/hooks/useFarmData";
+import { useMyCrops } from "@/hooks/useMyCrops";
 
 const QUICK_ACTIONS: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Crop Calendar", href: "/crop-calendar", icon: Calendar },
@@ -55,7 +52,12 @@ const QUICK_ACTIONS: { label: string; href: string; icon: LucideIcon }[] = [
 
 export default function DesktopDashboard({ embedded = false }: { embedded?: boolean }) {
   const { profile } = useFarmerProfile();
+  const { data: farm, stats: farmStats } = useFarmData();
+  const { crops: myCrops } = useMyCrops();
   const name = profile.name.trim() || "Kisan";
+
+  const activeCropCount = myCrops.length > 0 ? myCrops.length : farmStats.cropsGrowing;
+  const healthLabel = farmStats.healthScore >= 80 ? "Good" : farmStats.healthScore >= 65 ? "Average" : "Watch";
 
   return (
     <div className={AV.sectionGap}>
@@ -70,37 +72,14 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
       )}
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        <StatCard icon={Sprout} label="Active Crops" value={DASHBOARD_METRICS[0].value} action={DASHBOARD_METRICS[0].action} delay={0} />
-        <StatCard icon={Calendar} label="Upcoming Tasks" value={DASHBOARD_METRICS[1].value} action={DASHBOARD_METRICS[1].action} delay={1} />
-        <StatCard icon={Leaf} label="Field Health" value={DASHBOARD_METRICS[2].value} action={DASHBOARD_METRICS[2].action} delay={2} />
-        <StatCard icon={Bell} label="Alerts" value={DASHBOARD_METRICS[3].value} action={DASHBOARD_METRICS[3].action} delay={3} />
+        <StatCard icon={Sprout} label="Active Crops" value={`${activeCropCount} in field`} action={{ label: "View Details", href: "/my-farm" }} delay={0} />
+        <StatCard icon={Calendar} label="Upcoming Tasks" value={`${farm.activities.length} next 7 days`} action={{ label: "View Calendar", href: "/crop-calendar" }} delay={1} />
+        <StatCard icon={Leaf} label="Field Health" value={`${farmStats.healthScore}% ${healthLabel}`} action={{ label: "View Report", href: "/my-farm" }} delay={2} />
+        <StatCard icon={Bell} label="Alerts" value={`${DASHBOARD_ALERTS.length} new`} action={{ label: "View All", href: "/alerts" }} delay={3} />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-12">
-        <DarkCard hover className="xl:col-span-8" delay={1}>
-          <SectionHeader title="Weather Today" action={{ label: "Full Forecast", href: "/weather" }} />
-          <div className="mt-4 flex flex-wrap items-center gap-6">
-            <div>
-              <p className="text-4xl font-bold text-[var(--av-text-primary)]">32°C</p>
-              <p className={`text-sm ${AV.body}`}>Partly Cloudy · Feels like 36°C</p>
-              <p className={`mt-0.5 ${AV.micro}`}>Sehore, MP</p>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
-              <span className={`flex items-center gap-1 ${AV.body}`}>
-                <Droplets className="h-3.5 w-3.5 text-[var(--av-accent)]" /> 62%
-              </span>
-              <span className={`flex items-center gap-1 ${AV.body}`}>
-                <Wind className="h-3.5 w-3.5 text-[var(--av-accent)]" /> 14 km/h
-              </span>
-              <span className={`flex items-center gap-1 ${AV.body}`}>
-                <CloudSun className="h-3.5 w-3.5 text-[var(--av-accent)]" /> 20% rain
-              </span>
-              <span className={`flex items-center gap-1 ${AV.body}`}>
-                <Sun className="h-3.5 w-3.5 text-amber-500" /> UV 7
-              </span>
-            </div>
-          </div>
-        </DarkCard>
+        <DashboardWeatherCard />
 
         <DarkCard hover className="xl:col-span-4" delay={2}>
           <SectionHeader title="Quick Actions" />
@@ -129,8 +108,8 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
         <DarkCard hover delay={1}>
           <SectionHeader title="My Fields" action={{ label: "View All", href: "/my-farm" }} />
           <ul className="mt-3 space-y-2">
-            {DASHBOARD_FIELDS.map((f) => (
-              <li key={f.name} className="av-card-inset flex items-center justify-between">
+            {farm.fields.slice(0, 4).map((f) => (
+              <li key={f.id} className="av-card-inset flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold text-[var(--av-text-primary)]">{f.name}</p>
                   <p className={AV.micro}>
@@ -139,9 +118,9 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
                 </div>
                 <div className="text-right">
                   <span
-                    className={`text-[10px] font-bold ${f.status === "Good" ? "text-[var(--av-accent)]" : "text-amber-600"}`}
+                    className={`text-[10px] font-bold ${f.health >= 75 ? "text-[var(--av-accent)]" : "text-amber-600"}`}
                   >
-                    {f.status}
+                    {f.health >= 75 ? "Good" : "Average"}
                   </span>
                   <p className="text-xs font-bold text-[var(--av-accent)]">{f.health}%</p>
                 </div>
@@ -166,7 +145,7 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
         <DarkCard hover delay={3}>
           <SectionHeader title="Tasks Due" action={{ label: "Calendar", href: "/crop-calendar" }} />
           <ul className="mt-3 space-y-2">
-            {DASHBOARD_ACTIVITIES.map((a) => (
+            {farm.activities.slice(0, 4).map((a) => (
               <li key={a.id} className="av-card-inset">
                 <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.task}</p>
                 <p className={AV.micro}>{a.field}</p>
@@ -222,7 +201,11 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
         <DarkCard hover delay={1}>
           <SectionHeader title="Crop Health" action={{ label: "Report", href: "/my-farm" }} />
           <div className="mt-4 flex justify-center">
-            <DonutChart segments={CROP_HEALTH_SEGMENTS} centerValue="82%" centerLabel="Good" />
+            <DonutChart
+              segments={CROP_HEALTH_SEGMENTS}
+              centerValue={`${farmStats.healthScore}%`}
+              centerLabel={healthLabel}
+            />
           </div>
           <p className="mt-3 rounded-lg bg-[var(--av-accent-soft)] px-3 py-2 text-center text-xs text-[var(--av-accent)]">
             Fields healthy — keep monitoring pest alerts this week.

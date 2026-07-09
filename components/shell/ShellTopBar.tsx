@@ -1,7 +1,8 @@
 "use client";
 
 import AppLink from "@/components/ui/AppLink";
-import { Bell, ChevronDown, CloudSun, MapPin, User } from "lucide-react";
+import WeatherPill from "@/components/weather/WeatherPill";
+import { Bell, ChevronDown, MapPin, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMemo } from "react";
 
@@ -24,10 +25,7 @@ export default function ShellTopBar() {
         <ChevronDown className="h-3 w-3 text-[var(--av-text-muted)]" />
       </AppLink>
 
-      <AppLink href="/weather" className={pill}>
-        <CloudSun className="h-3.5 w-3.5 text-amber-500" />
-        32°C Partly Cloudy
-      </AppLink>
+      <WeatherPill />
 
       <AppLink
         href="/alerts"

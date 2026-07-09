@@ -1,5 +1,5 @@
 import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/data/pest-disease";
-import { getCropPestDisease } from "@/data/pest-disease";
+import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
 import { findStageGuideForThreat } from "@/lib/cropProtectionGuide";
 import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-disease-ui";
@@ -195,6 +195,14 @@ export function getEnrichedCropThreats(slug: string): EnrichedThreat[] {
     ...crop.diseases.map((d) => enrichDisease(crop, d)),
     ...crop.weeds.map((w) => enrichWeed(crop, w)),
   ];
+}
+
+/** All weeds across catalog crops — for weeds hub overview */
+export function getAllWeedsAcrossCrops(): EnrichedThreat[] {
+  return pestDiseaseCropList.flatMap((c) => {
+    const crop = getCropPestDisease(c.slug);
+    return crop.weeds.map((w) => enrichWeed(crop, w));
+  });
 }
 
 export function getThreatDetail(

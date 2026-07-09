@@ -1,42 +1,77 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, Filter, TrendingUp, TrendingDown } from "lucide-react";
+import { Search, Filter, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import StatCard from "@/components/shell/StatCard";
 import { LineChart, Sparkline, DonutChart } from "@/components/shell/charts";
 import { useToast } from "@/components/ui/Toast";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useMandiPrices } from "@/hooks/useMandiPrices";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import {
-  MANDI_STATS,
-  MANDI_PRICES,
   TOP_MANDIS,
   MANDI_INSIGHTS,
   MANDI_NEWS,
-  PRICE_ALERTS,
   COMMODITY_CATEGORIES,
 } from "@/data/mock/mandi";
+import type { MandiRow } from "@/lib/mandi/types";
 import { MapPin, Package, Activity, Bell } from "lucide-react";
+import { AV } from "@/lib/design/tokens";
+
+function topMandisFromRows(rows: MandiRow[]) {
+  return [...rows]
+    .sort((a, b) => b.modal - a.modal)
+    .slice(0, 4)
+    .map((r) => ({ name: `${r.mandi} Mandi`, price: r.modal, change: r.change }));
+}
 
 export default function MandiPage() {
   const { showToast } = useToast();
+  const { profile } = useFarmerProfile();
+  const state = profile.state.trim() || "Madhya Pradesh";
+  const district = profile.district.trim() || undefined;
+  const { data, loading, refresh } = useMandiPrices({ state, district });
+  const { settings, activeCount, addAlert, toggleAlert, removeAlert } = usePriceAlerts();
+
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"high" | "low" | "change">("high");
   const [category, setCategory] = useState<string | null>(null);
+  const [newCrop, setNewCrop] = useState("");
+  const [newTarget, setNewTarget] = useState("");
+
+  const rows = data?.rows ?? [];
+  const locationLabel = district ? `${district}, ${state}` : state;
 
   const filtered = useMemo(() => {
-    let rows = MANDI_PRICES.filter(
+    let list = rows.filter(
       (r) =>
         (category ? r.category === category : true) &&
         (r.crop.toLowerCase().includes(search.toLowerCase()) ||
-        r.cropHi.includes(search) ||
-        r.mandi.toLowerCase().includes(search.toLowerCase()))
+          r.cropHi.includes(search) ||
+          r.mandi.toLowerCase().includes(search.toLowerCase()))
     );
-    if (sort === "high") rows = [...rows].sort((a, b) => b.modal - a.modal);
-    if (sort === "low") rows = [...rows].sort((a, b) => a.modal - b.modal);
-    if (sort === "change") rows = [...rows].sort((a, b) => b.change - a.change);
-    return rows;
-  }, [search, sort, category]);
+    if (sort === "high") list = [...list].sort((a, b) => b.modal - a.modal);
+    if (sort === "low") list = [...list].sort((a, b) => a.modal - b.modal);
+    if (sort === "change") list = [...list].sort((a, b) => b.change - a.change);
+    return list;
+  }, [rows, search, sort, category]);
+
+  const topMandis = topMandisFromRows(rows).length ? topMandisFromRows(rows) : TOP_MANDIS;
+  const paddyTrend = rows.find((r) => r.crop === "Paddy")?.trend ?? [2100, 2120, 2140, 2150, 2160, 2170, 2180];
+
+  const handleAddAlert = () => {
+    const target = parseInt(newTarget, 10);
+    if (!newCrop.trim() || !Number.isFinite(target) || target <= 0) {
+      showToast("Crop name aur valid target price bharein", "error");
+      return;
+    }
+    addAlert({ crop: newCrop.trim(), target });
+    setNewCrop("");
+    setNewTarget("");
+    showToast("Price alert created ✓");
+  };
 
   return (
     <AppShell
@@ -44,11 +79,22 @@ export default function MandiPage() {
       subtitle="Live mandi rates, market trends & price insights"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Mandi Prices" }]}
     >
+      {data?.error && (
+        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-200">
+          {data.error}
+        </p>
+      )}
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard icon={MapPin} label="Selected Location" value={MANDI_STATS.location} action={{ label: "Change Location", href: "/profile" }} />
-        <StatCard icon={Package} label="Total Commodities" value={`${MANDI_STATS.commodities} Crops`} action={{ label: "View All", href: "/market-trends" }} />
-        <StatCard icon={Activity} label="Market Status" value={MANDI_STATS.status} sub={MANDI_STATS.lastUpdated} />
-        <StatCard icon={Bell} label="Price Alerts" value={`${MANDI_STATS.activeAlerts} Active`} action={{ label: "View Alerts", href: "/alerts" }} />
+        <StatCard icon={MapPin} label="Selected Location" value={locationLabel} action={{ label: "Change Location", href: "/profile" }} />
+        <StatCard icon={Package} label="Total Commodities" value={`${rows.length} Crops`} action={{ label: "View All", href: "/market-trends" }} />
+        <StatCard
+          icon={Activity}
+          label="Market Status"
+          value={data?.source === "live" ? "Live" : "Sample"}
+          sub={data?.lastUpdated ?? "—"}
+        />
+        <StatCard icon={Bell} label="Price Alerts" value={`${activeCount} Active`} action={{ label: "Manage Below", href: "#price-alerts" }} />
       </div>
 
       <DarkCard className="mt-4">
@@ -82,6 +128,15 @@ export default function MandiPage() {
           >
             <Filter className="h-4 w-4" /> Filter
           </button>
+          <button
+            type="button"
+            onClick={() => refresh()}
+            disabled={loading}
+            className="av-btn av-btn-sm av-btn-secondary inline-flex gap-1"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
         </div>
       </DarkCard>
 
@@ -101,26 +156,34 @@ export default function MandiPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1f2937]">
-              {filtered.map((row) => (
-                <tr key={row.id} className="transition hover:bg-[var(--av-surface-inset)]/50">
-                  <td className="px-4 py-3">
-                    <p className="font-semibold text-[var(--av-text-primary)]">{row.crop} ({row.cropHi})</p>
-                    <p className="text-[10px] text-[var(--av-text-muted)]">{row.category}</p>
-                  </td>
-                  <td className="px-4 py-3 text-[var(--av-text-secondary)]">{row.variety}</td>
-                  <td className="px-4 py-3 text-[var(--av-text-secondary)]">{row.mandi}, {row.state}</td>
-                  <td className="px-4 py-3 font-mono text-[var(--av-text-primary)]">₹{row.min}</td>
-                  <td className="px-4 py-3 font-mono text-[var(--av-text-primary)]">₹{row.max}</td>
-                  <td className="px-4 py-3 font-mono font-bold text-[var(--av-accent)]">₹{row.modal}</td>
-                  <td className={`px-4 py-3 font-semibold ${row.change >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                    {row.change >= 0 ? <TrendingUp className="inline h-3 w-3" /> : <TrendingDown className="inline h-3 w-3" />}
-                    {row.change > 0 ? "+" : ""}{row.change}% (₹{row.changeAmt})
-                  </td>
-                  <td className="px-4 py-3">
-                    <Sparkline data={row.trend} color={row.change >= 0 ? "#10b981" : "#f87171"} />
+              {loading && filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-8 text-center text-[var(--av-text-muted)]">
+                    Loading mandi rates…
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((row) => (
+                  <tr key={row.id} className="transition hover:bg-[var(--av-surface-inset)]/50">
+                    <td className="px-4 py-3">
+                      <p className="font-semibold text-[var(--av-text-primary)]">{row.crop} ({row.cropHi})</p>
+                      <p className="text-[10px] text-[var(--av-text-muted)]">{row.category}</p>
+                    </td>
+                    <td className="px-4 py-3 text-[var(--av-text-secondary)]">{row.variety}</td>
+                    <td className="px-4 py-3 text-[var(--av-text-secondary)]">{row.mandi}, {row.state}</td>
+                    <td className="px-4 py-3 font-mono text-[var(--av-text-primary)]">₹{row.min}</td>
+                    <td className="px-4 py-3 font-mono text-[var(--av-text-primary)]">₹{row.max}</td>
+                    <td className="px-4 py-3 font-mono font-bold text-[var(--av-accent)]">₹{row.modal}</td>
+                    <td className={`px-4 py-3 font-semibold ${row.change >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                      {row.change !== 0 && (row.change >= 0 ? <TrendingUp className="inline h-3 w-3" /> : <TrendingDown className="inline h-3 w-3" />)}
+                      {row.change !== 0 ? `${row.change > 0 ? "+" : ""}${row.change}%` : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Sparkline data={row.trend} color={row.change >= 0 ? "#10b981" : "#f87171"} />
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -128,16 +191,16 @@ export default function MandiPage() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <DarkCard hover delay={2}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Trend (Last 7 Days) — Paddy</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Trend — Paddy (modal)</h3>
           <LineChart
-            labels={["01 May", "02 May", "03 May", "04 May", "05 May", "06 May", "07 May"]}
-            series={[{ name: "Modal", data: [2100, 2120, 2140, 2150, 2160, 2170, 2180], color: "#10b981" }]}
+            labels={paddyTrend.map((_, i) => `D-${paddyTrend.length - i}`)}
+            series={[{ name: "Modal", data: paddyTrend, color: "#10b981" }]}
           />
         </DarkCard>
         <DarkCard hover delay={3}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Top Mandi Prices (Today)</h3>
           <ul className="mt-3 space-y-2">
-            {TOP_MANDIS.map((m, i) => (
+            {topMandis.map((m, i) => (
               <li key={m.name} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
                 <span className="text-xs text-[var(--av-text-secondary)]">#{i + 1} {m.name}</span>
                 <span className="font-mono text-sm font-bold text-[var(--av-accent)]">₹{m.price}</span>
@@ -147,18 +210,51 @@ export default function MandiPage() {
         </DarkCard>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div id="price-alerts" className="mt-4 grid gap-4 lg:grid-cols-3">
         <DarkCard hover delay={1}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Alert Setup</h3>
+          <div className="mt-3 flex gap-2">
+            <input
+              value={newCrop}
+              onChange={(e) => setNewCrop(e.target.value)}
+              placeholder="Crop (Paddy)"
+              className="av-input flex-1 text-xs"
+            />
+            <input
+              value={newTarget}
+              onChange={(e) => setNewTarget(e.target.value)}
+              placeholder="₹ Target"
+              inputMode="numeric"
+              className="av-input w-24 text-xs"
+            />
+            <button type="button" onClick={handleAddAlert} className={AV.btnPrimarySm}>
+              Add
+            </button>
+          </div>
           <ul className="mt-3 space-y-2">
-            {PRICE_ALERTS.map((a) => (
-              <li key={a.crop} className="flex items-center justify-between text-xs">
-                <span className="text-[var(--av-text-secondary)]">{a.crop} @ ₹{a.target}</span>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${a.enabled ? "bg-emerald-500/20 text-emerald-400" : "bg-[#1f2937] text-[var(--av-text-muted)]"}`}>
-                  {a.enabled ? "ON" : "OFF"}
-                </span>
-              </li>
-            ))}
+            {settings.alerts.map((a) => {
+              const match = rows.find((r) => r.crop.toLowerCase() === a.crop.toLowerCase());
+              const hit = match && (a.direction === "above" ? match.modal >= a.target : match.modal <= a.target);
+              return (
+                <li key={a.id} className="flex items-center justify-between gap-2 text-xs">
+                  <button type="button" onClick={() => toggleAlert(a.id)} className="flex-1 text-left">
+                    <span className="text-[var(--av-text-secondary)]">
+                      {a.crop} {a.direction === "above" ? "≥" : "≤"} ₹{a.target}
+                      {match && <span className="text-[var(--av-text-muted)]"> · now ₹{match.modal}</span>}
+                    </span>
+                    {hit && settings.masterEnabled && a.enabled && (
+                      <span className="ml-1 text-[10px] font-bold text-emerald-400">Target hit!</span>
+                    )}
+                  </button>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${a.enabled ? "bg-emerald-500/20 text-emerald-400" : "bg-[#1f2937] text-[var(--av-text-muted)]"}`}>
+                    {a.enabled ? "ON" : "OFF"}
+                  </span>
+                  <button type="button" onClick={() => removeAlert(a.id)} className="text-[10px] text-red-400">
+                    ×
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </DarkCard>
         <DarkCard hover delay={2}>

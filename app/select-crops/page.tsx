@@ -1,12 +1,13 @@
 "use client";
 
 import { useAppNavigate } from "@/hooks/useAppNavigate";
-import AppLink from "@/components/ui/AppLink";
-import { Check, ArrowLeft } from "lucide-react";
-import PageBackground from "@/components/ui/PageBackground";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { categoryOrder, getCropsByCategory, type CatalogCrop } from "@/data/crop-catalog";
 import { useMyCrops, MAX_MY_CROPS } from "@/hooks/useMyCrops";
+import { AV } from "@/lib/design/tokens";
 
 export default function SelectCropsPage() {
   const navigate = useAppNavigate();
@@ -14,39 +15,26 @@ export default function SelectCropsPage() {
   const grouped = getCropsByCategory();
 
   return (
-    <div className="agriveda-page relative min-h-screen pb-28">
-      <PageBackground />
-
-      <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
-          <AppLink
-            href="/"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-emerald-400"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </AppLink>
-          <div className="flex-1">
-            <h1 className="text-base font-extrabold theme-text-primary">Select Your Crops</h1>
-            <p className="text-[11px] theme-text-muted">
-              Maximum {MAX_MY_CROPS} crops · Selected: {crops.length}/{MAX_MY_CROPS}
-            </p>
-          </div>
-        </div>
-      </header>
-
-      <div className="relative mx-auto max-w-lg px-4 py-5 space-y-6">
-        {!canAddMore && (
-          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-400">
+    <AppShell
+      title="Select Your Crops"
+      subtitle={`Maximum ${MAX_MY_CROPS} crops · Selected: ${crops.length}/${MAX_MY_CROPS}`}
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Select Crops" }]}
+    >
+      {!canAddMore && (
+        <DarkCard className="border-amber-500/30 bg-amber-500/10">
+          <p className="text-sm font-medium text-amber-600">
             Maximum {MAX_MY_CROPS} crops selected. Deselect one to add another.
-          </div>
-        )}
+          </p>
+        </DarkCard>
+      )}
 
-        {categoryOrder.map((category) => {
+      <div className="space-y-4">
+        {categoryOrder.map((category, ci) => {
           const items = grouped[category];
           if (!items.length) return null;
           return (
-            <section key={category}>
-              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
+            <DarkCard key={category} delay={ci % 4}>
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[var(--av-accent)]">
                 {category}
               </p>
               <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
@@ -60,19 +48,19 @@ export default function SelectCropsPage() {
                   />
                 ))}
               </div>
-            </section>
+            </DarkCard>
           );
         })}
-
-        <button
-          type="button"
-          onClick={() => navigate("/")}
-          className="w-full rounded-2xl border border-emerald-500/40 bg-emerald-500/15 py-4 text-sm font-black text-emerald-400 shadow-[0_0_20px_rgba(0,255,136,0.15)] transition-all hover:shadow-[0_0_28px_rgba(0,255,136,0.25)]"
-        >
-          Save & Go to Home ({crops.length} selected)
-        </button>
       </div>
-    </div>
+
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        className={`mt-4 w-full ${AV.btnPrimary}`}
+      >
+        Save & Go to Home ({crops.length} selected)
+      </button>
+    </AppShell>
   );
 }
 
@@ -90,26 +78,25 @@ function CropSelectTile({
   return (
     <button
       type="button"
-      onClick={onToggle}
       disabled={disabled}
+      onClick={onToggle}
       className={cn(
-        "relative flex flex-col items-center gap-1.5 rounded-2xl border p-3 transition-all",
+        "relative flex flex-col items-center rounded-xl border p-3 transition",
         selected
-          ? "border-emerald-400/60 bg-emerald-500/15 shadow-[0_0_16px_rgba(0,255,136,0.2)]"
-          : disabled
-            ? "cursor-not-allowed border-white/5 bg-black/10 opacity-40"
-            : "border-white/10 bg-black/20 hover:border-emerald-500/30"
+          ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
+          : "border-[var(--av-border)] bg-[var(--av-surface-inset)] hover:border-[var(--av-accent)]/30",
+        disabled && "cursor-not-allowed opacity-40"
       )}
     >
-      <span className="text-3xl">{crop.emoji}</span>
-      <span className={cn("text-center text-[10px] font-bold leading-tight", selected ? "text-emerald-400" : "theme-text-muted")}>
+      {selected && (
+        <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--av-accent)]">
+          <Check className="h-3 w-3 text-white" />
+        </span>
+      )}
+      <span className="text-2xl">{crop.emoji}</span>
+      <span className="mt-1 text-center text-[10px] font-semibold leading-tight text-[var(--av-text-primary)]">
         {crop.name}
       </span>
-      {selected && (
-        <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-400 text-black">
-          <Check className="h-3 w-3" strokeWidth={3} />
-        </div>
-      )}
     </button>
   );
 }

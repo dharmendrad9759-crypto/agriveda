@@ -5,6 +5,7 @@ import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { AV } from "@/lib/design/tokens";
 import { Crown, ChevronRight, User, LogOut } from "lucide-react";
@@ -43,10 +44,10 @@ function SettingsRow({ label, value, href, toggle }: { label: string; value?: st
 export default function SettingsPage() {
   const { profile } = useFarmerProfile();
   const { theme, setTheme } = useTheme();
+  const { settings, setMasterEnabled } = usePriceAlerts();
   const [weatherAlerts, setWeatherAlerts] = useState(true);
   const [pestAlerts, setPestAlerts] = useState(true);
   const [fertReminders, setFertReminders] = useState(true);
-  const [priceAlerts, setPriceAlerts] = useState(false);
   const [autoSync, setAutoSync] = useState(true);
   const [twoFa, setTwoFa] = useState(false);
 
@@ -87,7 +88,11 @@ export default function SettingsPage() {
             <SettingsRow label="Weather Alerts" toggle={{ on: weatherAlerts, onChange: setWeatherAlerts }} />
             <SettingsRow label="Pest & Disease Alerts" toggle={{ on: pestAlerts, onChange: setPestAlerts }} />
             <SettingsRow label="Fertilizer Reminders" toggle={{ on: fertReminders, onChange: setFertReminders }} />
-            <SettingsRow label="Market Price Alerts" toggle={{ on: priceAlerts, onChange: setPriceAlerts }} />
+            <SettingsRow
+              label="Market Price Alerts"
+              toggle={{ on: settings.masterEnabled, onChange: setMasterEnabled }}
+            />
+            <SettingsRow label="Manage Price Alerts" value={`${settings.alerts.filter((a) => a.enabled).length} active`} href="/mandi#price-alerts" />
             <SettingsRow label="Quiet Hours" value="10:00 PM - 6:00 AM" />
           </div>
         </DarkCard>

@@ -6,8 +6,8 @@ import PestDiseasesContent from "@/components/pest-diseases/PestDiseasesContent"
 
 function Loading() {
   return (
-    <div className="agriveda-page flex min-h-screen items-center justify-center">
-      <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+    <div className="flex min-h-[40vh] items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-[var(--av-accent)]" />
     </div>
   );
 }

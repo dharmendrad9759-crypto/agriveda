@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from "react";
 import AppLink from "@/components/ui/AppLink";
-import { ArrowLeft, Bug, FlaskConical, Leaf, ShieldAlert, Sparkles } from "lucide-react";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
+import { Bug, FlaskConical, Leaf, ShieldAlert, Sparkles } from "lucide-react";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
 import { CATEGORY_COLORS, CATEGORY_LABELS } from "@/types/pest-disease-ui";
 import ThreatImage from "@/components/ui/ThreatImage";
-import PageBackground from "@/components/ui/PageBackground";
-import GlassCard from "@/components/ui/GlassCard";
 import FarmerPhotoUpload from "@/components/pest-diseases/FarmerPhotoUpload";
 import StageWiseSprayCard from "@/components/pest-diseases/StageWiseSprayCard";
 import { readStorage } from "@/lib/storage";
+import EtlGuideCard from "@/components/shell/EtlGuideCard";
+import { AV } from "@/lib/design/tokens";
 
 interface ThreatDetailClientProps {
   threat: EnrichedThreat;
@@ -36,162 +38,140 @@ export default function ThreatDetailClient({ threat }: ThreatDetailClientProps) 
       }
     : null;
 
+  const backHref =
+    threat.type === "weed"
+      ? `/pest-diseases?type=weed&crop=${threat.cropSlug}`
+      : `/pest-diseases?crop=${threat.cropSlug}`;
+
   return (
-    <div className="agriveda-page relative min-h-screen pb-28">
-      <PageBackground />
-
-      <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
-          <AppLink
-            href={`/pest-diseases?crop=${threat.cropSlug}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-emerald-600"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </AppLink>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-extrabold theme-text-primary">{threat.name}</p>
-            <p className="text-[11px] theme-text-muted">
-              {threat.cropName} • {threat.type}
-            </p>
-          </div>
-        </div>
-      </header>
-
-      <article className="relative mx-auto max-w-lg space-y-5 px-4 py-5">
-        <div className="overflow-hidden rounded-2xl">
-          {userPhoto ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={userPhoto}
-              alt={threat.name}
-              className="h-56 w-full object-cover"
-            />
-          ) : (
-            <ThreatImage
-              src={threat.image}
-              alt={threat.name}
-              category={threat.category}
-              className="h-56 w-full"
-            />
-          )}
-          {userPhoto && (
-            <p className="bg-emerald-500/10 px-3 py-1.5 text-center text-[10px] font-bold text-emerald-600">
-              Your uploaded field photo
-            </p>
-          )}
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <span className={`rounded-full border px-3 py-1 text-xs font-bold ${CATEGORY_COLORS[threat.category]}`}>
-            {CATEGORY_LABELS[threat.category]}
-          </span>
-          <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-bold theme-text-muted dark:border-white/10 dark:bg-black/20">
-            Stage: {threat.stage}
-          </span>
-          {threat.iracGroup && (
-            <span className="rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-600">
-              {threat.iracGroup}
-            </span>
-          )}
-          {threat.fracGroup && threat.fracGroup !== "—" && (
-            <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-1 text-xs font-bold text-purple-600">
-              {threat.fracGroup}
-            </span>
-          )}
-        </div>
-
-        <div>
-          <div className="flex items-center gap-2">
-            <TypeIcon className="h-5 w-5 text-emerald-600" />
-            <h1 className="text-xl font-black theme-text-primary">{threat.name}</h1>
-          </div>
-          <p className="mt-1 text-sm italic theme-text-muted">{threat.scientificName}</p>
-        </div>
-
-        <GlassCard className="p-4">
-          <h2 className="flex items-center gap-2 text-sm font-extrabold theme-text-primary">
-            <FlaskConical className="h-4 w-4 text-emerald-500" />
-            Scientific description
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed theme-text-muted">{threat.description}</p>
-        </GlassCard>
-
-        <GlassCard className="p-4">
-          <h2 className="text-sm font-extrabold theme-text-primary">Symptoms to identify</h2>
-          <ul className="mt-3 space-y-2">
-            {threat.symptoms.map((s, i) => (
-              <li key={i} className="flex gap-2 text-sm theme-text-muted">
-                <span className="font-bold text-emerald-600">•</span>
-                {s}
-              </li>
-            ))}
-          </ul>
-        </GlassCard>
-
-        {stageGuide && (
-          <GlassCard className="border-violet-500/20 bg-violet-500/5 p-4">
-            <h2 className="text-sm font-extrabold text-violet-900 dark:text-violet-200">
-              Stage-wise spray guide
-            </h2>
-            <p className="mt-1 text-[11px] theme-text-muted">
-              Early → Advanced escalation — CIB&RC label se verify karein
-            </p>
-            <div className="mt-3">
-              <StageWiseSprayCard
-                stages={stageGuide.stages}
-                rotationNotes={stageGuide.rotationNotes}
-                extraNotes={stageGuide.extraNotes}
-                continuousHarvest={stageGuide.continuousHarvest}
-              />
-            </div>
-          </GlassCard>
+    <AppShell
+      title={threat.name}
+      subtitle={`${threat.cropName} · ${threat.type}`}
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: threat.type === "weed" ? "Weeds" : "Pests & Diseases", href: backHref },
+        { label: threat.name },
+      ]}
+    >
+      <div className="overflow-hidden rounded-xl border border-[var(--av-border)]">
+        {userPhoto ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={userPhoto} alt={threat.name} className="h-56 w-full object-cover lg:h-72" />
+        ) : (
+          <ThreatImage
+            src={threat.image}
+            alt={threat.name}
+            category={threat.category}
+            className="h-56 w-full lg:h-72"
+          />
         )}
+        {userPhoto && (
+          <p className="bg-[var(--av-accent-soft)] px-3 py-1.5 text-center text-[10px] font-semibold text-[var(--av-accent)]">
+            Your uploaded field photo
+          </p>
+        )}
+      </div>
 
-        <GlassCard className="border-emerald-500/20 bg-emerald-500/5 p-4">
-          <h2 className="text-sm font-extrabold text-emerald-800 dark:text-emerald-300">
-            Remediation — actionable steps
-          </h2>
-          <ul className="mt-3 space-y-2.5">
-            {threat.remediation.map((r, i) => (
-              <li key={i} className="flex gap-2 text-sm theme-text-primary">
-                <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                  {i + 1}
-                </span>
-                {r}
-              </li>
-            ))}
-          </ul>
-          {threat.activeIngredient && (
-            <div className="mt-4 rounded-xl bg-white/80 p-3 dark:bg-black/30">
-              <p className="text-[10px] font-bold uppercase tracking-wider theme-text-muted">
-                Recommended active ingredient
-              </p>
-              <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-400">
-                {threat.activeIngredient}
-              </p>
-            </div>
-          )}
-          {threat.etl && (
-            <p className="mt-2 text-xs font-semibold text-amber-700 dark:text-amber-400">
-              Economic Threshold Level (ETL): {threat.etl}
+      <div className="mt-4 flex flex-wrap gap-2">
+        <span className={`av-chip ${CATEGORY_COLORS[threat.category]}`}>
+          {CATEGORY_LABELS[threat.category]}
+        </span>
+        <span className="av-chip">Stage: {threat.stage}</span>
+        {threat.iracGroup && (
+          <span className="av-chip border-red-500/30 bg-red-500/10 text-red-600">
+            {threat.iracGroup}
+          </span>
+        )}
+        {threat.fracGroup && threat.fracGroup !== "—" && (
+          <span className="av-chip border-violet-500/30 bg-violet-500/10 text-violet-600">
+            {threat.fracGroup}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-4 flex items-center gap-2">
+        <TypeIcon className="h-5 w-5 text-[var(--av-accent)]" />
+        <div>
+          <h1 className={AV.pageTitle}>{threat.name}</h1>
+          <p className={`italic ${AV.micro}`}>{threat.scientificName}</p>
+        </div>
+      </div>
+
+      <DarkCard className="mt-4" delay={0}>
+        <h2 className={`flex items-center gap-2 ${AV.sectionTitle}`}>
+          <FlaskConical className="h-4 w-4 text-[var(--av-accent)]" />
+          Scientific description
+        </h2>
+        <p className={`mt-2 leading-relaxed ${AV.body}`}>{threat.description}</p>
+      </DarkCard>
+
+      <DarkCard className="mt-4" delay={1}>
+        <h2 className={AV.sectionTitle}>Symptoms to identify</h2>
+        <ul className="mt-3 space-y-2">
+          {threat.symptoms.map((s, i) => (
+            <li key={i} className={`flex gap-2 ${AV.body}`}>
+              <span className="font-bold text-[var(--av-accent)]">•</span>
+              {s}
+            </li>
+          ))}
+        </ul>
+      </DarkCard>
+
+      {(threat.etl || threat.type === "pest") && (
+        <div className="mt-4">
+          <EtlGuideCard etl={threat.etl} pestName={threat.name} compact />
+        </div>
+      )}
+
+      {stageGuide && (
+        <DarkCard className="mt-4 border-violet-500/20" delay={2}>
+          <h2 className={AV.sectionTitle}>Stage-wise spray guide</h2>
+          <p className={AV.micro}>Early → Advanced escalation — CIB&RC label se verify karein</p>
+          <div className="mt-3">
+            <StageWiseSprayCard
+              stages={stageGuide.stages}
+              rotationNotes={stageGuide.rotationNotes}
+              extraNotes={stageGuide.extraNotes}
+              continuousHarvest={stageGuide.continuousHarvest}
+            />
+          </div>
+        </DarkCard>
+      )}
+
+      <DarkCard className="mt-4" delay={3}>
+        <h2 className={AV.sectionTitle}>Remediation — actionable steps</h2>
+        <ul className="mt-3 space-y-2.5">
+          {threat.remediation.map((r, i) => (
+            <li key={i} className={`flex gap-2 ${AV.body}`}>
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--av-accent)] text-[10px] font-bold text-white">
+                {i + 1}
+              </span>
+              {r}
+            </li>
+          ))}
+        </ul>
+        {threat.activeIngredient && (
+          <div className="av-card-inset mt-4 p-3">
+            <p className={AV.label}>Recommended active ingredient</p>
+            <p className="mt-1 text-sm font-semibold text-[var(--av-accent)]">
+              {threat.activeIngredient}
             </p>
-          )}
-        </GlassCard>
+          </div>
+        )}
+      </DarkCard>
 
+      <div className="mt-4">
         <FarmerPhotoUpload
           storageKey={storageKey}
           currentUrl={userPhoto}
           onUpload={setUserPhoto}
         />
+      </div>
 
-        <AppLink
-          href={`/ai-doctor`}
-          className="flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 py-3.5 text-sm font-bold text-emerald-700 dark:text-emerald-400"
-        >
-          <Sparkles className="h-4 w-4" />
-          AI Doctor से confirm करें
-        </AppLink>
-      </article>
-    </div>
+      <AppLink href="/ai-doctor" className={`mt-4 inline-flex gap-2 ${AV.btnSecondarySm}`}>
+        <Sparkles className="h-4 w-4" />
+        AI Doctor से confirm करें
+      </AppLink>
+    </AppShell>
   );
 }

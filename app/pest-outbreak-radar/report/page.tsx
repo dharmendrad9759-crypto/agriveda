@@ -2,10 +2,10 @@
 
 import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
 import { useAppNavigate } from "@/hooks/useAppNavigate";
-import { ArrowLeft, Camera, Loader2, Upload } from "lucide-react";
-import PageBackground from "@/components/ui/PageBackground";
+import { Camera, Loader2, Upload } from "lucide-react";
 import { cropCatalog } from "@/data/crop-catalog";
 import { getCropPestDisease } from "@/data/pest-disease";
 import { useReportOutbreak } from "@/hooks/useReportOutbreak";
@@ -13,6 +13,7 @@ import { useToast } from "@/components/ui/Toast";
 import { requestUserLocation } from "@/lib/weatherApi";
 import type { OutbreakSeverity } from "@/types/outbreak";
 import { cn } from "@/lib/cn";
+import { AV } from "@/lib/design/tokens";
 
 const OutbreakMap = dynamic(() => import("@/components/outbreak-radar/OutbreakMap"), {
   ssr: false,
@@ -91,31 +92,25 @@ export default function ReportOutbreakPage() {
   };
 
   return (
-    <div className="agriveda-page relative min-h-screen pb-28">
-      <PageBackground />
-
-      <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
-          <Link
-            href="/pest-outbreak-radar"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 text-emerald-600"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <h1 className="text-base font-extrabold theme-text-primary">Report an Issue</h1>
-        </div>
-      </header>
-
-      <div className="relative mx-auto max-w-lg space-y-4 px-4 py-5">
+    <AppShell
+      title="Report an Issue"
+      subtitle="Nearby farmers ko alert — GPS location zaroori"
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: "Outbreak Radar", href: "/pest-outbreak-radar" },
+        { label: "Report" },
+      ]}
+    >
+      <DarkCard>
         <label className="block">
-          <span className="text-xs font-bold theme-text-muted">Crop</span>
+          <span className={AV.label}>Crop</span>
           <select
             value={cropId}
             onChange={(e) => {
               setCropId(e.target.value);
               setThreatKey("");
             }}
-            className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
+            className="av-input mt-2 w-full"
           >
             {cropCatalog.map((c) => (
               <option key={c.slug} value={c.slug}>
@@ -125,12 +120,12 @@ export default function ReportOutbreakPage() {
           </select>
         </label>
 
-        <label className="block">
-          <span className="text-xs font-bold theme-text-muted">Pest / Disease</span>
+        <label className="mt-3 block">
+          <span className={AV.label}>Pest / Disease</span>
           <select
             value={threatKey}
             onChange={(e) => setThreatKey(e.target.value)}
-            className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
+            className="av-input mt-2 w-full"
           >
             <option value="">— Select —</option>
             {pd.pests.map((p) => (
@@ -146,9 +141,9 @@ export default function ReportOutbreakPage() {
           </select>
         </label>
 
-        <div>
-          <span className="text-xs font-bold theme-text-muted">Severity (self-rated)</span>
-          <div className="mt-1 flex gap-2">
+        <div className="mt-3">
+          <span className={AV.label}>Severity (self-rated)</span>
+          <div className="mt-2 flex gap-2">
             {(["low", "medium", "high"] as OutbreakSeverity[]).map((s) => (
               <button
                 key={s}
@@ -156,7 +151,9 @@ export default function ReportOutbreakPage() {
                 onClick={() => setSeverity(s)}
                 className={cn(
                   "flex-1 rounded-xl py-2 text-xs font-bold capitalize",
-                  severity === s ? "bg-emerald-600 text-white" : "border theme-text-muted"
+                  severity === s
+                    ? "bg-[var(--av-accent)] text-[#0a0f1a]"
+                    : "border border-[var(--av-border)] text-[var(--av-text-muted)]"
                 )}
               >
                 {s}
@@ -164,34 +161,36 @@ export default function ReportOutbreakPage() {
             ))}
           </div>
         </div>
+      </DarkCard>
 
-        <div>
-          <span className="text-xs font-bold theme-text-muted">Photo (optional)</span>
-          <label className="mt-1 flex cursor-pointer items-center gap-2 rounded-xl border border-dashed px-4 py-3">
-            <input type="file" accept="image/*" capture="environment" className="sr-only" onChange={handlePhoto} />
-            {photoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={photoUrl} alt="" className="h-16 w-16 rounded-lg object-cover" />
-            ) : (
-              <Camera className="h-8 w-8 text-emerald-500" />
-            )}
-            <span className="text-xs theme-text-muted">Tap to add field photo</span>
-          </label>
+      <DarkCard className="mt-4" delay={1}>
+        <span className={AV.label}>Photo (optional)</span>
+        <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-[var(--av-border)] px-4 py-3">
+          <input type="file" accept="image/*" capture="environment" className="sr-only" onChange={handlePhoto} />
+          {photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photoUrl} alt="" className="h-16 w-16 rounded-lg object-cover" />
+          ) : (
+            <Camera className="h-8 w-8 text-[var(--av-accent)]" />
+          )}
+          <span className="text-xs text-[var(--av-text-muted)]">Tap to add field photo</span>
+        </label>
+      </DarkCard>
+
+      <DarkCard className="mt-4" delay={2}>
+        <div className="flex items-center justify-between">
+          <span className={AV.label}>Location (adjust pin on map)</span>
+          <button
+            type="button"
+            onClick={captureGps}
+            disabled={locLoading}
+            className="text-xs font-bold text-[var(--av-accent)]"
+          >
+            {locLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Capture GPS"}
+          </button>
         </div>
-
-        <div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold theme-text-muted">Location (adjust pin on map)</span>
-            <button
-              type="button"
-              onClick={captureGps}
-              disabled={locLoading}
-              className="text-xs font-bold text-emerald-600"
-            >
-              {locLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Capture GPS"}
-            </button>
-          </div>
-          {lat != null && lon != null ? (
+        {lat != null && lon != null ? (
+          <div className="mt-2">
             <OutbreakMap
               lat={lat}
               lon={lon}
@@ -205,23 +204,23 @@ export default function ReportOutbreakPage() {
                 setLon(newLon);
               }}
             />
-          ) : (
-            <p className="mt-2 rounded-xl border border-dashed px-4 py-6 text-center text-xs theme-text-muted">
-              GPS required to tag outbreak location
-            </p>
-          )}
-        </div>
+          </div>
+        ) : (
+          <p className="mt-2 rounded-xl border border-dashed border-[var(--av-border)] px-4 py-6 text-center text-xs text-[var(--av-text-muted)]">
+            GPS required to tag outbreak location
+          </p>
+        )}
+      </DarkCard>
 
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={submitting}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#006432] py-4 text-sm font-black text-white disabled:opacity-60"
-        >
-          {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
-          Submit report
-        </button>
-      </div>
-    </div>
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={submitting}
+        className={`mt-4 flex w-full items-center justify-center gap-2 ${AV.btnPrimary} disabled:opacity-60`}
+      >
+        {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
+        Submit report
+      </button>
+    </AppShell>
   );
 }

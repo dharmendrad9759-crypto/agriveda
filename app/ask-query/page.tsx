@@ -1,20 +1,19 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
-import { Camera, Check, ImagePlus, X, ChevronRight } from "lucide-react";
-import PageHeader from "@/components/layout/PageHeader";
-import PageBackground from "@/components/ui/PageBackground";
-import GlassCard from "@/components/ui/GlassCard";
-import SectionHeading from "@/components/ui/SectionHeading";
+import AppLink from "@/components/ui/AppLink";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
+import { Camera, Check, ImagePlus, X } from "lucide-react";
 import CropSelector from "@/components/query/CropSelector";
-import VoiceRecorderMock from "@/components/query/VoiceRecorderMock";
+import VoiceInput from "@/components/query/VoiceInput";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cropCatalog } from "@/data/crop-catalog";
+import { AV } from "@/lib/design/tokens";
 
 const MAX_CHARS = 256;
 
@@ -84,68 +83,74 @@ export default function AskQueryPage() {
 
   if (submitted) {
     return (
-      <div className="agriveda-page flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <PageBackground />
-        <div className="relative">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/40 bg-emerald-500/15">
-            <Check className="h-8 w-8 text-emerald-400" />
+      <AppShell
+        title={t("querySent")}
+        subtitle={t("querySentSubtitle")}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Community", href: "/community" }]}
+      >
+        <DarkCard className="flex flex-col items-center py-10 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--av-accent)]/40 bg-[var(--av-accent)]/15">
+            <Check className="h-8 w-8 text-[var(--av-accent)]" />
           </div>
-          <h2 className="mt-4 text-xl font-black theme-text-primary">{t("querySent")}</h2>
-          <p className="mt-2 text-sm theme-text-muted">{t("querySentSubtitle")}</p>
-          <Link
-            href="/community"
-            className="mt-6 inline-block rounded-2xl bg-[#006432] px-8 py-3 text-sm font-black text-white"
-          >
+          <h2 className="mt-4 text-xl font-bold text-[var(--av-text-primary)]">{t("querySent")}</h2>
+          <p className="mt-2 text-sm text-[var(--av-text-muted)]">{t("querySentSubtitle")}</p>
+          <AppLink href="/community" className={`mt-6 ${AV.btnPrimary}`}>
             {t("viewCommunity")}
-          </Link>
-        </div>
-      </div>
+          </AppLink>
+        </DarkCard>
+      </AppShell>
     );
   }
 
   return (
-    <div className="agriveda-page relative pb-28">
-      <PageBackground />
-      <PageHeader title={t("askExpertTitle")} subtitle={t("askExpertSubtitle")} backHref="/" />
+    <AppShell
+      title={t("askExpertTitle")}
+      subtitle={t("askExpertSubtitle")}
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Ask Expert" }]}
+    >
+      <form onSubmit={handleSubmit} className="mx-auto max-w-lg space-y-4">
+        <DarkCard>
+          <h3 className={AV.sectionTitle}>{t("selectCrop")}</h3>
+          <div className="mt-3">
+            {availableCrops.length > 0 ? (
+              <CropSelector
+                crops={availableCrops}
+                selectedId={selectedCrop}
+                onSelect={setSelectedCrop}
+              />
+            ) : (
+              <p className="text-center text-sm text-[var(--av-text-muted)]">{t("addCropsFirst")}</p>
+            )}
+          </div>
+        </DarkCard>
 
-      <form onSubmit={handleSubmit} className="relative mx-auto max-w-lg space-y-6 px-4 py-5">
-        <section>
-          <SectionHeading title={t("selectCrop")} />
-          {availableCrops.length > 0 ? (
-            <CropSelector
-              crops={availableCrops}
-              selectedId={selectedCrop}
-              onSelect={setSelectedCrop}
-            />
-          ) : (
-            <GlassCard className="p-4 text-center text-sm theme-text-muted">
-              {t("addCropsFirst")}
-            </GlassCard>
-          )}
-        </section>
-
-        <section>
-          <SectionHeading title={t("writeQuery")} />
-          <div className="relative">
+        <DarkCard delay={1}>
+          <h3 className={AV.sectionTitle}>{t("writeQuery")}</h3>
+          <div className="relative mt-3">
             <textarea
               value={query}
               onChange={(e) => setQuery(e.target.value.slice(0, MAX_CHARS))}
               placeholder={t("queryPlaceholder")}
               rows={5}
-              className="theme-input w-full resize-none rounded-2xl border border-emerald-500/20 px-4 py-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              className="av-input w-full resize-none"
             />
-            <span className="absolute bottom-3 right-3 text-[11px] theme-text-muted tabular-nums">
+            <span className="absolute bottom-3 right-3 text-[11px] text-[var(--av-text-muted)] tabular-nums">
               {query.length}/{MAX_CHARS}
             </span>
           </div>
           <div className="mt-3">
-            <VoiceRecorderMock />
+            <VoiceInput
+              compact
+              onTranscript={(text) =>
+                setQuery((q) => `${q}${q ? " " : ""}${text}`.slice(0, MAX_CHARS))
+              }
+            />
           </div>
-        </section>
+        </DarkCard>
 
-        <section>
-          <SectionHeading title={t("addPhotoOptional")} />
-          <p className="mb-3 text-xs leading-relaxed theme-text-muted">{t("photoPermission")}</p>
+        <DarkCard delay={2}>
+          <h3 className={AV.sectionTitle}>{t("addPhotoOptional")}</h3>
+          <p className={`mt-1 ${AV.micro}`}>{t("photoPermission")}</p>
 
           <input
             ref={galleryInputRef}
@@ -164,7 +169,7 @@ export default function AskQueryPage() {
           />
 
           {photoPreview && (
-            <div className="relative mb-3 overflow-hidden rounded-2xl border border-emerald-500/20">
+            <div className="relative mb-3 mt-3 overflow-hidden rounded-xl border border-[var(--av-border)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={photoPreview} alt="Upload" className="h-40 w-full object-cover" />
               <button
@@ -179,39 +184,31 @@ export default function AskQueryPage() {
                 <X className="h-4 w-4" />
               </button>
               {photoName && (
-                <p className="px-3 py-2 text-xs font-medium text-emerald-600">{photoName}</p>
+                <p className="px-3 py-2 text-xs font-medium text-[var(--av-accent)]">{photoName}</p>
               )}
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={openGallery}
-              className="flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-3.5 text-xs font-bold text-emerald-700 dark:text-emerald-400"
-            >
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <button type="button" onClick={openGallery} className={`inline-flex justify-center gap-2 ${AV.btnSecondarySm}`}>
               <ImagePlus className="h-4 w-4" />
               {photoPreview ? t("changePhoto") : t("fromGallery")}
             </button>
             <button
               type="button"
               onClick={() => cameraInputRef.current?.click()}
-              className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 px-3 py-3.5 text-xs font-bold theme-text-muted dark:border-white/10"
+              className={`inline-flex justify-center gap-2 ${AV.btnSecondarySm}`}
             >
               <Camera className="h-4 w-4" />
               {t("takePhoto")}
             </button>
           </div>
-        </section>
+        </DarkCard>
 
-        <button
-          type="submit"
-          disabled={!query.trim()}
-          className="fixed bottom-20 left-4 right-4 mx-auto max-w-lg rounded-2xl bg-[#006432] py-4 text-center text-sm font-black text-white shadow-lg disabled:opacity-40 md:bottom-8"
-        >
+        <button type="submit" disabled={!query.trim()} className={`w-full ${AV.btnPrimary} disabled:opacity-40`}>
           {t("submitQuery")}
         </button>
       </form>
-    </div>
+    </AppShell>
   );
 }

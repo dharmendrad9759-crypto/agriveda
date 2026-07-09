@@ -33,6 +33,7 @@ import {
 import { AiDoctorDesktopHero, AiDoctorDesktopSidebar } from "@/components/ai-doctor/AiDoctorRedesign";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
+import VoiceInput from "@/components/query/VoiceInput";
 
 const SCAN_STEPS = [
   "Gemini AI photo dekh raha hai...",
@@ -58,6 +59,7 @@ export default function AIDoctorPage() {
   const [fileName, setFileName] = useState("");
   const [showWhy, setShowWhy] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
+  const [symptomNotes, setSymptomNotes] = useState("");
 
   const cropOptions = AI_DOCTOR_CROPS;
 
@@ -220,6 +222,28 @@ export default function AIDoctorPage() {
         </DarkCard>
 
         <DarkCard delay={1}>
+          <p className="text-xs font-bold text-[var(--av-text-secondary)]">Symptoms / notes (optional)</p>
+          <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+            Photo ke saath likhein ya mic se bolein — aapke notes scan ke baad reference ke liye rahenge.
+          </p>
+          <textarea
+            value={symptomNotes}
+            onChange={(e) => setSymptomNotes(e.target.value.slice(0, 300))}
+            placeholder="जैसे: पत्तियों पर पीले धब्बे, किनारे सूख रहे हैं..."
+            rows={3}
+            className="av-input mt-2 w-full resize-none text-sm"
+          />
+          <div className="mt-2">
+            <VoiceInput
+              compact
+              onTranscript={(text) =>
+                setSymptomNotes((n) => `${n}${n ? " " : ""}${text}`.slice(0, 300))
+              }
+            />
+          </div>
+        </DarkCard>
+
+        <DarkCard delay={2}>
           <p className="mb-2 text-xs font-bold text-[var(--av-text-secondary)]">Select crop:</p>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {cropOptions.map((c) => (
@@ -241,7 +265,7 @@ export default function AIDoctorPage() {
         </DarkCard>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <DarkCard delay={2}>
+          <DarkCard delay={3}>
             <input
               ref={cameraInputRef}
               type="file"
@@ -302,7 +326,7 @@ export default function AIDoctorPage() {
             </div>
           </DarkCard>
 
-          <DarkCard delay={3}>
+          <DarkCard delay={4}>
             {isScanning && (
               <div className="py-10 text-center">
                 <Loader2 className="mx-auto h-10 w-10 animate-spin text-emerald-500" />
@@ -314,6 +338,11 @@ export default function AIDoctorPage() {
               <div className="py-10 text-center">
                 <Stethoscope className="mx-auto h-10 w-10 theme-text-muted" />
                 <p className="mt-3 text-sm theme-text-muted">रिपोर्ट यहाँ दिखेगी</p>
+                {symptomNotes.trim() && (
+                  <p className="mx-auto mt-3 max-w-sm rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-left text-[10px] text-[var(--av-text-muted)]">
+                    <span className="font-semibold text-[var(--av-text-primary)]">Your notes:</span> {symptomNotes}
+                  </p>
+                )}
               </div>
             )}
 

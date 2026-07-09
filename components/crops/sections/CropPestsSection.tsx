@@ -6,6 +6,7 @@ import AppLink from "@/components/ui/AppLink";
 import DarkCard from "@/components/shell/DarkCard";
 import StatCard from "@/components/shell/StatCard";
 import RiskBadge from "@/components/shell/RiskBadge";
+import EtlGuideCard from "@/components/shell/EtlGuideCard";
 import { ShellTabBar } from "@/components/shell/AppShell";
 import { PADDY_PESTS, IPM_TABS } from "@/data/mock/crop-pests";
 import type { Crop } from "@/types/crop";
@@ -25,6 +26,8 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
+      <EtlGuideCard monitoring="Field scouting twice weekly during vulnerable stages" />
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard icon={Bug} iconColor="text-red-500" label="Top Risk Pest" value="Stem Borer — High" />
         <StatCard icon={Eye} iconColor="text-amber-500" label="Monitoring" value="4 Active Pests" sub="Monitor regularly" />
@@ -62,6 +65,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                   <span>Damage: {pest.damage}</span>
                   <span>Spread: {pest.spread}</span>
                   <span>Loss: {pest.loss}</span>
+                  {pest.etl && <span className="font-semibold text-amber-600">ETL: {pest.etl}</span>}
                 </div>
               </div>
               <div className="shrink-0 space-y-2 text-[10px] text-[var(--av-text-secondary)] lg:text-right">
