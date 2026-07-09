@@ -66,7 +66,7 @@ export default function PremiumServiceHub({ onAllServices }: { onAllServices?: (
         <button
           type="button"
           onClick={onAllServices}
-          className="mt-2.5 flex w-full min-h-[40px] items-center justify-between gap-2 rounded-xl border border-dashed border-cyan-500/35 bg-gradient-to-r from-cyan-500/8 to-emerald-500/8 px-3 py-2.5 active:scale-[0.99]"
+          className="mt-2.5 flex w-full items-center justify-between gap-2 rounded-xl border border-dashed border-cyan-500/35 bg-gradient-to-r from-cyan-500/8 to-emerald-500/8 px-3 py-2 active:scale-[0.99]"
         >
           <div className="flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-500/25 bg-cyan-500/12 text-cyan-700">

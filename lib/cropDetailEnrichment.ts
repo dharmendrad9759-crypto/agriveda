@@ -134,25 +134,33 @@ function growthStagesFromProfile(slug: string, crop: Crop) {
     return dashboard.growthStages.map((s) => ({
       title: s.name,
       period: s.das,
-      keyPoints: [s.status === "current" ? "Current stage" : "Monitor this stage"],
+      keyPoints:
+        s.status === "current"
+          ? ["Current stage — monitor closely"]
+          : ["Monitor crop health at this stage"],
     }));
   }
 
+  const midStage = crop.fertilizerSchedule.stageWise[0];
   return [
     {
       title: "Sowing / Establishment",
       period: getEstablishment(slug) === "transplant" ? "0 DAT" : "0 DAS",
       keyPoints: [crop.sowingGuide.sowingMethod, crop.sowingGuide.bestSowingTime],
     },
-    ...crop.fertilizerSchedule.stageWise.map((s) => ({
-      title: s.stage,
-      period: "Stage-wise",
-      keyPoints: s.details,
-    })),
+    ...(midStage
+      ? [
+          {
+            title: midStage.stage,
+            period: "Mid season",
+            keyPoints: midStage.details.slice(0, 3),
+          },
+        ]
+      : []),
     {
       title: "Harvest",
       period: crop.harvestAndYield.harvestingTime,
-      keyPoints: crop.harvestAndYield.maturitySigns,
+      keyPoints: crop.harvestAndYield.maturitySigns.slice(0, 3),
     },
   ];
 }

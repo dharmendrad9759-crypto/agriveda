@@ -89,6 +89,24 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         icon: Bell,
         glow: "shadow-[0_0_18px_rgba(244,63,94,0.35)] border-rose-400/30",
       },
+      {
+        titleKey: "toolDashboard",
+        href: "/crop-calendar",
+        icon: Calendar,
+        glow: "shadow-[0_0_18px_rgba(56,189,248,0.35)] border-sky-400/30",
+      },
+      {
+        titleKey: "toolSmartCrop",
+        href: "/field-advisor",
+        icon: Brain,
+        glow: "shadow-[0_0_18px_rgba(139,92,246,0.35)] border-violet-400/30",
+      },
+      {
+        titleKey: "toolMandi",
+        href: "/my-farm",
+        icon: Sprout,
+        glow: "shadow-[0_0_18px_rgba(52,211,153,0.35)] border-emerald-400/30",
+      },
     ],
   },
   {
@@ -202,8 +220,14 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
         glow: "shadow-[0_0_18px_rgba(251,191,36,0.35)] border-amber-400/30",
       },
       {
+        titleKey: "toolDashboard",
+        href: "/market-trends",
+        icon: LayoutDashboard,
+        glow: "shadow-[0_0_18px_rgba(99,102,241,0.35)] border-indigo-400/30",
+      },
+      {
         titleKey: "navProfile",
-        href: "/profile",
+        href: "/settings",
         icon: User,
         glow: "shadow-[0_0_18px_rgba(167,139,250,0.35)] border-violet-400/30",
       },

@@ -82,4 +82,4 @@ export const modalPanel = {
 };
 
 export const cardHoverGlow =
-  "transition-[box-shadow,border-color,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#10b981]/50 hover:shadow-[0_8px_24px_rgba(16,185,129,0.12)]";
+  "transition-[box-shadow,border-color,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--av-accent)]/50 hover:shadow-[var(--av-shadow-md)]";

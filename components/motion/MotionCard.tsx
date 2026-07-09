@@ -40,9 +40,8 @@ export default function MotionCard({
       }
       onClick={onClick}
       className={cn(
-        "rounded-xl border border-[#1f2937] bg-[#111827]",
-        hover &&
-          "transition-[box-shadow,border-color] duration-200 ease-out hover:border-[#10b981]/50 hover:shadow-[0_6px_20px_rgba(16,185,129,0.1)]",
+        "av-card",
+        hover && "av-card-hover",
         className
       )}
     >

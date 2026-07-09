@@ -115,7 +115,7 @@ const baseCrop = {
   },
 };
 
-export const cropsData: Crop[] = [
+export const rawCropsData: Crop[] = [
   {
     ...baseCrop,
     slug: "tomato",
@@ -877,6 +877,14 @@ export const cropsData: Crop[] = [
     },
   },
 ];
+
+import { importedCropListings } from "@/data/imported-crop-exports";
+
+/** Legacy list merged with ClickUp / batch JSON imports */
+export const cropsData: Crop[] = rawCropsData.map((crop) => {
+  const patch = importedCropListings[crop.slug];
+  return patch ? ({ ...crop, ...patch } as Crop) : crop;
+});
 
 export const crops = cropsData;
 export default cropsData;

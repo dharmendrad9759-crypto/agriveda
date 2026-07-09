@@ -1,16 +1,12 @@
 "use client";
 
-import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
-import FarmDashboard from "@/components/agriveda2/FarmDashboard";
+import AppShell from "@/components/shell/AppShell";
+import DesktopDashboard from "@/components/dashboard/DesktopDashboard";
 
 export default function DashboardPage() {
   return (
-    <Agriveda2Shell
-      title="मेरा खेत Dashboard"
-      subtitle="सभी खेत · सभी फसलें · एक नज़र में"
-      backHref="/"
-    >
-      <FarmDashboard />
-    </Agriveda2Shell>
+    <AppShell title="Dashboard" subtitle="All fields · all crops · at a glance">
+      <DesktopDashboard embedded />
+    </AppShell>
   );
 }

@@ -21,7 +21,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="agriveda-topbar sticky top-0 z-50 w-full border-b border-emerald-500/10 bg-[var(--background)]/95 backdrop-blur-xl">
+    <nav className="hidden">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-12 items-center justify-between gap-3 sm:h-14">
           <MotionPressable as="span">
@@ -33,7 +33,7 @@ export default function Navbar() {
           </MotionPressable>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="hidden items-center gap-0.5 md:flex">
+            <div className="hidden items-center gap-0.5 sm:flex">
               {navItems.map((item) => {
                 const isActive = pathname === item.path;
                 return (

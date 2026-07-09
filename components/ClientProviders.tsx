@@ -1,6 +1,10 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
+import AppSidebar from "@/components/shell/AppSidebar";
+import { NavDrawerProvider } from "@/components/shell/NavDrawerProvider";
+import ShellTopBar from "@/components/shell/ShellTopBar";
+import MobileShellTopBar from "@/components/shell/MobileShellTopBar";
 import Footer from "@/components/footer";
 import BottomNav from "@/components/layout/BottomNav";
 import OfflineBanner from "@/components/layout/OfflineBanner";
@@ -31,12 +35,21 @@ export default function ClientProviders({ children }: { children: React.ReactNod
             <BootSplash />
             <CapacitorNavigationFix />
             <FarmerOnboardingGate>
+              <NavDrawerProvider>
               <OfflineBanner />
-              <Navbar />
-              <main className="flex-grow pb-24 md:pb-0">{children}</main>
-              <Footer />
-              <BottomNav />
+              <div className="flex min-h-screen flex-col bg-[var(--background)] lg:flex-row">
+                <AppSidebar />
+                <div className="flex min-h-screen flex-1 flex-col">
+                  <MobileShellTopBar />
+                  <Navbar />
+                  <ShellTopBar />
+                  <main className="flex-grow bg-[var(--background)] pb-24 text-[var(--foreground)] lg:pb-0">{children}</main>
+                  <Footer />
+                  <BottomNav />
+                </div>
+              </div>
               <LanguageSwitcher />
+              </NavDrawerProvider>
             </FarmerOnboardingGate>
           </MotionConfig>
         </ToastProvider>

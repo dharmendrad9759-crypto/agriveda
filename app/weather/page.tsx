@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { FlaskConical } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MapPin, Navigation, Search, Loader2, CloudSun, RefreshCw, Share2 } from "lucide-react";
+import { MapPin, Navigation, Search, Loader2, CloudSun, RefreshCw } from "lucide-react";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
+import WeatherRedesign from "@/components/weather/WeatherRedesign";
 import {
   fetchWeatherByCity,
   fetchWeatherByCoords,
@@ -14,8 +15,8 @@ import {
 import { getSavedWeatherLocation } from "@/lib/sprayWeatherApi";
 import { shareText } from "@/lib/shareText";
 import { useToast } from "@/components/ui/Toast";
-import FarmWeatherDashboard from "@/components/weather/FarmWeatherDashboard";
-import { BRAND } from "@/lib/brand";
+import AppLink from "@/components/ui/AppLink";
+import { AV } from "@/lib/design/tokens";
 
 export default function WeatherPage() {
   const { showToast } = useToast();
@@ -46,13 +47,10 @@ export default function WeatherPage() {
   const useCurrentLocation = useCallback(async () => {
     setLocLoading(true);
     setError(null);
-
     try {
       const position = await requestUserLocation();
       setLocationMode("gps");
-      await loadWeather(() =>
-        fetchWeatherByCoords(position.coords.latitude, position.coords.longitude)
-      );
+      await loadWeather(() => fetchWeatherByCoords(position.coords.latitude, position.coords.longitude));
     } catch (err) {
       setError(geolocationErrorMessage(err));
     } finally {
@@ -63,7 +61,7 @@ export default function WeatherPage() {
   const searchManualCity = useCallback(async () => {
     const city = manualCity.trim();
     if (!city) {
-      setError("कृपया शहर या गाँव का नाम लिखें (अंग्रेज़ी में, जैसे Delhi, Aligarh)");
+      setError("कृपया शहर का नाम लिखें (जैसे Delhi, Indore)");
       return;
     }
     setLocationMode("manual");
@@ -102,182 +100,112 @@ export default function WeatherPage() {
   const shareWeather = async () => {
     if (!weatherData) return;
     const text = [
-      `🌾 Agriveda Weather — ${weatherData.location}`,
+      `Agriveda Weather — ${weatherData.location}`,
       `${weatherData.temp} · ${weatherData.condition}`,
       weatherData.rainfallAlert,
-      "",
-      "अगले घंटे:",
-      ...weatherData.hourlyForecast.slice(0, 6).map(
-        (h) => `${h.time}: ${h.temp}, बारिश ${h.rainChancePercent}%`
-      ),
     ].join("\n");
     const ok = await shareText("Agriveda Weather", text);
-    showToast(ok ? "मौसम साझा / कॉपी हो गया ✓" : "Share नहीं हो सका", ok ? "success" : "error");
+    showToast(ok ? "मौसम साझा हो गया ✓" : "Share नहीं हो सका", ok ? "success" : "error");
   };
 
-  const showWelcome = !loading && !weatherData && !error;
-
   return (
-    <main className="agriveda-page min-h-screen px-4 py-8 pb-28">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <div className="space-y-4 border-b border-gray-200/20 pb-6">
-          <span className="text-xs font-bold text-emerald-600">
-            {BRAND}
-          </span>
-          <h1 className="text-3xl font-extrabold theme-text-primary md:text-4xl">
-            मौसम पूर्वानुमान
-          </h1>
-          <p className="text-sm theme-text-muted">
-            पहले लोकेशन चुनें — GPS permission सिर्फ़ बटन दबाने पर मांगी जाएगी।
-            डैशबोर्ड लोकेशन लोड होने के बाद नीचे दिखेगा।
-          </p>
-
+    <AppShell
+      title="Weather"
+      subtitle="Live weather updates for smarter farming decisions"
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Weather" }]}
+    >
+      <DarkCard>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-2">
-            <Link
-              href="/weather/spray-advisory"
-              className="inline-flex items-center gap-2 rounded-xl border border-indigo-300 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800 dark:bg-indigo-500/10 dark:text-indigo-300"
-            >
-              <FlaskConical className="h-4 w-4" />
-              स्प्रे सलाह (Tank-mix)
-            </Link>
-            <Link
-              href="/pest-solver"
-              className="inline-flex items-center gap-2 rounded-xl border border-fuchsia-300 bg-fuchsia-50 px-3 py-2 text-xs font-bold text-fuchsia-800 dark:bg-fuchsia-500/10 dark:text-fuchsia-300"
-            >
-              लक्षण से पहचान
-            </Link>
+            <AppLink href="/weather/spray-advisory" className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-1.5 text-[10px] font-semibold text-indigo-400">
+              Spray Advisory
+            </AppLink>
+            <AppLink href="/pest-solver" className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-1.5 text-[10px] font-semibold text-fuchsia-400">
+              Symptom ID
+            </AppLink>
           </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-            <button
-              type="button"
-              onClick={useCurrentLocation}
-              disabled={locLoading || loading}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#006432] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#005528] disabled:opacity-60"
-            >
-              {locLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Navigation className="h-4 w-4" />
-              )}
-              मेरी सटीक लोकेशन इस्तेमाल करें
-            </button>
-
-            <div className="flex flex-1 gap-2">
-              <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  value={manualCity}
-                  onChange={(e) => {
-                    setManualCity(e.target.value);
-                    if (error?.includes("शहर")) setError(null);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      searchManualCity();
-                    }
-                  }}
-                  placeholder="शहर लिखें — Delhi, Aligarh, Jaipur..."
-                  className="theme-input w-full rounded-2xl border py-3 pl-10 pr-4 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={searchManualCity}
-                disabled={loading}
-                aria-label="शहर खोजें"
-                className="inline-flex items-center gap-2 rounded-2xl border border-emerald-600 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-60 dark:bg-emerald-500/10 dark:text-emerald-400"
-              >
-                {loading && locationMode === "manual" ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Search className="h-5 w-5" />
-                )}
-                <span className="hidden sm:inline">खोजें</span>
-              </button>
-            </div>
-          </div>
-
-          {locationMode === "gps" && weatherData && (
-            <p className="text-xs font-medium text-emerald-600">
-              📍 GPS लोकेशन से मौसम दिखाया जा रहा है
-            </p>
-          )}
-          {locationMode === "manual" && weatherData && (
-            <p className="text-xs font-medium text-emerald-600">
-              📍 मैन्युअल शहर से मौसम दिखाया जा रहा है
+          {lastUpdated && (
+            <p className="text-[10px] text-[var(--av-text-muted)]">
+              Last updated {lastUpdated.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
             </p>
           )}
         </div>
 
-        {showWelcome && (
-          <div className="agriveda-glass rounded-3xl p-10 text-center">
-            <CloudSun className="mx-auto h-14 w-14 text-emerald-500" />
-            <p className="mt-4 text-lg font-bold theme-text-primary">अपनी लोकेशन चुनें</p>
-            <p className="mt-2 text-sm theme-text-muted">
-              ऊपर &quot;मेरी सटीक लोकेशन&quot; बटन दबाएँ — phone पर location permission मांगी जाएगी।
-              <br />
-              या नीचे शहर का नाम लिखकर खोजें बटन दबाएँ।
-            </p>
-          </div>
-        )}
-
-        {loading && (
-          <div className="py-20 text-center">
-            <Loader2 className="mx-auto h-10 w-10 animate-spin text-emerald-500" />
-            <p className="mt-4 text-sm theme-text-muted">मौसम लोड हो रहा है...</p>
-          </div>
-        )}
-
-        {error && !loading && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-500/30 dark:bg-red-500/10">
-            <p className="text-sm font-semibold text-red-600 dark:text-red-400">{error}</p>
-            <div className="mt-3 flex flex-wrap justify-center gap-3">
-              <button
-                type="button"
-                onClick={useCurrentLocation}
-                className="text-sm font-bold text-emerald-600 underline"
-              >
-                GPS लोकेशन फिर से कोशिश करें
-              </button>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={useCurrentLocation}
+            disabled={locLoading || loading}
+            className={`inline-flex gap-1.5 disabled:opacity-60 ${AV.btnPrimarySm}`}
+          >
+            {locLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+            Use My Location
+          </button>
+          <div className="flex flex-1 gap-2">
+            <div className="relative flex-1">
+              <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
+              <input
+                value={manualCity}
+                onChange={(e) => setManualCity(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && searchManualCity()}
+                placeholder="Search city — Indore, Delhi..."
+                className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-10 pr-3 text-sm text-[var(--av-text-primary)] outline-none focus:border-[#10b981]"
+              />
             </div>
+            <button
+              type="button"
+              onClick={searchManualCity}
+              disabled={loading}
+              className={`inline-flex gap-1.5 ${AV.btnSecondarySm}`}
+            >
+              {loading && locationMode === "manual" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              Search
+            </button>
           </div>
-        )}
+        </div>
 
-        {!loading && !error && weatherData && (
-          <div className="rounded-3xl bg-[#f5f5f7] p-4 shadow-sm md:p-6">
-            <div className="mb-4 flex items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-emerald-700">{weatherData.location}</p>
-              <div className="flex gap-1">
-                <button
-                  type="button"
-                  onClick={refreshWeather}
-                  disabled={loading}
-                  className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-500/10 disabled:opacity-50"
-                  aria-label="Refresh weather"
-                >
-                  <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-                </button>
-                <button
-                  type="button"
-                  onClick={shareWeather}
-                  className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-500/10"
-                  aria-label="Share weather"
-                >
-                  <Share2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            <FarmWeatherDashboard weather={weatherData} lastUpdated={lastUpdated} />
-          </div>
+        {locationMode && weatherData && (
+          <p className="mt-2 text-[10px] font-medium text-[var(--av-accent)]">
+            📍 {locationMode === "gps" ? "GPS location" : "Manual city"} active
+          </p>
         )}
+      </DarkCard>
 
-        <Link href="/" className="text-sm font-semibold text-emerald-600 hover:underline">
-          ← होम पर वापस
-        </Link>
-      </div>
-    </main>
+      {!loading && !weatherData && !error && (
+        <DarkCard className="mt-4 text-center" delay={1}>
+          <CloudSun className="mx-auto h-12 w-12 text-[var(--av-accent)]" />
+          <p className="mt-3 text-base font-bold text-[var(--av-text-primary)]">Select your location</p>
+          <p className="mt-1 text-sm text-[var(--av-text-muted)]">Use GPS or search a city to load the weather dashboard</p>
+        </DarkCard>
+      )}
+
+      {loading && (
+        <div className="py-16 text-center">
+          <Loader2 className="mx-auto h-10 w-10 animate-spin text-[var(--av-accent)]" />
+          <p className="mt-3 text-sm text-[var(--av-text-muted)]">Loading weather...</p>
+        </div>
+      )}
+
+      {error && !loading && (
+        <DarkCard className="mt-4 border-red-500/30 bg-red-500/10 text-center">
+          <p className="text-sm text-red-400">{error}</p>
+          <button type="button" onClick={useCurrentLocation} className="mt-2 text-xs font-bold text-[var(--av-accent)]">
+            Retry GPS
+          </button>
+        </DarkCard>
+      )}
+
+      {!loading && weatherData && (
+        <div className="mt-4">
+          <WeatherRedesign
+            weather={weatherData}
+            lastUpdated={lastUpdated}
+            onRefresh={refreshWeather}
+            onShare={shareWeather}
+            onEnableLocation={useCurrentLocation}
+          />
+        </div>
+      )}
+    </AppShell>
   );
 }

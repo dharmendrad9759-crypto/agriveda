@@ -1,22 +1,36 @@
-import { notFound } from "next/navigation";
 import cropsData, { type Crop as CropData } from "@/data/crops";
 import CropDetailClient from "@/components/crops/CropDetailClient";
+import { isCropTabId, type CropTabId } from "@/lib/crops/crop-tabs";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ tab?: string }>;
 }
 
-export default async function CropDetailPage({ params }: Props) {
-  const resolvedParams = await params;
-  const crop = cropsData.find((item): item is CropData => item.slug === resolvedParams.slug);
+function CropDetailInner({
+  crop,
+  initialTab,
+}: {
+  crop: CropData;
+  initialTab: CropTabId;
+}) {
+  return <CropDetailClient crop={crop} initialTab={initialTab} />;
+}
 
-  if (!crop) {
-    return notFound();
-  }
+export default async function CropDetailPage({ params, searchParams }: Props) {
+  const { slug } = await params;
+  const { tab } = await searchParams;
+  const crop = cropsData.find((item): item is CropData => item.slug === slug);
+
+  if (!crop) notFound();
+
+  const initialTab: CropTabId = isCropTabId(tab) ? tab : "overview";
 
   return (
-    <main className="min-h-screen bg-[#0a0f1a] pb-8 font-sans text-[#f1f5f9] selection:bg-[#10b981]/30">
-      <CropDetailClient crop={crop} />
-    </main>
+    <Suspense fallback={null}>
+      <CropDetailInner crop={crop} initialTab={initialTab} />
+    </Suspense>
   );
 }

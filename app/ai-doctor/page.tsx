@@ -30,6 +30,9 @@ import {
   dataUrlToFile,
   releasePendingScanLock,
 } from "@/lib/pendingAiScan";
+import { AiDoctorDesktopHero, AiDoctorDesktopSidebar } from "@/components/ai-doctor/AiDoctorRedesign";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
 
 const SCAN_STEPS = [
   "Gemini AI photo dekh raha hai...",
@@ -184,12 +187,24 @@ export default function AIDoctorPage() {
   };
 
   return (
-    <main className="agriveda-page min-h-screen px-4 py-8 pb-28 sm:px-6">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6">
-        <section className="agriveda-glass-strong rounded-[28px] p-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-600">
+    <AppShell
+      title="AI Doctor"
+      subtitle="आपका स्मार्ट कृषि साथी — photo upload, diagnosis & treatment"
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "AI Doctor" }]}
+    >
+      <AiDoctorDesktopHero
+        onQuickTopic={() => {
+          document.getElementById("ai-doctor-scan")?.scrollIntoView({ behavior: "smooth" });
+          showToast("नीचे photo upload करें — AI diagnosis शुरू करें");
+        }}
+      />
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div id="ai-doctor-scan" className="space-y-4 lg:col-span-2">
+        <DarkCard>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#10b981]/30 bg-[var(--av-accent)]/10 px-3 py-1 text-[11px] font-semibold text-[var(--av-accent)]">
             <Sparkles className="h-3.5 w-3.5" />
-            {aiConfigured ? "AI सक्रिय" : "AI सेटअप ज़रूरी"}
+            {aiConfigured ? "24×7 AI Active" : "AI Setup Required"}
           </div>
           <h1 className="mt-3 text-3xl font-black theme-text-primary">फसल डॉक्टर</h1>
           <p className="mt-2 text-sm theme-text-muted">
@@ -202,10 +217,10 @@ export default function AIDoctorPage() {
               Free key: aistudio.google.com → Get API key
             </p>
           )}
-        </section>
+        </DarkCard>
 
-        <section>
-          <p className="mb-2 text-xs font-bold theme-text-muted">फसल चुनें:</p>
+        <DarkCard delay={1}>
+          <p className="mb-2 text-xs font-bold text-[var(--av-text-secondary)]">Select crop:</p>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {cropOptions.map((c) => (
               <button
@@ -214,8 +229,8 @@ export default function AIDoctorPage() {
                 onClick={() => setSelectedCrop(c.slug)}
                 className={`flex flex-shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold transition ${
                   selectedCrop === c.slug
-                    ? "bg-emerald-600 text-white shadow-[0_0_12px_rgba(0,255,136,0.25)]"
-                    : "border border-gray-200 theme-text-muted dark:border-white/10"
+                    ? "bg-[var(--av-accent)] text-[#0a0f1a]"
+                    : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
                 }`}
               >
                 <span>{c.emoji}</span>
@@ -223,10 +238,10 @@ export default function AIDoctorPage() {
               </button>
             ))}
           </div>
-        </section>
+        </DarkCard>
 
-        <section className="grid gap-6 lg:grid-cols-2">
-          <GlassCard className="p-5">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <DarkCard delay={2}>
             <input
               ref={cameraInputRef}
               type="file"
@@ -242,14 +257,15 @@ export default function AIDoctorPage() {
               onChange={handleFileSelect}
               className="sr-only"
             />
-            <div className="rounded-2xl border border-dashed border-emerald-500/30 p-4 text-center">
+            <div className="rounded-xl border border-dashed border-[#10b981]/30 bg-[var(--av-surface-inset)] p-4 text-center">
               {previewUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={previewUrl} alt="Sample" className="mx-auto h-52 w-full rounded-xl object-cover" />
               ) : (
                 <div className="py-8">
-                  <Microscope className="mx-auto h-12 w-12 text-emerald-500" />
-                  <p className="mt-2 font-bold theme-text-primary">पत्ती की साफ़ photo लें</p>
+                  <Microscope className="mx-auto h-12 w-12 text-[var(--av-accent)]" />
+                  <p className="mt-2 font-bold text-[var(--av-text-primary)]">Upload crop / leaf photo</p>
+                  <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">JPG, PNG up to 10MB</p>
                 </div>
               )}
             </div>
@@ -257,7 +273,7 @@ export default function AIDoctorPage() {
               <button
                 type="button"
                 onClick={() => cameraInputRef.current?.click()}
-                className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/40 px-4 py-2 text-sm font-bold text-emerald-600"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-2 text-sm font-bold text-[var(--av-accent)]"
               >
                 <Camera className="h-4 w-4" />
                 {previewUrl ? "नई photo" : "कैमरा"}
@@ -265,28 +281,28 @@ export default function AIDoctorPage() {
               <button
                 type="button"
                 onClick={() => galleryInputRef.current?.click()}
-                className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/40 px-4 py-2 text-sm font-bold text-emerald-600"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-2 text-sm font-bold text-[var(--av-accent)]"
               >
                 <ImagePlus className="h-4 w-4" />
-                {previewUrl ? "बदलें" : "गैलरी / फ़ाइल"}
+                {previewUrl ? "Change" : "Gallery"}
               </button>
               <button
                 type="button"
                 onClick={handleScan}
                 disabled={!selectedFile || isScanning || aiConfigured === false}
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--av-accent)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
               >
                 {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bot className="h-4 w-4" />}
                 {isScanning ? "Analyzing..." : "Run diagnosis"}
                 <ArrowRight className="h-4 w-4" />
               </button>
-              <button type="button" onClick={handleReset} className="rounded-xl px-4 py-2 text-sm theme-text-muted">
+              <button type="button" onClick={handleReset} className="rounded-xl px-4 py-2 text-sm text-[var(--av-text-muted)]">
                 Reset
               </button>
             </div>
-          </GlassCard>
+          </DarkCard>
 
-          <GlassCard className="p-5">
+          <DarkCard delay={3}>
             {isScanning && (
               <div className="py-10 text-center">
                 <Loader2 className="mx-auto h-10 w-10 animate-spin text-emerald-500" />
@@ -401,16 +417,16 @@ export default function AIDoctorPage() {
                 />
               </div>
             )}
-          </GlassCard>
-        </section>
+          </DarkCard>
+        </div>
 
         {history.length > 0 && (
-          <section>
+          <DarkCard delay={4}>
             <div className="flex items-center justify-between gap-2">
               <button
                 type="button"
                 onClick={() => setShowHistory(!showHistory)}
-                className="flex items-center gap-2 text-sm font-bold text-emerald-600"
+                className="flex items-center gap-2 text-sm font-bold text-[var(--av-accent)]"
               >
                 <History className="h-4 w-4" />
                 {t("recentScans")} ({history.length})
@@ -438,7 +454,7 @@ export default function AIDoctorPage() {
                     onClick={() => openHistoryEntry(h)}
                     className="text-left"
                   >
-                    <GlassCard className="flex gap-3 p-3 transition hover:ring-2 hover:ring-emerald-500/40">
+                    <DarkCard className="flex gap-3 p-3 !bg-[var(--av-surface-inset)]">
                       <SafeThumbnail
                         src={h.thumbnailUrl}
                         alt={h.fileName}
@@ -453,14 +469,23 @@ export default function AIDoctorPage() {
                           Tap karke detail dekhein →
                         </p>
                       </div>
-                    </GlassCard>
+                    </DarkCard>
                   </button>
                 ))}
               </div>
             )}
-          </section>
+          </DarkCard>
         )}
+        </div>
+
+        <div className="hidden lg:block">
+          <AiDoctorDesktopSidebar />
+        </div>
       </div>
-    </main>
+
+      <div className="mt-4 lg:hidden">
+        <AiDoctorDesktopSidebar />
+      </div>
+    </AppShell>
   );
 }

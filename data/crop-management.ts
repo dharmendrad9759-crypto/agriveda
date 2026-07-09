@@ -470,8 +470,11 @@ export const cropManagementCatalog: CropManagementProfile[] = [
 ];
 
 import { getEnrichedCropProfile } from "@/lib/knowledge/merge";
+import { importedManagementProfiles } from "@/data/imported-crop-exports";
 
 export function getCropManagementProfile(slug: string): CropManagementProfile | null {
-  const base = cropManagementCatalog.find((crop) => crop.slug === slug) ?? null;
+  const imported = importedManagementProfiles[slug];
+  const base =
+    imported ?? cropManagementCatalog.find((crop) => crop.slug === slug) ?? null;
   return getEnrichedCropProfile(base);
 }

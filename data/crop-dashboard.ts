@@ -1,4 +1,5 @@
 import { buildDashboardFromCatalog } from "@/lib/dashboardFactory";
+import { importedDashboards } from "@/data/imported-crop-exports";
 
 export interface GrowthStageItem {
   id: string;
@@ -555,6 +556,7 @@ export const cropDashboardData: Record<string, CropDashboardData> = {
 };
 
 export function getCropDashboard(slug: string): CropDashboardData {
+  if (importedDashboards[slug]) return importedDashboards[slug];
   if (cropDashboardData[slug]) return cropDashboardData[slug];
   const built = buildDashboardFromCatalog(slug);
   if (built) return built;

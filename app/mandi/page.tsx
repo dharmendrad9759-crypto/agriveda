@@ -1,168 +1,201 @@
-// app/mandi/page.tsx
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { BRAND } from "@/lib/brand";
+import { useMemo, useState } from "react";
+import { Search, Filter, TrendingUp, TrendingDown } from "lucide-react";
+import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
+import StatCard from "@/components/shell/StatCard";
+import { LineChart, Sparkline, DonutChart } from "@/components/shell/charts";
+import { useToast } from "@/components/ui/Toast";
+import {
+  MANDI_STATS,
+  MANDI_PRICES,
+  TOP_MANDIS,
+  MANDI_INSIGHTS,
+  MANDI_NEWS,
+  PRICE_ALERTS,
+  COMMODITY_CATEGORIES,
+} from "@/data/mock/mandi";
+import { MapPin, Package, Activity, Bell } from "lucide-react";
 
 export default function MandiPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const { showToast } = useToast();
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"high" | "low" | "change">("high");
+  const [category, setCategory] = useState<string | null>(null);
 
-  const mandiPrices = [
-    { crop: "गेहूँ (Wheat)", mandi: "मेरठ (उ.प्र.)", price: "₹2,275 - ₹2,400", unit: "क्विंटल", trend: "stable", change: "MSP" },
-    { crop: "सरसों (Mustard)", mandi: "बुलंदशहर (उ.प्र.)", price: "₹5,200 - ₹5,650", unit: "क्विंटल", trend: "up", change: "+₹180" },
-    { crop: "टमाटर (Tomato)", mandi: "जयपुर (राज.)", price: "₹2,400 - ₹3,200", unit: "क्विंटल", trend: "up", change: "+₹250" },
-    { crop: "धान (Paddy - Basmati)", mandi: "करनाल (हरियाणा)", price: "₹3,800 - ₹4,500", unit: "क्विंटल", trend: "up", change: "+₹120" },
-    { crop: "मक्का (Maize)", mandi: "अलीगढ़ (उ.प्र.)", price: "₹1,950 - ₹2,200", unit: "क्विंटल", trend: "down", change: "-₹40" },
-    { crop: "सोयाबीन (Soybean)", mandi: "इंदौर (म.प्र.)", price: "₹4,100 - ₹4,450", unit: "क्विंटल", trend: "up", change: "+₹90" },
-    { crop: "कपास (Cotton)", mandi: "झाबुआ (म.प्र.)", price: "₹6,800 - ₹7,500", unit: "क्विंटल", trend: "up", change: "+₹400" },
-    { crop: "आलू (Potato)", mandi: "आगरा (उ.प्र.)", price: "₹1,200 - ₹1,600", unit: "क्विंटल", trend: "stable", change: "₹0" },
-    { crop: "चना (Gram)", mandi: "भोपाल (म.प्र.)", price: "₹5,400 - ₹5,800", unit: "क्विंटल", trend: "up", change: "+₹110" },
-  ];
-
-  // लाइव सर्च फिल्टरिंग लॉजिक
-  const filteredPrices = mandiPrices.filter((item) =>
-    item.crop.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.mandi.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    let rows = MANDI_PRICES.filter(
+      (r) =>
+        (category ? r.category === category : true) &&
+        (r.crop.toLowerCase().includes(search.toLowerCase()) ||
+        r.cropHi.includes(search) ||
+        r.mandi.toLowerCase().includes(search.toLowerCase()))
+    );
+    if (sort === "high") rows = [...rows].sort((a, b) => b.modal - a.modal);
+    if (sort === "low") rows = [...rows].sort((a, b) => a.modal - b.modal);
+    if (sort === "change") rows = [...rows].sort((a, b) => b.change - a.change);
+    return rows;
+  }, [search, sort, category]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white px-4 py-12 selection:bg-emerald-500/30">
-      <div className="mx-auto max-w-5xl space-y-10">
-        
-        {/* ऊपर का हेडर */}
-        <div className="space-y-2 border-b border-white/5 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <span className="text-xs font-bold text-amber-400">
-              {BRAND}
-            </span>
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mt-1">
-              मंडी भाव
-            </h1>
-            <p className="text-sm md:text-base text-slate-400 max-w-xl">
-              उत्तर भारत की प्रमुख मंडियों के ताज़ा भाव — फसल बेचने से पहले देखें।
-            </p>
-          </div>
+    <AppShell
+      title="Mandi Prices"
+      subtitle="Live mandi rates, market trends & price insights"
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Mandi Prices" }]}
+    >
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard icon={MapPin} label="Selected Location" value={MANDI_STATS.location} action={{ label: "Change Location", href: "/profile" }} />
+        <StatCard icon={Package} label="Total Commodities" value={`${MANDI_STATS.commodities} Crops`} action={{ label: "View All", href: "/market-trends" }} />
+        <StatCard icon={Activity} label="Market Status" value={MANDI_STATS.status} sub={MANDI_STATS.lastUpdated} />
+        <StatCard icon={Bell} label="Price Alerts" value={`${MANDI_STATS.activeAlerts} Active`} action={{ label: "View Alerts", href: "/alerts" }} />
+      </div>
 
-          {/* लाइव सर्च बॉक्स */}
-          <div className="w-full md:w-72">
+      <DarkCard className="mt-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
             <input
-              type="text"
-              placeholder="🔍 फसल या मंडी खोजें..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-amber-500/50 text-slate-200 placeholder-slate-500 transition-all"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search crop (Wheat, Paddy, Soybean...)"
+              className="w-full rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-10 pr-3 text-sm text-[var(--av-text-primary)] outline-none focus:border-[#10b981]"
             />
           </div>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as typeof sort)}
+            className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-sm text-[var(--av-text-primary)]"
+          >
+            <option value="high">Price (High to Low)</option>
+            <option value="low">Price (Low to High)</option>
+            <option value="change">Change %</option>
+          </select>
+          <button
+            type="button"
+            onClick={() => {
+              const next = category ? null : COMMODITY_CATEGORIES[0].label;
+              setCategory(next);
+              showToast(next ? `Filter: ${next}` : "Filter cleared");
+            }}
+            className="av-btn av-btn-sm av-btn-primary inline-flex gap-1"
+          >
+            <Filter className="h-4 w-4" /> Filter
+          </button>
         </div>
+      </DarkCard>
 
-        {/* ================= MARKET OVERVIEW CARDS ================= */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {[
-            { label: "आज का充 मार्केट सेंटिमेंट", value: "तेज (Bullish)", desc: "कपास और टमाटर में भारी मांग", color: "text-emerald-400" },
-            { label: "सर्वाधिक उछाल वाली फसल", value: "कपास (+₹400)", desc: "झाबुआ मंडी में रिकॉर्ड आवक", color: "text-emerald-400" },
-            { label: "अपडेट का समय", value: "आज, 11:30 AM", desc: "AGMARKNET डेटा सोर्स आधारित", color: "text-amber-400" },
-          ].map((stat, i) => (
-            <div key={i} className="rounded-2xl border border-white/5 bg-slate-900/40 p-5 backdrop-blur-md">
-              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{stat.label}</p>
-              <p className={`mt-2 text-xl font-black tracking-tight ${stat.color}`}>{stat.value}</p>
-              <p className="mt-1 text-xs text-slate-500">{stat.desc}</p>
+      <DarkCard className="mt-4 overflow-hidden p-0" delay={1}>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-xs">
+            <thead>
+              <tr className="border-b border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]">
+                <th className="px-4 py-3 font-semibold">Commodity</th>
+                <th className="px-4 py-3 font-semibold">Variety</th>
+                <th className="px-4 py-3 font-semibold">Mandi</th>
+                <th className="px-4 py-3 font-semibold">Min</th>
+                <th className="px-4 py-3 font-semibold">Max</th>
+                <th className="px-4 py-3 font-semibold">Modal</th>
+                <th className="px-4 py-3 font-semibold">Change</th>
+                <th className="px-4 py-3 font-semibold">Trend</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#1f2937]">
+              {filtered.map((row) => (
+                <tr key={row.id} className="transition hover:bg-[var(--av-surface-inset)]/50">
+                  <td className="px-4 py-3">
+                    <p className="font-semibold text-[var(--av-text-primary)]">{row.crop} ({row.cropHi})</p>
+                    <p className="text-[10px] text-[var(--av-text-muted)]">{row.category}</p>
+                  </td>
+                  <td className="px-4 py-3 text-[var(--av-text-secondary)]">{row.variety}</td>
+                  <td className="px-4 py-3 text-[var(--av-text-secondary)]">{row.mandi}, {row.state}</td>
+                  <td className="px-4 py-3 font-mono text-[var(--av-text-primary)]">₹{row.min}</td>
+                  <td className="px-4 py-3 font-mono text-[var(--av-text-primary)]">₹{row.max}</td>
+                  <td className="px-4 py-3 font-mono font-bold text-[var(--av-accent)]">₹{row.modal}</td>
+                  <td className={`px-4 py-3 font-semibold ${row.change >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                    {row.change >= 0 ? <TrendingUp className="inline h-3 w-3" /> : <TrendingDown className="inline h-3 w-3" />}
+                    {row.change > 0 ? "+" : ""}{row.change}% (₹{row.changeAmt})
+                  </td>
+                  <td className="px-4 py-3">
+                    <Sparkline data={row.trend} color={row.change >= 0 ? "#10b981" : "#f87171"} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DarkCard>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <DarkCard hover delay={2}>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Trend (Last 7 Days) — Paddy</h3>
+          <LineChart
+            labels={["01 May", "02 May", "03 May", "04 May", "05 May", "06 May", "07 May"]}
+            series={[{ name: "Modal", data: [2100, 2120, 2140, 2150, 2160, 2170, 2180], color: "#10b981" }]}
+          />
+        </DarkCard>
+        <DarkCard hover delay={3}>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Top Mandi Prices (Today)</h3>
+          <ul className="mt-3 space-y-2">
+            {TOP_MANDIS.map((m, i) => (
+              <li key={m.name} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
+                <span className="text-xs text-[var(--av-text-secondary)]">#{i + 1} {m.name}</span>
+                <span className="font-mono text-sm font-bold text-[var(--av-accent)]">₹{m.price}</span>
+              </li>
+            ))}
+          </ul>
+        </DarkCard>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <DarkCard hover delay={1}>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Alert Setup</h3>
+          <ul className="mt-3 space-y-2">
+            {PRICE_ALERTS.map((a) => (
+              <li key={a.crop} className="flex items-center justify-between text-xs">
+                <span className="text-[var(--av-text-secondary)]">{a.crop} @ ₹{a.target}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${a.enabled ? "bg-emerald-500/20 text-emerald-400" : "bg-[#1f2937] text-[var(--av-text-muted)]"}`}>
+                  {a.enabled ? "ON" : "OFF"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </DarkCard>
+        <DarkCard hover delay={2}>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Market Insights</h3>
+          <ul className="mt-3 space-y-2 text-xs text-[var(--av-text-secondary)]">
+            {MANDI_INSIGHTS.map((ins) => (
+              <li key={ins} className="flex gap-2"><span className="text-[var(--av-accent)]">•</span>{ins}</li>
+            ))}
+          </ul>
+        </DarkCard>
+        <DarkCard hover delay={3}>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Commodity Category</h3>
+          <div className="mt-3">
+            <DonutChart segments={COMMODITY_CATEGORIES.map((c) => ({ label: c.label, value: c.value, color: c.color }))} />
+          </div>
+        </DarkCard>
+      </div>
+
+      <DarkCard className="mt-4" delay={4}>
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Latest Market News</h3>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          {MANDI_NEWS.map((n) => (
+            <div key={n.title} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3">
+              <p className="text-xs font-semibold text-[var(--av-text-primary)]">{n.title}</p>
+              <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">{n.snippet}</p>
+              <p className="mt-2 text-[9px] text-[var(--av-text-muted)]">{n.date}</p>
             </div>
           ))}
         </div>
+      </DarkCard>
 
-        {/* ================= MANDI PRICES DISPLAY ================= */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/20 overflow-hidden shadow-2xl backdrop-blur-sm">
-          
-          {/* 1. Desktop View (Table) - बड़ी स्क्रीन्स के लिए */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-white/5 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-white/5">
-                  <th className="px-6 py-4">फसल का नाम</th>
-                  <th className="px-6 py-4">प्रमुख मंडी (राज्य)</th>
-                  <th className="px-6 py-4">मूल्य सीमा (प्रति क्विंटल)</th>
-                  <th className="px-6 py-4 text-right">बाजार का रुख (Trend)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5 text-sm">
-                {filteredPrices.length > 0 ? (
-                  filteredPrices.map((item, idx) => (
-                    <tr key={idx} className="transition-colors hover:bg-white/[0.02]">
-                      <td className="px-6 py-4 font-bold text-white">{item.crop}</td>
-                      <td className="px-6 py-4 text-slate-300">{item.mandi}</td>
-                      <td className="px-6 py-4 font-mono font-semibold text-emerald-400">{item.price}</td>
-                      <td className="px-6 py-4 text-right font-mono font-medium">
-                        {item.trend === "up" && (
-                          <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs text-emerald-400 border border-emerald-500/20">
-                            ▲ {item.change}
-                          </span>
-                        )}
-                        {item.trend === "down" && (
-                          <span className="inline-flex items-center rounded-full bg-red-500/10 px-2.5 py-0.5 text-xs text-red-400 border border-red-500/20">
-                            ▼ {item.change}
-                          </span>
-                        )}
-                        {item.trend === "stable" && (
-                          <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2.5 py-0.5 text-xs text-slate-400 border border-slate-500/20">
-                            ● स्थिर
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-10 text-center text-slate-500 text-sm">❌ कोई डेटा नहीं मिला।</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* 2. Mobile View (Cards) - छोटे स्क्रीन्स पर टेबल की जगह सुंदर कार्ड्स दिखेंगे */}
-          <div className="block md:hidden divide-y divide-white/5">
-            {filteredPrices.length > 0 ? (
-              filteredPrices.map((item, idx) => (
-                <div key={idx} className="p-4 space-y-2 bg-slate-950/40">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-bold text-white text-base">{item.crop}</h4>
-                      <p className="text-xs text-slate-400 mt-0.5">📍 {item.mandi}</p>
-                    </div>
-                    <div>
-                      {item.trend === "up" && (
-                        <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-400 border border-emerald-500/20">▲ {item.change}</span>
-                      )}
-                      {item.trend === "down" && (
-                        <span className="inline-flex items-center rounded-full bg-red-500/10 px-2 py-0.5 text-xs text-red-400 border border-red-500/20">▼ {item.change}</span>
-                      )}
-                      {item.trend === "stable" && (
-                        <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2 py-0.5 text-xs text-slate-400 border border-slate-500/20">● स्थिर</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center pt-2 border-t border-white/5">
-                    <span className="text-xs text-slate-500">मूल्य सीमा ({item.unit})</span>
-                    <span className="text-sm font-mono font-bold text-emerald-400">{item.price}</span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-8 text-center text-slate-500 text-xs">❌ कोई डेटा नहीं मिला।</div>
-            )}
-          </div>
-
-        </div>
-
-        {/* पीछे जाने का बटन */}
-        <div className="pt-4">
-          <Link href="/" className="text-xs font-semibold text-slate-500 hover:text-amber-400 transition-colors">
-            ← मुख्य डैशबोर्ड पर लौटें
-          </Link>
-        </div>
-
-      </div>
-    </main>
+      <ShellCtaBanner
+        title="AI Market Advisor"
+        description="Ask our AI about market trends, predict prices & find the best selling time."
+        buttonLabel="Ask AI Advisor"
+        href="/kisan-saathi"
+      />
+    </AppShell>
   );
 }

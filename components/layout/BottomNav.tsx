@@ -54,7 +54,7 @@ export default function BottomNav() {
       aria-label={t("bottomNavLabel")}
     >
       <div className="mx-auto max-w-lg px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <div className="agriveda-glass-strong relative flex items-center justify-around rounded-2xl border border-[var(--panel-border)] px-1 py-1.5 shadow-lg">
+        <div className="agriveda-glass-strong relative flex items-center justify-around rounded-2xl border border-[#1f2937] bg-[#111827]/90 px-1 py-1.5 shadow-lg">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.match(pathname);

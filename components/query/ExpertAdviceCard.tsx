@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { Sprout } from "lucide-react";
+import AppLink from "@/components/ui/AppLink";
 import type { ExpertAdviceItem } from "@/data/crop-dashboard";
 import GlassCard from "@/components/ui/GlassCard";
 
@@ -8,6 +12,8 @@ interface ExpertAdviceCardProps {
 }
 
 export default function ExpertAdviceCard({ advice, compact = false }: ExpertAdviceCardProps) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <GlassCard className="p-4">
       <div className="flex items-start gap-3">
@@ -27,12 +33,16 @@ export default function ExpertAdviceCard({ advice, compact = false }: ExpertAdvi
         </div>
       </div>
 
-      <p className={`mt-3 text-sm text-slate-300 leading-relaxed ${compact ? "line-clamp-2" : ""}`}>
+      <p className={`mt-3 text-sm text-slate-300 leading-relaxed ${!expanded && compact ? "line-clamp-2" : !expanded ? "line-clamp-3" : ""}`}>
         {advice.query}
       </p>
       {!compact && (
-        <button type="button" className="mt-1 text-sm font-bold text-emerald-400">
-          Read more
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-1 text-sm font-bold text-emerald-400"
+        >
+          {expanded ? "Show less" : "Read more"}
         </button>
       )}
 
@@ -46,12 +56,12 @@ export default function ExpertAdviceCard({ advice, compact = false }: ExpertAdvi
             <p className="text-[10px] text-slate-500">{advice.expertDate}</p>
           </div>
         </div>
-        <p className="mt-2 text-xs text-slate-400 leading-relaxed line-clamp-2">
+        <p className={`mt-2 text-xs text-slate-400 leading-relaxed ${expanded ? "" : "line-clamp-2"}`}>
           {advice.answerPreview}
         </p>
-        <button type="button" className="mt-2 text-xs font-bold text-emerald-400">
-          View full answer
-        </button>
+        <AppLink href="/ask-query" className="mt-2 inline-block text-xs font-bold text-emerald-400">
+          View full answer →
+        </AppLink>
       </div>
     </GlassCard>
   );
