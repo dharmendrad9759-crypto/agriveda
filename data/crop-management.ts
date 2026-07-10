@@ -471,10 +471,17 @@ export const cropManagementCatalog: CropManagementProfile[] = [
 
 import { getEnrichedCropProfile } from "@/lib/knowledge/merge";
 import { importedManagementProfiles } from "@/data/imported-crop-exports";
+import { mergeIpmPestDiseaseManagement } from "@/lib/crops/ipmDataBridge";
+import { mergeWeedAbioticIntoProfile } from "@/lib/crops/weedAbioticBridge";
+import { mergeNutrientDeficiencyIntoProfile } from "@/lib/nutrients/nutrientDeficiencyBridge";
 
 export function getCropManagementProfile(slug: string): CropManagementProfile | null {
   const imported = importedManagementProfiles[slug];
   const base =
     imported ?? cropManagementCatalog.find((crop) => crop.slug === slug) ?? null;
-  return getEnrichedCropProfile(base);
+  const enriched = getEnrichedCropProfile(base);
+  if (!enriched) return null;
+  return mergeNutrientDeficiencyIntoProfile(
+    mergeWeedAbioticIntoProfile(mergeIpmPestDiseaseManagement(enriched))
+  );
 }

@@ -43,6 +43,40 @@ export interface WeedManagement {
   dose: string;
 }
 
+export interface HerbicideStep {
+  technical: string;
+  dose: string;
+  timing: string;
+  targets?: string;
+  note?: string;
+}
+
+export interface CropWeedProgram {
+  keyWeeds: string[];
+  criticalPeriod: string;
+  prevention: string[];
+  monitoring: string[];
+  cultural: string[];
+  chemical: HerbicideStep[];
+}
+
+export interface AbioticCorrection {
+  input: string;
+  dose: string;
+  stage: string;
+  note?: string;
+}
+
+export interface AbioticStressItem {
+  stressName: string;
+  symptoms: string;
+  cause: string;
+  prevention: string[];
+  monitoring: string[];
+  cultural: string[];
+  corrections: AbioticCorrection[];
+}
+
 export interface NutrientDeficiency {
   name: string;
   role: string;
@@ -81,9 +115,13 @@ export interface CropManagementProfile {
   growthStages: CropStage[];
   interculturalOperations: string[];
   weedManagement: WeedManagement[];
+  /** Full ICAR weed program from JSON batch */
+  weedProgram?: CropWeedProgram;
   pestManagement: PestManagement[];
   diseaseManagement: DiseaseManagement[];
   physiologicalDisorders: string[];
+  /** Structured abiotic / physiological stress (waterlogging, heat, deficiencies mistaken for disease) */
+  abioticStress?: AbioticStressItem[];
   nutrientDeficiencies: NutrientDeficiency[];
   harvesting: string[];
   yield: string;

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Calendar, CloudRain, Droplets, MapPin, Thermometer } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
+import DarkCard from "@/components/shell/DarkCard";
 import { cropCatalog } from "@/data/crop-catalog";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -84,7 +84,7 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
         ))}
       </select>
 
-      <GlassCard className={`border-2 p-5 ${STATUS_STYLE[result.status]}`}>
+      <DarkCard className={`border-2 p-5 ${STATUS_STYLE[result.status]}`}>
         <p className="text-xs font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
           बुआई का सही समय
         </p>
@@ -111,10 +111,10 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
         <p className="mt-3 rounded-lg bg-white/50 p-2 text-xs font-medium dark:bg-black/20">
           ⚠️ {result.criticalNote}
         </p>
-      </GlassCard>
+      </DarkCard>
 
       {result.windows.length > 0 && (
-        <GlassCard className="p-4">
+        <DarkCard className="p-4">
           <p className="text-xs font-bold theme-text-primary">State-wise buwai windows</p>
           <ul className="mt-2 space-y-2">
             {result.windows.map((w) => (
@@ -131,11 +131,11 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
               </li>
             ))}
           </ul>
-        </GlassCard>
+        </DarkCard>
       )}
 
       {result.seasons && (
-        <GlassCard className="p-4">
+        <DarkCard className="p-4">
           <p className="text-xs font-bold theme-text-primary">Season-wise detail</p>
           <ul className="mt-2 space-y-3 text-xs theme-text-muted">
             {Object.entries(result.seasons).map(([season, data]) => (
@@ -152,11 +152,11 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
               </li>
             ))}
           </ul>
-        </GlassCard>
+        </DarkCard>
       )}
 
       {Object.keys(result.stateData).length > 0 && (
-        <GlassCard className="p-4 text-xs theme-text-muted">
+        <DarkCard className="p-4 text-xs theme-text-muted">
           <p className="font-bold theme-text-primary">{result.regionKey} — verified calendar</p>
           <ul className="mt-2 space-y-1">
             {Object.entries(result.stateData).map(([k, v]) => (
@@ -165,7 +165,7 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
               </li>
             ))}
           </ul>
-        </GlassCard>
+        </DarkCard>
       )}
 
       <div className="grid grid-cols-3 gap-2">

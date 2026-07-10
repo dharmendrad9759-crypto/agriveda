@@ -1,4 +1,4 @@
-import PestDiseaseSolver from "@/components/pest-solver/PestDiseaseSolver";
+import PestSolverShell from "@/components/pest-solver/PestSolverShell";
 
 export const metadata = {
   title: "Pest & Disease Solver | Agriveda",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function PestSolverPage() {
-  return <PestDiseaseSolver />;
+  return <PestSolverShell />;
 }

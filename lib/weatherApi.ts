@@ -13,6 +13,8 @@ export interface WeatherViewModel {
   windSpeed: string;
   rainfallAlert: string;
   location: string;
+  lat?: number;
+  lon?: number;
   hourlyForecast: {
     time: string;
     temp: string;
@@ -42,10 +44,13 @@ interface WeatherApiResponse {
     wind: { speed: number };
   };
   forecast: { list: ForecastItem[] };
+  coords?: { lat: number; lon: number };
   resolvedLocation?: {
     name: string;
     state?: string;
     country: string;
+    lat?: number;
+    lon?: number;
   };
 }
 
@@ -89,7 +94,8 @@ function buildRecommendations(
 function mapWeatherResponse(
   currentData: WeatherApiResponse["current"],
   forecastList: ForecastItem[],
-  resolvedLocation?: WeatherApiResponse["resolvedLocation"]
+  resolvedLocation?: WeatherApiResponse["resolvedLocation"],
+  coords?: { lat: number; lon: number }
 ): WeatherViewModel {
   const hourly = expandForecastToHourly(forecastList as SharedForecastItem[], 24);
   const weatherMain = currentData.weather[0].main;
@@ -103,6 +109,12 @@ function mapWeatherResponse(
         .join(", ")
     : `${currentData.name}, ${currentData.sys.country}`;
 
+  const resolvedCoords =
+    coords ??
+    (resolvedLocation?.lat != null && resolvedLocation?.lon != null
+      ? { lat: resolvedLocation.lat, lon: resolvedLocation.lon }
+      : undefined);
+
   return {
     temp: `${Math.round(currentData.main.temp)}°C`,
     condition: currentData.weather[0].description,
@@ -110,6 +122,8 @@ function mapWeatherResponse(
     windSpeed: `${Math.round(currentData.wind.speed * 3.6)} km/h`,
     rainfallAlert: buildRainfallAlert(weatherMain, forecastList as SharedForecastItem[]),
     location: locationLabel,
+    lat: resolvedCoords?.lat,
+    lon: resolvedCoords?.lon,
     hourlyForecast: hourly.map((slot) => ({
       time: slot.time,
       temp: `${Math.round(slot.tempC)}°C`,
@@ -132,16 +146,45 @@ function mapWeatherResponse(
   };
 }
 
-async function fetchFromApi(params: URLSearchParams): Promise<WeatherViewModel> {
-  const res = await fetch(`/api/weather?${params.toString()}`);
-  const body = await res.json().catch(() => ({}));
+const WEATHER_CACHE_MS = 3 * 60 * 1000;
+const weatherCache = new Map<string, { data: WeatherViewModel; at: number }>();
+const weatherInflight = new Map<string, Promise<WeatherViewModel>>();
 
-  if (!res.ok) {
-    throw new Error(body.error || "मौसम लोड नहीं हो सका।");
+async function fetchFromApi(params: URLSearchParams): Promise<WeatherViewModel> {
+  const cacheKey = params.toString();
+  const cached = weatherCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < WEATHER_CACHE_MS) {
+    return cached.data;
   }
 
-  const data = body as WeatherApiResponse;
-  return mapWeatherResponse(data.current, data.forecast?.list ?? [], data.resolvedLocation);
+  const inflight = weatherInflight.get(cacheKey);
+  if (inflight) return inflight;
+
+  const promise = (async () => {
+    const res = await fetch(`/api/weather?${params.toString()}`);
+    const body = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw new Error(body.error || "मौसम लोड नहीं हो सका।");
+    }
+
+    const data = body as WeatherApiResponse;
+    const view = mapWeatherResponse(
+      data.current,
+      data.forecast?.list ?? [],
+      data.resolvedLocation,
+      data.coords
+    );
+    weatherCache.set(cacheKey, { data: view, at: Date.now() });
+    return view;
+  })();
+
+  weatherInflight.set(cacheKey, promise);
+  try {
+    return await promise;
+  } finally {
+    weatherInflight.delete(cacheKey);
+  }
 }
 
 export async function fetchWeatherByCity(city: string): Promise<WeatherViewModel> {

@@ -1,4 +1,4 @@
-import SprayAdvisoryDetail from "@/components/weather/SprayAdvisoryDetail";
+import SprayAdvisoryShell from "@/components/weather/SprayAdvisoryShell";
 
 export const metadata = {
   title: "Spray & Spread Advisory | Agriveda",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function SprayAdvisoryPage() {
-  return <SprayAdvisoryDetail />;
+  return <SprayAdvisoryShell />;
 }

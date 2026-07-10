@@ -29,7 +29,7 @@ import { useToast } from "@/components/ui/Toast";
 
 type View = "categories" | "list" | "detail";
 
-export default function PestDiseaseSolver() {
+export default function PestDiseaseSolver({ embedded = false }: { embedded?: boolean }) {
   const navigate = useAppNavigate();
   const router = useRouter();
   const { showToast } = useToast();
@@ -101,8 +101,8 @@ export default function PestDiseaseSolver() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-32 text-gray-950">
-      {/* Header */}
+    <div className={embedded ? "space-y-5" : "min-h-screen bg-white pb-32 text-gray-950"}>
+      {!embedded && (
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-sm">
         <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3.5">
           <button
@@ -124,8 +124,9 @@ export default function PestDiseaseSolver() {
           <Stethoscope className="h-6 w-6 shrink-0 text-emerald-600" aria-hidden />
         </div>
       </header>
+      )}
 
-      <main className="mx-auto max-w-lg px-4 py-5">
+      <main className={embedded ? "space-y-5" : "mx-auto max-w-lg px-4 py-5"}>
         {/* Categories grid */}
         {view === "categories" && (
           <section>

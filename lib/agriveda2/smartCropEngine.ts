@@ -6,6 +6,7 @@ import {
   riskLevelFromLabel,
   mandiTrendFromDemand,
 } from "@/data/agriveda2/smart-crop-data";
+import { getViableCropSlugs, currentSeason as planCurrentSeason } from "@/lib/cropPlanning/lookup";
 import {
   defaultSoilForState,
   getLocationCropScore,
@@ -38,12 +39,6 @@ const SEASON_CROPS: Record<string, string[]> = {
   zaid: ["tomato", "cucumber", "bhindi", "moong"],
 };
 
-function currentSeason(month: number): keyof typeof SEASON_CROPS {
-  if (month >= 6 && month <= 9) return "kharif";
-  if (month >= 10 || month <= 2) return "rabi";
-  return "zaid";
-}
-
 function waterIndexToIrrigationKey(water: "low" | "medium" | "high"): string {
   if (water === "low") return "0 irrigation (Baraani)";
   if (water === "high") return "Full irrigation (5+ watering)";
@@ -69,10 +64,11 @@ export function rankCropsForFarmer(options: {
   limit?: number;
 }): SmartCropRank[] {
   const month = options.month ?? new Date().getMonth() + 1;
-  const season = currentSeason(month);
-  const seasonSlugs = new Set(SEASON_CROPS[season]);
   const state = options.state ?? "";
   const district = options.district ?? "";
+  const season = planCurrentSeason(month);
+  const regionalSlugs = state ? getViableCropSlugs(state, district, season) : [];
+  const seasonSlugs = new Set(regionalSlugs.length > 0 ? regionalSlugs : SEASON_CROPS[season]);
   const soilType = options.soilType ?? (state ? defaultSoilForState(state) : undefined);
   const water = options.waterIndex ?? (state ? waterIndexForState(state) : "medium");
   const irrigationKey = waterIndexToIrrigationKey(water);
@@ -97,8 +93,14 @@ export function rankCropsForFarmer(options: {
       }
 
       if (seasonSlugs.has(crop.slug)) {
-        score += 12;
-        reasons.push(`${season} season — abhi buwai ka samay`);
+        score += regionalSlugs.length > 0 ? 18 : 12;
+        reasons.push(
+          regionalSlugs.length > 0
+            ? `${season} — aapke ilake ki crop calendar mein hai`
+            : `${season} season — abhi buwai ka samay`
+        );
+      } else if (regionalSlugs.length > 0) {
+        score -= 8;
       }
 
       if (irrigation?.best.some((c) => profitKey.includes(c) || crop.name.includes(c.split(" ")[0]))) {

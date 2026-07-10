@@ -347,13 +347,25 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
   },
 };
 
+import { getIpmCatalogEntry, mergeIpmCatalog } from "@/lib/crops/ipmDataBridge";
+import { mergeWeedAbioticCatalog } from "@/lib/crops/weedAbioticBridge";
+
 export function getCropPestDisease(slug: string): CropPestDiseaseData {
-  if (cropPestDiseaseData[slug]) return cropPestDiseaseData[slug];
-  return cropPestDiseaseData.paddy;
+  const base = cropPestDiseaseData[slug] ?? getIpmCatalogEntry(slug);
+  if (!base) return cropPestDiseaseData.paddy;
+  return mergeWeedAbioticCatalog(mergeIpmCatalog(base));
 }
 
-export const pestDiseaseCropList = cropCatalog.map((c) => ({
-  slug: c.slug,
-  name: c.name,
-  emoji: c.emoji,
-}));
+export const pestDiseaseCropList = [
+  ...cropCatalog.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    emoji: c.emoji,
+  })),
+  ...["brinjal", "bhindi", "cauliflower", "cabbage", "capsicum", "cucumber", "moong"]
+    .filter((slug) => getIpmCatalogEntry(slug) && !cropCatalog.some((c) => c.slug === slug))
+    .map((slug) => {
+      const entry = getIpmCatalogEntry(slug)!;
+      return { slug, name: entry.name, emoji: entry.emoji };
+    }),
+];

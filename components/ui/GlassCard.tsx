@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { fadeUp } from "@/lib/motion/variants";
+import Card from "@/components/design-system/Card";
 
 interface GlassCardProps {
   children: React.ReactNode;
@@ -10,31 +11,26 @@ interface GlassCardProps {
   strong?: boolean;
   hover?: boolean;
   neon?: boolean;
-  /** Stagger index for entrance animation */
   motionIndex?: number;
 }
 
+/** Glass surface — delegates to unified Card primitive */
 export default function GlassCard({
   children,
   className,
-  strong,
-  hover,
+  strong: _strong,
+  hover = false,
   neon,
   motionIndex = 0,
 }: GlassCardProps) {
   const reduced = useReducedMotion();
 
-  const baseClass = cn(
-    "rounded-xl",
-    strong ? "agriveda-glass-strong" : "agriveda-glass",
-    neon && "agriveda-neon-border",
-    hover &&
-      "transition-all duration-200 ease-out hover:border-emerald-400/30 hover:shadow-[0_0_24px_rgba(0,255,136,0.12)] hover:-translate-y-0.5",
-    className
-  );
-
   if (reduced) {
-    return <div className={baseClass}>{children}</div>;
+    return (
+      <Card variant="glass" hover={hover} className={cn(neon && "agriveda-neon-border", className)} static>
+        {children}
+      </Card>
+    );
   }
 
   return (
@@ -45,9 +41,15 @@ export default function GlassCard({
       viewport={{ once: true, margin: "-30px" }}
       custom={motionIndex}
       whileHover={hover ? { y: -2, transition: { duration: 0.2 } } : undefined}
-      className={baseClass}
     >
-      {children}
+      <Card
+        variant="glass"
+        hover={hover}
+        static
+        className={cn(neon && "agriveda-neon-border", className)}
+      >
+        {children}
+      </Card>
     </motion.div>
   );
 }

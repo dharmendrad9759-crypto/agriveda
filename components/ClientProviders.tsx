@@ -16,6 +16,7 @@ import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
+import AppPremiumBackground from "@/components/ui/AppPremiumBackground";
 import { MotionConfig } from "framer-motion";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { isCapacitorNative } from "@/lib/capacitorNav";
@@ -37,13 +38,14 @@ export default function ClientProviders({ children }: { children: React.ReactNod
             <FarmerOnboardingGate>
               <NavDrawerProvider>
               <OfflineBanner />
-              <div className="flex min-h-screen flex-col bg-[var(--background)] lg:flex-row">
+              <div className="app-premium-shell relative flex min-h-screen flex-col lg:flex-row">
+                <AppPremiumBackground />
                 <AppSidebar />
-                <div className="flex min-h-screen flex-1 flex-col">
+                <div className="relative z-10 flex min-h-screen flex-1 flex-col">
                   <MobileShellTopBar />
                   <Navbar />
                   <ShellTopBar />
-                  <main className="flex-grow bg-[var(--background)] pb-24 text-[var(--foreground)] lg:pb-0">{children}</main>
+                  <main className="flex-grow bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">{children}</main>
                   <Footer />
                   <BottomNav />
                 </div>

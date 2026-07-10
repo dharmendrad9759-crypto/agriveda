@@ -5,13 +5,16 @@ import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import StatCard from "@/components/shell/StatCard";
+import PageHero from "@/components/shell/PageHero";
+import Badge from "@/components/design-system/Badge";
 import { useToast } from "@/components/ui/Toast";
 import { useFarmData } from "@/hooks/useFarmData";
+import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
 import {
   FARM_INSIGHTS,
   FARM_RECORDS,
 } from "@/data/mock/farm";
-import { Tractor, Map, Sprout, ListTodo, Heart, Plus } from "lucide-react";
+import { Tractor, Map, Sprout, ListTodo, Heart, Plus, Bell } from "lucide-react";
 
 const RECORD_COLORS: Record<string, string> = {
   Fertilizer: "bg-emerald-500/20 text-emerald-400",
@@ -31,6 +34,7 @@ function totalAreaLabel(fields: { area: string }[]) {
 export default function MyFarmPage() {
   const { showToast } = useToast();
   const { data, stats, addField, addActivity, addNote } = useFarmData();
+  const farmAlerts = useDashboardAlerts(4);
 
   const [showAddField, setShowAddField] = useState(false);
   const [showAddNote, setShowAddNote] = useState(false);
@@ -114,10 +118,19 @@ export default function MyFarmPage() {
 
   return (
     <AppShell
+      className="!bg-transparent"
       title="My Farm"
       subtitle="Manage your fields, crops, activities and track farm progress"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "My Farm" }]}
     >
+      <PageHero
+        title="Farm Overview"
+        subtitle={`${stats.totalFields} fields · ${stats.cropsGrowing} crops growing · health ${stats.healthScore}%`}
+        badge="My Farm"
+        icon={Tractor}
+        action={{ label: "Field Advisor", href: "/field-advisor" }}
+      />
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <StatCard icon={Tractor} label="Total Fields" value={`${stats.totalFields} Active`} action={{ label: "View All", href: "/my-farm" }} />
         <StatCard icon={Map} label="Total Area" value={totalAreaLabel(data.fields)} action={{ label: "View Details", href: "/my-farm" }} />
@@ -244,9 +257,50 @@ export default function MyFarmPage() {
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <DarkCard hover delay={1}>
+        <DarkCard hover delay={1} className="border-amber-500/15">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-[var(--av-text-primary)]">
+              <Bell className="h-4 w-4 text-amber-400" />
+              Active Farm Alerts
+            </h3>
+            <Badge variant={farmAlerts.length ? "warning" : "success"}>{farmAlerts.length}</Badge>
+          </div>
+          <ul className="mt-3 space-y-2">
+            {farmAlerts.length === 0 ? (
+              <li className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-3 text-center text-xs text-emerald-400">
+                No active alerts
+              </li>
+            ) : (
+              farmAlerts.map((a) => (
+                <li key={a.id} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
+                  <AppLink href={a.actionHref ?? "/alerts"} className="block">
+                    <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.title}</p>
+                    <p className="text-[10px] text-[var(--av-text-muted)]">{a.body}</p>
+                  </AppLink>
+                </li>
+              ))
+            )}
+          </ul>
+          <AppLink href="/alerts" className="mt-2 inline-block text-xs font-semibold text-[var(--av-accent)]">
+            View all alerts →
+          </AppLink>
+        </DarkCard>
+
+        <DarkCard hover delay={2} className="border-emerald-500/15 bg-gradient-to-br from-emerald-500/5 to-transparent">
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Weather Forecast</h3>
+          <p className="mt-2 text-xs text-[var(--av-text-muted)]">
+            Live weather, spray advisory aur 7-day forecast ke liye{" "}
+            <AppLink href="/weather" className="font-semibold text-[var(--av-accent)]">
+              Weather page
+            </AppLink>{" "}
+            dekhein.
+          </p>
+        </DarkCard>
+      </div>
+
+      <DarkCard hover delay={1} className="mt-4 border-emerald-500/10">
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Farm Insights</h3>
-          <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {FARM_INSIGHTS.map((ins) => (
               <div key={ins.label} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3 text-center">
                 <span className="text-xl">{ins.icon}</span>
@@ -255,19 +309,7 @@ export default function MyFarmPage() {
               </div>
             ))}
           </div>
-        </DarkCard>
-
-        <DarkCard hover delay={2}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Weather Forecast</h3>
-          <p className="mt-2 text-xs text-[var(--av-text-muted)]">
-            Live weather ke liye{" "}
-            <AppLink href="/weather" className="font-semibold text-[var(--av-accent)]">
-              Weather page
-            </AppLink>{" "}
-            dekhein.
-          </p>
-        </DarkCard>
-      </div>
+      </DarkCard>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <DarkCard hover delay={1}>

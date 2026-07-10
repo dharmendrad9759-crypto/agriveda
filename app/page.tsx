@@ -5,7 +5,7 @@ import DesktopDashboard from "@/components/dashboard/DesktopDashboard";
 
 export default function Home() {
   return (
-    <AppShell>
+    <AppShell className="!bg-transparent">
       <DesktopDashboard />
     </AppShell>
   );

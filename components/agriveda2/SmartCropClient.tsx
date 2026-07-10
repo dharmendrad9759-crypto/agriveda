@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import AppLink from "@/components/ui/AppLink";
 import { MapPin } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
+import DarkCard from "@/components/shell/DarkCard";
 import SearchableSelect from "@/components/ui/SearchableSelect";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { rankCropsForFarmer } from "@/lib/agriveda2/smartCropEngine";
@@ -52,7 +52,7 @@ export default function SmartCropClient() {
 
   return (
     <div className="space-y-4">
-      <GlassCard className="space-y-4 p-4">
+      <DarkCard className="space-y-4 p-4">
         <p className="flex items-center gap-2 text-sm font-bold theme-text-primary">
           <MapPin className="h-4 w-4 text-emerald-600" />
           पहले अपना राज्य और ज़िला बताएँ
@@ -94,20 +94,20 @@ export default function SmartCropClient() {
         >
           मेरी जगह के हिसाब से सलाह दिखाएँ
         </button>
-      </GlassCard>
+      </DarkCard>
 
       {locationConfirmed && ranks.length > 0 && (
         <>
-          <GlassCard className="space-y-2 p-4 text-xs">
+          <DarkCard className="space-y-2 p-4 text-xs">
             <p className="font-bold theme-text-primary">{banner.title}</p>
             <p className="theme-text-muted leading-relaxed">{banner.body}</p>
             <p className="rounded-lg bg-amber-500/10 px-2 py-1.5 font-semibold text-amber-900 dark:text-amber-200">
               {banner.bighaNote}
             </p>
-          </GlassCard>
+          </DarkCard>
 
           {ranks.map((crop, i) => (
-            <GlassCard key={crop.slug} neon={i === 0} className="p-4">
+            <DarkCard key={crop.slug} className={`p-4 ${i === 0 ? "border-emerald-500/30 ring-1 ring-emerald-500/20" : ""}`}>
               <div className="flex items-center justify-between gap-2">
                 <p className="text-lg font-black theme-text-primary">
                   {medals[i]} {crop.emoji} {crop.name}
@@ -129,20 +129,20 @@ export default function SmartCropClient() {
               )}
               <p className="mt-1 text-xs theme-text-muted">{crop.netProfitRange}</p>
               <AppLink
-                href={`/crop-details/${crop.slug}`}
+                href={`/crops/${crop.slug}`}
                 className="mt-3 inline-block text-xs font-bold text-emerald-600"
               >
                 Crop guide →
               </AppLink>
-            </GlassCard>
+            </DarkCard>
           ))}
         </>
       )}
 
       {locationConfirmed && ranks.length === 0 && (
-        <GlassCard className="p-4 text-sm theme-text-muted">
+        <DarkCard className="p-4 text-sm theme-text-muted">
           इस ज़िले के लिए अभी data load नहीं हुआ — दोबारा राज्य/ज़िला चुनें।
-        </GlassCard>
+        </DarkCard>
       )}
     </div>
   );

@@ -17,7 +17,6 @@ import {
   Stethoscope,
   Loader2,
 } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
 import { analyzePlantImage, checkAiDoctorConfigured, type DiagnosisResult } from "@/lib/aiDiagnosis";
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import { useAIHistory } from "@/hooks/useAIHistory";

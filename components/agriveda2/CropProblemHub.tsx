@@ -3,7 +3,7 @@
 import AppLink from "@/components/ui/AppLink";
 import { useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { Camera, ChevronRight, ListChecks, Mic, Sparkles, Loader2 } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
+import DarkCard from "@/components/shell/DarkCard";
 import SafeThumbnail from "@/components/ui/SafeThumbnail";
 import SolutionCard, { solutionFromIssue } from "@/components/agriveda2/SolutionCard";
 import { SYMPTOM_CATEGORIES, getIssuesForCrop } from "@/data/symptom-solver";
@@ -100,7 +100,7 @@ export default function CropProblemHub() {
       />
 
       {photoPreview && (
-        <GlassCard className="space-y-3 p-4">
+        <DarkCard className="space-y-3 p-4">
           <p className="text-xs font-bold text-violet-700 dark:text-violet-300">
             📷 Photo select ho gayi — preview
           </p>
@@ -131,15 +131,15 @@ export default function CropProblemHub() {
               Badlein
             </button>
           </div>
-        </GlassCard>
+        </DarkCard>
       )}
 
-      <GlassCard className="p-4">
+      <DarkCard className="p-4">
         <p className="flex items-center gap-2 text-xs font-black uppercase text-emerald-600">
           <Sparkles className="h-4 w-4" />
           Sample Solution Card
         </p>
-      </GlassCard>
+      </DarkCard>
 
       <SolutionCard data={solutionFromIssue(sampleIssue)} />
     </div>

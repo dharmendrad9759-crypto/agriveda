@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Calculator, Mic, Sprout, Info, Leaf } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
+import DarkCard from "@/components/shell/DarkCard";
 import { cropCatalog } from "@/data/crop-catalog";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
@@ -75,7 +75,7 @@ export default function SeedCalculatorClient() {
 
   return (
     <div className="space-y-5">
-      <GlassCard neon className="p-4">
+      <DarkCard className="border-emerald-500/20 p-4">
         <p className="text-sm font-bold theme-text-primary">बीज कैलकुलेटर</p>
         <p className="mt-1 text-xs theme-text-muted">
           फसल चुनें, तरीका और खेत का area — बीज kg अपने आप निकलेगा। बीघा आपके ज़िले के हिसाब से।
@@ -192,10 +192,10 @@ export default function SeedCalculatorClient() {
             <Mic className="h-4 w-4" />
           </button>
         </div>
-      </GlassCard>
+      </DarkCard>
 
       {result ? (
-        <GlassCard neon className="space-y-3 p-5">
+        <DarkCard className="space-y-3 border-emerald-500/20 p-5">
           <div className="flex items-center gap-2 text-emerald-600">
             <Calculator className="h-5 w-5" />
             <span className="text-sm font-extrabold">
@@ -241,11 +241,11 @@ export default function SeedCalculatorClient() {
             </p>
             <p className="mt-1 text-xs theme-text-muted">{result.seedTreatment}</p>
           </div>
-        </GlassCard>
+        </DarkCard>
       ) : (
-        <GlassCard className="p-4 text-center text-sm theme-text-muted">
+        <DarkCard className="p-4 text-center text-sm theme-text-muted">
           Area daalein — result yahan dikhega
-        </GlassCard>
+        </DarkCard>
       )}
     </div>
   );

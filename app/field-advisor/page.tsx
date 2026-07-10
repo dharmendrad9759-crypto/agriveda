@@ -3,39 +3,53 @@
 import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
+import PageHero from "@/components/shell/PageHero";
+import Badge from "@/components/design-system/Badge";
 import { DonutChart } from "@/components/shell/charts";
 import { AV } from "@/lib/design/tokens";
 import {
   FIELD_ADVISOR_HELP,
-  FIELD_RECOMMENDATIONS,
   FIELD_EXPERTS,
   FIELD_TOOLS,
 } from "@/data/mock/field-advisor";
-import { DASHBOARD_ALERTS, CROP_HEALTH_SEGMENTS } from "@/data/mock/dashboard";
+import { CROP_HEALTH_SEGMENTS } from "@/data/mock/dashboard";
+import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
+import { useFarmData } from "@/hooks/useFarmData";
+import { buildFieldRecommendations } from "@/lib/field-advisor/buildFieldRecommendations";
+import { Brain, AlertTriangle } from "lucide-react";
+
+const SEVERITY_STYLES = {
+  critical: "border-red-500/30 bg-red-500/10 text-red-400",
+  warning: "border-amber-500/30 bg-amber-500/10 text-amber-400",
+  info: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+};
 
 export default function FieldAdvisorPage() {
+  const alerts = useDashboardAlerts(6);
+  const recommendations = buildFieldRecommendations(alerts);
+  const { stats } = useFarmData();
+  const healthLabel = stats.healthScore >= 80 ? "Good" : stats.healthScore >= 65 ? "Average" : "Watch";
+
   return (
     <AppShell
+      className="!bg-transparent"
       title="Field Advisor"
       subtitle="Your personal agriculture advisor for smarter farming decisions"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Field Advisor" }]}
     >
-      <div className="rounded-xl border border-[#10b981]/30 bg-gradient-to-r from-[#059669]/30 to-[#10b981]/10 p-6 lg:flex lg:items-center lg:justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-[var(--av-text-primary)]">Your Personal Agri Advisor</h2>
-          <p className="mt-1 text-sm text-[var(--av-text-secondary)]">Crop-specific recommendations based on your field, soil & weather.</p>
-          <AppLink href="/kisan-saathi" className={`mt-4 inline-flex ${AV.btnPrimarySm} bg-white text-[#059669] hover:bg-white/90`}>
-            Ask AI Advisor →
-          </AppLink>
-        </div>
-        <div className="mt-4 hidden text-6xl lg:mt-0 lg:block">🌾</div>
-      </div>
+      <PageHero
+        title="Your Personal Agri Advisor"
+        subtitle="Crop-specific recommendations based on your field, soil & weather."
+        badge="AI Powered"
+        icon={Brain}
+        action={{ label: "Ask AI Advisor", href: "/kisan-saathi" }}
+      />
 
-      <h3 className="mt-6 text-sm font-bold text-[var(--av-text-primary)]">What would you like help with today?</h3>
+      <h3 className="text-sm font-bold text-[var(--av-text-primary)]">What would you like help with today?</h3>
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {FIELD_ADVISOR_HELP.map((item, i) => (
           <AppLink key={item.title} href={item.href}>
-            <DarkCard hover delay={i} className="h-full text-center">
+            <DarkCard hover delay={i} className="h-full border-emerald-500/10 bg-gradient-to-br from-emerald-500/5 to-transparent text-center">
               <span className="text-2xl">{item.icon}</span>
               <p className="mt-2 text-xs font-bold text-[var(--av-text-primary)]">{item.title}</p>
               <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">{item.desc}</p>
@@ -45,12 +59,15 @@ export default function FieldAdvisorPage() {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <DarkCard hover delay={1}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Recommendations for Your Fields</h3>
+        <DarkCard hover delay={1} className="border-emerald-500/15">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Recommendations for Your Fields</h3>
+            <Badge variant="info">{recommendations.length} tips</Badge>
+          </div>
           <ul className="mt-3 space-y-2">
-            {FIELD_RECOMMENDATIONS.map((r) => (
-              <li key={r.crop} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
-                <div>
+            {recommendations.map((r) => (
+              <li key={`${r.crop}-${r.tip}`} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
+                <div className="min-w-0 pr-2">
                   <p className="text-xs font-semibold text-[var(--av-text-primary)]">{r.crop}</p>
                   <p className="text-[10px] text-[var(--av-text-muted)]">{r.tip}</p>
                 </div>
@@ -77,24 +94,52 @@ export default function FieldAdvisorPage() {
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <DarkCard hover delay={1}>
+        <DarkCard hover delay={1} className="border-emerald-500/15 bg-gradient-to-br from-emerald-500/5 to-transparent">
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Field Health Summary</h3>
           <div className="mt-4 flex justify-center">
-            <DonutChart segments={CROP_HEALTH_SEGMENTS} centerValue="82" centerLabel="Good" />
+            <DonutChart
+              segments={CROP_HEALTH_SEGMENTS}
+              centerValue={`${stats.healthScore}%`}
+              centerLabel={healthLabel}
+            />
           </div>
-          <p className="mt-3 text-center text-xs text-emerald-400">Keep it up! Your fields are in good condition.</p>
+          <p className="mt-3 text-center text-xs text-emerald-400">
+            {stats.healthScore >= 75
+              ? "Keep it up! Your fields are in good condition."
+              : "Review alerts below and take action this week."}
+          </p>
         </DarkCard>
 
         <DarkCard hover delay={2}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Important Alerts</h3>
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Important Alerts</h3>
+            <Badge variant={alerts.length ? "warning" : "success"}>{alerts.length} active</Badge>
+          </div>
           <ul className="mt-3 space-y-2">
-            {DASHBOARD_ALERTS.map((a) => (
-              <li key={a.id} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
-                <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.title}</p>
-                <p className="text-[10px] text-[var(--av-text-muted)]">{a.desc}</p>
+            {alerts.length === 0 ? (
+              <li className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-4 text-center text-xs text-emerald-400">
+                No active alerts — all good ✓
               </li>
-            ))}
+            ) : (
+              alerts.map((a) => (
+                <li key={a.id} className={`rounded-lg border px-3 py-2 ${SEVERITY_STYLES[a.severity]}`}>
+                  <AppLink href={a.actionHref ?? "/alerts"} className="block">
+                    <p className="flex items-center gap-1.5 text-xs font-semibold text-[var(--av-text-primary)]">
+                      {a.severity !== "info" && <AlertTriangle className="h-3 w-3 shrink-0" />}
+                      {a.title}
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">{a.body}</p>
+                    {a.actionLabel && (
+                      <p className="mt-1 text-[10px] font-bold text-[var(--av-accent)]">{a.actionLabel} →</p>
+                    )}
+                  </AppLink>
+                </li>
+              ))
+            )}
           </ul>
+          <AppLink href="/alerts" className={`mt-3 inline-flex ${AV.btnSecondarySm}`}>
+            View all alerts
+          </AppLink>
         </DarkCard>
       </div>
 

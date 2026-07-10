@@ -57,7 +57,7 @@ export function mapDataGovRecords(records: DataGovRecord[]): MandiRow[] {
 
     const modalVal = modal || Math.round((min + max) / 2);
     rows.push({
-      id: `live-${i}-${r.market}-${crop}`,
+        id: `live-${r.market ?? "m"}-${crop}-${r.variety ?? "v"}-${r.arrival_date ?? i}-${i}`,
       crop,
       cropHi: CROP_HI[crop] ?? crop,
       variety: r.variety?.trim() || "—",

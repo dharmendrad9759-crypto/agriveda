@@ -107,7 +107,7 @@ export default function FarmDashboard({ compact = false }: { compact?: boolean }
                 return (
                   <AppLink
                     key={field.id}
-                    href={`/crop-details/${field.cropSlug}`}
+                    href={`/crops/${field.cropSlug}`}
                     className="flex items-center gap-2.5 rounded-xl border border-emerald-500/15 bg-emerald-500/5 px-2.5 py-2 active:scale-[0.99]"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/60 text-lg dark:bg-black/20">
@@ -206,7 +206,7 @@ export default function FarmDashboard({ compact = false }: { compact?: boolean }
               <FieldAction href="/ai-doctor" icon={<Camera className="h-4 w-4" />} label="Scan" />
               <FieldAction href="/weather/spray-advisory" icon={<Droplets className="h-4 w-4" />} label="Spray" />
               <FieldAction href="/community" icon={<MessageCircle className="h-4 w-4" />} label="Community" />
-              <FieldAction href={`/crop-details/${field.cropSlug}`} icon={<BookOpen className="h-4 w-4" />} label="Guide" />
+              <FieldAction href={`/crops/${field.cropSlug}`} icon={<BookOpen className="h-4 w-4" />} label="Guide" />
             </div>
           </GlassCard>
         );

@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import PageBackground from "@/components/ui/PageBackground";
-import BottomNav from "@/components/layout/BottomNav";
 import GlassCard from "@/components/ui/GlassCard";
 
 interface ComingSoonPageProps {
@@ -13,8 +11,7 @@ interface ComingSoonPageProps {
 
 export default function ComingSoonPage({ title, subtitle }: ComingSoonPageProps) {
   return (
-    <main className="agriveda-page relative min-h-screen pb-28">
-      <PageBackground />
+    <main className="agriveda-page crop-premium-page relative min-h-screen pb-28">
 
       <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--background)]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3">
@@ -46,8 +43,6 @@ export default function ComingSoonPage({ title, subtitle }: ComingSoonPageProps)
           </Link>
         </GlassCard>
       </div>
-
-      <BottomNav />
     </main>
   );
 }

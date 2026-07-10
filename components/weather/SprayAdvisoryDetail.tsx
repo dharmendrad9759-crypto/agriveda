@@ -64,7 +64,7 @@ function mixResultStyles(result: TankMixCheckResult | null) {
   return "border-red-200 bg-red-50 text-red-900";
 }
 
-export default function SprayAdvisoryDetail() {
+export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: boolean }) {
   const { crops } = useMyCrops();
   const cropSlug = crops[0]?.slug ?? "paddy";
 
@@ -133,8 +133,8 @@ export default function SprayAdvisoryDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f5f7] text-gray-900">
-      {/* Header */}
+    <div className={embedded ? "space-y-5" : "min-h-screen bg-[#f4f5f7] text-gray-900"}>
+      {!embedded && (
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3.5">
           <Link
@@ -154,8 +154,9 @@ export default function SprayAdvisoryDetail() {
           </div>
         </div>
       </header>
+      )}
 
-      <main className="mx-auto max-w-lg space-y-5 px-4 py-5 pb-28">
+      <main className={embedded ? "space-y-5" : "mx-auto max-w-lg space-y-5 px-4 py-5 pb-28"}>
         {/* Current Status */}
         <section>
           <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">

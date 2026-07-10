@@ -41,12 +41,43 @@ export function cropSummary(rows: MandiRow[], crop: string) {
   return { modal, min, max, change, changeAmt, trend, count: cropRows.length };
 }
 
+export function topMandisFromRows(rows: MandiRow[], limit = 4) {
+  const byMandi = new Map<string, { mandi: string; price: number; change: number; crop: string }>();
+  for (const r of rows) {
+    const existing = byMandi.get(r.mandi);
+    if (!existing || r.modal > existing.price) {
+      byMandi.set(r.mandi, {
+        mandi: r.mandi,
+        price: r.modal,
+        change: r.change,
+        crop: r.crop,
+      });
+    }
+  }
+  return [...byMandi.values()]
+    .sort((a, b) => b.price - a.price)
+    .slice(0, limit)
+    .map((m) => ({
+      id: m.mandi,
+      name: `${m.mandi} Mandi`,
+      price: m.price,
+      change: m.change,
+      crop: m.crop,
+    }));
+}
+
 export function topMarketsTrend(rows: MandiRow[], crop: string, limit = 5) {
   const cropRows = rows.filter((r) => r.crop.toLowerCase() === crop.toLowerCase());
-  return [...cropRows]
+  const byMandi = new Map<string, MandiRow>();
+  for (const r of cropRows) {
+    const existing = byMandi.get(r.mandi);
+    if (!existing || r.modal > existing.modal) byMandi.set(r.mandi, r);
+  }
+  return [...byMandi.values()]
     .sort((a, b) => b.modal - a.modal)
     .slice(0, limit)
     .map((r) => ({
+      id: `${r.mandi}-${r.crop}-${r.variety}`,
       market: r.mandi,
       price: r.modal,
       change: r.change,
@@ -104,4 +135,74 @@ export function trendLabels(range: string): string[] {
   if (range === "30d") return Array.from({ length: 7 }, (_, i) => `W${i + 1}`);
   if (range === "1y") return ["Jan", "Mar", "May", "Jul", "Sep", "Nov", "Dec"];
   return Array.from({ length: 7 }, (_, i) => `D-${6 - i}`);
+}
+
+const DONUT_COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#8b5cf6", "#ef4444", "#6b7280"];
+
+export function commodityCategoryDonut(rows: MandiRow[]) {
+  const counts = new Map<string, number>();
+  rows.forEach((r) => counts.set(r.category, (counts.get(r.category) ?? 0) + 1));
+  const total = rows.length || 1;
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([label, count], i) => ({
+      label,
+      value: Math.round((count / total) * 100),
+      color: DONUT_COLORS[i % DONUT_COLORS.length],
+    }));
+}
+
+export function computedMarketInsights(rows: MandiRow[], crop?: string): string[] {
+  if (!rows.length) {
+    return ["Mandi data load hone ke baad insights yahan dikhenge."];
+  }
+
+  const stats = marketStats(rows);
+  const insights: string[] = [
+    `${stats.tracked} commodities tracked — market outlook ${stats.trend.toLowerCase()}.`,
+  ];
+
+  if (stats.avgChange !== 0) {
+    insights.push(
+      `Average price change across mandis: ${stats.avgChange > 0 ? "+" : ""}${stats.avgChange}% vs previous snapshot.`
+    );
+  }
+
+  const topGainer = [...rows].sort((a, b) => b.change - a.change)[0];
+  if (topGainer?.change > 0) {
+    insights.push(`${topGainer.crop} at ${topGainer.mandi} up ${topGainer.change}% — strongest gainer today.`);
+  }
+
+  const topLoser = [...rows].sort((a, b) => a.change - b.change)[0];
+  if (topLoser?.change < 0) {
+    insights.push(`${topLoser.crop} at ${topLoser.mandi} down ${Math.abs(topLoser.change)}% — watch before selling.`);
+  }
+
+  if (crop) {
+    const summary = cropSummary(rows, crop);
+    if (summary) {
+      insights.push(
+        `${crop} modal avg ₹${summary.modal.toLocaleString("en-IN")}/q — range ₹${summary.min.toLocaleString("en-IN")}–₹${summary.max.toLocaleString("en-IN")} across ${summary.count} mandi(s).`
+      );
+    }
+  }
+
+  return insights.slice(0, 5);
+}
+
+export function chartSeriesForRange(
+  history: number[],
+  fallbackTrend: number[],
+  range: string
+): number[] {
+  if (history.length >= 2) {
+    if (range === "1y" && history.length >= 7) {
+      const step = Math.max(1, Math.floor(history.length / 7));
+      return Array.from({ length: 7 }, (_, i) => history[Math.min(i * step, history.length - 1)]);
+    }
+    if (range === "30d" && history.length >= 7) return history.slice(-7);
+    return history.length >= 7 ? history.slice(-7) : history;
+  }
+  return fallbackTrend.length ? fallbackTrend : [0];
 }

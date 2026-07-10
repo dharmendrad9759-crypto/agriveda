@@ -113,9 +113,10 @@ export default function WeatherPage() {
       title="Weather"
       subtitle="Live weather updates for smarter farming decisions"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Weather" }]}
+      className="overflow-x-hidden"
     >
-      <DarkCard>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <DarkCard className="overflow-hidden">
+        <div className="flex flex-col gap-3">
           <div className="flex flex-wrap gap-2">
             <AppLink href="/weather/spray-advisory" className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-1.5 text-[10px] font-semibold text-indigo-400">
               Spray Advisory
@@ -131,32 +132,32 @@ export default function WeatherPage() {
           )}
         </div>
 
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-4 flex flex-col gap-3">
           <button
             type="button"
             onClick={useCurrentLocation}
             disabled={locLoading || loading}
-            className={`inline-flex gap-1.5 disabled:opacity-60 ${AV.btnPrimarySm}`}
+            className={`inline-flex w-full justify-center gap-1.5 disabled:opacity-60 sm:w-auto ${AV.btnPrimarySm}`}
           >
             {locLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
             Use My Location
           </button>
-          <div className="flex flex-1 gap-2">
-            <div className="relative flex-1">
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row">
+            <div className="relative min-w-0 flex-1">
               <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
               <input
                 value={manualCity}
                 onChange={(e) => setManualCity(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && searchManualCity()}
                 placeholder="Search city — Indore, Delhi..."
-                className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-10 pr-3 text-sm text-[var(--av-text-primary)] outline-none focus:border-[#10b981]"
+                className="w-full min-w-0 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-10 pr-3 text-sm text-[var(--av-text-primary)] outline-none focus:border-[#10b981]"
               />
             </div>
             <button
               type="button"
               onClick={searchManualCity}
               disabled={loading}
-              className={`inline-flex gap-1.5 ${AV.btnSecondarySm}`}
+              className={`inline-flex shrink-0 justify-center gap-1.5 ${AV.btnSecondarySm}`}
             >
               {loading && locationMode === "manual" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               Search
@@ -196,7 +197,7 @@ export default function WeatherPage() {
       )}
 
       {!loading && weatherData && (
-        <div className="mt-4">
+        <div className="mt-4 w-full overflow-x-hidden">
           <WeatherRedesign
             weather={weatherData}
             lastUpdated={lastUpdated}

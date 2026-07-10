@@ -1,6 +1,7 @@
 import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/data/pest-disease";
 import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
+import { getIpmThreatOverride } from "@/lib/crops/ipmDataBridge";
 import { findStageGuideForThreat } from "@/lib/cropProtectionGuide";
 import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-disease-ui";
 
@@ -52,7 +53,7 @@ function mergeStageGuide(
   threatType: ThreatType
 ): EnrichedThreat {
   const overrideKey = `${threat.cropSlug}-${threatType}-${threat.id}`;
-  const override = THREAT_DETAIL_OVERRIDES[overrideKey];
+  const override = { ...getIpmThreatOverride(overrideKey), ...THREAT_DETAIL_OVERRIDES[overrideKey] };
 
   if (override?.stageSprays?.length) {
     return {
@@ -87,7 +88,9 @@ function mergeStageGuide(
 
 function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
   const key = `${crop.slug}-pest-${pest.id}`;
+  const ipmOverride = getIpmThreatOverride(key);
   const override = THREAT_DETAIL_OVERRIDES[key];
+  const merged = { ...ipmOverride, ...override };
   const category: ThreatCategory = "insect";
 
   const base: EnrichedThreat = {
@@ -98,25 +101,25 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
     category,
     name: pest.name,
     scientificName: pest.scientificName,
-    image: resolveThreatImage(override?.image, pest.image) ?? THREAT_IMAGES.insect,
+    image: resolveThreatImage(merged?.image, pest.image) ?? THREAT_IMAGES.insect,
     stage: pest.stage,
     description:
-      override?.description ??
+      merged?.description ??
       `${pest.scientificName} is a major insect pest of ${crop.name}. It damages the crop during ${pest.stage} stage and requires integrated management combining monitoring, biological control, and targeted chemical intervention only at Economic Threshold Level (ETL).`,
-    symptoms: override?.symptoms ?? [
+    symptoms: merged?.symptoms ?? [
       `Visible feeding damage during ${pest.stage}`,
       "Reduced plant vigour and yield potential",
       "Honeydew or frass may be present on affected plant parts",
     ],
-    remediation: override?.remediation ?? [
+    remediation: merged?.remediation ?? [
       pest.control ?? "Follow package of practices for recommended control",
       "Scout field twice weekly during vulnerable crop stage",
       "Conserve natural enemies — avoid broad-spectrum insecticides",
       "Rotate insecticide modes of action (IRAC groups) to prevent resistance",
     ],
     iracGroup: pest.iracGroup,
-    activeIngredient: override?.activeIngredient ?? pest.control,
-    etl: override?.etl,
+    activeIngredient: merged?.activeIngredient ?? pest.control,
+    etl: merged?.etl,
   };
 
   return mergeStageGuide(base, "pest");
@@ -124,8 +127,10 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
 
 function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): EnrichedThreat {
   const key = `${crop.slug}-disease-${disease.id}`;
+  const ipmOverride = getIpmThreatOverride(key);
   const override = THREAT_DETAIL_OVERRIDES[key];
-  const category = override?.category ?? inferDiseaseCategory(disease.pathogen, disease.name);
+  const merged = { ...ipmOverride, ...override };
+  const category = merged?.category ?? inferDiseaseCategory(disease.pathogen, disease.name);
 
   const base: EnrichedThreat = {
     id: disease.id,
@@ -136,17 +141,17 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
     name: disease.name,
     scientificName: disease.pathogen,
     pathogen: disease.pathogen,
-    image: resolveThreatImage(override?.image, disease.image) ?? THREAT_IMAGES.fungalLeaf,
+    image: resolveThreatImage(merged?.image, disease.image) ?? THREAT_IMAGES.fungalLeaf,
     stage: disease.stage,
     description:
-      override?.description ??
+      merged?.description ??
       `${disease.name} is caused by ${disease.pathogen}. It affects ${crop.name} during ${disease.stage} and spreads under favourable weather conditions. Early identification and integrated disease management are critical to prevent yield loss.`,
-    symptoms: override?.symptoms ?? [
+    symptoms: merged?.symptoms ?? [
       `Characteristic lesions or symptoms during ${disease.stage}`,
       "Progressive spread if humidity and temperature are favourable",
       "Yield reduction proportional to disease severity and timing",
     ],
-    remediation: override?.remediation ?? [
+    remediation: merged?.remediation ?? [
       disease.control ?? "Apply recommended fungicide/bactericide as per local advisory",
       "Remove and destroy infected plant debris",
       "Improve drainage and reduce leaf wetness duration",
@@ -154,7 +159,7 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
       "Rotate crops to break disease cycle",
     ],
     fracGroup: disease.fracGroup,
-    activeIngredient: override?.activeIngredient ?? disease.control,
+    activeIngredient: merged?.activeIngredient ?? disease.control,
   };
 
   return mergeStageGuide(base, "disease");

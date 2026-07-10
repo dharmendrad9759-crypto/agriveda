@@ -6,11 +6,11 @@ import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import StatCard from "@/components/shell/StatCard";
 import { LineChart, Sparkline, GaugeChart } from "@/components/shell/charts";
-import { MARKET_INSIGHTS, FORECAST_BARS } from "@/data/mock/market-trends";
 import { BarChart3, Activity, RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMandiPrices } from "@/hooks/useMandiPrices";
+import { historicalSeriesForCrop } from "@/lib/mandi/historyCache";
 import {
   commodityTrendsList,
   cropSummary,
@@ -20,6 +20,8 @@ import {
   trendLabels,
   uniqueCrops,
   uniqueMarkets,
+  computedMarketInsights,
+  chartSeriesForRange,
 } from "@/lib/mandi/marketAnalytics";
 import { AV } from "@/lib/design/tokens";
 
@@ -51,13 +53,25 @@ export default function MarketTrendsPage() {
   const stats = useMemo(() => marketStats(rows), [rows]);
   const topMarkets = useMemo(() => topMarketsTrend(rows, activeCrop), [rows, activeCrop]);
   const commodityTrends = useMemo(() => commodityTrendsList(rows), [rows]);
+  const marketInsights = useMemo(() => computedMarketInsights(rows, activeCrop), [rows, activeCrop]);
 
-  const chartSeries = summary
-    ? [{ name: "Modal", data: summary.trend, color: "#10b981" }]
-    : [{ name: "Modal", data: [0], color: "#10b981" }];
+  const history = useMemo(
+    () =>
+      historicalSeriesForCrop(
+        profile.state.trim() || "Madhya Pradesh",
+        profile.district.trim() || undefined,
+        activeCrop,
+        range
+      ),
+    [profile.state, profile.district, activeCrop, range]
+  );
+
+  const chartData = chartSeriesForRange(history, summary?.trend ?? [0], range);
+  const chartSeries = [{ name: "Modal", data: chartData, color: "#10b981" }];
 
   return (
     <AppShell
+      className="!bg-transparent"
       title="Market Trends"
       subtitle="Track price trends, insights & forecasts to sell at the right time"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Market Trends" }]}
@@ -201,7 +215,7 @@ export default function MarketTrendsPage() {
               <tbody>
                 {topMarkets.length > 0 ? (
                   topMarkets.map((m) => (
-                    <tr key={m.market} className="border-t border-[var(--av-border)]">
+                    <tr key={m.id} className="border-t border-[var(--av-border)]">
                       <td className="py-2 text-[var(--av-text-primary)]">{m.market}</td>
                       <td className="py-2 text-center font-mono text-[var(--av-accent)]">₹{m.price}</td>
                       <td className="py-2 text-center text-emerald-400">
@@ -250,7 +264,7 @@ export default function MarketTrendsPage() {
         <DarkCard hover delay={2}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Key Insights</h3>
           <ul className="mt-3 space-y-2 text-xs text-[var(--av-text-secondary)]">
-            {MARKET_INSIGHTS.map((ins) => (
+            {marketInsights.map((ins) => (
               <li key={ins} className="flex gap-2">
                 <span className="text-[var(--av-accent)]">•</span>
                 {ins}
@@ -260,16 +274,23 @@ export default function MarketTrendsPage() {
         </DarkCard>
         <DarkCard hover delay={3}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Forecast — {activeCrop}</h3>
+          <p className={`mt-1 ${AV.micro}`}>
+            {history.length >= 2
+              ? "Based on saved mandi snapshots in your region"
+              : "Visit mandi page daily — trend builds as snapshots save"}
+          </p>
           <div className="mt-3 flex h-24 items-end justify-between gap-1">
-            {(summary?.trend ?? FORECAST_BARS).map((v, i) => (
+            {chartData.map((v, i) => (
               <div key={i} className="flex flex-1 flex-col items-center gap-1">
                 <div
                   className="w-full rounded-t bg-[var(--av-accent)]/60"
                   style={{
-                    height: `${Math.max(20, Math.min(80, ((v - (summary?.min ?? 2000)) / Math.max(summary?.max ?? 2500 - (summary?.min ?? 2000), 1)) * 60 + 20))}px`,
+                    height: `${Math.max(20, Math.min(80, ((v - (summary?.min ?? Math.min(...chartData))) / Math.max((summary?.max ?? Math.max(...chartData)) - (summary?.min ?? Math.min(...chartData)), 1)) * 60 + 20))}px`,
                   }}
                 />
-                <span className="text-[8px] text-[var(--av-text-muted)]">D{i + 1}</span>
+                <span className="text-[8px] text-[var(--av-text-muted)]">
+                  {range === "1y" ? `M${i + 1}` : range === "30d" ? `W${i + 1}` : `D${i + 1}`}
+                </span>
               </div>
             ))}
           </div>

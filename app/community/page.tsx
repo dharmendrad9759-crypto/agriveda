@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
+import PageHero from "@/components/shell/PageHero";
 import CommunityQueryCard from "@/components/community/CommunityQueryCard";
 import {
   COMMUNITY_STATS,
@@ -18,7 +19,7 @@ import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useToast } from "@/components/ui/Toast";
 import { readStorage, writeStorage } from "@/lib/storage";
 import { AV } from "@/lib/design/tokens";
-import { Eye, MessageCircle, Flame } from "lucide-react";
+import { Eye, MessageCircle, Flame, Users } from "lucide-react";
 
 const TABS = ["All", "My Questions", "Unanswered", "Following"] as const;
 const POLL_KEY = "agriveda-community-poll";
@@ -82,10 +83,19 @@ export default function CommunityPage() {
 
   return (
     <AppShell
+      className="!bg-transparent"
       title="Community"
       subtitle="Connect, share, learn and grow together"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Community" }]}
     >
+      <PageHero
+        title="Kisan Community"
+        subtitle="Sawal poochhein, anubhav share karein, experts se seekhein."
+        badge="Live"
+        icon={Users}
+        action={{ label: "Ask a Question", href: "/ask-query" }}
+      />
+
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
         {COMMUNITY_STATS.map((s, i) => (
           <DarkCard key={s.label} delay={i} className="text-center">
@@ -104,7 +114,7 @@ export default function CommunityPage() {
         ))}
       </div>
 
-      <DarkCard className="mt-4" delay={0}>
+      <DarkCard className="mt-4 border-emerald-500/15 bg-gradient-to-br from-emerald-500/5 to-transparent" delay={0}>
         <h3 className={AV.sectionTitle}>Community guidelines</h3>
         <ul className={`mt-2 space-y-1 ${AV.micro}`}>
           {GUIDELINES.map((g) => (

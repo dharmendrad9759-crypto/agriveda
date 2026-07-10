@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { MandiApiResponse } from "@/lib/mandi/types";
 import { MANDI_PRICES } from "@/data/mock/mandi";
 import { enrichMockWithChange } from "@/lib/mandi/mapDataGov";
+import { recordMandiSnapshot, enrichRowsWithHistory } from "@/lib/mandi/historyCache";
 
 interface UseMandiPricesOptions {
   state?: string;
@@ -21,24 +22,33 @@ export function useMandiPrices({ state = "Madhya Pradesh", district }: UseMandiP
       if (district?.trim()) params.set("district", district.trim());
       const res = await fetch(`/api/mandi?${params}`);
       if (res.ok) {
-        setData((await res.json()) as MandiApiResponse);
+        const json = (await res.json()) as MandiApiResponse;
+        recordMandiSnapshot(state, district, json.rows);
+        setData({
+          ...json,
+          rows: enrichRowsWithHistory(state, district, json.rows),
+        });
       } else {
+        const mockRows = enrichMockWithChange(MANDI_PRICES);
+        recordMandiSnapshot(state, district, mockRows);
         setData({
           source: "mock",
           state,
           district,
           lastUpdated: new Date().toLocaleString("en-IN"),
-          rows: enrichMockWithChange(MANDI_PRICES),
+          rows: enrichRowsWithHistory(state, district, mockRows),
           error: "Failed to load mandi data",
         });
       }
     } catch {
+      const mockRows = enrichMockWithChange(MANDI_PRICES);
+      recordMandiSnapshot(state, district, mockRows);
       setData({
         source: "mock",
         state,
         district,
         lastUpdated: new Date().toLocaleString("en-IN"),
-        rows: enrichMockWithChange(MANDI_PRICES),
+        rows: enrichRowsWithHistory(state, district, mockRows),
         error: "Network error",
       });
     } finally {

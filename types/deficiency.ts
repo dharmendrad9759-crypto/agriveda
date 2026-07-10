@@ -16,6 +16,34 @@ export interface CropSpecificDeficiencyData {
   notes: string;
 }
 
+export interface NutrientFertilizerFix {
+  fertilizer: string;
+  nutrientContent?: string;
+  soilApplicationDose?: string;
+  foliarSprayDose?: string;
+  fertigationDose?: string;
+  bestCropStage?: string;
+  methodOfApplication?: string;
+  expectedRecoveryTime?: string;
+  precautions?: string;
+}
+
+export interface NutrientToxicity {
+  whatHappens?: string;
+  plantToxicitySymptoms?: string;
+  correctionMethods?: string;
+}
+
+export interface NutrientSymptomDetail {
+  note?: string;
+  early?: string;
+  middle?: string;
+  severe?: string;
+  oldLeaves?: string;
+  youngLeaves?: string;
+  wholePlant?: string;
+}
+
 export interface NutrientDeficiencyData {
   slug: string;
   name: string;
@@ -39,4 +67,16 @@ export interface NutrientDeficiencyData {
   prevention: string[];
   cropExamples: string[];
   cropSpecificData: CropSpecificDeficiencyData[];
+  /** Rich Agriveda JSON fields */
+  category?: string;
+  formsTakenUp?: string;
+  plantFunctions?: Record<string, string>;
+  symptomDetail?: NutrientSymptomDetail;
+  howToFix?: NutrientFertilizerFix[];
+  methodOfApplication?: Record<string, string>;
+  toxicity?: NutrientToxicity;
+  commonFarmerMistakes?: string[];
+  expertTips?: string[];
+  faq?: { q: string; a: string }[];
+  references?: string[];
 }

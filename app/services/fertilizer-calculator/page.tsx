@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
-import GlassCard from "@/components/ui/GlassCard";
+import DarkCard from "@/components/shell/DarkCard";
 import { cropCatalog } from "@/data/crop-catalog";
 import { buildFertilizerPlan, listFertilizerCrops } from "@/lib/agriveda2/fertilizerEngine";
 import { FERTILIZER_SOURCES } from "@/data/agriveda2/fertilizer-data";
@@ -63,7 +63,7 @@ export default function FertilizerCalculatorPage() {
       subtitle="N, P, K, Ca, Mg, S, Zn, Fe, B — fasal ke hisaab se"
       backHref="/dashboard"
     >
-      <GlassCard className="space-y-4 p-4">
+      <DarkCard className="space-y-4 p-4">
         <label className="block text-xs font-bold theme-text-muted">फसल</label>
         <select
           value={slug}
@@ -246,7 +246,7 @@ export default function FertilizerCalculatorPage() {
             Area daalein — khad plan yahan aayega
           </p>
         )}
-      </GlassCard>
+      </DarkCard>
     </Agriveda2Shell>
   );
 }

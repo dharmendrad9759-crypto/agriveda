@@ -12,20 +12,12 @@ import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import {
   TOP_MANDIS,
-  MANDI_INSIGHTS,
   MANDI_NEWS,
-  COMMODITY_CATEGORIES,
 } from "@/data/mock/mandi";
-import type { MandiRow } from "@/lib/mandi/types";
+import { topMandisFromRows, commodityCategoryDonut, computedMarketInsights, uniqueCrops } from "@/lib/mandi/marketAnalytics";
+import PriceAlertsPanel from "@/components/alerts/PriceAlertsPanel";
 import { MapPin, Package, Activity, Bell } from "lucide-react";
 import { AV } from "@/lib/design/tokens";
-
-function topMandisFromRows(rows: MandiRow[]) {
-  return [...rows]
-    .sort((a, b) => b.modal - a.modal)
-    .slice(0, 4)
-    .map((r) => ({ name: `${r.mandi} Mandi`, price: r.modal, change: r.change }));
-}
 
 export default function MandiPage() {
   const { showToast } = useToast();
@@ -33,13 +25,11 @@ export default function MandiPage() {
   const state = profile.state.trim() || "Madhya Pradesh";
   const district = profile.district.trim() || undefined;
   const { data, loading, refresh } = useMandiPrices({ state, district });
-  const { settings, activeCount, addAlert, toggleAlert, removeAlert } = usePriceAlerts();
 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"high" | "low" | "change">("high");
   const [category, setCategory] = useState<string | null>(null);
-  const [newCrop, setNewCrop] = useState("");
-  const [newTarget, setNewTarget] = useState("");
+  const [chartCrop, setChartCrop] = useState("Paddy");
 
   const rows = data?.rows ?? [];
   const locationLabel = district ? `${district}, ${state}` : state;
@@ -58,20 +48,19 @@ export default function MandiPage() {
     return list;
   }, [rows, search, sort, category]);
 
-  const topMandis = topMandisFromRows(rows).length ? topMandisFromRows(rows) : TOP_MANDIS;
-  const paddyTrend = rows.find((r) => r.crop === "Paddy")?.trend ?? [2100, 2120, 2140, 2150, 2160, 2170, 2180];
+  const topMandis = useMemo(() => {
+    const live = topMandisFromRows(rows);
+    if (live.length) return live;
+    return TOP_MANDIS.map((m) => ({ ...m, id: m.name }));
+  }, [rows]);
 
-  const handleAddAlert = () => {
-    const target = parseInt(newTarget, 10);
-    if (!newCrop.trim() || !Number.isFinite(target) || target <= 0) {
-      showToast("Crop name aur valid target price bharein", "error");
-      return;
-    }
-    addAlert({ crop: newCrop.trim(), target });
-    setNewCrop("");
-    setNewTarget("");
-    showToast("Price alert created ✓");
-  };
+  const crops = useMemo(() => uniqueCrops(rows), [rows]);
+  const activeChartCrop = crops.includes(chartCrop) ? chartCrop : crops[0] ?? "Paddy";
+  const chartRow = rows.find((r) => r.crop === activeChartCrop);
+  const chartTrend = chartRow?.trend ?? [2100, 2120, 2140, 2150, 2160, 2170, 2180];
+  const categorySegments = useMemo(() => commodityCategoryDonut(rows), [rows]);
+  const mandiInsights = useMemo(() => computedMarketInsights(rows, activeChartCrop), [rows, activeChartCrop]);
+  const { activeCount } = usePriceAlerts();
 
   return (
     <AppShell
@@ -120,7 +109,7 @@ export default function MandiPage() {
           <button
             type="button"
             onClick={() => {
-              const next = category ? null : COMMODITY_CATEGORIES[0].label;
+              const next = category ? null : categorySegments[0]?.label ?? rows[0]?.category ?? null;
               setCategory(next);
               showToast(next ? `Filter: ${next}` : "Filter cleared");
             }}
@@ -191,17 +180,28 @@ export default function MandiPage() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <DarkCard hover delay={2}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Trend — Paddy (modal)</h3>
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Trend — {activeChartCrop}</h3>
+            <select
+              value={activeChartCrop}
+              onChange={(e) => setChartCrop(e.target.value)}
+              className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-1 text-[10px] text-[var(--av-text-primary)]"
+            >
+              {(crops.length ? crops : ["Paddy", "Wheat", "Soybean"]).map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+          </div>
           <LineChart
-            labels={paddyTrend.map((_, i) => `D-${paddyTrend.length - i}`)}
-            series={[{ name: "Modal", data: paddyTrend, color: "#10b981" }]}
+            labels={chartTrend.map((_, i) => `D-${chartTrend.length - i}`)}
+            series={[{ name: "Modal", data: chartTrend, color: "#10b981" }]}
           />
         </DarkCard>
         <DarkCard hover delay={3}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Top Mandi Prices (Today)</h3>
           <ul className="mt-3 space-y-2">
             {topMandis.map((m, i) => (
-              <li key={m.name} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
+              <li key={m.id} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
                 <span className="text-xs text-[var(--av-text-secondary)]">#{i + 1} {m.name}</span>
                 <span className="font-mono text-sm font-bold text-[var(--av-accent)]">₹{m.price}</span>
               </li>
@@ -211,56 +211,11 @@ export default function MandiPage() {
       </div>
 
       <div id="price-alerts" className="mt-4 grid gap-4 lg:grid-cols-3">
-        <DarkCard hover delay={1}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Alert Setup</h3>
-          <div className="mt-3 flex gap-2">
-            <input
-              value={newCrop}
-              onChange={(e) => setNewCrop(e.target.value)}
-              placeholder="Crop (Paddy)"
-              className="av-input flex-1 text-xs"
-            />
-            <input
-              value={newTarget}
-              onChange={(e) => setNewTarget(e.target.value)}
-              placeholder="₹ Target"
-              inputMode="numeric"
-              className="av-input w-24 text-xs"
-            />
-            <button type="button" onClick={handleAddAlert} className={AV.btnPrimarySm}>
-              Add
-            </button>
-          </div>
-          <ul className="mt-3 space-y-2">
-            {settings.alerts.map((a) => {
-              const match = rows.find((r) => r.crop.toLowerCase() === a.crop.toLowerCase());
-              const hit = match && (a.direction === "above" ? match.modal >= a.target : match.modal <= a.target);
-              return (
-                <li key={a.id} className="flex items-center justify-between gap-2 text-xs">
-                  <button type="button" onClick={() => toggleAlert(a.id)} className="flex-1 text-left">
-                    <span className="text-[var(--av-text-secondary)]">
-                      {a.crop} {a.direction === "above" ? "≥" : "≤"} ₹{a.target}
-                      {match && <span className="text-[var(--av-text-muted)]"> · now ₹{match.modal}</span>}
-                    </span>
-                    {hit && settings.masterEnabled && a.enabled && (
-                      <span className="ml-1 text-[10px] font-bold text-emerald-400">Target hit!</span>
-                    )}
-                  </button>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${a.enabled ? "bg-emerald-500/20 text-emerald-400" : "bg-[#1f2937] text-[var(--av-text-muted)]"}`}>
-                    {a.enabled ? "ON" : "OFF"}
-                  </span>
-                  <button type="button" onClick={() => removeAlert(a.id)} className="text-[10px] text-red-400">
-                    ×
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </DarkCard>
+        <PriceAlertsPanel rows={rows} className="lg:col-span-1" />
         <DarkCard hover delay={2}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Market Insights</h3>
           <ul className="mt-3 space-y-2 text-xs text-[var(--av-text-secondary)]">
-            {MANDI_INSIGHTS.map((ins) => (
+            {mandiInsights.map((ins) => (
               <li key={ins} className="flex gap-2"><span className="text-[var(--av-accent)]">•</span>{ins}</li>
             ))}
           </ul>
@@ -268,7 +223,7 @@ export default function MandiPage() {
         <DarkCard hover delay={3}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Commodity Category</h3>
           <div className="mt-3">
-            <DonutChart segments={COMMODITY_CATEGORIES.map((c) => ({ label: c.label, value: c.value, color: c.color }))} />
+            <DonutChart segments={categorySegments.length ? categorySegments : [{ label: "Others", value: 100, color: "#6b7280" }]} />
           </div>
         </DarkCard>
       </div>

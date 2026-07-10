@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bot, Loader2, Send, User } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
+import DarkCard from "@/components/shell/DarkCard";
 import { cropCatalog, categoryOrder } from "@/data/crop-catalog";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -129,7 +129,7 @@ export default function KisanSaathiChat() {
         })}
       </select>
 
-      <GlassCard className="flex max-h-[min(58vh,480px)] flex-col overflow-hidden p-0">
+      <DarkCard className="flex max-h-[min(58vh,480px)] flex-col overflow-hidden p-0">
         <div className="flex-1 space-y-3 overflow-y-auto p-4">
           {messages.map((m, i) => (
             <div
@@ -205,7 +205,7 @@ export default function KisanSaathiChat() {
             </button>
           </div>
         </div>
-      </GlassCard>
+      </DarkCard>
     </div>
   );
 }

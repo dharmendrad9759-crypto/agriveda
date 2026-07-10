@@ -2,15 +2,18 @@
 
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { ArrowLeft, ChevronRight, Sparkles } from "lucide-react";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
-import { ChevronRight } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import { AV } from "@/lib/design/tokens";
+import { cn } from "@/lib/cn";
 
 interface Breadcrumb {
   label: string;
   href?: string;
 }
+
+export type AppShellVariant = "default" | "hub";
 
 interface AppShellProps {
   children: ReactNode;
@@ -19,6 +22,10 @@ interface AppShellProps {
   breadcrumbs?: Breadcrumb[];
   hero?: ReactNode;
   className?: string;
+  variant?: AppShellVariant;
+  backHref?: string;
+  badge?: string;
+  hubPremium?: boolean;
 }
 
 export default function AppShell({
@@ -28,12 +35,84 @@ export default function AppShell({
   breadcrumbs,
   hero,
   className = "",
+  variant = "default",
+  backHref = "/",
+  badge = "AGRIVEDA",
+  hubPremium = false,
 }: AppShellProps) {
   const reduced = useReducedMotion();
   const Comp = reduced ? "div" : motion.div;
+  const isHub = variant === "hub";
+
+  if (isHub) {
+    return (
+      <div className={cn("crop-premium-page relative min-h-screen pb-28", className)}>
+        <div className="relative z-10">
+          <header
+            className={cn(
+              "sticky top-0 z-40 border-b backdrop-blur-xl",
+              hubPremium
+                ? "border-amber-500/15 bg-stone-950/90"
+                : "border-emerald-500/15 bg-[var(--background)]/92"
+            )}
+          >
+            <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3.5">
+              <AppLink
+                href={backHref}
+                className={cn(
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border active:scale-95",
+                  hubPremium
+                    ? "border-amber-500/25 bg-amber-500/5 text-amber-400"
+                    : "border-emerald-500/25 bg-emerald-500/5 text-emerald-600"
+                )}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </AppLink>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles
+                    className={cn("h-3.5 w-3.5", hubPremium ? "text-amber-500" : "text-emerald-500")}
+                  />
+                  <span
+                    className={cn(
+                      "text-[10px] font-bold tracking-wide",
+                      hubPremium ? "text-amber-500" : "text-emerald-600"
+                    )}
+                  >
+                    {badge}
+                  </span>
+                </div>
+                {title && (
+                  <h1
+                    className={cn(
+                      "truncate text-base font-extrabold",
+                      hubPremium ? "text-amber-50" : "text-[var(--av-text-primary)]"
+                    )}
+                  >
+                    {title}
+                  </h1>
+                )}
+                {subtitle && (
+                  <p
+                    className={cn(
+                      "truncate text-[11px]",
+                      hubPremium ? "text-amber-200/60" : "text-[var(--av-text-muted)]"
+                    )}
+                  >
+                    {subtitle}
+                  </p>
+                )}
+              </div>
+            </div>
+          </header>
+          <div className="relative mx-auto max-w-lg space-y-5 px-4 py-5">{children}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={`av-page font-sans ${className}`}>
+    <div className={cn("av-page font-sans", className)}>
       <Comp
         {...(reduced
           ? {}

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
+import { useAppSettings } from "@/hooks/useAppSettings";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { AV } from "@/lib/design/tokens";
 import { Crown, ChevronRight, User, LogOut } from "lucide-react";
@@ -44,15 +44,12 @@ function SettingsRow({ label, value, href, toggle }: { label: string; value?: st
 export default function SettingsPage() {
   const { profile } = useFarmerProfile();
   const { theme, setTheme } = useTheme();
-  const { settings, setMasterEnabled } = usePriceAlerts();
-  const [weatherAlerts, setWeatherAlerts] = useState(true);
-  const [pestAlerts, setPestAlerts] = useState(true);
-  const [fertReminders, setFertReminders] = useState(true);
-  const [autoSync, setAutoSync] = useState(true);
-  const [twoFa, setTwoFa] = useState(false);
+  const { settings, update } = useAppSettings();
+  const { settings: priceSettings, setMasterEnabled } = usePriceAlerts();
 
   return (
     <AppShell
+      className="!bg-transparent"
       title="Settings"
       subtitle="Manage your preferences, alerts, account and app settings"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Settings" }]}
@@ -85,15 +82,19 @@ export default function SettingsPage() {
         <DarkCard delay={2}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Alerts & Notifications</h3>
           <div className="mt-2">
-            <SettingsRow label="Weather Alerts" toggle={{ on: weatherAlerts, onChange: setWeatherAlerts }} />
-            <SettingsRow label="Pest & Disease Alerts" toggle={{ on: pestAlerts, onChange: setPestAlerts }} />
-            <SettingsRow label="Fertilizer Reminders" toggle={{ on: fertReminders, onChange: setFertReminders }} />
+            <SettingsRow label="Weather Alerts" toggle={{ on: settings.weatherAlerts, onChange: (v) => update({ weatherAlerts: v }) }} />
+            <SettingsRow label="Pest & Disease Alerts" toggle={{ on: settings.pestAlerts, onChange: (v) => update({ pestAlerts: v }) }} />
+            <SettingsRow label="Fertilizer Reminders" toggle={{ on: settings.fertilizerReminders, onChange: (v) => update({ fertilizerReminders: v }) }} />
             <SettingsRow
               label="Market Price Alerts"
-              toggle={{ on: settings.masterEnabled, onChange: setMasterEnabled }}
+              toggle={{ on: priceSettings.masterEnabled, onChange: setMasterEnabled }}
             />
-            <SettingsRow label="Manage Price Alerts" value={`${settings.alerts.filter((a) => a.enabled).length} active`} href="/mandi#price-alerts" />
-            <SettingsRow label="Quiet Hours" value="10:00 PM - 6:00 AM" />
+            <SettingsRow label="Manage Price Alerts" value={`${priceSettings.alerts.filter((a) => a.enabled).length} active`} href="/mandi#price-alerts" />
+            <SettingsRow
+              label="Quiet Hours"
+              value="10:00 PM - 6:00 AM"
+              toggle={{ on: settings.quietHoursEnabled, onChange: (v) => update({ quietHoursEnabled: v }) }}
+            />
           </div>
         </DarkCard>
 
@@ -119,7 +120,7 @@ export default function SettingsPage() {
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Account & Security</h3>
           <div className="mt-2">
             <SettingsRow label="Change Password" href="/profile" />
-            <SettingsRow label="Two-Factor Auth" toggle={{ on: twoFa, onChange: setTwoFa }} />
+            <SettingsRow label="Two-Factor Auth" toggle={{ on: settings.twoFactorAuth, onChange: (v) => update({ twoFactorAuth: v }) }} />
             <AppLink href="/profile" className="mt-2 flex items-center gap-2 text-sm text-red-400">
               <LogOut className="h-4 w-4" /> Logout
             </AppLink>
@@ -129,7 +130,7 @@ export default function SettingsPage() {
         <DarkCard delay={6}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Data & Sync</h3>
           <div className="mt-2">
-            <SettingsRow label="Auto Sync" toggle={{ on: autoSync, onChange: setAutoSync }} />
+            <SettingsRow label="Auto Sync" toggle={{ on: settings.autoSync, onChange: (v) => update({ autoSync: v }) }} />
             <SettingsRow label="Last Synced" value="07 May 2024, 09:30 AM" />
             <SettingsRow label="Clear Cache" value="45.2 MB" />
           </div>

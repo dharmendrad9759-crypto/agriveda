@@ -14,8 +14,6 @@ import {
   IndianRupee,
   LineChart,
   MessageCircle,
-  TrendingUp,
-  TrendingDown,
   Heart,
   type LucideIcon,
 } from "lucide-react";
@@ -26,14 +24,14 @@ import SectionHeader from "@/components/shell/SectionHeader";
 import { DonutChart } from "@/components/shell/charts";
 import { ShellCtaBanner } from "@/components/shell/AppShell";
 import DashboardWeatherCard from "@/components/dashboard/DashboardWeatherCard";
+import DashboardMandiWidget from "@/components/dashboard/DashboardMandiWidget";
 import { AV } from "@/lib/design/tokens";
 import {
-  DASHBOARD_ALERTS,
-  DASHBOARD_MANDI,
   EXPERT_TIP,
   CROP_HEALTH_SEGMENTS,
   COMMUNITY_POST,
 } from "@/data/mock/dashboard";
+import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useMyCrops } from "@/hooks/useMyCrops";
@@ -54,6 +52,7 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
   const { profile } = useFarmerProfile();
   const { data: farm, stats: farmStats } = useFarmData();
   const { crops: myCrops } = useMyCrops();
+  const dashboardAlerts = useDashboardAlerts(4);
   const name = profile.name.trim() || "Kisan";
 
   const activeCropCount = myCrops.length > 0 ? myCrops.length : farmStats.cropsGrowing;
@@ -75,7 +74,7 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
         <StatCard icon={Sprout} label="Active Crops" value={`${activeCropCount} in field`} action={{ label: "View Details", href: "/my-farm" }} delay={0} />
         <StatCard icon={Calendar} label="Upcoming Tasks" value={`${farm.activities.length} next 7 days`} action={{ label: "View Calendar", href: "/crop-calendar" }} delay={1} />
         <StatCard icon={Leaf} label="Field Health" value={`${farmStats.healthScore}% ${healthLabel}`} action={{ label: "View Report", href: "/my-farm" }} delay={2} />
-        <StatCard icon={Bell} label="Alerts" value={`${DASHBOARD_ALERTS.length} new`} action={{ label: "View All", href: "/alerts" }} delay={3} />
+        <StatCard icon={Bell} label="Alerts" value={`${dashboardAlerts.length} active`} action={{ label: "View All", href: "/alerts" }} delay={3} />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-12">
@@ -132,13 +131,23 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
         <DarkCard hover delay={2}>
           <SectionHeader title="Important Alerts" action={{ label: "View All", href: "/alerts" }} />
           <ul className="mt-3 space-y-2">
-            {DASHBOARD_ALERTS.map((a) => (
-              <li key={a.id} className="av-card-inset">
-                <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.title}</p>
-                <p className={`mt-0.5 ${AV.micro}`}>{a.desc}</p>
-                <p className={`mt-1 ${AV.micro}`}>{a.time}</p>
+            {dashboardAlerts.length === 0 ? (
+              <li className="av-card-inset text-center">
+                <p className={AV.micro}>No active alerts — all good ✓</p>
               </li>
-            ))}
+            ) : (
+              dashboardAlerts.map((a) => (
+                <li key={a.id} className="av-card-inset">
+                  <AppLink href={a.actionHref ?? "/alerts"} className="block">
+                    <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.title}</p>
+                    <p className={`mt-0.5 line-clamp-2 ${AV.micro}`}>{a.body}</p>
+                    {a.actionLabel && (
+                      <p className="mt-1 text-[10px] font-bold text-[var(--av-accent)]">{a.actionLabel} →</p>
+                    )}
+                  </AppLink>
+                </li>
+              ))
+            )}
           </ul>
         </DarkCard>
 
@@ -157,35 +166,7 @@ export default function DesktopDashboard({ embedded = false }: { embedded?: bool
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-12">
-        <DarkCard hover delay={1} className="xl:col-span-8">
-          <SectionHeader title="Mandi Prices (Today)" action={{ label: "View All", href: "/mandi" }} />
-          <div className="mt-3 overflow-x-auto">
-            <table className="av-table">
-              <thead>
-                <tr>
-                  <th>Commodity</th>
-                  <th>Market</th>
-                  <th>Modal</th>
-                  <th className="text-right">Change</th>
-                </tr>
-              </thead>
-              <tbody>
-                {DASHBOARD_MANDI.map((m) => (
-                  <tr key={m.crop}>
-                    <td className="font-semibold text-[var(--av-text-primary)]">{m.crop}</td>
-                    <td>{m.market}</td>
-                    <td className="font-mono">₹{m.modal}</td>
-                    <td className={`text-right font-semibold ${m.change >= 0 ? "text-[var(--av-accent)]" : "text-red-500"}`}>
-                      {m.change >= 0 ? <TrendingUp className="inline h-3 w-3" /> : <TrendingDown className="inline h-3 w-3" />}
-                      {m.change > 0 ? "+" : ""}
-                      {m.change}%
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </DarkCard>
+        <DashboardMandiWidget />
 
         <DarkCard hover delay={2} className="xl:col-span-4">
           <SectionHeader title="Expert Tip" />

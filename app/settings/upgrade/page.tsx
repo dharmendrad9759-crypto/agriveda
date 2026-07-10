@@ -3,6 +3,7 @@
 import { useState } from "react";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
+import PageHero from "@/components/shell/PageHero";
 import { PREMIUM_FEATURES, PREMIUM_PLANS, PLAN_COMPARISON, PREMIUM_FAQ } from "@/data/mock/premium";
 import { Check, X, Crown, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
@@ -15,10 +16,19 @@ export default function UpgradePage() {
 
   return (
     <AppShell
+      className="!bg-transparent"
       title="Upgrade to AgriVeda Premium 👑"
       subtitle="Unlock advanced features, expert insights and smart tools to take your farming to the next level"
       breadcrumbs={[{ label: "Settings", href: "/settings" }, { label: "Upgrade" }]}
     >
+      <PageHero
+        title="AgriVeda Premium"
+        subtitle="Advanced AI Doctor, unlimited alerts, expert consultation & priority support."
+        badge="Premium"
+        icon={Crown}
+        action={{ label: "Choose Plan", href: "#plans" }}
+      />
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {PREMIUM_FEATURES.map((f, i) => (
           <DarkCard key={f.title} hover delay={i} className="text-center">
@@ -29,7 +39,7 @@ export default function UpgradePage() {
         ))}
       </div>
 
-      <h2 className="mt-8 text-center text-sm font-bold text-[var(--av-text-primary)]">Choose the best plan for you</h2>
+      <h2 id="plans" className="mt-8 text-center text-sm font-bold text-[var(--av-text-primary)]">Choose the best plan for you</h2>
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         {PREMIUM_PLANS.map((plan, i) => (
           <DarkCard
