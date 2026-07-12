@@ -23,6 +23,10 @@
 # misc
 .DS_Store
 *.pem
+.idea/
+
+# Large local PDF library — keep on disk, do not push to GitHub
+/knowledge/
 
 # debug
 npm-debug.log*
