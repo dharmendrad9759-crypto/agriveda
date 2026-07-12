@@ -2,20 +2,20 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Search } from "lucide-react";
-import CropCard from "@/components/CropCard";
+import { Calendar, Filter, Grid3X3, LayoutList, Search } from "lucide-react";
+import AppLink from "@/components/ui/AppLink";
+import CropCard, { AddCustomCropCard } from "@/components/CropCard";
+import {
+  CROP_LISTING_CATEGORIES,
+  matchesListingCategory,
+  matchesSeasonFilter,
+  type CropListingCategory,
+  type SeasonTag,
+} from "@/lib/crops/crop-display";
+import { AV } from "@/lib/design/tokens";
 import type { Crop } from "@/types/crop";
 
-const CATEGORIES = ["All", "Cereals", "Vegetables", "Pulses", "Millets", "Cash-Crops"] as const;
-
-const CATEGORY_LABEL: Record<string, string> = {
-  All: "सभी",
-  Cereals: "अनाज",
-  Vegetables: "सब्जियाँ",
-  Pulses: "दालें",
-  Millets: "मिलेट",
-  "Cash-Crops": "नकदी फसल",
-};
+const SEASON_FILTERS = ["All Seasons", "Kharif", "Rabi", "Summer"] as const;
 
 interface Props {
   crops: Crop[];
@@ -23,65 +23,127 @@ interface Props {
 
 export default function CropsListingClient({ crops }: Props) {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
+  const [category, setCategory] = useState<CropListingCategory>("All");
+  const [season, setSeason] = useState<(typeof SEASON_FILTERS)[number]>("All Seasons");
+  const [view, setView] = useState<"grid" | "list">("grid");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return crops.filter((crop) => {
-      if (category !== "All" && crop.category !== category) return false;
+      if (!matchesListingCategory(crop, category)) return false;
+      if (!matchesSeasonFilter(crop, season as "All Seasons" | SeasonTag)) return false;
       if (!q) return true;
       return (
         crop.name.toLowerCase().includes(q) ||
         crop.scientificName.toLowerCase().includes(q) ||
-        crop.category.toLowerCase().includes(q)
+        crop.category.toLowerCase().includes(q) ||
+        crop.suitableSeason.toLowerCase().includes(q)
       );
     });
-  }, [crops, query, category]);
+  }, [crops, query, category, season]);
 
   return (
     <div>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-[var(--av-text-muted)]">{crops.length} crops available</p>
-        <div className="relative w-full sm:max-w-sm">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-secondary)]" />
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search crop — Paddy, Tomato, Wheat..."
-            className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-9 pr-3 text-sm text-[var(--av-text-primary)] placeholder:text-[var(--av-text-muted)] outline-none focus:border-[#10b981]"
+            placeholder="Search crops..."
+            className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-9 pr-3 text-sm text-[var(--av-text-primary)] placeholder:text-[var(--av-text-muted)] outline-none focus:border-[var(--av-accent)]"
           />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <select
+            value={season}
+            onChange={(e) => setSeason(e.target.value as (typeof SEASON_FILTERS)[number])}
+            className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-xs font-semibold text-[var(--av-text-primary)] outline-none focus:border-[var(--av-accent)]"
+          >
+            {SEASON_FILTERS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-xs font-semibold text-[var(--av-text-secondary)]"
+          >
+            <Filter className="h-3.5 w-3.5" />
+            Filter
+          </button>
         </div>
       </div>
 
       <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {CATEGORIES.map((cat) => {
-            const active = category === cat;
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setCategory(cat)}
-                className={`shrink-0 rounded px-3 py-1.5 text-xs font-semibold transition-all duration-150 ${
-                  active
-                    ? "bg-[var(--av-accent)] text-[#0a0f1a]"
-                    : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:border-[var(--av-accent)]/40 hover:text-[var(--av-text-primary)]"
-                }`}
-              >
-                {CATEGORY_LABEL[cat]}
-              </button>
-            );
-          })}
+        {CROP_LISTING_CATEGORIES.map((cat) => {
+          const active = category === cat;
+          const label = cat === "All" ? "All Crops" : cat;
+          return (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setCategory(cat)}
+              className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition ${
+                active
+                  ? "bg-[var(--av-accent)] text-white shadow-sm"
+                  : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)]"
+              }`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <p className="text-xs font-medium text-[var(--av-text-muted)]">
+          {filtered.length} crops available
+        </p>
+        <div className="flex items-center gap-2">
+          <AppLink
+            href="/crop-calendar"
+            className="hidden items-center gap-1.5 rounded-xl border border-[var(--av-accent)] px-3 py-2 text-xs font-bold text-[var(--av-accent)] sm:inline-flex"
+          >
+            <Calendar className="h-3.5 w-3.5" />
+            View Crop Calendar
+          </AppLink>
+          <div className="flex rounded-lg border border-[var(--av-border)] p-0.5">
+            <button
+              type="button"
+              onClick={() => setView("grid")}
+              className={`rounded-md p-1.5 ${view === "grid" ? "bg-[var(--av-accent)] text-white" : "text-[var(--av-text-muted)]"}`}
+              aria-label="Grid view"
+            >
+              <Grid3X3 className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              className={`rounded-md p-1.5 ${view === "list" ? "bg-[var(--av-accent)] text-white" : "text-[var(--av-text-muted)]"}`}
+              aria-label="List view"
+            >
+              <LayoutList className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
       </div>
 
       <motion.div
         layout
-        className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4"
+        className={
+          view === "grid"
+            ? "mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4"
+            : "mt-4 flex flex-col gap-3"
+        }
       >
         <AnimatePresence mode="popLayout">
           {filtered.map((crop, index) => (
-            <CropCard key={crop.slug} crop={crop} index={index} />
+            <CropCard key={crop.slug} crop={crop} index={index} variant={view} />
           ))}
+          {view === "grid" && <AddCustomCropCard index={filtered.length} />}
         </AnimatePresence>
       </motion.div>
 
@@ -94,7 +156,7 @@ export default function CropsListingClient({ crops }: Props) {
             className="mt-16 text-center"
           >
             <p className="text-sm font-medium text-[var(--av-text-primary)]">कोई फसल नहीं मिली</p>
-            <p className="mt-1 text-xs text-[var(--av-text-secondary)]">खोज या फ़िल्टर बदलकर देखें</p>
+            <p className={`mt-1 ${AV.body}`}>खोज या फ़िल्टर बदलकर देखें</p>
           </motion.div>
         )}
       </AnimatePresence>

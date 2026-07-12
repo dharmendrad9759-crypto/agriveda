@@ -1,0 +1,651 @@
+{
+  "crop_name": "Paddy",
+  "crop_basics": {
+    "growth_stages": [
+      {
+        "stage": "Seed selection and nursery preparation",
+        "typical_period": "0-5 days before sowing",
+        "field_practical_notes": "Use certified seed of a variety recommended by the State Agricultural University or ICAR institute for the local ecosystem. Remove light and damaged seed, prepare a well-drained nursery, and avoid seed from fields severely affected by blast, false smut or bacterial leaf blight."
+      },
+      {
+        "stage": "Germination and nursery",
+        "typical_period": "0-25 days after sowing",
+        "field_practical_notes": "Maintain shallow moisture without prolonged deep flooding. Monitor for thrips, caseworm, blast and damping-off-like seedling mortality. Avoid excessive nitrogen in the nursery."
+      },
+      {
+        "stage": "Transplanting or direct seeding",
+        "typical_period": "15-30 days after sowing, depending on establishment method",
+        "field_practical_notes": "Transplant healthy seedlings at the locally recommended age and spacing. Shallow planting and approximately 2-3 seedlings per hill generally support better tillering than deep, dense planting. Direct-seeded rice requires particularly timely weed control."
+      },
+      {
+        "stage": "Establishment",
+        "typical_period": "0-15 days after transplanting or emergence",
+        "field_practical_notes": "Replace missing hills, maintain only shallow water, inspect for stem borer egg masses, whorl maggot, caseworm and early weeds."
+      },
+      {
+        "stage": "Active tillering",
+        "typical_period": "15-45 days after transplanting",
+        "field_practical_notes": "This is a major nitrogen-demand and canopy-development period. Monitor stem borer dead hearts, leaf folder, blast, sheath blight, planthoppers and zinc deficiency."
+      },
+      {
+        "stage": "Panicle initiation",
+        "typical_period": "Variety dependent, commonly 45-70 days after transplanting",
+        "field_practical_notes": "A critical stage for irrigation, nitrogen and potassium availability. Avoid moisture stress. Scout for stem borer, leaf folder, sheath blight and blast before applying any pesticide."
+      },
+      {
+        "stage": "Booting and heading",
+        "typical_period": "Variety dependent",
+        "field_practical_notes": "Maintain adequate moisture. Monitor neck blast, false smut, sheath blight, earhead bug and stem borer white ear symptoms. Avoid unnecessary late nitrogen."
+      },
+      {
+        "stage": "Flowering and grain filling",
+        "typical_period": "Approximately 70-110 days after transplanting, depending on variety",
+        "field_practical_notes": "Protect the crop from moisture stress, lodging and planthopper flare-ups. Observe pesticide pre-harvest intervals before any late application."
+      },
+      {
+        "stage": "Physiological maturity and harvest",
+        "typical_period": "Variety dependent",
+        "field_practical_notes": "Harvest when about 80-85 percent of grains on the panicle are straw coloured and grains are firm. Avoid unnecessary delay, which increases shattering, lodging, bird damage and weather losses."
+      }
+    ],
+    "fertilizer_schedule": {
+      "important_limitation": "A universal fertilizer dose is unsafe because paddy recommendations vary with state, season, variety, soil test, establishment method, irrigation and yield target. Use the current State Agricultural University or Department of Agriculture recommendation and soil-test values as the controlling prescription.",
+      "official_example_recommendations": {
+        "rainfed_upland": "An official Indian rice production reference reports approximately 40:20:20 kg N:P2O5:K2O per hectare under some rainfed-upland situations; local recommendations take precedence.",
+        "lowland_kharif": "An official Indian rice production reference reports approximately 60:30:30 kg N:P2O5:K2O per hectare under some lowland-kharif situations; local recommendations take precedence.",
+        "rabi_irrigated": "An official Indian rice production reference reports approximately 80:40:40 kg N:P2O5:K2O per hectare under some rabi situations; local recommendations take precedence.",
+        "hybrid_rice": "An official Indian rice production reference reports approximately 100:60:60 kg N:P2O5:K2O per hectare for some hybrid-rice situations; confirm against the state recommendation and hybrid maturity."
+      },
+      "basal_application": "Apply all recommended phosphorus and normally all or the locally prescribed proportion of potassium before final puddling or at planting. Apply the locally recommended basal fraction of nitrogen. Incorporate well-decomposed farmyard manure or compost before puddling where available.",
+      "nitrogen_splitting": "Split nitrogen rather than applying it all at once. A common agronomic framework is basal, active tillering and panicle-initiation application, with the exact fractions determined by the state package. Use a Leaf Colour Chart where officially recommended. Do not apply nitrogen merely because the crop looks pale until waterlogging, root injury, zinc deficiency and pest damage have been excluded.",
+      "potassium_management": "Where potassium is split, apply the prescribed portions basally and around panicle initiation. Adequate potassium supports stem strength and stress tolerance, but it is not a pesticide or a cure for established disease.",
+      "zinc_management": "Base soil application on soil test and the state package. Official recommendations in zinc-deficient or sodic situations may use zinc sulphate, but product grade changes the required quantity. Do not substitute a heptahydrate dose for monohydrate or vice versa.",
+      "sulphur_and_micronutrients": "Apply only where deficiency risk, soil test or a locally validated recommendation supports use. Avoid indiscriminate micronutrient mixtures.",
+      "organic_and_biological_inputs": "Use well-decomposed organic matter and locally recommended biofertilizers as supplements. Their nutrient contribution should be considered when finalizing mineral fertilizer quantities.",
+      "field_checks": [
+        "Obtain a representative soil test before the season.",
+        "Verify fertilizer grade and nutrient percentage before calculating bag quantities.",
+        "Do not top-dress nitrogen into deep standing water or immediately before heavy rain.",
+        "Drain excess water before top-dressing where locally recommended, then restore shallow water after fertilizer incorporation or absorption.",
+        "Maintain untreated reference strips or Leaf Colour Chart-based decision points where the local package supports them."
+      ]
+    },
+    "irrigation_schedule": "Keep the nursery moist but not continuously deeply submerged. After transplanting, maintain shallow water sufficient for establishment; avoid deep water that suppresses tillering. During vegetative growth, follow locally validated intermittent irrigation or alternate wetting and drying where water control is reliable, generally re-irrigating before severe soil cracking or crop stress. Panicle initiation, booting, flowering and early grain filling are critical stages at which moisture stress can sharply reduce yield. Drain excess water when brown planthopper or root stress is developing, provided the crop stage and soil permit it. Stop irrigation roughly 7-15 days before harvest according to soil type, maturity and local recommendation. Do not use alternate wetting and drying in a manner that exposes the crop to drought at flowering.",
+    "harvest": "Harvest when approximately 80-85 percent of panicle grains are straw coloured and the grain has reached suitable harvest moisture for the intended method. Thresh promptly, clean the grain and dry it uniformly. For safe storage, reduce moisture to the level prescribed for the intended storage duration and system, commonly about 12-14 percent for grain, while seed may require stricter handling. Keep harvested grain off bare soil and protect it from rain, rodents and admixture.",
+    "faq": [
+      {
+        "question": "Should every pale paddy field receive urea immediately?",
+        "answer": "No. Pale plants can result from nitrogen deficiency, zinc deficiency, sulphur deficiency, prolonged submergence, root damage, salinity, herbicide injury or pest and disease attack. Diagnose the field pattern, roots and younger versus older leaves before applying fertilizer."
+      },
+      {
+        "question": "Is continuous deep flooding required for paddy?",
+        "answer": "No. Paddy tolerates flooding, but deep continuous water can reduce tillering, waste water and encourage some pest problems. Water depth and irrigation interval should follow crop stage, soil and the locally recommended establishment system."
+      },
+      {
+        "question": "Can prophylactic insecticide sprays prevent all pest outbreaks?",
+        "answer": "No. Calendar sprays kill natural enemies, increase residues and can trigger brown planthopper resurgence. Base intervention on field scouting, economic threshold levels and approved label claims."
+      },
+      {
+        "question": "Why should excessive nitrogen be avoided?",
+        "answer": "Excessive nitrogen produces a dense, succulent canopy that can increase lodging and susceptibility to leaf folder, planthoppers, blast and sheath blight while delaying maturity."
+      },
+      {
+        "question": "Can one pesticide be mixed with fertilizer, herbicide and fungicide in a single tank?",
+        "answer": "Only when every product label permits the mixture and a jar test confirms physical compatibility. Unverified multi-product mixtures increase crop-injury, antagonism, nozzle blockage and residue risks."
+      }
+    ]
+  },
+  "pest_database": [
+    {
+      "pest_name": "Yellow stem borer, Scirpophaga incertulas",
+      "identification": "Adult female is straw-yellow to orange-yellow with a dark spot on each forewing and a tuft of yellowish hairs at the abdominal tip; the male is smaller and darker. Egg masses are laid on leaves and covered with buff-coloured hairs. Larvae are pale yellowish and bore inside tillers.",
+      "life_cycle": "Eggs are laid in covered masses on leaves. Newly hatched larvae may disperse by crawling or silken threads, enter the leaf sheath and bore into the stem. Larvae feed internally, pupate within the stem and emerge as moths. Duration varies with temperature, season and rice ecosystem.",
+      "damage_symptoms": "Larval feeding at vegetative stage kills the central shoot, producing a dead heart that can often be pulled out easily. At reproductive stage, damage disconnects the developing panicle and produces a white ear or white head with empty or partially filled grains. Affected tillers may show an entry hole and frass near the lower nodes.",
+      "crop_stage_attacked": "Nursery through grain formation; dead hearts occur mainly during vegetative growth and white ears during booting to heading.",
+      "favorable_conditions": "Continuous rice cultivation, overlapping planting dates, retained stubble, volunteer rice, excessive nitrogen, dense crop canopy and survival of carry-over stages in residues favour infestation.",
+      "why_this_happened": "The outbreak commonly follows carry-over from stubble or nearby older rice, unsynchronised planting, excessive nitrogen, destruction of parasitoids through broad-spectrum sprays or failure to detect egg masses before larvae enter stems.",
+      "monitoring": "Inspect at least five representative areas of the field in a diagonal or zigzag route. Count total tillers and dead hearts or white ears, and examine leaves for covered egg masses. Use light or pheromone traps only as monitoring aids where locally recommended; trap catches do not by themselves justify spraying.",
+      "etl": "Use the current ICAR-NCIPM or State Agricultural University threshold. Common extension thresholds vary by crop stage and location; where an authoritative local threshold cannot be verified, treat the numerical ETL as unknown rather than relying on a generic value.",
+      "preventive": "Use locally recommended resistant or tolerant varieties, synchronized planting, balanced nitrogen, clean nursery material and timely planting. Avoid unnecessary broad-spectrum sprays that destroy egg and larval parasitoids.",
+      "cultural_control": "Clip seedling leaf tips before transplanting where recommended to remove egg masses, collecting and destroying the clippings away from the nursery. Remove visible egg masses, destroy infested stubble after harvest, control volunteer rice and avoid excessively dense transplanting.",
+      "biological_control": "Conserve spiders and parasitoids. Where included in the local IPM package, release Trichogramma japonicum at the officially recommended crop stage and release schedule. Do not combine parasitoid releases with insecticides that are highly toxic to beneficial organisms.",
+      "chemical_early_curative": {
+        "technical": "Chlorantraniliprole formulation carrying a current CIBRC label claim for yellow stem borer in rice",
+        "dose_per_acre": "unknown; use only the exact CIBRC-approved product-label dose because formulation concentration and application method differ",
+        "irac_group": "28",
+        "spray_water_volume": "Use the label-specified water volume and calibrated equipment; unknown as a universal value",
+        "spray_timing": "Apply only after the locally valid ETL is reached, preferably when egg hatch or very early larval activity is present and before most larvae are protected inside stems."
+      },
+      "chemical_hard_curative": {
+        "technical": "Cartap hydrochloride formulation carrying a current CIBRC label claim for stem borer in rice",
+        "dose_per_acre": "unknown; follow the exact approved label for the formulation and whether it is a spray or granule",
+        "irac_group": "14",
+        "spray_water_volume": "Not applicable to granules; for sprayable formulations use only the label-specified water volume",
+        "spray_timing": "Use only when an approved label and field threshold support treatment. Internal feeding limits curative performance once dead hearts or white ears are fully expressed; those tillers cannot be restored."
+      },
+      "next_spray_logic": "Reassess fresh egg masses, newly damaged tillers and living larvae after the label-defined assessment interval. Do not judge control from old dead hearts or white ears because these symptoms remain visible. Repeat only if fresh infestation remains above the local ETL and the label permits it; rotate to a different effective IRAC group.",
+      "resistance_management": "Do not expose consecutive pest generations to IRAC Group 28 or repeatedly use Group 14. Avoid sublethal doses, calendar sprays and unnecessary mixtures of insecticides with the same target site. Integrate egg removal, residue destruction and parasitoid conservation.",
+      "phi": "Product specific; consult the current CIBRC-approved label and use unknown if the selected label does not clearly state it.",
+      "rei": "Product specific; follow the label. Until spray deposits are dry, keep workers and livestock out as a minimum precaution unless the label requires a longer interval.",
+      "compatibility_notes": "Do not mix granules with urea, sand or another pesticide unless the label explicitly permits it. For sprays, conduct a jar test and avoid alkaline mixtures unless approved. Keep biological parasitoid releases separated from incompatible insecticides.",
+      "safety_notes": "Wear gloves, long clothing, closed footwear and eye or face protection during mixing and application. Never enter deep water barefoot while applying granules. Do not broadcast into canals, fish ponds or drinking-water sources. Follow the product label for personal protective equipment, disposal and first aid.",
+      "farmer_tip": "Open several suspected tillers. A true stem-borer dead heart usually has internal feeding and may contain a larva or frass; drought or root injury can also kill central leaves but lacks characteristic boring.",
+      "common_mistakes": "Spraying after white ears are already fully visible, counting old damage as new infestation, applying excessive urea, using the same IRAC group repeatedly and treating moth catches as proof that the ETL has been crossed.",
+      "references": [
+        "ICAR-National Research Centre for Integrated Pest Management, rice integrated pest-management guidance.",
+        "ICAR-National Rice Research Institute, rice pest identification and management guidance.",
+        "Directorate of Plant Protection, Quarantine and Storage, Central Insecticides Board and Registration Committee, current List of Major Uses of Insecticides.",
+        "Relevant State Agricultural University rice package of practices for locally valid ETL and timing."
+      ],
+      "confidence_level": "High for identification, damage and IPM principles; medium for active-ingredient selection; dose, PHI and REI intentionally marked unknown pending verification of the exact current product label."
+    },
+    {
+      "pest_name": "Rice leaf folder, Cnaphalocrocis medinalis",
+      "identification": "Adult is a small yellowish-brown moth with wavy dark lines on the wings. The green, active larva folds a leaf longitudinally and fastens the margins with silk, feeding from inside the fold.",
+      "life_cycle": "Eggs are laid singly or in small groups on leaves. Larvae pass through several instars while folding and scraping leaves, then pupate within a folded leaf or plant material. Multiple generations can occur during the crop season.",
+      "damage_symptoms": "Larvae scrape green tissue from within folded leaves, leaving longitudinal whitish, papery streaks. Severe attack reduces functional leaf area, particularly when the flag leaf is affected near panicle development.",
+      "crop_stage_attacked": "Tillering through booting and heading, with economic importance generally greatest when upper leaves or flag leaves are damaged.",
+      "favorable_conditions": "High humidity, cloudy weather, dense canopy, shaded fields, excessive nitrogen and indiscriminate insecticide use that removes parasitoids and predators favour outbreaks.",
+      "why_this_happened": "A lush nitrogen-rich canopy, humid microclimate, nearby infested fields and loss of natural enemies commonly allow the population to increase.",
+      "monitoring": "Walk a zigzag route and inspect representative hills. Record the proportion of leaves with fresh folds containing live larvae rather than counting empty, old or naturally opened folds. Give special attention to the top three leaves near reproductive development.",
+      "etl": "Use the locally current ICAR-NCIPM or State Agricultural University ETL based on fresh damaged leaves and live larvae. Numerical threshold is unknown here because official recommendations differ by stage and state.",
+      "preventive": "Apply nitrogen according to soil test or Leaf Colour Chart, maintain recommended spacing, remove grassy weeds and conserve spiders, parasitoids and predatory insects.",
+      "cultural_control": "Avoid excessive nitrogen and dense planting. In small fields, open or crush freshly folded leaves containing larvae where practical. Remove weed hosts around bunds without leaving bare bunds vulnerable to erosion.",
+      "biological_control": "Conserve larval parasitoids, spiders and predatory insects. Neem-based products may be considered only where the exact formulation has an approved rice label and infestation is at an early stage.",
+      "chemical_early_curative": {
+        "technical": "Flubendiamide formulation carrying a current CIBRC label claim for rice leaf folder",
+        "dose_per_acre": "unknown; follow the exact formulation label",
+        "irac_group": "28",
+        "spray_water_volume": "Use label-specified volume with coverage of the upper canopy; universal value unknown",
+        "spray_timing": "At local ETL while larvae are small and fresh folds are increasing."
+      },
+      "chemical_hard_curative": {
+        "technical": "Cartap hydrochloride formulation carrying a current CIBRC label claim for rice leaf folder",
+        "dose_per_acre": "unknown; follow the exact approved label",
+        "irac_group": "14",
+        "spray_water_volume": "Use label-specified volume; not applicable when an approved granule formulation is selected",
+        "spray_timing": "Only if live larvae and fresh folding remain above ETL. Established white scars cannot turn green after treatment."
+      },
+      "next_spray_logic": "Reassess fresh folds containing live larvae after the label-defined interval. Do not respray based on old white streaks. If a further treatment is justified and permitted, choose a different effective IRAC group and protect natural enemies.",
+      "resistance_management": "Limit the number of Group 28 applications across stem borer and leaf folder because both pests can be exposed in the same crop. Rotate by target-site group, not brand name, and avoid reduced doses.",
+      "phi": "Product specific; verify the current approved label.",
+      "rei": "Product specific; follow the label and keep people and livestock out until deposits are dry at minimum.",
+      "compatibility_notes": "Avoid unverified insecticide cocktails. Ensure folded leaves and the upper canopy receive adequate coverage. Follow label restrictions for mixtures with fungicides, herbicides or foliar nutrients.",
+      "safety_notes": "Use label-required personal protective equipment, avoid spray drift and prevent contamination of aquatic habitats. Triple-rinse containers where the label and local disposal system permit; never reuse pesticide containers.",
+      "farmer_tip": "Only fresh folds containing living larvae indicate current pressure. Old white streaks may remain after the population has already collapsed through natural enemies.",
+      "common_mistakes": "Spraying for every folded leaf, counting empty folds, applying extra nitrogen after damage, repeating Group 28 used earlier for stem borer and using too little water for canopy coverage.",
+      "references": [
+        "ICAR-NCIPM rice IPM guidance.",
+        "ICAR-NRRI rice insect-pest guidance.",
+        "CIBRC current List of Major Uses of Insecticides.",
+        "State Agricultural University rice package of practices."
+      ],
+      "confidence_level": "High for diagnosis and integrated management; medium for active-ingredient selection; exact dose, PHI and REI require product-label verification."
+    },
+    {
+      "pest_name": "Brown planthopper, Nilaparvata lugens",
+      "identification": "Adults are brown and occur in short-winged and long-winged forms. Nymphs are soft-bodied, brownish and move sideways around the lower stem. Colonies remain near the plant base beneath the canopy.",
+      "life_cycle": "Females insert eggs into leaf-sheath tissue. Nymphs pass through multiple instars and adults may migrate over considerable distances. Warm, humid and densely planted crops can support rapid multiplication.",
+      "damage_symptoms": "Nymphs and adults suck sap from the basal portion of tillers. Plants first yellow, then dry in circular or irregular patches known as hopperburn. Honeydew and sooty growth may occur. Brown planthopper also transmits important rice viral diseases in parts of Asia.",
+      "crop_stage_attacked": "Usually tillering to grain filling, often becoming severe from late tillering onward.",
+      "favorable_conditions": "Dense planting, excessive nitrogen, continuously humid canopy, standing water, indiscriminate pyrethroid or broad-spectrum insecticide use, destruction of spiders and mirid bugs, and repeated susceptible rice crops.",
+      "why_this_happened": "Planthopper resurgence frequently follows excessive nitrogen and insecticides that kill natural enemies while failing to reach insects at the plant base. Migrating adults from nearby mature or harvested fields can also initiate outbreaks.",
+      "monitoring": "Bend plants gently and inspect or tap the basal tillers over a tray. Sample multiple locations, including apparently healthy crop around hopperburn patches. Count nymphs and adults per hill and note predator abundance. Do not inspect only the upper leaves.",
+      "etl": "Use the locally approved stage-specific ETL that accounts for predator abundance. Numerical ETL is unknown here because official Indian recommendations vary by crop stage and local package.",
+      "preventive": "Avoid excess nitrogen, maintain recommended spacing, use resistant varieties where locally available, conserve spiders and Cyrtorhinus mirid bugs, and avoid prophylactic pyrethroid or broad-spectrum sprays.",
+      "cultural_control": "Drain the field for approximately 3-4 days where soil and crop stage permit, open alternate rows in an excessively dense canopy if locally advised, remove volunteer rice and avoid overlapping crop calendars.",
+      "biological_control": "Conserve spiders, mirid bugs, dragonflies and fungal pathogens naturally attacking planthoppers. Avoid unnecessary fungicide or insecticide applications that disrupt these organisms.",
+      "chemical_early_curative": {
+        "technical": "Pymetrozine formulation carrying a current CIBRC label claim for brown planthopper in rice",
+        "dose_per_acre": "unknown; use the exact approved label dose",
+        "irac_group": "9B",
+        "spray_water_volume": "Use the full label-specified water volume and direct spray toward the basal stems; universal value unknown",
+        "spray_timing": "At the locally valid ETL before hopperburn develops, after assessing predators and correcting excess standing water where appropriate."
+      },
+      "chemical_hard_curative": {
+        "technical": "Dinotefuran formulation carrying a current CIBRC label claim for brown planthopper in rice",
+        "dose_per_acre": "unknown; follow the exact approved formulation label",
+        "irac_group": "4A",
+        "spray_water_volume": "Label-specified volume with deliberate basal-canopy coverage",
+        "spray_timing": "For a confirmed above-threshold population with living hoppers around expanding patches, provided the label permits use at the crop stage and PHI can be observed."
+      },
+      "next_spray_logic": "Drain excess water where appropriate, apply to the plant base and reassess living hoppers in treated and untreated portions after the label-defined interval. Do not spray dried hopperburn centres; target live populations at patch margins. Repeat only if still above ETL and rotate away from the previously used IRAC group.",
+      "resistance_management": "Do not repeat neonicotinoid Group 4A products sequentially. Avoid synthetic pyrethroids where local guidance warns of brown planthopper resurgence. Rotate effective groups, use full label rates and preserve predators.",
+      "phi": "Product and crop-stage specific; verify the current CIBRC label before application.",
+      "rei": "Product specific; follow the label and prevent entry until deposits dry at minimum.",
+      "compatibility_notes": "Adequate basal coverage is more important than adding extra products. Avoid unapproved tank mixtures and insecticides known locally to cause planthopper resurgence.",
+      "safety_notes": "Prevent drift and contamination of fish ponds and drainage channels. Wear label-required protective equipment. Do not eat, smoke or drink during application, and wash exposed skin and clothing separately afterward.",
+      "farmer_tip": "When a patch begins yellowing, inspect the green plants around its edge. Live hoppers are usually concentrated there rather than in the already dead centre.",
+      "common_mistakes": "Spraying only the upper canopy, increasing nitrogen to green up infested plants, treating dead hopperburn, repeating neonicotinoids and using pyrethroids that disrupt natural enemies.",
+      "references": [
+        "ICAR-NCIPM rice IPM guidance for planthoppers and natural-enemy conservation.",
+        "ICAR-NRRI rice pest-management guidance.",
+        "CIBRC current List of Major Uses of Insecticides.",
+        "State Agricultural University stage-specific ETL recommendations."
+      ],
+      "confidence_level": "High for identification, outbreak factors and field tactics; medium for active-ingredient selection; label-specific dose, PHI and REI remain unknown until a product is selected."
+    },
+    {
+      "pest_name": "Rice earhead bug or gundhi bug, Leptocorisa species",
+      "identification": "Adults are slender, elongated, greenish-brown bugs with long legs and antennae. Nymphs resemble smaller wingless adults. Both stages emit a characteristic unpleasant odour when disturbed.",
+      "life_cycle": "Eggs are laid in rows on leaves. Nymphs pass through several instars on rice and grassy hosts before becoming adults. Populations may move into rice fields as panicles emerge.",
+      "damage_symptoms": "Nymphs and adults suck milky grains, causing empty, partially filled, shrivelled or discoloured grains. Feeding punctures may predispose grains to secondary staining and reduce milling and seed quality.",
+      "crop_stage_attacked": "Flowering to soft-dough stage, especially the milky-grain period.",
+      "favorable_conditions": "Staggered planting, abundant grassy hosts on bunds, nearby earlier or later rice crops, warm humid weather and prolonged availability of milky panicles.",
+      "why_this_happened": "Adults migrate from grasses or neighbouring rice when panicles become suitable. Unsynchronised sowing maintains a continuous food supply.",
+      "monitoring": "Inspect panicles during early morning or late afternoon when bugs are less active. Use a sweep net or count bugs on a fixed number of panicles at representative field points. Distinguish earhead bugs from harmless insects.",
+      "etl": "Use the current State Agricultural University threshold for bugs per square metre or per panicle sample. Numerical ETL is unknown without a location-specific official package.",
+      "preventive": "Synchronize planting in a locality, remove flowering grassy hosts before rice heading without damaging bund stability, and avoid unnecessary insecticides that remove predators.",
+      "cultural_control": "Keep bunds and channels free of flowering weed grasses before panicle emergence. In small plots, collect bugs with nets during cooler hours. Harvest at correct maturity.",
+      "biological_control": "Conserve egg parasitoids, spiders and predatory insects. No universal augmentative release recommendation is provided here.",
+      "chemical_early_curative": {
+        "technical": "Azadirachtin formulation only where a current CIBRC rice and target-pest label claim exists",
+        "dose_per_acre": "unknown; formulation strength varies substantially",
+        "irac_group": "UN",
+        "spray_water_volume": "Use the approved label volume for panicle coverage",
+        "spray_timing": "At early milky stage when the local ETL is reached and before extensive grain injury."
+      },
+      "chemical_hard_curative": {
+        "technical": "unknown; select only an insecticide with a current CIBRC label claim for earhead bug in rice and an acceptable PHI",
+        "dose_per_acre": "unknown",
+        "irac_group": "unknown",
+        "spray_water_volume": "unknown",
+        "spray_timing": "Only while grains remain susceptible and the required PHI can be fully observed."
+      },
+      "next_spray_logic": "Resample live bugs and grain stage after treatment. Do not repeat once grain hardens or if the PHI cannot be met. A second application requires a continuing above-threshold population and explicit label permission.",
+      "resistance_management": "Use nonchemical methods first, avoid repeated applications against mobile adults and rotate IRAC groups when more than one treatment is genuinely justified.",
+      "phi": "Critical and product specific because applications occur near harvest; verify the current label.",
+      "rei": "Product specific; follow the label.",
+      "compatibility_notes": "Do not combine a late insecticide with foliar nutrients or fungicides unless all labels permit the mixture. Panicle coverage and legal PHI are essential.",
+      "safety_notes": "Late-season residue risk is significant. Never shorten the label PHI, increase the dose or use an insecticide lacking a rice label claim.",
+      "farmer_tip": "Scout at the milky stage during early morning. By the time grains have hardened, spraying cannot reverse feeding injury.",
+      "common_mistakes": "Detecting the pest only after grain filling, spraying without checking grain stage, using a product with no rice label claim and ignoring the pre-harvest interval.",
+      "references": [
+        "ICAR-NRRI rice insect-pest guidance.",
+        "ICAR-NCIPM integrated pest-management principles.",
+        "CIBRC current List of Major Uses of Insecticides.",
+        "Relevant State Agricultural University package for local ETL."
+      ],
+      "confidence_level": "High for diagnosis and timing; low for a universal chemical recommendation, therefore the hard-curative chemical is marked unknown."
+    }
+  ],
+  "disease_database": [
+    {
+      "pest_name": "Rice blast, Magnaporthe oryzae",
+      "identification": "Leaf blast lesions are typically spindle or diamond shaped with grey or whitish centres and brown margins. Node blast blackens nodes, while neck blast causes brown to black infection at the panicle neck and may leave the panicle partially or completely unfilled.",
+      "life_cycle": "The fungus survives on infected seed, crop residues, volunteer rice and grass hosts. Conidia spread through wind and rain splash. Repeated infection cycles occur rapidly under favourable moisture and temperature.",
+      "damage_symptoms": "Seedlings or leaves develop expanding spindle-shaped lesions that may coalesce and kill large leaf areas. Collar infection kills the leaf blade. Node infection weakens stems. Neck infection prevents grain filling and can produce white or partially filled panicles.",
+      "crop_stage_attacked": "Nursery through maturity; leaf blast is common during vegetative growth and neck blast around heading.",
+      "favorable_conditions": "Prolonged leaf wetness, frequent dew, cloudy weather, high humidity, susceptible varieties, excessive or late nitrogen, drought stress followed by moisture, cool nights and dense canopy.",
+      "why_this_happened": "Susceptible variety, infected seed or nearby inoculum combined with long leaf-wetness periods and excessive nitrogen commonly initiates and amplifies the epidemic.",
+      "monitoring": "Inspect nursery and main field twice weekly during favourable weather. Examine newly emerged leaves for typical lesions and check panicle necks near heading. Distinguish blast from brown spot, herbicide injury and nutrient disorders.",
+      "etl": "Disease decisions are risk and symptom based rather than governed by one universal numerical ETL. Follow the State Agricultural University or ICAR advisory for the variety, stage and weather.",
+      "preventive": "Use resistant locally recommended varieties and certified seed, destroy volunteer rice, maintain balanced nutrition, avoid excessive nitrogen and follow approved seed-treatment and nursery-management guidance.",
+      "cultural_control": "Use recommended spacing, split nitrogen, maintain adequate but not excessive water, remove heavily infected nursery patches where practical and avoid moving infected seedlings to clean fields.",
+      "biological_control": "Use only biocontrol seed or soil products specifically registered or officially recommended for rice blast. Efficacy is preventive and variable; they do not replace timely action during a severe neck-blast risk.",
+      "chemical_early_curative": {
+        "technical": "Tricyclazole formulation carrying a current CIBRC label claim for rice blast",
+        "dose_per_acre": "unknown; follow the exact formulation label",
+        "frac_group": "16.1",
+        "spray_water_volume": "Use the label-specified volume for uniform leaf and panicle coverage",
+        "spray_timing": "At the first confirmed lesions or at the officially advised high-risk stage; for neck blast, preventive timing around late booting or early panicle emergence must follow the local advisory and product label."
+      },
+      "chemical_hard_curative": {
+        "technical": "Isoprothiolane formulation carrying a current CIBRC label claim for rice blast",
+        "dose_per_acre": "unknown; follow the exact formulation label",
+        "frac_group": "6",
+        "spray_water_volume": "Use the approved label volume",
+        "spray_timing": "When active lesion development continues and a legal label supports application. Established dead tissue and blank panicles cannot recover."
+      },
+      "next_spray_logic": "Review new lesions, weather and crop stage after the label-defined interval. Repeat only when disease remains active, the label permits it and PHI can be observed. Rotate to a different effective FRAC group rather than repeating the same single-site fungicide.",
+      "resistance_management": "Limit consecutive applications of FRAC 16.1 or FRAC 6. Use full label rates, integrate resistant varieties and balanced nitrogen, and prefer approved mixtures or rotations containing different effective modes of action where labels support them.",
+      "phi": "Product specific; verify the current CIBRC label.",
+      "rei": "Product specific; follow the label and keep workers out until deposits dry at minimum.",
+      "compatibility_notes": "Do not combine fungicides with unverified foliar fertilizers or alkaline products. Maintain the label concentration and coverage; rain soon after spraying may reduce performance according to label rainfastness.",
+      "safety_notes": "Wear label-required protective equipment, prevent drift and respect harvest intervals. Never use a seed-treatment formulation as a foliar spray or vice versa.",
+      "farmer_tip": "Neck blast must be prevented before or during early panicle emergence; spraying after the neck has blackened cannot refill the panicle.",
+      "common_mistakes": "Applying excess urea after seeing pale crop, confusing brown spot with blast, waiting for neck blast to become obvious, repeating tricyclazole and using below-label doses.",
+      "references": [
+        "ICAR-National Rice Research Institute guidance on rice blast.",
+        "ICAR-NCIPM rice disease-management guidance.",
+        "CIBRC current List of Major Uses of Fungicides.",
+        "State Agricultural University rice disease advisories."
+      ],
+      "confidence_level": "High for diagnosis and risk management; medium for active-ingredient choices; exact dose, PHI and REI require current label verification."
+    },
+    {
+      "pest_name": "Sheath blight, Rhizoctonia solani",
+      "identification": "Initial lesions occur on leaf sheaths near the waterline as oval or irregular greenish-grey spots with brown margins. Lesions enlarge and move upward; small brown sclerotia may develop on infected tissue.",
+      "life_cycle": "The pathogen survives as sclerotia and mycelium in soil and crop debris. Floating sclerotia or infected debris contact lower sheaths, and the fungus spreads from tiller to tiller under a dense humid canopy.",
+      "damage_symptoms": "Sheath lesions coalesce, leaves senesce prematurely, tillers weaken and plants may lodge. Severe upward spread during reproductive growth reduces grain filling.",
+      "crop_stage_attacked": "Usually tillering to grain filling, with greatest risk after canopy closure.",
+      "favorable_conditions": "Dense crop, high humidity, warm weather, excessive nitrogen, susceptible high-tillering varieties, continuous rice and prolonged canopy wetness.",
+      "why_this_happened": "Persistent soil inoculum combined with a dense nitrogen-rich canopy creates humid contact points that allow rapid plant-to-plant spread.",
+      "monitoring": "Inspect lower sheaths near the waterline, especially in dense or high-nitrogen patches. Record vertical movement toward the flag-leaf sheath, not merely the presence of old lower lesions.",
+      "etl": "No single universal numerical threshold is provided. Follow the locally approved disease-severity and crop-stage advisory.",
+      "preventive": "Use recommended spacing and nitrogen, adequate potassium according to soil test, tolerant varieties where available, and clean field sanitation.",
+      "cultural_control": "Avoid excessive plant population and late nitrogen, improve canopy aeration, remove or decompose infected residues appropriately, and manage weeds that maintain humidity.",
+      "biological_control": "Use only officially recommended or registered Trichoderma or Pseudomonas products with verified viable count and rice directions. These are primarily preventive.",
+      "chemical_early_curative": {
+        "technical": "Validamycin formulation carrying a current CIBRC label claim for sheath blight in rice",
+        "dose_per_acre": "unknown; follow the exact label",
+        "frac_group": "U18",
+        "spray_water_volume": "Use label-specified volume and direct coverage to lower sheaths",
+        "spray_timing": "At early lesion development before substantial upward spread."
+      },
+      "chemical_hard_curative": {
+        "technical": "Hexaconazole formulation carrying a current CIBRC label claim for rice sheath blight",
+        "dose_per_acre": "unknown; follow the exact label",
+        "frac_group": "3",
+        "spray_water_volume": "Use label-specified volume with lower-canopy penetration",
+        "spray_timing": "When fresh lesions continue moving upward and treatment remains legal for the crop stage."
+      },
+      "next_spray_logic": "Reassess fresh lesion expansion and upward movement after the label interval. Old lesions remain visible. Repeat only if active spread continues and rotate away from the previous FRAC group.",
+      "resistance_management": "Avoid repeated solo Group 3 applications. Rotate with an effective non-Group 3 option, use label rates and reduce canopy favourability through nitrogen and spacing management.",
+      "phi": "Product specific; verify the approved label.",
+      "rei": "Product specific; follow the label.",
+      "compatibility_notes": "Lower-sheath coverage is essential. Avoid unverified mixtures and excessive spray pressure that causes drift without penetrating the canopy.",
+      "safety_notes": "Follow label personal protective equipment and disposal directions. Keep spray out of aquaculture and domestic-water channels.",
+      "farmer_tip": "Spraying only the top leaves gives poor control because infection begins near the waterline; direct droplets into the lower canopy without exceeding the label rate.",
+      "common_mistakes": "Mistaking old lesions for active spread, applying fungicide only to upper leaves, continuing late urea and repeatedly using Group 3 fungicides.",
+      "references": [
+        "ICAR-NRRI rice disease guidance.",
+        "ICAR-NCIPM rice IPM guidance.",
+        "CIBRC current List of Major Uses of Fungicides.",
+        "Relevant State Agricultural University package."
+      ],
+      "confidence_level": "High for field diagnosis and management logic; medium for chemical options; label-specific dose and intervals are unknown until verified."
+    },
+    {
+      "pest_name": "Bacterial leaf blight, Xanthomonas oryzae pv. oryzae",
+      "identification": "Seedling wilt or kresek can kill young plants. On older plants, water-soaked yellowish lesions begin near leaf tips or margins and extend downward with wavy edges. Bacterial ooze may appear as yellowish beads under humid conditions.",
+      "life_cycle": "The bacterium survives in infected seed, stubble, volunteer rice and some weed hosts. It enters through hydathodes or wounds and spreads through rain splash, irrigation water, wind-driven rain, tools and plant contact.",
+      "damage_symptoms": "Leaves yellow and dry from the tip or margin downward. Severe early infection causes kresek and tiller death; later infection reduces photosynthetic area and grain filling.",
+      "crop_stage_attacked": "Nursery through grain filling, often severe after transplanting injury, storms or flooding.",
+      "favorable_conditions": "Driving rain, storms, flooding, leaf injury, clipping contaminated seedlings, high nitrogen, susceptible varieties and warm humid weather.",
+      "why_this_happened": "Infected planting material or residue supplied inoculum, while wounds, rain or contaminated water enabled entry and spread. Excess nitrogen increased crop susceptibility.",
+      "monitoring": "Inspect the advancing lesion margin and field spread after storms. Where diagnosis is uncertain, submit fresh symptomatic leaves to a plant-health laboratory because nutrient injury and other leaf blights can resemble the disease.",
+      "etl": "No universal numerical ETL. Management is primarily preventive and based on confirmed diagnosis, susceptible variety, weather and crop stage.",
+      "preventive": "Use resistant varieties and certified seed, maintain balanced nitrogen, avoid injury, ensure clean nursery practices and prevent movement of contaminated water where feasible.",
+      "cultural_control": "Do not clip seedlings in a field with suspected bacterial blight unless the local package specifically requires clipping and tools are sanitized. Avoid excess nitrogen, remove volunteer rice and manage infected residue according to local recommendations.",
+      "biological_control": "No universally reliable curative biological treatment is specified. Use only registered or officially recommended products with a rice and target-disease claim.",
+      "chemical_early_curative": {
+        "technical": "unknown; no chemical should be recommended as reliably curative without a current CIBRC rice label claim for bacterial leaf blight",
+        "dose_per_acre": "unknown",
+        "frac_group": "unknown",
+        "spray_water_volume": "unknown",
+        "spray_timing": "Preventive management and confirmation of diagnosis are priorities."
+      },
+      "chemical_hard_curative": {
+        "technical": "unknown",
+        "dose_per_acre": "unknown",
+        "frac_group": "unknown",
+        "spray_water_volume": "unknown",
+        "spray_timing": "Established systemic bacterial infection is not reliably reversed by foliar fungicides."
+      },
+      "next_spray_logic": "Do not schedule repeat sprays without a registered product, confirmed diagnosis and official local advisory. Track new lesions, stop late nitrogen and limit movement through wet fields.",
+      "resistance_management": "Do not use repeated antibiotics, copper compounds or fungicide mixtures without a current label claim. Indiscriminate antimicrobial use selects resistance and may violate residue regulations.",
+      "phi": "unknown",
+      "rei": "unknown",
+      "compatibility_notes": "Do not improvise antibiotic and fungicide cocktails. Copper products can be phytotoxic in some mixtures and conditions and must not be used without an approved rice label.",
+      "safety_notes": "Do not use human or veterinary antibiotics in crops. Follow national pesticide registration and residue requirements.",
+      "farmer_tip": "After storms, avoid walking through a wet infected field and then entering a healthy nursery or field without cleaning footwear and tools.",
+      "common_mistakes": "Calling every drying leaf bacterial blight, applying extra nitrogen, using unregistered antibiotics and expecting fungicides to restore dead tissue.",
+      "references": [
+        "ICAR-NRRI guidance on bacterial leaf blight of rice.",
+        "ICAR-NCIPM integrated disease-management principles.",
+        "CIBRC current List of Major Uses of Fungicides and bactericides.",
+        "State Agricultural University diagnostic and varietal recommendations."
+      ],
+      "confidence_level": "High for diagnosis and preventive management; intentionally low for chemical control, which is marked unknown absent exact current label verification."
+    },
+    {
+      "pest_name": "Brown spot, Bipolaris oryzae",
+      "identification": "Leaves develop small circular to oval brown lesions, often with a grey centre and reddish-brown margin. Glumes and grains may also develop dark spots. Lesions are generally more rounded than typical spindle-shaped blast lesions.",
+      "life_cycle": "The fungus is seed-borne and survives on infected residues and alternate hosts. Conidia spread by wind and rain, producing repeated infection cycles under favourable conditions.",
+      "damage_symptoms": "Numerous spots reduce green leaf area, weaken seedlings and may cause grain discoloration and poor grain filling. Severe disease often accompanies nutrient-poor or physiologically stressed crops.",
+      "crop_stage_attacked": "Nursery through maturity, including leaves, sheaths, glumes and grains.",
+      "favorable_conditions": "Nutrient-deficient soils, drought or moisture stress, poor root health, iron toxicity in some soils, infected seed, high humidity and prolonged leaf wetness.",
+      "why_this_happened": "Seed-borne inoculum combined with weak crop nutrition or root stress commonly predisposes plants to severe disease.",
+      "monitoring": "Inspect nursery and lower to middle leaves for typical rounded lesions. Evaluate soil and root problems concurrently. Confirm uncertain cases because blast and other spots require different risk decisions.",
+      "etl": "No universal numerical ETL. Decisions depend on severity, disease progress, grain stage and weather.",
+      "preventive": "Use healthy certified seed, approved seed treatment, balanced soil-test-based nutrition, adequate water management and tolerant varieties where recommended.",
+      "cultural_control": "Correct diagnosed nutrient and soil constraints, avoid drought stress, manage residue and use clean nursery practices.",
+      "biological_control": "Use only registered or officially recommended seed-treatment biocontrol products with rice directions. Do not expect biological treatment to cure heavily diseased leaves.",
+      "chemical_early_curative": {
+        "technical": "Mancozeb formulation carrying a current CIBRC label claim for brown spot in rice",
+        "dose_per_acre": "unknown; follow the exact formulation label",
+        "frac_group": "M03",
+        "spray_water_volume": "Use label-specified water volume for complete protective coverage",
+        "spray_timing": "At early confirmed disease when weather favours spread, together with correction of the underlying crop stress."
+      },
+      "chemical_hard_curative": {
+        "technical": "Propiconazole formulation only where a current CIBRC label claim covers brown spot in rice",
+        "dose_per_acre": "unknown; verify exact label",
+        "frac_group": "3",
+        "spray_water_volume": "Use label-specified volume",
+        "spray_timing": "When fresh lesions continue to develop and the selected label explicitly covers the disease and crop stage."
+      },
+      "next_spray_logic": "Correct crop stress and reassess fresh lesion development after the label interval. Rotate from multi-site M03 to a different effective group only if treatment remains necessary and legally labelled.",
+      "resistance_management": "Use multi-site protectants where labelled and appropriate, avoid repeated Group 3 sprays and integrate clean seed and balanced nutrition.",
+      "phi": "Product specific; verify the label.",
+      "rei": "Product specific; follow the label.",
+      "compatibility_notes": "Mancozeb and foliar nutrient mixtures may be physically or chemically incompatible. Use a jar test only after confirming that all labels permit mixing.",
+      "safety_notes": "Use protective clothing and avoid inhaling dust when measuring wettable powders. Respect aquatic and harvest restrictions.",
+      "farmer_tip": "A fungicide alone often disappoints if drought, potassium shortage or poor roots are not corrected.",
+      "common_mistakes": "Confusing brown spot with blast, spraying without correcting stress, using infected seed and repeating triazole fungicides.",
+      "references": [
+        "ICAR-NRRI rice disease guidance.",
+        "ICAR-NCIPM integrated disease-management guidance.",
+        "CIBRC current List of Major Uses of Fungicides.",
+        "State Agricultural University rice package of practices."
+      ],
+      "confidence_level": "High for diagnosis and integrated management; medium for chemical selection; exact label details require verification."
+    },
+    {
+      "pest_name": "False smut, Ustilaginoidea virens",
+      "identification": "Individual grains are replaced by velvety smut balls that are initially yellow or orange, later becoming greenish and finally dark olive to black. Only some grains in a panicle may be affected.",
+      "life_cycle": "The pathogen survives through durable spores and sclerotia associated with soil, residues and contaminated seed lots. Infection occurs around booting and flowering, but visible smut balls appear later.",
+      "damage_symptoms": "Affected florets are converted into smut balls, reducing grain number and contaminating harvested produce. Severe incidence lowers market and seed quality.",
+      "crop_stage_attacked": "Infection occurs mainly around booting to flowering; symptoms become visible during grain development.",
+      "favorable_conditions": "High humidity, frequent rain or cloudy weather around booting and flowering, excessive nitrogen, dense canopy, susceptible varieties and a history of the disease.",
+      "why_this_happened": "High inoculum and wet weather coincided with the susceptible flowering period, often in a lush nitrogen-rich crop.",
+      "monitoring": "Review field history and weather before booting. Inspect panicles after emergence for early yellow smut balls, but recognize that treatment after visible smut balls is too late to prevent those infections.",
+      "etl": "No universal numerical ETL. Preventive decisions are based on field history, variety, nitrogen status and forecast weather at booting.",
+      "preventive": "Use clean seed, tolerant varieties, balanced nitrogen, timely planting and residue management. Avoid excessive late nitrogen.",
+      "cultural_control": "Collect and destroy visibly infected panicles in seed-production or small fields before smut balls rupture, where practical. Do not retain heavily affected produce as seed.",
+      "biological_control": "No universal field-curative biological recommendation is provided. Use only officially validated and registered preventive products.",
+      "chemical_early_curative": {
+        "technical": "Propiconazole formulation only where the current CIBRC label explicitly claims false smut control in rice",
+        "dose_per_acre": "unknown; verify the exact label",
+        "frac_group": "3",
+        "spray_water_volume": "Use the label-specified volume for upper-canopy coverage",
+        "spray_timing": "Preventively at the label and local-advisory timing around booting; visible smut balls indicate infection has already occurred."
+      },
+      "chemical_hard_curative": {
+        "technical": "Azoxystrobin plus difenoconazole formulation only where a current CIBRC label explicitly covers rice false smut",
+        "dose_per_acre": "unknown; verify exact formulation and label",
+        "frac_group": "11 plus 3",
+        "spray_water_volume": "Use label-specified volume",
+        "spray_timing": "Only at an approved preventive or very early infection timing. There is no reliable hard cure after smut balls are visible."
+      },
+      "next_spray_logic": "Any second preventive application must be explicitly permitted by the label and justified by continued high-risk weather. Do not spray merely because mature smut balls are visible.",
+      "resistance_management": "Avoid repeated solo Group 3 use and limit Group 11 exposure. Rotate effective groups and combine chemical prevention with balanced nitrogen and varietal resistance.",
+      "phi": "Product specific; verify the current label.",
+      "rei": "Product specific; follow the label.",
+      "compatibility_notes": "Do not mix with unverified foliar fertilizers during booting. Ensure the selected product is specifically labelled for rice and false smut, not merely another rice disease.",
+      "safety_notes": "Observe label PPE and harvest restrictions. Smut-contaminated grain should not be retained as seed.",
+      "farmer_tip": "Management must be planned before panicles emerge; spraying visible smut balls does not clean infected grains.",
+      "common_mistakes": "Applying fungicide after symptoms appear, using excessive late nitrogen, assuming every rice fungicide controls false smut and repeating Group 3 products.",
+      "references": [
+        "ICAR-NRRI false-smut management guidance.",
+        "ICAR-NCIPM integrated rice disease-management principles.",
+        "CIBRC current List of Major Uses of Fungicides.",
+        "State Agricultural University false-smut advisories."
+      ],
+      "confidence_level": "High for identification and preventive timing; medium to low for a universal chemical programme because label claims change and must be verified."
+    }
+  ],
+  "nutrient_deficiency": [
+    {
+      "nutrient": "Nitrogen",
+      "symptoms": "Older leaves become uniformly pale green and then yellow, beginning near the tip and progressing along the midrib. Tillering, leaf size and crop vigour decline, and maturity may be early with low yield.",
+      "why_happens": "Low soil nitrogen, inadequate organic matter, leaching, denitrification, volatilization, deep standing water during top-dressing, poor roots or insufficient fertilizer splitting.",
+      "how_to_fix": "Confirm that symptoms begin on older leaves and exclude zinc deficiency, root injury and waterlogging. Use a Leaf Colour Chart where officially recommended, correct water management and apply the locally prescribed nitrogen split.",
+      "fertilizer_recommendation": "Urea or another locally recommended nitrogen source as part of the soil-test and state package; do not exceed the seasonal nitrogen target.",
+      "dose_per_acre": "unknown without soil test, crop stage, variety, previous nitrogen and local recommendation"
+    },
+    {
+      "nutrient": "Phosphorus",
+      "symptoms": "Plants are stunted with reduced tillering, narrow erect dark-green leaves and delayed maturity. Older leaves may develop reddish or purplish coloration in some varieties or conditions.",
+      "why_happens": "Low available phosphorus, acidic phosphorus-fixing soils, alkaline or calcareous soils, low temperature, poor root growth or failure to place phosphorus basally.",
+      "how_to_fix": "Confirm through soil test and root examination. Phosphorus is most effective when incorporated basally; a late rescue may not fully recover lost tillers.",
+      "fertilizer_recommendation": "State-recommended source such as DAP or SSP, with nitrogen and sulphur contributions included in the nutrient calculation.",
+      "dose_per_acre": "unknown; calculate from soil-test P2O5 recommendation and fertilizer grade"
+    },
+    {
+      "nutrient": "Potassium",
+      "symptoms": "Older leaf tips and margins yellow and then develop brown necrosis. Plants may be weak, lodge more easily and show poor grain filling or greater stress sensitivity.",
+      "why_happens": "Low exchangeable potassium, removal of straw, sandy soil, leaching, unbalanced high nitrogen or restricted roots.",
+      "how_to_fix": "Confirm the marginal pattern on older leaves and obtain a soil test. Apply the locally prescribed potassium split and correct excessive nitrogen.",
+      "fertilizer_recommendation": "Muriate of potash or another locally approved potassium source based on soil test and chloride sensitivity of the production system.",
+      "dose_per_acre": "unknown; calculate from the recommended K2O and product analysis"
+    },
+    {
+      "nutrient": "Zinc",
+      "symptoms": "Young plants show dusty brown spots or rusty blotches on older leaves, uneven chlorosis, reduced leaf size, stunting and poor tillering. Symptoms often appear in patches after transplanting and are commonly called khaira-type symptoms.",
+      "why_happens": "Low available zinc, high soil pH, calcareous or sodic soil, prolonged submergence, high bicarbonate, excessive phosphorus or low organic matter.",
+      "how_to_fix": "Confirm the field pattern and distinguish from brown spot disease. Improve drainage temporarily where appropriate and use the zinc source, grade and method recommended by the State Agricultural University.",
+      "fertilizer_recommendation": "Zinc sulphate of a clearly identified grade, or another officially recommended zinc source. Product grade is essential because monohydrate and heptahydrate contain different zinc percentages.",
+      "dose_per_acre": "unknown without soil test, product grade and state recommendation; do not interchange doses among zinc sulphate grades"
+    },
+    {
+      "nutrient": "Sulphur",
+      "symptoms": "Young leaves become uniformly pale yellow while older leaves may remain greener than in nitrogen deficiency. Plants are thin, stunted and slow to tiller.",
+      "why_happens": "Low organic matter, prolonged use of sulphur-free high-analysis fertilizers, sandy soil, leaching or removal of crop residues.",
+      "how_to_fix": "Confirm that younger leaves are affected and use soil or plant analysis where possible. Apply an officially recommended sulphur-containing fertilizer.",
+      "fertilizer_recommendation": "SSP, gypsum, ammonium sulphate or another state-recommended source, accounting for all accompanying nutrients.",
+      "dose_per_acre": "unknown; base on soil test and product analysis"
+    },
+    {
+      "nutrient": "Iron",
+      "symptoms": "Young leaves develop interveinal chlorosis and may become nearly white in severe deficiency while veins remain relatively greener. Deficiency is more likely in aerobic, upland or calcareous conditions than in normally flooded soil.",
+      "why_happens": "High pH, calcareous soil, bicarbonate, aerobic conditions, cold soil or poor root function.",
+      "how_to_fix": "Correct drainage or root problems where relevant and obtain local diagnostic advice. Foliar correction may be required, but concentration and product must follow the state recommendation to avoid leaf burn.",
+      "fertilizer_recommendation": "Officially recommended ferrous source or chelated iron appropriate to soil pH.",
+      "dose_per_acre": "unknown"
+    }
+  ],
+  "weed_database": [
+    {
+      "weed_name": "Echinochloa crus-galli and Echinochloa colona, barnyard grasses",
+      "weed_type": "Annual grasses",
+      "identification": "Seedlings resemble rice but generally lack the clear ligule and auricles characteristic of rice. Leaves are flat, and mature plants produce branched seed heads.",
+      "critical_competition_period": "Early crop establishment, particularly approximately 15-45 days after sowing or transplanting depending on the production system.",
+      "why_problem_occurs": "Contaminated seed, delayed weeding, shallow or uneven water, repeated rice, herbicide resistance and failure to distinguish grass seedlings from rice.",
+      "preventive": "Use clean certified seed, clean machinery, prevent seed set, maintain level fields and use stale seedbed techniques where locally recommended.",
+      "cultural_control": "Timely hand or mechanical weeding, line planting, competitive varieties, recommended plant population and appropriate water management.",
+      "biological_control": "No dependable universal biological control is recommended for field use.",
+      "chemical_management": {
+        "pre_emergence": "Pretilachlor or butachlor formulation only where a current CIBRC label supports the specific rice establishment method and target weeds.",
+        "early_post_emergence": "Bispyribac-sodium formulation only where currently labelled for the rice system and weed stage.",
+        "late_post_emergence": "unknown; late large grasses are difficult to control selectively and may require hand removal before seed set.",
+        "dose_per_acre": "unknown; formulation, crop establishment method, soil condition and label differ",
+        "application_timing": "Follow the exact label in days after sowing or transplanting and weed-leaf stage. Do not extrapolate timing between transplanted and direct-seeded rice.",
+        "hrac_group": "Pretilachlor and butachlor: Group 15; bispyribac-sodium: Group 2"
+      },
+      "resistance_management": "Rotate herbicide groups across seasons, combine chemical and nonchemical methods, remove survivors before seed set and do not apply repeated Group 2 herbicides to the same field without diversity.",
+      "safety_and_compatibility": "Use a calibrated flat-fan nozzle where the label specifies spraying. Maintain the required water condition. Do not mix herbicides with insecticides, fertilizers or micronutrients unless both labels permit it.",
+      "farmer_tip": "Check for rice ligules and auricles before treating grass-like seedlings; crop injury from mistaken identification cannot be reversed.",
+      "references": [
+        "ICAR-Directorate of Weed Research rice weed-management guidance.",
+        "ICAR-NRRI rice production guidance.",
+        "CIBRC current List of Major Uses of Herbicides.",
+        "State Agricultural University package for transplanted or direct-seeded rice."
+      ],
+      "confidence_level": "High for identification and integrated control; exact herbicide dose is label dependent and therefore unknown."
+    },
+    {
+      "weed_name": "Cyperus difformis and Fimbristylis miliacea, rice sedges",
+      "weed_type": "Annual sedges",
+      "identification": "Plants have narrow leaves and solid, often triangular stems. Seed heads are umbrella-like or branched clusters, distinguishing sedges from grasses.",
+      "critical_competition_period": "Early to mid-tillering, especially in wet direct-seeded and transplanted rice.",
+      "why_problem_occurs": "Persistent wet soil, large soil seed bank, delayed canopy closure and repeated use of herbicides weak on sedges.",
+      "preventive": "Use clean irrigation channels, level fields, prevent seed production and clean equipment before moving between fields.",
+      "cultural_control": "Timely hand or cono-weeding where suitable, line planting and water management that favours established rice without creating crop stress.",
+      "biological_control": "No reliable universal biological control is recommended.",
+      "chemical_management": {
+        "pre_emergence": "Use only a current CIBRC-labelled rice herbicide with sedge activity appropriate to the establishment system.",
+        "early_post_emergence": "Pyrazosulfuron-ethyl formulation where a current label covers the target sedges and rice system.",
+        "late_post_emergence": "Metsulfuron-methyl formulation only where the current rice label covers the target weed spectrum and crop stage.",
+        "dose_per_acre": "unknown; follow the exact formulation label",
+        "application_timing": "Apply to young actively growing sedges at the label-defined crop and weed stage.",
+        "hrac_group": "Pyrazosulfuron-ethyl and metsulfuron-methyl: Group 2"
+      },
+      "resistance_management": "Both listed post-emergence options are Group 2; do not treat them as a mode-of-action rotation. Introduce a genuinely different labelled group and nonchemical control in subsequent seasons.",
+      "safety_and_compatibility": "Very low-dose sulfonylurea herbicides require accurate measurement and uniform application. Prevent drift to sensitive broadleaf crops and clean the sprayer according to the label.",
+      "farmer_tip": "Changing brand names does not rotate mode of action when both products are Group 2.",
+      "references": [
+        "ICAR-Directorate of Weed Research guidance.",
+        "CIBRC current List of Major Uses of Herbicides.",
+        "ICAR-NRRI and State Agricultural University rice packages."
+      ],
+      "confidence_level": "High for weed group and resistance warning; exact dose and crop-stage use require label verification."
+    },
+    {
+      "weed_name": "Monochoria vaginalis, Ludwigia species and other broadleaf weeds",
+      "weed_type": "Aquatic or semi-aquatic annual broadleaf weeds",
+      "identification": "Monochoria has fleshy, glossy, heart-shaped to lance-shaped leaves and blue flowers; Ludwigia species have opposite or alternate broad leaves and small yellow flowers, depending on species.",
+      "critical_competition_period": "Approximately the first 15-45 days after crop establishment, depending on rice system and weed emergence.",
+      "why_problem_occurs": "Wet soil, contaminated water, poor land levelling, delayed weeding and herbicide programmes focused only on grasses.",
+      "preventive": "Prevent seed set, clean channels and equipment, use clean seed and maintain a competitive, uniform rice stand.",
+      "cultural_control": "Hand or mechanical weeding before flowering, line planting, stale seedbed where suitable and appropriate water management.",
+      "biological_control": "No universal field-ready biological control is recommended.",
+      "chemical_management": {
+        "pre_emergence": "Use a currently labelled broad-spectrum pre-emergence rice herbicide suitable for the establishment method.",
+        "early_post_emergence": "Bensulfuron-methyl or another current CIBRC-labelled option with activity on the identified broadleaf species.",
+        "late_post_emergence": "2,4-D formulation only where the exact label permits use in the rice establishment system and at the specified crop stage.",
+        "dose_per_acre": "unknown; follow the exact formulation label",
+        "application_timing": "Treat small actively growing weeds. Follow crop-stage restrictions strictly, particularly for 2,4-D, to reduce crop injury.",
+        "hrac_group": "Bensulfuron-methyl: Group 2; 2,4-D: Group 4"
+      },
+      "resistance_management": "Rotate Groups 2 and 4 with other labelled groups and nonchemical control. Remove survivors and avoid allowing escapes to replenish the seed bank.",
+      "safety_and_compatibility": "Prevent 2,4-D drift onto cotton, pulses, vegetables and other sensitive broadleaf crops. Use a dedicated or thoroughly decontaminated sprayer and avoid application during strong wind.",
+      "farmer_tip": "Identify the dominant weed before selecting a herbicide; a grass-only product will not solve a broadleaf infestation.",
+      "references": [
+        "ICAR-Directorate of Weed Research rice weed-management guidance.",
+        "CIBRC current List of Major Uses of Herbicides.",
+        "State Agricultural University rice package of practices."
+      ],
+      "confidence_level": "High for integrated management and drift warning; exact product dose and timing remain label specific."
+    },
+    {
+      "weed_name": "Mixed weed flora in direct-seeded rice",
+      "weed_type": "Mixed grasses, sedges and broadleaf weeds",
+      "identification": "A mixed population may include Echinochloa grasses, Leptochloa, Cyperus and Fimbristylis sedges, and aquatic broadleaf weeds. Identification at the two-to-four-leaf stage is essential for post-emergence selection.",
+      "critical_competition_period": "Generally the first 15-45 days after sowing, with severe yield loss possible when early flushes remain uncontrolled.",
+      "why_problem_occurs": "Absence of puddling and standing water, repeated shallow tillage, staggered emergence, poor land levelling, inadequate seed rate or row geometry and reliance on one herbicide.",
+      "preventive": "Use stale seedbed, clean seed, precision land levelling, line sowing, clean machinery and prevention of weed seed return.",
+      "cultural_control": "Use a competitive recommended variety, optimum seed rate, row sowing, timely mechanical or hand weeding and locally validated water management.",
+      "biological_control": "No universal biological method provides adequate control of mixed flora.",
+      "chemical_management": {
+        "pre_emergence": "Pendimethalin formulation only where currently labelled for direct-seeded rice and the intended soil and moisture conditions.",
+        "early_post_emergence": "Select a current CIBRC-labelled product based on the dominant live weed species; bispyribac-sodium may cover parts of the spectrum but should not be assumed to control every grass, sedge and broadleaf weed.",
+        "late_post_emergence": "Species-directed rescue treatment or hand removal; universal recommendation unknown.",
+        "dose_per_acre": "unknown; follow the exact label",
+        "application_timing": "Pre-emergence performance requires a fine, moist, level seedbed and label-compliant timing. Post-emergence selection must use actual weed and crop leaf stages.",
+        "hrac_group": "Pendimethalin: Group 3; bispyribac-sodium: Group 2"
+      },
+      "resistance_management": "Use an integrated sequence with different effective groups rather than repeated Group 2 rescue sprays. Record survivors by species, remove patches before seed set and modify the following season's programme.",
+      "safety_and_compatibility": "Seed depth, soil moisture and heavy rainfall around pre-emergence application can alter crop safety and efficacy. Follow buffer, nozzle, water-volume and re-entry directions on the label.",
+      "farmer_tip": "In direct-seeded rice, a one-week delay in identifying the first weed flush can turn an easy early treatment into an expensive and unreliable rescue operation.",
+      "references": [
+        "ICAR-Directorate of Weed Research direct-seeded rice guidance.",
+        "ICAR-NRRI direct-seeded rice production guidance.",
+        "CIBRC current List of Major Uses of Herbicides.",
+        "Local State Agricultural University recommendations."
+      ],
+      "confidence_level": "High for integrated strategy; chemical dose and universal rescue choice are unknown because weed spectrum and labels vary."
+    }
+  ]
+}

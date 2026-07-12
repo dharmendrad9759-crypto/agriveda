@@ -41,11 +41,13 @@ export default function ClientProviders({ children }: { children: React.ReactNod
               <div className="app-premium-shell relative flex min-h-screen flex-col lg:flex-row">
                 <AppPremiumBackground />
                 <AppSidebar />
-                <div className="relative z-10 flex min-h-screen flex-1 flex-col">
+                <div className="relative z-10 flex min-h-screen min-w-0 flex-1 flex-col overflow-x-hidden">
                   <MobileShellTopBar />
                   <Navbar />
                   <ShellTopBar />
-                  <main className="flex-grow bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">{children}</main>
+                  <main className="min-w-0 flex-grow overflow-x-hidden bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">
+                    {children}
+                  </main>
                   <Footer />
                   <BottomNav />
                 </div>

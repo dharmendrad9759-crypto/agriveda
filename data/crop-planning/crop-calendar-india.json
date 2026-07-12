@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "purpose": "AGRIVEDA Smart Crop Advisory - base data: which crops are agronomically grown where, by season",
+    "how_to_use": "Match farmer's selected State (and District, if UP) to the Kharif/Rabi/Zaid crop lists. This is the 'what CAN grow here' layer only.",
+    "important_for_profit_feature": "Screen shows 'sabse zyada munafa kis mein hai' - THIS file only tells you which crops are viable in a region. To actually rank by profit you need a second dataset layered on top: cost-of-cultivation per acre, expected yield per acre, and current mandi price per crop per region. Same crop list, different multiplier per district.",
+    "seasons": {
+      "kharif": "Sown Jun-Jul with monsoon onset, harvested Sep-Oct",
+      "rabi": "Sown Oct-Dec after monsoon retreat, harvested Feb-Apr, mostly irrigation/soil-moisture dependent",
+      "zaid": "Short summer crop, sown Mar, harvested Jun, needs assured irrigation since there's no rain support"
+    },
+    "coverage": "All India states/UTs at state level (~30 entries). Uttar Pradesh additionally broken into its 9 official agro-climatic zones covering all 75 districts, since that's AGRIVEDA's core operating region.",
+    "why_zones_not_raw_districts": "Crop choice follows soil/rainfall/temperature, not political boundaries - neighbouring districts in the same agro-climatic zone have almost identical crop calendars (ICAR and state agri departments plan this way too). A flat district-by-district list nationwide would mostly repeat the same handful of entries per zone while being far harder to keep accurate and maintain. Aligarh and Bulandshahr, for example, sit in two DIFFERENT UP zones despite being neighbours - which is exactly the kind of distinction a flat 'Western UP' label would miss.",
+    "crop_name_format": "English / हिंदी",
+    "compiled": "July 2026"
+  },
+
+  "uttar_pradesh_zones": [
+    {
+      "zone": "Bhabhar-Tarai",
+      "districts": ["Saharanpur", "Bijnor", "Pilibhit", "Lakhimpur Kheri", "Shahjahanpur", "Bahraich", "Shravasti", "Balrampur"],
+      "kharif": ["Paddy / धान", "Sugarcane / गन्ना", "Maize / मक्का", "Soybean / सोयाबीन"],
+      "rabi": ["Wheat / गेहूं", "Mustard / सरसों", "Lentil / मसूर", "Peas / मटर"],
+      "zaid": ["Moong / मूंग", "Vegetables / सब्ज़ियां"],
+      "note": "Higher rainfall (100-150cm), forest-adjacent, shallow water table - favours paddy and sugarcane"
+    },
+    {
+      "zone": "Western Plain",
+      "districts": ["Moradabad", "Rampur", "Amroha", "Sambhal", "Bareilly", "Budaun"],
+      "kharif": ["Paddy / धान", "Sugarcane / गन्ना", "Bajra / बाजरा", "Maize / मक्का"],
+      "rabi": ["Wheat / गेहूं", "Mustard / सरसों", "Gram / चना", "Potato / आलू"],
+      "zaid": ["Moong / मूंग", "Vegetables / सब्ज़ियां"],
+      "note": "Alluvial sandy loam, canal + tubewell irrigated, mixed rice-sugarcane belt"
+    },
+    {
+      "zone": "Central-Western Plain",
+      "districts": ["Muzaffarnagar", "Shamli", "Meerut", "Baghpat", "Ghaziabad", "Gautam Buddha Nagar", "Hapur", "Bulandshahr"],
+      "kharif": ["Sugarcane / गन्ना", "Paddy / धान", "Bajra / बाजरा", "Maize (fodder) / मक्का"],
+      "rabi": ["Wheat / गेहूं", "Sugarcane (planted) / गन्ना", "Mustard / सरसों", "Potato / आलू"],
+      "zaid": ["Moong / मूंग", "Urad / उड़द", "Vegetables / सब्ज़ियां", "Fodder / चारा"],
+      "note": "Highest irrigation intensity in UP, classic sugarcane-wheat belt, close to NCR vegetable market"
+    },
+    {
+      "zone": "South-Western Semi-Arid Plain",
+      "districts": ["Agra", "Firozabad", "Mainpuri", "Etawah", "Aligarh", "Mathura", "Hathras", "Kasganj", "Etah"],
+      "kharif": ["Bajra / बाजरा", "Jowar / ज्वार", "Moong / मूंग", "Til / तिल", "Paddy (irrigated pockets) / धान"],
+      "rabi": ["Wheat / गेहूं", "Mustard / सरसों", "Gram / चना", "Barley / जौ", "Potato / आलू"],
+      "zaid": ["Moong / मूंग", "Vegetables + melons / सब्ज़ियां"],
+      "note": "Lower, less reliable rainfall (~75cm) - drought-tolerant Kharif crops outperform water-hungry paddy here"
+    },
+    {
+      "zone": "Central Plain",
+      "districts": ["Lucknow", "Unnao", "Raebareli", "Sitapur", "Hardoi", "Kanpur Nagar", "Kanpur Dehat", "Kannauj", "Farrukhabad", "Auraiya", "Fatehpur", "Prayagraj", "Kaushambi"],
+      "kharif": ["Paddy / धान", "Maize / मक्का", "Arhar / अरहर", "Urad / उड़द"],
+      "rabi": ["Wheat / गेहूं", "Gram / चना", "Lentil / मसूर", "Peas / मटर", "Mustard / सरसों"],
+      "zaid": ["Moong / मूंग", "Vegetables / सब्ज़ियां"],
+      "note": "Core Ganga-Yamuna doab, classic rice-wheat rotation, highest cropping intensity in the state"
+    },
+    {
+      "zone": "Bundelkhand",
+      "districts": ["Jhansi", "Lalitpur", "Jalaun", "Hamirpur", "Mahoba", "Chitrakoot", "Banda"],
+      "kharif": ["Bajra / बाजरा", "Jowar / ज्वार", "Til / तिल", "Groundnut / मूंगफली", "Moong / मूंग", "Urad / उड़द"],
+      "rabi": ["Gram / चना", "Wheat / गेहूं", "Lentil / मसूर", "Mustard / सरसों", "Peas / मटर"],
+      "zaid": ["Very limited - low irrigation cover (~25% vs 60% state average), most land left fallow"],
+      "note": "Drought-prone plateau, red-black rocky soil (local names: Rakar, Parwa, Kabar, Maar) - chana is the standout Rabi crop"
+    },
+    {
+      "zone": "North-Eastern Plain",
+      "districts": ["Gonda", "Gorakhpur", "Maharajganj", "Kushinagar", "Siddharthnagar", "Basti", "Sant Kabir Nagar", "Deoria"],
+      "kharif": ["Paddy / धान", "Sugarcane / गन्ना", "Maize / मक्का"],
+      "rabi": ["Wheat / गेहूं", "Lentil / मसूर", "Peas / मटर", "Mustard / सरसों"],
+      "zaid": ["Moong / मूंग", "Vegetables / सब्ज़ियां"],
+      "note": "High rainfall (100-130cm), flood-prone in monsoon, sandy alluvial soil - paddy and sugarcane dominate"
+    },
+    {
+      "zone": "Eastern Plain",
+      "districts": ["Barabanki", "Ayodhya", "Amethi", "Ambedkar Nagar", "Sultanpur", "Pratapgarh", "Jaunpur", "Azamgarh", "Mau", "Ballia", "Bhadohi", "Ghazipur", "Varanasi", "Chandauli"],
+      "kharif": ["Paddy / धान", "Maize / मक्का", "Arhar / अरहर"],
+      "rabi": ["Wheat / गेहूं", "Gram / चना", "Lentil / मसूर", "Mustard / सरसों", "Peas / मटर"],
+      "zaid": ["Moong / मूंग", "Vegetables / सब्ज़ियां"],
+      "note": "Dense rice-wheat belt along the Ganga; Pratapgarh/Amethi belt also notable for aonla and mentha (menthol mint)"
+    },
+    {
+      "zone": "Vindhyan",
+      "districts": ["Mirzapur", "Sonbhadra"],
+      "kharif": ["Paddy (lowland) / धान", "Jowar / ज्वार", "Til / तिल", "Groundnut / मूंगफली", "Kodo-Kutki (minor millets) / कोदो-कुटकी"],
+      "rabi": ["Wheat / गेहूं", "Gram / चना", "Lentil / मसूर", "Mustard / सरसों"],
+      "zaid": ["Very limited - rainfed plateau"],
+      "note": "Plateau-like terrain, red/stony/lateritic soil, ~40% forest cover - coarse cereals and pulses outperform paddy/wheat"
+    }
+  ],
+
+  "india_states": [
+    { "state": "Jammu & Kashmir", "kharif": ["Paddy / धान", "Maize / मक्का", "Moong / मूंग"], "rabi": ["Wheat / गेहूं", "Barley / जौ", "Mustard / सरसों"], "zaid": ["Very limited - short growing window"] },
+    { "state": "Ladakh", "kharif": ["Barley / जौ", "Peas / मटर"], "rabi": ["None - single short summer growing season only"], "zaid": [] },
+    { "state": "Himachal Pradesh", "kharif": ["Maize / मक्का", "Paddy (valleys) / धान"], "rabi": ["Wheat / गेहूं", "Barley / जौ", "Mustard / सरसों"], "zaid": ["Limited - apple/stone-fruit horticulture dominates farm income instead"] },
+    { "state": "Punjab", "kharif": ["Paddy / धान", "Cotton / कपास", "Maize / मक्का", "Sugarcane / गन्ना"], "rabi": ["Wheat / गेहूं", "Mustard / सरसों", "Gram / चना", "Potato / आलू"], "zaid": ["Moong / मूंग", "Fodder / चारा"] },
+    { "state": "Haryana", "kharif": ["Paddy / धान", "Cotton / कपास", "Bajra / बाजरा", "Sugarcane / गन्ना", "Maize / मक्का"], "rabi": ["Wheat / गेहूं", "Mustard / सरसों", "Gram / चना", "Barley / जौ"], "zaid": ["Moong / मूंग", "Vegetables / सब्ज़ियां"] },
+    { "state": "Uttarakhand", "kharif": ["Paddy / धान", "Maize / मक्का", "Soybean / सोयाबीन", "Ragi (hills) / मंडुआ"], "rabi": ["Wheat / गेहूं", "Mustard / सरसों", "Barley / जौ"], "zaid": ["Moong / मूंग", "Vegetables / सब्ज़ियां"] },
+    { "state": "Uttar Pradesh", "note": "See 'uttar_pradesh_zones' above for full 9-zone, 75-district detail" },
+    { "state": "Rajasthan", "kharif": ["Bajra / बाजरा", "Jowar / ज्वार", "Maize / मक्का", "Moong / मूंग", "Guar / ग्वार", "Groundnut / मूंगफली", "Cotton (Sriganganagar belt) / कपास", "Til / तिल"], "rabi": ["Wheat / गेहूं", "Mustard / सरसों", "Gram / चना", "Barley / जौ", "Isabgol / ईसबगोल"], "zaid": ["Moong (irrigated pockets) / मूंग", "Vegetables / सब्ज़ियां"], "note": "Semi-arid state - crop choice varies sharply between canal-irrigated (Sriganganagar/Hanumangarh) and rainfed tracts" },
+    { "state": "Gujarat", "kharif": ["Cotton / कपास", "Groundnut / मूंगफली", "Bajra / बाजरा", "Paddy (south Gujarat) / धान", "Soybean / सोयाबीन"], "rabi": ["Wheat / गेहूं", "Mustard / सरसों", "Gram / चना", "Cumin / जीरा", "Isabgol / ईसबगोल"], "zaid": ["Groundnut (summer) / मूंगफली", "Vegetables / सब्ज़ियां"] },
+    { "state": "Madhya Pradesh", "kharif": ["Soybean / सोयाबीन", "Paddy / धान", "Maize / मक्का", "Cotton / कपास", "Arhar / अरहर"], "rabi": ["Wheat / गेहूं", "Gram / चना", "Mustard / सरसों", "Lentil / मसूर"], "zaid": ["Moong / मूंग", "Urad / उड़द"], "note": "India's largest soybean and gram (chana) producer" },
+    { "state": "Chhattisgarh", "kharif": ["Paddy / धान", "Maize / मक्का", "Kodo-Kutki / कोदो-कुटकी"], "rabi": ["Wheat / गेहूं", "Gram / चना", "Lentil / मसूर"], "note": "Traditional rice bowl - Kharif paddy dominates; Rabi area stays small since most land is rainfed" },
+    { "state": "Maharashtra", "kharif": ["Cotton / कपास", "Soybean / सोयाबीन", "Jowar / ज्वार", "Bajra / बाजरा", "Sugarcane / गन्ना", "Paddy (Konkan/Vidarbha) / धान"], "rabi": ["Jowar (Rabi jowar) / ज्वार", "Wheat / गेहूं", "Gram / चना", "Sunflower / सूरजमुखी"], "zaid": ["Groundnut / मूंगफली", "Vegetables / सब्ज़ियां"], "note": "One of the few states where Rabi jowar (not just Kharif) is a major crop, especially in Marathwada" },
+    { "state": "Goa", "kharif": ["Paddy / धान"], "rabi": ["Vegetables (limited) / सब्ज़ियां"], "note": "Coconut, cashew and areca (perennial crops) matter more here than seasonal cropping" },
+    { "state": "Karnataka", "kharif": ["Paddy / धान", "Maize / मक्का", "Cotton / कपास", "Ragi / रागी", "Jowar / ज्वार", "Groundnut / मूंगफली"], "rabi": ["Jowar / ज्वार", "Gram / चना", "Sunflower / सूरजमुखी", "Wheat (limited) / गेहूं"], "zaid": ["Groundnut / मूंगफली", "Vegetables / सब्ज़ियां"] },
+    { "state": "Andhra Pradesh", "kharif": ["Paddy / धान", "Cotton / कपास", "Maize / मक्का", "Groundnut / मूंगफली"], "rabi": ["Paddy (irrigated delta) / धान", "Maize / मक्का", "Gram / चना", "Sunflower / सूरजमुखी"], "zaid": ["Groundnut / मूंगफली", "Vegetables / सब्ज़ियां"] },
+    { "state": "Telangana", "kharif": ["Paddy / धान", "Cotton / कपास", "Maize / मक्का", "Soybean / सोयाबीन"], "rabi": ["Paddy / धान", "Maize / मक्का", "Gram / चना", "Sunflower / सूरजमुखी"] },
+    { "state": "Tamil Nadu", "kharif": ["Paddy (Kuruvai) / धान", "Cotton / कपास", "Sugarcane / गन्ना", "Groundnut / मूंगफली", "Ragi / रागी", "Bajra/Cumbu / बाजरा"], "rabi": ["Paddy (Samba/Thaladi) / धान", "Pulses / दालें"], "zaid": ["Groundnut / मूंगफली", "Pulses / दालें"], "note": "Local season names (Kuruvai/Samba/Thaladi/Navarai) map roughly to Kharif/Rabi/Zaid but follow their own calendar" },
+    { "state": "Kerala", "kharif": ["Paddy / धान"], "rabi": ["Paddy (2nd crop) / धान"], "note": "Perennial plantation crops - coconut, rubber, pepper, cardamom, banana - matter far more than the Kharif/Rabi/Zaid cycle here" },
+    { "state": "West Bengal", "kharif": ["Paddy - Aus & Aman / धान", "Jute / जूट"], "rabi": ["Paddy - Boro / धान", "Wheat / गेहूं", "Potato / आलू", "Mustard / सरसों", "Lentil / मसूर"], "zaid": ["Vegetables / सब्ज़ियां", "Moong / मूंग"], "note": "Grows 3 paddy crops a year (Aus-Aman-Boro) - unusual nationally" },
+    { "state": "Odisha", "kharif": ["Paddy / धान", "Groundnut / मूंगफली", "Til / तिल"], "rabi": ["Moong / मूंग", "Urad / उड़द", "Lentil / मसूर", "Mustard / सरसों", "Vegetables / सब्ज़ियां"] },
+    { "state": "Jharkhand", "kharif": ["Paddy / धान", "Maize / मक्का"], "rabi": ["Wheat / गेहूं", "Lentil / मसूर", "Mustard / सरसों"], "note": "Mostly rainfed - Rabi area is much smaller than Kharif due to limited irrigation" },
+    { "state": "Bihar", "kharif": ["Paddy / धान", "Maize / मक्का", "Sugarcane / गन्ना"], "rabi": ["Wheat / गेहूं", "Gram / चना", "Lentil / मसूर", "Mustard / सरसों", "Maize (Rabi) / मक्का"], "zaid": ["Moong / मूंग", "Maize (spring) / मक्का", "Vegetables / सब्ज़ियां"], "note": "One of the few states where maize is a major crop in all three seasons (Kosi/Purnea belt especially)" },
+    { "state": "Assam", "kharif": ["Paddy - Sali/Ahu / धान", "Jute / जूट"], "rabi": ["Paddy - Boro / धान", "Mustard / सरसों", "Lentil / मसूर"], "note": "Tea is the dominant cash crop but it's a perennial plantation crop, not a seasonal one" },
+    { "state": "North-Eastern Hill States (Meghalaya, Manipur, Mizoram, Nagaland, Tripura, Sikkim, Arunachal Pradesh)", "kharif": ["Paddy / धान", "Maize / मक्का"], "rabi": ["Mustard / सरसों", "Wheat (limited) / गेहूं"], "note": "Jhum (shifting) cultivation common in hills; ginger, turmeric, orange and pineapple are important cash crops alongside grain" },
+    { "state": "Delhi / Chandigarh / Puducherry / Andaman & Nicobar / Lakshadweep", "note": "Minimal or highly localised agriculture (urban-adjacent vegetables, horticulture, or island cropping) - not broken out in detail here" }
+  ]
+}

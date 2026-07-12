@@ -288,10 +288,18 @@ body {
 }
 
 /* ─── Agriveda Enterprise Design System ─── */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 .av-page {
   min-height: 100vh;
   background: transparent;
   color: var(--foreground);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .av-card {
@@ -305,6 +313,12 @@ body {
 @media (min-width: 1024px) {
   .av-card {
     padding: 1.25rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .av-card {
+    padding: 0.875rem;
   }
 }
 

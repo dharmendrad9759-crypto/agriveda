@@ -1,0 +1,503 @@
+{
+  "crop_name": "Cucumber",
+  "crop_basics": {
+    "growth_stages": [
+      {
+        "stage": "Land preparation and bed preparation",
+        "typical_period": "7-10 days before sowing",
+        "field_practical_notes": "Prepare well-drained raised beds or ridges. Cucumber is sensitive to waterlogging. Incorporate well-decomposed FYM or compost at 20-25 tonnes per hectare. Ensure good drainage channels between beds. Select a sunny location with protection from strong winds."
+      },
+      {
+        "stage": "Seed selection and treatment",
+        "typical_period": "1-2 days before sowing",
+        "field_practical_notes": "Use certified hybrid or open-pollinated variety seed suitable for the season and local market. Treat seed with recommended fungicide to prevent damping-off. Soak seeds in water for 3-4 hours before sowing to improve germination uniformity."
+      },
+      {
+        "stage": "Germination",
+        "typical_period": "0-7 days after sowing (Day 0-7)",
+        "field_practical_notes": "Maintain consistent soil moisture without waterlogging. Light irrigation morning and evening if needed. Protect from heavy rain. Monitor for damping-off and root rot. Remove weak or diseased seedlings. Avoid walking on beds."
+      },
+      {
+        "stage": "Seedling establishment and first true leaves",
+        "typical_period": "7-15 days after sowing (Day 7-15)",
+        "field_practical_notes": "Thin to recommended spacing if direct-seeded (usually 45-60 cm between plants, 1.5-2 m between rows). Apply first light nitrogen dose. Monitor for aphids, whiteflies and damping-off. Provide light staking or support preparation if using trellising system."
+      },
+      {
+        "stage": "Vine development and vegetative growth",
+        "typical_period": "15-30 days after sowing (Day 15-30)",
+        "field_practical_notes": "Rapid vine and leaf expansion. Install trellis or support system if using vertical training. Apply second nitrogen and potassium dose. Monitor for cucumber beetles, aphids, powdery mildew and downy mildew. Light earthing-up around the base. Remove weeds carefully without damaging shallow roots."
+      },
+      {
+        "stage": "Pre-flowering and flowering initiation",
+        "typical_period": "30-40 days after sowing (Day 30-40)",
+        "field_practical_notes": "First flowers appear, usually male flowers first followed by female flowers. Ensure adequate bee pollination in open-pollinated types. Monitor fruit fly activity. Apply third fertilizer dose with emphasis on potassium for fruit quality. Check for early signs of viral diseases transmitted by aphids or whiteflies."
+      },
+      {
+        "stage": "Active flowering and fruit setting",
+        "typical_period": "40-50 days after sowing (Day 40-50)",
+        "field_practical_notes": "Peak flowering and fruit set. Maintain consistent soil moisture—fluctuations cause fruit bitterness and deformity. Monitor for fruit borers, fruit flies, powdery mildew, anthracnose and bacterial wilt. Remove misshapen or diseased fruits. Apply fourth fertilizer dose."
+      },
+      {
+        "stage": "First harvest and continuous fruiting",
+        "typical_period": "50-65 days after sowing (Day 50-65)",
+        "field_practical_notes": "Begin harvest when fruits reach market size (typically 15-20 cm for slicing types). Harvest every 2-3 days to maintain quality and encourage continued production. Monitor for fruit rot, blossom-end rot and pest damage. Apply fifth fertilizer dose to support continued fruiting."
+      },
+      {
+        "stage": "Peak harvest",
+        "typical_period": "65-80 days after sowing (Day 65-80)",
+        "field_practical_notes": "Maximum fruit production period. Harvest daily or every alternate day. Maintain strict pest and disease monitoring. Continue foliar sprays as needed respecting PHI. Remove overripe, damaged or diseased fruits. Apply sixth fertilizer dose if crop vigor remains good."
+      },
+      {
+        "stage": "Late harvest and decline",
+        "typical_period": "80-95 days after sowing (Day 80-95)",
+        "field_practical_notes": "Production begins to decline. Older leaves show senescence. Continue harvesting marketable fruits. Stop fertilizer application. Plan for crop termination and field cleanup. Monitor for secondary pest infestations moving from other declining crops."
+      },
+      {
+        "stage": "Final harvest and field sanitation",
+        "typical_period": "95-100 days after sowing (Day 95-100)",
+        "field_practical_notes": "Final harvest of remaining marketable fruits. Remove and destroy all crop residue to prevent pest and disease carryover. Do not compost diseased material. Clean and sanitize support structures. Prepare land for next crop rotation—avoid cucurbit family for at least one season."
+      }
+    ],
+    "fertilizer_schedule": {
+      "important_limitation": "Fertilizer recommendations vary with soil type, organic matter, soil test results, variety, season and irrigation method. Always base final doses on soil test and local State Agricultural University or Horticulture Department recommendations.",
+      "general_recommendation": "A common reference for cucumber under good management is approximately 100-120 kg N, 50-60 kg P2O5, and 50-60 kg K2O per hectare. Actual requirement depends on soil fertility and yield target.",
+      "basal_application": "Apply well-decomposed FYM or compost at 20-25 tonnes per hectare during land preparation. Apply full dose of phosphorus (as SSP or DAP) and 25% of nitrogen and potassium as basal before sowing or transplanting. Mix thoroughly in the planting zone.",
+      "fertigation_schedule": [
+        {
+          "day": "0-7",
+          "stage": "Germination",
+          "N_kg_per_acre": "0",
+          "P2O5_kg_per_acre": "Full basal dose already applied",
+          "K2O_kg_per_acre": "0",
+          "notes": "No additional fertilizer. Light irrigation only."
+        },
+        {
+          "day": "10-12",
+          "stage": "Seedling establishment",
+          "N_kg_per_acre": "4-5",
+          "P2O5_kg_per_acre": "0",
+          "K2O_kg_per_acre": "2-3",
+          "notes": "First top-dress or fertigation. Use water-soluble NPK 19:19:19 or urea + MOP. Light dose to avoid seedling burn."
+        },
+        {
+          "day": "20-22",
+          "stage": "Vegetative growth",
+          "N_kg_per_acre": "6-8",
+          "P2O5_kg_per_acre": "0",
+          "K2O_kg_per_acre": "4-5",
+          "notes": "Second top-dress. Encourage vigorous vine and leaf growth. Apply around plant base and irrigate immediately."
+        },
+        {
+          "day": "30-32",
+          "stage": "Pre-flowering",
+          "N_kg_per_acre": "6-8",
+          "P2O5_kg_per_acre": "0",
+          "K2O_kg_per_acre": "5-6",
+          "notes": "Third application. Increase potassium proportion for flower and fruit development. Can add micronutrient foliar spray (Zn, B, Ca)."
+        },
+        {
+          "day": "40-42",
+          "stage": "Flowering and fruit set",
+          "N_kg_per_acre": "5-6",
+          "P2O5_kg_per_acre": "0",
+          "K2O_kg_per_acre": "6-7",
+          "notes": "Fourth application. Potassium-rich feed supports fruit quality and disease resistance. Avoid excessive nitrogen which delays fruiting."
+        },
+        {
+          "day": "50-52",
+          "stage": "First harvest phase",
+          "N_kg_per_acre": "4-5",
+          "P2O5_kg_per_acre": "0",
+          "K2O_kg_per_acre": "5-6",
+          "notes": "Fifth application. Maintain balanced nutrition during harvest. Monitor for nutrient deficiency symptoms on leaves."
+        },
+        {
+          "day": "60-65",
+          "stage": "Peak fruiting",
+          "N_kg_per_acre": "4-5",
+          "P2O5_kg_per_acre": "0",
+          "K2O_kg_per_acre": "5-6",
+          "notes": "Sixth application. Continue potassium emphasis. Can add calcium nitrate if blossom-end rot is observed."
+        },
+        {
+          "day": "75-80",
+          "stage": "Late harvest",
+          "N_kg_per_acre": "2-3 (optional)",
+          "P2O5_kg_per_acre": "0",
+          "K2O_kg_per_acre": "3-4 (optional)",
+          "notes": "Final light dose only if crop vigor is good and harvest will continue beyond 90 days. Stop fertilizer if crop is declining."
+        }
+      ],
+      "foliar_nutrition": "Apply foliar spray of micronutrients (19:19:19 + micronutrient mix or specific Zn, B, Ca formulations) at 15-day intervals starting from 25 days after sowing. Spray early morning or late evening. Add 1-2 ml per liter of non-ionic surfactant for better absorption. Calcium and boron foliar sprays reduce blossom-end rot and improve fruit quality.",
+      "organic_inputs": "Use well-decomposed FYM, vermicompost, neem cake and bio-fertilizers (Azotobacter, Azospirillum, phosphate-solubilizing bacteria) as supplements. Their nutrient contribution should reduce mineral fertilizer requirement by approximately 25%.",
+      "field_checks": [
+        "Conduct soil test before crop for accurate nutrient planning.",
+        "Never apply fertilizer to dry soil; irrigate before or immediately after top-dressing.",
+        "Avoid touching foliage with concentrated fertilizer to prevent leaf burn.",
+        "Split applications maintain steady nutrient supply and reduce leaching.",
+        "Monitor leaf color and fruit quality; pale leaves and poor fruit set indicate nutrient imbalance.",
+        "Excessive nitrogen causes lush foliage, delayed flowering, soft growth susceptible to disease and bitter fruits."
+      ]
+    },
+    "irrigation_schedule": "Cucumber requires consistent soil moisture throughout the crop cycle. Critical stages are germination, flowering and fruiting. Use drip irrigation where available for water-use efficiency and disease reduction. Furrow irrigation should be light and frequent, avoiding waterlogging. Irrigate every 2-3 days during germination and seedling stage (light irrigation). During vegetative growth, irrigate every 3-4 days depending on soil type and weather. Increase frequency to every 2-3 days during flowering and fruiting—moisture stress causes bitter fruits, poor set and fruit drop. In drip systems, run daily or alternate days with shorter duration. Stop or reduce irrigation 2-3 days before each harvest to improve fruit firmness and shelf life. Avoid overhead irrigation during flowering and fruiting to reduce foliar disease pressure. Mulching with plastic or organic material conserves moisture and reduces weed competition.",
+    "harvest": "Harvest cucumber when fruits reach marketable size and uniform color, typically 50-65 days after sowing for early harvest and continuing until 95-100 days. For slicing types, harvest at 15-20 cm length; for pickling types, 8-12 cm. Harvest early morning when fruits are turgid and cool. Use a sharp knife or secateurs to cut the fruit with a short stalk; avoid pulling which damages vines. Harvest every 2-3 days during peak production to maintain fruit quality and encourage continuous flowering. Overripe fruits become seedy, bitter and yellow, reducing market value. Handle gently to avoid bruising. Wash, grade and pack in ventilated crates. Store in a cool shaded area; cucumber is highly perishable. Market within 24-48 hours for best quality, or store at 10-12°C with 90-95% relative humidity for up to 1 week.",
+    "faq": [
+      {
+        "question": "Why are my cucumber fruits bitter?",
+        "answer": "Bitterness results from irregular watering (moisture stress followed by heavy irrigation), high temperature stress, nutrient imbalance (especially excessive nitrogen or low potassium), genetic factors in some varieties, or pest and disease stress. Maintain consistent soil moisture and balanced fertilization."
+      },
+      {
+        "question": "What causes cucumber fruits to be deformed or curved?",
+        "answer": "Irregular watering, inadequate pollination, nutrient deficiency (especially boron or calcium), very high or low temperatures, pest damage (thrips, mites), or poor varietal genetics. Ensure good bee activity, consistent moisture and balanced micronutrients."
+      },
+      {
+        "question": "Should I remove male flowers to get more fruits?",
+        "answer": "No. Male flowers are essential for pollination in open-pollinated and hybrid varieties that require pollination. Remove only diseased or pest-infected flowers. In parthenocarpic (seedless) hybrids, fruit set occurs without pollination, but removing male flowers is unnecessary and may stress the plant."
+      },
+      {
+        "question": "Can I grow cucumber in the same field every season?",
+        "answer": "No. Continuous cucurbit cropping increases soil-borne diseases (Fusarium wilt, root rot), nematodes and pest carryover. Rotate with non-cucurbit crops (cereals, legumes, leafy vegetables) for at least one or two seasons."
+      },
+      {
+        "question": "Is daily harvesting necessary?",
+        "answer": "During peak production (60-80 days), harvest every 2 days or daily to maintain fruit quality, prevent overripening, encourage continuous fruiting and reduce pest and disease incidence in overripe fruits. Less frequent harvest reduces yield and quality."
+      }
+    ]
+  },
+  "pest_database": [
+    {
+      "pest_name": "Fruit fly, Bactrocera cucurbitae",
+      "identification": "Adult is a small brownish-orange fly with patterned wings and a pointed abdomen. Females puncture young fruit to lay eggs beneath the skin. Maggots are creamy white legless larvae feeding inside the fruit.",
+      "life_cycle": "Eggs are laid under the fruit skin. Larvae feed inside, then drop to soil to pupate. Adults emerge and can complete several generations per season. Pupae survive in soil and crop residue.",
+      "damage_symptoms": "Female oviposition punctures on young fruits, internal maggot feeding, fruit rot, oozing, premature fruit drop and unmarketable deformed fruits. Infested fruits cannot be salvaged.",
+      "crop_stage_attacked": "Flowering through harvest; young developing fruits are most vulnerable.",
+      "favorable_conditions": "Warm humid weather, nearby infested cucurbit crops, fallen infested fruits left in field, continuous cucurbit cultivation and absence of trap-based monitoring.",
+      "why_this_happened": "Carry-over from previous cucurbit crop, failure to collect fallen fruits daily, reliance on cover sprays alone without traps and bait, and peak fly activity coinciding with fruit set.",
+      "monitoring": "Install cue-lure pheromone traps at 8-10 per acre before flowering. Monitor trap catches weekly. Inspect young fruits for puncture marks and oozing. Do not treat based on adult sightings alone.",
+      "etl": "Trap-catch based; act on first sustained catches and before maggot damage appears in fruits. Numerical ETL varies by locality; follow ICAR-IIHR or State Horticulture Department guidance.",
+      "preventive": "Early sowing to escape peak fly pressure where locally recommended, trellising to keep fruit off ground, fruit bagging in high-value crops and destruction of previous crop residue.",
+      "cultural_control": "Collect and destroy fallen or infested fruits daily to break the life cycle. Deep summer ploughing exposes pupae. Remove wild cucurbit hosts on bunds. Harvest marketable fruits promptly.",
+      "biological_control": "Conserve Opius parasitoids where present. Poison-bait and trap systems are primary; biological control supplements but does not replace sanitation and baiting.",
+      "chemical_early_curative": {
+        "technical": "Poison bait: jaggery or molasses with Malathion 50% EC formulation carrying a current CIBRC cucurbit label claim",
+        "dose_per_acre": "Spot-spray approximately 50 bait spots per acre; exact concentration per approved label",
+        "irac_group": "1B",
+        "spray_water_volume": "Low-volume spot application on leaf undersides; not a full-field cover spray",
+        "spray_timing": "At first trap catches or early fruit set, before maggot infestation becomes widespread."
+      },
+      "chemical_hard_curative": {
+        "technical": "Spinosad 45% SC bait spray formulation with a current CIBRC label claim",
+        "dose_per_acre": "approximately 60 ml per acre as spot bait; verify exact label",
+        "irac_group": "5",
+        "spray_water_volume": "Spot bait application per label; not a substitute for daily fruit collection",
+        "spray_timing": "When trap catches remain high and bait programme needs supplementation; maintain PHI for continuous harvest."
+      },
+      "next_spray_logic": "Reassess trap catches and newly punctured fruits after the label interval. Continue daily collection of fallen fruits. Do not repeat the same IRAC group unnecessarily; cover sprays alone are unreliable.",
+      "resistance_management": "Rotate between bait tactics and approved cover sprays only when label permits. Do not rely on repeated organophosphate cover sprays. Integrate traps, bait, sanitation and crop residue destruction.",
+      "phi": "Product specific; critical for continuous harvest. Verify current CIBRC label before every picking cycle.",
+      "rei": "Product specific; follow label. Keep workers out until bait deposits are dry or the label interval has passed.",
+      "compatibility_notes": "Do not mix poison bait with alkaline products. Cover sprays supplement but do not replace traps and bait. Avoid spraying during peak bee activity on open-pollinated types.",
+      "safety_notes": "Wear gloves and face protection when preparing poison bait. Keep bait away from bee hives, fish ponds and livestock feed areas. Follow label disposal instructions.",
+      "farmer_tip": "A fallen infested fruit can produce dozens of new flies. Daily collection is more effective than any spray applied after maggots are already inside fruits.",
+      "common_mistakes": "Relying on cover sprays alone, leaving fallen fruits in the field, spraying without traps, ignoring PHI during daily harvest and treating punctured fruits as if they can recover.",
+      "references": [
+        "ICAR-Indian Institute of Horticultural Research cucurbit IPM guidance.",
+        "Directorate of Plant Protection, Quarantine and Storage, CIBRC current List of Major Uses of Insecticides.",
+        "State Horticulture Department cucurbit fruit-fly package of practices."
+      ],
+      "confidence_level": "High for identification, sanitation and trap-bait IPM; medium for exact dose because formulation and label claims must be verified."
+    },
+    {
+      "pest_name": "Aphids, Aphis gossypii",
+      "identification": "Small soft-bodied insects, usually greenish to black, clustered on undersides of young leaves and growing tips. They produce honeydew and may be attended by ants.",
+      "life_cycle": "Females reproduce rapidly without mating in favourable conditions. Nymphs moult through several instars. Populations can build within days under warm dry weather.",
+      "damage_symptoms": "Leaf curling, stunting, honeydew and sooty mould, reduced vigour and transmission of cucumber mosaic and other viral diseases. Virus-infected plants cannot be cured chemically.",
+      "crop_stage_attacked": "Seedling establishment through fruiting; young succulent growth is preferred.",
+      "favorable_conditions": "Warm dry weather, excessive nitrogen, absence of natural enemies, weed hosts and nearby virus-infected crops.",
+      "why_this_happened": "Rapid multiplication in favourable weather, destruction of predators through broad-spectrum sprays, high nitrogen canopy and virus carry-over from weeds or infected seedlings.",
+      "monitoring": "Inspect growing tips and leaf undersides twice weekly. Use yellow sticky traps as a monitoring aid. Rogue and destroy virus-symptom plants immediately.",
+      "etl": "Need-based; treat early when colonies are building and before virus spread. Follow local ICAR-IIHR or State Horticulture advisory.",
+      "preventive": "Use reflective or silver mulch where locally recommended, maintain balanced nitrogen, remove weed hosts and select tolerant hybrids where available.",
+      "cultural_control": "Remove weed hosts and rogue virus-infected plants. Avoid excessive nitrogen. In small plots, spray plants with a strong water jet to dislodge early colonies.",
+      "biological_control": "Conserve ladybird beetles, lacewings (Chrysoperla) and parasitoids. Avoid broad-spectrum insecticides that destroy natural enemies.",
+      "chemical_early_curative": {
+        "technical": "Thiamethoxam 25% WG formulation with a current CIBRC label claim for aphids in cucurbits",
+        "dose_per_acre": "approximately 40 g per acre; verify exact approved label",
+        "irac_group": "4A",
+        "spray_water_volume": "Use label-specified volume with coverage of growing tips and leaf undersides",
+        "spray_timing": "At first colony establishment, before heavy honeydew and virus spread."
+      },
+      "chemical_hard_curative": {
+        "technical": "Diafenthiuron 50% WP formulation with a current CIBRC label claim",
+        "dose_per_acre": "approximately 240 g per acre; verify exact approved label",
+        "irac_group": "12A",
+        "spray_water_volume": "Use label-specified volume",
+        "spray_timing": "When colonies persist above treatment threshold and virus risk remains high; rotate away from recent neonicotinoid use."
+      },
+      "next_spray_logic": "Reassess live colonies and predator abundance after the label interval. Remove virus plants rather than spraying them. Rotate IRAC groups if a second application is genuinely needed.",
+      "resistance_management": "Rotate 4A to 12A or 9D groups as per label. Do not use repeated neonicotinoid applications. Integrate reflective mulch and biological conservation.",
+      "phi": "Product specific; verify current label for continuous harvest crop.",
+      "rei": "Product specific; follow label.",
+      "compatibility_notes": "Avoid tank mixes with alkaline foliar nutrients unless label permits. Do not spray during peak bee foraging on open-pollinated types.",
+      "safety_notes": "Use label-required PPE. Prevent drift to neighbouring bee-attractive crops. Wash produce per standard practice after PHI.",
+      "farmer_tip": "If leaves show mosaic mottling, spraying aphids will not cure the virus. Remove the plant and control vectors in surrounding healthy plants.",
+      "common_mistakes": "Spraying virus-infected plants, repeated neonicotinoid use, ignoring natural enemies, excessive nitrogen and treating sticky traps alone as proof of damaging population.",
+      "references": [
+        "ICAR-IIHR vegetable IPM guidance.",
+        "CIBRC current List of Major Uses of Insecticides.",
+        "State Horticulture Department cucurbit virus-management advisory."
+      ],
+      "confidence_level": "High for identification and integrated management; medium for chemical dose pending label verification."
+    },
+    {
+      "pest_name": "Red pumpkin beetle, Aulacophora foveicollis",
+      "identification": "Adult beetle is orange-red, about 5-8 mm long, feeding on cotyledons and leaves. Grubs are white legless larvae feeding on roots and stems near soil surface.",
+      "life_cycle": "Adults emerge from soil and feed on seedlings. Eggs are laid in soil; grubs feed on roots and pupate in soil. Multiple generations possible per season.",
+      "damage_symptoms": "Adults skeletonize cotyledons and young leaves, often killing seedlings outright. Grubs damage roots and stems, causing wilting. Ground-touching fruits may be damaged.",
+      "crop_stage_attacked": "Germination through early vine growth; cotyledon stage is most vulnerable.",
+      "favorable_conditions": "Direct seeding without protection, sandy soils, previous cucurbit cultivation, warm weather at emergence and absence of seedling monitoring.",
+      "why_this_happened": "Beetles overwinter in soil and residue, emerge at seedling stage, and can destroy unprotected direct-seeded crops within days.",
+      "monitoring": "Count beetles on seedlings at emergence daily for the first two weeks. One to two beetles per seedling can cause economic damage at cotyledon stage.",
+      "etl": "Approximately 1-2 beetles per seedling at cotyledon stage; follow local ICAR-IIHR threshold.",
+      "preventive": "Raise seedlings under net cover and transplant healthy plants, use early sowing, and practice crop rotation with non-cucurbit crops.",
+      "cultural_control": "Handpick adults in early morning when less active. Dust wood ash on seedlings at cotyledon stage as a low-cost deterrent. Remove crop residue after harvest.",
+      "biological_control": "Limited field options; entomopathogenic fungi such as Metarhizium may be considered for grub management where locally validated.",
+      "chemical_early_curative": {
+        "technical": "Carbaryl 50% WP formulation with a current CIBRC label claim",
+        "dose_per_acre": "approximately 600 g per acre; verify exact approved label",
+        "irac_group": "1A",
+        "spray_water_volume": "Use label-specified volume targeting seedlings and base of plants",
+        "spray_timing": "At cotyledon stage when 1-2 beetles per seedling are observed."
+      },
+      "chemical_hard_curative": {
+        "technical": "Thiamethoxam 25% WG formulation with a current CIBRC label claim",
+        "dose_per_acre": "approximately 40 g per acre; verify exact approved label",
+        "irac_group": "4A",
+        "spray_water_volume": "Use label-specified volume",
+        "spray_timing": "Under heavy adult pressure when carbamate treatment has been used and rotation is needed; not for routine prophylactic use."
+      },
+      "next_spray_logic": "Recount beetles after the label interval. Seedling stage protection is critical; late sprays cannot restore killed cotyledons. Rotate IRAC groups if second treatment is justified.",
+      "resistance_management": "Rotate 1A/1B to 4A groups. Do not use the same mode of action across consecutive generations. Combine chemical protection with net-raised seedlings where feasible.",
+      "phi": "Product specific; verify label.",
+      "rei": "Product specific; follow label.",
+      "compatibility_notes": "Seedling-stage applications require careful calibration to avoid phytotoxicity. Do not mix with unverified products.",
+      "safety_notes": "Wear gloves and mask during application. Keep pesticides away from water bodies. Follow label restrictions on bee activity.",
+      "farmer_tip": "The first week after emergence is the danger window. Inspect seedlings every morning before beetles hide in soil.",
+      "common_mistakes": "Discovering damage only after cotyledons are eaten, using transplant seedlings without checking beetles in field, repeated carbamate use and ignoring soil-borne grub damage.",
+      "references": [
+        "ICAR-IIHR cucurbit pest-management guidance.",
+        "CIBRC current List of Major Uses of Insecticides.",
+        "State Agricultural University cucurbit package of practices."
+      ],
+      "confidence_level": "High for seedling-stage damage and monitoring; medium for chemical dose pending label verification."
+    }
+  ],
+  "disease_database": [
+    {
+      "pest_name": "Downy mildew, Pseudoperonospora cubensis",
+      "identification": "Angular yellow to pale green patches on upper leaf surface bounded by veins. Underside shows purplish-grey downy fungal growth in humid conditions.",
+      "life_cycle": "Oospores survive in crop residue. Sporangiophores produce sporangia spread by wind and splashing water. Infection cycles rapidly under cool humid nights and warm days.",
+      "damage_symptoms": "Angular leaf lesions, defoliation, reduced photosynthesis, sunscald on exposed fruits and premature vine decline. Severe epidemics can destroy the crop within days.",
+      "crop_stage_attacked": "Vegetative growth through fruiting; all leaf stages susceptible.",
+      "favorable_conditions": "High humidity, leaf wetness, cool nights, dense canopy, overhead irrigation and susceptible varieties.",
+      "why_this_happened": "Inoculum from previous cucurbit crop or nearby fields combined with prolonged leaf wetness and dense planting without preventive fungicide programme.",
+      "monitoring": "Scout leaf undersides twice weekly from 20 days after sowing. Act at first lesion; disease spreads rapidly. Distinguish from powdery mildew and nutrient disorders.",
+      "etl": "Risk and symptom based; treat at first confirmed lesions or when local advisory issues a high-risk warning.",
+      "preventive": "Use tolerant hybrids, trellising for airflow, drip irrigation, wider spacing and destruction of previous crop residue.",
+      "cultural_control": "Avoid overhead irrigation during disease-prone periods. Remove heavily infected lower leaves where practical. Rotate with non-cucurbit crops.",
+      "biological_control": "Pseudomonas fluorescens or Trichoderma-based products may be used as supplements where officially recommended; they do not replace timely fungicide at epidemic onset.",
+      "chemical_early_curative": {
+        "technical": "Mancozeb 75% WP formulation with a current CIBRC label claim",
+        "dose_per_acre": "approximately 500 g per acre with sticker; verify exact label",
+        "frac_group": "M3",
+        "spray_water_volume": "Use label-specified volume for thorough leaf coverage including undersides",
+        "spray_timing": "At first symptoms or preventive spray before humid weather period."
+      },
+      "chemical_hard_curative": {
+        "technical": "Cymoxanil 8% + Mancozeb 64% WP or Dimethomorph 50% WP formulation with current CIBRC label claim",
+        "dose_per_acre": "approximately 600 g or 400 g per acre respectively; verify exact label",
+        "frac_group": "27+M3 or 40",
+        "spray_water_volume": "Use label-specified volume",
+        "spray_timing": "When disease is spreading beyond first lesions; rotate FRAC groups from preventive programme."
+      },
+      "next_spray_logic": "Reassess lesion spread after label interval. Alternate FRAC groups (M3, 27+M3, 40). Stop overhead irrigation. Remove dead leaves to improve airflow.",
+      "resistance_management": "Rotate Mancozeb with cymoxanil, dimethomorph or metalaxyl combinations. Do not use the same FRAC group repeatedly in one season.",
+      "phi": "Product specific; observe for continuous harvest.",
+      "rei": "Product specific; follow label.",
+      "compatibility_notes": "Add non-ionic sticker for underside coverage. Avoid alkaline tank mixes unless label permits.",
+      "safety_notes": "Wear mask and gloves. Prevent drift to sensitive crops. Follow label re-entry and harvest intervals.",
+      "farmer_tip": "Check the underside of leaves at the first yellow angular patch on top. By the time half the field shows symptoms, control is much harder.",
+      "common_mistakes": "Waiting until defoliation begins, spraying only leaf tops, overhead irrigation during epidemic, using one fungicide repeatedly and confusing with powdery mildew.",
+      "references": [
+        "ICAR-IIHR cucurbit disease-management guidance.",
+        "CIBRC current List of Major Uses of Fungicides.",
+        "State Horticulture Department downy mildew advisory."
+      ],
+      "confidence_level": "High for identification and management principles; medium for exact dose pending label verification."
+    },
+    {
+      "pest_name": "Powdery mildew, Podosphaera xanthii",
+      "identification": "White powdery fungal growth on both leaf surfaces, petioles and stems. Older infections cause leaf yellowing and premature drying.",
+      "life_cycle": "Conidia spread by wind. The fungus grows on leaf surface without requiring free water. Rapid build-up occurs in warm dry days with moderate night humidity.",
+      "damage_symptoms": "White powdery patches, leaf senescence, reduced fruit size and quality, and premature vine death in severe cases.",
+      "crop_stage_attacked": "Mid vegetative growth through late fruiting.",
+      "favorable_conditions": "Warm dry days, moderate humidity, dense canopy, shaded areas and susceptible varieties.",
+      "why_this_happened": "Dry weather favouring powdery mildew combined with dense planting, poor airflow and absence of early protective spray.",
+      "monitoring": "Scout upper leaves weekly from 25 days after sowing. Treat at first small white patches before whole leaves are covered.",
+      "etl": "Symptom based; treat at first visible colonies on leaves.",
+      "preventive": "Use tolerant hybrids, trellising, adequate spacing and balanced nutrition.",
+      "cultural_control": "Remove heavily infected leaves. Improve airflow through trellising and pruning of dense lower canopy where practical.",
+      "biological_control": "Ampelomyces quisqualis or Bacillus subtilis-based products may supplement management where locally available and recommended.",
+      "chemical_early_curative": {
+        "technical": "Wettable sulphur 80% WG formulation with a current CIBRC label claim",
+        "dose_per_acre": "approximately 500 g per acre; verify exact label",
+        "frac_group": "M2",
+        "spray_water_volume": "Use label-specified volume",
+        "spray_timing": "At first powdery patches; avoid application on very hot sunny days on sensitive varieties."
+      },
+      "chemical_hard_curative": {
+        "technical": "Azoxystrobin 23% SC or Hexaconazole 5% EC formulation with current CIBRC label claim",
+        "dose_per_acre": "approximately 200 ml or 400 ml per acre respectively; verify exact label",
+        "frac_group": "11 or 3",
+        "spray_water_volume": "Use label-specified volume",
+        "spray_timing": "When sulphur preventive programme is insufficient; rotate FRAC groups."
+      },
+      "next_spray_logic": "Reassess colony coverage after label interval. Alternate M2, 11 and 3 groups. Limit Group 11 applications per season as per label.",
+      "resistance_management": "Rotate sulphur, triazoles and strobilurins. Do not repeat Group 11 excessively.",
+      "phi": "Product specific; verify label for harvest crop.",
+      "rei": "Product specific; follow label.",
+      "compatibility_notes": "Sulphur should not be mixed with oils or applied at high temperature on sensitive cucurbits. Check jar test before mixing.",
+      "safety_notes": "Wear respiratory protection when applying sulphur dust or WP. Follow label heat and timing restrictions.",
+      "farmer_tip": "Powdery mildew can spread without rain. A dry spell does not mean disease risk is low.",
+      "common_mistakes": "Confusing with downy mildew, applying sulphur on hot afternoons, overusing Group 11 and treating only visible tops while ignoring stems.",
+      "references": [
+        "ICAR-IIHR cucurbit disease-management guidance.",
+        "CIBRC current List of Major Uses of Fungicides.",
+        "State Horticulture Department powdery mildew advisory."
+      ],
+      "confidence_level": "High for identification and FRAC rotation principles; medium for dose pending label verification."
+    },
+    {
+      "pest_name": "Anthracnose, Colletotrichum orbiculare",
+      "identification": "Small water-soaked spots on leaves, stems and fruits enlarging to tan or brown sunken lesions with dark margins. Fruit lesions may contain pinkish spore masses in humid weather.",
+      "life_cycle": "Fungus survives on infected seed, residue and weeds. Conidia spread by rain splash, irrigation water, tools and worker contact.",
+      "damage_symptoms": "Leaf spotting and blight, stem cankers, fruit rot and reduced marketability. Severe infection causes defoliation and vine collapse.",
+      "crop_stage_attacked": "Seedling through harvest; fruits are economically critical.",
+      "favorable_conditions": "Warm humid weather, rain splash, overhead irrigation, dense canopy and infected seed or residue.",
+      "why_this_happened": "Infected seed or crop residue, rain splash dispersal, overhead irrigation and lack of preventive fungicide during humid periods.",
+      "monitoring": "Inspect leaves, stems and fruits twice weekly during humid weather. Look for water-soaked spots on young fruits.",
+      "etl": "Symptom and risk based; treat at first lesions or preventively before rainy periods.",
+      "preventive": "Use certified disease-free seed, tolerant hybrids, trellising, drip irrigation and crop rotation.",
+      "cultural_control": "Avoid overhead irrigation. Remove infected plant debris. Disinfect stakes and trellis materials between seasons.",
+      "biological_control": "Trichoderma or Pseudomonas seed treatment and soil application may supplement where officially recommended.",
+      "chemical_early_curative": {
+        "technical": "Mancozeb 75% WP formulation with a current CIBRC label claim",
+        "dose_per_acre": "approximately 500 g per acre; verify exact label",
+        "frac_group": "M3",
+        "spray_water_volume": "Use label-specified volume covering leaves, stems and developing fruits",
+        "spray_timing": "Preventive or at first leaf or fruit spots."
+      },
+      "chemical_hard_curative": {
+        "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC formulation with current CIBRC label claim",
+        "dose_per_acre": "approximately 200 ml per acre; verify exact label",
+        "frac_group": "11+3",
+        "spray_water_volume": "Use label-specified volume",
+        "spray_timing": "When lesions are spreading on leaves, stems or fruits; rotate from Mancozeb programme."
+      },
+      "next_spray_logic": "Reassess new lesions after label interval. Alternate M3 with 11+3 combinations. Remove severely infected fruits.",
+      "resistance_management": "Rotate contact and systemic fungicides. Limit strobilurin and triazole exposure per season.",
+      "phi": "Product specific; critical for continuous harvest.",
+      "rei": "Product specific; follow label.",
+      "compatibility_notes": "Ensure fruit and stem coverage, not leaves alone. Avoid unverified tank mixes during fruiting.",
+      "safety_notes": "Observe PHI strictly. Wear PPE. Do not harvest fruits before label-permitted interval.",
+      "farmer_tip": "Fruit spots at harvest mean infection started weeks earlier on leaves or stems. Scout the whole vine, not only marketable fruits.",
+      "common_mistakes": "Using infected seed, ignoring stem lesions, spraying only leaves while fruits are unprotected and harvesting within PHI.",
+      "references": [
+        "ICAR-IIHR cucurbit disease-management guidance.",
+        "CIBRC current List of Major Uses of Fungicides.",
+        "State Horticulture Department anthracnose advisory."
+      ],
+      "confidence_level": "High for identification and integrated management; medium for dose pending label verification."
+    }
+  ],
+  "nutrient_deficiency": [
+    {
+      "nutrient": "Nitrogen",
+      "symptoms": "Older leaves become pale green to yellow, progressing upward from the base of the vine. Plants are stunted with weak vines, fewer flowers and small pale fruits.",
+      "why_happens": "Insufficient nitrogen application, leaching on sandy soils, imbalance with excessive potassium without nitrogen correction, or poor root function from waterlogging.",
+      "how_to_fix": "Confirm yellowing begins on older leaves. Apply light split doses of nitrogen through fertigation or top-dressing and correct waterlogging. Avoid excess nitrogen during heavy fruiting.",
+      "fertilizer_recommendation": "Urea, calcium ammonium nitrate or water-soluble 19:19:19 through drip as per fertigation schedule.",
+      "dose_per_acre": "Split doses of 4-8 kg N per acre per application during vegetative and early fruiting stages; adjust per soil test and state recommendation."
+    },
+    {
+      "nutrient": "Phosphorus",
+      "symptoms": "Dark green to dull leaves, stunted plants, delayed flowering and poor root development. Older leaves may show purplish tint under cool conditions.",
+      "why_happens": "Low soil phosphorus, failure to apply basal phosphorus, cold soil limiting uptake, or high pH soils fixing phosphorus.",
+      "how_to_fix": "Apply basal phosphorus before sowing or transplanting. Late correction is less effective; foliar phosphorus has limited benefit in field cucumber.",
+      "fertilizer_recommendation": "DAP or single super phosphate applied basally during land preparation.",
+      "dose_per_acre": "Full basal P2O5 dose per soil test, typically applied once before planting; verify state recommendation."
+    },
+    {
+      "nutrient": "Potassium",
+      "symptoms": "Older leaf margins scorch and brown, weak vines, misshapen fruits with narrow stem end, bitter fruits under stress and poor disease tolerance.",
+      "why_happens": "Heavy fruit removal depleting potassium, inadequate K in fertigation, high nitrogen without matching potassium, or sandy leaching soils.",
+      "how_to_fix": "Increase potassium proportion during flowering and fruiting. Use muriate of potash or potassium nitrate through fertigation. Maintain consistent moisture.",
+      "fertilizer_recommendation": "MOP (muriate of potash) or potassium nitrate through drip fertigation.",
+      "dose_per_acre": "4-7 kg K2O per acre per split during pre-flowering through peak fruiting; adjust per soil test."
+    },
+    {
+      "nutrient": "Calcium",
+      "symptoms": "Blossom-end rot on fruits, tip-burn of young leaves, distorted new growth and fruit cracking under moisture fluctuation.",
+      "why_happens": "Low calcium availability, irregular irrigation, high nitrogen or potassium competing with calcium uptake, or bicarbonate-rich irrigation water.",
+      "how_to_fix": "Maintain consistent soil moisture. Apply calcium nitrate through fertigation or foliar calcium sprays. Correct wide irrigation swings.",
+      "fertilizer_recommendation": "Calcium nitrate fertigation or foliar calcium chloride or calcium nitrate spray.",
+      "dose_per_acre": "Fertigation or foliar per label; commonly 2-5 kg calcium nitrate per acre per week during fruiting where deficiency is confirmed."
+    },
+    {
+      "nutrient": "Boron",
+      "symptoms": "Brittle young leaves, flower drop, misshapen and crooked fruits, hollow or cracked stems and poor fruit set.",
+      "why_happens": "Low boron in sandy soils, high pH, drought stress, or omission of micronutrient programme during flowering and fruiting.",
+      "how_to_fix": "Apply boron foliar spray at flowering and early fruiting. Avoid excess boron which is toxic. Confirm with soil or tissue test where possible.",
+      "fertilizer_recommendation": "Borax or solubor foliar spray; may combine with SOP foliar during flowering.",
+      "dose_per_acre": "Foliar borax approximately 200-400 g per acre equivalent or per label; never exceed recommended concentration."
+    },
+    {
+      "nutrient": "Magnesium",
+      "symptoms": "Interveinal chlorosis on older leaves with green veins, common in heavy-fruiting fertigated vines receiving high potassium.",
+      "why_happens": "High potassium fertilization without magnesium supplement, sandy soils, or omission from fertigation programme.",
+      "how_to_fix": "Include magnesium sulphate in fertigation or foliar programme, especially during peak fruiting on drip-irrigated crops.",
+      "fertilizer_recommendation": "Magnesium sulphate (Epsom salt) through drip or foliar spray.",
+      "dose_per_acre": "Approximately 5-10 kg magnesium sulphate per acre per application during fruiting; adjust per deficiency severity."
+    }
+  ],
+  "weed_database": [
+    {
+      "weed_name": "Mixed weed flora in cucumber, Echinochloa, Digitaria, Cyperus, Amaranthus and Commelina",
+      "weed_type": "Mixed annual grasses, sedges and broadleaf weeds",
+      "identification": "Grasses such as barnyard grass (Echinochloa) and crabgrass (Digitaria) have parallel-veined leaves. Sedges (Cyperus) have triangular stems. Broadleaf weeds such as Amaranthus and Commelina have net-veined leaves and rapid early growth.",
+      "critical_competition_period": "First 25-45 days after sowing until vines cover the bed or mulch.",
+      "why_problem_occurs": "Weed seed bank in soil, contaminated irrigation water, absence of mulch, delayed hand weeding and reliance on a single herbicide without identifying weed type.",
+      "preventive": "Use clean seed, black plastic mulch on raised beds, stale seedbed where suitable and pre-emergence herbicide on planting rows.",
+      "cultural_control": "Plastic mulch is the most effective practice for cucumber—controls weeds, conserves moisture and keeps fruits clean. Trellising and hand weeding in furrows supplement mulch.",
+      "biological_control": "No dependable universal biological weed control is recommended for commercial cucumber fields.",
+      "chemical_management": {
+        "pre_emergence": "Pendimethalin 30% EC formulation with a current CIBRC label claim for cucurbit crops on moist soil within 0-3 days after sowing.",
+        "early_post_emergence": "Quizalofop-ethyl 5% EC directed spray between rows for grass control only, avoiding contact with cucumber foliage.",
+        "late_post_emergence": "Hand weeding or directed grass herbicide only; broadleaf weeds in crop row require hand removal once vines are established.",
+        "dose_per_acre": "Pendimethalin approximately 1 L per acre pre-emergence; quizalofop-ethyl approximately 400 ml per acre directed; verify exact label",
+        "application_timing": "Pre-emergence on moist soil along planting rows immediately after sowing. Post-emergence directed grass spray at 2-4 leaf weed stage in furrows only.",
+        "hrac_group": "Pendimethalin: Group 3; quizalofop-ethyl: Group 1"
+      },
+      "resistance_management": "Rotate herbicide groups across seasons, use mulch to reduce herbicide dependence and prevent seed set from surviving weeds.",
+      "safety_and_compatibility": "Do not allow quizalofop or pendimethalin to contact cucumber leaves. Calibrate sprayer for directed application. Do not mix herbicides with insecticides unless label permits.",
+      "farmer_tip": "Black plastic mulch on raised beds often saves more labour and improves fruit quality than repeated herbicide sprays alone.",
+      "references": [
+        "ICAR-Directorate of Weed Research vegetable weed-management guidance.",
+        "ICAR-IIHR cucumber production package.",
+        "CIBRC current List of Major Uses of Herbicides.",
+        "State Horticulture Department cucumber package of practices."
+      ],
+      "confidence_level": "High for critical weed period and mulch recommendation; exact herbicide dose is label dependent."
+    }
+  ]
+}

@@ -2,220 +2,177 @@
 
 import AppLink from "@/components/ui/AppLink";
 import {
+  MapPin,
+  Plus,
   Sprout,
-  Calendar,
-  Leaf,
-  Bell,
-  CloudSun,
-  Brain,
-  Stethoscope,
-  Bug,
-  FlaskConical,
-  IndianRupee,
-  LineChart,
-  MessageCircle,
-  Heart,
-  type LucideIcon,
 } from "lucide-react";
 import DarkCard from "@/components/shell/DarkCard";
-import StatCard from "@/components/shell/StatCard";
-import PageHero from "@/components/shell/PageHero";
 import SectionHeader from "@/components/shell/SectionHeader";
 import { DonutChart } from "@/components/shell/charts";
-import { ShellCtaBanner } from "@/components/shell/AppShell";
-import DashboardWeatherCard from "@/components/dashboard/DashboardWeatherCard";
+import DashboardWeatherHero from "@/components/dashboard/DashboardWeatherHero";
+import DashboardCropCalendar from "@/components/dashboard/DashboardCropCalendar";
 import DashboardMandiWidget from "@/components/dashboard/DashboardMandiWidget";
+import DashboardPestAlerts from "@/components/dashboard/DashboardPestAlerts";
+import DashboardAiRecommendations from "@/components/dashboard/DashboardAiRecommendations";
+import { QuickActionIcon } from "@/components/services/SpriteQuickIcon";
 import { AV } from "@/lib/design/tokens";
-import {
-  EXPERT_TIP,
-  CROP_HEALTH_SEGMENTS,
-  COMMUNITY_POST,
-} from "@/data/mock/dashboard";
-import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
-import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { CROP_HEALTH_SEGMENTS } from "@/data/mock/dashboard";
 import { useFarmData } from "@/hooks/useFarmData";
-import { useMyCrops } from "@/hooks/useMyCrops";
 
-const QUICK_ACTIONS: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: "Crop Calendar", href: "/crop-calendar", icon: Calendar },
-  { label: "Field Advisor", href: "/field-advisor", icon: Brain },
-  { label: "AI Doctor", href: "/ai-doctor", icon: Stethoscope },
-  { label: "Pest Check", href: "/pest-diseases", icon: Bug },
-  { label: "Disease Check", href: "/pest-diseases", icon: Bug },
-  { label: "Weather", href: "/weather", icon: CloudSun },
-  { label: "Fertilizer", href: "/services/fertilizer-calculator", icon: FlaskConical },
-  { label: "Mandi Prices", href: "/mandi", icon: IndianRupee },
-  { label: "Market Trends", href: "/market-trends", icon: LineChart },
+const QUICK_ACTIONS: {
+  label: string;
+  href: string;
+  col?: number;
+  row?: number;
+  lucide?: typeof Plus;
+  imageSrc?: string;
+}[] = [
+  { label: "AI Doctor", href: "/ai-doctor", imageSrc: "/images/icons/ai-doctor.png" },
+  { label: "Add Field", href: "/my-farm", lucide: Plus },
+  { label: "Crop Planner", href: "/crop-calendar", col: 1, row: 0 },
+  { label: "Pest Scanner", href: "/pest-diseases", col: 3, row: 0 },
+  { label: "Fertilizer Calc", href: "/services/fertilizer-calculator", col: 2, row: 0 },
+  { label: "Market Prices", href: "/mandi", col: 5, row: 0 },
+  { label: "Weather", href: "/weather", col: 0, row: 1 },
 ];
 
-export default function DesktopDashboard({ embedded = false }: { embedded?: boolean }) {
-  const { profile } = useFarmerProfile();
-  const { data: farm, stats: farmStats } = useFarmData();
-  const { crops: myCrops } = useMyCrops();
-  const dashboardAlerts = useDashboardAlerts(4);
-  const name = profile.name.trim() || "Kisan";
+const AGRI_NEWS = [
+  {
+    title: "Heatwave alert in Uttar Pradesh",
+    time: "2 hours ago",
+    image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=120&h=80&fit=crop",
+  },
+  {
+    title: "Increase in Tomato Prices",
+    time: "5 hours ago",
+    image: "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=120&h=80&fit=crop",
+  },
+  {
+    title: "New IPM advisory for paddy stem borer",
+    time: "1 day ago",
+    image: "https://images.unsplash.com/photo-1536304575081-ff8c827fd69f?w=120&h=80&fit=crop",
+  },
+];
 
-  const activeCropCount = myCrops.length > 0 ? myCrops.length : farmStats.cropsGrowing;
-  const healthLabel = farmStats.healthScore >= 80 ? "Good" : farmStats.healthScore >= 65 ? "Average" : "Watch";
+export default function DesktopDashboard({ embedded: _embedded }: { embedded?: boolean } = {}) {
+  const { data: farm, stats: farmStats } = useFarmData();
+  const healthLabel = farmStats.healthScore >= 80 ? "Very Good" : farmStats.healthScore >= 65 ? "Good" : "Watch";
 
   return (
-    <div className={AV.sectionGap}>
-      {!embedded && (
-        <PageHero
-          title={`Namaste, ${name}`}
-          subtitle="Aaj ka farm overview — weather, alerts, mandi aur tasks ek jagah."
-          badge="Farm Dashboard"
-          icon={Sprout}
-          action={{ label: "Field Advisor", href: "/field-advisor" }}
-        />
-      )}
-
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        <StatCard icon={Sprout} label="Active Crops" value={`${activeCropCount} in field`} action={{ label: "View Details", href: "/my-farm" }} delay={0} />
-        <StatCard icon={Calendar} label="Upcoming Tasks" value={`${farm.activities.length} next 7 days`} action={{ label: "View Calendar", href: "/crop-calendar" }} delay={1} />
-        <StatCard icon={Leaf} label="Field Health" value={`${farmStats.healthScore}% ${healthLabel}`} action={{ label: "View Report", href: "/my-farm" }} delay={2} />
-        <StatCard icon={Bell} label="Alerts" value={`${dashboardAlerts.length} active`} action={{ label: "View All", href: "/alerts" }} delay={3} />
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-12">
-        <DashboardWeatherCard />
-
-        <DarkCard hover className="xl:col-span-4" delay={2}>
-          <SectionHeader title="Quick Actions" />
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            {QUICK_ACTIONS.map((a) => {
-              const Icon = a.icon;
-              return (
-                <AppLink
-                  key={a.href + a.label}
-                  href={a.href}
-                  className="av-card-inset flex flex-col items-center gap-1.5 p-2 text-center transition hover:border-[var(--av-accent)]/40"
-                >
-                  <Icon className="h-4 w-4 text-[var(--av-accent)]" />
-                  <span className="text-[9px] font-semibold leading-tight text-[var(--av-text-secondary)]">{a.label}</span>
-                </AppLink>
-              );
-            })}
-          </div>
-          <AppLink href="/crop-calendar" className={`mt-3 inline-flex ${AV.btnPrimarySm}`}>
-            + Add Activity
-          </AppLink>
-        </DarkCard>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        <DarkCard hover delay={1}>
-          <SectionHeader title="My Fields" action={{ label: "View All", href: "/my-farm" }} />
-          <ul className="mt-3 space-y-2">
-            {farm.fields.slice(0, 4).map((f) => (
-              <li key={f.id} className="av-card-inset flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold text-[var(--av-text-primary)]">{f.name}</p>
-                  <p className={AV.micro}>
-                    {f.crop} · {f.stage}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span
-                    className={`text-[10px] font-bold ${f.health >= 75 ? "text-[var(--av-accent)]" : "text-amber-600"}`}
-                  >
-                    {f.health >= 75 ? "Good" : "Average"}
-                  </span>
-                  <p className="text-xs font-bold text-[var(--av-accent)]">{f.health}%</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </DarkCard>
-
-        <DarkCard hover delay={2}>
-          <SectionHeader title="Important Alerts" action={{ label: "View All", href: "/alerts" }} />
-          <ul className="mt-3 space-y-2">
-            {dashboardAlerts.length === 0 ? (
-              <li className="av-card-inset text-center">
-                <p className={AV.micro}>No active alerts — all good ✓</p>
-              </li>
-            ) : (
-              dashboardAlerts.map((a) => (
-                <li key={a.id} className="av-card-inset">
-                  <AppLink href={a.actionHref ?? "/alerts"} className="block">
-                    <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.title}</p>
-                    <p className={`mt-0.5 line-clamp-2 ${AV.micro}`}>{a.body}</p>
-                    {a.actionLabel && (
-                      <p className="mt-1 text-[10px] font-bold text-[var(--av-accent)]">{a.actionLabel} →</p>
-                    )}
-                  </AppLink>
-                </li>
-              ))
-            )}
-          </ul>
-        </DarkCard>
-
-        <DarkCard hover delay={3}>
-          <SectionHeader title="Tasks Due" action={{ label: "Calendar", href: "/crop-calendar" }} />
-          <ul className="mt-3 space-y-2">
-            {farm.activities.slice(0, 4).map((a) => (
-              <li key={a.id} className="av-card-inset">
-                <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.task}</p>
-                <p className={AV.micro}>{a.field}</p>
-                <p className="mt-1 text-[10px] font-medium text-[var(--av-accent)]">{a.date}</p>
-              </li>
-            ))}
-          </ul>
-        </DarkCard>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-12">
-        <DashboardMandiWidget />
-
-        <DarkCard hover delay={2} className="xl:col-span-4">
-          <SectionHeader title="Expert Tip" />
-          <div className="mt-3">
-            <p className="text-xs font-semibold text-[var(--av-accent)]">{EXPERT_TIP.name}</p>
-            <p className={AV.micro}>{EXPERT_TIP.role}</p>
-            <p className={`mt-2 leading-relaxed ${AV.body}`}>{EXPERT_TIP.tip}</p>
-          </div>
-        </DarkCard>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <DarkCard hover delay={1}>
-          <SectionHeader title="Crop Health" action={{ label: "Report", href: "/my-farm" }} />
-          <div className="mt-4 flex justify-center">
+    <div className={`${AV.sectionGap} min-w-0 max-w-full overflow-x-hidden`}>
+      <div className="grid min-w-0 gap-3 sm:gap-4 xl:grid-cols-12">
+        <div className="min-w-0 xl:col-span-8">
+          <DashboardWeatherHero />
+        </div>
+        <DarkCard hover className="min-w-0 xl:col-span-4" delay={1}>
+          <SectionHeader title="Farm Health Score" />
+          <div className="mt-2 flex flex-col items-center">
             <DonutChart
               segments={CROP_HEALTH_SEGMENTS}
-              centerValue={`${farmStats.healthScore}%`}
+              centerValue={`${farmStats.healthScore}`}
               centerLabel={healthLabel}
             />
           </div>
-          <p className="mt-3 rounded-lg bg-[var(--av-accent-soft)] px-3 py-2 text-center text-xs text-[var(--av-accent)]">
-            Fields healthy — keep monitoring pest alerts this week.
+          <p className="mt-2 text-center text-xs text-[var(--av-text-secondary)]">
+            Keep it up! Your crops are healthy.
           </p>
-        </DarkCard>
-
-        <DarkCard hover delay={2}>
-          <SectionHeader title="Community" action={{ label: "View All", href: "/community" }} />
-          <div className="mt-3">
-            <p className="text-xs font-semibold text-[var(--av-text-primary)]">{COMMUNITY_POST.author}</p>
-            <p className={`mt-1 ${AV.body}`}>{COMMUNITY_POST.text}</p>
-            <div className={`mt-2 flex gap-3 ${AV.micro}`}>
-              <span className="flex items-center gap-1">
-                <MessageCircle className="h-3 w-3" /> {COMMUNITY_POST.comments}
-              </span>
-              <span className="flex items-center gap-1">
-                <Heart className="h-3 w-3" /> {COMMUNITY_POST.likes}
-              </span>
-            </div>
-          </div>
         </DarkCard>
       </div>
 
-      <ShellCtaBanner
-        title="Smarter decisions, better yield"
-        description="Premium tools — satellite insights, expert calls, and advanced crop analytics."
-        buttonLabel="Upgrade to Premium"
-        href="/settings/upgrade"
-      />
+      <DarkCard hover delay={1} className="min-w-0">
+        <SectionHeader title="Quick Actions" />
+        <div className="mt-3 grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-4">
+          {QUICK_ACTIONS.map((a) => (
+            <AppLink
+              key={a.href + a.label}
+              href={a.href}
+              className="group flex min-w-0 flex-col items-center gap-1.5 text-center sm:min-w-[72px] sm:gap-2"
+            >
+              <QuickActionIcon label={a.label} col={a.col} row={a.row} lucide={a.lucide} imageSrc={a.imageSrc} />
+              <span className="line-clamp-2 text-[9px] font-semibold leading-tight text-[var(--av-text-secondary)] sm:text-[10px]">
+                {a.label}
+              </span>
+            </AppLink>
+          ))}
+        </div>
+      </DarkCard>
+
+      <div className="grid min-w-0 gap-3 sm:gap-4 xl:grid-cols-12">
+        <DashboardCropCalendar />
+        <DarkCard hover className="min-w-0 xl:col-span-4" delay={2}>
+          <SectionHeader title="Upcoming Tasks" action={{ label: "View All", href: "/crop-calendar" }} />
+          <ul className="mt-3 space-y-2">
+            {farm.activities.slice(0, 4).map((a) => (
+              <li key={a.id} className="av-card-inset flex items-start justify-between gap-2 p-2.5">
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-[var(--av-text-primary)]">{a.task}</p>
+                  <p className={AV.micro}>{a.field}</p>
+                </div>
+                <span className="shrink-0 rounded-lg bg-[var(--av-accent-soft)] px-2 py-1 text-[10px] font-bold text-[var(--av-accent)]">
+                  {a.date.split(" ")[0]}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </DarkCard>
+      </div>
+
+      <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-3">
+        <DarkCard hover delay={1} className="min-w-0">
+          <SectionHeader title="Field Overview" action={{ label: "My Farm", href: "/my-farm" }} />
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="av-card-inset p-3 text-center">
+              <p className={AV.label}>Total Fields</p>
+              <p className="mt-1 text-xl font-bold text-[var(--av-text-primary)]">{farm.fields.length}</p>
+            </div>
+            <div className="av-card-inset p-3 text-center">
+              <p className={AV.label}>Total Area</p>
+              <p className="mt-1 text-xl font-bold text-[var(--av-text-primary)]">
+                {farm.fields.reduce((s, f) => s + parseFloat(f.area) || 0, 0).toFixed(1)} Acre
+              </p>
+            </div>
+            <div className="av-card-inset p-3 text-center">
+              <p className={AV.label}>Active Crops</p>
+              <p className="mt-1 text-xl font-bold text-[var(--av-accent)]">{statsActiveCrops(farm.fields)}</p>
+            </div>
+            <div className="av-card-inset p-3 text-center">
+              <p className={AV.label}>Irrigation Due</p>
+              <p className="mt-1 text-xl font-bold text-amber-600">2 Fields</p>
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-center rounded-xl bg-[var(--av-accent-soft)]/40 py-6">
+            <MapPin className="h-10 w-10 text-[var(--av-accent)] opacity-60" />
+            <Sprout className="-ml-4 h-8 w-8 text-emerald-600" />
+          </div>
+        </DarkCard>
+
+        <DashboardPestAlerts />
+
+        <DashboardMandiWidget limit={4} compact />
+      </div>
+
+      <div className="grid min-w-0 gap-3 sm:gap-4 xl:grid-cols-12">
+        <DashboardAiRecommendations />
+        <DarkCard hover className="min-w-0 xl:col-span-4" delay={2}>
+          <SectionHeader title="Agri News & Tips" action={{ label: "Library", href: "/library" }} />
+          <ul className="mt-3 space-y-3">
+            {AGRI_NEWS.map((n) => (
+              <li key={n.title} className="flex gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={n.image} alt="" className="h-12 w-16 shrink-0 rounded-lg object-cover" />
+                <div>
+                  <p className="text-xs font-semibold leading-snug text-[var(--av-text-primary)]">{n.title}</p>
+                  <p className={AV.micro}>{n.time}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </DarkCard>
+      </div>
     </div>
   );
+}
+
+function statsActiveCrops(fields: { crop: string }[]): number {
+  return new Set(fields.map((f) => f.crop)).size;
 }

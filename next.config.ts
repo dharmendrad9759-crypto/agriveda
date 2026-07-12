@@ -25,6 +25,14 @@ function lanDevOrigins(): string[] {
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: lanDevOrigins(),
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

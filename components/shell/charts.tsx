@@ -40,8 +40,8 @@ export function DonutChart({
   });
 
   return (
-    <div className="flex items-center gap-4">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
+    <div className="flex w-full max-w-full flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0" aria-hidden>
         {arcs.map((a) => (
           <path key={a.label} d={a.d} fill="none" stroke={a.color} strokeWidth="14" strokeLinecap="round" />
         ))}
@@ -58,9 +58,9 @@ export function DonutChart({
           </>
         )}
       </svg>
-      <ul className="space-y-1.5 text-xs">
+      <ul className="grid w-full grid-cols-2 gap-x-3 gap-y-1.5 text-xs sm:block sm:w-auto sm:space-y-1.5">
         {segments.map((s) => (
-          <li key={s.label} className="flex items-center gap-2 text-[var(--av-text-secondary)]">
+          <li key={s.label} className="flex min-w-0 items-center gap-2 text-[var(--av-text-secondary)]">
             <span className="h-2 w-2 rounded-full" style={{ background: s.color }} />
             {s.label} ({Math.round((s.value / total) * 100)}%)
           </li>

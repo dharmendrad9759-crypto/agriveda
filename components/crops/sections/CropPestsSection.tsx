@@ -9,6 +9,7 @@ import RiskBadge from "@/components/shell/RiskBadge";
 import EtlGuideCard from "@/components/shell/EtlGuideCard";
 import { ShellTabBar } from "@/components/shell/AppShell";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
+import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
 import type { Crop } from "@/types/crop";
 import { AV } from "@/lib/design/tokens";
@@ -29,11 +30,14 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
   const [selectedPestId, setSelectedPestId] = useState<string | null>(null);
 
   const ipmPests = useMemo(() => getIpmPestListForCrop(crop.slug), [crop.slug]);
+  const fieldGuidePests = useMemo(() => getCropFieldGuidePestListForCrop(crop.slug), [crop.slug]);
   const catalogPests = useMemo(() => getEnrichedCropThreats(crop.slug).filter((t) => t.type === "pest"), [crop.slug]);
 
-  const pests = ipmPests.length
-    ? ipmPests
-    : catalogPests.map((p) => ({
+  const pests = fieldGuidePests.length
+    ? fieldGuidePests
+    : ipmPests.length
+      ? ipmPests
+      : catalogPests.map((p) => ({
         id: p.id,
         name: p.name,
         scientific: p.scientificName,

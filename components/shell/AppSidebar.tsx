@@ -14,13 +14,16 @@ export default function AppSidebar() {
 
   return (
     <aside className="av-sidebar hidden lg:flex lg:w-60 xl:w-64 lg:shrink-0 lg:flex-col">
-      <div className="flex h-14 items-center gap-2 border-b border-[var(--av-border)] px-4">
+      <div className="flex h-14 flex-col justify-center border-b border-[var(--av-border)] px-4 py-2">
         <AppLink href="/" className="flex items-center gap-2">
           <Leaf className="h-5 w-5 text-[var(--av-accent)]" />
           <span className="text-sm font-black tracking-wider text-[var(--av-text-primary)]">
             {BRAND.toUpperCase()}
           </span>
         </AppLink>
+        <p className="mt-0.5 pl-7 text-[9px] font-medium text-[var(--av-text-muted)]">
+          Smart Farming, Better Future
+        </p>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide" aria-label="Main navigation">

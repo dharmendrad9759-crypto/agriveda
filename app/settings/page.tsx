@@ -158,8 +158,8 @@ export default function SettingsPage() {
           <p className="mt-2 text-xs text-[var(--av-text-muted)]">v{APP_VERSION}</p>
           <p className="mt-1 text-xs text-[var(--av-text-secondary)]">Smart farming companion for Indian farmers.</p>
           <div className="mt-3 space-y-1">
-            <SettingsRow label="Terms & Conditions" href="/profile" />
-            <SettingsRow label="Privacy Policy" href="/profile" />
+            <SettingsRow label="Terms & Conditions" href="/privacy#terms" />
+            <SettingsRow label="Privacy Policy" href="/privacy" />
             <SettingsRow label="Rate Us on Play Store" href="/profile" />
           </div>
         </DarkCard>

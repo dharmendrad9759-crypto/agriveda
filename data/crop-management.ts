@@ -472,6 +472,7 @@ export const cropManagementCatalog: CropManagementProfile[] = [
 import { getEnrichedCropProfile } from "@/lib/knowledge/merge";
 import { importedManagementProfiles } from "@/data/imported-crop-exports";
 import { mergeIpmPestDiseaseManagement } from "@/lib/crops/ipmDataBridge";
+import { mergeCropFieldGuideIntoProfile } from "@/lib/crops/cropFieldGuideBridge";
 import { mergeWeedAbioticIntoProfile } from "@/lib/crops/weedAbioticBridge";
 import { mergeNutrientDeficiencyIntoProfile } from "@/lib/nutrients/nutrientDeficiencyBridge";
 
@@ -482,6 +483,8 @@ export function getCropManagementProfile(slug: string): CropManagementProfile | 
   const enriched = getEnrichedCropProfile(base);
   if (!enriched) return null;
   return mergeNutrientDeficiencyIntoProfile(
-    mergeWeedAbioticIntoProfile(mergeIpmPestDiseaseManagement(enriched))
+    mergeWeedAbioticIntoProfile(
+      mergeCropFieldGuideIntoProfile(mergeIpmPestDiseaseManagement(enriched))
+    )
   );
 }

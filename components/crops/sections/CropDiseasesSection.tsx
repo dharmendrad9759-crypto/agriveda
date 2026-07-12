@@ -8,6 +8,7 @@ import StatCard from "@/components/shell/StatCard";
 import RiskBadge from "@/components/shell/RiskBadge";
 import { ShellTabBar } from "@/components/shell/AppShell";
 import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
+import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
 import type { Crop } from "@/types/crop";
 import { AV } from "@/lib/design/tokens";
@@ -27,14 +28,17 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
   const [mgmtTab, setMgmtTab] = useState<MgmtTab>("prevention");
 
   const ipmDiseases = useMemo(() => getIpmDiseaseListForCrop(crop.slug), [crop.slug]);
+  const fieldGuideDiseases = useMemo(() => getCropFieldGuideDiseaseListForCrop(crop.slug), [crop.slug]);
   const catalogDiseases = useMemo(
     () => getEnrichedCropThreats(crop.slug).filter((t) => t.type === "disease"),
     [crop.slug]
   );
 
-  const diseases = ipmDiseases.length
-    ? ipmDiseases
-    : catalogDiseases.map((d) => ({
+  const diseases = fieldGuideDiseases.length
+    ? fieldGuideDiseases
+    : ipmDiseases.length
+      ? ipmDiseases
+      : catalogDiseases.map((d) => ({
         id: d.id,
         name: d.name,
         scientific: d.pathogen ?? d.scientificName,

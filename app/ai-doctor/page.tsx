@@ -21,15 +21,13 @@ import { analyzePlantImage, checkAiDoctorConfigured, type DiagnosisResult } from
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useToast } from "@/components/ui/Toast";
-import SafeThumbnail from "@/components/ui/SafeThumbnail";
-import { useLocale } from "@/components/i18n/LocaleProvider";
 import { AI_DOCTOR_CROPS } from "@/data/ai-doctor-crops";
 import {
   claimPendingAiScan,
   dataUrlToFile,
   releasePendingScanLock,
 } from "@/lib/pendingAiScan";
-import { AiDoctorDesktopHero, AiDoctorDesktopSidebar } from "@/components/ai-doctor/AiDoctorRedesign";
+import { AiDoctorDesktopHero, AiDoctorDesktopSidebar, AiDoctorQuickIdentify, AiDoctorRecentDiagnoses } from "@/components/ai-doctor/AiDoctorRedesign";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
@@ -46,7 +44,6 @@ export default function AIDoctorPage() {
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const { addEntry, history, clearHistory } = useAIHistory();
   const { showToast } = useToast();
-  const { t } = useLocale();
 
   const [selectedCrop, setSelectedCrop] = useState("tomato");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -189,16 +186,39 @@ export default function AIDoctorPage() {
 
   return (
     <AppShell
-      title="AI Doctor"
-      subtitle="आपका स्मार्ट कृषि साथी — photo upload, diagnosis & treatment"
+      title={
+        <span className="inline-flex items-center gap-2">
+          AI Doctor
+          <span className="rounded-full bg-[var(--av-accent-soft)] px-2 py-0.5 text-[10px] font-bold text-[var(--av-accent)]">
+            AI Powered
+          </span>
+        </span>
+      }
+      subtitle="Identify problems, get solutions & expert recommendations"
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "AI Doctor" }]}
+      actions={
+        <button
+          type="button"
+          onClick={() => setShowHistory(!showHistory)}
+          className="inline-flex items-center gap-2 rounded-xl border border-[var(--av-border)] px-4 py-2 text-xs font-bold text-[var(--av-text-secondary)]"
+        >
+          <History className="h-4 w-4" />
+          Diagnosis History
+        </button>
+      }
     >
       <AiDoctorDesktopHero
+        onUploadClick={() => {
+          document.getElementById("ai-doctor-scan")?.scrollIntoView({ behavior: "smooth" });
+          cameraInputRef.current?.click();
+        }}
         onQuickTopic={() => {
           document.getElementById("ai-doctor-scan")?.scrollIntoView({ behavior: "smooth" });
           showToast("नीचे photo upload करें — AI diagnosis शुरू करें");
         }}
       />
+
+      <AiDoctorQuickIdentify selectedCrop={selectedCrop} onSelectCrop={setSelectedCrop} />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div id="ai-doctor-scan" className="space-y-4 lg:col-span-2">
@@ -207,15 +227,9 @@ export default function AIDoctorPage() {
             <Sparkles className="h-3.5 w-3.5" />
             {aiConfigured ? "24×7 AI Active" : "AI Setup Required"}
           </div>
-          <h1 className="mt-3 text-3xl font-black theme-text-primary">फसल डॉक्टर</h1>
-          <p className="mt-2 text-sm theme-text-muted">
-            पत्ती या फसल की फोटो डालें — बीमारी की पहचान, कारण और इलाज एक जगह मिलेगा।
-          </p>
           {aiConfigured === false && (
             <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-800 dark:text-amber-200">
-              ⚠️ GEMINI_API_KEY .env.local में add karein — bina key ke analysis nahi chalega.
-              <br />
-              Free key: aistudio.google.com → Get API key
+              ⚠️ GEMINI_API_KEY .env.local में add karein — Google AI Studio से key (AIzaSy या AQ. format).
             </p>
           )}
         </DarkCard>
@@ -243,24 +257,10 @@ export default function AIDoctorPage() {
         </DarkCard>
 
         <DarkCard delay={2}>
-          <p className="mb-2 text-xs font-bold text-[var(--av-text-secondary)]">Select crop:</p>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {cropOptions.map((c) => (
-              <button
-                key={c.slug}
-                type="button"
-                onClick={() => setSelectedCrop(c.slug)}
-                className={`flex flex-shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold transition ${
-                  selectedCrop === c.slug
-                    ? "bg-[var(--av-accent)] text-[#0a0f1a]"
-                    : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
-                }`}
-              >
-                <span>{c.emoji}</span>
-                {c.name}
-              </button>
-            ))}
-          </div>
+          <p className="mb-2 text-xs font-bold text-[var(--av-text-secondary)]">Selected crop for diagnosis:</p>
+          <p className="text-sm font-semibold text-[var(--av-accent)]">
+            {cropOptions.find((c) => c.slug === selectedCrop)?.name ?? selectedCrop}
+          </p>
         </DarkCard>
 
         <div className="grid gap-4 lg:grid-cols-2">
@@ -448,62 +448,7 @@ export default function AIDoctorPage() {
           </DarkCard>
         </div>
 
-        {history.length > 0 && (
-          <DarkCard delay={4}>
-            <div className="flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => setShowHistory(!showHistory)}
-                className="flex items-center gap-2 text-sm font-bold text-[var(--av-accent)]"
-              >
-                <History className="h-4 w-4" />
-                {t("recentScans")} ({history.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (window.confirm("Scan history हटाएँ?")) {
-                    clearHistory();
-                    setShowHistory(false);
-                    showToast("History साफ़ ✓");
-                  }
-                }}
-                className="text-xs font-bold text-red-500"
-              >
-                {t("clearHistory")}
-              </button>
-            </div>
-            {showHistory && (
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {history.slice(0, 6).map((h) => (
-                  <button
-                    key={h.id}
-                    type="button"
-                    onClick={() => openHistoryEntry(h)}
-                    className="text-left"
-                  >
-                    <DarkCard className="flex gap-3 p-3 !bg-[var(--av-surface-inset)]">
-                      <SafeThumbnail
-                        src={h.thumbnailUrl}
-                        alt={h.fileName}
-                        className="h-14 w-14 rounded-lg"
-                      />
-                      <div>
-                        <p className="text-xs font-bold theme-text-primary">{h.result.diseaseName}</p>
-                        <p className="text-[10px] theme-text-muted">
-                          {new Date(h.timestamp).toLocaleDateString("en-IN")} • {h.result.confidence}%
-                        </p>
-                        <p className="mt-0.5 text-[10px] font-bold text-emerald-600">
-                          Tap karke detail dekhein →
-                        </p>
-                      </div>
-                    </DarkCard>
-                  </button>
-                ))}
-              </div>
-            )}
-          </DarkCard>
-        )}
+        <AiDoctorRecentDiagnoses history={history} onOpenEntry={openHistoryEntry} />
         </div>
 
         <div className="hidden lg:block">

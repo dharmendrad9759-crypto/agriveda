@@ -348,12 +348,13 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
 };
 
 import { getIpmCatalogEntry, mergeIpmCatalog } from "@/lib/crops/ipmDataBridge";
+import { mergeCropFieldGuideCatalog } from "@/lib/crops/cropFieldGuideBridge";
 import { mergeWeedAbioticCatalog } from "@/lib/crops/weedAbioticBridge";
 
 export function getCropPestDisease(slug: string): CropPestDiseaseData {
   const base = cropPestDiseaseData[slug] ?? getIpmCatalogEntry(slug);
   if (!base) return cropPestDiseaseData.paddy;
-  return mergeWeedAbioticCatalog(mergeIpmCatalog(base));
+  return mergeWeedAbioticCatalog(mergeCropFieldGuideCatalog(mergeIpmCatalog(base)));
 }
 
 export const pestDiseaseCropList = [

@@ -48,7 +48,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="antialiased flex flex-col min-h-screen"
+        className="flex min-h-screen min-w-0 flex-col overflow-x-hidden antialiased"
         suppressHydrationWarning
       >
         <ClientProviders>{children}</ClientProviders>

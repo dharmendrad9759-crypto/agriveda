@@ -16,7 +16,7 @@ interface ExpandablePanelProps {
 }
 
 const ACCENT: Record<string, string> = {
-  green: "border-[#10b981]/30 bg-[#10b981]/5 text-[#10b981]",
+  green: "border-[#10b981]/30 bg-[var(--av-accent)]/5 text-[var(--av-accent)]",
   amber: "border-amber-500/30 bg-amber-500/5 text-amber-400",
   sky: "border-sky-500/30 bg-sky-500/5 text-sky-400",
   rose: "border-rose-500/30 bg-rose-500/5 text-rose-400",
@@ -36,11 +36,11 @@ export default function ExpandablePanel({
   const reduced = useReducedMotion();
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[#1f2937] bg-[#111827]">
+    <div className="overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex min-h-[52px] w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[#0a0f1a]/50"
+        className="flex min-h-[52px] w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--av-surface-inset)]/50"
       >
         {Icon && (
           <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border", ACCENT[accent])}>
@@ -49,19 +49,19 @@ export default function ExpandablePanel({
         )}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm font-semibold text-[#f1f5f9]">{title}</p>
+            <p className="text-sm font-semibold text-[var(--av-text-primary)]">{title}</p>
             {badge && (
-              <span className="rounded bg-[#0a0f1a] px-1.5 py-0.5 text-[10px] font-bold text-[#10b981]">
+              <span className="rounded bg-[var(--av-surface-inset)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--av-accent)]">
                 {badge}
               </span>
             )}
           </div>
           {subtitle && !open && (
-            <p className="mt-0.5 line-clamp-1 text-xs text-[#64748b]">{subtitle}</p>
+            <p className="mt-0.5 line-clamp-1 text-xs text-[var(--av-text-muted)]">{subtitle}</p>
           )}
         </div>
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown className="h-4 w-4 shrink-0 text-[#64748b]" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
         </motion.span>
       </button>
 
@@ -74,7 +74,7 @@ export default function ExpandablePanel({
             transition={{ duration: 0.22, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <div className="border-t border-[#1f2937] px-4 py-3">{children}</div>
+            <div className="border-t border-[var(--av-border)] px-4 py-3">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -85,7 +85,7 @@ export default function ExpandablePanel({
 /** Timing badge for DAS / DAT */
 export function TimingBadge({ timing, ref: timingRef }: { timing: string; ref?: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-md border border-[#10b981]/30 bg-[#10b981]/10 px-2 py-1 text-[11px] font-bold text-[#10b981]">
+    <span className="inline-flex items-center gap-1 rounded-md border border-[#10b981]/30 bg-[var(--av-accent)]/10 px-2 py-1 text-[11px] font-bold text-[var(--av-accent)]">
       {timingRef && <span className="opacity-70">{timingRef}</span>}
       {timing}
     </span>

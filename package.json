@@ -20,6 +20,8 @@
     "android:firewall": "powershell -ExecutionPolicy Bypass -File scripts/allow-dev-firewall.ps1",
     "android:run": "powershell -ExecutionPolicy Bypass -File scripts/android-run.ps1",
     "android:build": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1 assembleDebug",
+    "android:bundle": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1 bundleRelease",
+    "android:playstore": "powershell -ExecutionPolicy Bypass -File scripts/playstore-release.ps1",
     "android:gradle": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1"
   },
   "dependencies": {

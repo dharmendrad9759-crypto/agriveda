@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "purpose": "AGRIVEDA Smart Crop Advisory - VEGETABLES ONLY, supplements agriveda_crop_calendar_india.json",
+    "why_a_separate_file": "The main crop-calendar file only used a generic 'Vegetables' placeholder for most zones/states. Vegetables behave differently from grain/pulse/oilseed crops - seasonality is looser, regional specialisation is sharper, and a handful of states dominate specific vegetables nationally. That deserved its own file.",
+    "seasonality_caveat": "Kharif/Rabi/Zaid is a simplification for vegetables. Tomato, brinjal, chilli, and okra are often grown in staggered batches almost year-round wherever irrigation allows, with different varieties suited to each window - the season listed below is the PRIMARY/heaviest one, not the only one.",
+    "hill_state_note": "Jammu & Kashmir, Himachal Pradesh, and hill Uttarakhand grow 'off-season' vegetables in their summer (which is plains' too-hot Zaid season) - tomato, capsicum, cabbage, peas grown there fill the gap when plains supply is thin.",
+    "crop_name_format": "English / हिंदी",
+    "national_vegetable_leaders": {
+      "potato_aloo": "Uttar Pradesh #1 (~30-35% of national output; Agra-Mainpuri-Firozabad-Kannauj belt) > West Bengal #2 > Bihar > Gujarat > Punjab",
+      "onion_pyaz": "Maharashtra #1 (Nashik belt, over one-third of national output) > Madhya Pradesh > Gujarat > Karnataka - these 4 states together make ~two-thirds of India's onion",
+      "tomato_tamatar": "Madhya Pradesh leads national output, with Andhra Pradesh, Karnataka, and Gujarat also major producers",
+      "brinjal_baingan": "West Bengal #1 (~24-28% of national output, Nadia/24-Parganas/Hooghly belt) > Odisha #2 > Gujarat #3",
+      "cabbage_patta_gobi": "West Bengal #1 (~24-34% of national output)",
+      "cauliflower_phool_gobi": "West Bengal #1 (~22-29% of national output)",
+      "okra_bhindi": "West Bengal #1 (~14-19% of national output)",
+      "garlic_lehsun": "Madhya Pradesh #1 (Mandsaur-Neemuch belt)",
+      "tapioca_kand": "Tamil Nadu + Kerala together = ~94% of national output",
+      "ginger_adrak": "Madhya Pradesh, Karnataka, Gujarat lead in plains; Meghalaya and Sikkim lead in the hills"
+    },
+    "compiled": "July 2026"
+  },
+
+  "uttar_pradesh_zones": [
+    {
+      "zone": "Bhabhar-Tarai",
+      "districts": ["Saharanpur", "Bijnor", "Pilibhit", "Lakhimpur Kheri", "Shahjahanpur", "Bahraich", "Shravasti", "Balrampur"],
+      "kharif": ["Okra / भिंडी", "Cucumber / खीरा", "Bottle gourd / लौकी", "Colocasia / अरबी"],
+      "rabi": ["Potato / आलू", "Peas / मटर", "Cauliflower / फूलगोभी", "Radish / मूली"],
+      "zaid": ["Watermelon / तरबूज़", "Muskmelon / खरबूजा", "Cucumber / खीरा"]
+    },
+    {
+      "zone": "Western Plain",
+      "districts": ["Moradabad", "Rampur", "Amroha", "Sambhal", "Bareilly", "Budaun"],
+      "kharif": ["Okra / भिंडी", "Chilli / मिर्च", "Cucumber / खीरा"],
+      "rabi": ["Potato / आलू", "Peas / मटर", "Cauliflower / फूलगोभी", "Cabbage / पत्तागोभी", "Tomato / टमाटर"],
+      "zaid": ["Watermelon / तरबूज़", "Muskmelon / खरबूजा", "Bitter gourd / करेला"]
+    },
+    {
+      "zone": "Central-Western Plain",
+      "districts": ["Muzaffarnagar", "Shamli", "Meerut", "Baghpat", "Ghaziabad", "Gautam Buddha Nagar", "Hapur", "Bulandshahr"],
+      "kharif": ["Okra / भिंडी", "Brinjal / बैंगन", "Chilli / मिर्च", "Bottle gourd / लौकी"],
+      "rabi": ["Potato / आलू", "Cauliflower / फूलगोभी", "Cabbage / पत्तागोभी", "Peas / मटर", "Spinach / पालक", "Radish / मूली", "Carrot / गाजर"],
+      "zaid": ["Cucumber / खीरा", "Bitter gourd / करेला", "Muskmelon / खरबूजा", "French beans / फ्रेंच बीन"],
+      "note": "Closest UP zone to the Delhi-NCR mandi belt - highest vegetable diversity and cropping intensity in the state"
+    },
+    {
+      "zone": "South-Western Semi-Arid Plain",
+      "districts": ["Agra", "Firozabad", "Mainpuri", "Etawah", "Aligarh", "Mathura", "Hathras", "Kasganj", "Etah"],
+      "kharif": ["Okra / भिंडी", "Chilli / मिर्च", "Cluster bean / ग्वार फली"],
+      "rabi": ["Potato / आलू", "Peas / मटर", "Radish / मूली", "Mustard greens (Sarson saag) / सरसों साग"],
+      "zaid": ["Muskmelon / खरबूजा", "Watermelon / तरबूज़", "Cucumber / खीरा"],
+      "note": "Agra-Mainpuri-Firozabad is one of India's single biggest potato pockets, with good cold-storage access - the single strongest vegetable bet in this zone"
+    },
+    {
+      "zone": "Central Plain",
+      "districts": ["Lucknow", "Unnao", "Raebareli", "Sitapur", "Hardoi", "Kanpur Nagar", "Kanpur Dehat", "Kannauj", "Farrukhabad", "Auraiya", "Fatehpur", "Prayagraj", "Kaushambi"],
+      "kharif": ["Okra / भिंडी", "Brinjal / बैंगन", "Chilli / मिर्च"],
+      "rabi": ["Potato / आलू", "Peas / मटर", "Cauliflower / फूलगोभी", "Cabbage / पत्तागोभी", "Tomato / टमाटर"],
+      "zaid": ["Cucumber / खीरा", "Bitter gourd / करेला", "Watermelon / तरबूज़"]
+    },
+    {
+      "zone": "Bundelkhand",
+      "districts": ["Jhansi", "Lalitpur", "Jalaun", "Hamirpur", "Mahoba", "Chitrakoot", "Banda"],
+      "kharif": ["Okra / भिंडी", "Cluster bean / ग्वार फली"],
+      "rabi": ["Onion (limited) / प्याज", "Garlic / लहसुन", "Peas (small scale) / मटर"],
+      "zaid": ["Very limited - low irrigation cover"],
+      "note": "Water scarcity keeps overall vegetable area small; garlic/onion tolerate the dry conditions far better than a water-hungry crop like potato"
+    },
+    {
+      "zone": "North-Eastern Plain",
+      "districts": ["Gonda", "Gorakhpur", "Maharajganj", "Kushinagar", "Siddharthnagar", "Basti", "Sant Kabir Nagar", "Deoria"],
+      "kharif": ["Okra / भिंडी", "Brinjal / बैंगन", "Bottle gourd / लौकी", "Colocasia / अरबी"],
+      "rabi": ["Potato / आलू", "Peas / मटर", "Cauliflower / फूलगोभी"],
+      "zaid": ["Cucumber / खीरा", "Watermelon / तरबूज़"]
+    },
+    {
+      "zone": "Eastern Plain",
+      "districts": ["Barabanki", "Ayodhya", "Amethi", "Ambedkar Nagar", "Sultanpur", "Pratapgarh", "Jaunpur", "Azamgarh", "Mau", "Ballia", "Bhadohi", "Ghazipur", "Varanasi", "Chandauli"],
+      "kharif": ["Okra / भिंडी", "Brinjal / बैंगन", "Chilli / मिर्च"],
+      "rabi": ["Potato / आलू", "Peas / मटर", "Cauliflower / फूलगोभी"],
+      "zaid": ["Cucumber / खीरा", "Watermelon / तरबूज़", "Bitter gourd / करेला"],
+      "note": "Varanasi belt also well known for paan (betel leaf) alongside its vegetables"
+    },
+    {
+      "zone": "Vindhyan",
+      "districts": ["Mirzapur", "Sonbhadra"],
+      "kharif": ["Okra / भिंडी", "Cluster bean / ग्वार फली"],
+      "rabi": ["Onion / प्याज", "Peas (limited) / मटर"],
+      "zaid": ["Very limited - rainfed plateau"]
+    }
+  ],
+
+  "india_states": [
+    { "state": "Jammu & Kashmir", "kharif_summer": ["Off-season Cabbage / पत्तागोभी", "Off-season Cauliflower / फूलगोभी", "Off-season Tomato / टमाटर"], "rabi": ["Peas / मटर", "Potato (limited) / आलू"], "note": "Summer here = plains' off-season - a niche high-value vegetable window" },
+    { "state": "Ladakh", "kharif_summer": ["Cabbage / पत्तागोभी", "Peas / मटर"], "rabi": ["Potato (limited) / आलू"], "note": "Very short single growing season" },
+    { "state": "Himachal Pradesh", "kharif_summer": ["Off-season Tomato / टमाटर", "Capsicum / शिमला मिर्च", "Cabbage / पत्तागोभी", "Peas / मटर"], "rabi": ["Potato / आलू", "Peas / मटर"], "note": "India's best-known off-season vegetable hub - supplies plains mandis when local plains supply is thin" },
+    { "state": "Uttarakhand", "kharif_summer": ["Off-season Tomato / टमाटर", "Capsicum / शिमला मिर्च", "Peas / मटर (hills)"], "rabi": ["Potato / आलू", "Peas / मटर (Tarai plains)"] },
+    { "state": "Punjab", "kharif": ["Okra / भिंडी", "Chilli / मिर्च"], "rabi": ["Potato / आलू", "Peas / मटर", "Cauliflower / फूलगोभी", "Onion / प्याज"], "zaid": ["Muskmelon / खरबूजा", "Cucumber / खीरा"] },
+    { "state": "Haryana", "kharif": ["Okra / भिंडी", "Chilli / मिर्च"], "rabi": ["Potato / आलू", "Peas / मटर", "Cauliflower / फूलगोभी", "Onion / प्याज"], "zaid": ["Watermelon / तरबूज़", "Muskmelon / खरबूजा"] },
+    { "state": "Uttar Pradesh", "note": "See 'uttar_pradesh_zones' above. UP is India's #1 overall vegetable-producing state (~15% of national output) and #1 in potato specifically." },
+    { "state": "Rajasthan", "kharif": ["Cluster bean / ग्वार फली", "Okra / भिंडी"], "rabi": ["Garlic (limited) / लहसुन", "Onion / प्याज", "Fenugreek / मेथी"], "zaid": ["Watermelon (canal-command belts) / तरबूज़", "Muskmelon / खरबूजा"] },
+    { "state": "Gujarat", "kharif": ["Okra / भिंडी", "Brinjal / बैंगन"], "rabi": ["Onion / प्याज", "Garlic / लहसुन", "Potato / आलू"], "zaid": ["Watermelon / तरबूज़"], "note": "Strong, growing onion and brinjal producer" },
+    { "state": "Madhya Pradesh", "kharif": ["Okra / भिंडी"], "rabi": ["Onion / प्याज", "Tomato / टमाटर", "Garlic / लहसुन", "Peas / मटर"], "note": "National leader in tomato and garlic; among the top 4 onion producers" },
+    { "state": "Chhattisgarh", "kharif": ["Okra / भिंडी"], "rabi": ["Tomato / टमाटर", "Brinjal (smaller scale) / बैंगन"] },
+    { "state": "Maharashtra", "kharif": ["Onion (Kharif + late-Kharif crop) / प्याज"], "rabi": ["Onion / प्याज", "Tomato / टमाटर"], "note": "India's largest onion producer (Nashik belt) - uniquely grows onion across all three seasons for near year-round supply" },
+    { "state": "Karnataka", "kharif": ["Chilli / मिर्च", "Onion / प्याज"], "rabi": ["Onion / प्याज", "Tomato (Kolar belt) / टमाटर"], "note": "Major onion, tomato, and chilli producer" },
+    { "state": "Andhra Pradesh", "kharif": ["Chilli (Guntur belt) / मिर्च", "Tomato / टमाटर"], "rabi": ["Tomato / टमाटर", "Onion / प्याज"], "note": "Guntur is India's chilli trading hub; 2nd-largest tomato producer" },
+    { "state": "Telangana", "kharif": ["Chilli / मिर्च", "Tomato / टमाटर"], "rabi": ["Cabbage / पत्तागोभी", "Cauliflower / फूलगोभी", "Brinjal / बैंगन"] },
+    { "state": "Tamil Nadu", "kharif": ["Tapioca / कंद", "Small onion/shallot / छोटी प्याज", "Okra / भिंडी"], "rabi": ["Tomato / टमाटर", "Brinjal / बैंगन"], "note": "Tamil Nadu + Kerala grow ~94% of India's tapioca" },
+    { "state": "Kerala", "kharif": ["Tapioca / कंद", "Yam / जिमीकंद", "Colocasia / अरबी"], "note": "Perennial/tuber crops dominate over the classic Kharif-Rabi-Zaid vegetable cycle" },
+    { "state": "West Bengal", "kharif": ["Okra / भिंडी"], "rabi": ["Potato / आलू", "Brinjal / बैंगन", "Cabbage / पत्तागोभी", "Cauliflower / फूलगोभी"], "note": "National #1 in brinjal (~24-28%), cabbage (~24-34%), cauliflower (~22-29%) and okra (~14-19%); #2 in potato" },
+    { "state": "Odisha", "kharif": ["Okra / भिंडी"], "rabi": ["Brinjal / बैंगन", "Tomato / टमाटर", "Cauliflower / फूलगोभी"], "note": "National #2 in brinjal production" },
+    { "state": "Jharkhand", "rabi": ["Tomato / टमाटर", "Cauliflower / फूलगोभी"], "note": "Rainfed - vegetable area much smaller than grain area" },
+    { "state": "Bihar", "rabi": ["Potato / आलू", "Cauliflower / फूलगोभी", "Onion / प्याज"], "note": "Skilled short-cycle vegetable farmers - multiple harvests per year on the same plot" },
+    { "state": "Assam", "rabi": ["Potato (limited) / आलू"], "note": "Tea-dominant state; vegetable area is comparatively small" },
+    { "state": "North-Eastern Hill States (Meghalaya, Manipur, Mizoram, Nagaland, Tripura, Sikkim, Arunachal Pradesh)", "kharif": ["Ginger / अदरक", "Turmeric / हल्दी"], "kharif_summer": ["Off-season vegetables (hills)"], "note": "Meghalaya and Sikkim are leading ginger belts" },
+    { "state": "Delhi / Chandigarh / Puducherry / Andaman & Nicobar / Lakshadweep", "note": "Small, peri-urban or highly localised vegetable production - not broken out in detail here" }
+  ]
+}

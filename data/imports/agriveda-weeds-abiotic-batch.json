@@ -1,0 +1,2240 @@
+{
+  "exportVersion": "1.0",
+  "sourceDocuments": [
+    "Agriveda Weed & Abiotic Stress JSON (Pages A-D)"
+  ],
+  "compiledAt": "2026-07-10T06:04:23.027Z",
+  "crops": [
+    {
+      "crop": "Paddy / Dhaan",
+      "scientificName": "Oryza sativa",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa crus-galli/colona (sawank, grassy)",
+          "Cyperus rotundus/difformis (motha, sedge)",
+          "Ammania, Monochoria, Ludwigia (broadleaf)",
+          "Leptochloa, Ischaemum"
+        ],
+        "criticalPeriod": "First 30-45 DAT (transplanted); 15-45 DAS (DSR)",
+        "management": {
+          "prevention": [
+            "Clean/certified seed free of weed seed",
+            "Well-levelled field + good puddling smothers weeds",
+            "Healthy competitive crop stand"
+          ],
+          "monitoring": [
+            "Scout weed flush at 15 & 30 DAT; identify grass vs sedge vs BLW to pick herbicide"
+          ],
+          "cultural": [
+            "Maintain 3-5 cm standing water (biggest suppressor in transplanted rice)",
+            "Stale seedbed before DSR",
+            "Rotary/cono-weeder at 20 & 40 DAT in wider spacing",
+            "Green manure (dhaincha) smothers weeds"
+          ],
+          "chemical": [
+            {
+              "technical": "Pretilachlor 50% EC (with safener)",
+              "dose": "600 ml/acre",
+              "timing": "PE (0-3 DAT)",
+              "targets": "grasses + sedges",
+              "note": "Apply on thin water film; standing rice"
+            },
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE",
+              "targets": "grasses + some BLW",
+              "note": "Good in DSR"
+            },
+            {
+              "technical": "Pyrazosulfuron-ethyl 10% WP",
+              "dose": "80-100 g/acre",
+              "timing": "PE/EPoE",
+              "targets": "sedges + BLW",
+              "note": "DSR & transplanted"
+            },
+            {
+              "technical": "Bispyribac-sodium 10% SC",
+              "dose": "100 ml/acre",
+              "timing": "EPoE (15-20 DAT)",
+              "targets": "broad-spectrum: grasses+sedges+BLW",
+              "note": "The workhorse post-em; drain then re-flood after 2 days"
+            },
+            {
+              "technical": "Cyhalofop-butyl 10% EC + Ethoxysulfuron 15% WG (tank-mix)",
+              "dose": "400 ml + 40 g/acre",
+              "timing": "EPoE",
+              "targets": "grasses (cyhalofop) + sedge/BLW (ethoxysulfuron)",
+              "note": "Complete-spectrum combo"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Zinc deficiency (Khaira)",
+          "symptoms": "Bronze/rusty spots on lower leaves 2-3 wk after transplant, stunting, delayed tillering",
+          "cause": "Low available Zn, high-pH/calcareous & continuously flooded soils",
+          "management": {
+            "prevention": [
+              "Soil apply Zinc sulphate 10 kg/acre basal in Zn-deficient soils"
+            ],
+            "monitoring": [
+              "Watch bronzing on lower leaves 15-20 DAT"
+            ],
+            "cultural": [
+              "Intermittent drainage improves Zn availability"
+            ],
+            "chemical": [
+              {
+                "input": "Zinc sulphate 21% + lime foliar",
+                "dose": "1 kg ZnSO4 + 0.5 kg lime in 200 L/acre",
+                "stage": "on symptoms, repeat 10 days",
+                "note": "Neutralise with lime to avoid leaf scorch"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Iron deficiency (in aerobic/DSR)",
+          "symptoms": "Interveinal yellowing of young leaves, whitening in severe",
+          "cause": "Aerobic soil, high pH, DSR condition",
+          "management": {
+            "prevention": [
+              "Maintain reduced/flooded condition where possible"
+            ],
+            "monitoring": [
+              "Young-leaf chlorosis in DSR"
+            ],
+            "cultural": [
+              "Flush irrigation"
+            ],
+            "chemical": [
+              {
+                "input": "Ferrous sulphate foliar",
+                "dose": "5 g/L (1 kg/acre)",
+                "stage": "2-3 sprays 7-day interval",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Submergence / flash flood",
+          "symptoms": "Complete submergence, yellowing, plant death if prolonged",
+          "cause": "Flash flooding, poor drainage",
+          "management": {
+            "prevention": [
+              "Sub1 submergence-tolerant varieties (Swarna-Sub1)",
+              "Field bunding & drainage channels"
+            ],
+            "monitoring": [
+              "Watch water level in flood-prone fields"
+            ],
+            "cultural": [
+              "Drain excess water fast; avoid N just before flood"
+            ],
+            "chemical": [
+              {
+                "input": "None (variety + drainage based)",
+                "dose": "-",
+                "stage": "-",
+                "note": "Top-dress N after water recedes to aid recovery"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Salinity / alkalinity",
+          "symptoms": "Leaf-tip burn, poor tillering, patchy stunted growth on salt-affected patches",
+          "cause": "Saline/sodic soils, poor-quality irrigation water",
+          "management": {
+            "prevention": [
+              "Salt-tolerant varieties (CSR-30, CSR-36)",
+              "Gypsum for sodic soils"
+            ],
+            "monitoring": [
+              "Map affected patches; test EC/pH"
+            ],
+            "cultural": [
+              "Leaching with good water; gypsum + green manure; raised-bed transplanting"
+            ],
+            "chemical": [
+              {
+                "input": "Gypsum soil amendment",
+                "dose": "per soil-test (e.g. 2-4 q/acre)",
+                "stage": "pre-planting",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Lodging",
+          "symptoms": "Crop falls over at grain filling, grain loss, harvest difficulty",
+          "cause": "Excess N, dense crop, tall varieties, wind/rain",
+          "management": {
+            "prevention": [
+              "Semi-dwarf varieties; balanced N (split); avoid excess N"
+            ],
+            "monitoring": [
+              "Watch canopy density & N status"
+            ],
+            "cultural": [
+              "Proper spacing; drain before heavy wind events; silicon/K nutrition strengthens stem"
+            ],
+            "chemical": [
+              {
+                "input": "Potash top-dress",
+                "dose": "per schedule",
+                "stage": "tillering-panicle",
+                "note": "K improves stem strength"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Maize / Makka",
+      "scientificName": "Zea mays",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Digitaria, Eleusine (grasses)",
+          "Cyperus (sedge)",
+          "Amaranthus, Commelina, Celosia, Trianthema (broadleaf)"
+        ],
+        "criticalPeriod": "First 20-45 DAS",
+        "management": {
+          "prevention": [
+            "Clean seed; proper plant population for canopy shading"
+          ],
+          "monitoring": [
+            "Scout flush at 15 & 30 DAS; classify grass/sedge/BLW"
+          ],
+          "cultural": [
+            "Inter-row hoeing/earthing-up at 30-35 DAS (dual: weeds + fall-armyworm-free soil in whorl)",
+            "Intercropping with legumes smothers weeds"
+          ],
+          "chemical": [
+            {
+              "technical": "Atrazine 50% WP",
+              "dose": "400-500 g/acre",
+              "timing": "PE (0-3 DAS)",
+              "targets": "broad-spectrum grass+BLW",
+              "note": "Do NOT use in maize+pulse/veg intercrop; moist soil"
+            },
+            {
+              "technical": "Atrazine + Pendimethalin (tank-mix)",
+              "dose": "400 g + 700 ml/acre",
+              "timing": "PE",
+              "targets": "longer grass control",
+              "note": "Sole maize only"
+            },
+            {
+              "technical": "Tembotrione 34.4% SC + surfactant",
+              "dose": "115 ml/acre + 0.5% surfactant",
+              "timing": "PoE (20-25 DAS)",
+              "targets": "broad-spectrum incl. escaped grass+BLW",
+              "note": "Best rescue post-em in maize"
+            },
+            {
+              "technical": "Topramezone 33.6% SC",
+              "dose": "30 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses+BLW",
+              "note": "Rotation partner"
+            },
+            {
+              "technical": "2,4-D Na salt 80% WP",
+              "dose": "250 g/acre",
+              "timing": "PoE",
+              "targets": "broadleaf only",
+              "note": "Avoid drift to nearby broadleaf crops"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Nitrogen deficiency",
+          "symptoms": "V-shaped yellowing from tip of lower/older leaves along midrib",
+          "cause": "Low N, leaching after heavy rain, waterlogging",
+          "management": {
+            "prevention": [
+              "Split N application (basal + knee-high + tasseling)"
+            ],
+            "monitoring": [
+              "Leaf-colour chart; watch older-leaf V-yellowing"
+            ],
+            "cultural": [
+              "Timely top-dressing; drain waterlogged patches"
+            ],
+            "chemical": [
+              {
+                "input": "Urea top-dress / foliar",
+                "dose": "soil per schedule; foliar 2% (20 g/L)",
+                "stage": "knee-high & pre-tassel",
+                "note": "Foliar for quick correction"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Zinc deficiency",
+          "symptoms": "Broad white/yellow interveinal band on young leaves (white bud), stunting",
+          "cause": "High-pH soils, high P, sandy soils",
+          "management": {
+            "prevention": [
+              "Basal Zinc sulphate 10 kg/acre in deficient soils"
+            ],
+            "monitoring": [
+              "Young-leaf banding at 2-4 weeks"
+            ],
+            "cultural": [
+              "Avoid over-application of P"
+            ],
+            "chemical": [
+              {
+                "input": "Zinc sulphate + lime foliar",
+                "dose": "1 kg ZnSO4 + 0.5 kg lime/200 L/acre",
+                "stage": "on symptoms",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Waterlogging",
+          "symptoms": "Yellowing, purpling, stunting, root death in low spots after rain",
+          "cause": "Poor drainage, heavy rain (maize very sensitive)",
+          "management": {
+            "prevention": [
+              "Ridge-furrow/raised-bed planting; field drainage channels"
+            ],
+            "monitoring": [
+              "Watch low spots after rain"
+            ],
+            "cultural": [
+              "Drain within 24-48h; earthing-up on ridges"
+            ],
+            "chemical": [
+              {
+                "input": "Foliar N + micronutrient after drainage",
+                "dose": "2% urea + 0.5% MgSO4",
+                "stage": "post-drainage recovery",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Moisture stress at silking",
+          "symptoms": "Poor cob fill, tip barrenness, kernel abortion",
+          "cause": "Drought at flowering/silking (most sensitive stage)",
+          "management": {
+            "prevention": [
+              "Ensure irrigation at knee-high, tasseling, silking, grain-fill"
+            ],
+            "monitoring": [
+              "Track soil moisture at flowering"
+            ],
+            "cultural": [
+              "Mulching; life-saving irrigation at silking"
+            ],
+            "chemical": [
+              {
+                "input": "KNO3 foliar (anti-stress)",
+                "dose": "1% (10 g/L)",
+                "stage": "at silking under stress",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Bajra / Pearl Millet",
+      "scientificName": "Pennisetum glaucum",
+      "weeds": {
+        "keyWeeds": [
+          "Digitaria, Echinochloa, Cenchrus, Eleusine (grasses)",
+          "Trianthema portulacastrum (BLW, major in kharif)",
+          "Amaranthus, Celosia, Commelina"
+        ],
+        "criticalPeriod": "First 20-35 DAS",
+        "management": {
+          "prevention": [
+            "Clean seed; adequate plant stand for canopy cover"
+          ],
+          "monitoring": [
+            "Scout Trianthema flush after first rains"
+          ],
+          "cultural": [
+            "1-2 inter-row hoeings at 20 & 35 DAS (usually most economical for this fast dryland crop)",
+            "Higher seed rate for competition"
+          ],
+          "chemical": [
+            {
+              "technical": "Atrazine 50% WP",
+              "dose": "200-300 g/acre",
+              "timing": "PE (0-3 DAS)",
+              "targets": "grass+BLW",
+              "note": "Lower rate (light soils); moist soil"
+            },
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE",
+              "targets": "grasses + some BLW",
+              "note": "Alternative to atrazine"
+            },
+            {
+              "technical": "2,4-D Na salt 80% WP",
+              "dose": "250 g/acre",
+              "timing": "PoE (20-25 DAS)",
+              "targets": "broadleaf (Trianthema)",
+              "note": "Rescue for BLW escapes"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Drought / moisture stress",
+          "symptoms": "Leaf rolling, wilting, poor tillering & grain fill (though bajra is drought-hardy)",
+          "cause": "Erratic monsoon, sandy low-retention soils",
+          "management": {
+            "prevention": [
+              "Drought-tolerant hybrids; sow with monsoon onset"
+            ],
+            "monitoring": [
+              "Watch leaf rolling in dry spells"
+            ],
+            "cultural": [
+              "Mulching; conserve moisture; thin to optimal stand"
+            ],
+            "chemical": [
+              {
+                "input": "KNO3 / potash foliar (anti-stress)",
+                "dose": "1% (10 g/L)",
+                "stage": "at stress / flowering",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Iron deficiency",
+          "symptoms": "Interveinal yellowing of young leaves on calcareous/sandy soils",
+          "cause": "High-pH light soils, low available Fe",
+          "management": {
+            "prevention": [
+              "Organic matter; avoid over-liming"
+            ],
+            "monitoring": [
+              "Young-leaf chlorosis"
+            ],
+            "cultural": [
+              "FYM incorporation"
+            ],
+            "chemical": [
+              {
+                "input": "Ferrous sulphate foliar",
+                "dose": "5 g/L (1 kg/acre)",
+                "stage": "2 sprays 10-day interval",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Nitrogen deficiency",
+          "symptoms": "Older-leaf yellowing, thin stand, poor tillering",
+          "cause": "Low N, leaching, sandy soils",
+          "management": {
+            "prevention": [
+              "Split N (basal + 25-30 DAS)"
+            ],
+            "monitoring": [
+              "Older-leaf colour"
+            ],
+            "cultural": [
+              "Timely top-dress with adequate moisture"
+            ],
+            "chemical": [
+              {
+                "input": "Urea top-dress / 2% foliar",
+                "dose": "per schedule / 20 g/L foliar",
+                "stage": "tillering",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Heat stress at flowering",
+          "symptoms": "Poor grain set, chaffy earheads",
+          "cause": ">42C during flowering",
+          "management": {
+            "prevention": [
+              "Adjust sowing so flowering avoids peak heat",
+              "Heat-tolerant hybrids"
+            ],
+            "monitoring": [
+              "Track flowering vs heatwave forecast"
+            ],
+            "cultural": [
+              "Life-saving irrigation to cool canopy"
+            ],
+            "chemical": [
+              {
+                "input": "KNO3 foliar",
+                "dose": "1%",
+                "stage": "pre-flowering under heat",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Soybean",
+      "scientificName": "Glycine max",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Digitaria, Eleusine (grasses)",
+          "Cyperus (sedge)",
+          "Amaranthus, Commelina, Celosia, Euphorbia (broadleaf)"
+        ],
+        "criticalPeriod": "First 20-45 DAS",
+        "management": {
+          "prevention": [
+            "Clean seed; optimal plant population for early canopy cover"
+          ],
+          "monitoring": [
+            "Scout flush at 15 & 30 DAS; classify grass/sedge/BLW"
+          ],
+          "cultural": [
+            "Inter-row hoeing at 20 & 40 DAS",
+            "Stale seedbed; residue mulch"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE (0-3 DAS)",
+              "targets": "grasses + some BLW",
+              "note": "Moist soil"
+            },
+            {
+              "technical": "Diclosulam 84% WDG",
+              "dose": "12.4 g/acre",
+              "timing": "PE",
+              "targets": "broad-spectrum BLW+sedge, long residual",
+              "note": ""
+            },
+            {
+              "technical": "Imazethapyr 10% SL",
+              "dose": "300 ml/acre",
+              "timing": "EPoE (15-20 DAS)",
+              "targets": "grasses+BLW+sedge",
+              "note": "Soybean-selective workhorse"
+            },
+            {
+              "technical": "Imazethapyr 35% + Imazamox 35% WG (ready-mix)",
+              "dose": "40 g/acre",
+              "timing": "EPoE",
+              "targets": "broad-spectrum",
+              "note": "Complete post-em"
+            },
+            {
+              "technical": "Quizalofop-ethyl 5% EC",
+              "dose": "400 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses only",
+              "note": "Tank-mix partner where BLW handled separately"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Iron-deficiency chlorosis",
+          "symptoms": "Interveinal yellowing of young leaves, whitening in severe",
+          "cause": "High-pH/calcareous soils, waterlogging",
+          "management": {
+            "prevention": [
+              "Avoid over-liming; tolerant varieties"
+            ],
+            "monitoring": [
+              "Young-leaf chlorosis at 20-30 DAS"
+            ],
+            "cultural": [
+              "Improve drainage; FYM"
+            ],
+            "chemical": [
+              {
+                "input": "Ferrous sulphate foliar",
+                "dose": "5 g/L (0.5%) + 1 g/L citric acid",
+                "stage": "2 sprays 10-day interval",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Sulphur deficiency",
+          "symptoms": "Uniform yellowing of YOUNG leaves (unlike N which hits old leaves), thin stems",
+          "cause": "S-deficient soils, no S in fertiliser",
+          "management": {
+            "prevention": [
+              "Apply Gypsum/SSP or elemental S basal (oilseed needs S)"
+            ],
+            "monitoring": [
+              "Young-leaf yellowing"
+            ],
+            "cultural": [
+              "Use SSP instead of DAP to add S"
+            ],
+            "chemical": [
+              {
+                "input": "Bentonite sulphur soil / Gypsum",
+                "dose": "8-10 kg S/acre basal",
+                "stage": "basal",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Waterlogging",
+          "symptoms": "Yellowing, wilting, root rot, stand loss in low spots",
+          "cause": "Heavy rain, poor drainage (soybean sensitive)",
+          "management": {
+            "prevention": [
+              "Broad-bed-furrow (BBF) planting; drainage channels"
+            ],
+            "monitoring": [
+              "Watch low spots after rain"
+            ],
+            "cultural": [
+              "Drain within 24-48h; BBF system"
+            ],
+            "chemical": [
+              {
+                "input": "Foliar 2% urea + micronutrient post-drainage",
+                "dose": "20 g/L urea",
+                "stage": "recovery",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Flower & pod drop",
+          "symptoms": "Excessive shedding of flowers/young pods",
+          "cause": "Moisture/heat stress, poor nutrition at flowering",
+          "management": {
+            "prevention": [
+              "Ensure moisture at flowering-podding"
+            ],
+            "monitoring": [
+              "Track shedding at R1-R3"
+            ],
+            "cultural": [
+              "Irrigate at flowering & pod-fill"
+            ],
+            "chemical": [
+              {
+                "input": "2% DAP or KNO3 foliar",
+                "dose": "20 g/L",
+                "stage": "flowering & 15 days later",
+                "note": "Reduces drop, boosts pod-fill"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Groundnut / Mungfali",
+      "scientificName": "Arachis hypogaea",
+      "weeds": {
+        "keyWeeds": [
+          "Digitaria, Dactyloctenium, Echinochloa (grasses)",
+          "Cyperus (sedge)",
+          "Trianthema, Amaranthus, Commelina (broadleaf)"
+        ],
+        "criticalPeriod": "First 20-45 DAS; keep weed-free at pegging (40-60 DAS)",
+        "management": {
+          "prevention": [
+            "Clean seed; optimal population"
+          ],
+          "monitoring": [
+            "Scout flush at 15 & 30 DAS"
+          ],
+          "cultural": [
+            "Inter-row hoeing at 20 & 40 DAS BUT stop soil disturbance after pegging (damages pegs)",
+            "Earthing-up before pegging"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1-1.3 L/acre",
+              "timing": "PE (0-3 DAS)",
+              "targets": "grasses + BLW",
+              "note": "Moist soil"
+            },
+            {
+              "technical": "Imazethapyr 10% SL",
+              "dose": "300 ml/acre",
+              "timing": "EPoE (15-20 DAS)",
+              "targets": "grass+BLW+sedge",
+              "note": "Groundnut-selective"
+            },
+            {
+              "technical": "Quizalofop-ethyl 5% EC",
+              "dose": "400 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses only",
+              "note": "For grassy escapes"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Calcium deficiency at pegging (pops/unfilled pods)",
+          "symptoms": "Empty pods (pops), dark plumule, poor kernel fill",
+          "cause": "Low Ca in pegging zone, sandy soils",
+          "management": {
+            "prevention": [
+              "Apply Gypsum at flowering/pegging (the classic groundnut practice)"
+            ],
+            "monitoring": [
+              "Check pod fill at maturity"
+            ],
+            "cultural": [
+              "Earthing-up to bring Ca to pegging zone"
+            ],
+            "chemical": [
+              {
+                "input": "Gypsum (CaSO4) soil at pegging",
+                "dose": "100 kg/acre at flowering",
+                "stage": "40-45 DAS (flowering-pegging)",
+                "note": "Also supplies S"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Iron-deficiency chlorosis",
+          "symptoms": "Interveinal yellowing of young leaves on calcareous soils",
+          "cause": "High-pH/calcareous soils",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; avoid over-liming"
+            ],
+            "monitoring": [
+              "Young-leaf chlorosis"
+            ],
+            "cultural": [
+              "FYM; gypsum"
+            ],
+            "chemical": [
+              {
+                "input": "Ferrous sulphate foliar",
+                "dose": "5 g/L + citric acid 1 g/L",
+                "stage": "2-3 sprays 10-day interval",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Drought / moisture stress at pegging-pod-fill",
+          "symptoms": "Reduced pegging, poor pod fill, yield loss",
+          "cause": "Dry spell at critical pegging/pod-development stages",
+          "management": {
+            "prevention": [
+              "Irrigate at flowering, pegging, pod-development"
+            ],
+            "monitoring": [
+              "Soil moisture at pegging"
+            ],
+            "cultural": [
+              "Mulch; life-saving irrigation"
+            ],
+            "chemical": [
+              {
+                "input": "KNO3 foliar anti-stress",
+                "dose": "1%",
+                "stage": "under stress at pegging",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Aflatoxin risk (storage/end-season drought)",
+          "symptoms": "Aspergillus contamination of kernels (post-harvest safety, drought-linked)",
+          "cause": "End-season drought + delayed harvest + poor drying",
+          "management": {
+            "prevention": [
+              "Avoid end-season moisture stress; timely harvest",
+              "Dry kernels to <8% moisture before storage"
+            ],
+            "monitoring": [
+              "Check pod moisture at harvest"
+            ],
+            "cultural": [
+              "Proper curing/drying; avoid mechanical damage; hygienic storage"
+            ],
+            "chemical": [
+              {
+                "input": "None (management-based)",
+                "dose": "-",
+                "stage": "harvest-storage",
+                "note": "Calcium/gypsum-fed crops show lower aflatoxin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Moong / Green Gram",
+      "scientificName": "Vigna radiata",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Digitaria (grasses)",
+          "Cyperus (sedge)",
+          "Trianthema, Amaranthus, Commelina (broadleaf)"
+        ],
+        "criticalPeriod": "First 20-40 DAS (short crop, early weed-free vital)",
+        "management": {
+          "prevention": [
+            "Clean seed; dense stand for quick canopy"
+          ],
+          "monitoring": [
+            "Scout flush at 15 & 30 DAS"
+          ],
+          "cultural": [
+            "1-2 hand weedings at 20 & 40 DAS (often most economical for short Zaid/kharif crop)"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE (0-3 DAS)",
+              "targets": "grasses + BLW",
+              "note": "Moist soil"
+            },
+            {
+              "technical": "Imazethapyr 10% SL",
+              "dose": "250-300 ml/acre",
+              "timing": "EPoE (15-20 DAS)",
+              "targets": "grass+BLW+sedge",
+              "note": "Pulse-selective"
+            },
+            {
+              "technical": "Quizalofop-ethyl 5% EC",
+              "dose": "400 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses only",
+              "note": "Grassy escapes"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Waterlogging (Zaid/kharif)",
+          "symptoms": "Yellowing, wilting, root rot, stand loss",
+          "cause": "Poor drainage, heavy rain (moong very sensitive)",
+          "management": {
+            "prevention": [
+              "Raised-bed/ridge sowing; drainage"
+            ],
+            "monitoring": [
+              "Low-spot watch after rain"
+            ],
+            "cultural": [
+              "Drain within 24h"
+            ],
+            "chemical": [
+              {
+                "input": "2% urea foliar post-drainage",
+                "dose": "20 g/L",
+                "stage": "recovery",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Sulphur / phosphorus deficiency",
+          "symptoms": "S: young-leaf yellowing; P: dull dark-green/purpling, poor nodulation",
+          "cause": "Low S/P soils, no biofertiliser",
+          "management": {
+            "prevention": [
+              "SSP basal (adds P+S); Rhizobium+PSB seed treatment"
+            ],
+            "monitoring": [
+              "Leaf colour + nodulation check"
+            ],
+            "cultural": [
+              "Biofertiliser inoculation"
+            ],
+            "chemical": [
+              {
+                "input": "2% DAP foliar",
+                "dose": "20 g/L",
+                "stage": "pre-flowering",
+                "note": "Quick P boost"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Flower/pod drop",
+          "symptoms": "Heavy shedding of flowers/young pods",
+          "cause": "Heat/moisture stress at flowering",
+          "management": {
+            "prevention": [
+              "Irrigate at flowering-podding"
+            ],
+            "monitoring": [
+              "Shedding watch at flowering"
+            ],
+            "cultural": [
+              "Avoid stress at flowering"
+            ],
+            "chemical": [
+              {
+                "input": "KNO3 / 2% DAP foliar",
+                "dose": "1% / 20 g/L",
+                "stage": "flowering + 10 days",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Heat stress (Zaid)",
+          "symptoms": "Flower drop, poor pod set in peak summer",
+          "cause": ">40C at flowering in summer moong",
+          "management": {
+            "prevention": [
+              "Time sowing so flowering avoids peak heat; heat-tolerant varieties"
+            ],
+            "monitoring": [
+              "Flowering vs heatwave"
+            ],
+            "cultural": [
+              "Adequate irrigation to cool canopy"
+            ],
+            "chemical": [
+              {
+                "input": "KNO3 foliar",
+                "dose": "1%",
+                "stage": "pre-flowering",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Arhar / Pigeon Pea / Tur",
+      "scientificName": "Cajanus cajan",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Digitaria (grasses)",
+          "Cyperus (sedge)",
+          "Amaranthus, Celosia, Commelina, Trianthema (broadleaf)"
+        ],
+        "criticalPeriod": "First 45-60 DAS (slow early growth = long weedy window)",
+        "management": {
+          "prevention": [
+            "Clean seed; optimal spacing"
+          ],
+          "monitoring": [
+            "Scout flush at 20 & 45 DAS"
+          ],
+          "cultural": [
+            "2 inter-row hoeings at 25 & 50 DAS; intercropping (with short pulses) smothers weeds & uses early wide gaps"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1-1.3 L/acre",
+              "timing": "PE (0-3 DAS)",
+              "targets": "grasses + BLW",
+              "note": "Moist soil"
+            },
+            {
+              "technical": "Imazethapyr 10% SL",
+              "dose": "300 ml/acre",
+              "timing": "EPoE (15-20 DAS)",
+              "targets": "grass+BLW+sedge",
+              "note": "Pulse-selective; not in every intercrop"
+            },
+            {
+              "technical": "Quizalofop-ethyl 5% EC",
+              "dose": "400 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses only",
+              "note": ""
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Waterlogging (very sensitive)",
+          "symptoms": "Yellowing, wilting, root death, collapse in low spots",
+          "cause": "Poor drainage, heavy rain (arhar highly waterlogging-sensitive)",
+          "management": {
+            "prevention": [
+              "Ridge/broad-bed planting; drainage channels; avoid low-lying fields"
+            ],
+            "monitoring": [
+              "Low-spot watch after rain"
+            ],
+            "cultural": [
+              "Drain fast; ridge planting is key"
+            ],
+            "chemical": [
+              {
+                "input": "2% urea foliar post-drainage",
+                "dose": "20 g/L",
+                "stage": "recovery",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Flower & pod drop",
+          "symptoms": "Heavy shedding of flowers/young pods (arhar naturally sheds a lot)",
+          "cause": "Moisture stress, heat, poor nutrition, cloudy weather at flowering",
+          "management": {
+            "prevention": [
+              "Irrigate at flowering & pod-fill"
+            ],
+            "monitoring": [
+              "Track shedding at flowering"
+            ],
+            "cultural": [
+              "Avoid stress; balanced nutrition"
+            ],
+            "chemical": [
+              {
+                "input": "NAA (planofix) OR 2% DAP foliar",
+                "dose": "NAA 4-5 ml/15L; DAP 20 g/L",
+                "stage": "flower initiation + 15 days",
+                "note": "NAA reduces drop"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Iron/Zinc deficiency",
+          "symptoms": "Fe: young-leaf interveinal chlorosis; Zn: small leaves, interveinal yellowing",
+          "cause": "High-pH soils, low micronutrients",
+          "management": {
+            "prevention": [
+              "Basal ZnSO4 10 kg/acre; FYM"
+            ],
+            "monitoring": [
+              "Young-leaf chlorosis"
+            ],
+            "cultural": [
+              "Organic matter"
+            ],
+            "chemical": [
+              {
+                "input": "FeSO4 5 g/L + ZnSO4 5 g/L foliar",
+                "dose": "as stated",
+                "stage": "on symptoms",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Frost / cold (long-duration types)",
+          "symptoms": "Flower/pod damage, blackening in cold snaps",
+          "cause": "Frost during winter flowering of long-duration arhar",
+          "management": {
+            "prevention": [
+              "Choose duration so flowering avoids frost window"
+            ],
+            "monitoring": [
+              "Frost forecast at flowering"
+            ],
+            "cultural": [
+              "Light evening irrigation before frost night; smoke"
+            ],
+            "chemical": [
+              {
+                "input": "KNO3 foliar",
+                "dose": "1%",
+                "stage": "before forecast frost",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Sugarcane / Ganna",
+      "scientificName": "Saccharum officinarum",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Dactyloctenium, Cynodon (grasses)",
+          "Cyperus rotundus (major sedge)",
+          "Trianthema, Amaranthus, Convolvulus, Parthenium (broadleaf)"
+        ],
+        "criticalPeriod": "First 60-120 DAP (wide spacing + slow start = heavy prolonged pressure)",
+        "management": {
+          "prevention": [
+            "Clean setts; optimal planting geometry"
+          ],
+          "monitoring": [
+            "Scout flush at 30, 60, 90 DAP"
+          ],
+          "cultural": [
+            "Inter-cultivation + earthing-up; trash mulching between rows smothers weeds & conserves moisture",
+            "Intercropping (potato/onion/pulse) in early wide gaps"
+          ],
+          "chemical": [
+            {
+              "technical": "Atrazine 50% WP",
+              "dose": "800 g-1 kg/acre",
+              "timing": "PE (0-3 DAP)",
+              "targets": "broad-spectrum grass+BLW",
+              "note": "Moist soil"
+            },
+            {
+              "technical": "Metribuzin 70% WP",
+              "dose": "500 g/acre",
+              "timing": "PE/EPoE",
+              "targets": "grass+BLW",
+              "note": "Rotation partner"
+            },
+            {
+              "technical": "2,4-D Na salt 80% WP",
+              "dose": "400 g/acre",
+              "timing": "PoE (30-45 DAP)",
+              "targets": "broadleaf incl. Convolvulus",
+              "note": ""
+            },
+            {
+              "technical": "Glyphosate 41% SL (directed/hooded)",
+              "dose": "800 ml-1 L/acre",
+              "timing": "PoE inter-row",
+              "targets": "perennial grass+sedge (Cyperus, Cynodon)",
+              "note": "Directed only, avoid cane foliage"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Waterlogging",
+          "symptoms": "Yellowing, stunted growth, reduced tillering, root death; worsens red rot",
+          "cause": "Poor drainage, prolonged flooding",
+          "management": {
+            "prevention": [
+              "Field drainage; ridge-furrow; avoid low spots"
+            ],
+            "monitoring": [
+              "Standing water after rain"
+            ],
+            "cultural": [
+              "Drain excess; trench drainage in waterlogged belts"
+            ],
+            "chemical": [
+              {
+                "input": "Foliar N + micronutrient after drainage",
+                "dose": "2% urea",
+                "stage": "recovery",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Drought / moisture stress",
+          "symptoms": "Leaf rolling, dried tips, poor internode elongation, low tonnage & sugar",
+          "cause": "Dry spells in formative/grand-growth phase",
+          "management": {
+            "prevention": [
+              "Drip irrigation (best for cane); ensure formative-phase irrigation"
+            ],
+            "monitoring": [
+              "Leaf rolling in grand-growth"
+            ],
+            "cultural": [
+              "Trash mulch conserves moisture; drip; skip-furrow in scarcity"
+            ],
+            "chemical": [
+              {
+                "input": "KNO3 / potash foliar anti-stress",
+                "dose": "1-2%",
+                "stage": "under stress",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Iron deficiency chlorosis",
+          "symptoms": "Interveinal yellowing/whitening of young/top leaves",
+          "cause": "Calcareous/high-pH soils, waterlogging",
+          "management": {
+            "prevention": [
+              "Organic matter; avoid over-liming; drainage"
+            ],
+            "monitoring": [
+              "Top-leaf chlorosis"
+            ],
+            "cultural": [
+              "FYM/press-mud incorporation"
+            ],
+            "chemical": [
+              {
+                "input": "Ferrous sulphate foliar",
+                "dose": "5 g/L (2-3 sprays)",
+                "stage": "on symptoms",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Lodging",
+          "symptoms": "Canes fall over in grand-growth/mature phase, sugar loss, harvest difficulty",
+          "cause": "Excess N, tall dense crop, wind, waterlogging",
+          "management": {
+            "prevention": [
+              "Balanced N; adequate K; propping/tying"
+            ],
+            "monitoring": [
+              "Watch canopy height & wind events"
+            ],
+            "cultural": [
+              "Earthing-up; trash-twist propping/tying of canes; detrashing"
+            ],
+            "chemical": [
+              {
+                "input": "Potash top-dress",
+                "dose": "per schedule",
+                "stage": "grand-growth",
+                "note": "K improves stalk strength"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Tiller mortality / poor germination",
+          "symptoms": "Gaps, low tiller survival, uneven stand",
+          "cause": "Poor sett quality, moisture stress, temperature extremes at planting",
+          "management": {
+            "prevention": [
+              "Quality 3-budded setts; sett treatment; optimal planting temp/moisture"
+            ],
+            "monitoring": [
+              "Germination & tiller counts"
+            ],
+            "cultural": [
+              "Gap-filling; light irrigation post-planting; earthing-up to promote tillering"
+            ],
+            "chemical": [
+              {
+                "input": "Foliar N to promote tillering",
+                "dose": "2% urea",
+                "stage": "tillering phase",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Brinjal / Baingan",
+      "scientificName": "Solanum melongena",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Digitaria (grasses)",
+          "Cyperus (sedge)",
+          "Amaranthus, Portulaca, Trianthema, Commelina (broadleaf)"
+        ],
+        "criticalPeriod": "First 30-60 DAT (transplanted, long-duration)",
+        "management": {
+          "prevention": [
+            "Clean transplants; weed-free nursery"
+          ],
+          "monitoring": [
+            "Scout flush at 20 & 45 DAT"
+          ],
+          "cultural": [
+            "Black plastic mulch (controls weeds + conserves moisture)",
+            "Inter-row hoeing + earthing-up at 30 & 55 DAT"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE (pre-transplant, incorporate)",
+              "targets": "grasses + BLW",
+              "note": "Apply before transplanting on moist soil"
+            },
+            {
+              "technical": "Fluchloralin 45% EC",
+              "dose": "800 ml/acre",
+              "timing": "PPI (pre-plant incorporated)",
+              "targets": "grasses + BLW",
+              "note": "Soil-incorporate"
+            },
+            {
+              "technical": "Quizalofop-ethyl 5% EC (directed)",
+              "dose": "400 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses only",
+              "note": "Directed between rows"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Flower drop / poor fruit set",
+          "symptoms": "Excessive flower drop, few fruits",
+          "cause": "Heat/cold extremes, moisture stress, low B, poor pollination",
+          "management": {
+            "prevention": [
+              "Consistent irrigation; balanced nutrition incl. boron"
+            ],
+            "monitoring": [
+              "Track flower drop"
+            ],
+            "cultural": [
+              "Mulch for even moisture"
+            ],
+            "chemical": [
+              {
+                "input": "Borax + NAA foliar",
+                "dose": "Borax 1 g/L + NAA 4-5 ml/15L",
+                "stage": "flowering",
+                "note": "Improves set"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Potassium deficiency",
+          "symptoms": "Marginal leaf scorching/browning on older leaves, poor fruit quality",
+          "cause": "Low K, sandy soils, heavy fruiting drain",
+          "management": {
+            "prevention": [
+              "Adequate MOP basal + top-dress"
+            ],
+            "monitoring": [
+              "Older-leaf margin scorch"
+            ],
+            "cultural": [
+              "Split K application"
+            ],
+            "chemical": [
+              {
+                "input": "0-0-50 (SOP) foliar",
+                "dose": "5 g/L",
+                "stage": "fruiting",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Waterlogging",
+          "symptoms": "Yellowing, wilting, root rot, worsens bacterial wilt",
+          "cause": "Poor drainage",
+          "management": {
+            "prevention": [
+              "Raised beds; drainage"
+            ],
+            "monitoring": [
+              "Low-spot watch after rain"
+            ],
+            "cultural": [
+              "Drain fast; ridge planting"
+            ],
+            "chemical": [
+              {
+                "input": "2% urea foliar post-drainage",
+                "dose": "20 g/L",
+                "stage": "recovery",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Fruit sun-scald & cracking",
+          "symptoms": "Pale scalded patches / cracks on exposed fruit",
+          "cause": "Intense sun on exposed fruit, irregular irrigation",
+          "management": {
+            "prevention": [
+              "Maintain canopy; even irrigation"
+            ],
+            "monitoring": [
+              "Watch exposed fruit in summer"
+            ],
+            "cultural": [
+              "Avoid over-pruning; mulch for steady moisture; timely harvest"
+            ],
+            "chemical": [
+              {
+                "input": "Calcium + boron foliar",
+                "dose": "CaNO3 4 g/L + Borax 1 g/L",
+                "stage": "fruit development",
+                "note": "Reduces cracking"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Chilli / Mirch",
+      "scientificName": "Capsicum annuum",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Digitaria (grasses)",
+          "Cyperus (sedge)",
+          "Amaranthus, Parthenium, Trianthema, Commelina (broadleaf)"
+        ],
+        "criticalPeriod": "First 30-60 DAT",
+        "management": {
+          "prevention": [
+            "Weed-free nursery; clean transplants"
+          ],
+          "monitoring": [
+            "Scout flush at 20 & 45 DAT"
+          ],
+          "cultural": [
+            "Black plastic/straw mulch; inter-row hoeing at 30 & 55 DAT"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE (pre-transplant)",
+              "targets": "grasses + BLW",
+              "note": "Moist soil"
+            },
+            {
+              "technical": "Oxyfluorfen 23.5% EC",
+              "dose": "200 ml/acre",
+              "timing": "PE (pre-transplant)",
+              "targets": "grass+BLW",
+              "note": "Do not spray onto transplants"
+            },
+            {
+              "technical": "Quizalofop-ethyl 5% EC (directed)",
+              "dose": "400 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses only",
+              "note": "Directed inter-row"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Flower & bud drop",
+          "symptoms": "Heavy shedding of flowers/buds, low fruit set",
+          "cause": "Heat >35C, moisture stress, low boron, N excess",
+          "management": {
+            "prevention": [
+              "Even irrigation; balanced N; boron"
+            ],
+            "monitoring": [
+              "Track bud/flower drop in heat"
+            ],
+            "cultural": [
+              "Mulch; avoid moisture swings"
+            ],
+            "chemical": [
+              {
+                "input": "NAA + Borax foliar",
+                "dose": "NAA 4-5 ml/15L + Borax 1 g/L",
+                "stage": "flowering",
+                "note": "Reduces drop"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Die-back look-alike from nutrient stress",
+          "symptoms": "Tip die-back, general decline (distinguish from anthracnose)",
+          "cause": "K/Ca deficiency + stress (often confused with disease)",
+          "management": {
+            "prevention": [
+              "Balanced K/Ca nutrition"
+            ],
+            "monitoring": [
+              "Rule out anthracnose (acervuli) before treating as nutrient"
+            ],
+            "cultural": [
+              "Even irrigation; mulch"
+            ],
+            "chemical": [
+              {
+                "input": "CaNO3 + SOP foliar",
+                "dose": "CaNO3 4 g/L + SOP 5 g/L",
+                "stage": "fruiting",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Fruit sun-scald",
+          "symptoms": "Bleached leathery patches on exposed fruit",
+          "cause": "Intense sun, sparse canopy",
+          "management": {
+            "prevention": [
+              "Maintain canopy; adequate K"
+            ],
+            "monitoring": [
+              "Exposed fruit in peak summer"
+            ],
+            "cultural": [
+              "Avoid over-pruning; timely picking; mulch"
+            ],
+            "chemical": [
+              {
+                "input": "Kaolin/anti-transpirant",
+                "dose": "per label",
+                "stage": "peak heat",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Iron deficiency",
+          "symptoms": "Interveinal yellowing of young leaves",
+          "cause": "High-pH soils, waterlogging",
+          "management": {
+            "prevention": [
+              "Good drainage; avoid over-liming"
+            ],
+            "monitoring": [
+              "Young-leaf chlorosis"
+            ],
+            "cultural": [
+              "FYM"
+            ],
+            "chemical": [
+              {
+                "input": "FeSO4 foliar",
+                "dose": "5 g/L",
+                "stage": "on symptoms",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Capsicum / Shimla Mirch",
+      "scientificName": "Capsicum annuum var. grossum",
+      "weeds": {
+        "keyWeeds": [
+          "Under mulch/polyhouse weeds minimal",
+          "Open field: Echinochloa, Cyperus, Amaranthus, Commelina"
+        ],
+        "criticalPeriod": "First 30-45 DAT",
+        "management": {
+          "prevention": [
+            "Black plastic mulch (standard in capsicum, near-total weed control)",
+            "Clean media in protected culture"
+          ],
+          "monitoring": [
+            "Check planting holes & aisles"
+          ],
+          "cultural": [
+            "Mulch + manual removal in holes/aisles; no herbicide needed under polyhouse"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC (open field only)",
+              "dose": "1 L/acre",
+              "timing": "PE (pre-transplant)",
+              "targets": "grass+BLW",
+              "note": "Not needed where mulched"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Blossom-end rot (BER)",
+          "symptoms": "Sunken dark leathery rot at blossom end of fruit (NOT a disease)",
+          "cause": "Calcium deficiency + irregular irrigation/humidity swings (common in polyhouse)",
+          "management": {
+            "prevention": [
+              "Steady irrigation (drip + fertigation); adequate Ca; avoid moisture swings & excess N/K"
+            ],
+            "monitoring": [
+              "Inspect fruit blossom end"
+            ],
+            "cultural": [
+              "Consistent drip scheduling; mulch"
+            ],
+            "chemical": [
+              {
+                "input": "Calcium nitrate foliar",
+                "dose": "4-5 g/L",
+                "stage": "early fruit development, repeat weekly",
+                "note": "Classic BER fix"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Flower & fruit drop",
+          "symptoms": "Shedding of flowers/young fruit",
+          "cause": "Temp extremes (>32C day / cold nights), low light, humidity swings, poor pollination in polyhouse",
+          "management": {
+            "prevention": [
+              "Ventilation/cooling; foggers; maintain 20-30C"
+            ],
+            "monitoring": [
+              "Track drop vs temp/humidity log"
+            ],
+            "cultural": [
+              "Shade-net in summer; pollination aid (air blower/gentle shake)"
+            ],
+            "chemical": [
+              {
+                "input": "NAA foliar",
+                "dose": "4-5 ml/15L",
+                "stage": "flowering",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Sun-scald / heat stress",
+          "symptoms": "Bleached scalded patches on exposed fruit, wilting midday",
+          "cause": "High light/heat, sparse canopy, poor cooling",
+          "management": {
+            "prevention": [
+              "Shade-net (35-50%) in summer; maintain canopy"
+            ],
+            "monitoring": [
+              "Fruit exposure & midday wilt"
+            ],
+            "cultural": [
+              "Foggers/evaporative cooling; timely harvest"
+            ],
+            "chemical": [
+              {
+                "input": "Kaolin/anti-transpirant + Ca",
+                "dose": "per label",
+                "stage": "peak heat",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Nutrient imbalance (Fe/Mg deficiency in fertigation)",
+          "symptoms": "Fe: young-leaf interveinal chlorosis; Mg: older-leaf interveinal yellowing",
+          "cause": "Imbalanced fertigation, high-pH media/water",
+          "management": {
+            "prevention": [
+              "Balanced water-soluble fertigation; monitor media EC/pH"
+            ],
+            "monitoring": [
+              "Leaf symptoms + EC/pH log"
+            ],
+            "cultural": [
+              "Correct water pH to 5.5-6.5"
+            ],
+            "chemical": [
+              {
+                "input": "Chelated Fe (Fe-EDDHA) / MgSO4 foliar",
+                "dose": "Fe 0.5 g/L; MgSO4 5 g/L",
+                "stage": "on symptoms",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Cauliflower / Phool Gobhi",
+      "scientificName": "Brassica oleracea var. botrytis",
+      "weeds": {
+        "keyWeeds": [
+          "Chenopodium (bathua), Anagallis, Melilotus (broadleaf, Rabi)",
+          "Poa, Phalaris (grasses)",
+          "Cyperus (sedge)"
+        ],
+        "criticalPeriod": "First 30-45 DAT",
+        "management": {
+          "prevention": [
+            "Weed-free nursery; clean transplants"
+          ],
+          "monitoring": [
+            "Scout flush at 15 & 30 DAT"
+          ],
+          "cultural": [
+            "Inter-row hoeing + earthing-up at 25 & 45 DAT; mulching"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE (pre-transplant / 2-3 DAT)",
+              "targets": "grasses + BLW",
+              "note": "Moist soil; do not spray on foliage"
+            },
+            {
+              "technical": "Oxyfluorfen 23.5% EC",
+              "dose": "200 ml/acre",
+              "timing": "PE (pre-transplant)",
+              "targets": "grass+BLW",
+              "note": ""
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Whiptail (Molybdenum deficiency)",
+          "symptoms": "Strap-like/ribbon narrow distorted leaves, poor/no curd; interveinal chlorosis first",
+          "cause": "Mo deficiency, acidic soils (low pH)",
+          "management": {
+            "prevention": [
+              "Lime acidic soils to pH 6.5; adequate Mo"
+            ],
+            "monitoring": [
+              "Watch strappy new leaves in nursery/early field"
+            ],
+            "cultural": [
+              "Liming; treat nursery beds with Mo"
+            ],
+            "chemical": [
+              {
+                "input": "Sodium molybdate foliar",
+                "dose": "1 g/L",
+                "stage": "nursery + early field on symptoms",
+                "note": "Classic whiptail fix"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Browning / Hollow stem (Boron deficiency)",
+          "symptoms": "Brown/rusty water-soaked patches on curd, hollow/cracked stem, bitter curd",
+          "cause": "B deficiency, light/high-pH soils, dry spells",
+          "management": {
+            "prevention": [
+              "Basal Borax 4-5 kg/acre in B-deficient soils"
+            ],
+            "monitoring": [
+              "Inspect curd & split stem at curding"
+            ],
+            "cultural": [
+              "Maintain even moisture (B uptake drops in dry soil)"
+            ],
+            "chemical": [
+              {
+                "input": "Borax foliar",
+                "dose": "1-2 g/L",
+                "stage": "pre-curd & curd initiation",
+                "note": "Classic browning fix"
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Buttoning (tiny premature curd)",
+          "symptoms": "Small useless curds form too early on undersized plants",
+          "cause": "Wrong maturity-group variety for season, N deficiency, cold/stress at seedling",
+          "management": {
+            "prevention": [
+              "Pick correct early/mid/late variety for the sowing window; healthy N nutrition"
+            ],
+            "monitoring": [
+              "Watch early curd on small plants"
+            ],
+            "cultural": [
+              "Avoid transplant shock/stress; adequate N early"
+            ],
+            "chemical": [
+              {
+                "input": "2% urea foliar to push vegetative growth",
+                "dose": "20 g/L",
+                "stage": "early growth",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Riceyness / fuzzy curd (heat)",
+          "symptoms": "Curd surface becomes loose, ricey, fuzzy (bracts/flower stalks show)",
+          "cause": "High temperature during curd development, delayed harvest",
+          "management": {
+            "prevention": [
+              "Season-appropriate variety; timely sowing"
+            ],
+            "monitoring": [
+              "Watch curd texture in warm spells"
+            ],
+            "cultural": [
+              "Harvest promptly at compact stage; shade in heat"
+            ],
+            "chemical": [
+              {
+                "input": "None (variety/timing based)",
+                "dose": "-",
+                "stage": "-",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Cabbage / Gobhi (Patta Gobhi)",
+      "scientificName": "Brassica oleracea var. capitata",
+      "weeds": {
+        "keyWeeds": [
+          "Chenopodium, Melilotus, Anagallis (broadleaf, Rabi)",
+          "Poa, Phalaris (grasses)",
+          "Cyperus (sedge)"
+        ],
+        "criticalPeriod": "First 30-45 DAT",
+        "management": {
+          "prevention": [
+            "Weed-free nursery; clean transplants"
+          ],
+          "monitoring": [
+            "Scout flush at 15 & 30 DAT"
+          ],
+          "cultural": [
+            "Inter-row hoeing + earthing-up at 25 & 45 DAT; mulching"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE (pre-transplant / 2-3 DAT)",
+              "targets": "grasses + BLW",
+              "note": "Moist soil"
+            },
+            {
+              "technical": "Oxyfluorfen 23.5% EC",
+              "dose": "200 ml/acre",
+              "timing": "PE (pre-transplant)",
+              "targets": "grass+BLW",
+              "note": ""
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Head splitting / cracking",
+          "symptoms": "Mature heads split open, quality & market loss",
+          "cause": "Sudden heavy irrigation/rain after dry spell (rapid water uptake) at maturity, delayed harvest",
+          "management": {
+            "prevention": [
+              "Even irrigation; avoid heavy irrigation after dry spell near maturity"
+            ],
+            "monitoring": [
+              "Watch mature heads after rain"
+            ],
+            "cultural": [
+              "Harvest promptly at firm stage; root-pruning (twist plant) slows uptake to delay split"
+            ],
+            "chemical": [
+              {
+                "input": "None (water management based)",
+                "dose": "-",
+                "stage": "maturity",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Tip-burn (Calcium deficiency)",
+          "symptoms": "Brown scorched margins of inner wrapper leaves inside head",
+          "cause": "Ca deficiency + rapid growth/moisture swings + high N/K",
+          "management": {
+            "prevention": [
+              "Steady irrigation; adequate Ca; avoid excess N"
+            ],
+            "monitoring": [
+              "Cut sample heads to inspect inner leaf margins"
+            ],
+            "cultural": [
+              "Even moisture; mulch"
+            ],
+            "chemical": [
+              {
+                "input": "Calcium nitrate foliar",
+                "dose": "4 g/L",
+                "stage": "head development",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Bolting (premature flowering)",
+          "symptoms": "Plant sends up flower stalk without forming proper head",
+          "cause": "Prolonged low temperature (vernalisation) on over-mature transplants",
+          "management": {
+            "prevention": [
+              "Right variety for season; correct transplant age; avoid too-early cold-season sowing"
+            ],
+            "monitoring": [
+              "Watch for stalk elongation"
+            ],
+            "cultural": [
+              "Use young healthy transplants; season-appropriate variety"
+            ],
+            "chemical": [
+              {
+                "input": "None (variety/timing based)",
+                "dose": "-",
+                "stage": "-",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Boron/Mg deficiency",
+          "symptoms": "B: hollow/cracked stem, corky head; Mg: interveinal yellowing of older leaves",
+          "cause": "Light/high-pH soils, heavy leaching",
+          "management": {
+            "prevention": [
+              "Basal Borax 4-5 kg/acre; adequate Mg"
+            ],
+            "monitoring": [
+              "Split stem; older-leaf yellowing"
+            ],
+            "cultural": [
+              "Balanced nutrition; even moisture"
+            ],
+            "chemical": [
+              {
+                "input": "Borax 1-2 g/L / MgSO4 5 g/L foliar",
+                "dose": "as stated",
+                "stage": "on symptoms",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Cucumber / Khira",
+      "scientificName": "Cucumis sativus",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Digitaria (grasses)",
+          "Cyperus (sedge)",
+          "Amaranthus, Trianthema, Commelina (broadleaf)"
+        ],
+        "criticalPeriod": "First 25-45 DAS",
+        "management": {
+          "prevention": [
+            "Clean seed; plastic mulch on beds"
+          ],
+          "monitoring": [
+            "Scout flush at 15 & 30 DAS"
+          ],
+          "cultural": [
+            "Black plastic mulch (best: weeds + moisture + clean fruit + less fruit rot); trellising; hand weeding in furrows"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE (0-3 DAS)",
+              "targets": "grasses + BLW",
+              "note": "Moist soil; along planting rows"
+            },
+            {
+              "technical": "Quizalofop-ethyl 5% EC (directed)",
+              "dose": "400 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses only",
+              "note": "Directed inter-row"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Poor fruit set / mis-shapen fruit",
+          "symptoms": "Flower drop, curved/crooked/nubby fruit",
+          "cause": "Poor pollination (low bee activity/polyhouse), temp extremes, K/B deficiency, moisture stress",
+          "management": {
+            "prevention": [
+              "Ensure pollinators (open field); gynoecious hybrids need pollinizer or parthenocarpic types in polyhouse"
+            ],
+            "monitoring": [
+              "Track set & fruit shape"
+            ],
+            "cultural": [
+              "Introduce bees; even irrigation; balanced K/B"
+            ],
+            "chemical": [
+              {
+                "input": "Borax + SOP foliar",
+                "dose": "Borax 1 g/L + SOP 5 g/L",
+                "stage": "flowering-fruiting",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Bitterness in fruit",
+          "symptoms": "Bitter fruit (cucurbitacin buildup)",
+          "cause": "Moisture/temperature stress, wide swings, low fertility",
+          "management": {
+            "prevention": [
+              "Steady irrigation; avoid stress; balanced nutrition"
+            ],
+            "monitoring": [
+              "Taste-check under stress spells"
+            ],
+            "cultural": [
+              "Consistent moisture (drip + mulch); avoid drought-then-flood"
+            ],
+            "chemical": [
+              {
+                "input": "Balanced KNO3 foliar",
+                "dose": "1%",
+                "stage": "fruiting under stress",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Waterlogging",
+          "symptoms": "Yellowing, wilting, root rot, vine collapse",
+          "cause": "Poor drainage, heavy rain",
+          "management": {
+            "prevention": [
+              "Raised beds + drainage; plastic mulch sheds water"
+            ],
+            "monitoring": [
+              "Low-spot watch after rain"
+            ],
+            "cultural": [
+              "Drain within 24h; grow on ridges"
+            ],
+            "chemical": [
+              {
+                "input": "2% urea foliar post-drainage",
+                "dose": "20 g/L",
+                "stage": "recovery",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Nitrogen / Magnesium deficiency",
+          "symptoms": "N: older-leaf yellowing, pale vines; Mg: interveinal yellowing older leaves",
+          "cause": "Leaching (sandy soils), heavy fruiting drain",
+          "management": {
+            "prevention": [
+              "Split N via fertigation; adequate Mg"
+            ],
+            "monitoring": [
+              "Leaf-colour by age"
+            ],
+            "cultural": [
+              "Fertigation scheduling"
+            ],
+            "chemical": [
+              {
+                "input": "2% urea / MgSO4 5 g/L foliar",
+                "dose": "as stated",
+                "stage": "on symptoms",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Bhindi / Okra",
+      "scientificName": "Abelmoschus esculentus",
+      "weeds": {
+        "keyWeeds": [
+          "Echinochloa, Digitaria, Dactyloctenium (grasses)",
+          "Cyperus (sedge)",
+          "Amaranthus, Trianthema, Commelina (broadleaf)"
+        ],
+        "criticalPeriod": "First 40-45 DAS",
+        "management": {
+          "prevention": [
+            "Clean seed; optimal population"
+          ],
+          "monitoring": [
+            "Scout flush at 20 & 40 DAS"
+          ],
+          "cultural": [
+            "1-2 inter-row hoeings at 20 & 40 DAS; mulching; keep weed-free first 40-45 days"
+          ],
+          "chemical": [
+            {
+              "technical": "Pendimethalin 30% EC",
+              "dose": "1 L/acre",
+              "timing": "PE (0-3 DAS)",
+              "targets": "grasses + BLW",
+              "note": "Moist soil"
+            },
+            {
+              "technical": "Quizalofop-ethyl 5% EC (directed)",
+              "dose": "400 ml/acre",
+              "timing": "PoE",
+              "targets": "grasses only",
+              "note": "For grassy escapes"
+            }
+          ]
+        }
+      },
+      "abioticStress": [
+        {
+          "stress": "Flower & bud drop",
+          "symptoms": "Shedding of buds/flowers, poor pod set",
+          "cause": "Heat >40C, moisture stress, N excess, low boron",
+          "management": {
+            "prevention": [
+              "Even irrigation; balanced N; boron"
+            ],
+            "monitoring": [
+              "Track drop in heat"
+            ],
+            "cultural": [
+              "Mulch; avoid moisture swings"
+            ],
+            "chemical": [
+              {
+                "input": "NAA + Borax foliar",
+                "dose": "NAA 4-5 ml/15L + Borax 1 g/L",
+                "stage": "flowering",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Fibrous / hard pods",
+          "symptoms": "Pods turn woody, fibrous, unmarketable",
+          "cause": "Delayed/infrequent picking, moisture stress, over-maturity",
+          "management": {
+            "prevention": [
+              "Pick every 2-3 days at tender stage; steady irrigation"
+            ],
+            "monitoring": [
+              "Pod tenderness at each pick"
+            ],
+            "cultural": [
+              "Frequent harvest; mulch for even moisture"
+            ],
+            "chemical": [
+              {
+                "input": "None (harvest management based)",
+                "dose": "-",
+                "stage": "harvest",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Iron / Zinc deficiency",
+          "symptoms": "Fe: young-leaf interveinal chlorosis; Zn: small leaves, interveinal yellowing, stunting",
+          "cause": "High-pH/sandy soils, heavy cropping",
+          "management": {
+            "prevention": [
+              "Basal ZnSO4 10 kg/acre; FYM"
+            ],
+            "monitoring": [
+              "Young-leaf chlorosis"
+            ],
+            "cultural": [
+              "Organic matter"
+            ],
+            "chemical": [
+              {
+                "input": "FeSO4 5 g/L + ZnSO4 5 g/L foliar",
+                "dose": "as stated",
+                "stage": "on symptoms",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "stress": "Waterlogging",
+          "symptoms": "Yellowing, wilting, stunting, root rot",
+          "cause": "Poor drainage, heavy rain",
+          "management": {
+            "prevention": [
+              "Ridge sowing; drainage"
+            ],
+            "monitoring": [
+              "Low-spot watch after rain"
+            ],
+            "cultural": [
+              "Drain within 24h"
+            ],
+            "chemical": [
+              {
+                "input": "2% urea foliar post-drainage",
+                "dose": "20 g/L",
+                "stage": "recovery",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

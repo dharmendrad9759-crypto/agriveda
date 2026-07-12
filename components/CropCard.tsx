@@ -1,30 +1,54 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { cropCatalog } from "@/data/crop-catalog";
+import { Plus } from "lucide-react";
 import { fadeUp } from "@/lib/motion/variants";
+import {
+  formatCategoryLabel,
+  getCropHindiName,
+  getCropImageUrl,
+  parseSeasonTag,
+  seasonBadgeClass,
+} from "@/lib/crops/crop-display";
 import type { Crop } from "@/types/crop";
-
-const EMOJI_BY_SLUG = Object.fromEntries(cropCatalog.map((c) => [c.slug, c.emoji]));
-
-/** Category accent — corner dot & subtle border tint only, no text */
-const CATEGORY_ACCENT: Record<Crop["category"], string> = {
-  Cereals: "#f59e0b",
-  Vegetables: "#10b981",
-  Pulses: "#14b8a6",
-  Millets: "#84cc16",
-  "Cash-Crops": "#f472b6",
-};
 
 interface CropCardProps {
   crop: Crop;
   index: number;
+  variant?: "grid" | "list";
 }
 
-export default function CropCard({ crop, index }: CropCardProps) {
-  const emoji = EMOJI_BY_SLUG[crop.slug] ?? "🌱";
-  const accent = CATEGORY_ACCENT[crop.category];
+export default function CropCard({ crop, index, variant = "grid" }: CropCardProps) {
+  const hindi = getCropHindiName(crop.slug);
+  const season = parseSeasonTag(crop.suitableSeason);
+  const image = getCropImageUrl(crop);
+
+  if (variant === "list") {
+    return (
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={index}>
+        <Link
+          href={`/crops/${crop.slug}`}
+          className="av-card av-card-hover flex items-center gap-4 overflow-hidden p-3"
+        >
+          <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl">
+            <Image src={image} alt={crop.name} fill className="object-cover" sizes="80px" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-bold text-[var(--av-text-primary)]">
+              {crop.name}
+              {hindi ? ` (${hindi})` : ""}
+            </p>
+            <p className="text-xs text-[var(--av-text-muted)]">{formatCategoryLabel(crop.category)}</p>
+          </div>
+          <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${seasonBadgeClass(season)}`}>
+            {season}
+          </span>
+        </Link>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -32,56 +56,53 @@ export default function CropCard({ crop, index }: CropCardProps) {
       variants={fadeUp}
       initial="hidden"
       animate="visible"
-      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+      exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.2 } }}
       custom={index}
       transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: -4 }}
       className="h-full"
-    >      <Link href={`/crops/${crop.slug}`} className="group block h-full">
-        <article
-          className="relative flex aspect-square flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-[#1f2937] bg-[#111827] p-4 transition-[box-shadow,border-color] duration-200 ease-out group-hover:border-[#10b981]/50 group-hover:shadow-[0_8px_32px_rgba(16,185,129,0.15),0_0_0_1px_rgba(16,185,129,0.2)]"
-          style={{
-            boxShadow: `inset 0 0 0 1px ${accent}12`,
-          }}
-        >
-          {/* Category accent — corner dot */}
-          <span
-            className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full shadow-[0_0_8px_currentColor]"
-            style={{ backgroundColor: accent, color: accent }}
-            aria-hidden
-          />
-
-          {/* Subtle category glow on hover */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-            style={{
-              background: `radial-gradient(circle at 50% 30%, ${accent}18, transparent 65%)`,
-            }}
-            aria-hidden
-          />
-
-          {/* Icon with shimmer */}
-          <div className="relative flex h-14 w-14 items-center justify-center">
-            <div
-              className="absolute inset-0 rounded-full opacity-40 blur-md transition-opacity duration-200 group-hover:opacity-70"
-              style={{ background: `linear-gradient(135deg, ${accent}40, transparent)` }}
-              aria-hidden
+    >
+      <Link href={`/crops/${crop.slug}`} className="group block h-full">
+        <article className="av-card av-card-hover flex h-full flex-col overflow-hidden p-0">
+          <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--av-surface-muted)]">
+            <Image
+              src={image}
+              alt={crop.name}
+              fill
+              className="object-cover transition duration-300 group-hover:scale-105"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
-            <motion.span
-              className="relative text-[2rem] leading-none select-none"
-              animate={{ y: [0, -2, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }}
+            <span
+              className={`absolute right-2 top-2 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-sm ${seasonBadgeClass(season)}`}
             >
-              {emoji}
-            </motion.span>
+              {season}
+            </span>
           </div>
-
-          {/* Name only */}
-          <h3 className="px-2 text-center text-[18px] font-semibold leading-snug tracking-tight text-[#f1f5f9] transition-colors duration-200 group-hover:text-[#10b981] sm:text-[19px]">
-            {crop.name}
-          </h3>
+          <div className="flex flex-1 flex-col p-3">
+            <h3 className="text-sm font-bold leading-snug text-[var(--av-text-primary)] group-hover:text-[var(--av-accent)]">
+              {crop.name}
+              {hindi ? ` (${hindi})` : ""}
+            </h3>
+            <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">{formatCategoryLabel(crop.category)}</p>
+          </div>
         </article>
+      </Link>
+    </motion.div>
+  );
+}
+
+export function AddCustomCropCard({ index }: { index: number }) {
+  return (
+    <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={index} className="h-full">
+      <Link
+        href="/select-crops"
+        className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[var(--av-accent)]/40 bg-[var(--av-accent-soft)]/30 p-6 text-center transition hover:border-[var(--av-accent)] hover:bg-[var(--av-accent-soft)]/50"
+      >
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--av-accent)] text-white shadow-md">
+          <Plus className="h-6 w-6" />
+        </span>
+        <p className="text-sm font-bold text-[var(--av-accent)]">Add Custom Crop</p>
+        <p className="text-[11px] text-[var(--av-text-muted)]">Add crop not in the list</p>
       </Link>
     </motion.div>
   );

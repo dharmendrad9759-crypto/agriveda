@@ -1,0 +1,5173 @@
+{
+  "exportVersion": "1.0",
+  "sourceDocuments": [
+    "Agriveda Pest Management JSON (Pages A-D)",
+    "Agriveda Disease Management JSON (Pages A-D)"
+  ],
+  "compiledAt": "2026-07-10T04:02:01.829Z",
+  "crops": [
+    {
+      "crop": "Arhar / Pigeon Pea / Tur",
+      "scientificName": "Cajanus cajan",
+      "pests": [
+        {
+          "name": "Gram Pod Borer",
+          "scientificName": "Helicoverpa armigera",
+          "iracRotationNote": "Rotate 28 -> 6 -> 22A -> 5; never repeat; NPV-based IPM",
+          "damageSymptoms": "Larva bores pods, head inside, eats developing seeds; #1 yield loss",
+          "etl": "1-2 larvae/plant OR 5% pod damage OR 8 moths/trap/night",
+          "management": {
+            "prevention": [
+              "Intercrop with sorghum/maize (bird perch + parasitoid harbour)",
+              "Trap crop marigold border",
+              "Timely sowing"
+            ],
+            "monitoring": [
+              "Helicoverpa pheromone traps 4-5/acre; economic threshold on catches",
+              "Scout pods weekly"
+            ],
+            "cultural": [
+              "Bird perches @ 20/acre",
+              "Shake plants to dislodge larvae onto ground",
+              "Deep summer ploughing kills pupae"
+            ],
+            "biological": [
+              "HaNPV @ 100-250 LE/acre (2 sprays)",
+              "Bt kurstaki @ 400 g/acre small larvae",
+              "Trichogramma chilonis + Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Azadirachtin 1500 ppm",
+                "dose": "400 ml/acre",
+                "iracGroup": "UN",
+                "stage": "early",
+                "note": "Egg-laying deterrent + neonates"
+              },
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "At flower initiation"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Peak podding"
+              },
+              {
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "40 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Alternate diamide"
+              },
+              {
+                "technical": "Indoxacarb 15.8% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "22A",
+                "stage": "advanced",
+                "note": "Grown larvae"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Pod Fly",
+          "scientificName": "Melanagromyza obtusa",
+          "iracRotationNote": "Systemic + contact at podding; hard to reach inside pod",
+          "damageSymptoms": "Maggot feeds inside seed; no external hole till exit; shrivelled/partly-eaten seed",
+          "etl": "Manage at pod formation (concealed)",
+          "management": {
+            "prevention": [
+              "Early-maturing varieties escape",
+              "Avoid late crop"
+            ],
+            "monitoring": [
+              "Dissect random pods for maggots/pupae"
+            ],
+            "cultural": [
+              "Destroy volunteer/ratoon pigeonpea harbouring pest"
+            ],
+            "biological": [
+              "Euderus/Ormyrus parasitoids; conserve"
+            ],
+            "chemical": [
+              {
+                "technical": "Indoxacarb 15.8% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "22A",
+                "stage": "early",
+                "note": "At pod initiation"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Overlaps borer control"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Plume Moth",
+          "scientificName": "Exelastis atomosa",
+          "iracRotationNote": "Overlaps with pod borer sprays",
+          "damageSymptoms": "Larva scrapes pod surface & bores, feeds on seeds; frass at feeding site",
+          "etl": "Manage with pod-borer window",
+          "management": {
+            "prevention": [
+              "Timely sowing"
+            ],
+            "monitoring": [
+              "Scout pods for scraping & frass"
+            ],
+            "cultural": [
+              "Field sanitation"
+            ],
+            "biological": [
+              "Trichogramma; Bt for young larvae"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Covered by borer sprays"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Pod Sucking Bugs",
+          "scientificName": "Clavigralla / Riptortus spp.",
+          "iracRotationNote": "Short-residual at podding",
+          "damageSymptoms": "Sucks developing seeds -> shrivelled, discoloured, poor germination",
+          "etl": "Need-based at podding",
+          "management": {
+            "prevention": [
+              "Weed-free bunds"
+            ],
+            "monitoring": [
+              "Count bugs on pods at dawn"
+            ],
+            "cultural": [
+              "Remove alternate hosts"
+            ],
+            "biological": [
+              "Conserve reduviids"
+            ],
+            "chemical": [
+              {
+                "technical": "Lambda-cyhalothrin 5% EC",
+                "dose": "160 ml/acre",
+                "iracGroup": "3A",
+                "stage": "advanced",
+                "note": "Only at podding for bugs"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Fusarium Wilt",
+          "pathogen": "Fusarium udum",
+          "type": "fungal",
+          "fracRotationNote": "Resistant varieties + biological; chemical limited",
+          "symptoms": "Progressive wilting, partial/full plant yellowing; internal black-brown vascular streak in split stem",
+          "favourableConditions": "Wilt-sick soils, monocropping, 20-30C",
+          "management": {
+            "prevention": [
+              "Wilt-resistant varieties (Maruti/ICP-8863, Asha)",
+              "Seed treatment Trichoderma @ 10 g/kg",
+              "Long rotation"
+            ],
+            "monitoring": [
+              "Scout wilting; split stem for vascular browning"
+            ],
+            "cultural": [
+              "Crop rotation with non-host; intercrop sorghum reduces wilt",
+              "Rogue infected plants"
+            ],
+            "biological": [
+              "Trichoderma viride soil application with FYM @ 2 kg/acre"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (seed treatment + drench)",
+                "dose": "2 g/kg seed / 1 g/L drench",
+                "fracGroup": "1",
+                "stage": "preventive",
+                "note": "Supplements resistance"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Sterility Mosaic Disease (SMD)",
+          "pathogen": "Pigeonpea Sterility Mosaic Virus (eriophyid mite-vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; target eriophyid mite vector",
+          "symptoms": "Bushy pale mosaic foliage, no flowering/pods (sterility), stunting",
+          "favourableConditions": "High mite activity, ratoon/volunteer plants",
+          "management": {
+            "prevention": [
+              "SMD-resistant varieties (Asha, Maruti)",
+              "Rogue infected plants early"
+            ],
+            "monitoring": [
+              "Scout bushy mosaic; check for eriophyid mites"
+            ],
+            "cultural": [
+              "Destroy volunteer/ratoon pigeonpea (inoculum source)",
+              "Avoid overlapping crops"
+            ],
+            "biological": [
+              "Conserve predatory mites"
+            ],
+            "chemical": [
+              {
+                "technical": "Spiromesifen 22.9% SC (mite vector)",
+                "dose": "200 ml/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Control eriophyid vector"
+              },
+              {
+                "technical": "Wettable sulphur 80% WG (mite)",
+                "dose": "500 g/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Phytophthora Blight",
+          "pathogen": "Phytophthora drechsleri f.sp. cajani",
+          "type": "fungal",
+          "fracRotationNote": "Metalaxyl+Mancozeb; drainage-first",
+          "symptoms": "Dark stem lesions, girdling, collapse; worse in waterlogged patches",
+          "favourableConditions": "Waterlogging, heavy rain, high humidity",
+          "management": {
+            "prevention": [
+              "Well-drained fields; ridge planting; resistant lines"
+            ],
+            "monitoring": [
+              "Scout stem lesions after heavy rain"
+            ],
+            "cultural": [
+              "Improve drainage; avoid low spots; rotation"
+            ],
+            "biological": [
+              "Trichoderma soil application"
+            ],
+            "chemical": [
+              {
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "400 g/acre + soil drench",
+                "fracGroup": "4+M3",
+                "stage": "preventive",
+                "note": "On appearance / after waterlogging"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Dry Root Rot",
+          "pathogen": "Macrophomina phaseolina",
+          "type": "fungal",
+          "fracRotationNote": "Seed treatment + cultural",
+          "symptoms": "Sudden wilting in dry spell, shredded bark with black microsclerotia",
+          "favourableConditions": "High temp + moisture stress",
+          "management": {
+            "prevention": [
+              "Seed treatment Trichoderma @ 10 g/kg",
+              "Avoid moisture stress"
+            ],
+            "monitoring": [
+              "Split base for microsclerotia"
+            ],
+            "cultural": [
+              "Deep ploughing; organic matter; rotation"
+            ],
+            "biological": [
+              "Trichoderma viride soil"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (drench)",
+                "dose": "1 g/L on patches",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": "Limited"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Bajra / Pearl Millet",
+      "scientificName": "Pennisetum glaucum",
+      "pests": [
+        {
+          "name": "Shoot Fly",
+          "scientificName": "Atherigona approximata",
+          "iracRotationNote": "Seed treatment primary; minimal foliar",
+          "damageSymptoms": "Dead heart in seedlings (central shoot dries, pulls out easily)",
+          "etl": "10% dead hearts in first 3 weeks",
+          "management": {
+            "prevention": [
+              "Seed treatment Imidacloprid 70% WS @ 5 g/kg",
+              "Early sowing with monsoon onset",
+              "Higher seed rate"
+            ],
+            "monitoring": [
+              "Dead-heart counts in first 3 weeks"
+            ],
+            "cultural": [
+              "Rogue dead-heart seedlings",
+              "Thin to healthy stand"
+            ],
+            "biological": [
+              "Conserve parasitoids; limited options"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "Foliar if untreated seed"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Stem Borer",
+          "scientificName": "Chilo partellus",
+          "iracRotationNote": "Rotate 14 / 28",
+          "damageSymptoms": "Dead heart, stem tunnelling",
+          "etl": "10% dead hearts",
+          "management": {
+            "prevention": [
+              "Timely sowing, resistant lines"
+            ],
+            "monitoring": [
+              "Shot-hole & dead-heart scouting"
+            ],
+            "cultural": [
+              "Destroy stubble"
+            ],
+            "biological": [
+              "Trichogramma chilonis @ 20,000/acre"
+            ],
+            "chemical": [
+              {
+                "technical": "Cartap 4G",
+                "dose": "8 kg/acre in whorl",
+                "iracGroup": "14",
+                "stage": "early",
+                "note": "At dead-heart onset"
+              }
+            ]
+          }
+        },
+        {
+          "name": "White Grub",
+          "scientificName": "Holotrichia consanguinea",
+          "iracRotationNote": "Soil + seed treatment; light-trap adults",
+          "damageSymptoms": "Grubs feed on roots -> sudden wilting/drying of plants in patches (sandy soils)",
+          "etl": "1-2 grubs/m2 or visible wilting patches",
+          "management": {
+            "prevention": [
+              "Seed treatment Fipronil 5% SC @ 6 ml/kg",
+              "Deep summer ploughing to expose grubs"
+            ],
+            "monitoring": [
+              "Dig root zone in wilting patches; count grubs",
+              "Light traps at monsoon onset to gauge beetle emergence"
+            ],
+            "cultural": [
+              "Community light-trapping of adult beetles on first rains",
+              "Collect beetles from host trees (neem/ber) at dusk"
+            ],
+            "biological": [
+              "Metarhizium anisopliae soil application @ 2 kg/acre with FYM",
+              "EPN Heterorhabditis"
+            ],
+            "chemical": [
+              {
+                "technical": "Chlorpyriphos 20% EC",
+                "dose": "1 L/acre with irrigation / soil drench",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Target grubs in root zone"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Grey Weevil / Blister Beetle",
+          "scientificName": "Myllocerus / Mylabris spp.",
+          "iracRotationNote": "Need-based at earhead",
+          "damageSymptoms": "Weevil notches leaf margins; blister beetle feeds on flowers/pollen at earhead",
+          "etl": "Need-based at flowering",
+          "management": {
+            "prevention": [
+              "Field sanitation"
+            ],
+            "monitoring": [
+              "Earhead inspection at flowering"
+            ],
+            "cultural": [
+              "Hand-collect blister beetles (wear gloves; they blister skin)"
+            ],
+            "biological": [
+              "Limited"
+            ],
+            "chemical": [
+              {
+                "technical": "Quinalphos 25% EC",
+                "dose": "400 ml/acre",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Only if damaging at earhead"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Downy Mildew / Green Ear",
+          "pathogen": "Sclerospora graminicola",
+          "type": "fungal",
+          "fracRotationNote": "Seed treatment Metalaxyl is primary; foliar Metalaxyl+Mancozeb",
+          "symptoms": "Chlorosis + white downy underside; ear head converts to leafy green structures (green ear); stunting",
+          "favourableConditions": "High humidity, 20-25C, waterlogging",
+          "management": {
+            "prevention": [
+              "Resistant hybrids (HHB-67 Improved)",
+              "Seed treatment Metalaxyl 35% WS @ 6 g/kg",
+              "Clean/certified seed"
+            ],
+            "monitoring": [
+              "Scout for downy patches & green-ear at booting"
+            ],
+            "cultural": [
+              "Rogue & destroy infected plants early",
+              "Crop rotation; avoid waterlogging",
+              "Deep ploughing"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens seed treatment"
+            ],
+            "chemical": [
+              {
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "400 g/acre",
+                "fracGroup": "4+M3",
+                "stage": "preventive",
+                "note": "Early foliar; once green ear forms, no cure"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Ergot / Sugary Disease",
+          "pathogen": "Claviceps fusiformis",
+          "type": "fungal",
+          "fracRotationNote": "Preventive at flowering only",
+          "symptoms": "Pink sticky honeydew oozing from florets -> hard black sclerotia (toxic to livestock/humans)",
+          "favourableConditions": "High humidity/rain at flowering",
+          "management": {
+            "prevention": [
+              "Clean seed free of sclerotia (float in 10% salt solution to remove)",
+              "Resistant hybrids"
+            ],
+            "monitoring": [
+              "Watch honeydew on ears at flowering"
+            ],
+            "cultural": [
+              "Deep ploughing to bury sclerotia",
+              "Rotation; rogue infected ears"
+            ],
+            "biological": [
+              "-"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": "At boot + 50% flowering"
+              },
+              {
+                "technical": "Propiconazole 25% EC",
+                "dose": "200 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": "Second flowering spray"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Smut",
+          "pathogen": "Moesziomyces penicillariae",
+          "type": "fungal",
+          "fracRotationNote": "Preventive at earhead",
+          "symptoms": "Individual grains replaced by larger green-black sori (smut balls)",
+          "favourableConditions": "High humidity at flowering",
+          "management": {
+            "prevention": [
+              "Resistant hybrids; clean seed"
+            ],
+            "monitoring": [
+              "Inspect earheads at flowering"
+            ],
+            "cultural": [
+              "Rogue & destroy smutted ears (bag before removal)"
+            ],
+            "biological": [
+              "-"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": "At earhead emergence"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Rust",
+          "pathogen": "Puccinia substriata",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> triazole",
+          "symptoms": "Reddish-brown pustules on leaves, premature drying",
+          "favourableConditions": "Cool humid late-season weather",
+          "management": {
+            "prevention": [
+              "Resistant varieties; early sowing"
+            ],
+            "monitoring": [
+              "Scout leaves late-season"
+            ],
+            "cultural": [
+              "Remove alternate host (brinjal near fields)"
+            ],
+            "biological": [
+              "-"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Propiconazole 25% EC",
+                "dose": "200 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": "If severe"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Bhindi / Okra",
+      "scientificName": "Abelmoschus esculentus",
+      "pests": [
+        {
+          "name": "Shoot & Fruit Borer",
+          "scientificName": "Earias vittella / Earias insulana",
+          "iracRotationNote": "Rotate 6 -> 28 -> 28(diff); okra picked every 2-3 days so prefer low-PHI molecules",
+          "damageSymptoms": "Drooping bored shoots (early); bore holes in fruit with frass -> unmarketable",
+          "etl": "5% shoot/fruit damage",
+          "management": {
+            "prevention": [
+              "Resistant varieties (Arka Anamika)",
+              "Avoid overlapping plantings"
+            ],
+            "monitoring": [
+              "Earias pheromone traps 8/acre; weekly damage grading"
+            ],
+            "cultural": [
+              "Clip & destroy bored shoots + fruits at each picking",
+              "Remove residue after season"
+            ],
+            "biological": [
+              "Trichogramma chilonis @ 20,000/acre; Bt @ 400 g/acre; conserve Bracon"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Low PHI, safe near picking"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "40 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Alternate diamide"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Whitefly (Yellow Vein Mosaic vector)",
+          "scientificName": "Bemisia tabaci",
+          "iracRotationNote": "Rotate 4A -> 12A -> 7C -> 23; virus-focused",
+          "damageSymptoms": "Sucking + transmits Yellow Vein Mosaic (yellow vein network, pale deformed fruit) - NO cure",
+          "etl": "Manage early to prevent YVMV",
+          "management": {
+            "prevention": [
+              "YVMV-tolerant varieties (Kashi Kranti, Arka Anamika)",
+              "Rogue infected plants early",
+              "Border crop maize/bajra"
+            ],
+            "monitoring": [
+              "Yellow sticky traps 10/acre; underside counts"
+            ],
+            "cultural": [
+              "Remove weed hosts (Abutilon, Croton)",
+              "Reflective mulch"
+            ],
+            "biological": [
+              "Encarsia; Verticillium lecanii in humidity"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "Early vector control"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP",
+                "dose": "240 g/acre",
+                "iracGroup": "12A",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Pyriproxyfen 10% EC",
+                "dose": "200 ml/acre",
+                "iracGroup": "7C",
+                "stage": "advanced",
+                "note": "IGR, breaks nymph cycle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Jassids / Leafhopper",
+          "scientificName": "Amrasca biguttula biguttula",
+          "iracRotationNote": "Seed treatment first; rotate 4A -> 29",
+          "damageSymptoms": "Leaf-edge yellowing, cupping, hopper burn, stunting",
+          "etl": "1-2 nymphs/leaf",
+          "management": {
+            "prevention": [
+              "Seed treatment Imidacloprid 600 FS @ 8-10 ml/kg (protects 30-40 days)"
+            ],
+            "monitoring": [
+              "Nymph counts on lower leaf surface; yellow sticky traps"
+            ],
+            "cultural": [
+              "Remove weed hosts"
+            ],
+            "biological": [
+              "Conserve mirids, spiders, Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Flonicamid 50% WG",
+                "dose": "60 g/acre",
+                "iracGroup": "29",
+                "stage": "advanced",
+                "note": "Selective"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Red Spider Mite",
+          "scientificName": "Tetranychus urticae",
+          "iracRotationNote": "Rotate 23 -> 6; avoid pyrethroids (flare)",
+          "damageSymptoms": "Stippling, bronzing, webbing underside in hot-dry spells",
+          "etl": "Webbing/bronzing onset",
+          "management": {
+            "prevention": [
+              "Avoid moisture stress & dust"
+            ],
+            "monitoring": [
+              "Hand-lens underside checks"
+            ],
+            "cultural": [
+              "Remove infested leaves"
+            ],
+            "biological": [
+              "Amblyseius; Stethorus"
+            ],
+            "chemical": [
+              {
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "23",
+                "stage": "early",
+                "note": "Low PHI"
+              },
+              {
+                "technical": "Abamectin 1.9% EC",
+                "dose": "150 ml/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Aphids",
+          "scientificName": "Aphis gossypii",
+          "iracRotationNote": "Rotate 4A -> 29; conserve predators",
+          "damageSymptoms": "Colonies on tender shoots, honeydew, sooty mould",
+          "etl": "Colonies on tender growth",
+          "management": {
+            "prevention": [
+              "Balanced N"
+            ],
+            "monitoring": [
+              "Shoot inspection; sticky traps"
+            ],
+            "cultural": [
+              "Remove weed hosts"
+            ],
+            "biological": [
+              "Ladybirds, syrphids, Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Flonicamid 50% WG",
+                "dose": "60 g/acre",
+                "iracGroup": "29",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Yellow Vein Mosaic Virus (YVMV)",
+          "pathogen": "Bhendi Yellow Vein Mosaic Virus (whitefly-vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; target whitefly vector + resistant variety",
+          "symptoms": "Network of yellow veins -> whole leaf yellows; pale, deformed, unmarketable fruit",
+          "favourableConditions": "High whitefly activity, warm weather",
+          "management": {
+            "prevention": [
+              "YVMV-tolerant varieties (Kashi Kranti, Arka Anamika)",
+              "Rogue infected plants early",
+              "Border crop maize/bajra"
+            ],
+            "monitoring": [
+              "Yellow sticky traps 10/acre; scout vein-yellowing"
+            ],
+            "cultural": [
+              "Remove weed hosts (Abutilon, Croton); reflective mulch"
+            ],
+            "biological": [
+              "Encarsia; Verticillium lecanii in humidity"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG (vector)",
+                "dose": "40 g/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Early whitefly control"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP (vector)",
+                "dose": "240 g/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": "Whitefly buildup"
+              },
+              {
+                "technical": "Pyriproxyfen 10% EC (vector)",
+                "dose": "200 ml/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": "IGR, breaks nymph cycle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Enation Leaf Curl Virus (OELCV)",
+          "pathogen": "Okra Enation Leaf Curl Virus (whitefly-vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; whitefly vector management (as YVMV)",
+          "symptoms": "Leaf curling, thickened veins, enations (warty outgrowths) on underside, stunting",
+          "favourableConditions": "High whitefly activity",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; rogue infected plants early"
+            ],
+            "monitoring": [
+              "Yellow sticky traps; scout curl+enations"
+            ],
+            "cultural": [
+              "Remove weed hosts; reflective mulch; border crop"
+            ],
+            "biological": [
+              "Encarsia; conserve"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG (vector)",
+                "dose": "40 g/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Whitefly"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP (vector)",
+                "dose": "240 g/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Powdery Mildew",
+          "pathogen": "Erysiphe cichoracearum",
+          "type": "fungal",
+          "fracRotationNote": "Sulphur -> Hexaconazole / Azoxystrobin",
+          "symptoms": "White powdery patches on leaves (late crop), yellowing, defoliation",
+          "favourableConditions": "Warm dry days, cool nights, late-season",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; avoid dense crop"
+            ],
+            "monitoring": [
+              "Scout upper leaves late-season"
+            ],
+            "cultural": [
+              "Airflow; remove infected leaves"
+            ],
+            "biological": [
+              "Ampelomyces quisqualis"
+            ],
+            "chemical": [
+              {
+                "technical": "Wettable sulphur 80% WG",
+                "dose": "500 g/acre",
+                "fracGroup": "M2",
+                "stage": "preventive",
+                "note": "Avoid on hot days"
+              },
+              {
+                "technical": "Hexaconazole 5% EC",
+                "dose": "400 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cercospora / Alternaria Leaf Spot",
+          "pathogen": "Cercospora abelmoschi / Alternaria spp.",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Azoxystrobin+Difenoconazole",
+          "symptoms": "Angular/irregular brown leaf spots, sooty growth, defoliation",
+          "favourableConditions": "Warm humid weather",
+          "management": {
+            "prevention": [
+              "Clean seed; rotation; tolerant varieties"
+            ],
+            "monitoring": [
+              "Scout leaves at canopy closure"
+            ],
+            "cultural": [
+              "Residue destruction; airflow"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Fusarium Wilt",
+          "pathogen": "Fusarium oxysporum f.sp. vasinfectum",
+          "type": "fungal",
+          "fracRotationNote": "Seed treatment + Trichoderma; chemical limited",
+          "symptoms": "Yellowing, wilting, vascular browning, stunting",
+          "favourableConditions": "Warm soils, monocropping, root injury",
+          "management": {
+            "prevention": [
+              "Seed treatment Trichoderma @ 10 g/kg OR Carbendazim @ 2 g/kg",
+              "Rotation"
+            ],
+            "monitoring": [
+              "Split stem for vascular browning in wilting plants"
+            ],
+            "cultural": [
+              "Crop rotation; organic matter; well-drained soil"
+            ],
+            "biological": [
+              "Trichoderma viride soil application with FYM"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (drench)",
+                "dose": "1 g/L on patches",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": "Supplements bio + rotation"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Brinjal / Baingan",
+      "scientificName": "Solanum melongena",
+      "pests": [
+        {
+          "name": "Shoot & Fruit Borer",
+          "scientificName": "Leucinodes orbonalis",
+          "iracRotationNote": "Rotate 6 -> 28 -> 28(diff); avoid OPs that flare mites; respect PHI (continuous picking)",
+          "damageSymptoms": "Wilting drooping shoots (early); bore holes in fruit plugged with frass -> unmarketable",
+          "etl": "5% shoot/fruit damage",
+          "management": {
+            "prevention": [
+              "Resistant/tolerant varieties",
+              "Healthy net-raised seedlings",
+              "Avoid staggered planting nearby"
+            ],
+            "monitoring": [
+              "Leucinodes pheromone traps 8-10/acre; weekly damage grading"
+            ],
+            "cultural": [
+              "Clip & destroy bored shoots + damaged fruits weekly (single most effective step)",
+              "Remove crop residue after season"
+            ],
+            "biological": [
+              "Trichogramma chilonis @ 20,000/acre weekly",
+              "Bt kurstaki @ 400 g/acre; conserve Bracon"
+            ],
+            "chemical": [
+              {
+                "technical": "Azadirachtin 1500 ppm",
+                "dose": "400 ml/acre",
+                "iracGroup": "UN",
+                "stage": "early",
+                "note": "Egg/neonate stage; low PHI"
+              },
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Low PHI, good near harvest"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Heavy pressure"
+              },
+              {
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "40 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Alternate diamide"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Jassids / Leafhopper",
+          "scientificName": "Amrasca biguttula biguttula",
+          "iracRotationNote": "Rotate 4A -> 29 -> 9B",
+          "damageSymptoms": "Leaf-margin yellowing, cupping, hopper burn; sap sucking",
+          "etl": "1-2 nymphs/leaf",
+          "management": {
+            "prevention": [
+              "Seedling drench Imidacloprid at transplant"
+            ],
+            "monitoring": [
+              "Yellow sticky traps; nymph counts on lower leaf surface"
+            ],
+            "cultural": [
+              "Remove weed hosts"
+            ],
+            "biological": [
+              "Conserve mirids, spiders, Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Flonicamid 50% WG",
+                "dose": "60 g/acre",
+                "iracGroup": "29",
+                "stage": "advanced",
+                "note": "Selective"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Whitefly (Little Leaf phytoplasma spread)",
+          "scientificName": "Bemisia tabaci",
+          "iracRotationNote": "Rotate 12A -> 7C -> 23",
+          "damageSymptoms": "Sucking + honeydew; associated with little-leaf/leaf-disorders spread",
+          "etl": "Need-based",
+          "management": {
+            "prevention": [
+              "Rogue little-leaf plants",
+              "Net-raised seedlings"
+            ],
+            "monitoring": [
+              "Yellow sticky traps 10/acre"
+            ],
+            "cultural": [
+              "Remove weed hosts"
+            ],
+            "biological": [
+              "Encarsia; Verticillium lecanii"
+            ],
+            "chemical": [
+              {
+                "technical": "Diafenthiuron 50% WP",
+                "dose": "240 g/acre",
+                "iracGroup": "12A",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "23",
+                "stage": "advanced",
+                "note": "Also mites"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Epilachna Beetle (Hadda)",
+          "scientificName": "Henosepilachna vigintioctopunctata",
+          "iracRotationNote": "Handpick + need-based spray",
+          "damageSymptoms": "Adults & grubs scrape leaf -> skeletonised, lace-like leaves",
+          "etl": "Need-based on skeletonisation",
+          "management": {
+            "prevention": [
+              "Field sanitation"
+            ],
+            "monitoring": [
+              "Scout for grubs & lattice feeding"
+            ],
+            "cultural": [
+              "Handpick adults, grubs, egg clusters"
+            ],
+            "biological": [
+              "Conserve Pediobius parasitoid"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Quinalphos 25% EC",
+                "dose": "400 ml/acre",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Observe PHI"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Red Spider Mite",
+          "scientificName": "Tetranychus urticae",
+          "iracRotationNote": "Rotate acaricides 23 / 6 / 12C; avoid pyrethroids (flare)",
+          "damageSymptoms": "Stippling, bronzing, webbing on leaf underside; hot-dry weather",
+          "etl": "Need-based on webbing/bronzing",
+          "management": {
+            "prevention": [
+              "Avoid dusty field edges & moisture stress"
+            ],
+            "monitoring": [
+              "Hand-lens check of leaf underside for mites/webbing"
+            ],
+            "cultural": [
+              "Remove heavily infested leaves"
+            ],
+            "biological": [
+              "Predatory mite Amblyseius; Stethorus beetle"
+            ],
+            "chemical": [
+              {
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "23",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Abamectin 1.9% EC",
+                "dose": "150 ml/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Propargite 57% EC",
+                "dose": "400 ml/acre",
+                "iracGroup": "12C",
+                "stage": "advanced",
+                "note": "Heavy mite load"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Phomopsis Blight & Fruit Rot",
+          "pathogen": "Phomopsis vexans",
+          "type": "fungal",
+          "fracRotationNote": "Seed treatment + Mancozeb -> Carbendazim/combo",
+          "symptoms": "Grey leaf spots with dark margin; dieback; soft sunken circular fruit rot with pycnidia",
+          "favourableConditions": "Warm humid weather; seed-borne",
+          "management": {
+            "prevention": [
+              "Seed treatment Thiram/Carbendazim @ 2-3 g/kg",
+              "Resistant varieties; clean seed"
+            ],
+            "monitoring": [
+              "Scout leaves & fruit for spots/rot"
+            ],
+            "cultural": [
+              "Remove infected fruit/debris; rotation; staking to keep fruit off soil"
+            ],
+            "biological": [
+              "Trichoderma seed treatment; Pseudomonas spray"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": "First spots"
+              },
+              {
+                "technical": "Carbendazim 50% WP",
+                "dose": "200 g/acre",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": "Fruit-rot pressure"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Bacterial Wilt",
+          "pathogen": "Ralstonia solanacearum",
+          "type": "bacterial",
+          "fracRotationNote": "NO chemical cure; resistant rootstock + soil management",
+          "symptoms": "Sudden wilting without yellowing; vascular browning; milky ooze from cut stem in water",
+          "favourableConditions": "Warm wet soils, waterlogging, root injury",
+          "management": {
+            "prevention": [
+              "Resistant varieties (Arka Nidhi, Arka Keshav)",
+              "Grafting on resistant rootstock (Solanum torvum)",
+              "Well-drained soil"
+            ],
+            "monitoring": [
+              "Ooze test on wilting plants"
+            ],
+            "cultural": [
+              "Crop rotation with non-solanaceous (cereal)",
+              "Soil solarization; bleaching powder @ 12 kg/acre; rogue plants"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens soil application"
+            ],
+            "chemical": [
+              {
+                "technical": "Copper oxychloride 50% WP (soil drench)",
+                "dose": "2.5 g/L on patches",
+                "fracGroup": "M1",
+                "stage": "advanced",
+                "note": "Limits spread only; not a cure"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Little Leaf",
+          "pathogen": "Phytoplasma (leafhopper-vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; target leafhopper vector",
+          "symptoms": "Tiny bunched pale leaves, shortened internodes, sterile flowers, no fruit",
+          "favourableConditions": "High leafhopper activity",
+          "management": {
+            "prevention": [
+              "Net-raised seedlings; rogue infected plants early"
+            ],
+            "monitoring": [
+              "Scout bunchy little-leaf plants"
+            ],
+            "cultural": [
+              "Remove weed hosts; destroy infected plants"
+            ],
+            "biological": [
+              "Conserve leafhopper predators"
+            ],
+            "chemical": [
+              {
+                "technical": "Imidacloprid 17.8% SL (vector)",
+                "dose": "60 ml/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Control leafhopper vector"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Damping-off (nursery)",
+          "pathogen": "Pythium / Rhizoctonia",
+          "type": "fungal",
+          "fracRotationNote": "Trichoderma + Metalaxyl/Copper drench",
+          "symptoms": "Pre/post-emergence seedling collapse; water-soaked collar rot in nursery",
+          "favourableConditions": "Over-watering, dense nursery, poor drainage",
+          "management": {
+            "prevention": [
+              "Raised nursery beds; Trichoderma seed treatment @ 10 g/kg",
+              "Avoid over-watering"
+            ],
+            "monitoring": [
+              "Watch nursery for collapsing patches"
+            ],
+            "cultural": [
+              "Soil solarization of beds; thin sowing"
+            ],
+            "biological": [
+              "Trichoderma viride bed application"
+            ],
+            "chemical": [
+              {
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP (drench)",
+                "dose": "2 g/L nursery drench",
+                "fracGroup": "4+M3",
+                "stage": "preventive",
+                "note": "OR Copper oxychloride 3 g/L"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Cabbage / Gobhi (Patta Gobhi)",
+      "scientificName": "Brassica oleracea var. capitata",
+      "pests": [
+        {
+          "name": "Diamondback Moth (DBM)",
+          "scientificName": "Plutella xylostella",
+          "iracRotationNote": "#1 cabbage pest; Bt/Spinosad first, rotate 5 -> 28 -> 6; sticker mandatory",
+          "damageSymptoms": "Windowpane scraping on leaves; bores into head",
+          "etl": "1-2 larvae/plant",
+          "management": {
+            "prevention": [
+              "Mustard trap-crop border (proven for cabbage DBM)",
+              "Net-raised seedlings",
+              "Rotate away from crucifers"
+            ],
+            "monitoring": [
+              "DBM pheromone traps 10/acre; weekly counts"
+            ],
+            "cultural": [
+              "Overhead sprinkler dislodges larvae",
+              "Destroy residue"
+            ],
+            "biological": [
+              "Bt kurstaki @ 400 g/acre; Cotesia plutellae; Trichogramma"
+            ],
+            "chemical": [
+              {
+                "technical": "Spinosad 45% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "5",
+                "stage": "early",
+                "note": "+ sticker, low PHI"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cabbage Head Borer",
+          "scientificName": "Hellula undalis",
+          "iracRotationNote": "Spray BEFORE head formation (unreachable once inside); rotate 28 / 6",
+          "damageSymptoms": "Bores growing point & head, webs with frass; deforms head",
+          "etl": "Act at pre-head/early-head",
+          "management": {
+            "prevention": [
+              "Timely transplant; avoid late crop"
+            ],
+            "monitoring": [
+              "Scout growing point for webbing"
+            ],
+            "cultural": [
+              "Remove & destroy attacked growing points"
+            ],
+            "biological": [
+              "Bt @ 400 g/acre early; Trichogramma"
+            ],
+            "chemical": [
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "early",
+                "note": "Pre-head, + sticker"
+              },
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cabbage Butterfly",
+          "scientificName": "Pieris brassicae",
+          "iracRotationNote": "Handpick + Bt/diamide",
+          "damageSymptoms": "Large green larvae defoliate, leave frass; skeletonise outer leaves",
+          "etl": "Egg-mass/larval presence",
+          "management": {
+            "prevention": [
+              "Field sanitation"
+            ],
+            "monitoring": [
+              "Scout undersides for yellow egg clusters & larvae"
+            ],
+            "cultural": [
+              "Hand-collect egg masses & gregarious larvae"
+            ],
+            "biological": [
+              "Bt kurstaki @ 400 g/acre; Apanteles glomeratus (conserve)"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "+ sticker"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Aphids & Painted Bug",
+          "scientificName": "Brevicoryne brassicae / Bagrada hilaris",
+          "iracRotationNote": "Rotate 4A -> 29; painted bug worst at seedling",
+          "damageSymptoms": "Aphids: colonies + sooty mould; painted bug: sap sucking, seedling wilting",
+          "etl": "Colonies on 5-10% plants",
+          "management": {
+            "prevention": [
+              "Timely sowing; balanced N"
+            ],
+            "monitoring": [
+              "Yellow sticky traps; seedling inspection"
+            ],
+            "cultural": [
+              "Remove infested outer leaves"
+            ],
+            "biological": [
+              "Diaeretiella; ladybirds"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "+ sticker"
+              },
+              {
+                "technical": "Dimethoate 30% EC",
+                "dose": "300 ml/acre",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Observe PHI (head eaten fresh)"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Black Rot",
+          "pathogen": "Xanthomonas campestris pv. campestris",
+          "type": "bacterial",
+          "fracRotationNote": "Hot-water seed treatment + Copper+Streptocycline; #1 cabbage disease",
+          "symptoms": "V-shaped marginal yellowing, blackened veins, head rot",
+          "favourableConditions": "Warm wet weather, overhead irrigation",
+          "management": {
+            "prevention": [
+              "Hot-water seed treatment (50C/30 min); clean seed; tolerant varieties"
+            ],
+            "monitoring": [
+              "Scout V-lesions after rain"
+            ],
+            "cultural": [
+              "Rotation 2-3 yr; drip; avoid working wet plants; rogue plants"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens seed soak & spray"
+            ],
+            "chemical": [
+              {
+                "technical": "Copper oxychloride 50% WP + Streptocycline",
+                "dose": "500 g/acre + 6 g/acre",
+                "fracGroup": "M1",
+                "stage": "preventive",
+                "note": "No true cure"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Downy Mildew",
+          "pathogen": "Hyaloperonospora parasitica",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Metalaxyl+Mancozeb / Dimethomorph",
+          "symptoms": "Yellow patches upper, downy underside; on outer wrapper leaves & head",
+          "favourableConditions": "Cool humid weather, dew",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; wider spacing"
+            ],
+            "monitoring": [
+              "Scout underside in cool humid spells"
+            ],
+            "cultural": [
+              "Airflow; drip; residue destruction"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre + sticker",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "4+M3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Alternaria Leaf Spot",
+          "pathogen": "Alternaria brassicae",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Azoxystrobin+Difenoconazole",
+          "symptoms": "Target-board dark concentric spots on leaves & head",
+          "favourableConditions": "Warm humid weather, leaf wetness",
+          "management": {
+            "prevention": [
+              "Seed treatment; clean seed; rotation"
+            ],
+            "monitoring": [
+              "Scout target-board spots"
+            ],
+            "cultural": [
+              "Residue destruction; airflow"
+            ],
+            "biological": [
+              "Trichoderma; Pseudomonas"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre + sticker",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Sclerotinia / Bottom Rot",
+          "pathogen": "Sclerotinia sclerotiorum / Rhizoctonia solani",
+          "type": "fungal",
+          "fracRotationNote": "Carbendazim/Trichoderma drench; drainage-first",
+          "symptoms": "Watery soft rot of lower leaves/head base; white cottony mycelium + black sclerotia (Sclerotinia); brown bottom rot (Rhizoctonia)",
+          "favourableConditions": "Cool humid dense crop, waterlogging",
+          "management": {
+            "prevention": [
+              "Wider spacing; well-drained soil"
+            ],
+            "monitoring": [
+              "Scout head base & lower leaves"
+            ],
+            "cultural": [
+              "Deep ploughing to bury sclerotia; rotation; avoid waterlogging"
+            ],
+            "biological": [
+              "Trichoderma harzianum soil application"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (drench)",
+                "dose": "1 g/L on patches",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Capsicum / Shimla Mirch",
+      "scientificName": "Capsicum annuum var. grossum",
+      "pests": [
+        {
+          "name": "Thrips",
+          "scientificName": "Scirtothrips dorsalis / Thrips parvispinus",
+          "iracRotationNote": "Rotate 5 -> 28 -> 2B; in polyhouse pair with predatory mites",
+          "damageSymptoms": "Scarring, silvering, leaf curl, flower/fruit scarring; T. parvispinus causes severe tip die-back",
+          "etl": "5-10 thrips/flower or early curl",
+          "management": {
+            "prevention": [
+              "Insect-proof 40-50 mesh net (polyhouse advantage)",
+              "Net-raised seedlings"
+            ],
+            "monitoring": [
+              "Blue sticky traps; flower shake test"
+            ],
+            "cultural": [
+              "Remove weed hosts; rogue heavily curled plants"
+            ],
+            "biological": [
+              "Amblyseius swirskii predatory mite (excellent in protected culture)",
+              "Orius bug"
+            ],
+            "chemical": [
+              {
+                "technical": "Spinosad 45% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "5",
+                "stage": "early",
+                "note": "Low PHI"
+              },
+              {
+                "technical": "Cyantraniliprole 10.26% OD",
+                "dose": "360 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Fipronil 5% SC",
+                "dose": "400 ml/acre",
+                "iracGroup": "2B",
+                "stage": "advanced",
+                "note": "Rotation partner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Mites (broad + two-spotted)",
+          "scientificName": "Polyphagotarsonemus latus / Tetranychus urticae",
+          "iracRotationNote": "Rotate 23 -> 6 -> 12C",
+          "damageSymptoms": "Broad mite: leaf curl/bronzing; two-spotted: stippling & webbing",
+          "etl": "Early curl/stippling",
+          "management": {
+            "prevention": [
+              "Maintain humidity/airflow in polyhouse"
+            ],
+            "monitoring": [
+              "Hand-lens underside checks"
+            ],
+            "cultural": [
+              "Remove infested leaves"
+            ],
+            "biological": [
+              "Amblyseius; Stethorus"
+            ],
+            "chemical": [
+              {
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "23",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Abamectin 1.9% EC",
+                "dose": "150 ml/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Aphids & Whitefly (virus vectors)",
+          "scientificName": "Aphis gossypii / Bemisia tabaci",
+          "iracRotationNote": "Rotate 4A -> 29 -> 12A",
+          "damageSymptoms": "Sucking, honeydew, sooty mould; transmit mosaic & leaf-curl viruses",
+          "etl": "Need-based; manage early for virus",
+          "management": {
+            "prevention": [
+              "Insect-proof net; yellow sticky traps"
+            ],
+            "monitoring": [
+              "Sticky traps; shoot inspection"
+            ],
+            "cultural": [
+              "Remove weed hosts; rogue virus plants"
+            ],
+            "biological": [
+              "Aphidius; Encarsia; Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Diafenthiuron 50% WP",
+                "dose": "240 g/acre",
+                "iracGroup": "12A",
+                "stage": "advanced",
+                "note": "Whitefly"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Fruit Borer",
+          "scientificName": "Helicoverpa armigera",
+          "iracRotationNote": "Rotate 28 -> 6; respect PHI in protected culture",
+          "damageSymptoms": "Bores fruit, feeds inside, entry rot",
+          "etl": "1 larva/plant OR 5% fruit damage",
+          "management": {
+            "prevention": [
+              "Net exclusion; pheromone monitoring"
+            ],
+            "monitoring": [
+              "Pheromone traps; fruit inspection"
+            ],
+            "cultural": [
+              "Remove bored fruits"
+            ],
+            "biological": [
+              "HaNPV; Bt; Trichogramma"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Low PHI"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Anthracnose / Fruit Rot",
+          "pathogen": "Colletotrichum spp.",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Azoxystrobin+Difenoconazole",
+          "symptoms": "Sunken circular lesions on fruit with concentric rings; die-back",
+          "favourableConditions": "Warm humid weather, overhead irrigation",
+          "management": {
+            "prevention": [
+              "Seed treatment Carbendazim+Thiram @ 3 g/kg; clean seed"
+            ],
+            "monitoring": [
+              "Scout fruit & twigs"
+            ],
+            "cultural": [
+              "Drip not overhead irrigation; remove infected fruit; rotation"
+            ],
+            "biological": [
+              "Trichoderma seed treatment; Pseudomonas spray"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Powdery Mildew",
+          "pathogen": "Leveillula taurica",
+          "type": "fungal",
+          "fracRotationNote": "Sulphur -> Azoxystrobin/Myclobutanil; MAJOR in polyhouse",
+          "symptoms": "White powdery growth underside, yellow patches upper, heavy leaf drop",
+          "favourableConditions": "Protected-culture humidity swings, warm dry air",
+          "management": {
+            "prevention": [
+              "Airflow/ventilation in polyhouse; tolerant hybrids"
+            ],
+            "monitoring": [
+              "Scout underside; act on first patches (spreads fast in polyhouse)"
+            ],
+            "cultural": [
+              "Remove infected leaves; manage humidity"
+            ],
+            "biological": [
+              "Ampelomyces quisqualis; Bacillus subtilis"
+            ],
+            "chemical": [
+              {
+                "technical": "Wettable sulphur 80% WG",
+                "dose": "500 g/acre (2 g/L)",
+                "fracGroup": "M2",
+                "stage": "preventive",
+                "note": "Avoid >32C"
+              },
+              {
+                "technical": "Azoxystrobin 23% SC",
+                "dose": "200 ml/acre (1 ml/L)",
+                "fracGroup": "11",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Myclobutanil 10% WP",
+                "dose": "160 g/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": "Rotation partner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Damping-off & Root Rot",
+          "pathogen": "Pythium / Phytophthora / Fusarium",
+          "type": "fungal",
+          "fracRotationNote": "Trichoderma + Metalaxyl drench; drainage-first",
+          "symptoms": "Seedling collapse; wilting with root/collar rot; Phytophthora crown rot in wet media",
+          "favourableConditions": "Over-irrigation, poor-draining media",
+          "management": {
+            "prevention": [
+              "Well-drained media; Trichoderma seed & media treatment",
+              "Avoid over-irrigation"
+            ],
+            "monitoring": [
+              "Watch collapsing seedlings & wilt"
+            ],
+            "cultural": [
+              "Raised beds/grow-bags; sterile media; drip"
+            ],
+            "biological": [
+              "Trichoderma viride media application"
+            ],
+            "chemical": [
+              {
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP (drench)",
+                "dose": "2 g/L",
+                "fracGroup": "4+M3",
+                "stage": "preventive",
+                "note": "Root-zone drench"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Bacterial Spot",
+          "pathogen": "Xanthomonas euvesicatoria",
+          "type": "bacterial",
+          "fracRotationNote": "Copper + Streptocycline; no true cure",
+          "symptoms": "Small water-soaked spots -> dark scabby lesions on leaves & fruit",
+          "favourableConditions": "Warm wet weather, overhead irrigation",
+          "management": {
+            "prevention": [
+              "Clean/treated seed; tolerant hybrids"
+            ],
+            "monitoring": [
+              "Scout after rain/overhead irrigation"
+            ],
+            "cultural": [
+              "Drip irrigation; avoid working wet plants; rotation"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens"
+            ],
+            "chemical": [
+              {
+                "technical": "Copper oxychloride 50% WP + Streptocycline",
+                "dose": "500 g/acre + 6 g/acre",
+                "fracGroup": "M1",
+                "stage": "preventive",
+                "note": "At first spots; repeat 7-10 days"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Mosaic / Leaf Curl Viruses",
+          "pathogen": "CMV / ToLCV (aphid & whitefly vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; net exclusion + vector control (big polyhouse advantage)",
+          "symptoms": "Mosaic mottling, leaf curl/distortion, stunting, fruit deformation",
+          "favourableConditions": "High aphid/whitefly activity",
+          "management": {
+            "prevention": [
+              "Insect-proof 40-50 mesh net; tolerant hybrids; rogue infected plants"
+            ],
+            "monitoring": [
+              "Yellow sticky traps; scout mottling/curl"
+            ],
+            "cultural": [
+              "Remove weed hosts; sanitation between crops"
+            ],
+            "biological": [
+              "Aphidius, Encarsia; Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG (vector)",
+                "dose": "40 g/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Aphid/whitefly"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP (vector)",
+                "dose": "240 g/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": "Whitefly"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Cauliflower / Phool Gobhi",
+      "scientificName": "Brassica oleracea var. botrytis",
+      "pests": [
+        {
+          "name": "Diamondback Moth (DBM)",
+          "scientificName": "Plutella xylostella",
+          "iracRotationNote": "MOST resistance-prone pest; start Bt/Spinosad, rotate 5 -> 28 -> 6 strictly; always add sticker",
+          "damageSymptoms": "Larvae scrape leaf underside -> windowpane patches; bore into curd/heart",
+          "etl": "1-2 larvae/plant (pre-curd) / 0.5 (curd stage)",
+          "management": {
+            "prevention": [
+              "Net-raised seedlings",
+              "Avoid continuous cruciferous cropping",
+              "Mustard trap-crop border (20:2 rows) - highly effective for DBM"
+            ],
+            "monitoring": [
+              "DBM pheromone traps 10/acre; weekly larval counts"
+            ],
+            "cultural": [
+              "Destroy crop residue",
+              "Overhead sprinkler irrigation dislodges & kills larvae",
+              "Trap crop pull"
+            ],
+            "biological": [
+              "Bt kurstaki @ 400 g/acre (first line)",
+              "Cotesia plutellae parasitoid; Trichogramma"
+            ],
+            "chemical": [
+              {
+                "technical": "Spinosad 45% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "5",
+                "stage": "early",
+                "note": "+ sticker; low PHI"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "+ sticker"
+              },
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": "Rotation partner"
+              },
+              {
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "100 ml/acre",
+                "iracGroup": "5",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Tobacco Caterpillar / Cabbage Butterfly",
+          "scientificName": "Spodoptera litura / Pieris brassicae",
+          "iracRotationNote": "Rotate 6 -> 28 -> 22A; NPV + handpick",
+          "damageSymptoms": "Gregarious larvae skeletonise leaves; grown larvae defoliate; Pieris big green larvae",
+          "etl": "5% defoliation / egg-mass presence",
+          "management": {
+            "prevention": [
+              "Field sanitation",
+              "Deep ploughing kills Spodoptera pupae"
+            ],
+            "monitoring": [
+              "Spodoptera pheromone traps; scout egg masses"
+            ],
+            "cultural": [
+              "Hand-collect egg masses & gregarious larvae",
+              "Bird perches"
+            ],
+            "biological": [
+              "SlNPV @ 100 LE/acre; Bt @ 400 g/acre; Trichogramma + Bracon"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "+ sticker"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Indoxacarb 15.8% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "22A",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Aphids",
+          "scientificName": "Brevicoryne brassicae / Lipaphis erysimi",
+          "iracRotationNote": "Rotate 4A -> 29",
+          "damageSymptoms": "Dense colonies on leaves/curd, honeydew, sooty mould, distortion",
+          "etl": "Colonies on 5-10% plants",
+          "management": {
+            "prevention": [
+              "Balanced N"
+            ],
+            "monitoring": [
+              "Yellow sticky traps; curd/leaf inspection"
+            ],
+            "cultural": [
+              "Remove heavily infested outer leaves"
+            ],
+            "biological": [
+              "Diaeretiella parasitoid; ladybirds, syrphids"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "+ sticker"
+              },
+              {
+                "technical": "Flonicamid 50% WG",
+                "dose": "60 g/acre",
+                "iracGroup": "29",
+                "stage": "advanced",
+                "note": "Selective"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Downy Mildew",
+          "pathogen": "Hyaloperonospora parasitica",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Metalaxyl+Mancozeb / Dimethomorph",
+          "symptoms": "Yellow patches upper, white-grey downy growth underside; black speckling on curd",
+          "favourableConditions": "Cool humid weather, dew, dense crop",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; wider spacing; clean seed"
+            ],
+            "monitoring": [
+              "Scout underside in cool humid spells"
+            ],
+            "cultural": [
+              "Airflow; drip not overhead; residue destruction"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens; Trichoderma"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre + sticker",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": "First symptoms"
+              },
+              {
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "4+M3",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Dimethomorph 50% WP",
+                "dose": "400 g/acre",
+                "fracGroup": "40",
+                "stage": "advanced",
+                "note": "Rotation partner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Black Rot",
+          "pathogen": "Xanthomonas campestris pv. campestris",
+          "type": "bacterial",
+          "fracRotationNote": "Hot-water seed treatment + Copper+Streptocycline; #1 bacterial disease",
+          "symptoms": "V-shaped yellow lesions from leaf margin inward; blackened veins; systemic rot",
+          "favourableConditions": "Warm wet weather, overhead irrigation, injury",
+          "management": {
+            "prevention": [
+              "Hot-water seed treatment (50C/30 min)",
+              "Clean/certified seed; tolerant varieties"
+            ],
+            "monitoring": [
+              "Scout V-lesions from margins after rain"
+            ],
+            "cultural": [
+              "Crop rotation (2-3 yr non-crucifer); drip; avoid working wet plants; rogue plants"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens seed soak & spray"
+            ],
+            "chemical": [
+              {
+                "technical": "Copper oxychloride 50% WP + Streptocycline",
+                "dose": "500 g/acre + 6 g/acre",
+                "fracGroup": "M1",
+                "stage": "preventive",
+                "note": "At first symptoms; no true cure"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Alternaria Leaf Spot",
+          "pathogen": "Alternaria brassicae / brassicicola",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Azoxystrobin+Difenoconazole",
+          "symptoms": "Concentric-ring (target-board) dark spots on leaves & curd; seed-borne",
+          "favourableConditions": "Warm humid weather, leaf wetness",
+          "management": {
+            "prevention": [
+              "Seed treatment Iprodione/Mancozeb @ 2-3 g/kg; clean seed"
+            ],
+            "monitoring": [
+              "Scout target-board spots"
+            ],
+            "cultural": [
+              "Residue destruction; rotation; airflow"
+            ],
+            "biological": [
+              "Trichoderma; Pseudomonas"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre + sticker",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Damping-off & Sclerotinia Stalk Rot",
+          "pathogen": "Pythium/Rhizoctonia (nursery); Sclerotinia sclerotiorum (field)",
+          "type": "fungal",
+          "fracRotationNote": "Trichoderma nursery; Carbendazim drench for Sclerotinia",
+          "symptoms": "Nursery seedling collapse; field: watery soft stalk rot with white cottony mycelium + black sclerotia",
+          "favourableConditions": "Over-watering (nursery); cool humid dense crop (Sclerotinia)",
+          "management": {
+            "prevention": [
+              "Raised beds; Trichoderma seed treatment; avoid over-watering"
+            ],
+            "monitoring": [
+              "Watch nursery collapse & stalk rot"
+            ],
+            "cultural": [
+              "Wider spacing; drainage; deep ploughing to bury sclerotia; rotation"
+            ],
+            "biological": [
+              "Trichoderma harzianum soil application"
+            ],
+            "chemical": [
+              {
+                "technical": "Metalaxyl+Mancozeb (nursery drench)",
+                "dose": "2 g/L",
+                "fracGroup": "4+M3",
+                "stage": "preventive",
+                "note": "Damping-off"
+              },
+              {
+                "technical": "Carbendazim 50% WP (drench)",
+                "dose": "1 g/L on patches",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": "Sclerotinia"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Chilli / Mirch",
+      "scientificName": "Capsicum annuum",
+      "pests": [
+        {
+          "name": "Thrips (drives leaf curl / Murda)",
+          "scientificName": "Scirtothrips dorsalis",
+          "iracRotationNote": "Rotate 5 -> 28(cyantraniliprole) -> 2B; thrips resist fast",
+          "damageSymptoms": "Upward leaf curl, puckering, silvery scarring; part of leaf-curl complex; scarred fruit",
+          "etl": "5-10 thrips/leaf or early curl signs",
+          "management": {
+            "prevention": [
+              "Tolerant hybrids",
+              "Net-raised seedlings",
+              "Border crop maize"
+            ],
+            "monitoring": [
+              "Blue sticky traps 10/acre; tap young leaves over sheet"
+            ],
+            "cultural": [
+              "Remove weed hosts & early curled plants",
+              "Reflective mulch"
+            ],
+            "biological": [
+              "Conserve anthocorid & predatory thrips; Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Fipronil 5% SC",
+                "dose": "400 ml/acre",
+                "iracGroup": "2B",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Spinosad 45% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "5",
+                "stage": "early",
+                "note": "Low PHI"
+              },
+              {
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "100 ml/acre",
+                "iracGroup": "5",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Cyantraniliprole 10.26% OD",
+                "dose": "360 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Thrips + mite + borer breadth"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Yellow / Broad Mite",
+          "scientificName": "Polyphagotarsonemus latus",
+          "iracRotationNote": "Rotate 23 -> 6 -> sulphur; part of leaf-curl complex",
+          "damageSymptoms": "Downward curling & cupping of leaves, shiny bronze underside, elongated leaves, inverted-boat look",
+          "etl": "Early curl signs",
+          "management": {
+            "prevention": [
+              "Avoid moisture stress"
+            ],
+            "monitoring": [
+              "Hand-lens underside inspection of young leaves"
+            ],
+            "cultural": [
+              "Remove severely curled shoots"
+            ],
+            "biological": [
+              "Amblyseius predatory mite"
+            ],
+            "chemical": [
+              {
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "23",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Abamectin 1.9% EC",
+                "dose": "150 ml/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Wettable sulphur 80% WG",
+                "dose": "500 g/acre",
+                "iracGroup": "UN",
+                "stage": "early",
+                "note": "Avoid on hot days"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Aphids (virus vector)",
+          "scientificName": "Aphis gossypii / Myzus persicae",
+          "iracRotationNote": "Rotate 4A -> 29 -> 9B",
+          "damageSymptoms": "Sap sucking, honeydew, sooty mould; transmits mosaic viruses",
+          "etl": "Colonies on tender shoots",
+          "management": {
+            "prevention": [
+              "Reflective mulch; border crop"
+            ],
+            "monitoring": [
+              "Yellow sticky traps; shoot inspection"
+            ],
+            "cultural": [
+              "Remove weed hosts"
+            ],
+            "biological": [
+              "Ladybird, syrphid, Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Flonicamid 50% WG",
+                "dose": "60 g/acre",
+                "iracGroup": "29",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Fruit Borer",
+          "scientificName": "Helicoverpa armigera / Spodoptera litura",
+          "iracRotationNote": "Rotate 28 -> 6 -> 22A; NPV + traps",
+          "damageSymptoms": "Bores into fruit, feeds on seeds; frass; fruit rot entry",
+          "etl": "1 larva/plant OR 5% fruit damage",
+          "management": {
+            "prevention": [
+              "Deep ploughing",
+              "Marigold trap crop"
+            ],
+            "monitoring": [
+              "Helicoverpa pheromone traps 4/acre"
+            ],
+            "cultural": [
+              "Hand-collect larvae; remove bored fruits; bird perches"
+            ],
+            "biological": [
+              "HaNPV @ 100 LE/acre; Bt @ 400 g/acre; Trichogramma"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Low PHI"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Indoxacarb 15.8% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "22A",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Anthracnose / Die-back & Fruit Rot",
+          "pathogen": "Colletotrichum capsici / C. gloeosporioides",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb/Chlorothalonil -> Azoxystrobin+Difenoconazole; #1 chilli disease",
+          "symptoms": "Twig die-back from tip; sunken circular fruit lesions with concentric acervuli; ripe-fruit rot",
+          "favourableConditions": "Warm humid weather, rain at fruiting",
+          "management": {
+            "prevention": [
+              "Seed treatment Carbendazim+Thiram @ 3 g/kg",
+              "Tolerant varieties; clean seed"
+            ],
+            "monitoring": [
+              "Scout twigs & fruit at flowering-fruiting"
+            ],
+            "cultural": [
+              "Prune dead twigs; remove infected fruit; rotation; avoid overhead irrigation"
+            ],
+            "biological": [
+              "Trichoderma seed treatment; Pseudomonas fluorescens spray"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": "At flowering / first symptoms"
+              },
+              {
+                "technical": "Chlorothalonil 75% WP",
+                "dose": "400 g/acre",
+                "fracGroup": "M5",
+                "stage": "preventive",
+                "note": "Rotation partner"
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": "Fruit development"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Leaf Curl Complex (Murda)",
+          "pathogen": "Chilli Leaf Curl Virus (thrips/whitefly + mite driven)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; manage thrips+mite+whitefly vector complex",
+          "symptoms": "Upward/downward leaf curl, puckering, bushy stunted plant, no fruit set",
+          "favourableConditions": "High thrips/mite/whitefly activity, hot dry spells",
+          "management": {
+            "prevention": [
+              "Tolerant hybrids; net-raised seedlings",
+              "Border crop maize; reflective mulch"
+            ],
+            "monitoring": [
+              "Blue+yellow sticky traps; scout curling early"
+            ],
+            "cultural": [
+              "Rogue infected plants; remove weed hosts"
+            ],
+            "biological": [
+              "Amblyseius (mite); conserve anthocorids"
+            ],
+            "chemical": [
+              {
+                "technical": "Fipronil 5% SC (thrips)",
+                "dose": "400 ml/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Vector"
+              },
+              {
+                "technical": "Spiromesifen 22.9% SC (mite)",
+                "dose": "200 ml/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": "Vector complex"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP (whitefly)",
+                "dose": "240 g/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": "Vector"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Damping-off & Wilt",
+          "pathogen": "Pythium / Fusarium / Sclerotium",
+          "type": "fungal",
+          "fracRotationNote": "Trichoderma nursery + Metalaxyl/Carbendazim drench",
+          "symptoms": "Seedling collapse in nursery; field wilting with root/collar rot",
+          "favourableConditions": "Over-watering, poor drainage, warm soil",
+          "management": {
+            "prevention": [
+              "Raised beds; Trichoderma seed & nursery treatment",
+              "Avoid over-watering"
+            ],
+            "monitoring": [
+              "Watch nursery & field wilting patches"
+            ],
+            "cultural": [
+              "Soil solarization; good drainage; rotation"
+            ],
+            "biological": [
+              "Trichoderma viride @ 10 g/kg + soil"
+            ],
+            "chemical": [
+              {
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP (drench)",
+                "dose": "2 g/L",
+                "fracGroup": "4+M3",
+                "stage": "preventive",
+                "note": "Nursery"
+              },
+              {
+                "technical": "Carbendazim 50% WP (drench)",
+                "dose": "1 g/L on wilt patches",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": "Fusarium/Sclerotium"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Powdery Mildew",
+          "pathogen": "Leveillula taurica",
+          "type": "fungal",
+          "fracRotationNote": "Sulphur -> Azoxystrobin/Hexaconazole",
+          "symptoms": "White powdery patches on leaf underside, yellow blotches upper, defoliation",
+          "favourableConditions": "Warm dry days, cool nights",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; avoid dense crop"
+            ],
+            "monitoring": [
+              "Scout underside for powder"
+            ],
+            "cultural": [
+              "Airflow; remove infected leaves"
+            ],
+            "biological": [
+              "Ampelomyces quisqualis"
+            ],
+            "chemical": [
+              {
+                "technical": "Wettable sulphur 80% WG",
+                "dose": "500 g/acre",
+                "fracGroup": "M2",
+                "stage": "preventive",
+                "note": "Avoid on hot days"
+              },
+              {
+                "technical": "Azoxystrobin 23% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Cucumber / Khira",
+      "scientificName": "Cucumis sativus",
+      "pests": [
+        {
+          "name": "Fruit Fly",
+          "scientificName": "Bactrocera cucurbitae",
+          "iracRotationNote": "Traps + bait are PRIMARY; cover-spray alone fails",
+          "damageSymptoms": "Female punctures young fruit to lay eggs; maggots rot fruit; oozing, deformed, dropping fruit",
+          "etl": "Trap-catch based; act on first catches",
+          "management": {
+            "prevention": [
+              "Early sowing to escape peak",
+              "Fruit bagging in high-value crops",
+              "Trellising keeps fruit off ground"
+            ],
+            "monitoring": [
+              "Cue-lure pheromone traps 8-10/acre; monitor catches"
+            ],
+            "cultural": [
+              "Collect & destroy fallen infested fruits DAILY (breaks cycle)",
+              "Deep summer ploughing kills pupae"
+            ],
+            "biological": [
+              "Conserve Opius parasitoid; poison-bait relies on kill not bio"
+            ],
+            "chemical": [
+              {
+                "technical": "Poison bait: jaggery/molasses 100 g/L + Malathion 50% EC 10 ml/L",
+                "dose": "spot-spray on leaf undersides, 50 spots/acre",
+                "iracGroup": "1B",
+                "stage": "early",
+                "note": "Most effective single tactic"
+              },
+              {
+                "technical": "Spinosad 45% SC (bait spray)",
+                "dose": "60 ml/acre as spot bait",
+                "iracGroup": "5",
+                "stage": "advanced",
+                "note": "Low PHI"
+              },
+              {
+                "technical": "Malathion 50% EC",
+                "dose": "400 ml/acre cover spray",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Only supplements traps+bait"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Red Pumpkin Beetle",
+          "scientificName": "Aulacophora foveicollis",
+          "iracRotationNote": "Protect cotyledon stage; rotate 1A/1B -> 4A",
+          "damageSymptoms": "Orange adults eat cotyledons/young leaves (can wipe seedlings); grubs damage roots & ground-touching fruit",
+          "etl": "1-2 beetles/seedling",
+          "management": {
+            "prevention": [
+              "Early sowing; raise seedlings under net then transplant"
+            ],
+            "monitoring": [
+              "Seedling counts at emergence (most vulnerable)"
+            ],
+            "cultural": [
+              "Dust wood-ash on seedlings early morning",
+              "Handpick beetles; soil sanitation for grubs"
+            ],
+            "biological": [
+              "Limited; entomopathogens for grubs (Metarhizium)"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbaryl 50% WP",
+                "dose": "600 g/acre",
+                "iracGroup": "1A",
+                "stage": "early",
+                "note": "Cotyledon protection"
+              },
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "advanced",
+                "note": "Heavy adult pressure"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Aphids / Whitefly / Thrips (virus vectors)",
+          "scientificName": "Aphis gossypii / Bemisia tabaci / Thrips palmi",
+          "iracRotationNote": "Rotate 4A -> 29 -> 12A; manage for mosaic viruses",
+          "damageSymptoms": "Sap sucking, honeydew, sooty mould; transmit cucumber/yellow mosaic (no cure)",
+          "etl": "Need-based; early for virus",
+          "management": {
+            "prevention": [
+              "Reflective/silver mulch repels vectors",
+              "Border crop maize"
+            ],
+            "monitoring": [
+              "Yellow & blue sticky traps"
+            ],
+            "cultural": [
+              "Remove weed hosts; rogue virus plants"
+            ],
+            "biological": [
+              "Ladybirds, Chrysoperla, Encarsia"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Diafenthiuron 50% WP",
+                "dose": "240 g/acre",
+                "iracGroup": "12A",
+                "stage": "advanced",
+                "note": "Whitefly"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Red Spider Mite",
+          "scientificName": "Tetranychus urticae",
+          "iracRotationNote": "Rotate 23 -> 6; avoid pyrethroids",
+          "damageSymptoms": "Stippling, bronzing, webbing on underside; hot-dry weather",
+          "etl": "Webbing/bronzing onset",
+          "management": {
+            "prevention": [
+              "Avoid moisture stress & dust"
+            ],
+            "monitoring": [
+              "Hand-lens underside checks"
+            ],
+            "cultural": [
+              "Remove infested leaves"
+            ],
+            "biological": [
+              "Amblyseius; Stethorus"
+            ],
+            "chemical": [
+              {
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "23",
+                "stage": "early",
+                "note": ""
+              },
+              {
+                "technical": "Abamectin 1.9% EC",
+                "dose": "150 ml/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Downy Mildew",
+          "pathogen": "Pseudoperonospora cubensis",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Metalaxyl+Mancozeb / Dimethomorph / Cymoxanil combo",
+          "symptoms": "Angular yellow patches bounded by veins (upper), purplish downy growth underside",
+          "favourableConditions": "High humidity, leaf wetness, cool nights",
+          "management": {
+            "prevention": [
+              "Tolerant hybrids; trellising for airflow"
+            ],
+            "monitoring": [
+              "Scout underside; act early (spreads fast)"
+            ],
+            "cultural": [
+              "Wider spacing; drip; residue destruction"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens; Trichoderma"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre + sticker",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": "First symptoms"
+              },
+              {
+                "technical": "Cymoxanil 8% + Mancozeb 64% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "27+M3",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Dimethomorph 50% WP",
+                "dose": "400 g/acre",
+                "fracGroup": "40",
+                "stage": "advanced",
+                "note": "Rotation partner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Powdery Mildew",
+          "pathogen": "Podosphaera xanthii / Erysiphe cichoracearum",
+          "type": "fungal",
+          "fracRotationNote": "Sulphur/Dinocap -> Azoxystrobin / Hexaconazole / Myclobutanil",
+          "symptoms": "White powdery patches on both leaf surfaces & stem; premature drying",
+          "favourableConditions": "Warm dry days, moderate humidity, poor airflow",
+          "management": {
+            "prevention": [
+              "Tolerant hybrids; airflow via trellis"
+            ],
+            "monitoring": [
+              "Scout upper leaves; act at first patches"
+            ],
+            "cultural": [
+              "Wider spacing; remove infected leaves"
+            ],
+            "biological": [
+              "Ampelomyces quisqualis; Bacillus subtilis"
+            ],
+            "chemical": [
+              {
+                "technical": "Wettable sulphur 80% WG",
+                "dose": "500 g/acre",
+                "fracGroup": "M2",
+                "stage": "preventive",
+                "note": "Avoid on hot days / sensitive melons"
+              },
+              {
+                "technical": "Azoxystrobin 23% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Hexaconazole 5% EC",
+                "dose": "400 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": "Rotation"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Anthracnose",
+          "pathogen": "Colletotrichum orbiculare",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Azoxystrobin+Difenoconazole",
+          "symptoms": "Water-soaked spots -> sunken lesions on leaves, stems, fruit; fruit rot",
+          "favourableConditions": "Warm humid weather, rain splash",
+          "management": {
+            "prevention": [
+              "Clean seed; tolerant hybrids; rotation"
+            ],
+            "monitoring": [
+              "Scout leaves & fruit"
+            ],
+            "cultural": [
+              "Drip; trellising; residue destruction"
+            ],
+            "biological": [
+              "Trichoderma; Pseudomonas"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Fusarium Wilt & Damping-off",
+          "pathogen": "Fusarium oxysporum f.sp. cucumerinum / Pythium",
+          "type": "fungal",
+          "fracRotationNote": "Trichoderma seed treatment + Carbendazim/Metalaxyl drench",
+          "symptoms": "Seedling collapse (damping-off); field: yellowing, one-sided wilt, vascular browning",
+          "favourableConditions": "Warm soils, over-irrigation, poor drainage",
+          "management": {
+            "prevention": [
+              "Seed treatment Trichoderma @ 10 g/kg; raised beds; grafting on resistant rootstock"
+            ],
+            "monitoring": [
+              "Watch nursery collapse & wilt"
+            ],
+            "cultural": [
+              "Good drainage; rotation; solarization"
+            ],
+            "biological": [
+              "Trichoderma viride soil application"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (drench)",
+                "dose": "1 g/L on patches",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": "Fusarium"
+              },
+              {
+                "technical": "Metalaxyl+Mancozeb (drench)",
+                "dose": "2 g/L",
+                "fracGroup": "4+M3",
+                "stage": "preventive",
+                "note": "Damping-off"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cucumber / Yellow Mosaic Virus",
+          "pathogen": "CMV / cucurbit mosaic (aphid & whitefly vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; target aphid/whitefly vector",
+          "symptoms": "Mosaic mottling, leaf distortion, stunting, warty deformed fruit",
+          "favourableConditions": "High aphid/whitefly activity",
+          "management": {
+            "prevention": [
+              "Tolerant hybrids; reflective/silver mulch; rogue infected plants"
+            ],
+            "monitoring": [
+              "Yellow sticky traps; scout mottling"
+            ],
+            "cultural": [
+              "Remove weed hosts; border crop maize"
+            ],
+            "biological": [
+              "Ladybirds, Chrysoperla, Encarsia"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG (vector)",
+                "dose": "40 g/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Aphid/whitefly"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP (vector)",
+                "dose": "240 g/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": "Whitefly"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Groundnut / Mungfali",
+      "scientificName": "Arachis hypogaea",
+      "pests": [
+        {
+          "name": "Leaf Miner",
+          "scientificName": "Aproaerema modicella",
+          "iracRotationNote": "Rotate 1B -> 28/6",
+          "damageSymptoms": "Larvae mine then web leaflets; brown blotches; burnt look in severe attack",
+          "etl": "5 larvae/plant OR 10% leaf damage",
+          "management": {
+            "prevention": [
+              "Timely sowing",
+              "Avoid moisture stress"
+            ],
+            "monitoring": [
+              "Pheromone traps; count mines/webbed leaflets"
+            ],
+            "cultural": [
+              "Intercrop with pearl millet/cowpea to reduce buildup"
+            ],
+            "biological": [
+              "Trichogramma + Bracon; conserve Chrysoperla"
+            ],
+            "chemical": [
+              {
+                "technical": "Quinalphos 25% EC",
+                "dose": "400 ml/acre",
+                "iracGroup": "1B",
+                "stage": "early",
+                "note": "Early mines"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Heavy webbing"
+              },
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "80 g/acre",
+                "iracGroup": "6",
+                "stage": "advanced",
+                "note": "Also hits Spodoptera"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thrips (also bud necrosis virus vector)",
+          "scientificName": "Scirtothrips dorsalis / Frankliniella schultzei",
+          "iracRotationNote": "Rotate 5 / 4A / fipronil; manage early for PBNV",
+          "damageSymptoms": "Silvering/curling of young leaves; transmits Bud Necrosis (ring spots, terminal necrosis) - no cure",
+          "etl": "Manage early to prevent PBNV",
+          "management": {
+            "prevention": [
+              "Seed treatment Imidacloprid 70% WS @ 5 g/kg",
+              "Close spacing reduces PBNV",
+              "Border crop cereal"
+            ],
+            "monitoring": [
+              "Blue sticky traps; tap young leaves over white sheet"
+            ],
+            "cultural": [
+              "Rogue bud-necrosis plants",
+              "Remove weed hosts"
+            ],
+            "biological": [
+              "Conserve predatory thrips & anthocorids"
+            ],
+            "chemical": [
+              {
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "40 ml/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "Early vector control"
+              },
+              {
+                "technical": "Fipronil 5% SC",
+                "dose": "400 ml/acre",
+                "iracGroup": "2B",
+                "stage": "advanced",
+                "note": "Heavy thrips"
+              },
+              {
+                "technical": "Spinosad 45% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "5",
+                "stage": "advanced",
+                "note": "Rotation partner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Tobacco Caterpillar / Red Hairy Caterpillar",
+          "scientificName": "Spodoptera litura / Amsacta albistriga",
+          "iracRotationNote": "Rotate 6 -> 28 -> 22A; traps + NPV first",
+          "damageSymptoms": "Gregarious young larvae skeletonise; grown larvae defoliate",
+          "etl": "8 larvae/m row",
+          "management": {
+            "prevention": [
+              "Deep summer ploughing kills pupae",
+              "Timely sowing with monsoon"
+            ],
+            "monitoring": [
+              "Spodoptera pheromone traps 4/acre; Amsacta light traps"
+            ],
+            "cultural": [
+              "Hand-collect egg masses & gregarious larvae",
+              "Poison bait for grown larvae",
+              "Bird perches"
+            ],
+            "biological": [
+              "SlNPV @ 100 LE/acre",
+              "Bt kurstaki @ 400 g/acre"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "80 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Small-medium larvae"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ""
+              },
+              {
+                "technical": "Indoxacarb 15.8% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "22A",
+                "stage": "advanced",
+                "note": "Grown larvae"
+              }
+            ]
+          }
+        },
+        {
+          "name": "White Grub",
+          "scientificName": "Holotrichia consanguinea",
+          "iracRotationNote": "Soil + seed treatment + community light-trapping",
+          "damageSymptoms": "Grubs feed on roots/pods -> wilting patches, easy plant pull-out",
+          "etl": "1 grub/plant OR wilting patches",
+          "management": {
+            "prevention": [
+              "Seed treatment Chlorpyriphos 20% EC @ 12 ml/kg OR Imidacloprid 600 FS @ 6 ml/kg",
+              "Deep summer ploughing"
+            ],
+            "monitoring": [
+              "Dig root zone; light traps at first rains for beetle emergence"
+            ],
+            "cultural": [
+              "Community light/bonfire trapping of adult beetles on host trees (neem, ber) after first monsoon showers"
+            ],
+            "biological": [
+              "Metarhizium anisopliae @ 2 kg/acre with FYM",
+              "EPN Heterorhabditis"
+            ],
+            "chemical": [
+              {
+                "technical": "Chlorpyriphos 20% EC",
+                "dose": "2 L/acre soil drench with irrigation",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Root-zone grubs"
+              },
+              {
+                "technical": "Phorate 10% CG",
+                "dose": "4-5 kg/acre at sowing",
+                "iracGroup": "1B",
+                "stage": "early",
+                "note": "Soil application"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Early & Late Leaf Spot (Tikka)",
+          "pathogen": "Cercospora arachidicola / Phaeoisariopsis personata",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb/Chlorothalonil -> Hexaconazole or strobilurin+triazole combo",
+          "symptoms": "Early: brown spots with yellow halo (upper); Late: darker, no halo, rough underside; heavy defoliation",
+          "favourableConditions": "Warm humid weather, dew, 25-30C",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; crop rotation; timely sowing"
+            ],
+            "monitoring": [
+              "Scout lower leaves from 30-40 DAS"
+            ],
+            "cultural": [
+              "Residue destruction; avoid dense canopy"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens / Trichoderma spray"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": "First spots ~30-40 DAS"
+              },
+              {
+                "technical": "Chlorothalonil 75% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "M5",
+                "stage": "preventive",
+                "note": "Rotation partner"
+              },
+              {
+                "technical": "Hexaconazole 5% EC",
+                "dose": "400 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": "Spreading"
+              },
+              {
+                "technical": "Tebuconazole 25% + Trifloxystrobin 25% WG",
+                "dose": "100 g/acre",
+                "fracGroup": "3+11",
+                "stage": "advanced",
+                "note": "Also covers rust"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Rust",
+          "pathogen": "Puccinia arachidis",
+          "type": "fungal",
+          "fracRotationNote": "Same advanced combos as tikka (tank-mix compatible)",
+          "symptoms": "Orange-brown pustules on leaf underside; often with late leaf spot",
+          "favourableConditions": "Warm humid weather",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; rotation"
+            ],
+            "monitoring": [
+              "Scout underside pustules with leaf spot"
+            ],
+            "cultural": [
+              "Residue destruction"
+            ],
+            "biological": [
+              "-"
+            ],
+            "chemical": [
+              {
+                "technical": "Hexaconazole 5% EC",
+                "dose": "400 ml/acre",
+                "fracGroup": "3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Tebuconazole 25% + Trifloxystrobin 25% WG",
+                "dose": "100 g/acre",
+                "fracGroup": "3+11",
+                "stage": "advanced",
+                "note": "Rust + tikka together"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Stem Rot / Collar Rot",
+          "pathogen": "Sclerotium rolfsii / Aspergillus niger",
+          "type": "fungal",
+          "fracRotationNote": "Seed treatment (chemical or Trichoderma) is primary",
+          "symptoms": "White mycelium + mustard-seed sclerotia at collar/stem base; sudden wilting; pod rot",
+          "favourableConditions": "High soil moisture + temp, dense residue",
+          "management": {
+            "prevention": [
+              "Seed treatment Tebuconazole/Carbendazim @ 2-3 g/kg OR Trichoderma @ 4-10 g/kg",
+              "Deep burial of residue"
+            ],
+            "monitoring": [
+              "Scout collar for white mycelium in wet patches"
+            ],
+            "cultural": [
+              "Deep ploughing; avoid dense residue; gypsum improves collar zone"
+            ],
+            "biological": [
+              "Trichoderma viride enriched FYM soil application"
+            ],
+            "chemical": [
+              {
+                "technical": "Tebuconazole 25.9% EC (soil drench)",
+                "dose": "1 ml/L on collar",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": "On appearance"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Bud Necrosis (PBND)",
+          "pathogen": "Groundnut Bud Necrosis Virus (thrips-vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; target thrips vector early",
+          "symptoms": "Chlorotic/necrotic ring spots, terminal bud necrosis, stunting, reduced pods",
+          "favourableConditions": "High thrips activity, late/sparse sowing",
+          "management": {
+            "prevention": [
+              "Seed treatment Imidacloprid 70% WS @ 5 g/kg",
+              "Close spacing reduces PBND",
+              "Border crop cereal"
+            ],
+            "monitoring": [
+              "Blue sticky traps; scout ring spots"
+            ],
+            "cultural": [
+              "Rogue infected plants; remove weed hosts"
+            ],
+            "biological": [
+              "Conserve predatory thrips/anthocorids"
+            ],
+            "chemical": [
+              {
+                "technical": "Imidacloprid 17.8% SL (vector)",
+                "dose": "40 ml/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Early thrips control"
+              },
+              {
+                "technical": "Fipronil 5% SC (vector)",
+                "dose": "400 ml/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": "Heavy thrips"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Maize / Makka",
+      "scientificName": "Zea mays",
+      "pests": [
+        {
+          "name": "Fall Armyworm (FAW)",
+          "scientificName": "Spodoptera frugiperda",
+          "iracRotationNote": "Cycle IRAC 5 -> 6 -> 28 across sprays; never repeat a group",
+          "damageSymptoms": "Ragged windowpane feeding + moist sawdust-like frass in whorl; inverted-Y on head + 4 dots on last segment",
+          "etl": "5% whorl damage (early whorl) / 10% (late whorl & ear)",
+          "management": {
+            "prevention": [
+              "Timely & synchronised sowing",
+              "Seed treatment Cyantraniliprole 19.8% FS @ 6 ml/kg for early protection",
+              "Intercrop with pulses; maize-legume border"
+            ],
+            "monitoring": [
+              "Pheromone traps (FAW lure) 5/acre from germination",
+              "Scout whorls twice a week; grade damage"
+            ],
+            "cultural": [
+              "Hand-pick egg masses & larvae",
+              "Sand+lime (9:1) or dry soil placed in whorl kills larvae",
+              "Deep summer ploughing to expose pupae"
+            ],
+            "biological": [
+              "Trichogramma pretiosum + Telenomus remus egg parasitoids",
+              "Spray Metarhizium rileyi / Beauveria bassiana 1x10^8 @ 400 g/acre",
+              "Bt kurstaki @ 400 g/acre for small larvae"
+            ],
+            "chemical": [
+              {
+                "technical": "Azadirachtin 1500 ppm",
+                "dose": "400 ml/acre",
+                "iracGroup": "UN",
+                "stage": "early",
+                "note": "Neonate larvae, into whorl"
+              },
+              {
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "100 ml/acre",
+                "iracGroup": "5",
+                "stage": "early",
+                "note": "Direct into whorl, evening spray"
+              },
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "80 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Whorl-directed"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": ">25% damage / larger larvae"
+              },
+              {
+                "technical": "Poison bait (rice bran 10 kg + jaggery 2 kg + Thiodicarb 100 g)",
+                "dose": "apply into whorls/acre",
+                "iracGroup": "1A",
+                "stage": "advanced",
+                "note": "Late-whorl big larvae hiding deep"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Stem Borer (Maize)",
+          "scientificName": "Chilo partellus",
+          "iracRotationNote": "Rotate Cartap (14) & diamides (28)",
+          "damageSymptoms": "Dead heart in young plants, shot-hole leaf rows, stem tunnelling",
+          "etl": "10% dead hearts",
+          "management": {
+            "prevention": [
+              "Early sowing to escape peak",
+              "Resistant hybrids"
+            ],
+            "monitoring": [
+              "Scout for shot-holes & dead hearts at 2-4 weeks"
+            ],
+            "cultural": [
+              "Destroy stubble/residue harbouring larvae"
+            ],
+            "biological": [
+              "Trichogramma chilonis @ 20,000/acre",
+              "Cotesia flavipes larval parasitoid"
+            ],
+            "chemical": [
+              {
+                "technical": "Cartap hydrochloride 4G",
+                "dose": "8 kg/acre in whorl",
+                "iracGroup": "14",
+                "stage": "early",
+                "note": "At dead-heart onset"
+              },
+              {
+                "technical": "Chlorantraniliprole 0.4% GR",
+                "dose": "4 kg/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Whorl application"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Pink Stem Borer / Shoot Fly",
+          "scientificName": "Sesamia inferens / Atherigona spp.",
+          "iracRotationNote": "Seed treatment first line; avoid repeat neonics",
+          "damageSymptoms": "Shoot fly: dead heart in seedlings; Pink borer: stem tunnelling in Rabi/Spring maize",
+          "etl": "10% dead hearts in first 3 weeks",
+          "management": {
+            "prevention": [
+              "Seed treatment Thiamethoxam 30% FS @ 8-10 ml/kg",
+              "Higher seed rate to compensate",
+              "Timely sowing"
+            ],
+            "monitoring": [
+              "Seedling dead-heart counts in first 21 days"
+            ],
+            "cultural": [
+              "Rogue & destroy dead-heart plants",
+              "Avoid late Rabi sowing"
+            ],
+            "biological": [
+              "Trichogramma releases"
+            ],
+            "chemical": [
+              {
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "40 ml/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "Foliar if seed treatment skipped"
+              },
+              {
+                "technical": "Cartap 4G",
+                "dose": "8 kg/acre",
+                "iracGroup": "14",
+                "stage": "advanced",
+                "note": "Whorl for pink borer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Aphids",
+          "scientificName": "Rhopalosiphum maidis",
+          "iracRotationNote": "Rotate 4A / 29; conserve predators first",
+          "damageSymptoms": "Colonies on whorl/tassel, honeydew + sooty mould, virus vector",
+          "etl": "Need-based; heavy tassel colonisation",
+          "management": {
+            "prevention": [
+              "Balanced N"
+            ],
+            "monitoring": [
+              "Whorl & tassel inspection"
+            ],
+            "cultural": [
+              "Conserve field margins for predators"
+            ],
+            "biological": [
+              "Ladybird beetles, syrphids, Chrysoperla @ 5,000 eggs/acre"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "Only if predators absent"
+              },
+              {
+                "technical": "Flonicamid 50% WG",
+                "dose": "60 g/acre",
+                "iracGroup": "29",
+                "stage": "advanced",
+                "note": "Selective, spares beneficials"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Turcicum Leaf Blight",
+          "pathogen": "Exserohilum turcicum",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> strobilurin+triazole combo",
+          "symptoms": "Long cigar/boat-shaped grey-green necrotic lesions on leaves; heavy blighting reduces grain fill",
+          "favourableConditions": "Moderate temp 18-27C, high humidity, dew",
+          "management": {
+            "prevention": [
+              "Resistant hybrids",
+              "Crop rotation; balanced N"
+            ],
+            "monitoring": [
+              "Scout lower leaves from knee-high stage"
+            ],
+            "cultural": [
+              "Destroy infected residue; avoid dense stand"
+            ],
+            "biological": [
+              "Trichoderma/Pseudomonas seed treatment"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": "First lesions"
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": "Spreading"
+              },
+              {
+                "technical": "Tebuconazole 25% + Trifloxystrobin 25% WG",
+                "dose": "100 g/acre",
+                "fracGroup": "3+11",
+                "stage": "advanced",
+                "note": "Rotation partner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Maydis / Southern Leaf Blight",
+          "pathogen": "Bipolaris maydis",
+          "type": "fungal",
+          "fracRotationNote": "Same chemistry as Turcicum; rotate M3 with 11+3",
+          "symptoms": "Small tan diamond/rectangular lesions between veins, coalescing",
+          "favourableConditions": "Warm humid weather",
+          "management": {
+            "prevention": [
+              "Resistant hybrids; rotation"
+            ],
+            "monitoring": [
+              "Scout leaves in warm humid spells"
+            ],
+            "cultural": [
+              "Residue destruction"
+            ],
+            "biological": [
+              "Trichoderma seed treatment"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Banded Leaf & Sheath Blight",
+          "pathogen": "Rhizoctonia solani f.sp. sasakii",
+          "type": "fungal",
+          "fracRotationNote": "Validamycin / Hexaconazole directed to lower sheaths",
+          "symptoms": "Concentric banded lesions on sheath & leaf, climbing; ear rot in severe cases",
+          "favourableConditions": "Dense canopy, high humidity, warm temp",
+          "management": {
+            "prevention": [
+              "Wider spacing; avoid excess N"
+            ],
+            "monitoring": [
+              "Inspect lower sheaths in dense crop"
+            ],
+            "cultural": [
+              "Detrash lower leaves; residue destruction"
+            ],
+            "biological": [
+              "Trichoderma harzianum soil/foliar"
+            ],
+            "chemical": [
+              {
+                "technical": "Validamycin 3% L",
+                "dose": "400 ml/acre",
+                "fracGroup": "U",
+                "stage": "preventive",
+                "note": "Directed to lower sheaths"
+              },
+              {
+                "technical": "Hexaconazole 5% EC",
+                "dose": "400 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Downy Mildew (incl. crazy top)",
+          "pathogen": "Peronosclerospora sorghi/heteropogoni",
+          "type": "fungal",
+          "fracRotationNote": "Metalaxyl seed + foliar; FRAC 4",
+          "symptoms": "Chlorotic streaks, white downy growth underside, stunting, malformed tassel (crazy top)",
+          "favourableConditions": "High humidity, cool nights, waterlogging early",
+          "management": {
+            "prevention": [
+              "Seed treatment Metalaxyl 35% WS @ 6 g/kg",
+              "Resistant hybrids; good drainage"
+            ],
+            "monitoring": [
+              "Scout young plants for chlorotic streaks"
+            ],
+            "cultural": [
+              "Rogue infected plants; avoid waterlogging"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens"
+            ],
+            "chemical": [
+              {
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "400 g/acre",
+                "fracGroup": "4+M3",
+                "stage": "preventive",
+                "note": "Early foliar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Common Rust",
+          "pathogen": "Puccinia sorghi",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> triazole",
+          "symptoms": "Cinnamon-brown powdery pustules on both leaf surfaces",
+          "favourableConditions": "Cool moist weather",
+          "management": {
+            "prevention": [
+              "Resistant hybrids"
+            ],
+            "monitoring": [
+              "Scout for pustules pre-tasseling"
+            ],
+            "cultural": [
+              "Residue management"
+            ],
+            "biological": [
+              "-"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Propiconazole 25% EC",
+                "dose": "200 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Moong / Green Gram",
+      "scientificName": "Vigna radiata",
+      "pests": [
+        {
+          "name": "Whitefly (Yellow Mosaic Virus vector)",
+          "scientificName": "Bemisia tabaci",
+          "iracRotationNote": "Rotate 4A -> 12A -> 7C; virus-focused",
+          "damageSymptoms": "Sucking + YMV (yellow mosaic, pod distortion) - viral, no cure",
+          "etl": "Manage early for virus",
+          "management": {
+            "prevention": [
+              "YMV-resistant varieties (SML-668, IPM-2-3, Virat)",
+              "Rogue infected plants early"
+            ],
+            "monitoring": [
+              "Yellow sticky traps 10/acre; underside counts"
+            ],
+            "cultural": [
+              "Remove weed hosts; border crop cereal"
+            ],
+            "biological": [
+              "Encarsia; conserve"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "Early vector control"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP",
+                "dose": "240 g/acre",
+                "iracGroup": "12A",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thrips (on flowers)",
+          "scientificName": "Megalurothrips distalis",
+          "iracRotationNote": "Rotate 5 / 2B",
+          "damageSymptoms": "Flower drop, malformed flowers, poor pod set",
+          "etl": "5-10 thrips/flower at flowering",
+          "management": {
+            "prevention": [
+              "Timely sowing"
+            ],
+            "monitoring": [
+              "Blue sticky traps; shake flowers over sheet"
+            ],
+            "cultural": [
+              "Remove weed hosts"
+            ],
+            "biological": [
+              "Conserve anthocorids"
+            ],
+            "chemical": [
+              {
+                "technical": "Fipronil 5% SC",
+                "dose": "400 ml/acre",
+                "iracGroup": "2B",
+                "stage": "early",
+                "note": "At flowering"
+              },
+              {
+                "technical": "Spinosad 45% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "5",
+                "stage": "advanced",
+                "note": "Rotation partner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Pod Borer complex",
+          "scientificName": "Helicoverpa armigera / Maruca vitrata",
+          "iracRotationNote": "Rotate 28 -> 6 -> 22A; NPV + traps",
+          "damageSymptoms": "Helicoverpa bores pods; Maruca webs flowers+pods and feeds inside",
+          "etl": "1 larva/plant OR 5% pod damage",
+          "management": {
+            "prevention": [
+              "Deep ploughing",
+              "Timely sowing to escape peak"
+            ],
+            "monitoring": [
+              "Helicoverpa pheromone traps 4/acre; scout webbed flowers for Maruca"
+            ],
+            "cultural": [
+              "Bird perches",
+              "Shake plants to dislodge larvae",
+              "Remove webbed flowers"
+            ],
+            "biological": [
+              "HaNPV @ 100 LE/acre; Bt @ 400 g/acre; Trichogramma"
+            ],
+            "chemical": [
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Good on Maruca webs"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "At flowering-podding"
+              },
+              {
+                "technical": "Indoxacarb 15.8% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "22A",
+                "stage": "advanced",
+                "note": "Rotation"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Yellow Mosaic Virus (YMV)",
+          "pathogen": "MYMV (whitefly-vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; target whitefly vector",
+          "symptoms": "Yellow-green mosaic, pod distortion, stunting, yield loss",
+          "favourableConditions": "High whitefly, warm dry spells",
+          "management": {
+            "prevention": [
+              "Resistant varieties (SML-668, IPM-2-3, Virat)",
+              "Rogue infected plants early"
+            ],
+            "monitoring": [
+              "Yellow sticky traps; scout mosaic"
+            ],
+            "cultural": [
+              "Remove weed hosts; border crop cereal"
+            ],
+            "biological": [
+              "Encarsia; conserve"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG (vector)",
+                "dose": "40 g/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Early whitefly"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP (vector)",
+                "dose": "240 g/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cercospora Leaf Spot",
+          "pathogen": "Cercospora canescens",
+          "type": "fungal",
+          "fracRotationNote": "Mancozeb -> Carbendazim / triazole",
+          "symptoms": "Circular spots with grey centre + reddish-brown margin, defoliation",
+          "favourableConditions": "Warm humid weather at flowering",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; rotation"
+            ],
+            "monitoring": [
+              "Scout leaves from flowering"
+            ],
+            "cultural": [
+              "Residue destruction; avoid dense crop"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens spray"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "400 g/acre",
+                "fracGroup": "1+M3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Powdery Mildew",
+          "pathogen": "Erysiphe polygoni",
+          "type": "fungal",
+          "fracRotationNote": "Sulphur -> triazole",
+          "symptoms": "White powdery patches on leaves/pods, premature drying",
+          "favourableConditions": "Dry days + cool nights, late crop",
+          "management": {
+            "prevention": [
+              "Early sowing; tolerant varieties"
+            ],
+            "monitoring": [
+              "Scout upper leaves late-season"
+            ],
+            "cultural": [
+              "Avoid dense crop"
+            ],
+            "biological": [
+              "-"
+            ],
+            "chemical": [
+              {
+                "technical": "Wettable sulphur 80% WG",
+                "dose": "500 g/acre",
+                "fracGroup": "M2",
+                "stage": "preventive",
+                "note": "Avoid on hot days"
+              },
+              {
+                "technical": "Hexaconazole 5% EC",
+                "dose": "400 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Dry Root Rot",
+          "pathogen": "Macrophomina phaseolina",
+          "type": "fungal",
+          "fracRotationNote": "Seed treatment + cultural; avoid moisture stress",
+          "symptoms": "Sudden wilting, shredded bark at base with black microsclerotia",
+          "favourableConditions": "High temp + moisture stress",
+          "management": {
+            "prevention": [
+              "Seed treatment Trichoderma @ 10 g/kg OR Carbendazim @ 2 g/kg",
+              "Avoid moisture stress"
+            ],
+            "monitoring": [
+              "Split base of wilting plants for sclerotia"
+            ],
+            "cultural": [
+              "Deep ploughing; rotation; organic matter"
+            ],
+            "biological": [
+              "Trichoderma soil application"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (drench)",
+                "dose": "1 g/L on patches",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": "Limited"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Paddy / Dhaan",
+      "scientificName": "Oryza sativa",
+      "pests": [
+        {
+          "name": "Yellow Stem Borer",
+          "scientificName": "Scirpophaga incertulas",
+          "iracRotationNote": "Rotate diamides (IRAC 28) with Cartap (IRAC 14); never repeat a group back-to-back",
+          "damageSymptoms": "Dead heart in vegetative stage; white ear head (empty panicle) in reproductive stage",
+          "etl": "5% dead hearts OR 1 egg mass/m2 OR 1 moth/m2",
+          "management": {
+            "prevention": [
+              "Use borer-tolerant varieties",
+              "Avoid excess/late nitrogen",
+              "Synchronised community planting to break the cycle"
+            ],
+            "monitoring": [
+              "Pheromone traps (Scirpophaga lure) 5/acre for moth flush",
+              "Weekly scouting for dead hearts + egg masses on leaf tips"
+            ],
+            "cultural": [
+              "Clip seedling leaf tips at transplant to remove egg masses",
+              "Destroy stubble after harvest",
+              "Light traps to mass-trap adults"
+            ],
+            "biological": [
+              "Release Trichogramma japonicum @ 20,000/acre (1 lakh/ha) weekly from 30 DAT, 4-6 releases",
+              "Conserve spiders & mirid bugs"
+            ],
+            "chemical": [
+              {
+                "technical": "Cartap hydrochloride 4G",
+                "dose": "8 kg/acre broadcast in 2-5 cm standing water",
+                "iracGroup": "14",
+                "stage": "early",
+                "note": "Granular at 30-35 DAT on dead-heart appearance"
+              },
+              {
+                "technical": "Chlorantraniliprole 0.4% GR",
+                "dose": "4 kg/acre",
+                "iracGroup": "28",
+                "stage": "early",
+                "note": "Long residual, safe to natural enemies"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Spray at ETL / white-ear risk at booting"
+              },
+              {
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "40 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Alternate with Cartap to manage resistance"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Brown Plant Hopper (BPH)",
+          "scientificName": "Nilaparvata lugens",
+          "iracRotationNote": "NEVER use synthetic pyrethroids or excess N (causes resurgence); rotate 9B / 4A / 29",
+          "damageSymptoms": "Hopper burn (circular patches of dried plants), sooty mould, insects clustered at plant base",
+          "etl": "5-10 hoppers/hill at tillering; 10-20/hill later",
+          "management": {
+            "prevention": [
+              "Resistant varieties",
+              "Avoid dense planting & excess N",
+              "Maintain 30 cm alleys every 2-3 m for aeration & spray access"
+            ],
+            "monitoring": [
+              "Tap base of hills over water, count dislodged hoppers weekly",
+              "Yellow/light traps for macropterous migrants"
+            ],
+            "cultural": [
+              "Drain field for 3-4 days at early infestation",
+              "Wider spacing, alternate wetting-drying (AWD)",
+              "Avoid staggered planting"
+            ],
+            "biological": [
+              "Conserve mirid bug Cyrtorhinus lividipennis (key predator), spiders, Lycosa",
+              "Metarhizium/Beauveria in humid conditions"
+            ],
+            "chemical": [
+              {
+                "technical": "Pymetrozine 50% WG",
+                "dose": "120 g/acre",
+                "iracGroup": "9B",
+                "stage": "early",
+                "note": "Feeding blocker, selective"
+              },
+              {
+                "technical": "Buprofezin 25% SC",
+                "dose": "320 ml/acre",
+                "iracGroup": "16",
+                "stage": "early",
+                "note": "IGR, hits nymphs; direct spray to base"
+              },
+              {
+                "technical": "Dinotefuran 20% SG",
+                "dose": "60 g/acre",
+                "iracGroup": "4A",
+                "stage": "advanced",
+                "note": "Fast knockdown of hopper burn"
+              },
+              {
+                "technical": "Flonicamid 50% WG",
+                "dose": "60 g/acre",
+                "iracGroup": "29",
+                "stage": "advanced",
+                "note": "Direct nozzle to plant base"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Leaf Folder",
+          "scientificName": "Cnaphalocrocis medinalis",
+          "iracRotationNote": "Rotate Cartap (14) with diamides (28)",
+          "damageSymptoms": "Larvae fold leaf longitudinally, scrape green tissue leaving white papery streaks",
+          "etl": "1-2 freshly damaged leaves/hill OR 10% damaged leaves",
+          "management": {
+            "prevention": [
+              "Avoid excess N",
+              "Balanced spacing for aeration"
+            ],
+            "monitoring": [
+              "Count folded/scraped leaves weekly; check flag leaf near heading"
+            ],
+            "cultural": [
+              "Rope-dragging across canopy dislodges larvae",
+              "Remove grassy weeds (alternate hosts)"
+            ],
+            "biological": [
+              "Trichogramma chilonis @ 20,000/acre",
+              "Conserve spiders"
+            ],
+            "chemical": [
+              {
+                "technical": "Cartap hydrochloride 50% SP",
+                "dose": "200 g/acre",
+                "iracGroup": "14",
+                "stage": "early",
+                "note": "At ETL"
+              },
+              {
+                "technical": "Flubendiamide 20% WG",
+                "dose": "50 g/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "For flag-leaf protection"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Also covers stem borer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Gundhi Bug / Rice Earhead Bug",
+          "scientificName": "Leptocorisa oratorius",
+          "iracRotationNote": "Short-residual OPs/pyrethroids only at heading; single well-timed spray",
+          "damageSymptoms": "Sucks milky grains -> chaffy/discoloured grain with pin-point spots; foul smell in field",
+          "etl": "1 bug/hill OR 5 bugs/m2 at milk stage",
+          "management": {
+            "prevention": [
+              "Synchronised planting so heading is uniform (avoids continuous food)"
+            ],
+            "monitoring": [
+              "Sweep-net at flowering-milk stage, dawn/dusk",
+              "Smell test at field edges"
+            ],
+            "cultural": [
+              "Remove weeds/grasses around bunds",
+              "Fish/rotten-crab bait to attract & kill"
+            ],
+            "biological": [
+              "Conserve spiders and reduced-viid predators; limited bio options at grain stage"
+            ],
+            "chemical": [
+              {
+                "technical": "Malathion 50% EC",
+                "dose": "400 ml/acre",
+                "iracGroup": "1B",
+                "stage": "early",
+                "note": "At heading/milk; short PHI"
+              },
+              {
+                "technical": "Deltamethrin 2.8% EC",
+                "dose": "200 ml/acre",
+                "iracGroup": "3A",
+                "stage": "advanced",
+                "note": "Use only at heading; avoid earlier (BPH risk)"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Blast (leaf + neck)",
+          "pathogen": "Pyricularia oryzae (Magnaporthe)",
+          "type": "fungal",
+          "fracRotationNote": "Don't repeat Tricyclazole (FRAC 16.1) all season; rotate with strobilurin+triazole (11+3)",
+          "symptoms": "Spindle/eye-shaped spots, grey centre + brown margin on leaves; blackening & breaking at neck/node (neck blast = yield killer)",
+          "favourableConditions": "20-28C, cloudy, high humidity, dew, excess/late nitrogen",
+          "management": {
+            "prevention": [
+              "Resistant varieties",
+              "Avoid excess & late N; split N doses",
+              "Seed treatment Carbendazim @ 2 g/kg",
+              "Balanced K & silicon"
+            ],
+            "monitoring": [
+              "Scout leaf spots from tillering; watch weather (dew, cloud)",
+              "Inspect neck at boot-to-heading"
+            ],
+            "cultural": [
+              "Avoid dense planting & standing-water N flushes",
+              "Destroy infected stubble",
+              "Avoid late transplanting"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens seed treatment/spray @ 10 g/L",
+              "Trichoderma seed treatment"
+            ],
+            "chemical": [
+              {
+                "technical": "Tricyclazole 75% WP",
+                "dose": "120 g/acre (0.6 g/L)",
+                "fracGroup": "16.1",
+                "stage": "preventive",
+                "note": "First spots / high-risk weather"
+              },
+              {
+                "technical": "Isoprothiolane 40% EC",
+                "dose": "300 ml/acre",
+                "fracGroup": "6",
+                "stage": "preventive",
+                "note": "Rotation partner"
+              },
+              {
+                "technical": "Tricyclazole 45% + Hexaconazole 10% WG",
+                "dose": "200 g/acre",
+                "fracGroup": "16.1+3",
+                "stage": "advanced",
+                "note": "Neck-blast: spray at boot + 50% heading"
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": "Spreading lesions"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Sheath Blight",
+          "pathogen": "Rhizoctonia solani",
+          "type": "fungal",
+          "fracRotationNote": "Rotate Validamycin (U) / Hexaconazole (3) / strobilurin combo (11+3)",
+          "symptoms": "Greenish-grey water-soaked lesions on sheath near waterline -> snake-skin banded pattern climbing up",
+          "favourableConditions": "Dense canopy, high N, continuous flooding, high humidity",
+          "management": {
+            "prevention": [
+              "Wider spacing for aeration",
+              "Avoid excess N",
+              "Balanced K"
+            ],
+            "monitoring": [
+              "Inspect sheath at waterline from max-tillering"
+            ],
+            "cultural": [
+              "Drop water level",
+              "Remove infected debris & weed hosts",
+              "Avoid dense planting"
+            ],
+            "biological": [
+              "Trichoderma harzianum @ 400 g/acre; Pseudomonas fluorescens spray"
+            ],
+            "chemical": [
+              {
+                "technical": "Validamycin 3% L",
+                "dose": "400 ml/acre",
+                "fracGroup": "U",
+                "stage": "preventive",
+                "note": "Early lesions"
+              },
+              {
+                "technical": "Hexaconazole 5% SC/EC",
+                "dose": "400 ml/acre",
+                "fracGroup": "3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": "Spreading up canopy"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Bacterial Leaf Blight (BLB)",
+          "pathogen": "Xanthomonas oryzae pv. oryzae",
+          "type": "bacterial",
+          "fracRotationNote": "No fungicide cure; copper + antibiotic to limit spread",
+          "symptoms": "Yellow wavy margins drying from leaf tip downward; kresek (seedling wilt)",
+          "favourableConditions": "Rain, wind, flooding, high N, wounded leaves",
+          "management": {
+            "prevention": [
+              "Resistant varieties",
+              "Balanced N (stop top-dress on outbreak)",
+              "Use clean seed"
+            ],
+            "monitoring": [
+              "Watch tip-drying spread after rain/storm"
+            ],
+            "cultural": [
+              "Drain field",
+              "Avoid clipping/injury",
+              "Destroy stubble & weed hosts",
+              "Avoid flow of water from infected field"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens spray @ 10 g/L"
+            ],
+            "chemical": [
+              {
+                "technical": "Copper oxychloride 50% WP + Streptocycline",
+                "dose": "500 g/acre + 6 g/acre",
+                "fracGroup": "M1",
+                "stage": "preventive",
+                "note": "At first symptoms"
+              },
+              {
+                "technical": "Copper hydroxide 53.8% DF + Streptocycline",
+                "dose": "400 g/acre + 6 g/acre",
+                "fracGroup": "M1",
+                "stage": "advanced",
+                "note": "Repeat 7-day interval; no true cure"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Brown Spot",
+          "pathogen": "Bipolaris oryzae",
+          "type": "fungal",
+          "fracRotationNote": "Correct nutrition; Mancozeb -> Propiconazole",
+          "symptoms": "Oval brown sesame-seed spots on leaves; grain discoloration; a stress/nutrient (K, Si) disease",
+          "favourableConditions": "Nutrient-poor soils, drought stress, K deficiency",
+          "management": {
+            "prevention": [
+              "Seed treatment Carbendazim @ 2 g/kg",
+              "Correct potash & silicon",
+              "Avoid moisture stress"
+            ],
+            "monitoring": [
+              "Scout spots on stressed/low-fertility patches"
+            ],
+            "cultural": [
+              "Balanced fertilisation; use clean seed"
+            ],
+            "biological": [
+              "Trichoderma seed treatment"
+            ],
+            "chemical": [
+              {
+                "technical": "Mancozeb 75% WP",
+                "dose": "600 g/acre",
+                "fracGroup": "M3",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Propiconazole 25% EC",
+                "dose": "200 ml/acre",
+                "fracGroup": "3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "False Smut",
+          "pathogen": "Ustilaginoidea virens",
+          "type": "fungal",
+          "fracRotationNote": "Only the booting-stage preventive window works",
+          "symptoms": "Velvety greenish-yellow spore balls replacing grains; turn olive-black",
+          "favourableConditions": "High humidity/rain at flowering, high N",
+          "management": {
+            "prevention": [
+              "Avoid excess N",
+              "Resistant varieties",
+              "Clean seed"
+            ],
+            "monitoring": [
+              "Weather watch at booting-flowering"
+            ],
+            "cultural": [
+              "Destroy smut balls; avoid dense crop"
+            ],
+            "biological": [
+              "Pseudomonas fluorescens at boot"
+            ],
+            "chemical": [
+              {
+                "technical": "Propiconazole 25% EC",
+                "dose": "200 ml/acre",
+                "fracGroup": "3",
+                "stage": "preventive",
+                "note": "Spray at boot leaf stage (once balls appear, no cure)"
+              },
+              {
+                "technical": "Copper oxychloride 50% WP",
+                "dose": "500 g/acre",
+                "fracGroup": "M1",
+                "stage": "preventive",
+                "note": "Alternative at booting"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Soybean",
+      "scientificName": "Glycine max",
+      "pests": [
+        {
+          "name": "Girdle Beetle",
+          "scientificName": "Obereopsis brevis",
+          "iracRotationNote": "Rotate 4A / 28; combine with mechanical clipping",
+          "damageSymptoms": "Two ring-girdles on stem/petiole; portion above dries; larva tunnels stem",
+          "etl": "10% girdled plants OR 1 girdle/plant",
+          "management": {
+            "prevention": [
+              "Timely sowing",
+              "Recommended row spacing (avoid over-dense)",
+              "Girdle-tolerant varieties (JS-9560)"
+            ],
+            "monitoring": [
+              "Weekly scout for the twin girdle rings & drooping tops"
+            ],
+            "cultural": [
+              "Clip & destroy girdled shoots below lower ring (removes larva)",
+              "Deep ploughing to expose pupae"
+            ],
+            "biological": [
+              "Conserve reduviids & spiders"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "At first girdling"
+              },
+              {
+                "technical": "Triazophos 40% EC",
+                "dose": "320 ml/acre",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Also hits stem fly"
+              },
+              {
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "80 ml/acre",
+                "iracGroup": "4A+3A",
+                "stage": "advanced",
+                "note": "Combo for girdle beetle + defoliators together"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Defoliators (Tobacco caterpillar, Semilooper, Bihar hairy)",
+          "scientificName": "Spodoptera litura / Chrysodeixis acuta / Spilosoma obliqua",
+          "iracRotationNote": "Rotate 6 -> 28 -> 22A; start soft (Bt/neem)",
+          "damageSymptoms": "Skeletonised/defoliated leaves; Spodoptera scrapes then defoliates; heavy podding-stage loss",
+          "etl": "3 larvae/m row OR 25% defoliation pre-flowering / 15% at podding",
+          "management": {
+            "prevention": [
+              "Deep summer ploughing to kill Spodoptera pupae",
+              "Balanced N"
+            ],
+            "monitoring": [
+              "Spodoptera pheromone traps 4/acre",
+              "Scout undersides for egg masses & early larvae"
+            ],
+            "cultural": [
+              "Hand-collect egg masses/gregarious young larvae",
+              "Bird perches @ 20/acre"
+            ],
+            "biological": [
+              "SlNPV @ 100 LE/acre for Spodoptera",
+              "Bt kurstaki @ 400 g/acre small larvae",
+              "Trichogramma + Bracon"
+            ],
+            "chemical": [
+              {
+                "technical": "Azadirachtin 1500 ppm",
+                "dose": "400 ml/acre",
+                "iracGroup": "UN",
+                "stage": "early",
+                "note": "Neonates"
+              },
+              {
+                "technical": "Emamectin benzoate 5% SG",
+                "dose": "88 g/acre",
+                "iracGroup": "6",
+                "stage": "early",
+                "note": "Small-medium larvae"
+              },
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "60 ml/acre",
+                "iracGroup": "28",
+                "stage": "advanced",
+                "note": "Heavy pressure"
+              },
+              {
+                "technical": "Indoxacarb 15.8% SC",
+                "dose": "200 ml/acre",
+                "iracGroup": "22A",
+                "stage": "advanced",
+                "note": "Grown larvae"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Whitefly (Yellow Mosaic Virus vector)",
+          "scientificName": "Bemisia tabaci",
+          "iracRotationNote": "Rotate 4A -> 12A -> 7C; manage for virus not just numbers",
+          "damageSymptoms": "Sap sucking + honeydew; transmits Yellow Mosaic (bright yellow mottling, stunting) which has NO cure",
+          "etl": "Manage early to prevent virus; do not wait for high counts",
+          "management": {
+            "prevention": [
+              "YMV-tolerant varieties (JS-2069, NRC-150)",
+              "Rogue YMV plants at first sight"
+            ],
+            "monitoring": [
+              "Yellow sticky traps 10/acre",
+              "Underside leaf counts"
+            ],
+            "cultural": [
+              "Remove weed hosts (Parthenium, Abutilon)",
+              "Border crop maize/bajra"
+            ],
+            "biological": [
+              "Encarsia parasitoid; conserve",
+              "Verticillium lecanii in humid weather"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "40 g/acre",
+                "iracGroup": "4A",
+                "stage": "early",
+                "note": "Early vector knockdown"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP",
+                "dose": "240 g/acre",
+                "iracGroup": "12A",
+                "stage": "advanced",
+                "note": "Adults + nymphs"
+              },
+              {
+                "technical": "Pyriproxyfen 10% EC",
+                "dose": "200 ml/acre",
+                "iracGroup": "7C",
+                "stage": "advanced",
+                "note": "IGR, breaks nymph cycle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Stem Fly",
+          "scientificName": "Melanagromyza sojae",
+          "iracRotationNote": "Seed treatment first line",
+          "damageSymptoms": "Maggot tunnels petiole/stem; reddish tunnels; seedling mortality/stunting",
+          "etl": "Early-stage protection critical",
+          "management": {
+            "prevention": [
+              "Seed treatment Thiamethoxam 30% FS @ 10 ml/kg",
+              "Timely sowing"
+            ],
+            "monitoring": [
+              "Split seedling stems to check tunnelling"
+            ],
+            "cultural": [
+              "Destroy crop residue"
+            ],
+            "biological": [
+              "Conserve parasitoids"
+            ],
+            "chemical": [
+              {
+                "technical": "Triazophos 40% EC",
+                "dose": "320 ml/acre",
+                "iracGroup": "1B",
+                "stage": "early",
+                "note": "If seed not treated"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Yellow Mosaic Virus (YMV)",
+          "pathogen": "Mungbean Yellow Mosaic India Virus (whitefly-vectored)",
+          "type": "viral",
+          "fracRotationNote": "NO chemical cure; chemicals target whitefly vector",
+          "symptoms": "Bright yellow mosaic/mottling, stunting, poor pod fill",
+          "favourableConditions": "High whitefly activity, warm weather, nearby infected pulses",
+          "management": {
+            "prevention": [
+              "YMV-tolerant varieties (JS-2069, NRC-150)",
+              "Rogue infected plants at first sight"
+            ],
+            "monitoring": [
+              "Yellow sticky traps 10/acre; scout mosaic weekly"
+            ],
+            "cultural": [
+              "Remove weed hosts; border crop maize/bajra",
+              "Avoid overlapping pulse crops nearby"
+            ],
+            "biological": [
+              "Conserve Encarsia; Verticillium lecanii on whitefly"
+            ],
+            "chemical": [
+              {
+                "technical": "Thiamethoxam 25% WG (vector)",
+                "dose": "40 g/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Early whitefly knockdown"
+              },
+              {
+                "technical": "Diafenthiuron 50% WP (vector)",
+                "dose": "240 g/acre",
+                "fracGroup": "NA",
+                "stage": "advanced",
+                "note": "Whitefly buildup"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Rust",
+          "pathogen": "Phakosora pachyrhizi",
+          "type": "fungal",
+          "fracRotationNote": "Hexaconazole/Propiconazole -> strobilurin+triazole combo",
+          "symptoms": "Tan/reddish-brown pustules on leaf underside, rapid defoliation",
+          "favourableConditions": "Cool humid weather, prolonged leaf wetness",
+          "management": {
+            "prevention": [
+              "Tolerant varieties; timely sowing"
+            ],
+            "monitoring": [
+              "Scout leaf underside from flowering"
+            ],
+            "cultural": [
+              "Avoid dense canopy; residue destruction"
+            ],
+            "biological": [
+              "-"
+            ],
+            "chemical": [
+              {
+                "technical": "Hexaconazole 5% EC",
+                "dose": "400 ml/acre",
+                "fracGroup": "3",
+                "stage": "preventive",
+                "note": "First pustules"
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": "Repeat after 15 days"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Anthracnose / Pod Blight",
+          "pathogen": "Colletotrichum truncatum",
+          "type": "fungal",
+          "fracRotationNote": "Seed treatment + Carbendazim/combo foliar",
+          "symptoms": "Dark sunken lesions on stem/pods/petioles; seed-borne; pod blight",
+          "favourableConditions": "Warm humid weather at podding",
+          "management": {
+            "prevention": [
+              "Seed treatment Carbendazim+Thiram (1:1) @ 3 g/kg OR Trichoderma @ 5-10 g/kg",
+              "Clean seed"
+            ],
+            "monitoring": [
+              "Scout stems/pods at podding"
+            ],
+            "cultural": [
+              "Residue destruction; rotation"
+            ],
+            "biological": [
+              "Trichoderma viride seed treatment"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP",
+                "dose": "200 g/acre",
+                "fracGroup": "1",
+                "stage": "preventive",
+                "note": ""
+              },
+              {
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "200 ml/acre",
+                "fracGroup": "11+3",
+                "stage": "advanced",
+                "note": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Charcoal Rot",
+          "pathogen": "Macrophomina phaseolina",
+          "type": "fungal",
+          "fracRotationNote": "Mainly cultural + biological; avoid moisture stress",
+          "symptoms": "Root/lower-stem grey with tiny black microsclerotia (charcoal dusting); wilting in dry spell",
+          "favourableConditions": "High soil temp + moisture stress",
+          "management": {
+            "prevention": [
+              "Seed treatment Trichoderma @ 10 g/kg",
+              "Avoid moisture stress; irrigate at flowering-podding"
+            ],
+            "monitoring": [
+              "Split lower stem for microsclerotia in wilting patches"
+            ],
+            "cultural": [
+              "Deep summer ploughing; crop rotation; organic matter"
+            ],
+            "biological": [
+              "Trichoderma viride soil application with FYM"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (soil drench)",
+                "dose": "1 g/L on patches",
+                "fracGroup": "1",
+                "stage": "advanced",
+                "note": "Limited; culture-first disease"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "crop": "Sugarcane / Ganna",
+      "scientificName": "Saccharum officinarum",
+      "pests": [
+        {
+          "name": "Early Shoot Borer",
+          "scientificName": "Chilo infuscatellus",
+          "iracRotationNote": "Rotate 28 / 14; sett treatment + trichogramma",
+          "damageSymptoms": "Dead heart in young crop (up to 4 months); shoot pulls out with rotten smell",
+          "etl": "10-15% dead hearts",
+          "management": {
+            "prevention": [
+              "Early planting (Feb-Mar) to escape peak",
+              "Sett treatment; avoid moisture stress early"
+            ],
+            "monitoring": [
+              "Dead-heart counts up to 120 days",
+              "Pheromone traps for Chilo"
+            ],
+            "cultural": [
+              "Light irrigation reduces incidence",
+              "Earthing-up",
+              "Remove & destroy dead hearts",
+              "Trash mulching"
+            ],
+            "biological": [
+              "Trichogramma chilonis @ 20,000/acre at 10-day intervals (6-8 releases)",
+              "Cotesia flavipes"
+            ],
+            "chemical": [
+              {
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "150 ml/acre",
+                "iracGroup": "28",
+                "stage": "early",
+                "note": "Soil/base drench + light irrigation up to 90 days"
+              },
+              {
+                "technical": "Cartap hydrochloride 4G",
+                "dose": "12 kg/acre",
+                "iracGroup": "14",
+                "stage": "advanced",
+                "note": "Apply near base + earthing up"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Top Borer",
+          "scientificName": "Scirpophaga excerptalis",
+          "iracRotationNote": "Diamide GR + trichogramma; hard to reach in whorl",
+          "damageSymptoms": "Dead heart at top, bunchy top, shot holes in top leaves, red tunnels in top internodes",
+          "etl": "Broods appear Apr-Sep; act at first brood",
+          "management": {
+            "prevention": [
+              "Resistant varieties",
+              "Early planting"
+            ],
+            "monitoring": [
+              "Scout for bunchy top & shot holes; pheromone traps"
+            ],
+            "cultural": [
+              "Remove egg masses on leaf midrib",
+              "Detrash lower leaves"
+            ],
+            "biological": [
+              "Isotima javensis parasitoid; Trichogramma releases"
+            ],
+            "chemical": [
+              {
+                "technical": "Chlorantraniliprole 0.4% GR",
+                "dose": "12 kg/acre in whorl/soil",
+                "iracGroup": "28",
+                "stage": "early",
+                "note": "At first brood"
+              },
+              {
+                "technical": "Cartap 4G",
+                "dose": "12 kg/acre",
+                "iracGroup": "14",
+                "stage": "advanced",
+                "note": "Base application"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Pyrilla (Leafhopper)",
+          "scientificName": "Pyrilla perpusilla",
+          "iracRotationNote": "Conserve biocontrol FIRST; spray only in outbreak",
+          "damageSymptoms": "Nymphs+adults suck leaf sap; copious honeydew -> sooty mould blackens leaves; reduces sugar",
+          "etl": "Outbreak-based; when sooty mould spreading",
+          "management": {
+            "prevention": [
+              "Avoid excess N & waterlogging",
+              "Detrash to open canopy"
+            ],
+            "monitoring": [
+              "Leaf-underside counts; look for white egg masses & ectoparasite cocoons"
+            ],
+            "cultural": [
+              "Detrashing & removal of egg-laden lower leaves"
+            ],
+            "biological": [
+              "Conserve/augment Epiricania melanoleuca (ectoparasite) - highly effective; collect & release cocoons/egg masses from infested to new fields",
+              "Tetrastichus egg parasitoid"
+            ],
+            "chemical": [
+              {
+                "technical": "Quinalphos 25% EC",
+                "dose": "400 ml/acre",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Only in outbreak; spares if biocontrol active"
+              },
+              {
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "100 ml/acre",
+                "iracGroup": "4A",
+                "stage": "advanced",
+                "note": "Severe outbreak"
+              }
+            ]
+          }
+        },
+        {
+          "name": "White Grub",
+          "scientificName": "Holotrichia serrata",
+          "iracRotationNote": "Soil treatment + community trapping",
+          "damageSymptoms": "Grubs feed on roots -> yellowing, lodging, drying clumps in patches",
+          "etl": "1 grub/clump OR wilting patches",
+          "management": {
+            "prevention": [
+              "Deep summer ploughing",
+              "Avoid raw FYM near planting"
+            ],
+            "monitoring": [
+              "Dig root zone; light traps at monsoon onset"
+            ],
+            "cultural": [
+              "Community light-trapping of beetles on host trees at first rains"
+            ],
+            "biological": [
+              "Metarhizium anisopliae @ 2 kg/acre with FYM",
+              "EPN Heterorhabditis"
+            ],
+            "chemical": [
+              {
+                "technical": "Chlorpyriphos 20% EC",
+                "dose": "2 L/acre soil application with irrigation",
+                "iracGroup": "1B",
+                "stage": "advanced",
+                "note": "Root-zone grubs"
+              },
+              {
+                "technical": "Fipronil 0.3% GR",
+                "dose": "10 kg/acre in soil",
+                "iracGroup": "2B",
+                "stage": "early",
+                "note": "At planting in grub-prone fields"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Scale Insect / Mealybug",
+          "scientificName": "Melanaspis glomerata / Saccharicoccus sacchari",
+          "iracRotationNote": "Sett treatment + sanitation; systemic if severe",
+          "damageSymptoms": "Encrust nodes under leaf sheath, suck sap -> thin canes, low sugar; worse in ratoon & waterlogging",
+          "etl": "Sett/ratoon inspection based",
+          "management": {
+            "prevention": [
+              "Use clean, pest-free setts",
+              "Sett dip Dimethoate 0.1% before planting",
+              "Avoid ratooning heavily infested fields"
+            ],
+            "monitoring": [
+              "Peel leaf sheath at nodes to inspect"
+            ],
+            "cultural": [
+              "Detrashing",
+              "Avoid waterlogging",
+              "Remove & destroy infested canes"
+            ],
+            "biological": [
+              "Conserve Chilocorus/Pharoscymnus beetles",
+              "Cryptolaemus for mealybug"
+            ],
+            "chemical": [
+              {
+                "technical": "Dimethoate 30% EC",
+                "dose": "sett dip 0.1% / foliar 400 ml/acre",
+                "iracGroup": "1B",
+                "stage": "early",
+                "note": "Sett treatment key"
+              },
+              {
+                "technical": "Buprofezin 25% SC",
+                "dose": "400 ml/acre",
+                "iracGroup": "16",
+                "stage": "advanced",
+                "note": "IGR for scale/mealybug"
+              }
+            ]
+          }
+        }
+      ],
+      "diseases": [
+        {
+          "name": "Red Rot",
+          "pathogen": "Colletotrichum falcatum",
+          "type": "fungal",
+          "fracRotationNote": "No effective foliar cure; resistant variety + sett treatment is everything",
+          "symptoms": "Drying of top leaves, reddening of internal pith with white crosswise patches, alcoholic/sour smell on splitting cane",
+          "favourableConditions": "Waterlogging, monsoon, ratooning infected fields, susceptible varieties (Co-0238)",
+          "management": {
+            "prevention": [
+              "Resistant varieties (shift away from Co-0238 in affected belts -> Co-15023, Co-0118, Co-Lk-14201)",
+              "Disease-free seed cane from healthy nursery",
+              "Sett treatment"
+            ],
+            "monitoring": [
+              "Split suspect canes for pith reddening + white patches; smell test"
+            ],
+            "cultural": [
+              "Rogue & remove infected clumps",
+              "Avoid ratooning infected fields",
+              "Improve drainage; crop rotation with rice/green manure"
+            ],
+            "biological": [
+              "Trichoderma harzianum sett dip + soil application"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (sett dip)",
+                "dose": "1 g/L, dip 15 min",
+                "fracGroup": "1",
+                "stage": "preventive",
+                "note": "Seed cane treatment; moist hot-air therapy for nursery"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Smut",
+          "pathogen": "Sporisorium scitamineum",
+          "type": "fungal",
+          "fracRotationNote": "Sett treatment (Propiconazole/Carbendazim) + rogue whips",
+          "symptoms": "Black whip-like structure emerging from growing point; thin grassy tillers",
+          "favourableConditions": "Ratooning, susceptible varieties, dry weather",
+          "management": {
+            "prevention": [
+              "Resistant varieties; disease-free seed",
+              "Sett treatment"
+            ],
+            "monitoring": [
+              "Scout for black whips; count affected clumps"
+            ],
+            "cultural": [
+              "Rogue whips (bag before removal to avoid spore spread)",
+              "Avoid ratoon of infected; rotation"
+            ],
+            "biological": [
+              "Trichoderma sett dip"
+            ],
+            "chemical": [
+              {
+                "technical": "Propiconazole 25% EC (sett dip)",
+                "dose": "1 ml/L, dip",
+                "fracGroup": "3",
+                "stage": "preventive",
+                "note": "OR Carbendazim 1 g/L"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Wilt",
+          "pathogen": "Fusarium sacchari (+ Colletotrichum complex)",
+          "type": "fungal",
+          "fracRotationNote": "Resistant variety + healthy seed; chemical limited",
+          "symptoms": "Gradual yellowing/withering, hollow light cane, internal purple-brown discoloration, boat-shaped pith",
+          "favourableConditions": "Waterlogging alternating with drought, injured roots, red rot association",
+          "management": {
+            "prevention": [
+              "Resistant varieties; disease-free seed; avoid injury"
+            ],
+            "monitoring": [
+              "Split wilting canes for internal discoloration"
+            ],
+            "cultural": [
+              "Improve drainage; avoid moisture stress; rotation; rogue clumps"
+            ],
+            "biological": [
+              "Trichoderma sett dip + soil"
+            ],
+            "chemical": [
+              {
+                "technical": "Carbendazim 50% WP (sett dip)",
+                "dose": "1 g/L",
+                "fracGroup": "1",
+                "stage": "preventive",
+                "note": "Supplements resistance"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Grassy Shoot Disease (GSD)",
+          "pathogen": "Phytoplasma (leafhopper/sett-transmitted)",
+          "type": "viral",
+          "fracRotationNote": "NO cure; healthy seed + MHAT + rogue",
+          "symptoms": "Profuse thin grassy tillers, chlorotic/white narrow leaves, no millable cane",
+          "favourableConditions": "Infected seed cane, ratooning, leafhopper vectors",
+          "management": {
+            "prevention": [
+              "Disease-free seed",
+              "Moist Hot Air Treatment (MHAT 54C/4h) of seed cane",
+              "Resistant varieties"
+            ],
+            "monitoring": [
+              "Scout grassy chlorotic clumps early"
+            ],
+            "cultural": [
+              "Rogue infected clumps; avoid ratooning infected; control leafhopper"
+            ],
+            "biological": [
+              "-"
+            ],
+            "chemical": [
+              {
+                "technical": "Imidacloprid 17.8% SL (vector)",
+                "dose": "100 ml/acre",
+                "fracGroup": "NA",
+                "stage": "preventive",
+                "note": "Suppress leafhopper vector"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

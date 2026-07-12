@@ -17,10 +17,11 @@ export type AppShellVariant = "default" | "hub";
 
 interface AppShellProps {
   children: ReactNode;
-  title?: string;
+  title?: ReactNode;
   subtitle?: string;
   breadcrumbs?: Breadcrumb[];
   hero?: ReactNode;
+  actions?: ReactNode;
   className?: string;
   variant?: AppShellVariant;
   backHref?: string;
@@ -34,6 +35,7 @@ export default function AppShell({
   subtitle,
   breadcrumbs,
   hero,
+  actions,
   className = "",
   variant = "default",
   backHref = "/",
@@ -112,7 +114,7 @@ export default function AppShell({
   }
 
   return (
-    <div className={cn("av-page font-sans", className)}>
+    <div className={cn("av-page min-w-0 font-sans", className)}>
       <Comp
         {...(reduced
           ? {}
@@ -121,7 +123,7 @@ export default function AppShell({
               animate: { opacity: 1, y: 0 },
               transition: { duration: MOTION.normal, ease: EASE_OUT },
             })}
-        className="mx-auto max-w-7xl px-4 py-4 pb-28 lg:px-6 lg:pb-8 lg:pt-5"
+        className="mx-auto w-full min-w-0 max-w-lg overflow-x-hidden px-3 py-3 pb-28 sm:max-w-2xl sm:px-4 sm:py-4 md:max-w-4xl lg:max-w-7xl lg:px-6 lg:pb-8 lg:pt-5"
       >
         {breadcrumbs && breadcrumbs.length > 0 && (
           <nav className={`mb-3 flex flex-wrap items-center gap-1 lg:mb-4 ${AV.micro}`}>
@@ -140,10 +142,13 @@ export default function AppShell({
           </nav>
         )}
 
-        {(title || subtitle) && (
-          <header className="mb-4 lg:mb-6">
-            {title && <h1 className={AV.pageTitle}>{title}</h1>}
-            {subtitle && <p className={AV.pageSubtitle}>{subtitle}</p>}
+        {(title || subtitle || actions) && (
+          <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between lg:mb-6">
+            <div className="min-w-0">
+              {title && <h1 className={AV.pageTitle}>{title}</h1>}
+              {subtitle && <p className={AV.pageSubtitle}>{subtitle}</p>}
+            </div>
+            {actions && <div className="shrink-0">{actions}</div>}
           </header>
         )}
 

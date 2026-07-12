@@ -2,6 +2,7 @@ import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/dat
 import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
 import { getIpmThreatOverride } from "@/lib/crops/ipmDataBridge";
+import { getCropFieldGuideThreatOverride } from "@/lib/crops/cropFieldGuideBridge";
 import { findStageGuideForThreat } from "@/lib/cropProtectionGuide";
 import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-disease-ui";
 
@@ -53,7 +54,11 @@ function mergeStageGuide(
   threatType: ThreatType
 ): EnrichedThreat {
   const overrideKey = `${threat.cropSlug}-${threatType}-${threat.id}`;
-  const override = { ...getIpmThreatOverride(overrideKey), ...THREAT_DETAIL_OVERRIDES[overrideKey] };
+  const override = {
+    ...getIpmThreatOverride(overrideKey),
+    ...getCropFieldGuideThreatOverride(overrideKey),
+    ...THREAT_DETAIL_OVERRIDES[overrideKey],
+  };
 
   if (override?.stageSprays?.length) {
     return {
@@ -88,7 +93,10 @@ function mergeStageGuide(
 
 function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
   const key = `${crop.slug}-pest-${pest.id}`;
-  const ipmOverride = getIpmThreatOverride(key);
+  const ipmOverride = {
+    ...getIpmThreatOverride(key),
+    ...getCropFieldGuideThreatOverride(key),
+  };
   const override = THREAT_DETAIL_OVERRIDES[key];
   const merged = { ...ipmOverride, ...override };
   const category: ThreatCategory = "insect";
@@ -127,7 +135,10 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
 
 function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): EnrichedThreat {
   const key = `${crop.slug}-disease-${disease.id}`;
-  const ipmOverride = getIpmThreatOverride(key);
+  const ipmOverride = {
+    ...getIpmThreatOverride(key),
+    ...getCropFieldGuideThreatOverride(key),
+  };
   const override = THREAT_DETAIL_OVERRIDES[key];
   const merged = { ...ipmOverride, ...override };
   const category = merged?.category ?? inferDiseaseCategory(disease.pathogen, disease.name);

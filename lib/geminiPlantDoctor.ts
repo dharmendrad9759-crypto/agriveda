@@ -132,7 +132,7 @@ function parseGeminiError(status: number, errBody: string): Error {
 
   if (status === 403 || status === 401 || /api key|permission|invalid/i.test(apiMessage)) {
     return new Error(
-      "GEMINI_API_KEY galat ya expired hai. Google AI Studio (aistudio.google.com) se nayi free key banayein — AIzaSy se shuru honi chahiye."
+      "GEMINI_API_KEY galat ya expired hai. Google AI Studio (aistudio.google.com) se nayi key banayein — AIzaSy ya AQ. format dono valid hain."
     );
   }
 
@@ -189,11 +189,15 @@ async function callGeminiModel(
   imageBase64: string,
   mimeType: string
 ): Promise<GeminiRawResponse> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  // Native Gemini endpoint — supports both legacy AIzaSy and new AQ. auth keys
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
+    },
     body: JSON.stringify({
       contents: [
         {

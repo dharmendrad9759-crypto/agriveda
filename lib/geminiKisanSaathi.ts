@@ -76,10 +76,13 @@ ${knowledge ? `Knowledge base excerpts:\n${knowledge}` : ""}`;
   for (const model of GEMINI_MODELS) {
     try {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey,
+          },
           body: JSON.stringify({
             contents,
             generationConfig: { temperature: 0.55, maxOutputTokens: 512 },
