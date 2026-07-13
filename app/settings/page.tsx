@@ -4,6 +4,7 @@ import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useFarmData } from "@/hooks/useFarmData";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useTheme } from "@/components/theme/ThemeProvider";
@@ -43,6 +44,7 @@ function SettingsRow({ label, value, href, toggle }: { label: string; value?: st
 
 export default function SettingsPage() {
   const { profile } = useFarmerProfile();
+  const { data: farm, stats: farmStats } = useFarmData();
   const { theme, setTheme } = useTheme();
   const { settings, update } = useAppSettings();
   const { settings: priceSettings, setMasterEnabled } = usePriceAlerts();
@@ -60,8 +62,8 @@ export default function SettingsPage() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--av-accent)]/20">
               <User className="h-8 w-8 text-[var(--av-accent)]" />
             </div>
-            <h2 className="mt-3 text-base font-bold text-[var(--av-text-primary)]">{profile.name || "Deepak Chouhan"}</h2>
-            <p className="text-xs text-[var(--av-text-muted)]">{profile.phone || "+91 6262 123 456"}</p>
+            <h2 className="mt-3 text-base font-bold text-[var(--av-text-primary)]">{profile.name || "अपना नाम जोड़ें"}</h2>
+            <p className="text-xs text-[var(--av-text-muted)]">{profile.phone ? `+91 ${profile.phone}` : "मोबाइल नंबर जोड़ें"}</p>
             <AppLink href="/profile" className={`mt-4 flex w-full justify-center ${AV.btnSecondarySm}`}>
               Edit Profile
             </AppLink>
@@ -110,9 +112,19 @@ export default function SettingsPage() {
         <DarkCard delay={4}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Location & Farm</h3>
           <div className="mt-2">
-            <SettingsRow label="My Location" value={[profile.district, profile.state].filter(Boolean).join(", ") || "Sehore, MP"} href="/profile" />
-            <SettingsRow label="Manage Farms" value="2 Farms Added" href="/my-farm" />
-            <SettingsRow label="Default Farm" value="Main Farm (12.50 Acre)" />
+            <SettingsRow label="My Location" value={[profile.district, profile.state].filter(Boolean).join(", ") || "स्थान जोड़ें"} href="/profile" />
+            <SettingsRow label="Manage Farms" value={farm.fields.length ? `${farm.fields.length} खेत जोड़े` : "खेत जोड़ें"} href="/my-farm" />
+            <SettingsRow
+              label="Default Farm"
+              value={
+                farm.fields[0]
+                  ? `${farm.fields[0].name} (${farm.fields[0].area})`
+                  : farmStats.totalAreaAcres > 0
+                    ? `${farmStats.totalAreaAcres.toFixed(2)} Acre कुल`
+                    : "अभी सेट नहीं"
+              }
+              href="/my-farm"
+            />
           </div>
         </DarkCard>
 

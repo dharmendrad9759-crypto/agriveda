@@ -10,10 +10,7 @@ import Badge from "@/components/design-system/Badge";
 import { useToast } from "@/components/ui/Toast";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
-import {
-  FARM_INSIGHTS,
-  FARM_RECORDS,
-} from "@/data/mock/farm";
+import { cropCatalog } from "@/data/crop-catalog";
 import { Tractor, Map, Sprout, ListTodo, Heart, Plus, Bell } from "lucide-react";
 
 const RECORD_COLORS: Record<string, string> = {
@@ -43,6 +40,8 @@ export default function MyFarmPage() {
   const [fieldName, setFieldName] = useState("");
   const [fieldArea, setFieldArea] = useState("");
   const [fieldCrop, setFieldCrop] = useState("");
+  const [fieldCropSlug, setFieldCropSlug] = useState("");
+  const [fieldOwnership, setFieldOwnership] = useState<"Owned" | "Leased">("Owned");
   const [noteTitle, setNoteTitle] = useState("");
   const [noteBody, setNoteBody] = useState("");
   const [activityTask, setActivityTask] = useState("");
@@ -63,27 +62,48 @@ export default function MyFarmPage() {
     });
 
   const handleAddField = () => {
-    if (!fieldName.trim() || !fieldArea.trim() || !fieldCrop.trim()) {
-      showToast("Field name, area aur crop bharein", "error");
+    if (!fieldName.trim() || !fieldArea.trim()) {
+      showToast("खेत का नाम और रकबा भरें", "error");
+      return;
+    }
+    const areaNum = parseFloat(fieldArea);
+    if (!Number.isFinite(areaNum) || areaNum <= 0) {
+      showToast("सही रकबा (एकड़) भरें", "error");
+      return;
+    }
+    const catalog = cropCatalog.find((c) => c.slug === fieldCropSlug);
+    const cropLabel = fieldCrop.trim() || catalog?.name || "";
+    if (!cropLabel) {
+      showToast("फसल चुनें या लिखें", "error");
       return;
     }
     addField({
       name: fieldName.trim(),
-      area: fieldArea.trim(),
-      ownership: "Owned",
-      crop: fieldCrop.trim(),
+      area: `${areaNum.toFixed(2)} Acre`,
+      ownership: fieldOwnership,
+      crop: cropLabel,
+      cropSlug: fieldCropSlug || undefined,
       status: "Active",
       sowingDate: new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
-      emoji: "🌾",
+      emoji: catalog?.emoji ?? "🌾",
       health: 78,
       stage: "Active growth",
     });
     setFieldName("");
     setFieldArea("");
     setFieldCrop("");
+    setFieldCropSlug("");
+    setFieldOwnership("Owned");
     setShowAddField(false);
-    showToast("Field saved ✓");
+    showToast("खेत सेव हो गया ✓");
   };
+
+  const farmInsights = [
+    { label: "कुल रकबा", value: totalAreaLabel(data.fields), icon: "📐" },
+    { label: "सक्रिय खेत", value: `${stats.activeFields}`, icon: "🌾" },
+    { label: "फसलें", value: `${stats.cropsGrowing}`, icon: "🌱" },
+    { label: "स्वास्थ्य", value: data.fields.length ? `${stats.healthScore}%` : "—", icon: "💚" },
+  ];
 
   const handleAddNote = () => {
     if (!noteTitle.trim() || !noteBody.trim()) {
@@ -125,11 +145,31 @@ export default function MyFarmPage() {
     >
       <PageHero
         title="Farm Overview"
-        subtitle={`${stats.totalFields} fields · ${stats.cropsGrowing} crops growing · health ${stats.healthScore}%`}
+        subtitle={
+          data.fields.length
+            ? `${stats.totalFields} fields · ${stats.cropsGrowing} crops growing · health ${stats.healthScore}%`
+            : "अपनी ज़मीन और फसल की जानकारी यहाँ जोड़ें"
+        }
         badge="My Farm"
         icon={Tractor}
         action={{ label: "Field Advisor", href: "/field-advisor" }}
       />
+
+      {data.fields.length === 0 && (
+        <DarkCard className="border-emerald-500/20 bg-emerald-500/5">
+          <p className="text-sm font-bold text-[var(--av-text-primary)]">अभी कोई खेत नहीं जोड़ा</p>
+          <p className="mt-1 text-xs text-[var(--av-text-muted)]">
+            नीचे &quot;Add Field&quot; दबाकर अपना पहला खेत, रकबा और फसल जोड़ें।
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowAddField(true)}
+            className="av-btn av-btn-sm av-btn-primary mt-3 inline-flex gap-1"
+          >
+            <Plus className="h-3.5 w-3.5" /> पहला खेत जोड़ें
+          </button>
+        </DarkCard>
+      )}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <StatCard icon={Tractor} label="Total Fields" value={`${stats.totalFields} Active`} action={{ label: "View All", href: "/my-farm" }} />
@@ -152,28 +192,59 @@ export default function MyFarmPage() {
 
       {showAddField && (
         <DarkCard className="mt-3">
-          <div className="grid gap-2 sm:grid-cols-3">
+          <div className="grid gap-2 sm:grid-cols-2">
             <input
               value={fieldName}
               onChange={(e) => setFieldName(e.target.value)}
-              placeholder="Field name"
+              placeholder="खेत का नाम"
               className="av-input text-xs"
             />
             <input
+              type="number"
+              inputMode="decimal"
               value={fieldArea}
               onChange={(e) => setFieldArea(e.target.value)}
-              placeholder="Area (e.g. 2.5 Acre)"
+              placeholder="रकबा (एकड़)"
               className="av-input text-xs"
             />
+            <select
+              value={fieldOwnership}
+              onChange={(e) => setFieldOwnership(e.target.value as "Owned" | "Leased")}
+              className="av-input text-xs"
+            >
+              <option value="Owned">अपनी ज़मीन</option>
+              <option value="Leased">बटाई / किराया</option>
+            </select>
             <input
               value={fieldCrop}
               onChange={(e) => setFieldCrop(e.target.value)}
-              placeholder="Crop (e.g. Paddy PB 1121)"
+              placeholder="वैरायटी (वैकल्पिक)"
               className="av-input text-xs"
             />
           </div>
-          <button type="button" onClick={handleAddField} className="av-btn av-btn-sm av-btn-primary mt-2">
-            Save Field
+          <p className="mt-2 text-[10px] font-bold text-[var(--av-text-muted)]">फसल चुनें</p>
+          <div className="mt-1 grid grid-cols-4 gap-2 sm:grid-cols-6">
+            {cropCatalog.slice(0, 12).map((crop) => (
+              <button
+                key={crop.slug}
+                type="button"
+                onClick={() => {
+                  setFieldCropSlug(crop.slug);
+                  if (!fieldCrop.trim()) setFieldCrop(crop.name);
+                }}
+                className={`rounded-lg border px-1 py-1.5 text-center text-[9px] font-bold ${
+                  fieldCropSlug === crop.slug
+                    ? "border-emerald-500 bg-emerald-500/15"
+                    : "border-[var(--av-border)]"
+                }`}
+              >
+                <span className="block text-base">{crop.emoji}</span>
+                {crop.name}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={handleAddField} className="av-btn av-btn-sm av-btn-primary mt-3">
+            खेत सेव करें
           </button>
         </DarkCard>
       )}
@@ -301,7 +372,7 @@ export default function MyFarmPage() {
       <DarkCard hover delay={1} className="mt-4 border-emerald-500/10">
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Farm Insights</h3>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {FARM_INSIGHTS.map((ins) => (
+            {farmInsights.map((ins) => (
               <div key={ins.label} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3 text-center">
                 <span className="text-xl">{ins.icon}</span>
                 <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">{ins.label}</p>
@@ -315,16 +386,22 @@ export default function MyFarmPage() {
         <DarkCard hover delay={1}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Recent Farm Records</h3>
           <ul className="mt-3 space-y-2">
-            {FARM_RECORDS.map((r) => (
-              <li key={r.desc} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
-                <div>
-                  <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${RECORD_COLORS[r.type]}`}>{r.type}</span>
-                  <p className="mt-1 text-xs text-[var(--av-text-primary)]">{r.desc}</p>
-                  <p className="text-[10px] text-[var(--av-text-muted)]">{r.detail}</p>
-                </div>
-                <span className="text-[10px] text-[var(--av-text-muted)]">{r.date}</span>
+            {data.activities.length === 0 ? (
+              <li className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-3 text-center text-xs text-[var(--av-text-muted)]">
+                अभी कोई रिकॉर्ड नहीं — ऊपर Activity जोड़ें
               </li>
-            ))}
+            ) : (
+              data.activities.slice(0, 6).map((r) => (
+                <li key={r.id} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
+                  <div>
+                    <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${RECORD_COLORS.Activity}`}>Activity</span>
+                    <p className="mt-1 text-xs text-[var(--av-text-primary)]">{r.task}</p>
+                    <p className="text-[10px] text-[var(--av-text-muted)]">{r.field}</p>
+                  </div>
+                  <span className="text-[10px] text-[var(--av-text-muted)]">{r.date}</span>
+                </li>
+              ))
+            )}
           </ul>
         </DarkCard>
 
@@ -349,13 +426,17 @@ export default function MyFarmPage() {
             </div>
           )}
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {data.notes.map((n) => (
-              <div key={n.id} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3">
-                <p className="text-xs font-bold text-[var(--av-text-primary)]">{n.title} {n.pinned && "📌"}</p>
-                <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">{n.body}</p>
-                <p className="mt-2 text-[9px] text-[var(--av-text-muted)]">{n.date}</p>
-              </div>
-            ))}
+            {data.notes.length === 0 ? (
+              <p className="text-xs text-[var(--av-text-muted)]">कोई नोट नहीं — Add Note से जोड़ें</p>
+            ) : (
+              data.notes.map((n) => (
+                <div key={n.id} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3">
+                  <p className="text-xs font-bold text-[var(--av-text-primary)]">{n.title} {n.pinned && "📌"}</p>
+                  <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">{n.body}</p>
+                  <p className="mt-2 text-[9px] text-[var(--av-text-muted)]">{n.date}</p>
+                </div>
+              ))
+            )}
           </div>
         </DarkCard>
       </div>

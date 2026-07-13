@@ -45,10 +45,10 @@ $javaHome = Find-JavaHome
 $env:JAVA_HOME = $javaHome
 
 $sdkCandidates = @(
-    $env:ANDROID_HOME,
+    "$env:LOCALAPPDATA\Android\Sdk",
     $env:ANDROID_SDK_ROOT,
-    "$env:LOCALAPPDATA\Android\Sdk"
-) | Where-Object { $_ -and (Test-Path $_) }
+    $env:ANDROID_HOME
+) | Where-Object { $_ -and (Test-Path $_) -and $_.Length -gt 3 }
 
 if (-not $sdkCandidates) {
     throw "Android SDK not found. Install Android Studio or set ANDROID_HOME."

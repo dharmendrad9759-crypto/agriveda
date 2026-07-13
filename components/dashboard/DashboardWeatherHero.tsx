@@ -6,6 +6,9 @@ import { Droplets, Loader2, Sun, Wind, CloudRain } from "lucide-react";
 import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 
+const HERO_BG =
+  "https://images.unsplash.com/photo-1536304575081-ff8c827fd69f?w=1400&q=85&auto=format&fit=crop";
+
 function greeting(): string {
   const h = new Date().getHours();
   if (h < 12) return "Good Morning";
@@ -23,70 +26,68 @@ export default function DashboardWeatherHero() {
   const humidity = weather?.humidity ?? "22%";
   const wind = weather?.windSpeed ?? "8 km/h";
   const rainChance = weather?.hourlyForecast[0]?.rainChancePercent ?? 0;
-  const feelsLike = weather ? `${parseInt(weather.temp, 10) + 3}°C` : "35°C";
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-[var(--av-border)] shadow-[var(--av-shadow-md)]">
+    <section className="relative overflow-hidden rounded-2xl border border-emerald-500/20 shadow-[0_8px_32px_rgba(0,100,50,0.15)]">
       <div className="absolute inset-0">
         <Image
-          src="/images/dashboard-hero.jpg"
-          alt="Farm landscape at sunrise"
+          src={HERO_BG}
+          alt="Green crop field"
           fill
-          className="object-cover"
+          className="object-cover object-center"
           priority
-          sizes="(max-width: 1280px) 100vw, 70vw"
+          sizes="(max-width: 1280px) 100vw, 100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/85 via-emerald-900/70 to-emerald-800/40" />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/88 via-emerald-900/72 to-emerald-800/45" />
       </div>
 
-      <div className="relative z-10 p-4 sm:p-5 lg:p-6">
-        <p className="text-base font-bold text-white sm:text-lg lg:text-xl">
+      <div className="relative z-10 p-4 sm:p-5">
+        <p className="text-lg font-black text-white sm:text-xl">
           {greeting()}, {name}! 👋
         </p>
-        <p className="mt-1 max-w-xl text-xs text-emerald-50/90 sm:text-sm">
-          Let&apos;s make your farm more productive today.
+        <p className="mt-0.5 text-xs text-emerald-50/85 sm:text-sm">
+          आज का मौसम और खेती — एक नज़र में
         </p>
 
         {loading ? (
-          <div className="mt-5 flex items-center gap-2 text-white/90 sm:mt-6">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <span className="text-sm">Loading weather…</span>
+          <div className="mt-4 flex items-center gap-2 text-white/90">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-sm">मौसम लोड हो रहा है…</span>
           </div>
         ) : (
-          <div className="mt-4 flex flex-col gap-4 sm:mt-5 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">{temp}</p>
-              <p className="mt-1 text-xs capitalize text-emerald-50 sm:text-sm">
-                {condition} · Feels like {feelsLike}
-              </p>
+          <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-3xl font-black text-white sm:text-4xl">{temp}</p>
+              <p className="text-xs capitalize text-emerald-100/90">{condition}</p>
             </div>
-            <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:gap-3 sm:grid-cols-4">
+            <div className="flex flex-wrap gap-2">
               {[
                 { icon: Droplets, label: "Humidity", value: humidity },
                 { icon: Wind, label: "Wind", value: wind },
                 { icon: CloudRain, label: "Rain", value: `${rainChance}%` },
-                { icon: Sun, label: "UV", value: "Moderate" },
+                { icon: Sun, label: "UV", value: "Mod" },
               ].map(({ icon: Icon, label, value }) => (
                 <div
                   key={label}
-                  className="min-w-0 rounded-xl border border-white/15 bg-white/10 px-2 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2"
+                  className="rounded-lg border border-white/15 bg-black/20 px-2.5 py-1.5 backdrop-blur-md"
                 >
-                  <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/80">
-                    <Icon className="h-3.5 w-3.5" />
+                  <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-emerald-100/75">
+                    <Icon className="h-3 w-3" />
                     {label}
                   </div>
-                  <p className="mt-0.5 text-sm font-bold text-white">{value}</p>
+                  <p className="text-xs font-bold text-white">{value}</p>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {error && (
-          <AppLink href="/weather" className="mt-3 inline-block text-xs font-semibold text-emerald-200 hover:underline">
-            Set location for live weather →
-          </AppLink>
-        )}
+        <AppLink
+          href="/weather"
+          className="mt-3 inline-flex text-[11px] font-bold text-emerald-200 hover:text-white"
+        >
+          पूरा मौसम देखें →
+        </AppLink>
       </div>
     </section>
   );

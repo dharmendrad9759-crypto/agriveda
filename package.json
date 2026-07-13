@@ -22,6 +22,7 @@
     "android:build": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1 assembleDebug",
     "android:bundle": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1 bundleRelease",
     "android:playstore": "powershell -ExecutionPolicy Bypass -File scripts/playstore-release.ps1",
+    "android:keystore": "powershell -ExecutionPolicy Bypass -File scripts/create-keystore.ps1",
     "android:gradle": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1"
   },
   "dependencies": {

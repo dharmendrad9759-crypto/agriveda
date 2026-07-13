@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzePlantPhotoWithGemini, getGeminiApiKey } from "@/lib/geminiPlantDoctor";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED_MIME = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"]);
 
@@ -55,8 +58,12 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
+  const key = getGeminiApiKey();
+  const prefix = key ? key.slice(0, 4) : null;
   return NextResponse.json({
-    configured: Boolean(getGeminiApiKey()),
+    configured: Boolean(key),
     provider: "google-gemini",
+    /** Safe hint for Vercel debugging — never exposes full key */
+    keyPrefix: prefix,
   });
 }

@@ -6,7 +6,9 @@ import { buildKnowledgeContext } from "@/lib/knowledge/retrieve";
 const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-3.5-flash", "gemini-3.1-flash-lite"] as const;
 
 export function getGeminiApiKey(): string | null {
-  return process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || null;
+  const raw = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || "";
+  const key = raw.trim().replace(/^["']|["']$/g, "");
+  return key.length > 0 ? key : null;
 }
 
 function cropLabel(slug: string): string {

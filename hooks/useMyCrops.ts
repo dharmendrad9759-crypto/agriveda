@@ -1,14 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { defaultMyCrops, type MyCropItem } from "@/data/crop-catalog";
-import { cropCatalog } from "@/data/crop-catalog";
+import { type MyCropItem, cropCatalog } from "@/data/crop-catalog";
 
 const STORAGE_KEY = "agriveda-my-crops";
 export const MAX_MY_CROPS = 4;
 
 export function useMyCrops() {
-  const [crops, setCrops] = useState<MyCropItem[]>(defaultMyCrops);
+  const [crops, setCrops] = useState<MyCropItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -17,6 +16,8 @@ export function useMyCrops() {
       if (stored) {
         const parsed = JSON.parse(stored) as MyCropItem[];
         setCrops(parsed.slice(0, MAX_MY_CROPS));
+      } else {
+        setCrops([]);
       }
     } catch {
       /* use defaults */

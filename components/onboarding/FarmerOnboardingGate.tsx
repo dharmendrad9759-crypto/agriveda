@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Capacitor } from "@capacitor/core";
 import { Loader2, Phone, ShieldCheck, User } from "lucide-react";
+import FarmSetupStep from "@/components/onboarding/FarmSetupStep";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
 import SearchableSelect from "@/components/ui/SearchableSelect";
@@ -21,15 +22,18 @@ import {
 } from "@/lib/firebase/phoneAuth";
 import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
 
-type Step = "phone" | "otp" | "profile";
+type Step = "phone" | "otp" | "profile" | "farm";
 
 export default function FarmerOnboardingGate({ children }: { children: React.ReactNode }) {
-  const { profile, hydrated, completeOnboarding } = useFarmerProfile();
+  const { profile, hydrated, completeOnboarding, completeFarmSetup } = useFarmerProfile();
   const { showToast } = useToast();
   const useFirebase = isFirebaseConfigured();
   const isNativeApp = Capacitor.isNativePlatform();
 
-  const [step, setStep] = useState<Step>("phone");
+  const needsFarmSetup = profile.onboardingComplete && !profile.farmSetupComplete;
+  const needsFullOnboarding = !profile.onboardingComplete;
+
+  const [step, setStep] = useState<Step>(needsFarmSetup ? "farm" : "phone");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [demoOtp, setDemoOtp] = useState<string | null>(null);
@@ -54,16 +58,27 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   };
 
   const skipForDev = () => {
-    completeOnboarding(DEMO_FARMER_PROFILE);
-    showToast("Demo mode — dashboard khula hai 🌾");
+    completeOnboarding({ ...DEMO_FARMER_PROFILE, farmSetupComplete: false });
+    setStep("farm");
+    showToast("Demo mode — अब ज़मीन की जानकारी भरें");
   };
 
   useEffect(() => {
-    if (!hydrated || profile.onboardingComplete || !shouldAutoSkipOnboarding()) return;
-    completeOnboarding(DEMO_FARMER_PROFILE);
+    if (!hydrated || !shouldAutoSkipOnboarding() || profile.onboardingComplete) return;
+    completeOnboarding({ ...DEMO_FARMER_PROFILE, farmSetupComplete: false });
+    setStep("farm");
   }, [hydrated, profile.onboardingComplete, completeOnboarding]);
 
-  if (!hydrated || profile.onboardingComplete || shouldAutoSkipOnboarding()) {
+  useEffect(() => {
+    if (needsFarmSetup) setStep("farm");
+  }, [needsFarmSetup]);
+
+  const showGate =
+    hydrated &&
+    (needsFullOnboarding || needsFarmSetup) &&
+    (needsFarmSetup || !shouldAutoSkipOnboarding());
+
+  if (!hydrated || !showGate) {
     return <>{children}</>;
   }
 
@@ -152,16 +167,38 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       return;
     }
 
-    completeOnboarding({
-      phone: phone.replace(/\D/g, "").slice(-10),
-      firebaseUid: firebaseUid ?? undefined,
-      name: name.trim(),
-      village: village.trim(),
-      district: district.trim(),
-      state: state.trim(),
-    });
+    setError(null);
+    setStep("farm");
+  };
+
+  const finishFarmSetup = (totalAcres: number) => {
+    const profileData = needsFarmSetup
+      ? { totalFarmAreaAcres: totalAcres }
+      : {
+          phone: phone.replace(/\D/g, "").slice(-10),
+          firebaseUid: firebaseUid ?? undefined,
+          name: name.trim(),
+          village: village.trim(),
+          district: district.trim(),
+          state: state.trim(),
+          totalFarmAreaAcres: totalAcres,
+        };
+
+    completeFarmSetup(profileData);
     showToast("स्वागत है, किसान भाई! 🌾");
   };
+
+  const stepTitle =
+    step === "phone"
+      ? "पहले मोबाइल नंबर verify करें"
+      : step === "otp"
+        ? "SMS OTP डालकर verify करें"
+        : step === "profile"
+          ? "अपनी जानकारी भरें"
+          : "अपनी ज़मीन की जानकारी";
+
+  const stepHeading =
+    step === "farm" ? "खेत सेटअप" : needsFarmSetup ? "खेत सेटअप" : "किसान पंजीकरण";
 
   return (
     <div className="fixed inset-0 z-[200] flex items-end justify-center bg-[#030712] p-4 sm:items-center">
@@ -169,18 +206,14 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
         role="dialog"
         aria-modal
         aria-label="Farmer registration"
-        className="w-full max-w-md overflow-hidden rounded-3xl border border-emerald-500/25 bg-[var(--background)] shadow-2xl"
+        className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-3xl border border-emerald-500/25 bg-[var(--background)] shadow-2xl"
       >
         <div className="border-b border-emerald-500/15 bg-emerald-600 px-6 py-5 text-white">
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-100">
             Agriveda
           </p>
-          <h2 className="mt-1 text-xl font-black">किसान पंजीकरण</h2>
-          <p className="mt-1 text-sm text-emerald-50/90">
-            {step === "phone" && "पहले मोबाइल नंबर verify करें"}
-            {step === "otp" && "SMS OTP डालकर verify करें"}
-            {step === "profile" && "अपनी जानकारी भरें"}
-          </p>
+          <h2 className="mt-1 text-xl font-black">{stepHeading}</h2>
+          <p className="mt-1 text-sm text-emerald-50/90">{stepTitle}</p>
         </div>
 
         <div className="space-y-4 p-6">
@@ -310,18 +343,28 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                 onClick={finishProfile}
                 className="w-full rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white"
               >
-                शुरू करें
+                आगे बढ़ें — खेत की जानकारी
               </button>
             </>
           )}
 
-          {error && (
+          {step === "farm" && (
+            <FarmSetupStep
+              farmerName={needsFarmSetup ? profile.name : name}
+              onComplete={finishFarmSetup}
+              loading={loading}
+            />
+          )}
+
+          {error && step !== "farm" && (
             <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm font-semibold text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
 
-          {(process.env.NODE_ENV === "development" || isNativeApp) && (
+          {(process.env.NODE_ENV === "development" || isNativeApp) &&
+            step !== "farm" &&
+            !needsFarmSetup && (
             <button
               type="button"
               onClick={skipForDev}

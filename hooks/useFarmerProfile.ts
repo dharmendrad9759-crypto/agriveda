@@ -12,6 +12,10 @@ export interface FarmerProfile {
   phone: string;
   phoneVerified: boolean;
   onboardingComplete: boolean;
+  /** User completed farm/field setup after profile */
+  farmSetupComplete: boolean;
+  /** Total farm area in acres (from onboarding) */
+  totalFarmAreaAcres?: number;
   firebaseUid?: string;
   /** ISO date strings keyed by crop slug */
   sowingDates: Record<string, string>;
@@ -27,16 +31,19 @@ const DEFAULT: FarmerProfile = {
   phone: "",
   phoneVerified: false,
   onboardingComplete: false,
+  farmSetupComplete: false,
   sowingDates: {},
 };
 
 function normalizeProfile(raw: Partial<FarmerProfile>): FarmerProfile {
+  const onboardingComplete = Boolean(raw.onboardingComplete);
   return {
     ...DEFAULT,
     ...raw,
     sowingDates: raw.sowingDates ?? {},
     phoneVerified: Boolean(raw.phoneVerified),
-    onboardingComplete: Boolean(raw.onboardingComplete),
+    onboardingComplete,
+    farmSetupComplete: Boolean(raw.farmSetupComplete ?? onboardingComplete),
   };
 }
 
@@ -73,8 +80,25 @@ export function useFarmerProfile() {
   }, []);
 
   const completeOnboarding = useCallback((next: Partial<FarmerProfile>) => {
-    saveProfile({ ...next, phoneVerified: true, onboardingComplete: true });
+    saveProfile({
+      ...next,
+      phoneVerified: true,
+      onboardingComplete: true,
+      farmSetupComplete: next.farmSetupComplete ?? true,
+    });
   }, [saveProfile]);
+
+  const completeFarmSetup = useCallback(
+    (next: Partial<FarmerProfile>) => {
+      saveProfile({
+        ...next,
+        farmSetupComplete: true,
+        onboardingComplete: true,
+        phoneVerified: next.phoneVerified ?? true,
+      });
+    },
+    [saveProfile]
+  );
 
   const setSowingDate = useCallback((cropSlug: string, date: string) => {
     setProfile((prev) => {
@@ -87,5 +111,5 @@ export function useFarmerProfile() {
     });
   }, []);
 
-  return { profile, hydrated, saveProfile, completeOnboarding, setSowingDate };
+  return { profile, hydrated, saveProfile, completeOnboarding, completeFarmSetup, setSowingDate };
 }

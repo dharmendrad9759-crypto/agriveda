@@ -1,5 +1,6 @@
 const APP_KEYS = [
   "agriveda-farmer-profile",
+  "agriveda-farm-data",
   "agriveda-my-crops",
   "agriveda-ai-history",
   "agriveda-user-queries",

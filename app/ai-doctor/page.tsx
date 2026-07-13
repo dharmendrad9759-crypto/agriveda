@@ -229,7 +229,10 @@ export default function AIDoctorPage() {
           </div>
           {aiConfigured === false && (
             <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-800 dark:text-amber-200">
-              ⚠️ GEMINI_API_KEY .env.local में add karein — Google AI Studio से key (AIzaSy या AQ. format).
+              {typeof window !== "undefined" &&
+              (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+                ? "⚠️ GEMINI_API_KEY .env.local में add karein — Google AI Studio से key (AIzaSy या AQ. format)."
+                : "⚠️ Vercel → Settings → Environment Variables → GEMINI_API_KEY → Production ✅ enable करें, Save करें, फिर Deployments → Redeploy करें।"}
             </p>
           )}
         </DarkCard>
