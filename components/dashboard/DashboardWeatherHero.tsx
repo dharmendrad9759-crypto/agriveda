@@ -8,8 +8,8 @@ import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
-const HERO_BG =
-  "https://images.unsplash.com/photo-1536304575081-ff8c827fd69f?w=1400&q=85&auto=format&fit=crop";
+/** Local curated paddy photo — premium farm hero backdrop */
+const HERO_BG = "/images/crops/paddy.png";
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -41,13 +41,15 @@ export default function DashboardWeatherHero() {
       <div className="absolute inset-0">
         <Image
           src={HERO_BG}
-          alt="Green crop field"
+          alt="Paddy field"
           fill
-          className="object-cover object-center"
+          className="object-cover object-center scale-105"
           priority
           sizes="(max-width: 1280px) 100vw, 100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/90 via-emerald-900/75 to-lime-900/40" />
+        {/* Keep text readable over crop photo */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/88 via-emerald-900/70 to-lime-950/45" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-emerald-950/20" />
         <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-400/20 blur-2xl animate-float" />
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-300/50 to-transparent" />
       </div>
