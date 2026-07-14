@@ -112,10 +112,117 @@ export const FERTILIZER_RECOMMENDATIONS: FertilizerRecommendation[] = [
     splits: ["Half N at sowing", "Half N at first irrigation (CRI ~21 DAS)"],
     notes: ["Avoid late sowing for Karnal bunt risk"],
   },
+  {
+    cropSlug: "sugarcane",
+    cropName: "Sugarcane",
+    source: "ICAR-IISR / state sugarcane PoP",
+    n: 250,
+    p2o5: 80,
+    k2o: 120,
+    micronutrients: ["ZnSO₄ / FeSO4 if chlorosis on alkaline soils", "Trash mulching after earthing"],
+    splits: ["Basal P+K at planting", "N in 2–3 splits till grand growth", "Last N before monsoon peak"],
+    notes: ["FYM 10-15 t/ha", "Ratoon: reduce N slightly; gap filling essential"],
+  },
+  {
+    cropSlug: "onion",
+    cropName: "Onion",
+    source: "NHRDF / ICAR vegetable PoP",
+    n: 100,
+    p2o5: 50,
+    k2o: 50,
+    micronutrients: ["S through gypsum/SSP — quality bulbs", "Boron if hollow stems"],
+    splits: ["Basal NPK at transplant/sowing", "Top-dress N at 30 & 45 DAT"],
+    notes: ["FYM 15-20 t/ha", "Avoid excess late N — soft bulbs / poor storage"],
+  },
+  {
+    cropSlug: "cauliflower",
+    cropName: "Cauliflower",
+    source: "ICAR vegetable PoP",
+    n: 120,
+    p2o5: 80,
+    k2o: 60,
+    micronutrients: ["Boron (borax) critical — prevents browning", "Mo if deficiency on sandy soils"],
+    splits: ["Basal + top-dress N at curd initiation"],
+    notes: ["FYM 20 t/ha", "Maintain cool temperatures for curd quality"],
+  },
+  {
+    cropSlug: "brinjal",
+    cropName: "Brinjal",
+    source: "ICAR / SAU vegetable PoP",
+    n: 100,
+    p2o5: 50,
+    k2o: 50,
+    micronutrients: ["Foliar micronutrient mix if stunting"],
+    splits: ["Basal + N splits at 30, 60 DAT"],
+    notes: ["FYM 20 t/ha", "Stake tall hybrids; drip fertigation preferred"],
+  },
+  {
+    cropSlug: "cucumber",
+    cropName: "Cucumber",
+    source: "Protected cultivation / ICAR PoP",
+    n: 80,
+    p2o5: 40,
+    k2o: 40,
+    micronutrients: ["Ca foliar for tip burn under protected culture"],
+    splits: ["Basal + frequent light fertigation under drip"],
+    notes: ["Avoid water stress at flowering/fruiting", "Organic mulch helps"],
+  },
+  {
+    cropSlug: "mustard",
+    cropName: "Mustard",
+    source: "ICAR / mustard PoP",
+    n: 80,
+    p2o5: 40,
+    k2o: 40,
+    micronutrients: ["Sulphur critical — gypsum/SSP", "Boron for sterility issues"],
+    splits: ["Basal + top-dress N at 30 DAS"],
+    notes: ["S deficiency hurts oil quality", "Avoid waterlogging"],
+  },
+  {
+    cropSlug: "moong",
+    cropName: "Moong",
+    source: "ICAR pulse PoP",
+    n: 20,
+    p2o5: 40,
+    k2o: 20,
+    micronutrients: ["Rhizobium + PSB seed treatment", "Mo for acid soils"],
+    splits: ["Full basal — legume"],
+    notes: ["Do not overload N", "FYM 5 t/ha improves yield"],
+  },
+  {
+    cropSlug: "pulses",
+    cropName: "Arhar / Tur",
+    source: "ICAR pigeonpea PoP",
+    n: 25,
+    p2o5: 50,
+    k2o: 20,
+    micronutrients: ["Rhizobium + PSB", "ZnSO₄ if deficient"],
+    splits: ["Basal at sowing; light N only if poor nodulation"],
+    notes: ["Line sowing + drainage important", "Intercrop options in rainfed"],
+  },
+  {
+    cropSlug: "bhindi",
+    cropName: "Bhindi (Okra)",
+    source: "ICAR vegetable PoP",
+    n: 80,
+    p2o5: 40,
+    k2o: 40,
+    micronutrients: ["Foliar NPK+MN if YVM stress plants"],
+    splits: ["Basal + N at 30 DAS"],
+    notes: ["FYM 10-15 t/ha", "Resistant varieties reduce pesticide load"],
+  },
 ];
 
 export function getFertilizerForCrop(slug: string): FertilizerRecommendation | null {
-  return FERTILIZER_RECOMMENDATIONS.find((f) => f.cropSlug === slug) ?? null;
+  const key =
+    slug === "groundnut" || slug === "mungfali"
+      ? "moongfali"
+      : slug === "arhar" || slug === "tur"
+        ? "pulses"
+        : slug === "rice" || slug === "dhaan"
+          ? "paddy"
+          : slug;
+  return FERTILIZER_RECOMMENDATIONS.find((f) => f.cropSlug === key) ?? null;
 }
 
 /** Convert kg/ha to kg/acre (1 ha ≈ 2.47 acre) */
