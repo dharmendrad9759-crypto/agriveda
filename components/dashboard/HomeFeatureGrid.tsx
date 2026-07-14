@@ -3,15 +3,12 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Tractor,
-  FlaskConical,
   Leaf,
-  CloudSun,
   Brain,
   Droplets,
   Calendar,
   Bell,
   BookOpen,
-  Sprout,
   ShieldAlert,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -20,6 +17,7 @@ import HomeSnapSlider from "@/components/dashboard/HomeSnapSlider";
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
+/** Tools NOT already in Quick Actions (AI, Add Field, Planner, Pest Scanner, Fertilizer, Mandi, Weather) */
 const FEATURES: {
   label: string;
   sub: string;
@@ -28,15 +26,12 @@ const FEATURES: {
   ring: string;
 }[] = [
   { label: "My Farm", sub: "खेत", href: "/my-farm", icon: Tractor, ring: "ring-emerald-500/40" },
-  { label: "Fertilizer", sub: "Schedule", href: "/services/fertilizer-calculator", icon: FlaskConical, ring: "ring-amber-500/40" },
   { label: "Nutrients", sub: "Deficiency", href: "/deficiencies", icon: Leaf, ring: "ring-lime-500/40" },
-  { label: "Weather", sub: "Forecast", href: "/weather", icon: CloudSun, ring: "ring-sky-500/40" },
   { label: "Advisor", sub: "Field", href: "/field-advisor", icon: Brain, ring: "ring-violet-500/40" },
   { label: "Spray", sub: "Advisory", href: "/weather/spray-advisory", icon: Droplets, ring: "ring-cyan-500/40" },
   { label: "Sowing", sub: "Window", href: "/sowing-window", icon: Calendar, ring: "ring-indigo-500/40" },
   { label: "Alerts", sub: "Farm", href: "/alerts", icon: Bell, ring: "ring-red-500/40" },
-  { label: "Calendar", sub: "Crop", href: "/crop-calendar", icon: Sprout, ring: "ring-emerald-500/30" },
-  { label: "Pests", sub: "Guide", href: "/pest-diseases", icon: ShieldAlert, ring: "ring-orange-500/40" },
+  { label: "Weeds", sub: "Guide", href: "/pest-diseases?type=weed", icon: ShieldAlert, ring: "ring-orange-500/40" },
   { label: "Library", sub: "ज्ञान", href: "/library", icon: BookOpen, ring: "ring-stone-500/40" },
 ];
 
@@ -46,7 +41,7 @@ export default function HomeFeatureGrid() {
   return (
     <section className="min-w-0">
       <div className="mb-1.5 flex items-center justify-between px-0.5">
-        <h2 className="text-xs font-bold text-[var(--av-text-primary)]">Farm Tools</h2>
+        <h2 className="text-xs font-bold text-[var(--av-text-primary)]">More Tools</h2>
         <span className="text-[9px] font-semibold text-[var(--av-text-muted)]">swipe →</span>
       </div>
       <HomeSnapSlider itemCount={FEATURES.length} showArrows>

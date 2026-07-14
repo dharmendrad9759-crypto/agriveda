@@ -8,57 +8,64 @@ import HomeFarmSnapshot from "@/components/dashboard/HomeFarmSnapshot";
 import HomeFeatureGrid from "@/components/dashboard/HomeFeatureGrid";
 import HomeSnapSlider, { HomeTipCarousel } from "@/components/dashboard/HomeSnapSlider";
 import { QuickActionIcon } from "@/components/services/SpriteQuickIcon";
+import BiHeading from "@/components/i18n/BiHeading";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmData } from "@/hooks/useFarmData";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
 const QUICK_ACTIONS: {
   label: string;
+  labelHi: string;
   href: string;
   col?: number;
   row?: number;
   lucide?: typeof Plus;
   imageSrc?: string;
 }[] = [
-  { label: "AI Doctor", href: "/ai-doctor", imageSrc: "/images/icons/ai-doctor.png" },
-  { label: "Add Field", href: "/my-farm", lucide: Plus },
-  { label: "Crop Planner", href: "/crop-calendar", col: 1, row: 0 },
-  { label: "Pest Scanner", href: "/pest-diseases", col: 3, row: 0 },
-  { label: "Fertilizer", href: "/services/fertilizer-calculator", col: 2, row: 0 },
-  { label: "Mandi", href: "/mandi", col: 5, row: 0 },
-  { label: "Weather", href: "/weather", col: 0, row: 1 },
+  { label: "AI Doctor", labelHi: "AI डॉक्टर", href: "/ai-doctor", imageSrc: "/images/icons/ai-doctor.png" },
+  { label: "Add Field", labelHi: "खेत जोड़ें", href: "/my-farm", lucide: Plus },
+  { label: "Crop Planner", labelHi: "फसल योजना", href: "/crop-calendar", col: 1, row: 0 },
+  { label: "Pest Scanner", labelHi: "कीट स्कैन", href: "/pest-diseases", col: 3, row: 0 },
+  { label: "Fertilizer", labelHi: "उर्वरक", href: "/services/fertilizer-calculator", col: 2, row: 0 },
+  { label: "Mandi", labelHi: "मंडी", href: "/mandi", col: 5, row: 0 },
+  { label: "Weather", labelHi: "मौसम", href: "/weather", col: 0, row: 1 },
 ];
 
-const TIPS = [
-  {
-    title: "खेत का data खुद भरें",
-    body: "My Farm में रकबा और फसल जोड़ें — alerts उसी से आएंगे।",
-  },
-  {
-    title: "स्प्रे से पहले मौसम देखें",
-    body: "Spray Advisory में हवा और बारिश चेक करें।",
-    href: "/weather/spray-advisory",
-  },
-  {
-    title: "मंडी भाव live",
-    body: "Mandi page पर आज के भाव — बेचने से पहले देखें।",
-    href: "/mandi",
-  },
+const TIPS_EN = [
+  { title: "Add your own farm data", body: "Enter acreage and crops in My Farm — alerts use your fields." },
+  { title: "Check weather before spray", body: "Use Spray Advisory for wind and rain risk.", href: "/weather/spray-advisory" },
+  { title: "Live mandi rates", body: "Check today’s prices before selling.", href: "/mandi" },
+];
+
+const TIPS_HI = [
+  { title: "खेत का डेटा खुद भरें", body: "My Farm में रकबा और फसल जोड़ें — alerts उसी से आएंगे।" },
+  { title: "स्प्रे से पहले मौसम देखें", body: "Spray Advisory में हवा और बारिश चेक करें।", href: "/weather/spray-advisory" },
+  { title: "मंडी भाव live", body: "Mandi page पर आज के भाव — बेचने से पहले देखें।", href: "/mandi" },
 ];
 
 export default function DesktopDashboard({ embedded: _embedded }: { embedded?: boolean } = {}) {
   const { data: farm } = useFarmData();
   const reduced = useReducedMotion();
+  const { locale } = useLocale();
+  const isHi = locale === "hi" || locale === "hinglish";
 
   return (
-    <div className="space-y-3 min-w-0 max-w-full overflow-x-hidden">
+    <div className="min-w-0 max-w-full space-y-3 overflow-x-hidden">
       <DashboardWeatherHero />
 
       <HomeFarmSnapshot />
 
       <section className="min-w-0">
         <div className="mb-1.5 flex items-center justify-between px-0.5">
-          <h2 className="text-xs font-bold text-[var(--av-text-primary)]">Quick Actions</h2>
-          <span className="text-[9px] font-semibold text-[var(--av-text-muted)]">swipe →</span>
+          <BiHeading
+            en="Quick Actions"
+            hi="त्वरित सेवाएँ"
+            as="h2"
+            className="text-xs font-bold text-[var(--av-text-primary)]"
+          />
+          <span className="text-[9px] font-semibold text-[var(--av-text-muted)]">
+            {isHi ? "स्वाइप →" : "swipe →"}
+          </span>
         </div>
         <HomeSnapSlider itemCount={QUICK_ACTIONS.length}>
           {QUICK_ACTIONS.map((a, i) => (
@@ -82,7 +89,7 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
                   imageSrc={a.imageSrc}
                 />
                 <span className="line-clamp-2 text-[9px] font-semibold leading-tight text-[var(--av-text-secondary)]">
-                  {a.label}
+                  {isHi ? a.labelHi : a.label}
                 </span>
               </AppLink>
             </motion.div>
@@ -92,7 +99,7 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
 
       <HomeFeatureGrid />
 
-      <HomeTipCarousel tips={TIPS} />
+      <HomeTipCarousel tips={isHi ? TIPS_HI : TIPS_EN} />
 
       {farm.activities.length > 0 && (
         <motion.div
@@ -102,9 +109,14 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
           className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3"
         >
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-[var(--av-text-primary)]">आपके कार्य</h3>
+            <BiHeading
+              en="Your tasks"
+              hi="आपके कार्य"
+              as="h3"
+              className="text-xs font-bold text-[var(--av-text-primary)]"
+            />
             <AppLink href="/my-farm" className="text-[10px] font-bold text-[var(--av-accent)]">
-              सभी →
+              {isHi ? "सभी →" : "All →"}
             </AppLink>
           </div>
           <ul className="mt-2 space-y-1">

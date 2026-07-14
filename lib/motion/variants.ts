@@ -65,6 +65,11 @@ export const staggerItem = {
     y: 0,
     transition: { duration: MOTION.normal, ease: EASE_OUT },
   },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: MOTION.normal, ease: EASE_OUT },
+  },
 };
 
 export const modalBackdrop = {

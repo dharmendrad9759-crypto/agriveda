@@ -6,7 +6,7 @@ import type { ThreatCategory } from "@/types/pest-disease-ui";
 import { cn } from "@/lib/cn";
 import { BRAND } from "@/lib/brand";
 
-const GENERIC_STOCK = /unsplash\.com|placeholder|picsum|loremflickr/i;
+const GENERIC_STOCK = /placeholder|picsum|loremflickr|via\.placeholder/i;
 
 interface ThreatImageProps {
   src?: string | null;
@@ -59,8 +59,8 @@ function ThreatImageFallback({
       <div className="flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
         <CategoryIcon category={category} />
       </div>
-      <span className="px-2 text-center text-[9px] font-bold text-emerald-700/80 dark:text-emerald-300/80">
-        {BRAND}
+      <span className="max-w-[90%] truncate px-2 text-center text-[10px] font-bold text-emerald-700/90 dark:text-emerald-300/90">
+        {alt || BRAND}
       </span>
     </div>
   );

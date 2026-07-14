@@ -382,12 +382,18 @@ export default function NutrientDetailExperience({
 
             {tab === "symptoms" && (
               <div className="space-y-3">
-                <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-3">
-                  {scope.symptoms.map((s) => (
-                    <motion.div key={s.id} variants={staggerItem}>
-                      <SymptomCard symptom={s} />
-                    </motion.div>
-                  ))}
+                <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-3">
+                  {scope.symptoms.length === 0 ? (
+                    <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-slate-400">
+                      इस पोषक तत्व के लक्षण डेटा जल्द जुड़ेगा। Overview में संक्षिप्त लक्षण देखें।
+                    </p>
+                  ) : (
+                    scope.symptoms.map((s) => (
+                      <motion.div key={s.id} variants={staggerItem}>
+                        <SymptomCard symptom={s} />
+                      </motion.div>
+                    ))
+                  )}
                 </motion.div>
               </div>
             )}
