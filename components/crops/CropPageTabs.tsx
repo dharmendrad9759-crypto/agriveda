@@ -2,56 +2,104 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { CROP_TABS, type CropTabId } from "@/lib/crops/crop-tabs";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { cn } from "@/lib/cn";
+import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+
+const RING_BY_TAB: Record<CropTabId, string> = {
+  overview: "ring-emerald-500/40",
+  growth: "ring-lime-500/40",
+  fertilizer: "ring-amber-500/40",
+  pests: "ring-orange-500/40",
+  diseases: "ring-red-500/40",
+  nutrients: "ring-violet-500/40",
+  irrigation: "ring-cyan-500/40",
+  weeds: "ring-green-500/40",
+  calendar: "ring-indigo-500/40",
+  varieties: "ring-yellow-500/40",
+  harvest: "ring-orange-400/40",
+  faq: "ring-slate-500/40",
+  expert: "ring-teal-500/40",
+};
+
+const LABEL_HI: Partial<Record<CropTabId, string>> = {
+  overview: "ओवरव्यू",
+  growth: "वृद्धि",
+  fertilizer: "उर्वरक",
+  pests: "कीट",
+  diseases: "रोग",
+  nutrients: "पोषक",
+  irrigation: "पानी",
+  weeds: "खरपतवार",
+  calendar: "कैलेंडर",
+  varieties: "किस्में",
+  harvest: "कटाई",
+  faq: "FAQ",
+  expert: "टिप्स",
+};
 
 interface CropPageTabsProps {
   active: CropTabId;
   onChange: (tab: CropTabId) => void;
 }
 
-/** Premium segmented control — sticky, spring pill, horizontal scroll */
+/** Home-style tool grid — no horizontal slider */
 export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
   const reduced = useReducedMotion();
+  const { locale } = useLocale();
+  const isHi = locale === "hi" || locale === "hinglish";
 
   return (
-    <nav
-      className="sticky top-[52px] z-30 -mx-1 mb-5 py-2 lg:top-14"
-      aria-label="Crop sections"
-    >
-      <div className="crop-segment-track flex gap-1 overflow-x-auto p-1 scrollbar-hide">
-        {CROP_TABS.map((tab) => {
+    <nav className="mb-5 min-w-0" aria-label="Crop sections">
+      <p className="mb-1.5 px-0.5 text-xs font-bold text-[var(--av-text-primary)]">
+        {isHi ? "फसल गाइड" : "Crop guide"}
+      </p>
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7">
+        {CROP_TABS.map((tab, i) => {
           const Icon = tab.icon;
           const isActive = active === tab.id;
           return (
-            <button
+            <motion.div
               key={tab.id}
-              type="button"
-              onClick={() => onChange(tab.id)}
-              className={`relative z-10 flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-[11px] font-bold transition-colors sm:px-3.5 sm:text-xs ${
-                isActive
-                  ? "text-[var(--av-text-primary)]"
-                  : "text-[var(--av-text-muted)] hover:text-[var(--av-text-secondary)]"
-              }`}
+              className="min-w-0"
+              initial={reduced ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(i, 10) * 0.02, duration: MOTION.normal, ease: EASE_OUT }}
             >
-              {isActive && !reduced && (
-                <motion.span
-                  layoutId="crop-page-tab-pill"
-                  className="absolute inset-0 rounded-xl border border-emerald-500/25 bg-gradient-to-r from-emerald-500/20 to-cyan-500/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_16px_rgba(16,185,129,0.12)]"
-                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                />
-              )}
-              {isActive && reduced && (
-                <span className="absolute inset-0 rounded-xl border border-emerald-500/25 bg-emerald-500/15" />
-              )}
-              <motion.span
-                className="relative text-sm"
-                animate={{ scale: isActive ? 1.08 : 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 28 }}
+              <button
+                type="button"
+                onClick={() => onChange(tab.id)}
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "group flex h-full w-full flex-col items-center gap-1 rounded-2xl border p-2.5 text-center shadow-sm transition duration-200 active:scale-[0.97]",
+                  isActive
+                    ? "border-emerald-500/45 bg-emerald-500/10 shadow-[0_8px_24px_rgba(0,100,50,0.14)]"
+                    : "border-[var(--av-border)] bg-[var(--av-surface)] hover:-translate-y-0.5 hover:border-[var(--av-accent)]/35 hover:shadow-[0_8px_24px_rgba(0,100,50,0.12)]"
+                )}
               >
-                {tab.emoji}
-              </motion.span>
-              <Icon className="relative hidden h-3.5 w-3.5 shrink-0 sm:block" />
-              <span className="relative whitespace-nowrap">{tab.shortLabel}</span>
-            </button>
+                <span
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/15 to-transparent ring-1",
+                    RING_BY_TAB[tab.id]
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "h-4 w-4 transition group-hover:scale-110",
+                      isActive ? "text-emerald-600 dark:text-emerald-400" : "text-[var(--av-accent)]"
+                    )}
+                  />
+                </span>
+                <span
+                  className={cn(
+                    "line-clamp-2 text-[10px] font-bold leading-tight",
+                    isActive ? "text-emerald-700 dark:text-emerald-300" : "text-[var(--av-text-primary)]"
+                  )}
+                >
+                  {isHi ? LABEL_HI[tab.id] ?? tab.shortLabel : tab.shortLabel}
+                </span>
+              </button>
+            </motion.div>
           );
         })}
       </div>

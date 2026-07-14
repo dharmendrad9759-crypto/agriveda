@@ -695,14 +695,19 @@ select:-webkit-autofill {
   }
 }
 
-/* Hide default Google Translate chrome — we use TranslatorFab */
+/* Hide default Google Translate chrome — we use LanguageSwitcher + cookie */
 .goog-te-banner-frame,
 .goog-te-balloon-frame,
 #goog-gt-tt,
 .goog-tooltip,
 .goog-te-spinner-pos,
-body > .skiptranslate {
+body > .skiptranslate,
+.skiptranslate iframe,
+#google_translate_element {
   display: none !important;
+}
+body {
+  top: 0 !important;
 }
 .goog-text-highlight {
   background: none !important;
@@ -853,15 +858,6 @@ body > .skiptranslate {
 .crop-premium-cta:hover {
   transform: translateY(-1px);
   box-shadow: 0 12px 28px -6px rgba(16, 185, 129, 0.5);
-}
-
-.crop-segment-track {
-  border-radius: 18px;
-  border: 1px solid color-mix(in srgb, var(--av-accent) 15%, var(--av-border));
-  background: color-mix(in srgb, var(--av-surface) 75%, transparent);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--av-shadow-sm);
 }
 
 .crop-premium-inset {
