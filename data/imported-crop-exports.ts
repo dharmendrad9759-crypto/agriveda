@@ -10,6 +10,7 @@ import {
   mapToManagementProfile,
   type AgrivedaBatchExport,
 } from "@/lib/crops/agrivedaExportMapper";
+import { resolveCropImage } from "@/lib/crops/cropImages";
 import type { CropCategory } from "@/data/crop-catalog";
 
 function mapCatalogCategory(cat: CropCategory): Crop["category"] {
@@ -65,7 +66,7 @@ for (const slug of BATCH2_PRIORITY_SLUGS) {
         slug: cat.slug,
         name: cat.name,
         category: mapCatalogCategory(cat.category),
-        image: `/images/${cat.slug}.png`,
+        image: resolveCropImage({ slug: cat.slug }),
         overview: `${cat.name} cultivation guide — package of practices for Indian farmers.`,
       };
     }

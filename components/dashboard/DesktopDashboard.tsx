@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import DashboardWeatherHero from "@/components/dashboard/DashboardWeatherHero";
 import HomeFarmSnapshot from "@/components/dashboard/HomeFarmSnapshot";
 import HomeFeatureGrid from "@/components/dashboard/HomeFeatureGrid";
-import HomeSnapSlider, { HomeTipCarousel } from "@/components/dashboard/HomeSnapSlider";
+import { HomeTipCarousel } from "@/components/dashboard/HomeSnapSlider";
 import { QuickActionIcon } from "@/components/services/SpriteQuickIcon";
 import BiHeading from "@/components/i18n/BiHeading";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -56,26 +56,22 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
       <HomeFarmSnapshot />
 
       <section className="min-w-0">
-        <div className="mb-1.5 flex items-center justify-between px-0.5">
+        <div className="mb-1.5 px-0.5">
           <BiHeading
             en="Quick Actions"
             hi="त्वरित सेवाएँ"
             as="h2"
             className="text-xs font-bold text-[var(--av-text-primary)]"
           />
-          <span className="text-[9px] font-semibold text-[var(--av-text-muted)]">
-            {isHi ? "स्वाइप →" : "swipe →"}
-          </span>
         </div>
-        <HomeSnapSlider itemCount={QUICK_ACTIONS.length}>
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
           {QUICK_ACTIONS.map((a, i) => (
             <motion.div
               key={a.href + a.label}
-              data-slide
-              className="w-[72px] shrink-0 snap-start"
+              className="min-w-0"
               initial={reduced ? false : { opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.04, duration: MOTION.normal, ease: EASE_OUT }}
+              transition={{ delay: i * 0.03, duration: MOTION.normal, ease: EASE_OUT }}
             >
               <AppLink
                 href={a.href}
@@ -94,7 +90,7 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
               </AppLink>
             </motion.div>
           ))}
-        </HomeSnapSlider>
+        </div>
       </section>
 
       <HomeFeatureGrid />

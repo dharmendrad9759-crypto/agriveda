@@ -13,51 +13,59 @@ import {
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import AppLink from "@/components/ui/AppLink";
-import HomeSnapSlider from "@/components/dashboard/HomeSnapSlider";
+import BiHeading from "@/components/i18n/BiHeading";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
-/** Tools NOT already in Quick Actions (AI, Add Field, Planner, Pest Scanner, Fertilizer, Mandi, Weather) */
+/** Tools NOT already in Quick Actions */
 const FEATURES: {
   label: string;
+  labelHi: string;
   sub: string;
+  subHi: string;
   href: string;
   icon: LucideIcon;
   ring: string;
 }[] = [
-  { label: "My Farm", sub: "खेत", href: "/my-farm", icon: Tractor, ring: "ring-emerald-500/40" },
-  { label: "Nutrients", sub: "Deficiency", href: "/deficiencies", icon: Leaf, ring: "ring-lime-500/40" },
-  { label: "Advisor", sub: "Field", href: "/field-advisor", icon: Brain, ring: "ring-violet-500/40" },
-  { label: "Spray", sub: "Advisory", href: "/weather/spray-advisory", icon: Droplets, ring: "ring-cyan-500/40" },
-  { label: "Sowing", sub: "Window", href: "/sowing-window", icon: Calendar, ring: "ring-indigo-500/40" },
-  { label: "Alerts", sub: "Farm", href: "/alerts", icon: Bell, ring: "ring-red-500/40" },
-  { label: "Weeds", sub: "Guide", href: "/pest-diseases?type=weed", icon: ShieldAlert, ring: "ring-orange-500/40" },
-  { label: "Library", sub: "ज्ञान", href: "/library", icon: BookOpen, ring: "ring-stone-500/40" },
+  { label: "My Farm", labelHi: "मेरा खेत", sub: "Fields", subHi: "खेत", href: "/my-farm", icon: Tractor, ring: "ring-emerald-500/40" },
+  { label: "Nutrients", labelHi: "पोषक तत्व", sub: "Deficiency", subHi: "कमी", href: "/deficiencies", icon: Leaf, ring: "ring-lime-500/40" },
+  { label: "Advisor", labelHi: "सलाहकार", sub: "Field", subHi: "खेती", href: "/field-advisor", icon: Brain, ring: "ring-violet-500/40" },
+  { label: "Spray", labelHi: "स्प्रे", sub: "Advisory", subHi: "सलाह", href: "/weather/spray-advisory", icon: Droplets, ring: "ring-cyan-500/40" },
+  { label: "Sowing", labelHi: "बुआई", sub: "Window", subHi: "समय", href: "/sowing-window", icon: Calendar, ring: "ring-indigo-500/40" },
+  { label: "Alerts", labelHi: "अलर्ट", sub: "Farm", subHi: "खेत", href: "/alerts", icon: Bell, ring: "ring-red-500/40" },
+  { label: "Weeds", labelHi: "खरपतवार", sub: "Guide", subHi: "गाइड", href: "/pest-diseases?type=weed", icon: ShieldAlert, ring: "ring-orange-500/40" },
+  { label: "Library", labelHi: "लाइब्रेरी", sub: "Learn", subHi: "ज्ञान", href: "/library", icon: BookOpen, ring: "ring-stone-500/40" },
 ];
 
 export default function HomeFeatureGrid() {
   const reduced = useReducedMotion();
+  const { locale } = useLocale();
+  const isHi = locale === "hi" || locale === "hinglish";
 
   return (
     <section className="min-w-0">
-      <div className="mb-1.5 flex items-center justify-between px-0.5">
-        <h2 className="text-xs font-bold text-[var(--av-text-primary)]">More Tools</h2>
-        <span className="text-[9px] font-semibold text-[var(--av-text-muted)]">swipe →</span>
+      <div className="mb-1.5 px-0.5">
+        <BiHeading
+          en="More Tools"
+          hi="और टूल्स"
+          as="h2"
+          className="text-xs font-bold text-[var(--av-text-primary)]"
+        />
       </div>
-      <HomeSnapSlider itemCount={FEATURES.length} showArrows>
+      <div className="grid grid-cols-4 gap-2">
         {FEATURES.map((f, i) => (
           <motion.div
             key={f.href + f.label}
-            data-slide
-            className="w-[88px] shrink-0 snap-start"
+            className="min-w-0"
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(i, 8) * 0.04, duration: MOTION.normal, ease: EASE_OUT }}
+            transition={{ delay: Math.min(i, 8) * 0.03, duration: MOTION.normal, ease: EASE_OUT }}
           >
             <AppLink
               href={f.href}
               className={cn(
-                "group flex flex-col items-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2.5 text-center shadow-sm",
+                "group flex h-full flex-col items-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2.5 text-center shadow-sm",
                 "transition duration-200 hover:-translate-y-0.5 hover:border-[var(--av-accent)]/35 hover:shadow-[0_8px_24px_rgba(0,100,50,0.12)] active:scale-[0.97]"
               )}
             >
@@ -69,12 +77,16 @@ export default function HomeFeatureGrid() {
               >
                 <f.icon className="h-4 w-4 text-[var(--av-accent)] transition group-hover:scale-110" />
               </span>
-              <span className="truncate text-[10px] font-bold text-[var(--av-text-primary)]">{f.label}</span>
-              <span className="truncate text-[8px] text-[var(--av-text-muted)]">{f.sub}</span>
+              <span className="line-clamp-1 text-[10px] font-bold text-[var(--av-text-primary)]">
+                {isHi ? f.labelHi : f.label}
+              </span>
+              <span className="line-clamp-1 text-[8px] text-[var(--av-text-muted)]">
+                {isHi ? f.subHi : f.sub}
+              </span>
             </AppLink>
           </motion.div>
         ))}
-      </HomeSnapSlider>
+      </div>
     </section>
   );
 }

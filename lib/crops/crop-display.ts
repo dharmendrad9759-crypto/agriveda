@@ -1,5 +1,6 @@
 import { cropCatalog } from "@/data/crop-catalog";
 import type { Crop } from "@/types/crop";
+import { resolveCropImage } from "@/lib/crops/cropImages";
 
 const EMOJI_BY_SLUG = Object.fromEntries(cropCatalog.map((c) => [c.slug, c.emoji]));
 
@@ -20,6 +21,7 @@ const HINDI_NAMES: Record<string, string> = {
   sugarcane: "गन्ना",
   soybean: "सोयाबीन",
   moongfali: "मूंगफली",
+  groundnut: "मूंगफली",
   mustard: "सरसों",
   moong: "मूंग",
   pulses: "अरहर",
@@ -27,28 +29,6 @@ const HINDI_NAMES: Record<string, string> = {
   banana: "केला",
   grapes: "अंगूर",
   capsicum: "शिमला मिर्च",
-};
-
-const CROP_IMAGES: Record<string, string> = {
-  paddy: "https://images.unsplash.com/photo-1536304575081-ff8c827fd69f?w=480&h=360&fit=crop&q=80",
-  wheat: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=480&h=360&fit=crop&q=80",
-  maize: "https://images.unsplash.com/photo-1551754655-cd27f13c3a88?w=480&h=360&fit=crop&q=80",
-  bajra: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=480&h=360&fit=crop&q=80",
-  tomato: "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=480&h=360&fit=crop&q=80",
-  potato: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=480&h=360&fit=crop&q=80",
-  onion: "https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?w=480&h=360&fit=crop&q=80",
-  chilli: "https://images.unsplash.com/photo-1592840067980-057d97d26f4a?w=480&h=360&fit=crop&q=80",
-  cauliflower: "https://images.unsplash.com/photo-1568584711073-3d021d499b1e?w=480&h=360&fit=crop&q=80",
-  cucumber: "https://images.unsplash.com/photo-1604977049386-4b1a0d0e0c0e?w=480&h=360&fit=crop&q=80",
-  brinjal: "https://images.unsplash.com/photo-1622206152918-f835a4b700b4?w=480&h=360&fit=crop&q=80",
-  bhindi: "https://images.unsplash.com/photo-1592921453113-2fdceb6e3c9f?w=480&h=360&fit=crop&q=80",
-  cotton: "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=480&h=360&fit=crop&q=80",
-  sugarcane: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=480&h=360&fit=crop&q=80",
-  soybean: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=480&h=360&fit=crop&q=80",
-  moongfali: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=480&h=360&fit=crop&q=80",
-  mustard: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=480&h=360&fit=crop&q=80",
-  moong: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=480&h=360&fit=crop&q=80",
-  pulses: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=480&h=360&fit=crop&q=80",
 };
 
 export type SeasonTag = "Kharif" | "Rabi" | "Summer" | "All Season";
@@ -61,11 +41,13 @@ export function getCropEmoji(slug: string): string {
   return EMOJI_BY_SLUG[slug] ?? "🌱";
 }
 
-export function getCropImageUrl(crop: Pick<Crop, "slug" | "image">): string {
-  const img = crop.image?.trim();
-  // Local /images/*.png paths are placeholders — use Unsplash fallbacks until assets are added.
-  if (img && !img.startsWith("/images/")) return img;
-  return CROP_IMAGES[crop.slug] ?? CROP_IMAGES.paddy;
+/** Card / list / hero image — local curated photo when available. */
+export function getCropImageUrl(crop: Pick<Crop, "slug" | "image" | "name">): string {
+  return resolveCropImage({
+    slug: crop.slug,
+    name: crop.name,
+    image: crop.image,
+  });
 }
 
 export function parseSeasonTag(season: string): SeasonTag {

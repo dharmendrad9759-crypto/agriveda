@@ -5,7 +5,8 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Calendar, Clock, CloudSun, Droplets, Sparkles, Sprout, TrendingUp } from "lucide-react";
 import { getCropDashboard } from "@/data/crop-dashboard";
-import { getCropEmoji, getCropHealthScore } from "@/lib/crops/crop-visual";
+import { getCropHealthScore } from "@/lib/crops/crop-visual";
+import { getCropImageUrl } from "@/lib/crops/crop-display";
 import { CROP_PEST_RISK, CROP_DISEASE_RISK } from "@/data/mock/crop-overview";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { Crop } from "@/types/crop";
@@ -26,7 +27,7 @@ interface Props {
 
 export default function CropPremiumHero({ crop, detail }: Props) {
   const reduceMotion = useReducedMotion();
-  const emoji = getCropEmoji(crop.slug);
+  const cropImage = getCropImageUrl(crop);
   const health = getCropHealthScore(crop.slug);
   const dash = getCropDashboard(crop.slug);
   const currentStage =
@@ -51,18 +52,14 @@ export default function CropPremiumHero({ crop, detail }: Props) {
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             className="relative h-[88px] w-[88px] shrink-0 overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 shadow-[0_8px_32px_rgba(16,185,129,0.2)]"
           >
-            {crop.image ? (
-              <Image
-                src={crop.image}
-                alt={crop.name}
-                fill
-                className="object-cover"
-                sizes="88px"
-                priority
-              />
-            ) : (
-              <span className="flex h-full w-full items-center justify-center text-4xl">{emoji}</span>
-            )}
+            <Image
+              src={cropImage}
+              alt={crop.name}
+              fill
+              className="object-cover object-center"
+              sizes="88px"
+              priority
+            />
           </motion.div>
 
           <div className="min-w-0">

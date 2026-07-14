@@ -33,7 +33,7 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
           className="av-card av-card-hover flex items-center gap-4 overflow-hidden p-3"
         >
           <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl">
-            <Image src={image} alt={crop.name} fill className="object-cover" sizes="80px" />
+            <Image src={image} alt={crop.name} fill className="object-cover object-center" sizes="80px" />
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-bold text-[var(--av-text-primary)]">
@@ -69,7 +69,7 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
               src={image}
               alt={crop.name}
               fill
-              className="object-cover transition duration-300 group-hover:scale-105"
+              className="object-cover object-center transition duration-300 group-hover:scale-105"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
             <span

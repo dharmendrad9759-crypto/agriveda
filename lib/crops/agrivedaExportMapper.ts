@@ -1,6 +1,7 @@
 import type { Crop } from "@/types/crop";
 import type { CropManagementProfile } from "@/types/crop-management";
 import type { CropDashboardData, AgronomicSection } from "@/data/crop-dashboard";
+import { resolveCropImage } from "@/lib/crops/cropImages";
 
 /** Tom / ClickUp export shape (batch JSON) */
 export interface AgrivedaCropExport {
@@ -190,7 +191,7 @@ export function mapToManagementProfile(exportCrop: AgrivedaCropExport): CropMana
     name: b.hindiName ? `${b.name} (${b.hindiName})` : b.name,
     scientificName: b.scientificName,
     category: mapCategory(b.category),
-    image: `/images/${slug}.png`,
+    image: resolveCropImage({ slug }),
     summary: b.summary,
     overview: b.overview,
     climate: b.climate,
@@ -276,7 +277,7 @@ export function mapToCropListing(exportCrop: AgrivedaCropExport): Partial<Crop> 
     name: m.basicInfo.name,
     scientificName: m.basicInfo.scientificName,
     category: mapCategory(m.basicInfo.category),
-    image: `/images/${slug}.png`,
+    image: resolveCropImage({ slug }),
     overview: m.basicInfo.overview,
     durationDays: c.duration,
     estimatedYield: c.yield,
