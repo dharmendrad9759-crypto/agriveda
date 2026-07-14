@@ -7,7 +7,11 @@ import { Calendar, Clock, CloudSun, Droplets, Sparkles, Sprout, TrendingUp } fro
 import { getCropDashboard } from "@/data/crop-dashboard";
 import { getCropHealthScore } from "@/lib/crops/crop-visual";
 import { getCropImageUrl } from "@/lib/crops/crop-display";
-import { CROP_PEST_RISK, CROP_DISEASE_RISK } from "@/data/mock/crop-overview";
+import {
+  getCropAgroMeta,
+  getCropDiseaseRisk,
+  getCropPestRisk,
+} from "@/lib/crops/cropAgroMeta";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { Crop } from "@/types/crop";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
@@ -30,6 +34,9 @@ export default function CropPremiumHero({ crop, detail }: Props) {
   const cropImage = getCropImageUrl(crop);
   const health = getCropHealthScore(crop.slug);
   const dash = getCropDashboard(crop.slug);
+  const agro = getCropAgroMeta(crop.slug);
+  const pestRisk = getCropPestRisk(crop, detail);
+  const diseaseRisk = getCropDiseaseRisk(crop, detail);
   const currentStage =
     dash?.growthStages.find((s) => s.status === "current")?.name ??
     detail.growthStages[0]?.title ??
@@ -118,7 +125,7 @@ export default function CropPremiumHero({ crop, detail }: Props) {
           { icon: Clock, label: "Duration", value: crop.durationDays },
           { icon: TrendingUp, label: "Yield", value: crop.estimatedYield },
           { icon: Calendar, label: "Season", value: crop.suitableSeason },
-          { icon: Droplets, label: "Water", value: crop.irrigationManagement.waterRequirement.slice(0, 24) },
+          { icon: Droplets, label: "Water", value: agro.waterMm },
         ].map((stat) => {
           const Icon = stat.icon;
           return (
@@ -126,7 +133,9 @@ export default function CropPremiumHero({ crop, detail }: Props) {
               <Icon className="h-3.5 w-3.5 text-emerald-500" />
               <div className="min-w-0">
                 <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">{stat.label}</p>
-                <p className="truncate text-xs font-semibold text-[var(--av-text-primary)]">{stat.value}</p>
+                <p className="text-xs font-semibold leading-snug text-[var(--av-text-primary)]" title={stat.label === "Water" ? agro.waterDetail : String(stat.value)}>
+                  {stat.value}
+                </p>
               </div>
             </div>
           );
@@ -134,11 +143,15 @@ export default function CropPremiumHero({ crop, detail }: Props) {
       </div>
 
       <div className="relative mt-4 flex flex-wrap items-center gap-2">
-        <span className="crop-premium-risk crop-premium-risk-amber">
-          Pest: {CROP_PEST_RISK.top} · {CROP_PEST_RISK.pct}%
+        <span
+          className={`crop-premium-risk ${pestRisk.level === "high" ? "crop-premium-risk-amber" : "crop-premium-risk-lime"}`}
+        >
+          Pest: {pestRisk.top} · {pestRisk.pct}%
         </span>
-        <span className="crop-premium-risk crop-premium-risk-lime">
-          Disease: {CROP_DISEASE_RISK.top} · {CROP_DISEASE_RISK.pct}%
+        <span
+          className={`crop-premium-risk ${diseaseRisk.level === "high" ? "crop-premium-risk-amber" : "crop-premium-risk-lime"}`}
+        >
+          Disease: {diseaseRisk.top} · {diseaseRisk.pct}%
         </span>
         <Link href="/ai-doctor" className="crop-premium-cta ml-auto">
           <Sparkles className="h-4 w-4" />

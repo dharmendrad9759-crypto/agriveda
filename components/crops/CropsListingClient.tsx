@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Calendar, Filter, Grid3X3, LayoutList, Search } from "lucide-react";
+import { Calendar, Filter, Grid3X3, LayoutList, Search, X } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import CropCard, { AddCustomCropCard } from "@/components/CropCard";
 import {
@@ -26,6 +26,10 @@ export default function CropsListingClient({ crops }: Props) {
   const [category, setCategory] = useState<CropListingCategory>("All");
   const [season, setSeason] = useState<(typeof SEASON_FILTERS)[number]>("All Seasons");
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  const activeFilterCount =
+    (category !== "All" ? 1 : 0) + (season !== "All Seasons" ? 1 : 0);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -41,6 +45,11 @@ export default function CropsListingClient({ crops }: Props) {
       );
     });
   }, [crops, query, category, season]);
+
+  const clearFilters = () => {
+    setCategory("All");
+    setSeason("All Seasons");
+  };
 
   return (
     <div>
@@ -69,13 +78,103 @@ export default function CropsListingClient({ crops }: Props) {
           </select>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-xs font-semibold text-[var(--av-text-secondary)]"
+            onClick={() => setFilterOpen((o) => !o)}
+            aria-expanded={filterOpen}
+            className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-semibold transition ${
+              filterOpen || activeFilterCount > 0
+                ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)] text-[var(--av-accent)]"
+                : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+            }`}
           >
             <Filter className="h-3.5 w-3.5" />
             Filter
+            {activeFilterCount > 0 && (
+              <span className="ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--av-accent)] px-1 text-[10px] font-bold text-white">
+                {activeFilterCount}
+              </span>
+            )}
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {filterOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-bold text-[var(--av-text-primary)]">Filter crops</p>
+                <div className="flex items-center gap-2">
+                  {activeFilterCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearFilters}
+                      className="text-[10px] font-bold text-[var(--av-accent)]"
+                    >
+                      Clear all
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setFilterOpen(false)}
+                    className="rounded-lg p-1 text-[var(--av-text-muted)] hover:bg-[var(--av-surface-muted)]"
+                    aria-label="Close filters"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <p className={`mt-3 ${AV.label}`}>Season</p>
+              <div className="mt-1.5 flex flex-wrap gap-2">
+                {SEASON_FILTERS.map((s) => {
+                  const active = season === s;
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setSeason(s)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                        active
+                          ? "bg-[var(--av-accent)] text-white"
+                          : "border border-[var(--av-border)] text-[var(--av-text-muted)]"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <p className={`mt-4 ${AV.label}`}>Category</p>
+              <div className="mt-1.5 flex flex-wrap gap-2">
+                {CROP_LISTING_CATEGORIES.map((cat) => {
+                  const active = category === cat;
+                  const label = cat === "All" ? "All Crops" : cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setCategory(cat)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                        active
+                          ? "bg-[var(--av-accent)] text-white"
+                          : "border border-[var(--av-border)] text-[var(--av-text-muted)]"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         {CROP_LISTING_CATEGORIES.map((cat) => {

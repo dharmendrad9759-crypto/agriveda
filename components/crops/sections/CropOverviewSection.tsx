@@ -8,13 +8,15 @@ import AppLink from "@/components/ui/AppLink";
 import MotionCard from "@/components/motion/MotionCard";
 import { AV } from "@/lib/design/tokens";
 import {
-  CROP_TASKS_DUE,
-  CROP_STAGE_ALERTS,
-  CROP_EXPERT_TIP,
-  CROP_IRRIGATION_SUMMARY,
-  CROP_PEST_RISK,
-  CROP_DISEASE_RISK,
-} from "@/data/mock/crop-overview";
+  formatClimateCard,
+  formatSowingCard,
+  getCropDiseaseRisk,
+  getCropExpertTip,
+  getCropIrrigationSummary,
+  getCropPestRisk,
+  getCropStageAlerts,
+  getCropTasksDue,
+} from "@/lib/crops/cropAgroMeta";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { Crop } from "@/types/crop";
@@ -41,6 +43,12 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
   const topDiseases = detail.diseases.slice(0, 3);
   const topPests = detail.pests.slice(0, 3);
   const varieties = getVarietiesForCrop(crop.slug, profile.state || undefined).slice(0, 3);
+  const pestRisk = getCropPestRisk(crop, detail);
+  const diseaseRisk = getCropDiseaseRisk(crop, detail);
+  const stageAlerts = getCropStageAlerts(crop);
+  const tasksDue = getCropTasksDue(crop);
+  const irrigation = getCropIrrigationSummary(crop);
+  const expertTip = getCropExpertTip(crop);
 
   return (
     <div className="space-y-4">
@@ -51,15 +59,15 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
         <MiniStat label="Season" value={crop.suitableSeason} index={3} />
         <MiniStat label="Seed Rate" value={crop.seedRate} index={4} />
         <MiniStat label="Spacing" value={crop.spacing} index={5} />
-        <MiniStat label="Climate" value={crop.climate} index={6} />
-        <MiniStat label="Sowing" value={crop.sowingGuide.bestSowingTime} index={7} />
+        <MiniStat label="Climate" value={formatClimateCard(crop.slug, crop.climate)} index={6} />
+        <MiniStat label="Sowing" value={formatSowingCard(crop.slug, crop.sowingGuide.bestSowingTime)} index={7} />
       </div>
 
       <div className="grid gap-3 lg:grid-cols-12">
         <DarkCard className="lg:col-span-4" delay={0}>
           <SectionHeader title="Tasks Due" action={{ label: "Calendar", href: "/crop-calendar" }} />
           <ul className="mt-3 space-y-2">
-            {CROP_TASKS_DUE.map((t) => (
+            {tasksDue.map((t) => (
               <li key={t.id} className="av-card-inset">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-xs font-semibold text-[var(--av-text-primary)]">{t.task}</p>
@@ -76,17 +84,17 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
           <div className="mt-3 space-y-3">
             <button type="button" onClick={() => onTabChange("pests")} className="av-card-inset flex w-full items-center justify-between text-left">
               <div>
-                <p className={AV.label}>Pest risk</p>
-                <p className="text-sm font-semibold text-[var(--av-text-primary)]">{CROP_PEST_RISK.top}</p>
+                <p className={AV.label}>Pest risk · {pestRisk.pct}%</p>
+                <p className="text-sm font-semibold text-[var(--av-text-primary)]">{pestRisk.top}</p>
               </div>
-              <RiskBadge level={CROP_PEST_RISK.level} />
+              <RiskBadge level={pestRisk.level} />
             </button>
             <button type="button" onClick={() => onTabChange("diseases")} className="av-card-inset flex w-full items-center justify-between text-left">
               <div>
-                <p className={AV.label}>Disease risk</p>
-                <p className="text-sm font-semibold text-[var(--av-text-primary)]">{CROP_DISEASE_RISK.top}</p>
+                <p className={AV.label}>Disease risk · {diseaseRisk.pct}%</p>
+                <p className="text-sm font-semibold text-[var(--av-text-primary)]">{diseaseRisk.top}</p>
               </div>
-              <RiskBadge level={CROP_DISEASE_RISK.level} />
+              <RiskBadge level={diseaseRisk.level} />
             </button>
           </div>
         </DarkCard>
@@ -94,14 +102,15 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
         <DarkCard className="lg:col-span-4" delay={2}>
           <SectionHeader title="Irrigation" />
           <div className="mt-3 space-y-2 text-sm">
-            <p className="flex justify-between">
-              <span className={AV.micro}>Frequency</span>
-              <span className="font-semibold text-[var(--av-text-primary)]">{CROP_IRRIGATION_SUMMARY.frequency}</span>
+            <p className="flex justify-between gap-2">
+              <span className={AV.micro}>Total water</span>
+              <span className="text-right font-semibold text-[var(--av-text-primary)]">{irrigation.totalWater}</span>
             </p>
-            <p className="flex justify-between">
-              <span className={AV.micro}>Next due</span>
-              <span className="font-semibold text-[var(--av-accent)]">{CROP_IRRIGATION_SUMMARY.nextDue}</span>
+            <p className="flex justify-between gap-2">
+              <span className={AV.micro}>Schedule</span>
+              <span className="text-right font-semibold text-[var(--av-text-primary)]">{irrigation.frequency}</span>
             </p>
+            <p className={`text-[10px] text-[var(--av-text-muted)]`}>{irrigation.criticalNote}</p>
             <button type="button" onClick={() => onTabChange("irrigation")} className={`mt-2 w-full text-left text-xs text-[var(--av-accent)]`}>
               Full irrigation guide →
             </button>
@@ -143,7 +152,7 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
         <DarkCard delay={3}>
           <SectionHeader title="Recommended Varieties" />
           <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-            {crop.name} की मुख्य किस्में
+            {crop.name} — top popular varieties
           </p>
           <ul className="mt-2 space-y-2">
             {varieties.map((v) => (
@@ -166,7 +175,7 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
       <DarkCard delay={2}>
         <SectionHeader title="Stage-wise Alerts" />
         <ul className="mt-3 space-y-2">
-          {CROP_STAGE_ALERTS.map((a) => (
+          {stageAlerts.map((a) => (
             <li key={a.id} className="av-card-inset flex gap-2">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
               <div className="min-w-0 flex-1">
@@ -182,8 +191,8 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
       </DarkCard>
 
       <DarkCard delay={3}>
-        <SectionHeader title="Expert Tip" action={CROP_EXPERT_TIP.action} />
-        <p className={`mt-2 ${AV.body}`}>{CROP_EXPERT_TIP.tip}</p>
+        <SectionHeader title="Expert Tip" action={expertTip.action} />
+        <p className={`mt-2 ${AV.body}`}>{expertTip.tip}</p>
       </DarkCard>
 
       <DarkCard delay={4}>

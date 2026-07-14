@@ -5,7 +5,7 @@ import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
-import { CROP_TASKS_DUE, CROP_STAGE_ALERTS } from "@/data/mock/crop-overview";
+import { getCropStageAlerts, getCropTasksDue } from "@/lib/crops/cropAgroMeta";
 import { AV } from "@/lib/design/tokens";
 import type { Crop } from "@/types/crop";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
@@ -17,6 +17,8 @@ interface Props {
 
 export default function CropCalendarSection({ crop, detail }: Props) {
   const harvestStage = detail.growthStages[detail.growthStages.length - 1];
+  const tasksDue = getCropTasksDue(crop);
+  const stageAlerts = getCropStageAlerts(crop);
 
   return (
     <div className="space-y-4">
@@ -43,7 +45,7 @@ export default function CropCalendarSection({ crop, detail }: Props) {
       <DarkCard>
         <SectionHeader title="Upcoming Tasks" />
         <ul className="mt-3 space-y-2">
-          {CROP_TASKS_DUE.map((t) => (
+          {tasksDue.map((t) => (
             <li key={t.id} className="crop-premium-inset flex items-start justify-between gap-2">
               <div className="flex gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
@@ -61,7 +63,7 @@ export default function CropCalendarSection({ crop, detail }: Props) {
       <DarkCard>
         <SectionHeader title="Stage Alerts" />
         <ul className="mt-3 space-y-2">
-          {CROP_STAGE_ALERTS.map((a) => (
+          {stageAlerts.map((a) => (
             <li key={a.id} className="crop-premium-inset">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs font-bold text-[var(--av-text-primary)]">{a.stage}</p>

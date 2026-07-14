@@ -76,14 +76,16 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
     { name: "IPM 02-3", trait: "Yellow mosaic tolerant", season: "Kharif", states: ["Uttar Pradesh", "Madhya Pradesh", "Rajasthan"], marketNote: "Good local trader demand" },
   ],
   moongfali: [
-    { name: "TG 37A", trait: "Spanish bunch, early", season: "Kharif / Rabi", states: ["Gujarat", "Rajasthan", "Andhra Pradesh"], marketNote: "Oil + confectionery crush demand" },
+    { name: "GG 20", trait: "Most popular Gujarat bunch type", season: "Kharif / Summer", states: ["Gujarat", "Rajasthan"], marketNote: "Top Saurashtra farmer choice" },
+    { name: "TG 37A", trait: "Spanish bunch, early, widely grown", season: "Kharif / Rabi", states: ["Gujarat", "Rajasthan", "Andhra Pradesh"], marketNote: "Oil + confectionery crush demand" },
+    { name: "TAG 24", trait: "Bunch type, stable yield — ICAR", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh", "Gujarat"], marketNote: "Popular certified seed choice" },
     { name: "GJG 9", trait: "High yield for Gujarat", season: "Kharif", states: ["Gujarat"], marketNote: "Saurashtra mandi volumes" },
-    { name: "TAG 24", trait: "Bunch type, stable yield", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh"], marketNote: "Popular certified seed choice" },
   ],
   groundnut: [
-    { name: "TG 37A", trait: "Spanish bunch, early", season: "Kharif / Rabi", states: ["Gujarat", "Rajasthan", "Andhra Pradesh"], marketNote: "Oil + confectionery crush demand" },
+    { name: "GG 20", trait: "Most popular Gujarat bunch type", season: "Kharif / Summer", states: ["Gujarat", "Rajasthan"], marketNote: "Top Saurashtra farmer choice" },
+    { name: "TG 37A", trait: "Spanish bunch, early, widely grown", season: "Kharif / Rabi", states: ["Gujarat", "Rajasthan", "Andhra Pradesh"], marketNote: "Oil + confectionery crush demand" },
+    { name: "TAG 24", trait: "Bunch type, stable yield — ICAR", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh", "Gujarat"], marketNote: "Popular certified seed choice" },
     { name: "GJG 9", trait: "High yield for Gujarat", season: "Kharif", states: ["Gujarat"], marketNote: "Saurashtra mandi volumes" },
-    { name: "TAG 24", trait: "Bunch type, stable yield", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh"], marketNote: "Popular certified seed choice" },
   ],
   cauliflower: [
     { name: "Pusa Snowball K-1", trait: "Snowball curd, winter crop", season: "Rabi", states: ["Uttar Pradesh", "Haryana", "Punjab", "Bihar"], marketNote: "North India wholesale favourite" },

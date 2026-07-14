@@ -5,7 +5,6 @@ import Image from "next/image";
 import {
   Calendar,
   Download,
-  FolderOpen,
   Share2,
   Sprout,
   Droplets,
@@ -450,16 +449,6 @@ export default function CropPlannerClient() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <AppLink
-          href="/my-farm"
-          className="inline-flex items-center gap-2 rounded-xl border border-[var(--av-border)] px-4 py-2 text-xs font-bold text-[var(--av-text-secondary)]"
-        >
-          <FolderOpen className="h-4 w-4" />
-          My Plans
-        </AppLink>
-      </div>
-
       <DarkCard className="!bg-[var(--av-surface-muted)]/60">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div>
