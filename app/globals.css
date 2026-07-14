@@ -678,6 +678,23 @@ select:-webkit-autofill {
 }
 .animate-float { animation: float 4s ease-in-out infinite; }
 
+@keyframes av-glow-line {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.85; }
+}
+.av-glow-line {
+  animation: av-glow-line 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .agriveda-shimmer,
+  .animate-pulse-glow,
+  .av-glow-line {
+    animation: none !important;
+  }
+}
+
 /* Hide default Google Translate chrome — we use TranslatorFab */
 .goog-te-banner-frame,
 .goog-te-balloon-frame,

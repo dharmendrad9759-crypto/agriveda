@@ -4,14 +4,12 @@ import { useState } from "react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
-import StatCard from "@/components/shell/StatCard";
-import PageHero from "@/components/shell/PageHero";
 import Badge from "@/components/design-system/Badge";
 import { useToast } from "@/components/ui/Toast";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
 import { cropCatalog } from "@/data/crop-catalog";
-import { Tractor, Map, Sprout, ListTodo, Heart, Plus, Bell } from "lucide-react";
+import { Tractor, Map, Sprout, Heart, Plus, Bell } from "lucide-react";
 
 const RECORD_COLORS: Record<string, string> = {
   Fertilizer: "bg-emerald-500/20 text-emerald-400",
@@ -134,52 +132,57 @@ export default function MyFarmPage() {
     showToast("Activity saved ✓");
   };
 
-  const healthLabel = stats.healthScore >= 80 ? "Very Good" : stats.healthScore >= 65 ? "Good" : "Watch";
-
   return (
     <AppShell
       className="!bg-transparent"
       title="My Farm"
-      subtitle="Manage your fields, crops, activities and track farm progress"
+      subtitle={
+        data.fields.length
+          ? `${stats.totalFields} खेत · ${totalAreaLabel(data.fields)} · health ${stats.healthScore}%`
+          : "अपना खेत, रकबा और फसल खुद जोड़ें"
+      }
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "My Farm" }]}
+      actions={
+        <AppLink href="/field-advisor" className="av-btn av-btn-sm av-btn-secondary">
+          Advisor
+        </AppLink>
+      }
     >
-      <PageHero
-        title="Farm Overview"
-        subtitle={
-          data.fields.length
-            ? `${stats.totalFields} fields · ${stats.cropsGrowing} crops growing · health ${stats.healthScore}%`
-            : "अपनी ज़मीन और फसल की जानकारी यहाँ जोड़ें"
-        }
-        badge="My Farm"
-        icon={Tractor}
-        action={{ label: "Field Advisor", href: "/field-advisor" }}
-      />
+      <div className="grid grid-cols-4 gap-2">
+        {[
+          { label: "Fields", value: `${stats.totalFields}`, icon: Tractor },
+          { label: "Area", value: data.fields.length ? totalAreaLabel(data.fields).replace(" Acre", "ac") : "—", icon: Map },
+          { label: "Crops", value: `${stats.cropsGrowing}`, icon: Sprout },
+          { label: "Health", value: data.fields.length ? `${stats.healthScore}` : "—", icon: Heart },
+        ].map(({ label, value, icon: Icon }) => (
+          <div
+            key={label}
+            className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-2 text-center"
+          >
+            <Icon className="mx-auto h-3.5 w-3.5 text-[var(--av-accent)]" />
+            <p className="mt-1 text-sm font-black text-[var(--av-text-primary)]">{value}</p>
+            <p className="text-[8px] font-semibold uppercase tracking-wide text-[var(--av-text-muted)]">{label}</p>
+          </div>
+        ))}
+      </div>
 
       {data.fields.length === 0 && (
-        <DarkCard className="border-emerald-500/20 bg-emerald-500/5">
-          <p className="text-sm font-bold text-[var(--av-text-primary)]">अभी कोई खेत नहीं जोड़ा</p>
+        <DarkCard className="mt-3 border-emerald-500/20 bg-emerald-500/5">
+          <p className="text-sm font-bold text-[var(--av-text-primary)]">अभी कोई खेत नहीं</p>
           <p className="mt-1 text-xs text-[var(--av-text-muted)]">
-            नीचे &quot;Add Field&quot; दबाकर अपना पहला खेत, रकबा और फसल जोड़ें।
+            पहला खेत जोड़कर अपनी खेती शुरू करें।
           </p>
           <button
             type="button"
             onClick={() => setShowAddField(true)}
-            className="av-btn av-btn-sm av-btn-primary mt-3 inline-flex gap-1"
+            className="av-btn av-btn-sm av-btn-primary mt-2 inline-flex gap-1"
           >
             <Plus className="h-3.5 w-3.5" /> पहला खेत जोड़ें
           </button>
         </DarkCard>
       )}
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-        <StatCard icon={Tractor} label="Total Fields" value={`${stats.totalFields} Active`} action={{ label: "View All", href: "/my-farm" }} />
-        <StatCard icon={Map} label="Total Area" value={totalAreaLabel(data.fields)} action={{ label: "View Details", href: "/my-farm" }} />
-        <StatCard icon={Sprout} label="Crops Growing" value={`${stats.cropsGrowing} Current`} action={{ label: "View Crops", href: "/crops" }} />
-        <StatCard icon={ListTodo} label="Upcoming Tasks" value={`${stats.upcomingTasks} This Week`} action={{ label: "View Tasks", href: "/crop-calendar" }} />
-        <StatCard icon={Heart} label="Farm Health" value={`${stats.healthScore}/100`} sub={healthLabel} action={{ label: "Improve Now", href: "/field-advisor" }} />
-      </div>
-
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between">
         <h2 className="text-sm font-bold text-[var(--av-text-primary)]">My Fields</h2>
         <button
           type="button"

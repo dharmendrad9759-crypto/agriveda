@@ -14,125 +14,72 @@ import {
   Sprout,
   ShieldAlert,
 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import AppLink from "@/components/ui/AppLink";
+import HomeSnapSlider from "@/components/dashboard/HomeSnapSlider";
 import { cn } from "@/lib/cn";
+import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
 const FEATURES: {
   label: string;
   sub: string;
   href: string;
   icon: LucideIcon;
-  accent: string;
+  ring: string;
 }[] = [
-  {
-    label: "My Farm",
-    sub: "खेत प्रबंधन",
-    href: "/my-farm",
-    icon: Tractor,
-    accent: "from-emerald-500/25 to-green-600/5 border-emerald-500/25",
-  },
-  {
-    label: "Fertilizer",
-    sub: "Schedule",
-    href: "/services/fertilizer-calculator",
-    icon: FlaskConical,
-    accent: "from-amber-500/20 to-orange-500/5 border-amber-500/20",
-  },
-  {
-    label: "Nutrients",
-    sub: "Deficiency",
-    href: "/deficiencies",
-    icon: Leaf,
-    accent: "from-lime-500/20 to-green-500/5 border-lime-500/20",
-  },
-  {
-    label: "Weather",
-    sub: "Forecast",
-    href: "/weather",
-    icon: CloudSun,
-    accent: "from-sky-500/20 to-blue-500/5 border-sky-500/20",
-  },
-  {
-    label: "Field Advisor",
-    sub: "सलाह",
-    href: "/field-advisor",
-    icon: Brain,
-    accent: "from-violet-500/20 to-purple-500/5 border-violet-500/20",
-  },
-  {
-    label: "Spray",
-    sub: "Advisory",
-    href: "/weather/spray-advisory",
-    icon: Droplets,
-    accent: "from-cyan-500/20 to-teal-500/5 border-cyan-500/20",
-  },
-  {
-    label: "Sowing",
-    sub: "Window",
-    href: "/sowing-window",
-    icon: Calendar,
-    accent: "from-indigo-500/20 to-blue-500/5 border-indigo-500/20",
-  },
-  {
-    label: "Alerts",
-    sub: "Farm",
-    href: "/alerts",
-    icon: Bell,
-    accent: "from-red-500/15 to-rose-500/5 border-red-500/20",
-  },
-  {
-    label: "Crop Calendar",
-    sub: "योजना",
-    href: "/crop-calendar",
-    icon: Sprout,
-    accent: "from-emerald-600/15 to-teal-500/5 border-emerald-500/15",
-  },
-  {
-    label: "Pest Guide",
-    sub: "कीट रोग",
-    href: "/pest-diseases",
-    icon: ShieldAlert,
-    accent: "from-orange-500/15 to-amber-500/5 border-orange-500/20",
-  },
-  {
-    label: "Library",
-    sub: "ज्ञान",
-    href: "/library",
-    icon: BookOpen,
-    accent: "from-stone-500/15 to-neutral-500/5 border-stone-500/20",
-  },
+  { label: "My Farm", sub: "खेत", href: "/my-farm", icon: Tractor, ring: "ring-emerald-500/40" },
+  { label: "Fertilizer", sub: "Schedule", href: "/services/fertilizer-calculator", icon: FlaskConical, ring: "ring-amber-500/40" },
+  { label: "Nutrients", sub: "Deficiency", href: "/deficiencies", icon: Leaf, ring: "ring-lime-500/40" },
+  { label: "Weather", sub: "Forecast", href: "/weather", icon: CloudSun, ring: "ring-sky-500/40" },
+  { label: "Advisor", sub: "Field", href: "/field-advisor", icon: Brain, ring: "ring-violet-500/40" },
+  { label: "Spray", sub: "Advisory", href: "/weather/spray-advisory", icon: Droplets, ring: "ring-cyan-500/40" },
+  { label: "Sowing", sub: "Window", href: "/sowing-window", icon: Calendar, ring: "ring-indigo-500/40" },
+  { label: "Alerts", sub: "Farm", href: "/alerts", icon: Bell, ring: "ring-red-500/40" },
+  { label: "Calendar", sub: "Crop", href: "/crop-calendar", icon: Sprout, ring: "ring-emerald-500/30" },
+  { label: "Pests", sub: "Guide", href: "/pest-diseases", icon: ShieldAlert, ring: "ring-orange-500/40" },
+  { label: "Library", sub: "ज्ञान", href: "/library", icon: BookOpen, ring: "ring-stone-500/40" },
 ];
 
 export default function HomeFeatureGrid() {
+  const reduced = useReducedMotion();
+
   return (
     <section className="min-w-0">
-      <div className="mb-2 flex items-center justify-between px-0.5">
-        <h2 className="text-sm font-bold text-[var(--av-text-primary)]">Farm Tools</h2>
-        <span className="text-[10px] font-semibold text-[var(--av-text-muted)]">सब कुछ एक जगह</span>
+      <div className="mb-1.5 flex items-center justify-between px-0.5">
+        <h2 className="text-xs font-bold text-[var(--av-text-primary)]">Farm Tools</h2>
+        <span className="text-[9px] font-semibold text-[var(--av-text-muted)]">swipe →</span>
       </div>
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2.5 lg:grid-cols-6">
-        {FEATURES.map((f) => (
-          <AppLink
+      <HomeSnapSlider itemCount={FEATURES.length} showArrows>
+        {FEATURES.map((f, i) => (
+          <motion.div
             key={f.href + f.label}
-            href={f.href}
-            className={cn(
-              "group relative flex min-w-0 flex-col items-center gap-1.5 overflow-hidden rounded-2xl border bg-gradient-to-br p-2.5 text-center transition",
-              "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/10 active:scale-[0.98]",
-              f.accent
-            )}
+            data-slide
+            className="w-[88px] shrink-0 snap-start"
+            initial={reduced ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(i, 8) * 0.04, duration: MOTION.normal, ease: EASE_OUT }}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--av-surface)]/80 shadow-sm ring-1 ring-white/10">
-              <f.icon className="h-4 w-4 text-[var(--av-accent)]" />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-[10px] font-bold leading-tight text-[var(--av-text-primary)] sm:text-[11px]">
-                {f.label}
-              </p>
-              <p className="truncate text-[9px] text-[var(--av-text-muted)]">{f.sub}</p>
-            </div>
-          </AppLink>
+            <AppLink
+              href={f.href}
+              className={cn(
+                "group flex flex-col items-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2.5 text-center shadow-sm",
+                "transition duration-200 hover:-translate-y-0.5 hover:border-[var(--av-accent)]/35 hover:shadow-[0_8px_24px_rgba(0,100,50,0.12)] active:scale-[0.97]"
+              )}
+            >
+              <span
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/15 to-transparent ring-1",
+                  f.ring
+                )}
+              >
+                <f.icon className="h-4 w-4 text-[var(--av-accent)] transition group-hover:scale-110" />
+              </span>
+              <span className="truncate text-[10px] font-bold text-[var(--av-text-primary)]">{f.label}</span>
+              <span className="truncate text-[8px] text-[var(--av-text-muted)]">{f.sub}</span>
+            </AppLink>
+          </motion.div>
         ))}
-      </div>
+      </HomeSnapSlider>
     </section>
   );
 }
