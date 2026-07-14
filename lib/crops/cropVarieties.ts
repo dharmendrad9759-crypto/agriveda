@@ -78,6 +78,46 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
   moongfali: [
     { name: "TG 37A", trait: "Spanish bunch, early", season: "Kharif / Rabi", states: ["Gujarat", "Rajasthan", "Andhra Pradesh"], marketNote: "Oil + confectionery crush demand" },
     { name: "GJG 9", trait: "High yield for Gujarat", season: "Kharif", states: ["Gujarat"], marketNote: "Saurashtra mandi volumes" },
+    { name: "TAG 24", trait: "Bunch type, stable yield", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh"], marketNote: "Popular certified seed choice" },
+  ],
+  groundnut: [
+    { name: "TG 37A", trait: "Spanish bunch, early", season: "Kharif / Rabi", states: ["Gujarat", "Rajasthan", "Andhra Pradesh"], marketNote: "Oil + confectionery crush demand" },
+    { name: "GJG 9", trait: "High yield for Gujarat", season: "Kharif", states: ["Gujarat"], marketNote: "Saurashtra mandi volumes" },
+    { name: "TAG 24", trait: "Bunch type, stable yield", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh"], marketNote: "Popular certified seed choice" },
+  ],
+  cauliflower: [
+    { name: "Pusa Snowball K-1", trait: "Snowball curd, winter crop", season: "Rabi", states: ["Uttar Pradesh", "Haryana", "Punjab", "Bihar"], marketNote: "North India wholesale favourite" },
+    { name: "Pusa Sharad", trait: "Mid-season, compact head", season: "Rabi", states: ["Uttar Pradesh", "Madhya Pradesh", "Rajasthan"], marketNote: "Steady mandi arrivals" },
+    { name: "Himani", trait: "Early hybrid type", season: "Rabi / Late kharif", states: ["Maharashtra", "Karnataka", "Gujarat"], marketNote: "Urban market premium" },
+  ],
+  bhindi: [
+    { name: "Arka Anamika", trait: "Yellow vein mosaic tolerant", season: "Kharif / Summer", states: ["Karnataka", "Andhra Pradesh", "Tamil Nadu", "Maharashtra"], marketNote: "South + western veg mandis" },
+    { name: "Pusa Sawani", trait: "Long pods, multipurpose", season: "Kharif / Summer", states: ["Uttar Pradesh", "Bihar", "Delhi"], marketNote: "North India daily market staple" },
+    { name: "Varsha Uphar", trait: "Hybrid high yield", season: "Kharif", states: ["Gujarat", "Maharashtra", "Rajasthan"], marketNote: "Good trader offtake" },
+  ],
+  pulses: [
+    { name: "ICPL 87119 (Asha)", trait: "Wilt resistant arhar/tur", season: "Kharif", states: ["Maharashtra", "Madhya Pradesh", "Karnataka", "Gujarat"], marketNote: "Dal mill preference — Tur" },
+    { name: "Maruti (ICP 8863)", trait: "Widely adapted pigeonpea", season: "Kharif", states: ["Karnataka", "Andhra Pradesh", "Telangana"], marketNote: "Strong south India pulse trade" },
+    { name: "UPAS 120", trait: "Early arhar for UP belt", season: "Kharif", states: ["Uttar Pradesh", "Bihar"], marketNote: "North pulse mandi demand" },
+  ],
+  mango: [
+    { name: "Alphonso (Hapus)", trait: "Premium export variety", season: "Summer harvest", states: ["Maharashtra", "Gujarat", "Karnataka"], marketNote: "Highest premium rates" },
+    { name: "Dashehari", trait: "North India table mango", season: "Summer harvest", states: ["Uttar Pradesh", "Bihar", "Uttarakhand"], marketNote: "Lucknow / Malihabad trade" },
+    { name: "Kesar", trait: "Sweet, Saurashtra speciality", season: "Summer harvest", states: ["Gujarat"], marketNote: "Gujarat mandi + processing" },
+  ],
+  banana: [
+    { name: "Grand Naine (G-9)", trait: "Tissue culture, export type", season: "Year-round", states: ["Maharashtra", "Gujarat", "Andhra Pradesh", "Tamil Nadu"], marketNote: "Main wholesale + ripener demand" },
+    { name: "Robusta", trait: "Heavy bunch, local markets", season: "Year-round", states: ["Karnataka", "Tamil Nadu", "Kerala"], marketNote: "South India retail staple" },
+    { name: "Nendran", trait: "Cooking banana, Kerala type", season: "Year-round", states: ["Kerala", "Tamil Nadu"], marketNote: "Chip / local cuisine premium" },
+  ],
+  grapes: [
+    { name: "Thompson Seedless", trait: "Export table grape", season: "Winter / Spring", states: ["Maharashtra", "Karnataka"], marketNote: "Nashik export clusters" },
+    { name: "Sharad Seedless", trait: "Black seedless, good shelf", season: "Winter", states: ["Maharashtra"], marketNote: "Domestic + export dual market" },
+    { name: "Bangalore Blue", trait: "Juice / wine local type", season: "Year-round flushes", states: ["Karnataka"], marketNote: "Bengaluru processing demand" },
+  ],
+  capsicum: [
+    { name: "Indira", trait: "Blocky green hybrid", season: "Protected / Rabi", states: ["Maharashtra", "Karnataka", "Haryana"], marketNote: "Urban wholesale premium" },
+    { name: "Bombay", trait: "Open field green bell", season: "Rabi", states: ["Maharashtra", "Madhya Pradesh"], marketNote: "Steady vegetable mandi" },
   ],
 };
 
@@ -91,7 +131,17 @@ function normalizeState(state?: string): string {
 
 /** Per-crop varieties; prefer those matching farmer state for market tip ordering */
 export function getVarietiesForCrop(cropSlug: string, state?: string): MarketVarietyRec[] {
-  const list = VARIETIES_BY_CROP[cropSlug] ?? FALLBACK;
+  const slug = cropSlug.trim().toLowerCase();
+  const aliased =
+    slug === "groundnut" || slug === "mungfali"
+      ? "moongfali"
+      : slug === "arhar" || slug === "tur" || slug === "pigeonpea"
+        ? "pulses"
+        : slug === "rice" || slug === "dhaan"
+          ? "paddy"
+          : slug;
+
+  const list = VARIETIES_BY_CROP[aliased] ?? FALLBACK;
   const s = normalizeState(state);
   if (!s) return list;
   const matched = list.filter((v) => v.states.some((st) => st.toLowerCase() === s));

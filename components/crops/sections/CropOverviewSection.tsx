@@ -10,12 +10,13 @@ import { AV } from "@/lib/design/tokens";
 import {
   CROP_TASKS_DUE,
   CROP_STAGE_ALERTS,
-  CROP_RECOMMENDED_VARIETIES,
   CROP_EXPERT_TIP,
   CROP_IRRIGATION_SUMMARY,
   CROP_PEST_RISK,
   CROP_DISEASE_RISK,
 } from "@/data/mock/crop-overview";
+import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { Crop } from "@/types/crop";
 import type { CropTabId } from "@/lib/crops/crop-tabs";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
@@ -36,8 +37,10 @@ interface CropOverviewSectionProps {
 }
 
 export default function CropOverviewSection({ crop, detail, onTabChange }: CropOverviewSectionProps) {
+  const { profile } = useFarmerProfile();
   const topDiseases = detail.diseases.slice(0, 3);
   const topPests = detail.pests.slice(0, 3);
+  const varieties = getVarietiesForCrop(crop.slug, profile.state || undefined).slice(0, 3);
 
   return (
     <div className="space-y-4">
@@ -139,14 +142,24 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
 
         <DarkCard delay={3}>
           <SectionHeader title="Recommended Varieties" />
+          <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+            {crop.name} की मुख्य किस्में
+          </p>
           <ul className="mt-2 space-y-2">
-            {CROP_RECOMMENDED_VARIETIES.map((v) => (
+            {varieties.map((v) => (
               <li key={v.name} className="av-card-inset">
                 <p className="text-xs font-semibold text-[var(--av-text-primary)]">{v.name}</p>
                 <p className={AV.micro}>{v.trait}</p>
               </li>
             ))}
           </ul>
+          <button
+            type="button"
+            onClick={() => onTabChange("varieties")}
+            className="mt-3 text-[10px] font-bold text-[var(--av-accent)]"
+          >
+            सभी किस्में देखें →
+          </button>
         </DarkCard>
       </div>
 
