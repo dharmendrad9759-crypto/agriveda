@@ -47,10 +47,10 @@ export default function DashboardWeatherHero() {
           priority
           sizes="(max-width: 1280px) 100vw, 100vw"
         />
-        {/* Keep text readable over crop photo */}
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/88 via-emerald-900/70 to-lime-950/45" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-emerald-950/20" />
-        <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-400/20 blur-2xl animate-float" />
+        {/* Soft glass so the crop photo stays visible but text stays readable */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/72 via-emerald-900/48 to-lime-950/28" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-emerald-950/15" />
+        <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-400/25 blur-2xl animate-float" />
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-300/50 to-transparent" />
       </div>
 

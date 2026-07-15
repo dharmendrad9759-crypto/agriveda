@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
 import { Plus } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -11,6 +12,7 @@ import { QuickActionIcon } from "@/components/services/SpriteQuickIcon";
 import BiHeading from "@/components/i18n/BiHeading";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmData } from "@/hooks/useFarmData";
+import { resolveCropImage } from "@/lib/crops/cropImages";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
 const QUICK_ACTIONS: {
@@ -49,88 +51,115 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
   const { locale } = useLocale();
   const isHi = locale === "hi" || locale === "hinglish";
 
+  const primaryField = farm.fields[0];
+  const backdropSrc = resolveCropImage({
+    slug: primaryField?.cropSlug || "paddy",
+    name: primaryField?.crop || "Paddy",
+  });
+
   return (
-    <div className="min-w-0 max-w-full space-y-3 overflow-x-hidden">
-      <DashboardWeatherHero />
+    <div className="relative min-w-0 max-w-full overflow-x-hidden">
+      {/* Atmospheric crop photo behind the whole home stack */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-[-12px] top-0 z-0 h-[min(72vh,640px)] overflow-hidden sm:inset-x-[-20px]"
+      >
+        <Image
+          src={backdropSrc}
+          alt=""
+          fill
+          priority
+          sizes="(max-width: 1280px) 100vw, 1100px"
+          className="object-cover object-[center_28%] scale-110 opacity-[0.52] dark:opacity-[0.34]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--background)]/30 via-[var(--background)]/58 to-[var(--background)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/12 via-transparent to-lime-500/10" />
+        <div className="absolute -right-10 top-16 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl" />
+        <div className="absolute -left-8 bottom-10 h-32 w-32 rounded-full bg-lime-400/15 blur-3xl" />
+      </div>
 
-      <HomeFarmSnapshot />
+      <div className="relative z-10 space-y-3">
+        <DashboardWeatherHero />
 
-      <section className="min-w-0">
-        <div className="mb-1.5 px-0.5">
-          <BiHeading
-            en="Quick Actions"
-            hi="त्वरित सेवाएँ"
-            as="h2"
-            className="text-xs font-bold text-[var(--av-text-primary)]"
-          />
-        </div>
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
-          {QUICK_ACTIONS.map((a, i) => (
-            <motion.div
-              key={a.href + a.label}
-              className="min-w-0"
-              initial={reduced ? false : { opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.03, duration: MOTION.normal, ease: EASE_OUT }}
-            >
-              <AppLink
-                href={a.href}
-                className="group flex flex-col items-center gap-1 text-center active:scale-95"
-              >
-                <QuickActionIcon
-                  label={a.label}
-                  col={a.col}
-                  row={a.row}
-                  lucide={a.lucide}
-                  imageSrc={a.imageSrc}
-                />
-                <span className="line-clamp-2 text-[9px] font-semibold leading-tight text-[var(--av-text-secondary)]">
-                  {isHi ? a.labelHi : a.label}
-                </span>
-              </AppLink>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+        <HomeFarmSnapshot />
 
-      <HomeFeatureGrid />
-
-      <HomeTipCarousel tips={isHi ? TIPS_HI : TIPS_EN} />
-
-      {farm.activities.length > 0 && (
-        <motion.div
-          initial={reduced ? false : { opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: MOTION.normal, ease: EASE_OUT }}
-          className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3"
-        >
-          <div className="flex items-center justify-between">
+        <section className="min-w-0">
+          <div className="mb-1.5 px-0.5">
             <BiHeading
-              en="Your tasks"
-              hi="आपके कार्य"
-              as="h3"
+              en="Quick Actions"
+              hi="त्वरित सेवाएँ"
+              as="h2"
               className="text-xs font-bold text-[var(--av-text-primary)]"
             />
-            <AppLink href="/my-farm" className="text-[10px] font-bold text-[var(--av-accent)]">
-              {isHi ? "सभी →" : "All →"}
-            </AppLink>
           </div>
-          <ul className="mt-2 space-y-1">
-            {farm.activities.slice(0, 3).map((a) => (
-              <li
-                key={a.id}
-                className="flex items-center justify-between gap-2 rounded-xl bg-[var(--av-surface-inset)] px-2.5 py-1.5"
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+            {QUICK_ACTIONS.map((a, i) => (
+              <motion.div
+                key={a.href + a.label}
+                className="min-w-0"
+                initial={reduced ? false : { opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.03, duration: MOTION.normal, ease: EASE_OUT }}
               >
-                <div className="min-w-0">
-                  <p className="truncate text-[11px] font-semibold text-[var(--av-text-primary)]">{a.task}</p>
-                  <p className="truncate text-[9px] text-[var(--av-text-muted)]">{a.field}</p>
-                </div>
-                <span className="shrink-0 text-[9px] font-bold text-[var(--av-accent)]">{a.date}</span>
-              </li>
+                <AppLink
+                  href={a.href}
+                  className="group flex flex-col items-center gap-1 text-center active:scale-95"
+                >
+                  <QuickActionIcon
+                    label={a.label}
+                    col={a.col}
+                    row={a.row}
+                    lucide={a.lucide}
+                    imageSrc={a.imageSrc}
+                  />
+                  <span className="line-clamp-2 text-[9px] font-semibold leading-tight text-[var(--av-text-secondary)]">
+                    {isHi ? a.labelHi : a.label}
+                  </span>
+                </AppLink>
+              </motion.div>
             ))}
-          </ul>
-        </motion.div>
-      )}
+          </div>
+        </section>
+
+        <HomeFeatureGrid />
+
+        <HomeTipCarousel tips={isHi ? TIPS_HI : TIPS_EN} />
+
+        {farm.activities.length > 0 && (
+          <motion.div
+            initial={reduced ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: MOTION.normal, ease: EASE_OUT }}
+            className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 p-3 backdrop-blur-sm"
+          >
+            <div className="flex items-center justify-between">
+              <BiHeading
+                en="Your tasks"
+                hi="आपके कार्य"
+                as="h3"
+                className="text-xs font-bold text-[var(--av-text-primary)]"
+              />
+              <AppLink href="/my-farm" className="text-[10px] font-bold text-[var(--av-accent)]">
+                {isHi ? "सभी →" : "All →"}
+              </AppLink>
+            </div>
+            <ul className="mt-2 space-y-1">
+              {farm.activities.slice(0, 3).map((a) => (
+                <li
+                  key={a.id}
+                  className="flex items-center justify-between gap-2 rounded-xl bg-[var(--av-surface-inset)] px-2.5 py-1.5"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-[11px] font-semibold text-[var(--av-text-primary)]">{a.task}</p>
+                    <p className="truncate text-[9px] text-[var(--av-text-muted)]">{a.field}</p>
+                  </div>
+                  <span className="shrink-0 text-[9px] font-bold text-[var(--av-accent)]">{a.date}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }
