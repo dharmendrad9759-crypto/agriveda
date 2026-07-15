@@ -22,13 +22,13 @@ export default function CategoryChips({
             type="button"
             onClick={() => onSelect(c === "All" ? "" : c)}
             className={cn(
-              "shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-bold transition active:scale-95",
+              "shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition active:scale-95",
               isActive
-                ? "bg-emerald-600 text-white shadow-sm shadow-emerald-600/25"
-                : "border border-slate-200 bg-white text-slate-500 hover:border-emerald-300 hover:text-emerald-700"
+                ? "bg-[#2563eb] text-white shadow-sm shadow-blue-600/25"
+                : "bg-slate-100 text-slate-600"
             )}
           >
-            {c}
+            {c === "All" ? "सभी" : c}
           </button>
         );
       })}

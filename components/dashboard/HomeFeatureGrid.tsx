@@ -1,7 +1,7 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
-import { Bell, BookOpen, Droplets, ShieldAlert } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import AppLink from "@/components/ui/AppLink";
 import BiHeading from "@/components/i18n/BiHeading";
@@ -52,7 +52,7 @@ const FEATURES: {
     sub: "Advisory",
     subHi: "सलाह",
     href: "/weather/spray-advisory",
-    icon: Droplets,
+    imageSrc: "/images/icons/tools/spray-advisory.png",
     ring: "ring-cyan-500/40",
   },
   {
@@ -61,7 +61,7 @@ const FEATURES: {
     sub: "Farm",
     subHi: "खेत",
     href: "/alerts",
-    icon: Bell,
+    imageSrc: "/images/icons/tools/farm-alert.png",
     ring: "ring-red-500/40",
   },
   {
@@ -70,7 +70,7 @@ const FEATURES: {
     sub: "Guide",
     subHi: "गाइड",
     href: "/pest-diseases?type=weed",
-    icon: ShieldAlert,
+    imageSrc: "/images/icons/tools/weed-guide.png",
     ring: "ring-orange-500/40",
   },
   {

@@ -1,18 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
-  BarChart3,
   CalendarDays,
+  Folder,
   Heart,
+  Info,
+  LineChart,
   MapPin,
   Share2,
+  Star,
 } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
-import { Sparkline } from "@/components/shell/charts";
-import { DetailStatsCard, PriceSummaryCard } from "@/components/mandi/PriceSummaryCard";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { resolveCropImage } from "@/lib/crops/cropImages";
@@ -21,6 +22,78 @@ import { cn } from "@/lib/cn";
 function avg(nums: number[]): number {
   if (!nums.length) return 0;
   return Math.round(nums.reduce((a, b) => a + b, 0) / nums.length);
+}
+
+function maxOf(nums: number[], fallback: number) {
+  return nums.length ? Math.max(...nums) : fallback;
+}
+
+function minOf(nums: number[], fallback: number) {
+  return nums.length ? Math.min(...nums) : fallback;
+}
+
+function ChangePill({ amount, tone }: { amount: number; tone: "up" | "down" | "flat" }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold",
+        tone === "up" && "bg-emerald-50 text-emerald-600",
+        tone === "down" && "bg-rose-50 text-rose-600",
+        tone === "flat" && "bg-slate-100 text-slate-500"
+      )}
+    >
+      {tone === "up" ? "▲" : tone === "down" ? "▼" : "∼"} ₹{Math.abs(amount).toLocaleString("en-IN")}
+    </span>
+  );
+}
+
+function PeriodCard({
+  title,
+  icon,
+  iconClass,
+  modal,
+  high,
+  low,
+  change,
+  tone,
+  footer,
+}: {
+  title: string;
+  icon: ReactNode;
+  iconClass: string;
+  modal: number;
+  high: number;
+  low: number;
+  change: number;
+  tone: "up" | "down" | "flat";
+  footer?: string;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_4px_14px_rgba(15,23,42,0.04)]">
+      <div className={cn("flex items-center gap-2 px-3.5 py-2.5 text-xs font-bold text-slate-700", iconClass)}>
+        {icon}
+        {title}
+      </div>
+      <div className="space-y-2 px-3.5 py-3 text-sm">
+        <div className="flex items-center justify-between">
+          <span className="text-slate-500">मुख्य भाव</span>
+          <span className="font-bold text-slate-900">₹{modal.toLocaleString("en-IN")}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-slate-500">अधिकतम</span>
+          <span className="font-semibold text-slate-800">₹{high.toLocaleString("en-IN")}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-slate-500">न्यूनतम</span>
+          <span className="font-semibold text-slate-800">₹{low.toLocaleString("en-IN")}</span>
+        </div>
+        <div className="flex items-center justify-between pt-1">
+          <ChangePill amount={change} tone={tone} />
+          {footer ? <span className="text-[10px] text-slate-400">{footer}</span> : null}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function MandiDetailClient({ id }: { id: string }) {
@@ -36,157 +109,194 @@ export default function MandiDetailClient({ id }: { id: string }) {
   );
 
   const image = resolveCropImage({ slug: row?.crop ?? "paddy", name: row?.crop });
-
-  const periods = useMemo(() => {
-    if (!row) return [];
-    const t = row.trend.length ? row.trend : [row.modal];
-    const week = t.slice(-7);
-    const monthish = t;
-    return [
-      { label: "Today’s price", value: row.modal, hint: "Modal rate now" },
-      { label: "This week", value: avg(week), hint: "Avg of recent days" },
-      { label: "This month", value: avg(monthish), hint: "Recent window avg" },
-      { label: "Last 30 days", value: avg(monthish), hint: "Trend sample" },
-    ];
-  }, [row]);
-
-  const locationLabel = district ? `${district}, ${state}` : row?.mandi || state;
   const up = (row?.change ?? 0) >= 0;
   const dateLabel =
     row?.arrivalDate ||
     data?.lastUpdated?.split(",")[0] ||
-    new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+    new Date().toLocaleDateString("en-IN");
+
+  const stats = useMemo(() => {
+    if (!row) return null;
+    const t = row.trend.length ? row.trend : [row.modal];
+    const week = t.slice(-7);
+    const month = t;
+    return {
+      weekAvg: avg(week),
+      weekHigh: maxOf(week, row.max),
+      weekLow: minOf(week, row.min),
+      monthAvg: avg(month),
+      monthHigh: maxOf(month, row.max),
+      monthLow: minOf(month, row.min),
+      daySample: t[Math.max(0, t.length - 4)] ?? row.modal,
+    };
+  }, [row]);
 
   return (
     <AppShell
-      className="!bg-[#f3faf5]"
+      className="!bg-[#f7f8fb]"
       breadcrumbs={[
         { label: "Home", href: "/" },
         { label: "Mandi", href: "/mandi" },
-        { label: row?.crop ?? "Detail" },
+        { label: row?.cropHi || row?.crop || "Detail" },
       ]}
     >
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between">
         <AppLink
           href="/mandi"
-          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm active:scale-95"
+          aria-label="Back"
         >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Back
+          <ArrowLeft className="h-4 w-4 text-slate-700" />
         </AppLink>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              if (typeof navigator !== "undefined" && navigator.share && row) {
-                void navigator.share({
-                  title: `${row.crop} mandi rate`,
-                  text: `${row.crop} @ ₹${row.modal}/qtl · ${row.mandi}`,
-                });
-              }
-            }}
-            className="rounded-full border border-slate-200 bg-white p-2 text-slate-600 shadow-sm active:scale-95"
-            aria-label="Share"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setFav((v) => !v)}
-            className={cn(
-              "rounded-full border bg-white p-2 shadow-sm active:scale-95",
-              fav ? "border-rose-200 text-rose-500" : "border-slate-200 text-slate-600"
-            )}
-            aria-label="Favorite"
-          >
-            <Heart className={cn("h-4 w-4", fav && "fill-current")} />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setFav((v) => !v)}
+          className={cn(
+            "flex h-10 w-10 items-center justify-center rounded-full border bg-white shadow-sm active:scale-95",
+            fav ? "border-rose-200 text-rose-500" : "border-slate-200 text-slate-500"
+          )}
+          aria-label="Favorite"
+        >
+          <Heart className={cn("h-4 w-4", fav && "fill-current")} />
+        </button>
       </div>
 
       {loading && !row ? (
         <div className="space-y-3">
-          <div className="h-40 animate-pulse rounded-[24px] bg-white" />
-          <div className="h-28 animate-pulse rounded-[24px] bg-white" />
+          <div className="mx-auto h-28 w-28 animate-pulse rounded-full bg-white" />
+          <div className="h-24 animate-pulse rounded-2xl bg-white" />
         </div>
-      ) : !row ? (
-        <div className="rounded-[22px] border border-dashed border-slate-200 bg-white px-4 py-12 text-center">
-          <p className="text-sm font-bold text-slate-800">Price not found</p>
-          <AppLink href="/mandi" className="mt-3 inline-block text-xs font-bold text-emerald-700">
-            ← Back to Mandi list
+      ) : !row || !stats ? (
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-12 text-center">
+          <p className="text-sm font-bold text-slate-800">भाव नहीं मिला</p>
+          <AppLink href="/mandi" className="mt-3 inline-block text-xs font-bold text-[#2563eb]">
+            ← बाज़ार पर वापस
           </AppLink>
         </div>
       ) : (
-        <div className="space-y-3.5">
-          <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.06)]">
-            <div className="relative h-36 w-full bg-gradient-to-br from-emerald-50 to-lime-50">
+        <div className="space-y-3">
+          <div className="flex flex-col items-center pt-1 text-center">
+            <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={image}
-                alt={row.crop}
-                className="h-full w-full object-cover object-center opacity-90"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+              <img src={image} alt={row.crop} className="h-full w-full object-cover" />
             </div>
-            <div className="relative -mt-6 space-y-2 px-4 pb-4">
-              <div className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
-                Grade · {row.variety || "FAQ"}
-              </div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-900">
-                {row.cropHi ? `${row.cropHi} · ` : ""}
-                {row.crop}
-              </h1>
-              <p className="flex items-center gap-1.5 text-xs text-slate-500">
-                <MapPin className="h-3.5 w-3.5 text-emerald-600" />
-                {row.mandi}
-                {row.state ? `, ${row.state}` : ""} · {locationLabel}
-              </p>
-              <p className="flex items-center gap-1.5 text-xs text-slate-500">
-                <CalendarDays className="h-3.5 w-3.5 text-emerald-600" />
-                Price date · {dateLabel}
-              </p>
-            </div>
+            <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-900">
+              {row.cropHi || row.crop}
+            </h1>
+            <p className="mt-0.5 text-sm text-slate-400">{row.category || "अन्य"}</p>
           </div>
 
-          <PriceSummaryCard modal={row.modal} change={row.change} changeAmt={row.changeAmt} />
-          <DetailStatsCard min={row.min} max={row.max} />
-
-          <div className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-bold text-slate-900">Price trend</p>
-              <BarChart3 className="h-4 w-4 text-emerald-600" />
-            </div>
-            <div className="flex justify-center py-2">
-              <Sparkline
-                data={row.trend}
-                color={up ? "#059669" : "#e11d48"}
-                width={280}
-                height={56}
-              />
-            </div>
+          <div className="space-y-2.5 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm">
+            <p className="flex items-center gap-2 text-sm text-slate-700">
+              <MapPin className="h-4 w-4 text-[#2563eb]" />
+              {row.mandi} • {district || row.state}, {state}
+            </p>
+            <p className="flex items-center gap-2 text-sm text-slate-700">
+              <CalendarDays className="h-4 w-4 text-emerald-500" />
+              भाव की तारीख: {dateLabel}
+            </p>
+            <p className="flex items-center gap-2 text-sm text-slate-700">
+              <Star className="h-4 w-4 text-amber-400" />
+              ग्रेड: {row.variety || "FAQ / Grade A"}
+            </p>
           </div>
 
-          <div className="space-y-2">
-            {periods.map((p) => (
-              <div
-                key={p.label}
-                className="flex items-center justify-between rounded-[20px] border border-slate-200 bg-white px-4 py-3.5 shadow-sm"
-              >
-                <div>
-                  <p className="text-sm font-bold text-slate-900">{p.label}</p>
-                  <p className="text-[10px] text-slate-400">{p.hint}</p>
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="flex items-start justify-between px-4 pt-4">
+              <div>
+                <p className="text-xs font-medium text-slate-400">वर्तमान मूल्य</p>
+                <p className="mt-1 text-4xl font-black tracking-tight text-slate-900">
+                  ₹{row.modal.toLocaleString("en-IN")}
+                </p>
+                <div className="mt-2">
+                  <ChangePill
+                    amount={Math.abs(row.changeAmt || Math.round((row.modal * Math.abs(row.change)) / 100))}
+                    tone={up ? "up" : "down"}
+                  />
                 </div>
-                <p className="text-lg font-black text-slate-900">₹{p.value.toLocaleString("en-IN")}</p>
               </div>
-            ))}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof navigator !== "undefined" && navigator.share) {
+                      void navigator.share({
+                        title: `${row.cropHi || row.crop} भाव`,
+                        text: `${row.cropHi || row.crop} @ ₹${row.modal}/qtl · ${row.mandi}`,
+                      });
+                    }
+                  }}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+                  aria-label="Share"
+                >
+                  <Share2 className="h-4 w-4" />
+                </button>
+                <AppLink
+                  href="/market-trends"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-[#2563eb]"
+                  aria-label="Analytics"
+                >
+                  <LineChart className="h-4 w-4" />
+                </AppLink>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 border-t border-slate-100 bg-slate-50">
+              <div className="border-r border-slate-100 px-4 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">न्यूनतम</p>
+                <p className="mt-0.5 text-base font-bold text-slate-800">₹{row.min.toLocaleString("en-IN")}</p>
+              </div>
+              <div className="px-4 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">अधिकतम</p>
+                <p className="mt-0.5 text-base font-bold text-slate-800">₹{row.max.toLocaleString("en-IN")}</p>
+              </div>
+            </div>
           </div>
 
-          <AppLink
-            href="/market-trends"
-            className="flex items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 py-3 text-xs font-bold text-emerald-700"
-          >
-            Open full market analytics →
-          </AppLink>
+          <PeriodCard
+            title={`${dateLabel} का भाव`}
+            icon={<Info className="h-3.5 w-3.5" />}
+            iconClass="bg-slate-50"
+            modal={row.modal}
+            high={row.max}
+            low={row.min}
+            change={Math.abs(row.changeAmt) || Math.round(row.modal * 0.05)}
+            tone={up ? "up" : "down"}
+            footer={dateLabel}
+          />
+          <PeriodCard
+            title="इस सप्ताह"
+            icon={<CalendarDays className="h-3.5 w-3.5" />}
+            iconClass="bg-blue-50 text-blue-700"
+            modal={stats.weekAvg}
+            high={stats.weekHigh}
+            low={stats.weekLow}
+            change={Math.abs(row.modal - stats.weekAvg)}
+            tone={row.modal >= stats.weekAvg ? "up" : "down"}
+          />
+          <PeriodCard
+            title="इस महीने"
+            icon={<Folder className="h-3.5 w-3.5" />}
+            iconClass="bg-emerald-50 text-emerald-700"
+            modal={stats.monthAvg}
+            high={stats.monthHigh}
+            low={stats.monthLow}
+            change={Math.abs(row.modal - stats.monthAvg)}
+            tone={row.modal >= stats.monthAvg ? "up" : "down"}
+          />
+          <PeriodCard
+            title="पिछले 30 दिन"
+            icon={<LineChart className="h-3.5 w-3.5" />}
+            iconClass="bg-violet-50 text-violet-700"
+            modal={stats.daySample}
+            high={stats.monthHigh}
+            low={stats.monthLow}
+            change={Math.abs(row.modal - stats.daySample)}
+            tone="flat"
+          />
+
+          <p className="pb-2 pt-1 text-center text-[11px] italic text-slate-400">
+            Made with ❤️ in India
+          </p>
         </div>
       )}
     </AppShell>

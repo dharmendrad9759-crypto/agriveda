@@ -1,17 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Bell, RefreshCw, Search } from "lucide-react";
+import { Bell, ChevronDown, RefreshCw } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
-import LocationCard from "@/components/mandi/LocationCard";
 import CategoryChips from "@/components/mandi/CategoryChips";
 import MarketPriceCard from "@/components/mandi/MarketPriceCard";
 import PriceAlertsPanel from "@/components/alerts/PriceAlertsPanel";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
-import { uniqueCrops } from "@/lib/mandi/marketAnalytics";
+import { uniqueCrops, uniqueMarkets } from "@/lib/mandi/marketAnalytics";
 import { cn } from "@/lib/cn";
 
 type Tab = "prices" | "alerts";
@@ -23,45 +22,40 @@ export default function MandiListClient() {
   const { data, loading, refresh } = useMandiPrices({ state, district });
   const { activeCount } = usePriceAlerts();
 
-  const [search, setSearch] = useState("");
   const [chip, setChip] = useState("");
-  const [sort, setSort] = useState<"high" | "low" | "change">("high");
+  const [marketFilter, setMarketFilter] = useState("All");
   const [tab, setTab] = useState<Tab>("prices");
 
   const rows = data?.rows ?? [];
   const locationLabel = district ? `${district}, ${state}` : state;
   const cropChips = useMemo(() => uniqueCrops(rows).slice(0, 10), [rows]);
+  const markets = useMemo(() => ["All", ...uniqueMarkets(rows).slice(0, 16)], [rows]);
+
+  const dateLabel =
+    data?.lastUpdated?.split(",")[0] ||
+    new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric" });
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
     const chipQ = chip.trim().toLowerCase();
-    let list = rows.filter((r) => {
-      const matchesSearch =
-        !q ||
-        r.crop.toLowerCase().includes(q) ||
-        r.cropHi.includes(search) ||
-        r.mandi.toLowerCase().includes(q);
+    return rows.filter((r) => {
       const matchesChip = !chipQ || r.crop.toLowerCase() === chipQ;
-      return matchesSearch && matchesChip;
+      const matchesMarket = marketFilter === "All" || r.mandi === marketFilter;
+      return matchesChip && matchesMarket;
     });
-    if (sort === "high") list = [...list].sort((a, b) => b.modal - a.modal);
-    if (sort === "low") list = [...list].sort((a, b) => a.modal - b.modal);
-    if (sort === "change") list = [...list].sort((a, b) => b.change - a.change);
-    return list;
-  }, [rows, search, chip, sort]);
+  }, [rows, chip, marketFilter]);
 
   return (
     <AppShell
-      className="!bg-[#f3faf5]"
-      title="Mandi Prices"
-      subtitle={`${locationLabel} · ${data?.source === "live" ? "Live" : "Sample"} · ${rows.length} crops`}
+      className="!bg-[#f7f8fb]"
+      title="बाज़ार देखें"
+      subtitle={`${locationLabel} · ${data?.source === "live" ? "Live" : "Sample"} · ${rows.length} भाव`}
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Mandi" }]}
       actions={
         <button
           type="button"
           onClick={() => refresh()}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-[11px] font-bold text-emerald-700 shadow-sm transition active:scale-95 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 shadow-sm active:scale-95 disabled:opacity-60"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
           Refresh
@@ -75,9 +69,7 @@ export default function MandiListClient() {
           </p>
         )}
 
-        <LocationCard locationLabel={locationLabel} />
-
-        <div className="flex gap-1 rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+        <div className="flex gap-1 rounded-2xl bg-slate-100 p-1">
           {(
             [
               { id: "prices" as const, label: "आज के भाव" },
@@ -89,10 +81,8 @@ export default function MandiListClient() {
               type="button"
               onClick={() => setTab(t.id)}
               className={cn(
-                "flex-1 rounded-xl py-2.5 text-xs font-bold transition active:scale-[0.98]",
-                tab === t.id
-                  ? "bg-emerald-600 text-white shadow-sm shadow-emerald-600/30"
-                  : "text-slate-500"
+                "flex-1 rounded-xl py-2.5 text-xs font-bold transition",
+                tab === t.id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
               )}
             >
               {t.label}
@@ -102,51 +92,62 @@ export default function MandiListClient() {
 
         {tab === "prices" && (
           <div className="space-y-3">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-600" />
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search crop or mandi…"
-                  className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20"
-                />
-              </div>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as typeof sort)}
-                className="rounded-2xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm outline-none focus:border-emerald-400"
-              >
-                <option value="high">High ₹</option>
-                <option value="low">Low ₹</option>
-                <option value="change">% Change</option>
-              </select>
-            </div>
-
             <CategoryChips chips={cropChips} active={chip} onSelect={setChip} />
+
+            <div className="space-y-2">
+              <div className="relative">
+                <select
+                  value={state}
+                  disabled
+                  className="w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm font-semibold text-slate-800 shadow-sm"
+                >
+                  <option>{state}</option>
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              </div>
+              <div className="relative">
+                <select
+                  value={marketFilter}
+                  onChange={(e) => setMarketFilter(e.target.value)}
+                  className="w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-10 text-sm font-semibold text-slate-800 shadow-sm outline-none focus:border-blue-400"
+                >
+                  {markets.map((m) => (
+                    <option key={m} value={m}>
+                      {m === "All" ? `सभी मंडी · ${district || state}` : m}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              </div>
+              <AppLink href="/profile" className="block text-right text-[11px] font-bold text-[#2563eb]">
+                स्थान बदलें →
+              </AppLink>
+            </div>
 
             <div className="space-y-2.5">
               {loading && filtered.length === 0 ? (
                 <div className="space-y-2">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-[84px] animate-pulse rounded-[22px] bg-white/80" />
+                    <div key={i} className="h-[110px] animate-pulse rounded-2xl bg-white" />
                   ))}
                 </div>
               ) : filtered.length === 0 ? (
-                <div className="rounded-[22px] border border-dashed border-slate-200 bg-white px-4 py-10 text-center">
-                  <p className="text-sm font-bold text-slate-800">No matching prices</p>
-                  <p className="mt-1 text-xs text-slate-500">Try another crop or clear filters</p>
+                <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-10 text-center">
+                  <p className="text-sm font-bold text-slate-800">कोई भाव नहीं मिला</p>
+                  <p className="mt-1 text-xs text-slate-500">दूसरी फसल या मंडी चुनें</p>
                 </div>
               ) : (
-                filtered.slice(0, 30).map((row) => <MarketPriceCard key={row.id} row={row} />)
+                filtered
+                  .slice(0, 30)
+                  .map((row) => <MarketPriceCard key={row.id} row={row} dateLabel={dateLabel} />)
               )}
             </div>
 
             <AppLink
               href="/market-trends"
-              className="flex items-center justify-center gap-1 rounded-2xl border border-emerald-200 bg-emerald-50 py-3 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100 active:scale-[0.99]"
+              className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-3 text-xs font-bold text-[#2563eb]"
             >
-              Market trends & insights →
+              बाजार रुझान देखें →
             </AppLink>
           </div>
         )}
@@ -154,10 +155,10 @@ export default function MandiListClient() {
         {tab === "alerts" && (
           <div id="price-alerts" className="space-y-2">
             <div className="flex items-center gap-1.5 px-0.5 text-xs font-bold text-slate-800">
-              <Bell className="h-3.5 w-3.5 text-emerald-600" />
+              <Bell className="h-3.5 w-3.5 text-[#2563eb]" />
               Price Alerts
             </div>
-            <div className="rounded-[22px] border border-slate-200 bg-white p-3 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
               <PriceAlertsPanel rows={rows} />
             </div>
           </div>
