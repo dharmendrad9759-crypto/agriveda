@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { SubmitOutbreakInput } from "@/types/outbreak";
-import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase";
+import {
+  createSupabaseServiceClient,
+  hasSupabaseServiceRole,
+} from "@/lib/supabase";
 import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import {
   fetchOutbreakReportsSince,
@@ -8,40 +11,60 @@ import {
 } from "@/lib/supabaseOutbreak";
 import { buildOutbreakRadarPayload, toPublicOutbreakReport } from "@/lib/outbreakPublic";
 import { detectOutbreakCluster } from "@/lib/outbreakCluster";
+import { requireSession } from "@/lib/session";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 export async function GET(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: "Supabase not configured" },
-      { status: 503 }
-    );
+  if (!hasSupabaseServiceRole()) {
+    return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
   }
 
   const lat = parseFloat(request.nextUrl.searchParams.get("lat") ?? "");
   const lon = parseFloat(request.nextUrl.searchParams.get("lon") ?? "");
-  const radiusKm = parseFloat(request.nextUrl.searchParams.get("radiusKm") ?? "10");
-  const days = parseInt(request.nextUrl.searchParams.get("days") ?? "14", 10);
+  const radiusKm = Math.min(
+    50,
+    Math.max(1, parseFloat(request.nextUrl.searchParams.get("radiusKm") ?? "10"))
+  );
+  const days = Math.min(
+    30,
+    Math.max(1, parseInt(request.nextUrl.searchParams.get("days") ?? "14", 10))
+  );
 
   if (Number.isNaN(lat) || Number.isNaN(lon)) {
     return NextResponse.json({ error: "lat and lon required" }, { status: 400 });
   }
 
-  const all = await fetchOutbreakReportsSince(days, createSupabaseServerClient());
+  const ip = clientIp(request);
+  const limited = rateLimit(`outbreak-get:${ip}`, 60, 60_000);
+  if (!limited.ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
+  const client = createSupabaseServiceClient();
+  const all = await fetchOutbreakReportsSince(days, client);
   const payload = buildOutbreakRadarPayload(all, lat, lon, radiusKm, days);
 
   return NextResponse.json(payload);
 }
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
+  if (!hasSupabaseServiceRole()) {
+    return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
+  }
+
+  const auth = requireSession(request);
+  if ("error" in auth) return auth.error;
+
+  const limited = rateLimit(`outbreak-post:${auth.session.deviceId}`, 10, 60 * 60_000);
+  if (!limited.ok) {
     return NextResponse.json(
-      { error: "Supabase not configured" },
-      { status: 503 }
+      { error: "Outbreak report limit — 1 घंटे में ज़्यादा रिपोर्ट न भेजें" },
+      { status: 429 }
     );
   }
 
   try {
-    const body = (await request.json()) as SubmitOutbreakInput & { deviceId?: string };
+    const body = (await request.json()) as SubmitOutbreakInput;
 
     if (
       !body.cropId ||
@@ -54,11 +77,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid outbreak report" }, { status: 400 });
     }
 
-    const client = createSupabaseServerClient();
-    let farmerId: string | null = body.farmerId ?? null;
-    if (!farmerId && body.deviceId) {
-      farmerId = (await ensureFarmerRecord(body.deviceId, client)) ?? null;
+    if (
+      typeof body.photoUrl === "string" &&
+      body.photoUrl.length > 400_000
+    ) {
+      return NextResponse.json({ error: "Photo too large" }, { status: 400 });
     }
+
+    const client = createSupabaseServiceClient();
+    if (!client) {
+      return NextResponse.json({ error: "Supabase unavailable" }, { status: 503 });
+    }
+
+    // Never trust body.farmerId
+    const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
+      phone: auth.session.phone,
+    });
 
     const report = await insertOutbreakReportToSupabase(
       {

@@ -7,6 +7,7 @@ const lanUrl = `http://${ip}:3000`;
 const localUrl = "http://127.0.0.1:3000";
 
 process.env.CAPACITOR_SERVER_URL = lanUrl;
+process.env.CAPACITOR_ALLOW_CLEARTEXT = "true";
 
 function probe(url) {
   return new Promise((resolve) => {
@@ -64,7 +65,11 @@ const child = spawn(
   ["next", "dev", "--hostname", "0.0.0.0", "--port", "3000"],
   {
     stdio: "inherit",
-    env: { ...process.env, CAPACITOR_SERVER_URL: lanUrl },
+    env: {
+      ...process.env,
+      CAPACITOR_SERVER_URL: lanUrl,
+      CAPACITOR_ALLOW_CLEARTEXT: "true",
+    },
     shell: process.platform === "win32",
   }
 );

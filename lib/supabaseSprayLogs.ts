@@ -1,7 +1,7 @@
 import type { SprayLog } from "@/types/spray-rotation";
-import { getProductById } from "@/data/spray-products";
-import { getSupabase, createSupabaseServerClient } from "@/lib/supabase";
+import { createSupabaseServiceClient } from "@/lib/supabase";
 import type { Database } from "@/types/database";
+import { getProductById } from "@/data/spray-products";
 
 type SprayRow = Database["public"]["Tables"]["spray_logs"]["Row"];
 
@@ -22,7 +22,7 @@ export function sprayRowToLog(row: SprayRow): SprayLog {
 
 export async function fetchSprayLogsForFarmer(
   farmerId: string,
-  client = getSupabase() ?? createSupabaseServerClient()
+  client = createSupabaseServiceClient()
 ): Promise<SprayLog[]> {
   if (!client) return [];
 
@@ -43,7 +43,7 @@ export async function fetchSprayLogsForFarmer(
 export async function insertSprayLogToSupabase(
   farmerId: string,
   log: SprayLog,
-  client = getSupabase() ?? createSupabaseServerClient()
+  client = createSupabaseServiceClient()
 ): Promise<SprayLog | null> {
   if (!client) return null;
 

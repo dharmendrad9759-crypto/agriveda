@@ -1,8 +1,5 @@
 import type { SubmitOutbreakInput } from "@/types/outbreak";
 import { readStorage, writeStorage } from "@/lib/storage";
-import { getDeviceId } from "@/lib/deviceId";
-import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
-import { insertOutbreakReportToSupabase } from "@/lib/supabaseOutbreak";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
 const PENDING_KEY = "agriveda-outbreak-pending";
@@ -23,26 +20,30 @@ export async function trySyncPendingOutbreaks(): Promise<number> {
   const pending = getPendingOutbreakReports();
   if (pending.length === 0) return 0;
 
-  const deviceId = getDeviceId();
-  const farmerId = await ensureFarmerRecord(deviceId);
-  if (!farmerId) return 0;
-
   const remaining: SubmitOutbreakInput[] = [];
   let synced = 0;
 
   for (const item of pending) {
-    const saved = await insertOutbreakReportToSupabase({
-      farmerId,
-      cropId: item.cropId,
-      threatType: item.threatType,
-      pestOrDiseaseId: item.pestOrDiseaseId,
-      photoUrl: item.photoUrl,
-      latitude: item.latitude,
-      longitude: item.longitude,
-      severity: item.severity,
-    });
-    if (saved) synced++;
-    else remaining.push(item);
+    try {
+      const res = await fetch("/api/outbreaks", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cropId: item.cropId,
+          threatType: item.threatType,
+          pestOrDiseaseId: item.pestOrDiseaseId,
+          photoUrl: item.photoUrl,
+          latitude: item.latitude,
+          longitude: item.longitude,
+          severity: item.severity,
+        }),
+      });
+      if (res.ok) synced++;
+      else remaining.push(item);
+    } catch {
+      remaining.push(item);
+    }
   }
 
   writeStorage(PENDING_KEY, remaining);

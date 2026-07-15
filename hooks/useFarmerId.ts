@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getDeviceId } from "@/lib/deviceId";
-import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
 /**
- * Returns Supabase farmers.id (UUID) for the current device.
- * Creates farmers row on first use when Supabase is configured.
+ * Returns Supabase farmers.id for the current session (via /api/auth/session).
  */
 export function useFarmerId(): string {
   const [farmerId, setFarmerId] = useState("");
@@ -15,10 +12,17 @@ export function useFarmerId(): string {
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
 
-    const deviceId = getDeviceId();
-    ensureFarmerRecord(deviceId).then((id) => {
-      if (id) setFarmerId(id);
-    });
+    let cancelled = false;
+    fetch("/api/auth/session", { credentials: "include" })
+      .then((r) => r.json())
+      .then((body: { farmerId?: string | null }) => {
+        if (!cancelled && body.farmerId) setFarmerId(body.farmerId);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return farmerId;

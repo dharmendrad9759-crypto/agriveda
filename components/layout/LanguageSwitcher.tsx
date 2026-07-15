@@ -5,20 +5,37 @@ import { useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
+import { applyPageTranslation, TRANSLATE_LANGUAGES } from "@/lib/translator";
 
 const OPTIONS: {
   locale: AppLocale;
   label: string;
   hint: string;
 }[] = [
-  { locale: "en", label: "English", hint: "Simple English — AI bhi English" },
-  { locale: "hi", label: "सरल हिंदी", hint: "पूरी app + AI जवाब Hindi में" },
-  { locale: "hinglish", label: "Hinglish", hint: "Hindi + English mix — short jawab" },
+  { locale: "en", label: "English", hint: "Full app in English" },
+  { locale: "hi", label: "सरल हिंदी", hint: "पूरा पेज हिंदी में (रिफ्रेश होगा)" },
+  { locale: "hinglish", label: "Hinglish", hint: "Short mix — page stays English-friendly" },
 ];
 
 export default function LanguageSwitcher() {
   const { locale, setLocale, t } = useLocale();
   const [open, setOpen] = useState(false);
+
+  const pick = (next: AppLocale) => {
+    setLocale(next);
+    setOpen(false);
+
+    // Full-page Google Translate so pest/mandi English content becomes Hindi
+    if (next === "hi") {
+      const hi = TRANSLATE_LANGUAGES.find((l) => l.code === "hi");
+      if (hi) applyPageTranslation(hi);
+      return;
+    }
+    if (next === "en") {
+      const en = TRANSLATE_LANGUAGES.find((l) => l.code === "en");
+      if (en) applyPageTranslation(en);
+    }
+  };
 
   return (
     <>
@@ -41,7 +58,9 @@ export default function LanguageSwitcher() {
             <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
               <div>
                 <h2 className="text-base font-extrabold theme-text-primary">{t("chooseLanguage")}</h2>
-                <p className="text-[11px] theme-text-muted">{t("langSwitchNote")}</p>
+                <p className="text-[11px] theme-text-muted">
+                  हिंदी चुनें → पूरा पेज हिंदी हो जाएगा (reload)
+                </p>
               </div>
               <button
                 type="button"
@@ -58,10 +77,7 @@ export default function LanguageSwitcher() {
                 <li key={opt.locale}>
                   <button
                     type="button"
-                    onClick={() => {
-                      setLocale(opt.locale);
-                      setOpen(false);
-                    }}
+                    onClick={() => pick(opt.locale)}
                     className={cn(
                       "flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-sm font-bold transition",
                       locale === opt.locale

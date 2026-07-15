@@ -50,6 +50,7 @@ if ($mode -eq "Wi-Fi LAN") {
 }
 
 $env:CAPACITOR_SERVER_URL = $url
+$env:CAPACITOR_ALLOW_CLEARTEXT = "true"
 npx cap sync android
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

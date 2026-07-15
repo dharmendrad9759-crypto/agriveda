@@ -1,5 +1,5 @@
 import type { OutbreakReport, OutbreakSeverity, OutbreakThreatType } from "@/types/outbreak";
-import { getSupabase, createSupabaseServerClient } from "@/lib/supabase";
+import { createSupabaseServiceClient } from "@/lib/supabase";
 import type { Database } from "@/types/database";
 
 type OutbreakRow = Database["public"]["Tables"]["outbreak_reports"]["Row"];
@@ -41,7 +41,7 @@ export function outbreakRowToReport(row: OutbreakRow): OutbreakReport {
 
 export async function fetchOutbreakReportsSince(
   days = 14,
-  client = getSupabase() ?? createSupabaseServerClient()
+  client = createSupabaseServiceClient()
 ): Promise<OutbreakReport[]> {
   if (!client) return [];
 
@@ -75,7 +75,7 @@ export interface InsertOutbreakParams {
 
 export async function insertOutbreakReportToSupabase(
   params: InsertOutbreakParams,
-  client = getSupabase() ?? createSupabaseServerClient()
+  client = createSupabaseServiceClient()
 ): Promise<OutbreakReport | null> {
   if (!client) return null;
 

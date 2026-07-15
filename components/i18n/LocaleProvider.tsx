@@ -53,6 +53,20 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale === "en" ? "en" : "hi";
   }, [locale, hydrated]);
 
+  // One-time: if UI locale is Hindi but page isn't translating, apply cookie + reload
+  useEffect(() => {
+    if (!hydrated || locale !== "hi") return;
+    try {
+      if (document.cookie.includes("googtrans=/en/hi")) return;
+      if (sessionStorage.getItem("agriveda-hi-translate-boot") === "1") return;
+      sessionStorage.setItem("agriveda-hi-translate-boot", "1");
+      document.cookie = "googtrans=/en/hi; path=/; max-age=31536000";
+      window.location.reload();
+    } catch {
+      /* ignore */
+    }
+  }, [locale, hydrated]);
+
   const setLocale = useCallback((next: AppLocale) => {
     setLocaleState(next);
     writeStorage(LOCALE_KEY, next);

@@ -132,20 +132,21 @@ function chemicalsToStageSprays(chemicals: IpmChemical[], isDisease: boolean): S
     const main = early[0];
     stages.push({
       stage: "early",
-      label: isDisease ? "Preventive / first spots" : "Early infestation",
-      chemistry: early.map((c) => c.technical).join(" + "),
-      dose: early.map((c) => `${c.technical} ${c.dose}`).join("; "),
-      notes: early.map((c) => c.note).filter(Boolean).join(" "),
+      label: isDisease ? "First spots" : "Early attack",
+      chemistry: main.technical,
+      dose: main.dose,
+      notes: main.note,
     });
   }
 
   if (advanced.length) {
+    const main = advanced[0];
     stages.push({
       stage: "advanced",
-      label: isDisease ? "Advanced / spreading" : "Heavy pressure",
-      chemistry: advanced.map((c) => c.technical).join(" + "),
-      dose: advanced.map((c) => `${c.dose}`).join("; "),
-      notes: advanced.map((c) => c.note).filter(Boolean).join(" "),
+      label: isDisease ? "Spreading fast" : "Heavy attack",
+      chemistry: main.technical,
+      dose: main.dose,
+      notes: main.note,
     });
   }
 
@@ -155,21 +156,30 @@ function chemicalsToStageSprays(chemicals: IpmChemical[], isDisease: boolean): S
       label: "Recommended spray",
       chemistry: chemicals[0].technical,
       dose: chemicals[0].dose,
+      notes: chemicals[0].note,
     });
   }
 
   return stages;
 }
 
-function buildRemediation(mgmt: IpmManagement, rotationNote?: string): string[] {
+function buildRemediation(mgmt: IpmManagement, _rotationNote?: string): string[] {
   const items: string[] = [];
-  if (rotationNote) items.push(`Rotation: ${rotationNote}`);
-  if (mgmt.prevention.length) items.push(`Prevention: ${mgmt.prevention.join("; ")}`);
-  if (mgmt.monitoring.length) items.push(`Monitoring: ${mgmt.monitoring.join("; ")}`);
-  if (mgmt.cultural.length) items.push(`Cultural: ${mgmt.cultural.join("; ")}`);
-  if (mgmt.biological.length) items.push(`Biological: ${mgmt.biological.join("; ")}`);
-  for (const c of formatChemicals(mgmt.chemical)) {
-    items.push(`Chemical: ${c}`);
+  // Only ship buckets that have real field methods (UI hides empty ones)
+  for (const p of mgmt.prevention.slice(0, 4)) items.push(`Prevention: ${p}`);
+  for (const m of mgmt.monitoring.slice(0, 2)) items.push(`Monitoring: ${m}`);
+  for (const c of mgmt.cultural.slice(0, 4)) {
+    if (/trap|plough|remove|weed|shake|perch|destroy|hoe|hand/i.test(c)) {
+      items.push(`Mechanical: ${c}`);
+    } else {
+      items.push(`Cultural: ${c}`);
+    }
+  }
+  for (const b of mgmt.biological.slice(0, 4)) items.push(`Biological: ${b}`);
+  // Chemicals live in stageSprays — keep 1 line for fallback only
+  if (mgmt.chemical[0]) {
+    const c = mgmt.chemical[0];
+    items.push(`Chemical: ${c.technical} @ ${c.dose}`);
   }
   return items;
 }
@@ -296,12 +306,8 @@ export function buildIpmThreatOverrides(slug: string, record: IpmCropRecord): Re
       activeIngredient: firstChem ? `${firstChem.technical} @ ${firstChem.dose}` : undefined,
       stageSprays: chemicalsToStageSprays(pest.management.chemical, false),
       rotationNotes: pest.iracRotationNote,
-      stageExtraNotes: [
-        ...pest.management.prevention.map((p) => `Prevention: ${p}`),
-        ...pest.management.monitoring.map((m) => `Monitoring: ${m}`),
-        ...pest.management.cultural.map((c) => `Cultural: ${c}`),
-        ...pest.management.biological.map((b) => `Biological: ${b}`),
-      ],
+      // Keep chemical card clean — IPM non-chemical shown via remediation prefixes only
+      stageExtraNotes: undefined,
     };
   });
 

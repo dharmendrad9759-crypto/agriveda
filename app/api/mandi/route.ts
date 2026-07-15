@@ -7,7 +7,7 @@ import type { MandiApiResponse } from "@/lib/mandi/types";
 export const dynamic = "force-dynamic";
 
 function readApiKey(): string | undefined {
-  const raw = process.env.DATA_GOV_API_KEY || process.env.NEXT_PUBLIC_DATA_GOV_API_KEY;
+  const raw = process.env.DATA_GOV_API_KEY;
   if (!raw) return undefined;
   return raw.trim().replace(/^["']|["']$/g, "");
 }

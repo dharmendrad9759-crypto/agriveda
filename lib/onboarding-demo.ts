@@ -13,18 +13,8 @@ export const DEMO_FARMER_PROFILE: Pick<
   onboardingComplete: true,
 };
 
+/** Only for local `next dev` — never auto-skip on Android / production. */
 export function shouldAutoSkipOnboarding(): boolean {
-  if (process.env.NEXT_PUBLIC_SKIP_ONBOARDING === "true") return true;
-  if (typeof window === "undefined") return false;
-
-  const w = window as Window & { Capacitor?: { isNativePlatform?: () => boolean } };
-  if (w.Capacitor?.isNativePlatform?.()) return true;
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { Capacitor } = require("@capacitor/core") as typeof import("@capacitor/core");
-    return Capacitor.isNativePlatform();
-  } catch {
-    return false;
-  }
+  if (process.env.NODE_ENV !== "development") return false;
+  return process.env.NEXT_PUBLIC_SKIP_ONBOARDING === "true";
 }

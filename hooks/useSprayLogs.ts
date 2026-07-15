@@ -4,12 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { SprayLog } from "@/types/spray-rotation";
 import { readStorage, writeStorage } from "@/lib/storage";
 import { queueSpraySync, trySyncPendingSprays } from "@/lib/spraySync";
-import { getDeviceId } from "@/lib/deviceId";
-import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
-import {
-  fetchSprayLogsForFarmer,
-  mergeSprayLogs,
-} from "@/lib/supabaseSprayLogs";
+import { mergeSprayLogs } from "@/lib/supabaseSprayLogs";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { randomId } from "@/lib/randomId";
 
@@ -22,14 +17,22 @@ export function useSprayLogs() {
   const [farmerId, setFarmerId] = useState<string | null>(null);
 
   const refreshFromSupabase = useCallback(async () => {
-    if (!isSupabaseConfigured() || !farmerId) return;
+    if (!isSupabaseConfigured()) return;
 
     const local = readStorage<SprayLog[]>(KEY, []);
-    const remote = await fetchSprayLogsForFarmer(farmerId);
-    const merged = mergeSprayLogs(local, remote);
-    writeStorage(KEY, merged);
-    setLogs(merged);
-  }, [farmerId]);
+    try {
+      const res = await fetch("/api/spray-logs", { credentials: "include" });
+      if (!res.ok) return;
+      const body = (await res.json()) as { logs?: SprayLog[]; farmerId?: string };
+      if (body.farmerId) setFarmerId(body.farmerId);
+      const remote = body.logs ?? [];
+      const merged = mergeSprayLogs(local, remote);
+      writeStorage(KEY, merged);
+      setLogs(merged);
+    } catch {
+      /* keep local */
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,17 +42,20 @@ export function useSprayLogs() {
       if (!cancelled) setLogs(local);
 
       if (isSupabaseConfigured()) {
-        const deviceId = getDeviceId();
-        const fid = await ensureFarmerRecord(deviceId);
-        if (!cancelled && fid) {
-          setFarmerId(fid);
-          const remote = await fetchSprayLogsForFarmer(fid);
-          const merged = mergeSprayLogs(local, remote);
-          writeStorage(KEY, merged);
-          if (!cancelled) setLogs(merged);
+        try {
+          const res = await fetch("/api/spray-logs", { credentials: "include" });
+          if (res.ok) {
+            const body = (await res.json()) as { logs?: SprayLog[]; farmerId?: string };
+            if (!cancelled && body.farmerId) setFarmerId(body.farmerId);
+            const merged = mergeSprayLogs(local, body.logs ?? []);
+            writeStorage(KEY, merged);
+            if (!cancelled) setLogs(merged);
+          }
           await trySyncPendingSprays();
           const afterSync = readStorage<SprayLog[]>(KEY, []);
           if (!cancelled) setLogs(afterSync);
+        } catch {
+          /* local only */
         }
       }
 

@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzePlantPhotoWithGemini, getGeminiApiKey } from "@/lib/geminiPlantDoctor";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { readSessionFromRequest } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const MAX_BYTES = 5 * 1024 * 1024;
-const ALLOWED_MIME = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"]);
+const ALLOWED_MIME = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+]);
 
 export async function POST(request: NextRequest) {
   if (!getGeminiApiKey()) {
@@ -18,10 +27,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const ip = clientIp(request);
+  const session = readSessionFromRequest(request);
+  const bucket = session?.deviceId ? `ai:${session.deviceId}` : `ai-ip:${ip}`;
+  const limited = rateLimit(bucket, 20, 60 * 60_000);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: `AI limit — ${limited.retryAfterSec} सेकंड बाद फिर कोशिश करें` },
+      { status: 429 }
+    );
+  }
+
   try {
     const body = await request.json();
     const imageBase64 = typeof body.imageBase64 === "string" ? body.imageBase64.trim() : "";
-    const mimeType = typeof body.mimeType === "string" ? body.mimeType.toLowerCase() : "image/jpeg";
+    const mimeType =
+      typeof body.mimeType === "string" ? body.mimeType.toLowerCase() : "image/jpeg";
     const cropSlug = typeof body.cropSlug === "string" ? body.cropSlug.trim() : "tomato";
 
     if (!imageBase64) {
@@ -29,7 +50,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!ALLOWED_MIME.has(mimeType)) {
-      return NextResponse.json({ error: "Sirf JPEG/PNG/WebP photo upload karein" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Sirf JPEG/PNG/WebP photo upload karein" },
+        { status: 400 }
+      );
     }
 
     const byteLength = Math.ceil((imageBase64.length * 3) / 4);
@@ -50,20 +74,17 @@ export async function POST(request: NextRequest) {
       message.includes("पत्ती") ||
       message.includes("नहीं");
 
+    console.error("[ai-doctor]", message);
     return NextResponse.json(
-      { error: message },
+      { error: isUserError ? message : "Analysis failed — later try करें" },
       { status: isUserError ? 422 : 500 }
     );
   }
 }
 
 export async function GET() {
-  const key = getGeminiApiKey();
-  const prefix = key ? key.slice(0, 4) : null;
   return NextResponse.json({
-    configured: Boolean(key),
+    configured: Boolean(getGeminiApiKey()),
     provider: "google-gemini",
-    /** Safe hint for Vercel debugging — never exposes full key */
-    keyPrefix: prefix,
   });
 }

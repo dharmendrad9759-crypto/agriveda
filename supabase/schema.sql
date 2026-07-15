@@ -50,7 +50,8 @@ create index if not exists outbreak_reports_report_date_idx
 -- pest_or_disease format: "pest:p1" or "disease:d2"
 
 -- ---------------------------------------------------------------------------
--- Row Level Security (anon access until real auth is added)
+-- Row Level Security — deny all anon / authenticated direct access.
+-- Server APIs use SUPABASE_SERVICE_ROLE_KEY (bypasses RLS).
 -- ---------------------------------------------------------------------------
 
 alter table public.farmers enable row level security;
@@ -64,26 +65,12 @@ drop policy if exists "anon_insert_spray_logs" on public.spray_logs;
 drop policy if exists "anon_select_outbreak_reports" on public.outbreak_reports;
 drop policy if exists "anon_insert_outbreak_reports" on public.outbreak_reports;
 
-create policy "anon_select_farmers"
-  on public.farmers for select to anon using (true);
-
-create policy "anon_insert_farmers"
-  on public.farmers for insert to anon with check (true);
-
-create policy "anon_select_spray_logs"
-  on public.spray_logs for select to anon using (true);
-
-create policy "anon_insert_spray_logs"
-  on public.spray_logs for insert to anon with check (true);
-
-create policy "anon_select_outbreak_reports"
-  on public.outbreak_reports for select to anon using (true);
-
-create policy "anon_insert_outbreak_reports"
-  on public.outbreak_reports for insert to anon with check (true);
+-- No policies for anon/authenticated ⇒ default deny.
+-- (Re-run this block alone on existing projects — see rls-lockdown.sql)
 
 -- ---------------------------------------------------------------------------
 -- Demo seed data (optional — nearby Jaipur for map testing)
+-- Insert as SQL editor (postgres role) — bypasses RLS.
 -- ---------------------------------------------------------------------------
 
 insert into public.outbreak_reports (crop_id, pest_or_disease, latitude, longitude, severity, verified, report_date)

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Capacitor } from "@capacitor/core";
 import { Loader2, Phone, ShieldCheck, User } from "lucide-react";
 import FarmSetupStep from "@/components/onboarding/FarmSetupStep";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -21,6 +20,7 @@ import {
   firebaseAuthError,
 } from "@/lib/firebase/phoneAuth";
 import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
+import { getDeviceId } from "@/lib/deviceId";
 
 type Step = "phone" | "otp" | "profile" | "farm";
 
@@ -28,7 +28,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const { profile, hydrated, completeOnboarding, completeFarmSetup } = useFarmerProfile();
   const { showToast } = useToast();
   const useFirebase = isFirebaseConfigured();
-  const isNativeApp = Capacitor.isNativePlatform();
+  const showDevSkip = process.env.NODE_ENV === "development";
 
   const needsFarmSetup = profile.onboardingComplete && !profile.farmSetupComplete;
   const needsFullOnboarding = !profile.onboardingComplete;
@@ -97,13 +97,17 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
       const res = await fetch("/api/auth/otp/send", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone }),
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || "OTP नहीं भेजा जा सका");
 
-      if (body.demoOtp) setDemoOtp(String(body.demoOtp));
+      // demoOtp only returned in local/dev when SMS is off
+      if (body.demoOtp && process.env.NODE_ENV === "development") {
+        setDemoOtp(String(body.demoOtp));
+      }
       setStep("otp");
       showToast("OTP भेज दिया गया");
     } catch (err) {
@@ -124,8 +128,21 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     setLoading(true);
 
     try {
+      const deviceId = getDeviceId();
+
       if (useFirebase) {
         const user = await verifyFirebasePhoneOtp(otp);
+        const idToken = await user.getIdToken();
+        const sessionRes = await fetch("/api/auth/session/firebase", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken, deviceId }),
+        });
+        const sessionBody = await sessionRes.json();
+        if (!sessionRes.ok) {
+          throw new Error(sessionBody.error || "Session create failed");
+        }
         setFirebaseUid(user.uid);
         setStep("profile");
         showToast("मोबाइल verify हो गया ✓");
@@ -134,11 +151,12 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
       const res = await fetch("/api/auth/otp/verify", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, otp }),
+        body: JSON.stringify({ phone, otp, deviceId }),
       });
       const body = await res.json();
-      if (!res.ok) throw new Error(body.error || "OTP verify नहीं hua");
+      if (!res.ok) throw new Error(body.error || "OTP verify नहीं हुआ");
 
       setStep("profile");
       showToast("मोबाइल verify हो गया ✓");
@@ -362,15 +380,13 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
             </p>
           )}
 
-          {(process.env.NODE_ENV === "development" || isNativeApp) &&
-            step !== "farm" &&
-            !needsFarmSetup && (
+          {showDevSkip && step !== "farm" && !needsFarmSetup && (
             <button
               type="button"
               onClick={skipForDev}
               className="w-full rounded-2xl border border-dashed border-emerald-400/50 py-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-300"
             >
-              बाद में — पहले app explore करें
+              Dev only — skip OTP
             </button>
           )}
         </div>

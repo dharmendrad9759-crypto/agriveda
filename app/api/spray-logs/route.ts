@@ -1,31 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { SprayLog } from "@/types/spray-rotation";
-import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase";
+import { createSupabaseServiceClient, hasSupabaseServiceRole } from "@/lib/supabase";
 import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import {
   fetchSprayLogsForFarmer,
   insertSprayLogToSupabase,
 } from "@/lib/supabaseSprayLogs";
+import { requireSession } from "@/lib/session";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
+  if (!hasSupabaseServiceRole()) {
+    return NextResponse.json(
+      { error: "Supabase service role not configured" },
+      { status: 503 }
+    );
+  }
+
+  const auth = requireSession(request);
+  if ("error" in auth) return auth.error;
+
+  const limited = rateLimit(`spray-post:${auth.session.deviceId}`, 30, 60_000);
+  if (!limited.ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
   try {
     const body = await request.json();
-    const client = createSupabaseServerClient();
+    const client = createSupabaseServiceClient();
+    if (!client) {
+      return NextResponse.json({ error: "Supabase unavailable" }, { status: 503 });
+    }
 
     if (!body?.productId || !body?.sprayDate) {
       return NextResponse.json({ error: "Invalid spray log" }, { status: 400 });
     }
 
-    let farmerId: string | null = (body.farmerId as string | undefined) ?? null;
-    if (!farmerId && body.deviceId) {
-      farmerId = (await ensureFarmerRecord(body.deviceId, client)) ?? null;
-    }
+    // farmerId ALWAYS from session device — never trust body.farmerId
+    const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
+      phone: auth.session.phone,
+    });
     if (!farmerId) {
-      return NextResponse.json({ error: "farmerId or deviceId required" }, { status: 400 });
+      return NextResponse.json({ error: "Could not resolve farmer" }, { status: 500 });
     }
 
     const log: SprayLog = {
@@ -55,22 +71,30 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
+  if (!hasSupabaseServiceRole()) {
+    return NextResponse.json(
+      { error: "Supabase service role not configured" },
+      { status: 503 }
+    );
   }
 
-  const farmerId = request.nextUrl.searchParams.get("farmerId");
-  const deviceId = request.nextUrl.searchParams.get("deviceId");
-  const client = createSupabaseServerClient();
+  const auth = requireSession(request);
+  if ("error" in auth) return auth.error;
 
-    let fid: string | null = farmerId;
-    if (!fid && deviceId) {
-      fid = (await ensureFarmerRecord(deviceId, client)) ?? null;
-    }
-    if (!fid) {
-      return NextResponse.json({ error: "farmerId or deviceId required" }, { status: 400 });
-    }
+  void clientIp(request); // keep import used for future IP logging
 
-    const logs = await fetchSprayLogsForFarmer(fid, client);
-  return NextResponse.json({ count: logs.length, logs });
+  const client = createSupabaseServiceClient();
+  if (!client) {
+    return NextResponse.json({ error: "Supabase unavailable" }, { status: 503 });
+  }
+
+  const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
+    phone: auth.session.phone,
+  });
+  if (!farmerId) {
+    return NextResponse.json({ error: "Could not resolve farmer" }, { status: 500 });
+  }
+
+  const logs = await fetchSprayLogsForFarmer(farmerId, client);
+  return NextResponse.json({ count: logs.length, logs, farmerId });
 }

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_KEY =
-  process.env.OPENWEATHER_API_KEY ||
-  process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY ||
-  "7329dc97e3c822b153c190c7c1b5e85d";
+function readOpenWeatherKey(): string | undefined {
+  const raw = process.env.OPENWEATHER_API_KEY?.trim();
+  return raw || undefined;
+}
 
 const FETCH_TIMEOUT_MS = 12_000;
 
@@ -26,9 +26,9 @@ async function owmFetch(url: string, revalidate = 300): Promise<Response | null>
   }
 }
 
-async function geocodeCity(city: string): Promise<GeoResult | null> {
+async function geocodeCity(city: string, apiKey: string): Promise<GeoResult | null> {
   const query = city.includes(",") ? city.trim() : `${city.trim()},IN`;
-  const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=1&appid=${API_KEY}`;
+  const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=1&appid=${apiKey}`;
   const res = await owmFetch(url, 86400);
   if (!res?.ok) return null;
   const rows = (await res.json()) as GeoResult[];
@@ -39,10 +39,14 @@ type WeatherBundleResult =
   | { current: unknown; forecast: unknown }
   | { error: string; status: number };
 
-async function fetchWeatherBundle(lat: number, lon: number): Promise<WeatherBundleResult> {
+async function fetchWeatherBundle(
+  lat: number,
+  lon: number,
+  apiKey: string
+): Promise<WeatherBundleResult> {
   const q = `lat=${lat}&lon=${lon}`;
   const currentRes = await owmFetch(
-    `https://api.openweathermap.org/data/2.5/weather?${q}&units=metric&appid=${API_KEY}&lang=hi`
+    `https://api.openweathermap.org/data/2.5/weather?${q}&units=metric&appid=${apiKey}&lang=hi`
   );
 
   if (!currentRes) {
@@ -63,7 +67,7 @@ async function fetchWeatherBundle(lat: number, lon: number): Promise<WeatherBund
   }
 
   const forecastRes = await owmFetch(
-    `https://api.openweathermap.org/data/2.5/forecast?${q}&units=metric&appid=${API_KEY}&lang=hi`
+    `https://api.openweathermap.org/data/2.5/forecast?${q}&units=metric&appid=${apiKey}&lang=hi`
   );
 
   const current = await currentRes.json();
@@ -73,13 +77,24 @@ async function fetchWeatherBundle(lat: number, lon: number): Promise<WeatherBund
 }
 
 export async function GET(request: NextRequest) {
+  const apiKey = readOpenWeatherKey();
+  if (!apiKey) {
+    return NextResponse.json(
+      {
+        error:
+          "Weather configure नहीं है — server पर OPENWEATHER_API_KEY set करें (OpenWeather dashboard से नया key बनाएं)",
+      },
+      { status: 503 }
+    );
+  }
+
   const city = request.nextUrl.searchParams.get("city");
   const lat = request.nextUrl.searchParams.get("lat");
   const lon = request.nextUrl.searchParams.get("lon");
 
   try {
     if (lat && lon) {
-      const bundle = await fetchWeatherBundle(Number(lat), Number(lon));
+      const bundle = await fetchWeatherBundle(Number(lat), Number(lon), apiKey);
       if ("error" in bundle) {
         return NextResponse.json({ error: bundle.error }, { status: bundle.status });
       }
@@ -90,7 +105,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (city?.trim()) {
-      const geo = await geocodeCity(city.trim());
+      const geo = await geocodeCity(city.trim(), apiKey);
       if (!geo) {
         return NextResponse.json(
           {
@@ -101,7 +116,7 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      const bundle = await fetchWeatherBundle(geo.lat, geo.lon);
+      const bundle = await fetchWeatherBundle(geo.lat, geo.lon, apiKey);
       if ("error" in bundle) {
         return NextResponse.json({ error: bundle.error }, { status: bundle.status });
       }

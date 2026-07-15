@@ -42,4 +42,4 @@ export function lanIp() {
 const ip = lanIp();
 console.log(ip);
 console.log(`\nPhone URL: http://${ip}:3000`);
-console.log(`Capacitor:  $env:CAPACITOR_SERVER_URL="http://${ip}:3000"; npx cap sync android`);
+console.log(`Capacitor:  $env:CAPACITOR_ALLOW_CLEARTEXT="true"; $env:CAPACITOR_SERVER_URL="http://${ip}:3000"; npx cap sync android`);
