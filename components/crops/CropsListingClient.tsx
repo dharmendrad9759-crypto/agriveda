@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, Filter, Grid3X3, LayoutList, Search, X } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
-import CropCard, { AddCustomCropCard } from "@/components/CropCard";
+import CropCard from "@/components/CropCard";
+import { AddCustomCropCard } from "@/components/crops/AddCustomCropCard";
 import {
   CROP_LISTING_CATEGORIES,
   matchesListingCategory,

@@ -11,7 +11,7 @@ export interface CropThreatRisk {
   pct: number;
 }
 
-/** ICAR / SAU style climate + water + sowing windows (India rainfed/irrigated PoP) */
+/** Climate + water + sowing windows for crop overview cards (farmer-facing copy) */
 const AGRO_BY_SLUG: Record<
   string,
   {
@@ -20,8 +20,8 @@ const AGRO_BY_SLUG: Record<
     climateNote: string;
     waterMm: string;
     waterDetail: string;
-    sowingIcar: string;
-    sowingSource: string;
+    /** Best sowing window — shown on Overview (no institution names) */
+    sowingWindow: string;
   }
 > = {
   paddy: {
@@ -30,8 +30,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Warm humid; standing water / AWD. Avoid cool nights at flowering.",
     waterMm: "1200–1500 mm season",
     waterDetail: "Transplanted rice: ~1200–1500 mm (incl. rainfall + irrigation)",
-    sowingIcar: "Kharif nursery: May–Jun; transplant Jun–Jul (onset of SW monsoon)",
-    sowingSource: "ICAR / NFSM Rice PoP",
+    sowingWindow: "Kharif nursery: May–Jun; transplant Jun–Jul with southwest monsoon onset",
   },
   wheat: {
     tempMinC: 10,
@@ -39,8 +38,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Cool dry Rabi crop. Ideal grain fill ~15–20°C; avoid late heat stress.",
     waterMm: "400–600 mm season",
     waterDetail: "Irrigated wheat typically 4–6 irrigations ≈ 400–600 mm total",
-    sowingIcar: "Timely: mid-Nov (upto 25 Nov NWP); late till early Dec (lower yield)",
-    sowingSource: "ICAR-IIWBR / NFSM Wheat PoP",
+    sowingWindow: "Timely: mid-Nov (upto 25 Nov in northwest plains); late till early Dec lowers yield",
   },
   maize: {
     tempMinC: 18,
@@ -48,8 +46,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Warm season cereal; sensitive to drought at silking / tasseling.",
     waterMm: "500–800 mm season",
     waterDetail: "Kharif rainfed / irrigated: ~500–800 mm depending on hybrid & region",
-    sowingIcar: "Kharif: onset monsoon Jun–Jul; Rabi: Oct–Nov (irrigated)",
-    sowingSource: "ICAR-IIMR Maize PoP",
+    sowingWindow: "Kharif: monsoon onset Jun–Jul; Rabi irrigated: Oct–Nov",
   },
   bajra: {
     tempMinC: 25,
@@ -57,8 +54,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Hot arid / semi-arid millet; drought escape with early hybrids.",
     waterMm: "350–550 mm season",
     waterDetail: "Low water crop — ~350–550 mm; avoid waterlogging",
-    sowingIcar: "Kharif: first fortnight of Jul (or with monsoon showers)",
-    sowingSource: "ICAR Pearl Millet PoP",
+    sowingWindow: "Kharif: first fortnight of Jul, or with reliable monsoon showers",
   },
   soybean: {
     tempMinC: 20,
@@ -66,8 +62,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Warm Kharif oilseed; flowers poorly under extreme heat / waterlogging.",
     waterMm: "450–700 mm season",
     waterDetail: "Typically 450–700 mm; critical moisture at flowering & pod fill",
-    sowingIcar: "Kharif: onset monsoon (Jun–Jul) when soil moisture adequate",
-    sowingSource: "ICAR-IISR / Soybean PoP",
+    sowingWindow: "Kharif: monsoon onset (Jun–Jul) when soil moisture is adequate",
   },
   moongfali: {
     tempMinC: 20,
@@ -75,8 +70,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Warm season legume; gypsum at flowering boosts pods in many soils.",
     waterMm: "500–700 mm season",
     waterDetail: "Kharif / Rabi groundnut ~500–700 mm equivalent with timely rains / irrigation",
-    sowingIcar: "Kharif: Jun–Jul with monsoon; Rabi/summer: per state PoP (e.g. Oct–Nov / Jan–Feb)",
-    sowingSource: "ICAR Groundnut PoP / SAU",
+    sowingWindow: "Kharif: Jun–Jul with monsoon; Rabi/summer: Oct–Nov or Jan–Feb by region",
   },
   potato: {
     tempMinC: 15,
@@ -84,8 +78,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Cool nights for tuberization; frost & heat both cut yield.",
     waterMm: "500–700 mm season",
     waterDetail: "About 500–700 mm; critical irrigation at tuber initiation & bulking",
-    sowingIcar: "North plains: Oct–Nov planting (variety & zone specific)",
-    sowingSource: "ICAR-CPRI Potato PoP",
+    sowingWindow: "North plains: Oct–Nov planting (adjust by variety and zone)",
   },
   tomato: {
     tempMinC: 18,
@@ -93,8 +86,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Fruit set drops if night temp high; frost sensitive.",
     waterMm: "400–600 mm + fertigation",
     waterDetail: "Open field ~400–600 mm; drip fertigation preferred under precision farming",
-    sowingIcar: "Nursery then transplant: season by zone (Rabi / late Kharif / Zaid)",
-    sowingSource: "ICAR / precision vegetable PoP",
+    sowingWindow: "Nursery then transplant: Rabi / late Kharif / Zaid by your zone",
   },
   chilli: {
     tempMinC: 20,
@@ -102,8 +94,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Warm dry spells help colour; excess rain invites fungal disease.",
     waterMm: "600–900 mm season",
     waterDetail: "600–900 mm depending on duration & irrigation method",
-    sowingIcar: "Nursery + transplant as per state (often Jun–Aug / Sep–Oct)",
-    sowingSource: "ICAR / chilli crop PoP",
+    sowingWindow: "Nursery + transplant by region (often Jun–Aug or Sep–Oct)",
   },
   cotton: {
     tempMinC: 21,
@@ -111,8 +102,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Warm long-season crop; bollworm risk high if N excess after flowering.",
     waterMm: "700–1200 mm season",
     waterDetail: "Bt hybrid irrigated needs ~700–1200 mm equivalent across season",
-    sowingIcar: "Central/South: Jun–Jul with monsoon; North irrigated: Apr–May",
-    sowingSource: "ICAR cotton PoP",
+    sowingWindow: "Central/South: Jun–Jul with monsoon; North irrigated: Apr–May",
   },
   sugarcane: {
     tempMinC: 20,
@@ -120,8 +110,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Tropical / subtropical; grand growth needs heat + moisture.",
     waterMm: "1500–2500 mm season",
     waterDetail: "Very high water need — typically 1500–2500 mm (rain + irrigation)",
-    sowingIcar: "Spring: Feb–Mar; Autumn: Sep–Oct (zone dependent)",
-    sowingSource: "ICAR-IISR Sugarcane PoP",
+    sowingWindow: "Spring: Feb–Mar; Autumn: Sep–Oct (depends on your zone)",
   },
   onion: {
     tempMinC: 13,
@@ -129,8 +118,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Cool seasons for bulb quality; bolting if temps too low early.",
     waterMm: "350–550 mm season",
     waterDetail: "About 350–550 mm; stop irrigation before harvest for curing",
-    sowingIcar: "Rabi: Oct–Nov transplant; Kharif as per NHRDF zone calendar",
-    sowingSource: "NHRDF / ICAR onion PoP",
+    sowingWindow: "Rabi: Oct–Nov transplant; Kharif as per your regional calendar",
   },
   mustard: {
     tempMinC: 10,
@@ -138,8 +126,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Cool Rabi oilseed; frost at flowering risky; S nutrition for oil quality.",
     waterMm: "250–400 mm season",
     waterDetail: "Relatively low — ~250–400 mm with 1–2 critical irrigations",
-    sowingIcar: "North: mid-Oct to early Nov (timely sowing)",
-    sowingSource: "ICAR mustard / rapeseed PoP",
+    sowingWindow: "North: mid-Oct to early Nov for timely sowing",
   },
   cauliflower: {
     tempMinC: 15,
@@ -147,8 +134,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Cool temperatures for compact curd; heat causes buttoning / riceyness.",
     waterMm: "400–600 mm season",
     waterDetail: "Light frequent irrigation; total ~400–600 mm equivalent",
-    sowingIcar: "Nursery then transplant for winter / early winter slots (Sep–Nov zone-wise)",
-    sowingSource: "ICAR vegetable PoP",
+    sowingWindow: "Nursery then transplant for winter slots (Sep–Nov, zone-wise)",
   },
   cucumber: {
     tempMinC: 18,
@@ -156,8 +142,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Warm season cucurbit; frost sensitive; prefers well-drained soils.",
     waterMm: "400–600 mm season",
     waterDetail: "Keep moisture even at flowering/fruiting — ~400–600 mm",
-    sowingIcar: "Summer / Zaid sowing after frost risk; protected culture year-round",
-    sowingSource: "ICAR / protected cultivation PoP",
+    sowingWindow: "Summer / Zaid after frost risk; greenhouse / polyhouse year-round",
   },
   brinjal: {
     tempMinC: 18,
@@ -165,17 +150,15 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Warm season; bacterial wilt risk in humid tropics.",
     waterMm: "500–700 mm season",
     waterDetail: "About 500–700 mm with drip preferred under hybrids",
-    sowingIcar: "Nursery + transplant nearly year-round in mild zones",
-    sowingSource: "ICAR vegetable PoP",
+    sowingWindow: "Nursery + transplant nearly year-round in mild zones",
   },
   bhindi: {
     tempMinC: 25,
     tempMaxC: 35,
-    climateNote: "Hot season crop; YVMV major virus risk in many belts.",
+    climateNote: "Hot season crop; yellow vein mosaic is a major risk in many belts.",
     waterMm: "400–600 mm season",
     waterDetail: "Moderate — ~400–600 mm; avoid prolonged water stress",
-    sowingIcar: "Kharif / summer sowing when soil warm (Feb–Jul window by zone)",
-    sowingSource: "ICAR vegetable PoP",
+    sowingWindow: "Kharif / summer when soil is warm (Feb–Jul window by zone)",
   },
   moong: {
     tempMinC: 20,
@@ -183,8 +166,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Short-duration pulse; heat + moisture stress cuts podding.",
     waterMm: "300–450 mm season",
     waterDetail: "Low–moderate ~300–450 mm; drain excess water",
-    sowingIcar: "Zaid / Kharif as per state (e.g. Mar–Apr summer; Jun–Jul Kharif)",
-    sowingSource: "ICAR pulse PoP",
+    sowingWindow: "Summer: Mar–Apr; Kharif: Jun–Jul (confirm local window)",
   },
   pulses: {
     tempMinC: 20,
@@ -192,8 +174,7 @@ const AGRO_BY_SLUG: Record<
     climateNote: "Pigeonpea likes warm Kharif; sensitive to waterlogging.",
     waterMm: "500–700 mm season",
     waterDetail: "Around 500–700 mm; ensure drainage in heavy rains",
-    sowingIcar: "Kharif: Jun–Jul with monsoon onset (line sowing preferred)",
-    sowingSource: "ICAR pigeonpea PoP",
+    sowingWindow: "Kharif: Jun–Jul with monsoon onset (line sowing preferred)",
   },
 };
 
@@ -210,11 +191,10 @@ export function getCropAgroMeta(slug: string) {
     AGRO_BY_SLUG[key] ?? {
       tempMinC: 18,
       tempMaxC: 32,
-      climateNote: "Follow local ICAR-KVK / SAU advisories for your district.",
+      climateNote: "Follow your local agri office or block advisor for district weather.",
       waterMm: "As per soil & season",
-      waterDetail: "Use soil moisture / local PoP for exact irrigation schedule",
-      sowingIcar: "Follow state agriculture university / KVK sowing window",
-      sowingSource: "Local SAU / KVK PoP",
+      waterDetail: "Use soil moisture and local crop calendar for exact irrigation",
+      sowingWindow: "Follow your district sowing calendar for best timing",
     }
   );
 }
@@ -226,7 +206,7 @@ export function formatClimateCard(slug: string, fallbackClimate: string): string
 
 export function formatSowingCard(slug: string, fallback: string): string {
   const m = getCropAgroMeta(slug);
-  return `${m.sowingIcar} (${m.sowingSource})` || fallback;
+  return m.sowingWindow || fallback;
 }
 
 function hashPct(seed: string, base: number): number {
@@ -281,8 +261,8 @@ export function getCropExpertTip(crop: Crop) {
   return {
     title: `${crop.name} — field tip`,
     tip: pest
-      ? `At ${stage}, scout every 5–7 days for ${pest}. Follow ETL before spraying; keep irrigation on critical stages (${crop.irrigationManagement.criticalStages.slice(0, 2).join(", ") || "as per PoP"}).`
-      : `Follow local KVK/SAU PoP for ${crop.name}. Maintain moisture at critical stages and use certified seed of recommended varieties.`,
+      ? `At ${stage}, scout every 5–7 days for ${pest}. Spray only after threshold; keep irrigation on critical stages (${crop.irrigationManagement.criticalStages.slice(0, 2).join(", ") || "as per crop guide"}).`
+      : `For ${crop.name}, maintain moisture at critical stages and use certified seed of recommended varieties.`,
     action: { label: "Ask AI Doctor", href: "/ai-doctor" as const },
   };
 }

@@ -6,6 +6,23 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
+/** Home-style circular tool badges for crop guide sections */
+const TAB_ICON: Record<CropTabId, string> = {
+  overview: "/images/icons/crop-tabs/overview.png",
+  growth: "/images/icons/crop-tabs/growth.png",
+  fertilizer: "/images/icons/crop-tabs/fertilizer.png",
+  pests: "/images/icons/crop-tabs/pests.png",
+  diseases: "/images/icons/crop-tabs/disease.png",
+  nutrients: "/images/icons/crop-tabs/nutrients.png",
+  irrigation: "/images/icons/crop-tabs/water.png",
+  weeds: "/images/icons/crop-tabs/weeds.png",
+  calendar: "/images/icons/crop-tabs/calendar.png",
+  varieties: "/images/icons/crop-tabs/varieties.png",
+  harvest: "/images/icons/crop-tabs/harvest.png",
+  faq: "/images/icons/crop-tabs/faq.png",
+  expert: "/images/icons/crop-tabs/tips.png",
+};
+
 const RING_BY_TAB: Record<CropTabId, string> = {
   overview: "ring-emerald-500/40",
   growth: "ring-lime-500/40",
@@ -43,7 +60,7 @@ interface CropPageTabsProps {
   onChange: (tab: CropTabId) => void;
 }
 
-/** Home-style tool grid — no horizontal slider */
+/** Same visual language as home More Tools — circular illustrated badges */
 export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
   const reduced = useReducedMotion();
   const { locale } = useLocale();
@@ -56,7 +73,6 @@ export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
       </p>
       <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7">
         {CROP_TABS.map((tab, i) => {
-          const Icon = tab.icon;
           const isActive = active === tab.id;
           return (
             <motion.div
@@ -71,7 +87,7 @@ export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
                 onClick={() => onChange(tab.id)}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "group flex h-full w-full flex-col items-center gap-1 rounded-2xl border p-2.5 text-center shadow-sm transition duration-200 active:scale-[0.97]",
+                  "group flex h-full w-full flex-col items-center gap-1 rounded-2xl border p-2 text-center shadow-sm transition duration-200 active:scale-[0.97]",
                   isActive
                     ? "border-emerald-500/45 bg-emerald-500/10 shadow-[0_8px_24px_rgba(0,100,50,0.14)]"
                     : "border-[var(--av-border)] bg-[var(--av-surface)] hover:-translate-y-0.5 hover:border-[var(--av-accent)]/35 hover:shadow-[0_8px_24px_rgba(0,100,50,0.12)]"
@@ -79,15 +95,17 @@ export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
               >
                 <span
                   className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/15 to-transparent ring-1",
-                    RING_BY_TAB[tab.id]
+                    "relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent ring-1",
+                    RING_BY_TAB[tab.id],
+                    isActive && "ring-2 ring-emerald-500/50"
                   )}
                 >
-                  <Icon
-                    className={cn(
-                      "h-4 w-4 transition group-hover:scale-110",
-                      isActive ? "text-emerald-600 dark:text-emerald-400" : "text-[var(--av-accent)]"
-                    )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={TAB_ICON[tab.id]}
+                    alt=""
+                    className="h-full w-full scale-110 object-cover transition group-hover:scale-[1.15]"
+                    draggable={false}
                   />
                 </span>
                 <span

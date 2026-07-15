@@ -1,7 +1,5 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
-import { BookOpen } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import AppLink from "@/components/ui/AppLink";
 import BiHeading from "@/components/i18n/BiHeading";
@@ -15,8 +13,7 @@ const FEATURES: {
   sub: string;
   subHi: string;
   href: string;
-  icon?: LucideIcon;
-  imageSrc?: string;
+  imageSrc: string;
   ring: string;
 }[] = [
   {
@@ -73,15 +70,6 @@ const FEATURES: {
     imageSrc: "/images/icons/tools/weed-guide.png",
     ring: "ring-orange-500/40",
   },
-  {
-    label: "Library",
-    labelHi: "लाइब्रेरी",
-    sub: "Learn",
-    subHi: "ज्ञान",
-    href: "/library",
-    icon: BookOpen,
-    ring: "ring-stone-500/40",
-  },
 ];
 
 export default function HomeFeatureGrid() {
@@ -121,17 +109,13 @@ export default function HomeFeatureGrid() {
                   f.ring
                 )}
               >
-                {f.imageSrc ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={f.imageSrc}
-                    alt=""
-                    className="h-full w-full scale-110 object-cover"
-                    draggable={false}
-                  />
-                ) : f.icon ? (
-                  <f.icon className="h-4 w-4 text-[var(--av-accent)] transition group-hover:scale-110" />
-                ) : null}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={f.imageSrc}
+                  alt=""
+                  className="h-full w-full scale-110 object-cover"
+                  draggable={false}
+                />
               </span>
               <span className="line-clamp-1 text-[10px] font-bold text-[var(--av-text-primary)]">
                 {isHi ? f.labelHi : f.label}

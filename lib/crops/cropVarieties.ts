@@ -78,13 +78,13 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
   moongfali: [
     { name: "GG 20", trait: "Most popular Gujarat bunch type", season: "Kharif / Summer", states: ["Gujarat", "Rajasthan"], marketNote: "Top Saurashtra farmer choice" },
     { name: "TG 37A", trait: "Spanish bunch, early, widely grown", season: "Kharif / Rabi", states: ["Gujarat", "Rajasthan", "Andhra Pradesh"], marketNote: "Oil + confectionery crush demand" },
-    { name: "TAG 24", trait: "Bunch type, stable yield — ICAR", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh", "Gujarat"], marketNote: "Popular certified seed choice" },
+    { name: "TAG 24", trait: "Bunch type, stable yield nationwide", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh", "Gujarat"], marketNote: "Popular certified seed choice" },
     { name: "GJG 9", trait: "High yield for Gujarat", season: "Kharif", states: ["Gujarat"], marketNote: "Saurashtra mandi volumes" },
   ],
   groundnut: [
     { name: "GG 20", trait: "Most popular Gujarat bunch type", season: "Kharif / Summer", states: ["Gujarat", "Rajasthan"], marketNote: "Top Saurashtra farmer choice" },
     { name: "TG 37A", trait: "Spanish bunch, early, widely grown", season: "Kharif / Rabi", states: ["Gujarat", "Rajasthan", "Andhra Pradesh"], marketNote: "Oil + confectionery crush demand" },
-    { name: "TAG 24", trait: "Bunch type, stable yield — ICAR", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh", "Gujarat"], marketNote: "Popular certified seed choice" },
+    { name: "TAG 24", trait: "Bunch type, stable yield nationwide", season: "Kharif", states: ["Maharashtra", "Karnataka", "Andhra Pradesh", "Gujarat"], marketNote: "Popular certified seed choice" },
     { name: "GJG 9", trait: "High yield for Gujarat", season: "Kharif", states: ["Gujarat"], marketNote: "Saurashtra mandi volumes" },
   ],
   cauliflower: [

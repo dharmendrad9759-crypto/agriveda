@@ -54,6 +54,8 @@ export interface MyCropItem {
   slug: string;
   name: string;
   emoji: string;
+  /** Farmer-added crop that may not exist in catalog / crop detail pages */
+  custom?: boolean;
 }
 
 export const defaultMyCrops: MyCropItem[] = [

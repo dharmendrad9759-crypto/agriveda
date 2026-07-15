@@ -1,18 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import { useAppNavigate } from "@/hooks/useAppNavigate";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
-import { Check } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { categoryOrder, getCropsByCategory, type CatalogCrop } from "@/data/crop-catalog";
 import { useMyCrops, MAX_MY_CROPS } from "@/hooks/useMyCrops";
+import { useToast } from "@/components/ui/Toast";
 import { AV } from "@/lib/design/tokens";
 
 export default function SelectCropsPage() {
   const navigate = useAppNavigate();
-  const { crops, isSelected, toggleCrop, canAddMore } = useMyCrops();
+  const { showToast } = useToast();
+  const { crops, isSelected, toggleCrop, canAddMore, addCustomCrop } = useMyCrops();
   const grouped = getCropsByCategory();
+  const [customName, setCustomName] = useState("");
+
+  const handleAddCustom = () => {
+    const result = addCustomCrop({ name: customName, emoji: "🌱" });
+    if (!result.ok) {
+      showToast(result.reason, "error");
+      return;
+    }
+    setCustomName("");
+    showToast(`${result.crop.emoji} ${result.crop.name} Home पर जोड़ दी`);
+  };
 
   return (
     <AppShell
@@ -27,6 +41,44 @@ export default function SelectCropsPage() {
           </p>
         </DarkCard>
       )}
+
+      <DarkCard className="mb-4 border-emerald-500/20">
+        <p className="text-xs font-bold text-[var(--av-text-primary)]">Custom crop (Home के लिए)</p>
+        <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+          सूची में नहीं है तो नाम लिखकर जोड़ें
+        </p>
+        <div className="mt-2 flex gap-2">
+          <input
+            value={customName}
+            onChange={(e) => setCustomName(e.target.value)}
+            placeholder="फसल का नाम…"
+            className="min-w-0 flex-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-sm outline-none focus:border-[var(--av-accent)]"
+          />
+          <button
+            type="button"
+            onClick={handleAddCustom}
+            disabled={!canAddMore || customName.trim().length < 2}
+            className="inline-flex shrink-0 items-center gap-1 rounded-xl bg-[var(--av-accent)] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add
+          </button>
+        </div>
+        {crops.some((c) => c.custom) && (
+          <ul className="mt-2 flex flex-wrap gap-1.5">
+            {crops
+              .filter((c) => c.custom)
+              .map((c) => (
+                <li
+                  key={c.slug}
+                  className="rounded-full bg-[var(--av-accent-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--av-accent)]"
+                >
+                  {c.emoji} {c.name}
+                </li>
+              ))}
+          </ul>
+        )}
+      </DarkCard>
 
       <div className="space-y-4">
         {categoryOrder.map((category, ci) => {

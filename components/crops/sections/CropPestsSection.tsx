@@ -87,7 +87,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard icon={Bug} iconColor="text-red-500" label="Pests listed" value={`${pests.length} major`} />
-        <StatCard icon={Eye} iconColor="text-amber-500" label="Data source" value={ipmPests.length ? "ICAR IPM JSON" : "Catalog"} />
+        <StatCard icon={Eye} iconColor="text-amber-500" label="Data source" value={ipmPests.length ? "Field IPM guide" : "Crop catalog"} />
         <StatCard icon={ShieldCheck} label="ETL based" value="Spray at threshold" sub="Not calendar spray" />
         <StatCard icon={Calendar} label="IRAC rotate" value="Group rotation" sub="Resistance safe" />
       </div>

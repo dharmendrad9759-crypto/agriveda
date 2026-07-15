@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
 import { fadeUp } from "@/lib/motion/variants";
 import {
   formatCategoryLabel,
@@ -86,23 +85,6 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
             <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">{formatCategoryLabel(crop.category)}</p>
           </div>
         </article>
-      </Link>
-    </motion.div>
-  );
-}
-
-export function AddCustomCropCard({ index }: { index: number }) {
-  return (
-    <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={index} className="h-full">
-      <Link
-        href="/select-crops"
-        className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[var(--av-accent)]/40 bg-[var(--av-accent-soft)]/30 p-6 text-center transition hover:border-[var(--av-accent)] hover:bg-[var(--av-accent-soft)]/50"
-      >
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--av-accent)] text-white shadow-md">
-          <Plus className="h-6 w-6" />
-        </span>
-        <p className="text-sm font-bold text-[var(--av-accent)]">Add Custom Crop</p>
-        <p className="text-[11px] text-[var(--av-text-muted)]">Add crop not in the list</p>
       </Link>
     </motion.div>
   );

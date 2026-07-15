@@ -31,8 +31,15 @@ const SUB_TABS: {
   { id: "foliar", label: "Foliar", labelHi: "पर्णीय", icon: Droplets, ring: "ring-cyan-500/40" },
   { id: "organic", label: "Organic", labelHi: "जैविक", icon: Leaf, ring: "ring-emerald-500/40" },
   { id: "calculator", label: "Calculator", labelHi: "कैलकुलेटर", icon: Calculator, ring: "ring-violet-500/40" },
-  { id: "notes", label: "ICAR Notes", labelHi: "नोट्स", icon: FileText, ring: "ring-slate-500/40" },
+  { id: "notes", label: "Notes", labelHi: "नोट्स", icon: FileText, ring: "ring-slate-500/40" },
 ];
+
+/** Farmer-facing label — never show institution / PDF jargon */
+function guideSourceLabel(raw: string | undefined): string {
+  if (!raw) return "Agriveda crop guide · adjust to soil test";
+  if (/verified/i.test(raw)) return "Agriveda verified guide (kg/acre)";
+  return "Agriveda crop guide · adjust to soil test";
+}
 
 function nutrientTotal(detail: string): number | null {
   const m = detail.match(/total:\s*([\d.]+)/i) || detail.match(/^([\d.]+)/);
@@ -83,13 +90,13 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     const rows: { name: string; detail: string }[] = [];
     for (const m of micros) rows.push({ name: "Micronutrient", detail: m });
     for (const s of sprays) rows.push({ name: "Foliar spray", detail: s });
-    for (const m of fromIcar) rows.push({ name: "ICAR / PoP", detail: m });
+    for (const m of fromIcar) rows.push({ name: "Guide micronutrient", detail: m });
     for (const n of fromPlan) rows.push({ name: n.nutrient, detail: n.detail });
 
     if (!rows.length) {
       rows.push({
         name: "Soil test first",
-        detail: `${crop.name}: Zn/Fe/B foliar only if deficiency — soil test every 2–3 years (ICAR guidance)`,
+        detail: `${crop.name}: Zn/Fe/B foliar only if deficiency — soil test every 2–3 years`,
       });
     }
     // de-dupe by detail
@@ -113,7 +120,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       }
     }
     if (/soybean|moong|moongfali|pulses|groundnut/i.test(crop.slug)) {
-      rows.push("Rhizobium (or Rhizobium + PSB) seed treatment — essential for legumes (ICAR/SAU PoP)");
+      rows.push("Rhizobium (or Rhizobium + PSB) seed treatment — essential for legumes");
     }
     rows.push("Farmyard manure / compost as basal — improves soil carbon and nutrient use efficiency");
     rows.push("Avoid dumping excess urea on legumes — reduces nodulation");
@@ -131,7 +138,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
         n: haToAcre(icar.n, 1),
         p: haToAcre(icar.p2o5, 1),
         k: haToAcre(icar.k2o, 1),
-        source: icar.source,
+        source: guideSourceLabel(icar.source),
       };
     }
     const nRow = plan?.nutrients.find((x) => x.nutrient === "N");
@@ -141,7 +148,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       n: nRow ? nutrientTotal(nRow.detail) ?? 0 : 0,
       p: pRow ? nutrientTotal(pRow.detail) ?? 0 : 0,
       k: kRow ? nutrientTotal(kRow.detail) ?? 0 : 0,
-      source: plan?.source === "verified" ? "Agriveda verified PoP (kg/acre)" : "Crop guide / soil test",
+      source: guideSourceLabel(plan?.source === "verified" ? "verified" : undefined),
     };
   }, [icar, plan]);
 
@@ -169,7 +176,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     if (icar?.notes?.length) list.push(...icar.notes);
     if (plan?.guideNotes?.length) list.push(...plan.guideNotes);
     if (plan?.unitNote) list.push(plan.unitNote);
-    list.push("Doses are research/PoP based (ICAR / NFSM / SAU style). Always adjust to local soil test.");
+    list.push("Doses follow standard crop research. Always adjust to your local soil test.");
     list.push("Never apply all nitrogen at once — split as per schedule.");
     return list;
   }, [icar, plan]);
@@ -334,7 +341,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
         <div className="space-y-3">
           <DarkCard>
             <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
-              Nutrient need — {crop.name} (research PoP)
+              Nutrient need — {crop.name}
             </h3>
             <label className="mt-3 flex items-center gap-2 text-xs font-semibold text-[var(--av-text-secondary)]">
               Area (acre)
@@ -383,7 +390,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       {activeSubTab === "notes" && (
         <DarkCard>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
-            ICAR / PoP notes — {crop.name}
+            Field notes — {crop.name}
           </h3>
           <ul className="mt-3 space-y-2">
             {notes.map((n) => (
@@ -394,7 +401,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
           </ul>
           {icar?.splits?.length ? (
             <p className="mt-3 text-[10px] font-semibold text-[var(--av-text-muted)]">
-              Ref: {icar.source}
+              {guideSourceLabel(icar.source)}
             </p>
           ) : null}
         </DarkCard>
