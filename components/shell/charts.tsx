@@ -70,19 +70,52 @@ export function DonutChart({
   );
 }
 
-export function Sparkline({ data, color = "#10b981", width = 64, height = 24 }: { data: number[]; color?: string; width?: number; height?: number }) {
+export function Sparkline({
+  data,
+  color = "#10b981",
+  width = 88,
+  height = 32,
+}: {
+  data: number[];
+  color?: string;
+  width?: number;
+  height?: number;
+}) {
   if (data.length < 2) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
-  const pts = data.map((v, i) => {
+  const padY = 3;
+  const points = data.map((v, i) => {
     const x = (i / (data.length - 1)) * width;
-    const y = height - ((v - min) / range) * (height - 4) - 2;
-    return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+    const y = height - padY - ((v - min) / range) * (height - padY * 2);
+    return { x, y };
   });
+  const line = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+  const area = `${line} L ${width} ${height} L 0 ${height} Z`;
+  const gradId = `spark-${color.replace("#", "")}-${width}`;
+  const last = points[points.length - 1];
+  const up = data[data.length - 1] >= data[0];
+
   return (
     <svg width={width} height={height} className="overflow-visible" aria-hidden>
-      <path d={pts.join(" ")} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${gradId})`} />
+      <path
+        d={line}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx={last.x} cy={last.y} r="3" fill={color} stroke="white" strokeWidth="1.25" />
+      <title>{up ? "Up" : "Down"} trend</title>
     </svg>
   );
 }

@@ -69,31 +69,20 @@ export default function PestDiseasesContent() {
         { label: isWeedHub ? "Weeds" : "Pests & Diseases" },
       ]}
     >
-      {isWeedHub && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <DarkCard className="text-center">
-            <p className="text-lg font-bold text-[var(--av-accent)]">{getAllWeedsAcrossCrops().length}</p>
-            <p className={AV.micro}>Weeds catalogued</p>
-          </DarkCard>
-          <DarkCard className="text-center">
-            <p className="text-lg font-bold text-[var(--av-accent)]">{pestDiseaseCropList.length}</p>
-            <p className={AV.micro}>Crops covered</p>
-          </DarkCard>
-        </div>
+      {!isWeedHub && (
+        <AppLink
+          href="/pest-solver"
+          className="av-card av-card-hover flex items-center justify-between p-4"
+        >
+          <div>
+            <p className="text-sm font-semibold text-[var(--av-text-primary)]">Not sure what it is?</p>
+            <p className={`mt-0.5 ${AV.micro}`}>Identify by symptom → Pest &amp; Disease Solver</p>
+          </div>
+          <span className="text-lg font-bold text-[var(--av-accent)]">→</span>
+        </AppLink>
       )}
 
-      <AppLink
-        href="/pest-solver"
-        className="av-card av-card-hover flex items-center justify-between p-4"
-      >
-        <div>
-          <p className="text-sm font-semibold text-[var(--av-text-primary)]">Not sure what it is?</p>
-          <p className={`mt-0.5 ${AV.micro}`}>Identify by symptom → Pest &amp; Disease Solver</p>
-        </div>
-        <span className="text-lg font-bold text-[var(--av-accent)]">→</span>
-      </AppLink>
-
-      <DarkCard className="mt-4" delay={0}>
+      <DarkCard className={isWeedHub ? "mt-0" : "mt-4"} delay={0}>
         <h3 className={AV.sectionTitle}>{t("selectCropPrompt")}</h3>
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {isWeedHub && (
@@ -150,6 +139,11 @@ export default function PestDiseasesContent() {
           category={category}
           onCategoryChange={setCategory}
           resultCount={filtered.length}
+          placeholder={
+            isWeedHub
+              ? "खरपतवार का नाम लिखें…"
+              : "नाम से खोजें — कीट, रोग…"
+          }
         />
       </div>
 

@@ -1,68 +1,92 @@
 "use client";
 
 import type { StageSprayRecommendation } from "@/types/crop-protection";
+import {
+  pickFarmerStages,
+  primaryChemistry,
+  shortRotationTip,
+  WATER_PER_ACRE_EN,
+  WATER_PER_ACRE_HI,
+} from "@/lib/pest/farmerSpray";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const STAGE_STYLE: Record<string, string> = {
-  preventive: "border-sky-400/50 bg-sky-500/10 text-sky-900 dark:text-sky-200",
-  early: "border-emerald-400/50 bg-emerald-500/10 text-emerald-900 dark:text-emerald-200",
-  advanced: "border-amber-400/50 bg-amber-500/10 text-amber-950 dark:text-amber-200",
-};
-
-const STAGE_LABEL: Record<string, string> = {
-  preventive: "🛡️ Preventive",
-  early: "🟢 Early / Halki lag",
-  advanced: "🔴 Advanced / Tez fail raha",
+  early: "border-emerald-400/40 bg-emerald-500/10",
+  preventive: "border-emerald-400/40 bg-emerald-500/10",
+  advanced: "border-amber-400/40 bg-amber-500/10",
 };
 
 export default function StageWiseSprayCard({
   stages,
   rotationNotes,
-  extraNotes,
-  continuousHarvest,
 }: {
   stages: StageSprayRecommendation[];
   rotationNotes?: string;
   extraNotes?: string[];
   continuousHarvest?: boolean;
 }) {
-  if (!stages.length) return null;
+  const { locale } = useLocale();
+  const hi = locale === "hi" || locale === "hinglish";
+  const farmerStages = pickFarmerStages(stages);
+  if (!farmerStages.length) return null;
+
+  const water = hi ? WATER_PER_ACRE_HI : WATER_PER_ACRE_EN;
+  const tip = shortRotationTip(rotationNotes, hi);
 
   return (
     <div className="space-y-3">
-      {continuousHarvest && (
-        <p className="rounded-lg bg-violet-500/10 px-3 py-2 text-[11px] font-bold text-violet-800 dark:text-violet-200">
-          ⚡ Continuous harvest crop — harvest ke paas low-PHI molecules prefer karein
+      {farmerStages.map((s, i) => {
+        const isAdvanced = s.stage === "advanced";
+        const title = hi
+          ? isAdvanced
+            ? "अगर तेज़ फैल रहा हो"
+            : "शुरुआत में (हल्की लग)"
+          : isAdvanced
+            ? "If spreading fast"
+            : "Start here (early)";
+        const chem = primaryChemistry(s.chemistry);
+        return (
+          <div
+            key={`${s.stage}-${i}`}
+            className={`rounded-2xl border-2 p-3.5 ${STAGE_STYLE[s.stage] ?? STAGE_STYLE.early}`}
+          >
+            <p className="text-xs font-black text-[var(--av-text-primary)]">{title}</p>
+
+            <div className="mt-2.5 space-y-1.5 text-sm">
+              <p>
+                <span className="font-bold text-[var(--av-text-muted)]">
+                  {hi ? "दवा (टेक्निकल): " : "Medicine (technical): "}
+                </span>
+                <span className="font-bold text-[var(--av-text-primary)]">{chem}</span>
+              </p>
+              <p>
+                <span className="font-bold text-[var(--av-text-muted)]">
+                  {hi ? "डोज़ (एक एकड़): " : "Dose (1 acre): "}
+                </span>
+                <span className="font-semibold text-[var(--av-text-primary)]">{s.dose}</span>
+              </p>
+              <p>
+                <span className="font-bold text-[var(--av-text-muted)]">
+                  {hi ? "पानी: " : "Water: "}
+                </span>
+                <span className="font-semibold text-[var(--av-text-primary)]">{water}</span>
+              </p>
+            </div>
+          </div>
+        );
+      })}
+
+      {tip && (
+        <p className="rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[11px] font-medium text-amber-900 dark:text-amber-100">
+          {tip}
         </p>
       )}
 
-      {stages.map((s, i) => (
-        <div
-          key={`${s.stage}-${i}`}
-          className={`rounded-xl border-2 p-3.5 ${STAGE_STYLE[s.stage] ?? STAGE_STYLE.early}`}
-        >
-          <p className="text-xs font-black">{STAGE_LABEL[s.stage] ?? s.label}</p>
-          <p className="mt-1 text-sm font-bold">{s.label}</p>
-          <p className="mt-2 text-sm">
-            <span className="font-bold">Dawai:</span> {s.chemistry}
-          </p>
-          <p className="mt-1 text-sm">
-            <span className="font-bold">Dose:</span> {s.dose}
-          </p>
-          {s.notes && <p className="mt-2 text-xs opacity-90">{s.notes}</p>}
-        </div>
-      ))}
-
-      {rotationNotes && (
-        <p className="rounded-lg bg-indigo-500/10 px-3 py-2 text-xs font-semibold text-indigo-900 dark:text-indigo-200">
-          🔄 Rotation: {rotationNotes}
-        </p>
-      )}
-
-      {extraNotes?.map((n) => (
-        <p key={n} className="text-xs theme-text-muted">
-          • {n}
-        </p>
-      ))}
+      <p className="text-[10px] text-[var(--av-text-muted)]">
+        {hi
+          ? "दूकान पर बोतल का लेबल ज़रूर पढ़ें। सही मात्रा से ज़्यादा न डालें।"
+          : "Always follow the bottle label. Do not overdose."}
+      </p>
     </div>
   );
 }

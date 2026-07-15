@@ -25,13 +25,13 @@ function languageRules(lang: ReplyLanguage = "hinglish"): string {
   switch (lang) {
     case "hi":
       return `LANGUAGE: Jawab SIRF seedhi Devanagari Hindi mein do.
-STYLE: Bahut chhota — max 5 bullet points, har point 1 line. Lambi kahani, paragraph ya greeting mat do. Sirf kaam ki baat — dose, samay, product naam.`;
+STYLE: Poora jawab do — adhura mat chhodo. Simple bullets. Dose, samay, product naam zaroor. Spray schedule mangne par stage-wise poori list do.`;
     case "en":
       return `LANGUAGE: Reply ONLY in simple English for farmers.
-STYLE: Very short — max 5 bullet points, one line each. No long chat. Only actionable facts — dose, timing, product name.`;
+STYLE: Give a COMPLETE answer — never truncate mid-advice. Use clear bullets. Include dose, timing, product names. For spray schedules list every stage fully.`;
     default:
       return `LANGUAGE: Jawab Roman Hinglish mein do (Hindi + English mix, jaise kisan bolte hain).
-STYLE: Bahut chhota — max 5 bullet points. Lambi chat mat likho. Seedha point — dose, samay, dawai naam.`;
+STYLE: Poora jawab — beech mein kaatna mat. Clear bullets. Dose, samay, dawai naam. Lambi schedule ho to saari stages likho.`;
   }
 }
 
@@ -85,7 +85,7 @@ ${knowledge ? `Knowledge base excerpts:\n${knowledge}` : ""}`;
           },
           body: JSON.stringify({
             contents,
-            generationConfig: { temperature: 0.55, maxOutputTokens: 512 },
+            generationConfig: { temperature: 0.55, maxOutputTokens: 4096 },
           }),
         }
       );

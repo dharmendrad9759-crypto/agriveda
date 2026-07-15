@@ -1,18 +1,101 @@
 import type { MandiRow } from "@/lib/mandi/types";
 
-const PRIORITY_CROPS = ["Paddy", "Wheat", "Soybean", "Maize", "Gram", "Mustard", "Cotton", "Tomato"];
+const PRIORITY_CROPS = [
+  "Paddy",
+  "Wheat",
+  "Soybean",
+  "Maize",
+  "Gram",
+  "Mustard",
+  "Cotton",
+  "Tomato",
+  "Onion",
+  "Potato",
+  "Chilli",
+  "Groundnut",
+  "Bajra",
+  "Tur",
+  "Sugarcane",
+];
+
+/** Extra crop names always offered in filters (even if current API slice is thin) */
+export const EXTRA_CROP_OPTIONS = [
+  "Paddy",
+  "Wheat",
+  "Soybean",
+  "Maize",
+  "Gram",
+  "Mustard",
+  "Cotton",
+  "Tomato",
+  "Onion",
+  "Potato",
+  "Chilli",
+  "Groundnut",
+  "Bajra",
+  "Tur",
+  "Moong",
+  "Urad",
+  "Sugarcane",
+  "Banana",
+  "Apple",
+  "Garlic",
+];
+
+export const EXTRA_MARKET_OPTIONS = [
+  "Sehore",
+  "Indore",
+  "Bhopal",
+  "Ujjain",
+  "Vidisha",
+  "Khandwa",
+  "Agra",
+  "Kanpur",
+  "Lucknow",
+  "Varanasi",
+  "Patna",
+  "Muzaffarpur",
+  "Nashik",
+  "Lasalgaon",
+  "Pune",
+  "Ahmedabad",
+  "Rajkot",
+  "Guntur",
+  "Kurnool",
+  "Warangal",
+  "Bengaluru",
+  "Hubli",
+  "Jaipur",
+  "Kota",
+  "Ludhiana",
+  "Karnal",
+  "Hisar",
+  "Babrala",
+  "Polavaram",
+  "Chintapally",
+];
 
 export function uniqueCrops(rows: MandiRow[]): string[] {
   const counts = new Map<string, number>();
   rows.forEach((r) => counts.set(r.crop, (counts.get(r.crop) ?? 0) + 1));
   const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
   const priority = PRIORITY_CROPS.filter((c) => counts.has(c));
-  const rest = sorted.filter((c) => !priority.includes(c));
-  return [...priority, ...rest].slice(0, 12);
+  const rest = sorted.filter((c) => !priority.includes(c) && !/wood/i.test(c));
+  const fromData = [...priority, ...rest];
+  const merged = [...fromData];
+  for (const c of EXTRA_CROP_OPTIONS) {
+    if (!merged.some((x) => x.toLowerCase() === c.toLowerCase())) merged.push(c);
+  }
+  return merged.slice(0, 28);
 }
 
 export function uniqueMarkets(rows: MandiRow[]): string[] {
-  return [...new Set(rows.map((r) => r.mandi))].filter((m) => m !== "—").slice(0, 20);
+  const fromData = [...new Set(rows.map((r) => r.mandi))].filter((m) => m && m !== "—");
+  const merged = [...fromData];
+  for (const m of EXTRA_MARKET_OPTIONS) {
+    if (!merged.some((x) => x.toLowerCase() === m.toLowerCase())) merged.push(m);
+  }
+  return merged.slice(0, 40);
 }
 
 export function filterMandiRows(

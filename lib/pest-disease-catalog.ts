@@ -194,11 +194,10 @@ function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
       "Nutrient and moisture stress in crop plants",
     ],
     remediation: [
-      `Pre-emergence: ${weed.preEmergence}`,
-      `Post-emergence: ${weed.postEmergence}`,
-      `Cultural control: ${weed.culturalControl}`,
-      "Maintain weed-free field for first 45 days after sowing/transplanting",
-    ],
+      `Chemical: Pre-emergence: ${weed.preEmergence}`,
+      `Chemical: Post-emergence: ${weed.postEmergence}`,
+      weed.culturalControl ? `Cultural: ${weed.culturalControl}` : "",
+    ].filter(Boolean),
   };
 
   return mergeStageGuide(base, "weed");

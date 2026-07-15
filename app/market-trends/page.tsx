@@ -240,14 +240,19 @@ export default function MarketTrendsPage() {
 
         <DarkCard hover delay={2}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Trend by Commodity</h3>
-          <ul className="mt-3 space-y-2">
+          <ul className="mt-3 space-y-2.5">
             {commodityTrends.map((c) => (
-              <li key={c.name} className="flex items-center justify-between gap-2">
-                <span className="text-xs text-[var(--av-text-primary)]">{c.name}</span>
-                <Sparkline data={c.trend} color={c.up ? "#10b981" : "#f87171"} />
-                <span className={`text-xs font-semibold ${c.up ? "text-emerald-400" : "text-red-400"}`}>
-                  {c.change !== 0 ? `${c.up ? "+" : ""}${c.change}%` : "—"}
-                </span>
+              <li
+                key={c.name}
+                className="flex items-center gap-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]/60 px-2.5 py-2"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-bold text-[var(--av-text-primary)]">{c.name}</p>
+                  <p className={`text-[10px] font-semibold ${c.up ? "text-emerald-500" : "text-rose-500"}`}>
+                    {c.change !== 0 ? `${c.up ? "▲" : "▼"} ${c.up ? "+" : ""}${c.change}%` : "Stable"}
+                  </p>
+                </div>
+                <Sparkline data={c.trend} color={c.up ? "#10b981" : "#f43f5e"} width={96} height={36} />
               </li>
             ))}
           </ul>
