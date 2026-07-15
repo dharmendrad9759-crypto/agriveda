@@ -55,7 +55,7 @@ export function QuickActionIcon({
         <img
           src={imageSrc}
           alt={label}
-          className="absolute inset-0 h-full w-full scale-[1.35] object-cover object-[center_18%]"
+          className="absolute inset-0 h-full w-full scale-[1.08] object-cover object-center"
           draggable={false}
         />
       ) : col !== undefined && row !== undefined ? (

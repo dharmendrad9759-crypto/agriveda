@@ -1,16 +1,7 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
-import {
-  Tractor,
-  Leaf,
-  Brain,
-  Droplets,
-  Calendar,
-  Bell,
-  BookOpen,
-  ShieldAlert,
-} from "lucide-react";
+import { Bell, BookOpen, Droplets, ShieldAlert } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import AppLink from "@/components/ui/AppLink";
 import BiHeading from "@/components/i18n/BiHeading";
@@ -18,24 +9,79 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
-/** Tools NOT already in Quick Actions */
 const FEATURES: {
   label: string;
   labelHi: string;
   sub: string;
   subHi: string;
   href: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  imageSrc?: string;
   ring: string;
 }[] = [
-  { label: "My Farm", labelHi: "मेरा खेत", sub: "Fields", subHi: "खेत", href: "/my-farm", icon: Tractor, ring: "ring-emerald-500/40" },
-  { label: "Nutrients", labelHi: "पोषक तत्व", sub: "Deficiency", subHi: "कमी", href: "/deficiencies", icon: Leaf, ring: "ring-lime-500/40" },
-  { label: "Advisor", labelHi: "सलाहकार", sub: "Field", subHi: "खेती", href: "/field-advisor", icon: Brain, ring: "ring-violet-500/40" },
-  { label: "Spray", labelHi: "स्प्रे", sub: "Advisory", subHi: "सलाह", href: "/weather/spray-advisory", icon: Droplets, ring: "ring-cyan-500/40" },
-  { label: "Sowing", labelHi: "बुआई", sub: "Window", subHi: "समय", href: "/sowing-window", icon: Calendar, ring: "ring-indigo-500/40" },
-  { label: "Alerts", labelHi: "अलर्ट", sub: "Farm", subHi: "खेत", href: "/alerts", icon: Bell, ring: "ring-red-500/40" },
-  { label: "Weeds", labelHi: "खरपतवार", sub: "Guide", subHi: "गाइड", href: "/pest-diseases?type=weed", icon: ShieldAlert, ring: "ring-orange-500/40" },
-  { label: "Library", labelHi: "लाइब्रेरी", sub: "Learn", subHi: "ज्ञान", href: "/library", icon: BookOpen, ring: "ring-stone-500/40" },
+  {
+    label: "Nutrients",
+    labelHi: "पोषक तत्व",
+    sub: "Deficiency",
+    subHi: "कमी",
+    href: "/deficiencies",
+    imageSrc: "/images/icons/tools/nutrients.png",
+    ring: "ring-lime-500/40",
+  },
+  {
+    label: "Advisor",
+    labelHi: "सलाहकार",
+    sub: "Field",
+    subHi: "खेती",
+    href: "/field-advisor",
+    imageSrc: "/images/icons/tools/advisor.png",
+    ring: "ring-emerald-500/40",
+  },
+  {
+    label: "Sowing",
+    labelHi: "बुआई",
+    sub: "Window",
+    subHi: "समय",
+    href: "/sowing-window",
+    imageSrc: "/images/icons/tools/sowing-window.png",
+    ring: "ring-indigo-500/40",
+  },
+  {
+    label: "Spray",
+    labelHi: "स्प्रे",
+    sub: "Advisory",
+    subHi: "सलाह",
+    href: "/weather/spray-advisory",
+    icon: Droplets,
+    ring: "ring-cyan-500/40",
+  },
+  {
+    label: "Alerts",
+    labelHi: "अलर्ट",
+    sub: "Farm",
+    subHi: "खेत",
+    href: "/alerts",
+    icon: Bell,
+    ring: "ring-red-500/40",
+  },
+  {
+    label: "Weeds",
+    labelHi: "खरपतवार",
+    sub: "Guide",
+    subHi: "गाइड",
+    href: "/pest-diseases?type=weed",
+    icon: ShieldAlert,
+    ring: "ring-orange-500/40",
+  },
+  {
+    label: "Library",
+    labelHi: "लाइब्रेरी",
+    sub: "Learn",
+    subHi: "ज्ञान",
+    href: "/library",
+    icon: BookOpen,
+    ring: "ring-stone-500/40",
+  },
 ];
 
 export default function HomeFeatureGrid() {
@@ -65,17 +111,27 @@ export default function HomeFeatureGrid() {
             <AppLink
               href={f.href}
               className={cn(
-                "group flex h-full flex-col items-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2.5 text-center shadow-sm",
+                "group flex h-full flex-col items-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2 text-center shadow-sm",
                 "transition duration-200 hover:-translate-y-0.5 hover:border-[var(--av-accent)]/35 hover:shadow-[0_8px_24px_rgba(0,100,50,0.12)] active:scale-[0.97]"
               )}
             >
               <span
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/15 to-transparent ring-1",
+                  "relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent ring-1",
                   f.ring
                 )}
               >
-                <f.icon className="h-4 w-4 text-[var(--av-accent)] transition group-hover:scale-110" />
+                {f.imageSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={f.imageSrc}
+                    alt=""
+                    className="h-full w-full scale-110 object-cover"
+                    draggable={false}
+                  />
+                ) : f.icon ? (
+                  <f.icon className="h-4 w-4 text-[var(--av-accent)] transition group-hover:scale-110" />
+                ) : null}
               </span>
               <span className="line-clamp-1 text-[10px] font-bold text-[var(--av-text-primary)]">
                 {isHi ? f.labelHi : f.label}

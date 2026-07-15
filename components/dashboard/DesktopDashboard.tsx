@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
-import { Plus } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import DashboardWeatherHero from "@/components/dashboard/DashboardWeatherHero";
 import HomeFarmSnapshot from "@/components/dashboard/HomeFarmSnapshot";
@@ -21,16 +20,15 @@ const QUICK_ACTIONS: {
   href: string;
   col?: number;
   row?: number;
-  lucide?: typeof Plus;
   imageSrc?: string;
 }[] = [
   { label: "AI Doctor", labelHi: "AI डॉक्टर", href: "/ai-doctor", imageSrc: "/images/icons/ai-doctor.png" },
-  { label: "Add Field", labelHi: "खेत जोड़ें", href: "/my-farm", lucide: Plus },
-  { label: "Crop Planner", labelHi: "फसल योजना", href: "/crop-calendar", col: 1, row: 0 },
-  { label: "Pest Scanner", labelHi: "कीट स्कैन", href: "/pest-diseases", col: 3, row: 0 },
-  { label: "Fertilizer", labelHi: "उर्वरक", href: "/services/fertilizer-calculator", col: 2, row: 0 },
-  { label: "Mandi", labelHi: "मंडी", href: "/mandi", col: 5, row: 0 },
-  { label: "Weather", labelHi: "मौसम", href: "/weather", col: 0, row: 1 },
+  { label: "My Farm", labelHi: "मेरा खेत", href: "/my-farm", imageSrc: "/images/icons/tools/my-farm.png" },
+  { label: "Crop Planner", labelHi: "फसल योजना", href: "/crop-calendar", imageSrc: "/images/icons/tools/crop-planner.png" },
+  { label: "Pest Scanner", labelHi: "कीट स्कैन", href: "/pest-diseases", imageSrc: "/images/icons/tools/pest-scanner.png" },
+  { label: "Fertilizer", labelHi: "उर्वरक", href: "/services/fertilizer-calculator", imageSrc: "/images/icons/tools/fertilizer.png" },
+  { label: "Mandi", labelHi: "मंडी", href: "/mandi", imageSrc: "/images/icons/tools/mandi.png" },
+  { label: "Weather", labelHi: "मौसम", href: "/weather", imageSrc: "/images/icons/tools/weather.png" },
 ];
 
 const TIPS_EN = [
@@ -105,13 +103,12 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
                   href={a.href}
                   className="group flex flex-col items-center gap-1 text-center active:scale-95"
                 >
-                  <QuickActionIcon
-                    label={a.label}
-                    col={a.col}
-                    row={a.row}
-                    lucide={a.lucide}
-                    imageSrc={a.imageSrc}
-                  />
+                <QuickActionIcon
+                  label={a.label}
+                  col={a.col}
+                  row={a.row}
+                  imageSrc={a.imageSrc}
+                />
                   <span className="line-clamp-2 text-[9px] font-semibold leading-tight text-[var(--av-text-secondary)]">
                     {isHi ? a.labelHi : a.label}
                   </span>
