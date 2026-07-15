@@ -7,7 +7,6 @@ import DarkCard from "@/components/shell/DarkCard";
 import PageHero from "@/components/shell/PageHero";
 import CommunityQueryCard from "@/components/community/CommunityQueryCard";
 import {
-  COMMUNITY_STATS,
   COMMUNITY_DISCUSSIONS,
   COMMUNITY_EXPERTS,
   POPULAR_TOPICS,
@@ -90,28 +89,45 @@ export default function CommunityPage() {
     >
       <PageHero
         title="Kisan Community"
-        subtitle="Sawal poochhein, anubhav share karein, experts se seekhein."
-        badge="Live"
+        subtitle="Apne sawal phone pe save karein. Turant jawab ke liye AI Doctor use karein — expert network abhi live nahi."
+        badge="Local"
         icon={Users}
-        action={{ label: "Ask a Question", href: "/ask-query" }}
+        action={{ label: "Ask AI Doctor", href: "/ai-doctor" }}
       />
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-        {COMMUNITY_STATS.map((s, i) => (
-          <DarkCard key={s.label} delay={i} className="text-center">
-            <p className="text-lg font-bold text-[var(--av-accent)]">{s.value}</p>
-            <p className="text-[10px] font-semibold text-[var(--av-text-primary)]">{s.label}</p>
-            <p className="text-[9px] text-[var(--av-text-muted)]">{s.sub}</p>
-          </DarkCard>
-        ))}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+        <DarkCard delay={0} className="text-center">
+          <p className="text-lg font-bold text-[var(--av-accent)]">{hydrated ? myQueries.length : "—"}</p>
+          <p className="text-[10px] font-semibold text-[var(--av-text-primary)]">My saved asks</p>
+          <p className="text-[9px] text-[var(--av-text-muted)]">On this phone</p>
+        </DarkCard>
+        <DarkCard delay={1} className="text-center">
+          <p className="text-lg font-bold text-[var(--av-accent)]">AI</p>
+          <p className="text-[10px] font-semibold text-[var(--av-text-primary)]">Field doctor</p>
+          <p className="text-[9px] text-[var(--av-text-muted)]">Photo + text answers</p>
+        </DarkCard>
+        <DarkCard delay={2} className="text-center">
+          <p className="text-lg font-bold text-[var(--av-accent)]">Guide</p>
+          <p className="text-[10px] font-semibold text-[var(--av-text-primary)]">Crop tips</p>
+          <p className="text-[9px] text-[var(--av-text-muted)]">Per crop tabs</p>
+        </DarkCard>
+        <DarkCard delay={3} className="text-center">
+          <p className="text-lg font-bold text-[var(--av-accent)]">KVK</p>
+          <p className="text-[10px] font-semibold text-[var(--av-text-primary)]">Local help</p>
+          <p className="text-[9px] text-[var(--av-text-muted)]">District agri office</p>
+        </DarkCard>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {["Ask a Question", "Share Experience", "Post Photo", "Polls & Surveys"].map((label) => (
-          <AppLink key={label} href="/ask-query" className="av-chip">
-            {label}
-          </AppLink>
-        ))}
+        <AppLink href="/ai-doctor" className="av-chip">
+          Ask AI Doctor
+        </AppLink>
+        <AppLink href="/ask-query" className="av-chip">
+          Save a question
+        </AppLink>
+        <AppLink href="/crops" className="av-chip">
+          Crop guides
+        </AppLink>
       </div>
 
       <DarkCard className="mt-4 border-emerald-500/15 bg-gradient-to-br from-emerald-500/5 to-transparent" delay={0}>

@@ -133,7 +133,7 @@ export default function FertilizerCalculatorPage() {
           >
               <p className="rounded-lg bg-emerald-500/10 p-2 text-[10px] theme-text-muted">
                 {plan.unitNote}
-                {plan.source === "guide" && " · ICAR crop guide (verified data jald add hoga)"}
+                {plan.source === "guide" && " · Crop guide estimate — adjust with soil test"}
               </p>
 
               <div>
@@ -149,7 +149,10 @@ export default function FertilizerCalculatorPage() {
                   {plan.nutrients.map((row) => {
                     const key = row.nutrient.replace(/[^A-Za-z]/g, "").slice(0, 2);
                     const grad = NUTRIENT_COLORS[key] ?? "from-emerald-400 to-teal-500";
-                    const pct = Math.min(100, 40 + (row.detail.length % 50));
+                    const kgMatch = row.detail.match(/([\d.]+)\s*kg/i);
+                    const pct = kgMatch
+                      ? Math.min(100, Math.max(12, Math.round((Number(kgMatch[1]) / 80) * 100)))
+                      : 35;
                     return (
                       <motion.div
                         key={row.nutrient}

@@ -84,14 +84,19 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
           <div className="mt-3 space-y-3">
             <button type="button" onClick={() => onTabChange("pests")} className="av-card-inset flex w-full items-center justify-between text-left">
               <div>
-                <p className={AV.label}>Pest risk · {pestRisk.pct}%</p>
+                <p className={AV.label}>
+                  Pest watch · {pestRisk.level === "high" ? "Priority" : pestRisk.level === "medium" ? "Monitor" : "Low"}
+                </p>
                 <p className="text-sm font-semibold text-[var(--av-text-primary)]">{pestRisk.top}</p>
               </div>
               <RiskBadge level={pestRisk.level} />
             </button>
             <button type="button" onClick={() => onTabChange("diseases")} className="av-card-inset flex w-full items-center justify-between text-left">
               <div>
-                <p className={AV.label}>Disease risk · {diseaseRisk.pct}%</p>
+                <p className={AV.label}>
+                  Disease watch ·{" "}
+                  {diseaseRisk.level === "high" ? "Priority" : diseaseRisk.level === "medium" ? "Monitor" : "Low"}
+                </p>
                 <p className="text-sm font-semibold text-[var(--av-text-primary)]">{diseaseRisk.top}</p>
               </div>
               <RiskBadge level={diseaseRisk.level} />
@@ -125,7 +130,15 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
             {topDiseases.map((d, i) => (
               <li key={d.name} className="flex justify-between">
                 <span className="text-[var(--av-text-secondary)]">{d.name}</span>
-                <RiskBadge level={i === 0 ? "high" : "medium"} />
+                <RiskBadge
+                  level={
+                    i === 0
+                      ? diseaseRisk.level
+                      : diseaseRisk.level === "high"
+                        ? "medium"
+                        : "low"
+                  }
+                />
               </li>
             ))}
           </ul>
@@ -140,7 +153,9 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
             {topPests.map((p, i) => (
               <li key={p.name} className="flex justify-between">
                 <span className="text-[var(--av-text-secondary)]">{p.name}</span>
-                <RiskBadge level={i < 2 ? "high" : "low"} />
+                <RiskBadge
+                  level={i === 0 ? pestRisk.level : pestRisk.level === "high" ? "medium" : "low"}
+                />
               </li>
             ))}
           </ul>

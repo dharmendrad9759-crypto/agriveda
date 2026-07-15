@@ -93,8 +93,8 @@ export default function PestOutbreakRadarPage() {
       )}
 
       {!isSupabaseConfigured() && (
-        <p className="mt-4 rounded-xl border border-sky-500/25 bg-sky-500/10 px-3 py-2 text-center text-[11px] font-semibold text-sky-800 dark:text-sky-200">
-          डेमो मोड — sample चेतावनी। Live data ke liye Supabase setup karein.
+        <p className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-center text-[11px] font-semibold text-amber-900 dark:text-amber-200">
+          Nearby outbreak map empty jab tak live reports connected nahi. Aap apna field report still save/sync kar sakte hain jab backend ready ho.
         </p>
       )}
 

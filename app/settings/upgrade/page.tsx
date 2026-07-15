@@ -70,13 +70,13 @@ export default function UpgradePage() {
               type="button"
               onClick={() => {
                 setSelectedPlan(plan.id);
-                showToast(`${plan.name} plan selected — payment jald available`);
+                showToast(`${plan.name} interest saved — payment coming soon. We'll notify you.`);
               }}
               className={`mt-4 ${selectedPlan === plan.id ? AV.btnPrimarySm : AV.btnSecondarySm} w-full ${
                 plan.popular && selectedPlan !== plan.id ? "border-[var(--av-accent)]" : ""
               }`}
             >
-              Choose {plan.name}
+              {selectedPlan === plan.id ? "Interest saved" : `Notify me — ${plan.name}`}
             </button>
           </DarkCard>
         ))}
@@ -157,10 +157,10 @@ export default function UpgradePage() {
         </div>
         <button
           type="button"
-          onClick={() => showToast("Premium upgrade — payment jald available")}
+          onClick={() => showToast("Interest noted — payment opens soon. You'll get a notify option in Settings.")}
           className={`mt-4 lg:mt-0 ${AV.btnPrimarySm} bg-white text-[#059669] hover:bg-white/90`}
         >
-          Upgrade Now →
+          Notify me when Premium opens →
         </button>
       </div>
     </AppShell>

@@ -181,6 +181,37 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     return list;
   }, [icar, plan]);
 
+  const downloadSchedule = () => {
+    const lines = [
+      `Agriveda fertilizer plan — ${crop.name}${hindi ? ` (${hindi})` : ""}`,
+      `Season: ${crop.suitableSeason}`,
+      `Area: ${acres} acre`,
+      `Variety tip: ${variety}`,
+      `NPK (kg/acre guide): N ${npkAcre.n} · P₂O₅ ${npkAcre.p} · K₂O ${npkAcre.k}`,
+      `Source: ${npkAcre.source}`,
+      "",
+      "Stage schedule:",
+      ...scheduleRows.map((r) => `${r.stage}. ${r.time}: ${r.apply}`),
+      "",
+      bags.length ? "Bag estimate:" : "",
+      ...bags.map((b) => `- ${b.name}: ${b.amount}`),
+      "",
+      "Notes:",
+      ...notes.slice(0, 8).map((n) => `- ${n}`),
+      "",
+      "Always confirm doses with soil test and product label.",
+    ].filter(Boolean);
+
+    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${crop.slug}-fertilizer-plan.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Fertilizer plan downloaded ✓");
+  };
+
   const donutSegments = [
     { label: "N", value: Math.max(npkAcre.n, 1), color: "#10b981" },
     { label: "P₂O₅", value: Math.max(npkAcre.p, 1), color: "#3b82f6" },
@@ -195,13 +226,9 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
           {plan?.source === "verified" ? " · verified bags" : ""}
         </p>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => showToast("PDF download — jald available")}
-            className={AV.btnSecondarySm}
-          >
+          <button type="button" onClick={downloadSchedule} className={AV.btnSecondarySm}>
             <Download className="mr-1.5 inline h-3.5 w-3.5" />
-            PDF
+            Download plan
           </button>
           <AppLink href="/services/fertilizer-calculator" className={AV.btnPrimarySm}>
             Full Calculator

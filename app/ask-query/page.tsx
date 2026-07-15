@@ -78,24 +78,29 @@ export default function AskQueryPage() {
       farmerName: profile.name || "You",
     });
     setSubmitted(true);
-    showToast("Query sent ✓");
+    showToast("Saved on this phone — open AI Doctor for an answer");
   };
 
   if (submitted) {
     return (
       <AppShell
-        title={t("querySent")}
-        subtitle={t("querySentSubtitle")}
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Community", href: "/community" }]}
+        title="Query saved"
+        subtitle="Phone pe history me save. Expert community live nahi — AI Doctor se jawab lein."
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Ask", href: "/ask-query" }]}
       >
         <DarkCard className="flex flex-col items-center py-10 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--av-accent)]/40 bg-[var(--av-accent)]/15">
             <Check className="h-8 w-8 text-[var(--av-accent)]" />
           </div>
-          <h2 className="mt-4 text-xl font-bold text-[var(--av-text-primary)]">{t("querySent")}</h2>
-          <p className="mt-2 text-sm text-[var(--av-text-muted)]">{t("querySentSubtitle")}</p>
-          <AppLink href="/community" className={`mt-6 ${AV.btnPrimary}`}>
-            {t("viewCommunity")}
+          <h2 className="mt-4 text-xl font-bold text-[var(--av-text-primary)]">Saved locally</h2>
+          <p className="mt-2 max-w-sm text-sm text-[var(--av-text-muted)]">
+            Community expert inbox abhi live nahi hai. AI Doctor se {availableCrops.find((c) => c.id === selectedCrop)?.name ?? "crop"} ke baare mein turant jawab milega.
+          </p>
+          <AppLink href="/ai-doctor" className={`mt-6 ${AV.btnPrimary}`}>
+            Open AI Doctor
+          </AppLink>
+          <AppLink href="/ask-query" className={`mt-3 ${AV.btnSecondarySm}`}>
+            Ask another
           </AppLink>
         </DarkCard>
       </AppShell>

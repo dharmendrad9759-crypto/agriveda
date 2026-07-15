@@ -6,20 +6,13 @@ import { ChevronDown } from "lucide-react";
 import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
 import { getCropManagementProfile } from "@/data/crop-management";
+import { buildCropFaqs } from "@/lib/crops/buildCropFaqs";
 import type { Crop } from "@/types/crop";
 
 export default function CropFaqSection({ crop }: { crop: Crop }) {
   const profile = getCropManagementProfile(crop.slug);
-  const faqs = profile?.faqs ?? [];
+  const faqs = profile?.faqs?.length ? profile.faqs : buildCropFaqs(crop);
   const [open, setOpen] = useState<number | null>(0);
-
-  if (!faqs.length) {
-    return (
-      <div className="crop-premium-empty">
-        <p className="text-sm text-[var(--av-text-secondary)]">FAQ data coming soon for {crop.name}.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-3">

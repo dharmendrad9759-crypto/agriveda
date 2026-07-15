@@ -5,16 +5,9 @@ import type {
   SubmitOutbreakInput,
 } from "@/types/outbreak";
 import { readStorage, writeStorage } from "@/lib/storage";
-import { fetchOutbreakReportsSince } from "@/lib/supabaseOutbreak";
 import { buildOutbreakRadarPayload } from "@/lib/outbreakPublic";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { queueOutbreakReport, trySyncPendingOutbreaks } from "@/lib/outbreakSync";
-import { getDeviceId } from "@/lib/deviceId";
-import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
-import { insertOutbreakReportToSupabase } from "@/lib/supabaseOutbreak";
-import { toPublicOutbreakReport } from "@/lib/outbreakPublic";
-import { detectOutbreakCluster } from "@/lib/outbreakCluster";
-import { OUTBREAK_SEED_REPORTS } from "@/data/outbreak-seed";
 
 const CACHE_KEY = "agriveda-outbreak-cache";
 const CACHE_TTL_MS = 30 * 60 * 1000;
@@ -70,22 +63,39 @@ export async function fetchNearbyOutbreaks(
   }
 
   if (!isSupabaseConfigured()) {
-    const demoReports = OUTBREAK_SEED_REPORTS.map((r, i) => ({
-      ...r,
-      id: `demo-${r.id}`,
-      latitude: lat + ((i % 3) - 1) * 0.012,
-      longitude: lon + (Math.floor(i / 3) - 1) * 0.01,
-      reportDate: new Date(Date.now() - (i + 1) * 6 * 60 * 60 * 1000).toISOString(),
-    }));
-    const payload = buildOutbreakRadarPayload(demoReports, lat, lon, radiusKm, days);
-    setOutbreakCache({ lat, lon, ...payload });
-    return { ...payload, fromCache: false };
+    return {
+      reports: [],
+      clusters: [],
+      summaries: [],
+      fromCache: false,
+    };
   }
 
   await trySyncPendingOutbreaks();
 
-  const all = await fetchOutbreakReportsSince(days);
-  const payload = buildOutbreakRadarPayload(all, lat, lon, radiusKm, days);
+  const res = await fetch(
+    `/api/outbreaks?lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}&radiusKm=${radiusKm}&days=${days}`,
+    { credentials: "include" }
+  );
+
+  if (!res.ok) {
+    const cached = getOutbreakCache(lat, lon);
+    if (cached) {
+      return {
+        reports: cached.reports,
+        clusters: cached.clusters,
+        summaries: cached.summaries,
+        fromCache: true,
+      };
+    }
+    throw new Error("Outbreak radar load failed");
+  }
+
+  const payload = (await res.json()) as {
+    reports: PublicOutbreakReport[];
+    clusters: OutbreakCluster[];
+    summaries: OutbreakListSummary[];
+  };
 
   setOutbreakCache({
     lat,
@@ -106,36 +116,39 @@ export async function submitOutbreakReport(
     throw new Error("Offline — report queued for sync when Supabase is available.");
   }
 
-  const deviceId = getDeviceId();
-  const farmerId = input.farmerId || (await ensureFarmerRecord(deviceId));
-
   if (!navigator.onLine) {
-    queueOutbreakReport({ ...input, farmerId: farmerId ?? input.farmerId });
+    queueOutbreakReport(input);
     throw new Error("Offline — report saved and will sync when online.");
   }
 
-  const saved = await insertOutbreakReportToSupabase({
-    farmerId: farmerId ?? null,
-    cropId: input.cropId,
-    threatType: input.threatType,
-    pestOrDiseaseId: input.pestOrDiseaseId,
-    photoUrl: input.photoUrl,
-    latitude: input.latitude,
-    longitude: input.longitude,
-    severity: input.severity,
+  const res = await fetch("/api/outbreaks", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      cropId: input.cropId,
+      threatType: input.threatType,
+      pestOrDiseaseId: input.pestOrDiseaseId,
+      photoUrl: input.photoUrl,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      severity: input.severity,
+    }),
   });
 
-  if (!saved) {
-    queueOutbreakReport({ ...input, farmerId: farmerId ?? input.farmerId });
+  if (res.status === 401) {
+    queueOutbreakReport(input);
+    throw new Error("Login required — पहले OTP verify करें");
+  }
+
+  if (!res.ok) {
+    queueOutbreakReport(input);
     throw new Error("Could not submit report — queued for retry.");
   }
 
-  const all = await fetchOutbreakReportsSince(14);
-  const clusters = detectOutbreakCluster(all);
-
-  return {
-    report: toPublicOutbreakReport(saved),
-    clusters,
+  return (await res.json()) as {
+    report: PublicOutbreakReport;
+    clusters: OutbreakCluster[];
   };
 }
 

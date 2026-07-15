@@ -5,7 +5,6 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Calendar, Clock, CloudSun, Droplets, Sparkles, Sprout, TrendingUp } from "lucide-react";
 import { getCropDashboard } from "@/data/crop-dashboard";
-import { getCropHealthScore } from "@/lib/crops/crop-visual";
 import { getCropImageUrl } from "@/lib/crops/crop-display";
 import {
   getCropAgroMeta,
@@ -32,15 +31,23 @@ interface Props {
 export default function CropPremiumHero({ crop, detail }: Props) {
   const reduceMotion = useReducedMotion();
   const cropImage = getCropImageUrl(crop);
-  const health = getCropHealthScore(crop.slug);
   const dash = getCropDashboard(crop.slug);
   const agro = getCropAgroMeta(crop.slug);
   const pestRisk = getCropPestRisk(crop, detail);
   const diseaseRisk = getCropDiseaseRisk(crop, detail);
+  const watchLevel =
+    pestRisk.level === "high" || diseaseRisk.level === "high"
+      ? ("amber" as const)
+      : pestRisk.level === "medium" || diseaseRisk.level === "medium"
+        ? ("amber" as const)
+        : ("emerald" as const);
+  const watchLabel =
+    watchLevel === "amber" ? "Scout this week" : "Guide ready";
   const currentStage =
     dash?.growthStages.find((s) => s.status === "current")?.name ??
     detail.growthStages[0]?.title ??
-    "Growing";
+    crop.fertilizerSchedule.stageWise[0]?.stage ??
+    "Establishment";
 
   return (
     <motion.section
@@ -89,31 +96,27 @@ export default function CropPremiumHero({ crop, detail }: Props) {
 
         <div className="flex shrink-0 gap-2 sm:flex-col">
           <div className="crop-premium-glass min-w-[100px] flex-1 p-3 sm:flex-none">
-            <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">Health</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">Field focus</p>
             <p
-              className={`mt-0.5 text-xl font-black ${
-                health.tone === "amber" ? "text-amber-500" : "text-emerald-500"
+              className={`mt-0.5 text-sm font-black ${
+                watchLevel === "amber" ? "text-amber-500" : "text-emerald-500"
               }`}
             >
-              {health.score}%
+              {watchLabel}
             </p>
-            <p className="text-[10px] text-[var(--av-text-secondary)]">{health.label}</p>
-            <div className="mt-2 h-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
-              <motion.div
-                className={`h-full rounded-full ${health.tone === "amber" ? "bg-amber-400" : "bg-emerald-400"}`}
-                initial={{ width: 0 }}
-                animate={{ width: `${health.score}%` }}
-                transition={{ duration: 1, ease: EASE_OUT, delay: 0.2 }}
-              />
-            </div>
+            <p className="text-[10px] text-[var(--av-text-secondary)]">
+              Watch: {pestRisk.top.split(" ")[0]} / {diseaseRisk.top.split(" ")[0]}
+            </p>
           </div>
 
           <div className="crop-premium-glass min-w-[100px] flex-1 p-3 sm:flex-none">
             <p className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-              <CloudSun className="h-3 w-3" /> Weather
+              <CloudSun className="h-3 w-3" /> Climate
             </p>
-            <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">32°C</p>
-            <p className="text-[10px] text-[var(--av-text-secondary)]">Partly cloudy</p>
+            <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
+              {agro.tempMinC}–{agro.tempMaxC}°C
+            </p>
+            <p className="text-[10px] text-[var(--av-text-secondary)] line-clamp-2">{crop.suitableSeason}</p>
           </div>
         </div>
       </div>
@@ -146,13 +149,17 @@ export default function CropPremiumHero({ crop, detail }: Props) {
         <span
           className={`crop-premium-risk ${pestRisk.level === "high" ? "crop-premium-risk-amber" : "crop-premium-risk-lime"}`}
         >
-          Pest: {pestRisk.top} · {pestRisk.pct}%
+          Pest: {pestRisk.top}
         </span>
         <span
           className={`crop-premium-risk ${diseaseRisk.level === "high" ? "crop-premium-risk-amber" : "crop-premium-risk-lime"}`}
         >
-          Disease: {diseaseRisk.top} · {diseaseRisk.pct}%
+          Disease: {diseaseRisk.top}
         </span>
+        <Link href="/weather" className="crop-premium-cta">
+          <CloudSun className="h-4 w-4" />
+          Live weather
+        </Link>
         <Link href="/ai-doctor" className="crop-premium-cta ml-auto">
           <Sparkles className="h-4 w-4" />
           AI Crop Doctor

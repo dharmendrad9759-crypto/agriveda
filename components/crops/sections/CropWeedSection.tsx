@@ -24,20 +24,34 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
   const chemicals = program?.chemical ?? [];
 
   if (!weedNames.length && !chemicals.length) {
-    return (
-      <div className="crop-premium-empty">
-        <p className="text-sm text-[var(--av-text-secondary)]">
-          Weed data is not available for this crop yet.
-        </p>
-        {crop.cropProtection.weedManagement.length > 0 && (
-          <ul className="mt-4 space-y-2">
-            {crop.cropProtection.weedManagement.map((w) => (
+    const guide = crop.cropProtection.weedManagement;
+    if (guide.length > 0) {
+      return (
+        <div className="space-y-3">
+          <p className="text-xs text-[var(--av-text-muted)]">
+            {crop.name} — field weed guide (herbicide catalog may expand by season)
+          </p>
+          <ul className="space-y-2">
+            {guide.map((w) => (
               <li key={w} className="crop-premium-inset text-xs text-[var(--av-text-primary)]">
                 {w}
               </li>
             ))}
           </ul>
-        )}
+          <AppLink href="/ai-doctor" className="inline-flex text-xs font-bold text-[var(--av-accent)]">
+            Photo se weed pehchaan → AI Doctor
+          </AppLink>
+        </div>
+      );
+    }
+    return (
+      <div className="crop-premium-empty">
+        <p className="text-sm text-[var(--av-text-secondary)]">
+          Detailed weed molecules are not listed for {crop.name} yet. First 30–45 days critical — keep field clean and ask AI Doctor with a photo.
+        </p>
+        <AppLink href="/ai-doctor" className="mt-3 inline-flex text-xs font-bold text-[var(--av-accent)]">
+          Open AI Doctor →
+        </AppLink>
       </div>
     );
   }

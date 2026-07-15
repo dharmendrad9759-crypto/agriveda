@@ -5,6 +5,7 @@ import {
   type BuwaiDateWindow,
 } from "@/data/agriveda2/buwai-data";
 import { resolveNorthIndiaRegion } from "@/data/agriveda2/crop-slug-map";
+import { formatSowingCard, getCropAgroMeta } from "@/lib/crops/cropAgroMeta";
 
 export type SowingWindowStatus = "green" | "yellow" | "red";
 
@@ -91,18 +92,26 @@ export function evaluateSowingWindow(
   const cropName = profile?.name ?? cropSlug;
 
   if (!buwai) {
+    const agro = getCropAgroMeta(cropSlug);
+    const sowing = formatSowingCard(cropSlug, agro.sowingWindow);
     return {
       status: "yellow",
-      title: `${cropName} — buwai data jald aayega`,
-      messageHi: `${cropName} ke liye verified buwai calendar abhi add ho raha hai. Agli update mein state-wise window milegi.`,
-      messageEn: `Verified sowing calendar for ${cropName} is being added.`,
+      title: `${cropName} — sowing window`,
+      messageHi: `${cropName}: ${sowing}. Apne zila ke mausam / mitti dekh kar final din decide karein.`,
+      messageEn: `${cropName}: ${sowing}. Confirm final date with local weather and soil moisture.`,
       regionKey: region,
       stateData: {},
-      windows: [],
-      criticalNote: "North India ICAR-based calendar follow karein.",
+      windows: [
+        {
+          label: "Recommended window",
+          range: agro.sowingWindow,
+          active: true,
+        },
+      ],
+      criticalNote: agro.climateNote,
       soilMoisturePercent: soilMoisture,
       gddEstimate: gdd,
-      factors: ["no_buwai_data"],
+      factors: ["agro_meta_fallback"],
     };
   }
 
