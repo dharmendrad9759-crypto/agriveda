@@ -5,7 +5,7 @@ import AppLink from "@/components/ui/AppLink";
 import BiHeading from "@/components/i18n/BiHeading";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
-import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+import { EASE_OUT } from "@/lib/motion/variants";
 
 const FEATURES: {
   label: string;
@@ -80,32 +80,34 @@ export default function HomeFeatureGrid() {
   return (
     <section className="min-w-0">
       <div className="mb-1.5 px-0.5">
-        <BiHeading
-          en="More Tools"
-          hi="और टूल्स"
-          as="h2"
-          className="text-xs font-bold text-[var(--av-text-primary)]"
-        />
+            <BiHeading
+              en="More Tools"
+              hi="और टूल्स"
+              as="h2"
+              className="font-display text-sm font-bold tracking-tight text-[var(--av-text-primary)]"
+            />
       </div>
       <div className="grid grid-cols-4 gap-2">
         {FEATURES.map((f, i) => (
           <motion.div
             key={f.href + f.label}
             className="min-w-0"
-            initial={reduced ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(i, 8) * 0.03, duration: MOTION.normal, ease: EASE_OUT }}
+            initial={reduced ? false : { opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: 0.1 + Math.min(i, 8) * 0.04, duration: 0.4, ease: EASE_OUT }}
+            whileHover={reduced ? undefined : { y: -3 }}
+            whileTap={reduced ? undefined : { scale: 0.96 }}
           >
             <AppLink
               href={f.href}
               className={cn(
-                "group flex h-full flex-col items-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2 text-center shadow-sm",
-                "transition duration-200 hover:-translate-y-0.5 hover:border-[var(--av-accent)]/35 hover:shadow-[0_8px_24px_rgba(0,100,50,0.12)] active:scale-[0.97]"
+                "group flex h-full flex-col items-center gap-1 rounded-2xl border border-emerald-500/15 bg-[var(--av-surface)]/90 p-2 text-center shadow-sm backdrop-blur-sm",
+                "transition duration-200 hover:border-[var(--av-accent)]/40 hover:shadow-[0_10px_28px_rgba(0,100,50,0.14)] active:scale-[0.97]"
               )}
             >
               <span
                 className={cn(
-                  "relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent ring-1",
+                  "relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent ring-1 sm:h-16 sm:w-16",
                   f.ring
                 )}
               >
@@ -113,7 +115,7 @@ export default function HomeFeatureGrid() {
                 <img
                   src={f.imageSrc}
                   alt=""
-                  className="h-full w-full scale-110 object-cover"
+                  className="h-full w-full scale-[1.18] object-cover"
                   draggable={false}
                 />
               </span>

@@ -9,10 +9,10 @@ export const MOTION = {
 } as const;
 
 export const pageTransition = {
-  initial: { opacity: 1, y: 8 },
+  initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 1, y: -4 },
-  transition: { duration: MOTION.normal, ease: EASE_OUT },
+  exit: { opacity: 0, y: -6 },
+  transition: { duration: MOTION.slow, ease: EASE_OUT },
 };
 
 export const fadeDown = {

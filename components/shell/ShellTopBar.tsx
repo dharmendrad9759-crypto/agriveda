@@ -29,13 +29,10 @@ export default function ShellTopBar() {
 
       <AppLink
         href="/alerts"
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-muted)] hover:text-[var(--av-accent)]"
+        className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/15 bg-[var(--av-surface)]/80 text-[var(--av-text-muted)] backdrop-blur-md hover:text-[var(--av-accent)]"
         aria-label="Notifications"
       >
         <Bell className="h-4 w-4" />
-        <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
-          3
-        </span>
       </AppLink>
 
       <AppLink

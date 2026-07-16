@@ -87,17 +87,22 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
               en="Quick Actions"
               hi="त्वरित सेवाएँ"
               as="h2"
-              className="text-xs font-bold text-[var(--av-text-primary)]"
+              className="font-display text-sm font-bold tracking-tight text-[var(--av-text-primary)]"
             />
+            <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+              {isHi ? "एक टैप — स्मार्ट खेती" : "One tap — smarter farming"}
+            </p>
           </div>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
             {QUICK_ACTIONS.map((a, i) => (
               <motion.div
                 key={a.href + a.label}
                 className="min-w-0"
-                initial={reduced ? false : { opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.03, duration: MOTION.normal, ease: EASE_OUT }}
+                initial={reduced ? false : { opacity: 0, scale: 0.86, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 0.08 + i * 0.04, duration: 0.4, ease: EASE_OUT }}
+                whileHover={reduced ? undefined : { y: -3 }}
+                whileTap={reduced ? undefined : { scale: 0.96 }}
               >
                 <AppLink
                   href={a.href}

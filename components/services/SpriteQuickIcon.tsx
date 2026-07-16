@@ -49,13 +49,13 @@ export function QuickActionIcon({
   imageSrc?: string;
 }) {
   return (
-    <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--av-border)] bg-[var(--av-surface-muted)] shadow-sm transition group-hover:border-[var(--av-accent)]/40 group-hover:bg-[var(--av-accent-soft)] sm:h-12 sm:w-12">
+    <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--av-border)] bg-[var(--av-surface-muted)] shadow-sm transition group-hover:border-[var(--av-accent)]/40 group-hover:bg-[var(--av-accent-soft)] sm:h-16 sm:w-16">
       {imageSrc ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={imageSrc}
           alt={label}
-          className="absolute inset-0 h-full w-full scale-[1.08] object-cover object-center"
+          className="absolute inset-0 h-full w-full scale-[1.18] object-cover object-center"
           draggable={false}
         />
       ) : col !== undefined && row !== undefined ? (

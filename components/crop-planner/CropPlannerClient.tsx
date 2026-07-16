@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   Calendar,
@@ -17,7 +17,13 @@ import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
 import { crops } from "@/data/crops";
 import { getCropManagementProfile } from "@/data/crop-management";
-import { getCropHindiName, getCropImageUrl } from "@/lib/crops/crop-display";
+import {
+  getCropHindiName,
+  getCropImageUrl,
+  getPlannerSeasonsForCrop,
+  pickDefaultPlannerSeason,
+  type PlannerSeasonId,
+} from "@/lib/crops/crop-display";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import { buildFertilizerPlan } from "@/lib/agriveda2/fertilizerEngine";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -25,24 +31,25 @@ import { useToast } from "@/components/ui/Toast";
 import { writeStorage } from "@/lib/storage";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
+import { shortenFarmerLine, shortenFarmerLines, stageTipsFromPoints } from "@/lib/crops/farmerShortCopy";
 
-const SEASONS = [
+const SEASONS: { id: PlannerSeasonId; label: string }[] = [
   { id: "kharif", label: "Kharif (Jun–Oct)" },
   { id: "rabi", label: "Rabi (Nov–Mar)" },
   { id: "zaid", label: "Zaid (Apr–Jun)" },
-] as const;
+];
 
 const PLAN_TABS = [
-  "Overview",
-  "Irrigation",
-  "Fertilizer",
-  "Pest Control",
-  "Disease Control",
-  "Weed Control",
-  "Harvest",
+  { id: "Overview", label: "काम" },
+  { id: "Irrigation", label: "पानी" },
+  { id: "Fertilizer", label: "खाद" },
+  { id: "Pest Control", label: "कीट" },
+  { id: "Disease Control", label: "रोग" },
+  { id: "Weed Control", label: "घास" },
+  { id: "Harvest", label: "कटाई" },
 ] as const;
 
-type PlanTab = (typeof PLAN_TABS)[number];
+type PlanTab = (typeof PLAN_TABS)[number]["id"];
 
 const STAGE_ICONS = ["🌱", "🚜", "🌿", "🌾", "🌸", "🌽", "✅", "📦"];
 
@@ -59,7 +66,7 @@ export default function CropPlannerClient() {
   const planRef = useRef<HTMLDivElement>(null);
 
   const [cropSlug, setCropSlug] = useState("paddy");
-  const [season, setSeason] = useState<(typeof SEASONS)[number]["id"]>("kharif");
+  const [season, setSeason] = useState<PlannerSeasonId>("kharif");
   const [area, setArea] = useState("1");
   const [activeTab, setActiveTab] = useState<PlanTab>("Overview");
   const [generated, setGenerated] = useState(false);
@@ -70,6 +77,22 @@ export default function CropPlannerClient() {
   const hindi = getCropHindiName(crop.slug);
   const mgmt = getCropManagementProfile(crop.slug);
   const acres = Math.max(0.1, Number(area) || 1);
+
+  const allowedSeasons = useMemo(
+    () => getPlannerSeasonsForCrop(crop.slug, crop.suitableSeason),
+    [crop.slug, crop.suitableSeason]
+  );
+
+  const seasonOptions = useMemo(
+    () => SEASONS.filter((s) => allowedSeasons.includes(s.id)),
+    [allowedSeasons]
+  );
+
+  // Crop change → auto season (single = lock; multi = prefer current calendar season)
+  useEffect(() => {
+    const next = pickDefaultPlannerSeason(allowedSeasons);
+    setSeason((prev) => (allowedSeasons.includes(prev) ? prev : next));
+  }, [crop.slug, allowedSeasons]);
 
   const fertPlan = useMemo(
     () => (generated ? buildFertilizerPlan(crop.slug, acres) : null),
@@ -85,15 +108,15 @@ export default function CropPlannerClient() {
     const stages = mgmt?.growthStages;
     if (!stages?.length) {
       return [
-        { stage: "Sowing", days: crop.sowingGuide.bestSowingTime, icon: "🌱" },
-        { stage: "Vegetative", days: "Early growth", icon: "🌿" },
-        { stage: "Reproductive", days: "Mid season", icon: "🌸" },
-        { stage: "Harvest", days: crop.harvestAndYield.harvestingTime, icon: "✅" },
+        { stage: "Buwai", days: shortenFarmerLine(crop.sowingGuide.bestSowingTime, 28), icon: "🌱" },
+        { stage: "Badhaw", days: "Shuruat", icon: "🌿" },
+        { stage: "Phool/dana", days: "Beech", icon: "🌸" },
+        { stage: "Kataai", days: shortenFarmerLine(crop.harvestAndYield.harvestingTime, 28), icon: "✅" },
       ];
     }
-    return stages.slice(0, 8).map((s, i) => ({
-      stage: s.title.split(/[—(]/)[0]?.trim().slice(0, 22) || s.title,
-      days: s.period,
+    return stages.slice(0, 6).map((s, i) => ({
+      stage: shortenFarmerLine(s.title.split(/[—(]/)[0]?.trim() || s.title, 16),
+      days: shortenFarmerLine(s.period, 24),
       icon: STAGE_ICONS[i] ?? "🌱",
     }));
   }, [mgmt, crop, planStamp]);
@@ -103,30 +126,39 @@ export default function CropPlannerClient() {
     if (!stages?.length) {
       return [
         {
-          stage: "Land & sowing",
-          days: crop.sowingGuide.bestSowingTime,
-          activities: [
-            crop.sowingGuide.seedTreatment,
-            `Seed rate: ${crop.sowingGuide.seedRate}`,
-            crop.sowingGuide.sowingMethod,
-          ],
+          stage: "Buwai",
+          days: shortenFarmerLine(crop.sowingGuide.bestSowingTime, 32),
+          activities: stageTipsFromPoints(
+            [
+              `Beej: ${crop.sowingGuide.seedRate}`,
+              crop.sowingGuide.seedTreatment,
+              crop.sowingGuide.sowingMethod,
+            ],
+            "Certified beej + sahi spacing"
+          ),
         },
         {
-          stage: "Crop care",
-          days: crop.durationDays,
-          activities: crop.irrigationManagement.schedule.slice(0, 3),
+          stage: "Dekhbhal",
+          days: shortenFarmerLine(crop.durationDays, 32),
+          activities: stageTipsFromPoints(
+            crop.irrigationManagement.schedule,
+            "Paani mitti dekh ke dein"
+          ),
         },
         {
-          stage: "Harvest",
-          days: crop.harvestAndYield.harvestingTime,
-          activities: crop.harvestAndYield.maturitySigns.slice(0, 3),
+          stage: "Kataai",
+          days: shortenFarmerLine(crop.harvestAndYield.harvestingTime, 32),
+          activities: stageTipsFromPoints(
+            crop.harvestAndYield.maturitySigns,
+            "Pakne ke nishaan dekh ke kaatein"
+          ),
         },
       ];
     }
-    return stages.slice(0, 8).map((s) => ({
-      stage: s.title.split(/[—(]/)[0]?.trim() || s.title,
-      days: s.period,
-      activities: s.keyPoints.slice(0, 3).length ? s.keyPoints.slice(0, 3) : [s.title],
+    return stages.slice(0, 6).map((s) => ({
+      stage: shortenFarmerLine(s.title.split(/[—(]/)[0]?.trim() || s.title, 22),
+      days: shortenFarmerLine(s.period, 28),
+      activities: stageTipsFromPoints(s.keyPoints, s.title),
     }));
   }, [mgmt, crop, planStamp]);
 
@@ -136,33 +168,67 @@ export default function CropPlannerClient() {
     if (fert) {
       list.push({
         color: "border-emerald-200 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/10",
-        text: `Fertilizer: ${fert.time} — ${fert.apply}`,
+        text: shortenFarmerLine(`Khad: ${fert.time} — ${fert.apply}`, 78),
       });
     } else if (crop.fertilizerSchedule.stageWise[0]) {
       list.push({
         color: "border-emerald-200 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/10",
-        text: `Fertilizer (${crop.fertilizerSchedule.stageWise[0].stage}): ${crop.fertilizerSchedule.stageWise[0].details[0]}`,
+        text: shortenFarmerLine(
+          `Khad (${crop.fertilizerSchedule.stageWise[0].stage}): ${crop.fertilizerSchedule.stageWise[0].details[0]}`,
+          78
+        ),
       });
     }
     const pest = mgmt?.pestManagement?.[0];
     if (pest) {
       list.push({
         color: "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/10",
-        text: `Pest watch: ${pest.pestName} — ETL: ${pest.etl}`,
+        text: shortenFarmerLine(`Keet: ${pest.pestName} — field check karte rahein`, 78),
       });
     }
     if (crop.irrigationManagement.criticalStages[0]) {
       list.push({
         color: "border-sky-200 bg-sky-50 dark:border-sky-500/20 dark:bg-sky-500/10",
-        text: `Irrigation critical: ${crop.irrigationManagement.criticalStages.join(", ")}`,
+        text: shortenFarmerLine(
+          `Paani zaroori: ${crop.irrigationManagement.criticalStages.slice(0, 2).join(", ")}`,
+          78
+        ),
       });
     }
     list.push({
       color: "border-red-200 bg-red-50 dark:border-red-500/20 dark:bg-red-500/10",
-      text: `Harvest: ${crop.harvestAndYield.harvestingTime} — ${crop.harvestAndYield.maturitySigns[0] ?? crop.estimatedYield}`,
+      text: shortenFarmerLine(
+        `Kataai: ${crop.harvestAndYield.harvestingTime}`,
+        78
+      ),
     });
     return list.slice(0, 4);
   }, [fertPlan, mgmt, crop, planStamp]);
+
+  const downloadShortPlan = () => {
+    const lines = [
+      `Agriveda plan — ${crop.name}${hindi ? ` (${hindi})` : ""}`,
+      `Season: ${SEASONS.find((s) => s.id === season)?.label ?? season}`,
+      `Area: ${acres} acre`,
+      "",
+      "Kaam (stages):",
+      ...scheduleRows.flatMap((r) => [
+        `• ${r.stage} (${r.days})`,
+        ...r.activities.map((a) => `  - ${a}`),
+      ]),
+      "",
+      "Yaad rakhein:",
+      ...reminders.map((r) => `• ${r.text}`),
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${crop.slug}-plan.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Chhota plan download ✓");
+  };
 
   const generatePlan = async () => {
     if (!cropSlug) {
@@ -195,101 +261,98 @@ export default function CropPlannerClient() {
     });
   };
 
-  const waterNeed =
+  const waterNeed = shortenFarmerLine(
     crop.irrigationManagement.waterRequirement ||
-    mgmt?.irrigationSchedule?.[0] ||
-    "As per crop / soil moisture";
+      mgmt?.irrigationSchedule?.[0] ||
+      "Mitti dekh ke paani",
+    40
+  );
 
   const tabBody = () => {
     if (activeTab === "Overview") {
       return (
         <DarkCard className="xl:col-span-8" hover>
-          <SectionHeader title={`${crop.name} — Recommended Schedule`} />
+          <SectionHeader title={`${crop.name} — chhote kaam`} />
           <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-            {acres} acre · {SEASONS.find((s) => s.id === season)?.label} · generated for your selection
+            {acres} acre · {SEASONS.find((s) => s.id === season)?.label} — sirf zaroori baatein
           </p>
-          <div className="mt-3 overflow-x-auto">
-            <table className="av-table min-w-[560px]">
-              <thead>
-                <tr>
-                  <th>Stage</th>
-                  <th>Days / Period</th>
-                  <th>Key Activities</th>
-                  <th className="text-right">Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scheduleRows.map((row) => (
-                  <tr key={row.stage + row.days}>
-                    <td className="font-bold text-[var(--av-accent)]">{row.stage}</td>
-                    <td className="whitespace-nowrap text-[var(--av-text-muted)]">{row.days}</td>
-                    <td>
-                      <ul className="space-y-0.5">
-                        {row.activities.map((a) => (
-                          <li key={a} className="text-xs text-[var(--av-text-secondary)]">
-                            • {a}
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td className="text-right">
-                      <AppLink
-                        href={`/crops/${crop.slug}`}
-                        className="text-[10px] font-bold text-[var(--av-accent)]"
-                      >
-                        Crop guide →
-                      </AppLink>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ul className="mt-3 space-y-2">
+            {scheduleRows.map((row) => (
+              <li
+                key={row.stage + row.days}
+                className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5"
+              >
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-xs font-black text-[var(--av-accent)]">{row.stage}</p>
+                  <p className="shrink-0 text-[10px] font-semibold text-[var(--av-text-muted)]">{row.days}</p>
+                </div>
+                <ul className="mt-1.5 space-y-0.5">
+                  {row.activities.map((a) => (
+                    <li key={a} className="text-xs leading-snug text-[var(--av-text-secondary)]">
+                      • {a}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
           <div className="mt-4 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => showToast("PDF export — जल्द available")}
+              onClick={downloadShortPlan}
               className={`inline-flex items-center gap-1.5 ${AV.btnSecondarySm}`}
             >
               <Download className="h-3.5 w-3.5" />
-              Download PDF
+              Save plan
             </button>
             <button
               type="button"
               onClick={() => {
-                const text = `${crop.name} plan · ${acres} acre · ${season}`;
+                const text = [
+                  `${crop.name} · ${acres} acre · ${season}`,
+                  ...scheduleRows.map((r) => `${r.stage}: ${r.activities.join("; ")}`),
+                ].join("\n");
                 if (navigator.share) {
                   void navigator.share({ title: "Agriveda Crop Plan", text });
                 } else {
                   void navigator.clipboard?.writeText(text);
-                  showToast("Plan summary copied");
+                  showToast("Plan copy ✓");
                 }
               }}
               className={`inline-flex items-center gap-1.5 ${AV.btnSecondarySm}`}
             >
               <Share2 className="h-3.5 w-3.5" />
-              Share Plan
+              Share
             </button>
+            <AppLink href={`/crops/${crop.slug}`} className={`inline-flex items-center ${AV.btnSecondarySm}`}>
+              Full guide →
+            </AppLink>
           </div>
         </DarkCard>
       );
     }
 
     if (activeTab === "Irrigation") {
-      const lines =
+      const lines = shortenFarmerLines(
         mgmt?.irrigationSchedule?.length
           ? mgmt.irrigationSchedule
           : [
               crop.irrigationManagement.waterRequirement,
               ...crop.irrigationManagement.criticalStages.map((c) => `Critical: ${c}`),
               ...crop.irrigationManagement.schedule,
-            ];
+            ],
+        4,
+        70
+      );
       return (
         <DarkCard className="xl:col-span-12">
-          <SectionHeader title={`Irrigation — ${crop.name}`} />
+          <SectionHeader title={`Paani — ${crop.name}`} />
           <ul className="mt-3 space-y-2">
-            {lines.filter(Boolean).map((line) => (
-              <li key={line} className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-secondary)]">
+            {lines.map((line) => (
+              <li
+                key={line}
+                className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-sm font-medium text-[var(--av-text-primary)]"
+              >
                 {line}
               </li>
             ))}
@@ -299,148 +362,162 @@ export default function CropPlannerClient() {
     }
 
     if (activeTab === "Fertilizer") {
+      const lines = shortenFarmerLines(
+        fertPlan?.schedule?.length
+          ? fertPlan.schedule.map((s) => `${s.time}: ${s.apply}`)
+          : [
+              ...crop.fertilizerSchedule.basalDose,
+              ...crop.fertilizerSchedule.stageWise.flatMap((s) =>
+                s.details.map((d) => `${s.stage}: ${d}`)
+              ),
+            ],
+        5,
+        75
+      );
       return (
         <DarkCard className="xl:col-span-12">
-          <SectionHeader title={`Fertilizer — ${crop.name} (${acres} acre)`} />
+          <SectionHeader title={`Khad — ${crop.name} (${acres} acre)`} />
           <ul className="mt-3 space-y-2">
-            {(fertPlan?.schedule?.length
-              ? fertPlan.schedule.map((s) => `${s.time}: ${s.apply}`)
-              : [
-                  ...crop.fertilizerSchedule.basalDose,
-                  ...crop.fertilizerSchedule.stageWise.flatMap((s) =>
-                    s.details.map((d) => `${s.stage}: ${d}`)
-                  ),
-                ]
-            ).map((line) => (
-              <li key={line} className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs">
+            {lines.map((line) => (
+              <li
+                key={line}
+                className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5 text-sm font-medium"
+              >
                 {line}
               </li>
             ))}
           </ul>
           {fertPlan?.bags?.length ? (
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {fertPlan.bags.map((b) => (
-                <div key={b.name} className="rounded-xl border border-[var(--av-border)] px-3 py-2">
-                  <p className="text-[10px] text-[var(--av-text-muted)]">{b.name}</p>
-                  <p className="text-sm font-bold text-[var(--av-accent)]">{b.amount}</p>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {fertPlan.bags.slice(0, 3).map((b) => (
+                <div key={b.name} className="rounded-xl border border-[var(--av-border)] px-2 py-2 text-center">
+                  <p className="text-[9px] text-[var(--av-text-muted)]">{shortenFarmerLine(b.name, 18)}</p>
+                  <p className="text-sm font-black text-[var(--av-accent)]">{b.amount}</p>
                 </div>
               ))}
             </div>
           ) : null}
-          <AppLink href={`/crops/${crop.slug}?tab=fertilizer`} className={`mt-3 inline-flex ${AV.link}`}>
-            Full fertilizer guide →
-          </AppLink>
         </DarkCard>
       );
     }
 
     if (activeTab === "Pest Control") {
-      const pests = mgmt?.pestManagement?.slice(0, 5) ?? [];
+      const pests = mgmt?.pestManagement?.slice(0, 4) ?? [];
       return (
         <DarkCard className="xl:col-span-12">
-          <SectionHeader title={`Pests — ${crop.name}`} />
+          <SectionHeader title={`Keet — ${crop.name}`} />
           {pests.length ? (
             <ul className="mt-3 space-y-2">
               {pests.map((p) => (
                 <li key={p.pestName} className="rounded-xl border border-[var(--av-border)] px-3 py-2.5">
-                  <p className="text-xs font-bold text-[var(--av-text-primary)]">{p.pestName}</p>
-                  <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">ETL: {p.etl}</p>
+                  <p className="text-sm font-bold text-[var(--av-text-primary)]">
+                    {shortenFarmerLine(p.pestName, 40)}
+                  </p>
                   <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                    {p.activeIngredient} @ {p.dose}
+                    {shortenFarmerLine(`${p.activeIngredient} — ${p.dose}`, 70)}
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                    Spray tab jab nuksaan dikhe / threshold cross ho
                   </p>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-xs text-[var(--av-text-muted)]">
-              {crop.cropProtection.majorPests.join(", ") || "See crop pest guide"}
+            <p className="mt-2 text-sm text-[var(--av-text-muted)]">
+              {shortenFarmerLines(crop.cropProtection.majorPests, 3, 40).join(" · ") || "Crop guide dekhein"}
             </p>
           )}
-          <AppLink href={`/crops/${crop.slug}?tab=pests`} className={`mt-3 inline-flex ${AV.link}`}>
-            All pests →
-          </AppLink>
         </DarkCard>
       );
     }
 
     if (activeTab === "Disease Control") {
-      const diseases = mgmt?.diseaseManagement?.slice(0, 5) ?? [];
+      const diseases = mgmt?.diseaseManagement?.slice(0, 4) ?? [];
       return (
         <DarkCard className="xl:col-span-12">
-          <SectionHeader title={`Diseases — ${crop.name}`} />
+          <SectionHeader title={`Rog — ${crop.name}`} />
           {diseases.length ? (
             <ul className="mt-3 space-y-2">
               {diseases.map((d) => (
                 <li key={d.diseaseName} className="rounded-xl border border-[var(--av-border)] px-3 py-2.5">
-                  <p className="text-xs font-bold">{d.diseaseName}</p>
+                  <p className="text-sm font-bold">{shortenFarmerLine(d.diseaseName, 40)}</p>
                   <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                    {d.activeIngredient} @ {d.dose}
+                    {shortenFarmerLine(`${d.activeIngredient} — ${d.dose}`, 70)}
                   </p>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-xs text-[var(--av-text-muted)]">
-              {crop.cropProtection.majorDiseases.join(", ") || "See crop disease guide"}
+            <p className="mt-2 text-sm text-[var(--av-text-muted)]">
+              {shortenFarmerLines(crop.cropProtection.majorDiseases, 3, 40).join(" · ") || "Crop guide dekhein"}
             </p>
           )}
-          <AppLink href={`/crops/${crop.slug}?tab=diseases`} className={`mt-3 inline-flex ${AV.link}`}>
-            All diseases →
-          </AppLink>
         </DarkCard>
       );
     }
 
     if (activeTab === "Weed Control") {
-      const weeds = mgmt?.weedManagement?.slice(0, 4) ?? [];
+      const weeds = mgmt?.weedManagement?.slice(0, 3) ?? [];
       const program = mgmt?.weedProgram;
       return (
         <DarkCard className="xl:col-span-12">
-          <SectionHeader title={`Weed management — ${crop.name}`} />
+          <SectionHeader title={`Ghass / weed — ${crop.name}`} />
           {program?.criticalPeriod ? (
-            <p className="mt-2 text-xs text-[var(--av-text-muted)]">
-              Critical period: {program.criticalPeriod}
+            <p className="mt-2 text-xs font-semibold text-[var(--av-accent)]">
+              Pehle {shortenFarmerLine(program.criticalPeriod, 50)} saaf rakhein
             </p>
           ) : null}
           {weeds.length ? (
             <ul className="mt-3 space-y-2">
               {weeds.map((w) => (
-                <li key={w.weedName} className="rounded-xl border border-[var(--av-border)] px-3 py-2 text-xs">
-                  <p className="font-bold">{w.weedName}</p>
-                  <p className="mt-1 text-[var(--av-text-secondary)]">
-                    Pre: {w.preEmergenceHerbicide} · Post: {w.postEmergenceHerbicide} · {w.dose}
+                <li key={w.weedName} className="rounded-xl border border-[var(--av-border)] px-3 py-2.5">
+                  <p className="text-sm font-bold">{shortenFarmerLine(w.weedName, 36)}</p>
+                  <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
+                    {shortenFarmerLine(
+                      `Dawai: ${w.postEmergenceHerbicide || w.preEmergenceHerbicide} · ${w.dose}`,
+                      72
+                    )}
                   </p>
                 </li>
               ))}
             </ul>
           ) : (
-            <ul className="mt-3 space-y-1 text-xs text-[var(--av-text-secondary)]">
-              {crop.cropProtection.weedManagement.map((w) => (
-                <li key={w}>• {w}</li>
+            <ul className="mt-3 space-y-1.5">
+              {shortenFarmerLines(crop.cropProtection.weedManagement, 3, 70).map((w) => (
+                <li
+                  key={w}
+                  className="rounded-xl border border-[var(--av-border)] px-3 py-2 text-sm text-[var(--av-text-secondary)]"
+                >
+                  {w}
+                </li>
               ))}
             </ul>
           )}
-          <AppLink href={`/crops/${crop.slug}?tab=weeds`} className={`mt-3 inline-flex ${AV.link}`}>
-            Weed guide →
-          </AppLink>
         </DarkCard>
       );
     }
 
-    // Harvest
     return (
       <DarkCard className="xl:col-span-12">
-        <SectionHeader title={`Harvest — ${crop.name}`} />
-        <p className="mt-2 text-xs font-semibold text-[var(--av-accent)]">
-          {crop.harvestAndYield.harvestingTime}
+        <SectionHeader title={`Kataai — ${crop.name}`} />
+        <p className="mt-2 text-sm font-black text-[var(--av-accent)]">
+          {shortenFarmerLine(crop.harvestAndYield.harvestingTime, 50)}
         </p>
-        <p className="mt-1 text-xs text-[var(--av-text-muted)]">Yield: {crop.estimatedYield}</p>
-        <ul className="mt-3 space-y-1 text-xs text-[var(--av-text-secondary)]">
-          {crop.harvestAndYield.maturitySigns.map((m) => (
-            <li key={m}>• {m}</li>
-          ))}
-          {crop.harvestAndYield.storageTips.slice(0, 3).map((m) => (
-            <li key={m}>• Storage: {m}</li>
+        <p className="mt-1 text-xs text-[var(--av-text-muted)]">
+          Paidawar: {shortenFarmerLine(crop.estimatedYield, 40)}
+        </p>
+        <ul className="mt-3 space-y-1.5">
+          {shortenFarmerLines(
+            [...crop.harvestAndYield.maturitySigns, ...crop.harvestAndYield.storageTips.slice(0, 2)],
+            4,
+            70
+          ).map((m) => (
+            <li
+              key={m}
+              className="rounded-xl border border-[var(--av-border)] px-3 py-2 text-sm text-[var(--av-text-secondary)]"
+            >
+              {m}
+            </li>
           ))}
         </ul>
       </DarkCard>
@@ -456,7 +533,11 @@ export default function CropPlannerClient() {
             <select
               value={cropSlug}
               onChange={(e) => {
-                setCropSlug(e.target.value);
+                const nextSlug = e.target.value;
+                const nextCrop = crops.find((c) => c.slug === nextSlug) ?? crops[0];
+                const seasons = getPlannerSeasonsForCrop(nextCrop.slug, nextCrop.suitableSeason);
+                setCropSlug(nextSlug);
+                setSeason(pickDefaultPlannerSeason(seasons));
                 setGenerated(false);
               }}
               className="mt-1 w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-sm font-semibold"
@@ -468,23 +549,37 @@ export default function CropPlannerClient() {
                 </option>
               ))}
             </select>
+            <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+              {crop.suitableSeason}
+            </p>
           </div>
           <div>
-            <label className={AV.label}>Select Season</label>
+            <label className={AV.label}>
+              Select Season
+              {allowedSeasons.length === 1 ? (
+                <span className="ml-1 font-semibold text-[var(--av-accent)]">(auto)</span>
+              ) : null}
+            </label>
             <select
               value={season}
               onChange={(e) => {
-                setSeason(e.target.value as (typeof SEASONS)[number]["id"]);
+                setSeason(e.target.value as PlannerSeasonId);
                 setGenerated(false);
               }}
-              className="mt-1 w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-sm font-semibold"
+              disabled={allowedSeasons.length === 1}
+              className="mt-1 w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-80"
             >
-              {SEASONS.map((s) => (
+              {seasonOptions.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.label}
                 </option>
               ))}
             </select>
+            <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+              {allowedSeasons.length === 1
+                ? `${crop.name} is fasal ke liye yahi season`
+                : `${crop.name} ${allowedSeasons.length} seasons me ho sakti hai — choose karein`}
+            </p>
           </div>
           <div>
             <label className={AV.label}>Area</label>
@@ -550,17 +645,17 @@ export default function CropPlannerClient() {
           <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
             {PLAN_TABS.map((tab) => (
               <button
-                key={tab}
+                key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "rounded-xl border px-1.5 py-2 text-center text-[9px] font-bold leading-tight transition sm:text-[10px]",
-                  activeTab === tab
+                  "rounded-xl border px-1.5 py-2 text-center text-[10px] font-bold leading-tight transition sm:text-xs",
+                  activeTab === tab.id
                     ? "border-emerald-500/45 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                     : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-muted)]"
                 )}
               >
-                {tab}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -580,17 +675,17 @@ export default function CropPlannerClient() {
                       sizes="320px"
                     />
                   </div>
-                  <h3 className="mt-3 text-sm font-bold text-[var(--av-text-primary)]">Crop Summary</h3>
+                  <h3 className="mt-3 text-sm font-bold text-[var(--av-text-primary)]">Short summary</h3>
                   <ul className="mt-2 space-y-2 text-xs">
                     {[
-                      { icon: Calendar, label: "Duration", value: crop.durationDays },
+                      { icon: Calendar, label: "Din", value: shortenFarmerLine(crop.durationDays, 28) },
                       {
                         icon: Sprout,
                         label: "Season",
                         value: SEASONS.find((s) => s.id === season)?.label ?? season,
                       },
-                      { icon: Droplets, label: "Water", value: waterNeed },
-                      { icon: IndianRupee, label: "Yield", value: crop.estimatedYield },
+                      { icon: Droplets, label: "Paani", value: waterNeed },
+                      { icon: IndianRupee, label: "Paidawar", value: shortenFarmerLine(crop.estimatedYield, 28) },
                       { icon: IndianRupee, label: "Area", value: `${acres} acre` },
                     ].map(({ icon: Icon, label, value }) => (
                       <li key={label} className="flex items-start gap-2 text-[var(--av-text-secondary)]">
@@ -604,7 +699,7 @@ export default function CropPlannerClient() {
                 </DarkCard>
 
                 <DarkCard hover delay={1}>
-                  <SectionHeader title="Important Reminders" />
+                  <SectionHeader title="Yaad rakhein" />
                   <ul className="mt-3 space-y-2">
                     {reminders.map((r) => (
                       <li

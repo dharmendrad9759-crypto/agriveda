@@ -8,36 +8,40 @@ import MobileShellTopBar from "@/components/shell/MobileShellTopBar";
 import Footer from "@/components/footer";
 import BottomNav from "@/components/layout/BottomNav";
 import OfflineBanner from "@/components/layout/OfflineBanner";
+import PullToRefresh from "@/components/layout/PullToRefresh";
 import CapacitorNavigationFix from "@/components/capacitor/CapacitorNavigationFix";
 import CapacitorBootstrap from "@/components/capacitor/CapacitorBootstrap";
+import NativeAppEssentials from "@/components/capacitor/NativeAppEssentials";
 import BootSplash from "@/components/BootSplash";
 import FarmerOnboardingGate from "@/components/onboarding/FarmerOnboardingGate";
+import LocationBootstrap from "@/components/location/LocationBootstrap";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 import GoogleTranslateBootstrap from "@/components/i18n/GoogleTranslateBootstrap";
 import AppPremiumBackground from "@/components/ui/AppPremiumBackground";
+import PageReveal from "@/components/motion/PageReveal";
 import { MotionConfig } from "framer-motion";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
-import { isCapacitorNative } from "@/lib/capacitorNav";
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
-  const native = typeof window !== "undefined" && isCapacitorNative();
-
   return (
     <ThemeProvider>
       <LocaleProvider>
         <ToastProvider>
           <MotionConfig
-            reducedMotion={native ? "always" : "user"}
+            reducedMotion="user"
             transition={{ duration: MOTION.normal, ease: EASE_OUT }}
           >
             <GoogleTranslateBootstrap />
             <CapacitorBootstrap />
+            <NativeAppEssentials />
             <BootSplash />
             <CapacitorNavigationFix />
             <FarmerOnboardingGate>
+              <LocationBootstrap />
+              <PullToRefresh>
               <NavDrawerProvider>
               <OfflineBanner />
               <div className="app-premium-shell relative flex min-h-screen flex-col lg:flex-row">
@@ -48,7 +52,7 @@ export default function ClientProviders({ children }: { children: React.ReactNod
                   <Navbar />
                   <ShellTopBar />
                   <main className="min-w-0 flex-grow overflow-x-hidden bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">
-                    {children}
+                    <PageReveal>{children}</PageReveal>
                   </main>
                   <Footer />
                   <BottomNav />
@@ -56,6 +60,7 @@ export default function ClientProviders({ children }: { children: React.ReactNod
               </div>
               <LanguageSwitcher />
               </NavDrawerProvider>
+              </PullToRefresh>
             </FarmerOnboardingGate>
           </MotionConfig>
         </ToastProvider>

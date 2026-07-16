@@ -243,7 +243,13 @@ export default function CropsListingClient({ crops }: Props) {
           {filtered.map((crop, index) => (
             <CropCard key={crop.slug} crop={crop} index={index} variant={view} />
           ))}
-          {view === "grid" && <AddCustomCropCard index={filtered.length} />}
+          {view === "grid" && (
+            <AddCustomCropCard
+              crops={crops}
+              index={filtered.length}
+              onSelectName={(name) => setQuery(name)}
+            />
+          )}
         </AnimatePresence>
       </motion.div>
 

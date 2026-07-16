@@ -307,7 +307,7 @@ export const rawCropsData: Crop[] = [
     estimatedYield: "20-30 Quintals per Acre",
     seedRate: "8-10 kg/acre",
     spacing: "60 × 20 cm",
-    suitableSeason: "Kharif and spring",
+    suitableSeason: "Kharif, Rabi and Zaid",
     suitableSoil: "Fertile loam with drainage",
     climate: "Warm and humid climate with bright sun",
     sowingGuide: {

@@ -9,9 +9,29 @@ import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { AV } from "@/lib/design/tokens";
-import { Crown, ChevronRight, User, LogOut } from "lucide-react";
+import { Crown, ChevronRight, User, LogOut, Share2 } from "lucide-react";
 import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
+import { shareAgriveda } from "@/lib/appEssentials";
+import { useToast } from "@/components/ui/Toast";
+
+function ShareAgrivedaButton() {
+  const { showToast } = useToast();
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        const result = await shareAgriveda();
+        if (result === "copied") showToast("Link clipboard me copy ho gaya", "success");
+        else if (result === true) showToast("Dhanyavaad — share ho gaya", "success");
+      }}
+      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-300"
+    >
+      <Share2 className="h-4 w-4" />
+      Share Agriveda
+    </button>
+  );
+}
 
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -174,6 +194,7 @@ export default function SettingsPage() {
             <SettingsRow label="Privacy Policy" href="/privacy" />
             <SettingsRow label="Rate Us on Play Store" href="/profile" />
           </div>
+          <ShareAgrivedaButton />
         </DarkCard>
       </div>
 
