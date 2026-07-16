@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
-import { Camera, ShieldCheck, Sparkles } from "lucide-react";
+import { Camera, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -48,27 +48,20 @@ export default function HomeScanHero() {
       )}
 
       <div className="relative z-10 flex min-h-[220px] flex-col justify-between p-4 sm:min-h-[240px] sm:p-5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <p className="font-display text-[1.65rem] font-extrabold leading-none tracking-tight text-white sm:text-[1.85rem]">
-              AgriVeda
-            </p>
-            <p className="mt-2 text-[15px] font-semibold leading-snug text-emerald-50/95">
-              {isHi
-                ? `नमस्ते ${name} — आज फसल के लिए क्या करें?`
-                : `Namaste ${name} — aaj fasal ke liye kya karein?`}
-            </p>
-            <p className="mt-1 max-w-[18rem] text-[12px] leading-relaxed text-emerald-100/80">
-              {isHi
-                ? "पत्ती की फोटो लें, AI Doctor तुरंत बताएगा।"
-                : "Leaf ki photo lo — AI Doctor turant batayega."}
-            </p>
-          </div>
-
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-200/35 bg-amber-400/20 px-2.5 py-1 text-[10px] font-bold text-amber-50 backdrop-blur-md">
-            <ShieldCheck className="h-3 w-3" strokeWidth={2.5} />
-            {isHi ? "भरोसेमंद" : "Trusted"}
-          </span>
+        <div className="min-w-0 max-w-[20rem]">
+          <p className="font-display text-[1.65rem] font-extrabold leading-none tracking-tight text-white sm:text-[1.85rem]">
+            AgriVeda
+          </p>
+          <p className="mt-2 text-[15px] font-semibold leading-snug text-emerald-50/95">
+            {isHi
+              ? `नमस्ते ${name} — आज फसल के लिए क्या करें?`
+              : `Namaste ${name} — aaj fasal ke liye kya karein?`}
+          </p>
+          <p className="mt-1 text-[12px] leading-relaxed text-emerald-100/80">
+            {isHi
+              ? "पत्ती की फोटो लें, AI Doctor तुरंत बताएगा।"
+              : "Leaf ki photo lo — AI Doctor turant batayega."}
+          </p>
         </div>
 
         <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:items-center">

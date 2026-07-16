@@ -10,6 +10,7 @@ import {
   FlaskConical,
   Users,
   Award,
+  ShieldCheck,
 } from "lucide-react";
 import HomeScanHero from "@/components/dashboard/HomeScanHero";
 import HomeWeatherCard from "@/components/dashboard/HomeWeatherCard";
@@ -97,8 +98,9 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
             <p className="truncate text-[13px] font-semibold text-[var(--av-text-primary)]">
               {isHi ? "आज का फ़ोकस: फसल की जाँच" : "Aaj ka focus: fasal check"}
             </p>
-            <p className="truncate text-[11px] text-[var(--av-text-muted)]">
-              {isHi ? "स्मार्ट फार्म असिस्टेंट · सरल सलाह" : "Smart farm assistant · simple advice"}
+            <p className="mt-0.5 flex items-center gap-1 truncate text-[11px] font-medium text-[var(--av-text-muted)]">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-[var(--av-accent)]" />
+              {isHi ? "किसानों का भरोसेमंद साथी" : "Farmers ka bharosemand saathi"}
             </p>
           </div>
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-800 ring-1 ring-amber-500/25 dark:text-amber-200">
