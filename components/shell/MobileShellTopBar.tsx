@@ -5,13 +5,17 @@ import WeatherPill from "@/components/weather/WeatherPill";
 import { Bell, MapPin, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
+import { usePathname } from "next/navigation";
 
 export default function MobileShellTopBar() {
+  const pathname = usePathname();
   const { profile } = useFarmerProfile();
   const location = [profile.district, profile.state].filter(Boolean).join(", ") || "Sehore, MP";
 
   const iconBtn =
     "flex h-8 w-8 items-center justify-center rounded-xl border border-emerald-500/15 bg-[var(--av-surface)]/80 text-[var(--av-text-muted)] shadow-sm backdrop-blur-md transition hover:border-emerald-500/35 hover:text-[var(--av-accent)]";
+
+  if (pathname === "/") return null;
 
   return (
     <header className="av-topbar sticky top-0 z-40 flex items-center justify-between gap-2 border-b border-emerald-500/10 bg-[var(--av-surface)]/70 px-3 py-2.5 backdrop-blur-xl lg:hidden">

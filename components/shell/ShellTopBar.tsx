@@ -5,8 +5,10 @@ import WeatherPill from "@/components/weather/WeatherPill";
 import { Bell, ChevronDown, MapPin, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMemo } from "react";
+import { usePathname } from "next/navigation";
 
 export default function ShellTopBar() {
+  const pathname = usePathname();
   const { profile } = useFarmerProfile();
 
   const location = useMemo(() => {
@@ -16,6 +18,8 @@ export default function ShellTopBar() {
 
   const pill =
     "flex items-center gap-1.5 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 text-xs font-medium text-[var(--av-text-primary)]";
+
+  if (pathname === "/") return null;
 
   return (
     <header className="av-topbar sticky top-0 z-40 hidden items-center justify-end gap-3 px-4 py-2 lg:flex">
