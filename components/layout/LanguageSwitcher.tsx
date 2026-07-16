@@ -6,6 +6,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
 import { applyPageTranslation, TRANSLATE_LANGUAGES } from "@/lib/translator";
+import { usePathname } from "next/navigation";
 
 const OPTIONS: {
   locale: AppLocale;
@@ -18,6 +19,7 @@ const OPTIONS: {
 ];
 
 export default function LanguageSwitcher() {
+  const pathname = usePathname();
   const { locale, setLocale, t } = useLocale();
   const [open, setOpen] = useState(false);
 
@@ -36,6 +38,8 @@ export default function LanguageSwitcher() {
       if (en) applyPageTranslation(en);
     }
   };
+
+  if (pathname === "/") return null;
 
   return (
     <>

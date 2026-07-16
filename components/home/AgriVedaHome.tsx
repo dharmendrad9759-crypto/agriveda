@@ -152,7 +152,7 @@ export default function AgriVedaHome() {
           </div>
         </div>
 
-        <section className="relative min-h-[252px] overflow-hidden rounded-[26px] bg-[#0d542d] shadow-[0_18px_40px_-18px_rgba(8,75,37,0.55)] sm:min-h-[290px]">
+        <section className="relative min-h-[238px] overflow-hidden rounded-[26px] bg-[#0d542d] shadow-[0_18px_40px_-18px_rgba(8,75,37,0.55)] sm:min-h-[290px]">
           <Image
             src="/images/agriveda-hero-farmer.png"
             alt="Farmer scanning a crop leaf with the AgriVeda AI doctor"
@@ -166,7 +166,7 @@ export default function AgriVedaHome() {
           <div className="absolute -left-12 -top-16 h-44 w-44 rounded-full border border-white/10" />
           <div className="absolute left-16 top-5 h-32 w-32 rounded-full border border-white/[0.06]" />
 
-          <div className="relative z-10 flex min-h-[252px] max-w-[66%] flex-col items-start px-5 py-5 sm:min-h-[290px] sm:max-w-[58%] sm:px-8 sm:py-7">
+          <div className="relative z-10 flex min-h-[238px] max-w-[66%] flex-col items-start px-5 py-5 sm:min-h-[290px] sm:max-w-[58%] sm:px-8 sm:py-7">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/12 px-2.5 py-1 text-[10px] font-bold text-white backdrop-blur-md">
               <Sparkles className="h-3 w-3 text-[#ffd071]" />
               AI CROP DOCTOR
@@ -202,7 +202,7 @@ export default function AgriVedaHome() {
           <span className="text-[10px] font-semibold text-[#9b7d3c]">Trusted farmer rewards</span>
         </div>
 
-        <section className="mt-7">
+        <section className="mt-6 sm:mt-7">
           <div className="mb-3 flex items-end justify-between">
             <div>
               <h2 className="text-lg font-extrabold tracking-[-0.02em] text-[#183e28]">Quick Actions</h2>
@@ -217,7 +217,7 @@ export default function AgriVedaHome() {
               <AppLink
                 key={label}
                 href={href}
-                className="group flex min-h-[112px] flex-col items-center justify-center rounded-[20px] border border-[#e3ebe1] bg-white px-2 py-3 text-center shadow-[0_6px_20px_rgba(31,75,45,0.055)] transition hover:-translate-y-0.5 hover:border-[#c9ddca] hover:shadow-[0_10px_24px_rgba(31,75,45,0.09)] active:scale-[0.98]"
+                className="group flex min-h-[102px] flex-col items-center justify-center rounded-[20px] border border-[#e3ebe1] bg-white px-2 py-2.5 text-center shadow-[0_6px_20px_rgba(31,75,45,0.055)] transition hover:-translate-y-0.5 hover:border-[#c9ddca] hover:shadow-[0_10px_24px_rgba(31,75,45,0.09)] active:scale-[0.98] sm:min-h-[112px] sm:py-3"
               >
                 <span className={`flex h-11 w-11 items-center justify-center rounded-[15px] ${color}`}>
                   <Icon className="h-5 w-5" strokeWidth={2.1} />
