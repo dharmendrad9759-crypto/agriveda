@@ -1,38 +1,53 @@
 "use client";
 
 import AppLink from "@/components/ui/AppLink";
-import WeatherPill from "@/components/weather/WeatherPill";
-import { Bell, MapPin, User } from "lucide-react";
+import { Bell, MapPin } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
 
 export default function MobileShellTopBar() {
   const { profile } = useFarmerProfile();
   const location = [profile.district, profile.state].filter(Boolean).join(", ") || "Sehore, MP";
-
-  const iconBtn =
-    "flex h-8 w-8 items-center justify-center rounded-xl border border-emerald-500/15 bg-[var(--av-surface)]/80 text-[var(--av-text-muted)] shadow-sm backdrop-blur-md transition hover:border-emerald-500/35 hover:text-[var(--av-accent)]";
+  const initials = profile.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase() || "K";
 
   return (
-    <header className="av-topbar sticky top-0 z-40 flex items-center justify-between gap-2 border-b border-emerald-500/10 bg-[var(--av-surface)]/70 px-3 py-2.5 backdrop-blur-xl lg:hidden">
-      <div className="flex min-w-0 items-center gap-2">
-        <NavDrawerTrigger variant="menu" />
-        <NavDrawerTrigger variant="brand" />
-      </div>
-      <div className="flex shrink-0 items-center gap-1.5">
+    <header className="av-topbar sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-emerald-950/[0.07] bg-[var(--av-surface)]/88 px-4 py-3 shadow-[0_8px_30px_-24px_rgba(5,80,50,0.5)] backdrop-blur-xl lg:hidden">
+      <div className="min-w-0">
+        <NavDrawerTrigger
+          variant="brand"
+          className="[&_svg]:h-5 [&_svg]:w-5 [&_svg]:rounded-lg [&_svg]:bg-emerald-100 [&_svg]:p-1 [&_span]:font-display [&_span]:text-[15px] [&_span]:tracking-tight dark:[&_svg]:bg-emerald-400/10"
+        />
         <AppLink
           href="/profile"
-          className="hidden items-center gap-1 rounded-xl border border-emerald-500/15 bg-[var(--av-surface)]/80 px-2 py-1 text-[9px] text-[var(--av-text-secondary)] backdrop-blur-md xs:flex"
+          className="mt-0.5 flex max-w-44 items-center gap-1 text-[10px] font-medium text-[var(--av-text-muted)]"
+          aria-label={`Current location: ${location}`}
         >
-          <MapPin className="h-3 w-3 text-[var(--av-accent)]" />
-          {location.split(",")[0]}
+          <MapPin className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-300" />
+          <span className="truncate">{location}</span>
         </AppLink>
-        <WeatherPill compact />
-        <AppLink href="/alerts" className={`relative ${iconBtn}`} aria-label="Alerts">
-          <Bell className="h-3.5 w-3.5" />
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2">
+        <AppLink
+          href="/alerts"
+          className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-950/[0.08] bg-[var(--av-surface-muted)] text-[var(--av-text-secondary)] transition hover:border-emerald-500/30 hover:text-emerald-700 dark:border-white/10 dark:hover:text-emerald-300"
+          aria-label="Notifications"
+        >
+          <Bell className="h-[18px] w-[18px]" />
+          <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-amber-500 ring-2 ring-[var(--av-surface-muted)]" />
         </AppLink>
-        <AppLink href="/settings" className={`rounded-full text-[var(--av-accent)] ${iconBtn}`}>
-          <User className="h-3.5 w-3.5" />
+        <AppLink
+          href="/profile"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-[11px] font-extrabold text-white shadow-[0_8px_20px_-10px_rgba(5,100,65,0.8)] ring-2 ring-white dark:ring-emerald-300/20"
+          aria-label="Profile"
+        >
+          {initials}
         </AppLink>
       </div>
     </header>

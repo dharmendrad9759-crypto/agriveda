@@ -27,7 +27,7 @@ const SIDE_ITEMS = [
 
 const RIGHT_ITEMS = [
   {
-    label: "Market",
+    label: "Mandi",
     path: "/mandi",
     icon: IndianRupee,
     match: (pathname: string) => pathname.startsWith("/mandi"),
