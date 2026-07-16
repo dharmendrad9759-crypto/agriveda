@@ -106,7 +106,7 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
               >
                 <AppLink
                   href={a.href}
-                  className="group flex flex-col items-center gap-1 text-center active:scale-95"
+                  className="av-tool-press group flex flex-col items-center gap-1 text-center"
                 >
                 <QuickActionIcon
                   label={a.label}

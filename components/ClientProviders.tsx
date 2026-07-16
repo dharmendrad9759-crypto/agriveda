@@ -59,7 +59,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
                       <Navbar />
                       <ShellTopBar />
                       <main className="min-w-0 flex-grow overflow-x-hidden bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">
-                        {native ? children : <PageReveal>{children}</PageReveal>}
+                        <PageReveal>{children}</PageReveal>
                       </main>
                       <Footer />
                       <BottomNav />

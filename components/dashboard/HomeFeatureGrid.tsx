@@ -101,8 +101,8 @@ export default function HomeFeatureGrid() {
             <AppLink
               href={f.href}
               className={cn(
-                "group flex h-full flex-col items-center gap-1 rounded-2xl border border-emerald-500/15 bg-[var(--av-surface)]/90 p-2 text-center shadow-sm backdrop-blur-sm",
-                "transition duration-200 hover:border-[var(--av-accent)]/40 hover:shadow-[0_10px_28px_rgba(0,100,50,0.14)] active:scale-[0.97]"
+                "group av-tool-press flex h-full flex-col items-center gap-1 rounded-2xl border border-emerald-500/15 bg-[var(--av-surface)]/90 p-2 text-center shadow-sm backdrop-blur-sm",
+                "transition duration-200 hover:border-[var(--av-accent)]/40 hover:shadow-[0_10px_28px_rgba(0,100,50,0.14)]"
               )}
             >
               <span

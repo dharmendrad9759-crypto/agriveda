@@ -35,9 +35,9 @@ export default function BootSplash() {
   useEffect(() => {
     if (phase === "gone") return;
 
-    // Accessibility: short. Everyone else: clear, watchable farm open (~2.4s)
-    const totalMs = a11yReduced ? 900 : 2400;
-    const exitMs = a11yReduced ? 220 : 600;
+    // Accessibility: short. Everyone else: clear, watchable farm open (~3.2s)
+    const totalMs = a11yReduced ? 900 : 3200;
+    const exitMs = a11yReduced ? 220 : 700;
     const t1 = window.setTimeout(() => setPhase("exit"), totalMs - exitMs);
     const t2 = window.setTimeout(() => {
       setPhase("gone");
@@ -207,7 +207,7 @@ export default function BootSplash() {
             className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-lime-300 to-emerald-400"
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
-            transition={{ delay: 1.1, duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: 0.85, duration: 1.9, ease: [0.22, 1, 0.36, 1] }}
           />
         </motion.div>
       </motion.div>

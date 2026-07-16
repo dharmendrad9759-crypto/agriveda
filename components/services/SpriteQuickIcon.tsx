@@ -49,7 +49,7 @@ export function QuickActionIcon({
   imageSrc?: string;
 }) {
   return (
-    <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--av-border)] bg-[var(--av-surface-muted)] shadow-sm transition group-hover:border-[var(--av-accent)]/40 group-hover:bg-[var(--av-accent-soft)] sm:h-16 sm:w-16">
+    <span className="av-tool-press relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--av-border)] bg-[var(--av-surface-muted)] shadow-sm transition group-hover:border-[var(--av-accent)]/40 group-hover:bg-[var(--av-accent-soft)] sm:h-16 sm:w-16">
       {imageSrc ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

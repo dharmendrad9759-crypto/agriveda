@@ -1,25 +1,35 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
-/** Soft page enter — keyed by route so each navigation feels alive */
+/**
+ * Tool / page enter animation.
+ * Uses CSS (not Framer) so it still runs on Capacitor even when UI motion is reduced for performance.
+ */
 export default function PageReveal({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const reduced = useReducedMotion();
+  const [reduced, setReduced] = useState(false);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduced(mq.matches);
+    sync();
+    mq.addEventListener?.("change", sync);
+    return () => mq.removeEventListener?.("change", sync);
+  }, []);
+
+  // Remount animation whenever route changes
+  useEffect(() => {
+    setTick((n) => n + 1);
+  }, [pathname]);
 
   if (reduced) return <>{children}</>;
 
   return (
-    <motion.div
-      key={pathname}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: MOTION.slow, ease: EASE_OUT }}
-      className="min-w-0"
-    >
+    <div key={`${pathname}-${tick}`} className="av-page-enter min-w-0">
       {children}
-    </motion.div>
+    </div>
   );
 }
