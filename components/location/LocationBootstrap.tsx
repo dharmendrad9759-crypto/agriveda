@@ -64,15 +64,20 @@ export default function LocationBootstrap() {
 
   useEffect(() => {
     if (!hydrated || !profile.onboardingComplete) return;
-    const status = getLocationPermissionStatus();
-    if (status === "denied") {
-      setShowDenied(true);
-      return;
-    }
-    // First open / unknown — ask immediately
-    if (status !== "granted" || !profile.state) {
-      void applyLocation(false);
-    }
+
+    // Let home paint first — GPS prompt on cold start feels like a freeze
+    const start = window.setTimeout(() => {
+      const status = getLocationPermissionStatus();
+      if (status === "denied") {
+        setShowDenied(true);
+        return;
+      }
+      if (status !== "granted" || !profile.state) {
+        void applyLocation(false);
+      }
+    }, 2200);
+
+    return () => window.clearTimeout(start);
   }, [hydrated, profile.onboardingComplete]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!hydrated || !profile.onboardingComplete) return null;

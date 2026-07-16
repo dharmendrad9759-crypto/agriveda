@@ -1,10 +1,13 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
+import { isCapacitorNative } from "@/lib/capacitorNav";
 
-/** Living agritech atmosphere — sunrise haze, field depth, floating seeds */
+/** Living agritech atmosphere — static on native phones for smooth open */
 export default function AppPremiumBackground() {
   const reduceMotion = useReducedMotion();
+  const native = typeof window !== "undefined" ? isCapacitorNative() : false;
+  const animateParticles = !reduceMotion && !native;
 
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
@@ -17,15 +20,17 @@ export default function AppPremiumBackground() {
       <div className="absolute -right-24 top-0 h-72 w-72 rounded-full bg-lime-300/[0.08] blur-[90px] dark:bg-cyan-500/[0.08]" />
       <div className="absolute bottom-1/4 left-1/3 h-56 w-56 rounded-full bg-amber-300/[0.06] blur-[80px]" />
 
-      <div
-        className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(16,185,129,0.55) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.55) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(ellipse at center, black 20%, transparent 75%)",
-        }}
-      />
+      {!native && (
+        <div
+          className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(16,185,129,0.55) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.55) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+            maskImage: "radial-gradient(ellipse at center, black 20%, transparent 75%)",
+          }}
+        />
+      )}
 
       <svg
         className="absolute bottom-0 left-0 right-0 h-[26vh] w-full opacity-[0.09] dark:opacity-[0.12]"
@@ -50,27 +55,17 @@ export default function AppPremiumBackground() {
         </defs>
       </svg>
 
-      {!reduceMotion &&
-        Array.from({ length: 10 }).map((_, i) => (
-          <motion.span
+      {animateParticles &&
+        Array.from({ length: 6 }).map((_, i) => (
+          <span
             key={i}
-            className="absolute rounded-full bg-emerald-400/30"
+            className="absolute rounded-full bg-emerald-400/30 animate-pulse"
             style={{
-              left: `${6 + i * 9.5}%`,
+              left: `${6 + i * 14}%`,
               top: `${12 + (i % 4) * 16}%`,
               width: 3 + (i % 3),
               height: 3 + (i % 3),
-            }}
-            animate={{
-              y: [0, -18 - (i % 4) * 4, 0],
-              opacity: [0.15, 0.45, 0.15],
-              x: [0, (i % 2 === 0 ? 6 : -6), 0],
-            }}
-            transition={{
-              duration: 5.5 + i * 0.35,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.28,
+              animationDuration: `${4 + i * 0.4}s`,
             }}
           />
         ))}
