@@ -104,7 +104,7 @@ function SectionTitle({
   );
 }
 
-export default function DesktopDashboard({ embedded: _embedded }: { embedded?: boolean } = {}) {
+export default function DesktopDashboard({ embedded = false }: { embedded?: boolean } = {}) {
   const { data: farm } = useFarmData();
   const { profile } = useFarmerProfile();
   const { weather, loading: weatherLoading } = useLiveWeather();
@@ -125,7 +125,10 @@ export default function DesktopDashboard({ embedded: _embedded }: { embedded?: b
     : `बारिश की संभावना ${rainChance}% और हवा ${weather?.windSpeed ?? "तेज़"} है। दवा के नुकसान से बचने के लिए अगले साफ़ समय का इंतज़ार करें।`;
 
   return (
-    <div className="home-dashboard relative mx-auto min-w-0 max-w-6xl text-[#173c2b]">
+    <div
+      className="home-dashboard relative mx-auto min-w-0 max-w-6xl text-[#173c2b]"
+      data-embedded={embedded || undefined}
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute -left-28 top-20 h-64 w-64 rounded-full bg-[#dff2d9]/70 blur-3xl"
