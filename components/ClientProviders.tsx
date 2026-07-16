@@ -45,7 +45,6 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
             <GoogleTranslateBootstrap />
             <CapacitorBootstrap />
             <NativeAppEssentials />
-            <BootSplash />
             <CapacitorNavigationFix />
             <FarmerOnboardingGate>
               <LocationBootstrap />
@@ -71,6 +70,8 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
               </PullToRefresh>
             </FarmerOnboardingGate>
           </MotionConfig>
+          {/* Outside MotionConfig so phone UI jank-fix doesn't kill the open animation */}
+          <BootSplash />
         </ToastProvider>
       </LocaleProvider>
     </ThemeProvider>
