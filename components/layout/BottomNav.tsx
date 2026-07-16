@@ -27,7 +27,7 @@ const SIDE_ITEMS = [
 
 const RIGHT_ITEMS = [
   {
-    label: "Market",
+    label: "Mandi",
     path: "/mandi",
     icon: IndianRupee,
     match: (pathname: string) => pathname.startsWith("/mandi"),
@@ -81,7 +81,7 @@ function NavItem({
           strokeWidth={isActive ? 2.5 : 2}
         />
         <span
-          className={`truncate text-[9px] font-bold ${
+          className={`truncate text-[10px] font-bold ${
             isActive ? "text-emerald-600 dark:text-emerald-300" : "theme-text-muted"
           }`}
         >
@@ -144,7 +144,7 @@ export default function BottomNav() {
               <Stethoscope className="h-6 w-6" strokeWidth={2.25} />
             </motion.span>
             <span
-              className={`text-[9px] font-bold ${aiActive ? "text-emerald-500" : "theme-text-muted"}`}
+              className={`text-[10px] font-bold ${aiActive ? "text-emerald-500" : "theme-text-muted"}`}
             >
               AI Doctor
             </span>
