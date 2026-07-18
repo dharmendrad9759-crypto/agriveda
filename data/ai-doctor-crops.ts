@@ -16,3 +16,11 @@ export const AI_DOCTOR_CROPS = [
   { slug: "bhindi", name: "Bhindi", emoji: "🫛" },
   { slug: "moong", name: "Moong", emoji: "🫘" },
 ] as const;
+
+/** Special picker option — let the AI identify the crop from the photo itself. */
+export const OTHER_CROP = { slug: "other", name: "Other", emoji: "🌱" } as const;
+
+/** True when the farmer did not pick a specific listed crop. */
+export function isOtherCrop(slug: string): boolean {
+  return slug === OTHER_CROP.slug;
+}
