@@ -8,7 +8,7 @@ import SectionHeader from "@/components/shell/SectionHeader";
 import RiskBadge from "@/components/shell/RiskBadge";
 import { GaugeChart } from "@/components/shell/charts";
 import { AV } from "@/lib/design/tokens";
-import { AI_DOCTOR_CROPS } from "@/data/ai-doctor-crops";
+import { AI_DOCTOR_CROPS, OTHER_CROP } from "@/data/ai-doctor-crops";
 import { getCropImageUrl } from "@/lib/crops/crop-display";
 import { crops } from "@/data/crops";
 import {
@@ -163,6 +163,20 @@ export function AiDoctorQuickIdentify({
             </button>
           );
         })}
+        <button
+          type="button"
+          onClick={() => onSelectCrop(OTHER_CROP.slug)}
+          className={`flex min-w-[72px] shrink-0 flex-col items-center gap-1.5 rounded-xl border p-2 transition ${
+            selectedCrop === OTHER_CROP.slug
+              ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
+              : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-[var(--av-accent)]/40"
+          }`}
+        >
+          <span className="flex h-12 w-12 items-center justify-center rounded-lg text-2xl">
+            {OTHER_CROP.emoji}
+          </span>
+          <span className="text-[10px] font-bold text-[var(--av-text-primary)]">{OTHER_CROP.name}</span>
+        </button>
         <AppLink
           href="/crops"
           className="flex min-w-[72px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[var(--av-border)] p-2 text-[10px] font-bold text-[var(--av-accent)]"

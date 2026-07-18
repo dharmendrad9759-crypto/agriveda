@@ -1,5 +1,5 @@
 import type { DiagnosisResult } from "@/lib/aiDiagnosis";
-import { AI_DOCTOR_CROPS } from "@/data/ai-doctor-crops";
+import { AI_DOCTOR_CROPS, isOtherCrop } from "@/data/ai-doctor-crops";
 import { buildKnowledgeContext } from "@/lib/knowledge/retrieve";
 
 /** Ordered fallbacks — older 2.0/1.5 models were shut down June 2026 */
@@ -12,6 +12,7 @@ export function getGeminiApiKey(): string | null {
 }
 
 function cropLabel(slug: string): string {
+  if (isOtherCrop(slug)) return "फसल AI द्वारा पहचानी गई";
   const crop = AI_DOCTOR_CROPS.find((c) => c.slug === slug);
   return crop ? `${crop.name} (${crop.slug})` : slug;
 }
@@ -75,22 +76,33 @@ const RESPONSE_SCHEMA = {
 };
 
 function buildPrompt(cropSlug: string): string {
+  const isOther = isOtherCrop(cropSlug);
   const crop = cropLabel(cropSlug);
-  const knowledge = buildKnowledgeContext({ cropSlug, maxChunks: 5 });
+
+  // For "Other", let Gemini identify the crop from the photo — skip crop-specific knowledge.
+  const knowledge = isOther ? "" : buildKnowledgeContext({ cropSlug, maxChunks: 5 });
   const knowledgeBlock = knowledge
     ? `\n\nREFERENCE KNOWLEDGE (ICAR PoP / diagnostic guides — use for doses and disease names):\n${knowledge.slice(0, 2500)}`
     : "";
 
+  const cropLine = isOther
+    ? `The farmer did NOT select a specific crop (chose "Other"). FIRST identify the crop/plant species from the photo yourself, then diagnose it. State the identified crop name (Hindi + English) at the start of the cropContext field.`
+    : `The farmer selected crop: ${crop}`;
+
+  const problemLine = isOther
+    ? `If you see a problem, name the most likely pest, disease, or nutrient issue for the crop you identified from the photo, in the Indian context. Include the scientific pathogen/pest name in the pathogen field.`
+    : `If you see a problem, name the most likely pest, disease, or nutrient issue for ${crop} in India. Include scientific pathogen/pest name in pathogen field.`;
+
   return `You are Agriveda AI Plant Doctor — an expert agronomist helping Indian farmers.
 
-The farmer selected crop: ${crop}${knowledgeBlock}
+${cropLine}${knowledgeBlock}
 
 Analyze the uploaded photo carefully. Your answer MUST be based on what you ACTUALLY SEE in this specific image — not a generic template.
 
 RULES:
 1. If the image is NOT a crop/plant photo (person, animal, vehicle, food plate, wall, floor, unrelated object, or too blurry to see leaves), set isValidPlantPhoto=false and rejectionReason in simple Hindi (1-2 sentences).
 2. If the plant looks healthy with no clear pest/disease/nutrient problem, set diseaseName to "स्वस्थ पौधा / कोई स्पष्ट समस्या नहीं" and give preventive care tips.
-3. If you see a problem, name the most likely pest, disease, or nutrient issue for ${crop} in India. Include scientific pathogen/pest name in pathogen field.
+3. ${problemLine}
 4. confidence: 0-100 based on image clarity and diagnostic certainty. Use below 55 if unsure.
 5. severity: Low, Medium, or High only.
 6. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage) in SIMPLE HINDI. Technical chemical names can stay in English.

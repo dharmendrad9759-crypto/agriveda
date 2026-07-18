@@ -21,13 +21,13 @@ import { analyzePlantImage, checkAiDoctorConfigured, type DiagnosisResult } from
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useToast } from "@/components/ui/Toast";
-import { AI_DOCTOR_CROPS } from "@/data/ai-doctor-crops";
+import { AI_DOCTOR_CROPS, isOtherCrop } from "@/data/ai-doctor-crops";
 import {
   claimPendingAiScan,
   dataUrlToFile,
   releasePendingScanLock,
 } from "@/lib/pendingAiScan";
-import { AiDoctorDesktopHero, AiDoctorDesktopSidebar, AiDoctorQuickIdentify, AiDoctorRecentDiagnoses } from "@/components/ai-doctor/AiDoctorRedesign";
+import { AiDoctorDesktopSidebar, AiDoctorQuickIdentify, AiDoctorRecentDiagnoses } from "@/components/ai-doctor/AiDoctorRedesign";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
@@ -212,17 +212,6 @@ export default function AIDoctorPage() {
         </button>
       }
     >
-      <AiDoctorDesktopHero
-        onUploadClick={() => {
-          document.getElementById("ai-doctor-scan")?.scrollIntoView({ behavior: "smooth" });
-          cameraInputRef.current?.click();
-        }}
-        onQuickTopic={() => {
-          document.getElementById("ai-doctor-scan")?.scrollIntoView({ behavior: "smooth" });
-          showToast("नीचे photo upload करें — AI diagnosis शुरू करें");
-        }}
-      />
-
       <AiDoctorQuickIdentify selectedCrop={selectedCrop} onSelectCrop={setSelectedCrop} />
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -267,8 +256,15 @@ export default function AIDoctorPage() {
         <DarkCard delay={2}>
           <p className="mb-2 text-xs font-bold text-[var(--av-text-secondary)]">Selected crop for diagnosis:</p>
           <p className="text-sm font-semibold text-[var(--av-accent)]">
-            {cropOptions.find((c) => c.slug === selectedCrop)?.name ?? selectedCrop}
+            {isOtherCrop(selectedCrop)
+              ? "Other / अन्य फसल"
+              : cropOptions.find((c) => c.slug === selectedCrop)?.name ?? selectedCrop}
           </p>
+          {isOtherCrop(selectedCrop) && (
+            <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+              AI photo से खुद फसल पहचान कर diagnosis देगा।
+            </p>
+          )}
         </DarkCard>
 
         <div className="grid gap-4 lg:grid-cols-2">
