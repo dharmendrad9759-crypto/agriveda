@@ -27,37 +27,45 @@ function readFileAsDataUrl(file: File): Promise<string> {
   });
 }
 
-/** Compress large phone photos before sending to Gemini API */
+/** Compress large phone photos before sending to Gemini API.
+ * Formats the browser can't decode in a <canvas> (e.g. HEIC/HEIF from many
+ * phones) are returned untouched so the server/Gemini can handle the original
+ * instead of the whole scan failing. */
 async function compressImageIfNeeded(file: File): Promise<File> {
   if (file.size <= 1.2 * 1024 * 1024) return file;
 
-  const dataUrl = await readFileAsDataUrl(file);
-  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-    const el = new Image();
-    el.onload = () => resolve(el);
-    el.onerror = () => reject(new Error("Photo load failed"));
-    el.src = dataUrl;
-  });
+  try {
+    const dataUrl = await readFileAsDataUrl(file);
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error("decode-unsupported"));
+      el.src = dataUrl;
+    });
 
-  const maxSide = 1280;
-  const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
-  const w = Math.max(1, Math.round(img.width * scale));
-  const h = Math.max(1, Math.round(img.height * scale));
+    const maxSide = 1280;
+    const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+    const w = Math.max(1, Math.round(img.width * scale));
+    const h = Math.max(1, Math.round(img.height * scale));
 
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return file;
-  ctx.drawImage(img, 0, 0, w, h);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(img, 0, 0, w, h);
 
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, "image/jpeg", 0.82)
-  );
-  if (!blob) return file;
-  return new File([blob], file.name.replace(/\.\w+$/, ".jpg") || "scan.jpg", {
-    type: "image/jpeg",
-  });
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.82)
+    );
+    if (!blob) return file;
+    return new File([blob], file.name.replace(/\.\w+$/, ".jpg") || "scan.jpg", {
+      type: "image/jpeg",
+    });
+  } catch {
+    // Undecodable format (HEIC/HEIF, etc.) — send the original to the server.
+    return file;
+  }
 }
 
 export async function fileToBase64Payload(
