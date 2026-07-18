@@ -28,7 +28,8 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const { profile, hydrated, completeOnboarding, completeFarmSetup } = useFarmerProfile();
   const { showToast } = useToast();
   const useFirebase = isFirebaseConfigured();
-  const showDevSkip = process.env.NODE_ENV === "development";
+  /** Preview/production without Firebase+SMS — allow entering the app to see home. */
+  const allowGuestContinue = !useFirebase || process.env.NODE_ENV === "development";
 
   const needsFarmSetup = profile.onboardingComplete && !profile.farmSetupComplete;
   const needsFullOnboarding = !profile.onboardingComplete;
@@ -57,10 +58,15 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     }
   };
 
-  const skipForDev = () => {
-    completeOnboarding({ ...DEMO_FARMER_PROFILE, farmSetupComplete: false });
-    setStep("farm");
-    showToast("Demo mode — अब ज़मीन की जानकारी भरें");
+  /** Skip OTP + farm form and open home immediately (demo / no-SMS preview). */
+  const continueWithoutOtp = () => {
+    completeFarmSetup({
+      ...DEMO_FARMER_PROFILE,
+      phone: phone.replace(/\D/g, "").slice(-10) || DEMO_FARMER_PROFILE.phone,
+      farmSetupComplete: true,
+      totalFarmAreaAcres: 5,
+    });
+    showToast("Home खुल गया — AgriVeda demo");
   };
 
   useEffect(() => {
@@ -380,13 +386,13 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
             </p>
           )}
 
-          {showDevSkip && step !== "farm" && !needsFarmSetup && (
+          {allowGuestContinue && step !== "farm" && !needsFarmSetup && (
             <button
               type="button"
-              onClick={skipForDev}
-              className="w-full rounded-2xl border border-dashed border-emerald-400/50 py-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-300"
+              onClick={continueWithoutOtp}
+              className="w-full rounded-2xl border border-dashed border-emerald-400/50 py-3 text-sm font-bold text-emerald-700 dark:text-emerald-300"
             >
-              Dev only — skip OTP
+              OTP के बिना Home देखें
             </button>
           )}
         </div>
