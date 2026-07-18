@@ -52,6 +52,7 @@ export default function AIDoctorPage() {
   const [scanStep, setScanStep] = useState(0);
   const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
   const [fileName, setFileName] = useState("");
   const [showWhy, setShowWhy] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
@@ -80,6 +81,7 @@ export default function AIDoctorPage() {
           if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
           return pending.dataUrl;
         });
+        setPreviewFailed(false);
         setResult(null);
         setShowHistory(false);
 
@@ -127,6 +129,7 @@ export default function AIDoctorPage() {
   const openHistoryEntry = (entry: (typeof history)[0]) => {
     setResult(entry.result);
     setPreviewUrl(entry.thumbnailUrl);
+    setPreviewFailed(false);
     setFileName(entry.fileName);
     setSelectedFile(null);
     setShowHistory(false);
@@ -144,6 +147,7 @@ export default function AIDoctorPage() {
     setSelectedFile(file);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(URL.createObjectURL(file));
+    setPreviewFailed(false);
     setResult(null);
   };
 
@@ -177,6 +181,7 @@ export default function AIDoctorPage() {
   const handleReset = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
+    setPreviewFailed(false);
     setSelectedFile(null);
     setFileName("");
     setResult(null);
@@ -284,9 +289,25 @@ export default function AIDoctorPage() {
               className="sr-only"
             />
             <div className="rounded-xl border border-dashed border-[#10b981]/30 bg-[var(--av-surface-inset)] p-4 text-center">
-              {previewUrl ? (
+              {previewUrl && !previewFailed ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={previewUrl} alt="Sample" className="mx-auto h-52 w-full rounded-xl object-cover" />
+                <img
+                  src={previewUrl}
+                  alt="Selected crop photo"
+                  className="mx-auto h-52 w-full rounded-xl object-cover"
+                  onError={() => setPreviewFailed(true)}
+                />
+              ) : previewUrl && previewFailed ? (
+                <div className="py-8">
+                  <ImagePlus className="mx-auto h-12 w-12 text-[var(--av-accent)]" />
+                  <p className="mt-2 font-bold text-[var(--av-text-primary)]">Photo selected ✓</p>
+                  <p className="mt-1 break-all px-2 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+                    {fileName || "photo"}
+                  </p>
+                  <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+                    Preview यहाँ नहीं दिख सकती (HEIC/format), फिर भी &quot;Run diagnosis&quot; चलेगा।
+                  </p>
+                </div>
               ) : (
                 <div className="py-8">
                   <Microscope className="mx-auto h-12 w-12 text-[var(--av-accent)]" />
