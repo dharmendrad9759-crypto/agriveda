@@ -1,5 +1,6 @@
 // app/layout.tsx
 import ClientProviders from "@/components/ClientProviders";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata = {
@@ -52,6 +53,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ClientProviders>{children}</ClientProviders>
+        <SpeedInsights />
       </body>
     </html>
   );
