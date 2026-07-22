@@ -229,7 +229,7 @@ export default function AIDoctorPage() {
         />
 
         <div className="grid gap-3.5 sm:gap-5 lg:grid-cols-3">
-          <div id="ai-doctor-scan" className="space-y-3.5 sm:space-y-5 lg:col-span-2">
+          <div id="ai-doctor-scan" className="min-w-0 space-y-3.5 sm:space-y-5 lg:col-span-2">
             <AiDoctorCropSelect selectedCrop={selectedCrop} onSelectCrop={setSelectedCrop} />
 
             {isOtherCrop(selectedCrop) && (
