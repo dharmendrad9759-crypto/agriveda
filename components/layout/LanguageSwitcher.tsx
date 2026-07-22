@@ -2,6 +2,7 @@
 
 import { Languages, X, Check } from "lucide-react";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
@@ -18,8 +19,12 @@ const OPTIONS: {
 ];
 
 export default function LanguageSwitcher() {
+  const pathname = usePathname();
   const { locale, setLocale, t } = useLocale();
   const [open, setOpen] = useState(false);
+
+  // Keep AI Doctor uncluttered — language remains available via Profile/Settings.
+  if (pathname?.startsWith("/ai-doctor")) return null;
 
   const pick = (next: AppLocale) => {
     setLocale(next);

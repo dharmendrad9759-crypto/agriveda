@@ -3,31 +3,35 @@
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
-  Bot,
-  Camera,
   ChevronDown,
   ChevronUp,
-  History,
-  ImagePlus,
   Leaf,
-  Microscope,
-  ShieldCheck,
-  Sparkles,
-  Stethoscope,
   Loader2,
+  ShieldCheck,
+  Stethoscope,
 } from "lucide-react";
 import { analyzePlantImage, checkAiDoctorConfigured, type DiagnosisResult } from "@/lib/aiDiagnosis";
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useToast } from "@/components/ui/Toast";
-import { AI_DOCTOR_CROPS, isOtherCrop } from "@/data/ai-doctor-crops";
+import { isOtherCrop } from "@/data/ai-doctor-crops";
 import {
   claimPendingAiScan,
   dataUrlToFile,
   releasePendingScanLock,
 } from "@/lib/pendingAiScan";
-import { AiDoctorDesktopSidebar, AiDoctorQuickIdentify, AiDoctorRecentDiagnoses } from "@/components/ai-doctor/AiDoctorRedesign";
+import {
+  AiDoctorActions,
+  AiDoctorAskExpert,
+  AiDoctorCropSelect,
+  AiDoctorDesktopSidebar,
+  AiDoctorHero,
+  AiDoctorPhotoUpload,
+  AiDoctorRecentDiagnoses,
+  AiDoctorRiskForecast,
+  AiDoctorSymptoms,
+  AiDoctorTipsHelpline,
+} from "@/components/ai-doctor/AiDoctorRedesign";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
@@ -55,10 +59,9 @@ export default function AIDoctorPage() {
   const [previewFailed, setPreviewFailed] = useState(false);
   const [fileName, setFileName] = useState("");
   const [showWhy, setShowWhy] = useState(true);
-  const [showHistory, setShowHistory] = useState(false);
+  const [historyExpanded, setHistoryExpanded] = useState(false);
   const [symptomNotes, setSymptomNotes] = useState("");
-
-  const cropOptions = AI_DOCTOR_CROPS;
+  const [activeChips, setActiveChips] = useState<string[]>([]);
 
   useEffect(() => {
     checkAiDoctorConfigured().then(setAiConfigured);
@@ -83,7 +86,7 @@ export default function AIDoctorPage() {
         });
         setPreviewFailed(false);
         setResult(null);
-        setShowHistory(false);
+        setHistoryExpanded(false);
 
         if (pending.autoScan) {
           setIsScanning(true);
@@ -132,9 +135,15 @@ export default function AIDoctorPage() {
     setPreviewFailed(false);
     setFileName(entry.fileName);
     setSelectedFile(null);
-    setShowHistory(false);
     setShowWhy(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const scrollToHistory = () => {
+    setHistoryExpanded(true);
+    requestAnimationFrame(() => {
+      document.getElementById("ai-doctor-history")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,299 +194,256 @@ export default function AIDoctorPage() {
     setSelectedFile(null);
     setFileName("");
     setResult(null);
+    setSymptomNotes("");
+    setActiveChips([]);
     if (cameraInputRef.current) cameraInputRef.current.value = "";
     if (galleryInputRef.current) galleryInputRef.current.value = "";
   };
 
+  const handleToggleChip = (id: string, label: string) => {
+    const isActive = activeChips.includes(id);
+    if (isActive) {
+      setActiveChips((prev) => prev.filter((c) => c !== id));
+      setSymptomNotes((notes) =>
+        notes
+          .replace(new RegExp(`(^|,\\s*)${label}(?=,|$)`, "gi"), "$1")
+          .replace(/,\s*,/g, ",")
+          .replace(/^[\s,]+|[\s,]+$/g, "")
+          .slice(0, 300)
+      );
+      return;
+    }
+    setActiveChips((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    setSymptomNotes((notes) => {
+      if (new RegExp(`(^|,\\s*)${label}(?=,|$)`, "i").test(notes)) return notes;
+      const next = notes.trim() ? `${notes.trim()}, ${label}` : label;
+      return next.slice(0, 300);
+    });
+  };
+
   return (
-    <AppShell
-      title={
-        <span className="inline-flex items-center gap-2">
-          AI Doctor
-          <span className="rounded-full bg-[var(--av-accent-soft)] px-2 py-0.5 text-[10px] font-bold text-[var(--av-accent)]">
-            AI Powered
-          </span>
-        </span>
-      }
-      subtitle="Identify problems, get solutions & expert recommendations"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "AI Doctor" }]}
-      actions={
-        <button
-          type="button"
-          onClick={() => setShowHistory(!showHistory)}
-          className="inline-flex items-center gap-2 rounded-xl border border-[var(--av-border)] px-4 py-2 text-xs font-bold text-[var(--av-text-secondary)]"
-        >
-          <History className="h-4 w-4" />
-          Diagnosis History
-        </button>
-      }
-    >
-      <AiDoctorQuickIdentify selectedCrop={selectedCrop} onSelectCrop={setSelectedCrop} />
+    <AppShell className="ai-doctor-page" breadcrumbs={[{ label: "Home", href: "/" }, { label: "AI Doctor" }]}>
+      <div className="space-y-5">
+        <AiDoctorHero
+          aiConfigured={aiConfigured}
+          onHistoryClick={scrollToHistory}
+          historyCount={history.length}
+        />
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div id="ai-doctor-scan" className="space-y-4 lg:col-span-2">
-        <DarkCard>
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#10b981]/30 bg-[var(--av-accent)]/10 px-3 py-1 text-[11px] font-semibold text-[var(--av-accent)]">
-            <Sparkles className="h-3.5 w-3.5" />
-            {aiConfigured ? "24×7 AI Active" : "AI Setup Required"}
-          </div>
-          {aiConfigured === false && (
-            <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-800 dark:text-amber-200">
-              {typeof window !== "undefined" &&
-              (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                ? "⚠️ GEMINI_API_KEY .env.local में add karein — Google AI Studio से key (AIzaSy या AQ. format)."
-                : "⚠️ Vercel → Settings → Environment Variables → GEMINI_API_KEY → Production ✅ enable करें, Save करें, फिर Deployments → Redeploy करें।"}
-            </p>
-          )}
-        </DarkCard>
+        <div className="grid gap-5 lg:grid-cols-3">
+          <div id="ai-doctor-scan" className="space-y-5 lg:col-span-2">
+            <AiDoctorCropSelect selectedCrop={selectedCrop} onSelectCrop={setSelectedCrop} />
 
-        <DarkCard delay={1}>
-          <p className="text-xs font-bold text-[var(--av-text-secondary)]">Symptoms / notes (optional)</p>
-          <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
-            Photo ke saath likhein ya mic se bolein — aapke notes scan ke baad reference ke liye rahenge.
-          </p>
-          <textarea
-            value={symptomNotes}
-            onChange={(e) => setSymptomNotes(e.target.value.slice(0, 300))}
-            placeholder="जैसे: पत्तियों पर पीले धब्बे, किनारे सूख रहे हैं..."
-            rows={3}
-            className="av-input mt-2 w-full resize-none text-sm"
-          />
-          <div className="mt-2">
-            <VoiceInput
-              compact
-              onTranscript={(text) =>
-                setSymptomNotes((n) => `${n}${n ? " " : ""}${text}`.slice(0, 300))
+            {isOtherCrop(selectedCrop) && (
+              <p className="-mt-2 rounded-xl border border-emerald-500/20 bg-emerald-50/80 px-3 py-2 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
+                Other crop selected — AI photo se fasal pehchaan kar diagnosis dega.
+              </p>
+            )}
+
+            <AiDoctorSymptoms
+              value={symptomNotes}
+              onChange={setSymptomNotes}
+              activeChips={activeChips}
+              onToggleChip={handleToggleChip}
+              voiceSlot={
+                <VoiceInput
+                  compact
+                  onTranscript={(text) =>
+                    setSymptomNotes((n) => `${n}${n ? " " : ""}${text}`.slice(0, 300))
+                  }
+                />
               }
             />
-          </div>
-        </DarkCard>
 
-        <DarkCard delay={2}>
-          <p className="mb-2 text-xs font-bold text-[var(--av-text-secondary)]">Selected crop for diagnosis:</p>
-          <p className="text-sm font-semibold text-[var(--av-accent)]">
-            {isOtherCrop(selectedCrop)
-              ? "Other / अन्य फसल"
-              : cropOptions.find((c) => c.slug === selectedCrop)?.name ?? selectedCrop}
-          </p>
-          {isOtherCrop(selectedCrop) && (
-            <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-              AI photo से खुद फसल पहचान कर diagnosis देगा।
-            </p>
-          )}
-        </DarkCard>
-
-        <div className="grid gap-4 lg:grid-cols-2">
-          <DarkCard delay={3}>
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleFileSelect}
-              className="sr-only"
-            />
-            <input
-              ref={galleryInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="sr-only"
-            />
-            <div className="rounded-xl border border-dashed border-[#10b981]/30 bg-[var(--av-surface-inset)] p-4 text-center">
-              {previewUrl && !previewFailed ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={previewUrl}
-                  alt="Selected crop photo"
-                  className="mx-auto h-52 w-full rounded-xl object-cover"
-                  onError={() => setPreviewFailed(true)}
+            <AiDoctorPhotoUpload
+              previewUrl={previewUrl}
+              previewFailed={previewFailed}
+              fileName={fileName}
+              onCamera={() => cameraInputRef.current?.click()}
+              onGallery={() => galleryInputRef.current?.click()}
+              cameraInput={
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleFileSelect}
+                  className="sr-only"
                 />
-              ) : previewUrl && previewFailed ? (
-                <div className="py-8">
-                  <ImagePlus className="mx-auto h-12 w-12 text-[var(--av-accent)]" />
-                  <p className="mt-2 font-bold text-[var(--av-text-primary)]">Photo selected ✓</p>
-                  <p className="mt-1 break-all px-2 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-                    {fileName || "photo"}
-                  </p>
-                  <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-                    Preview यहाँ नहीं दिख सकती (HEIC/format), फिर भी &quot;Run diagnosis&quot; चलेगा।
-                  </p>
+              }
+              galleryInput={
+                <input
+                  ref={galleryInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="sr-only"
+                />
+              }
+            />
+
+            <AiDoctorActions
+              canScan={Boolean(selectedFile) && !isScanning && aiConfigured !== false}
+              isScanning={isScanning}
+              hasFile={Boolean(previewUrl || selectedFile || result)}
+              onScan={handleScan}
+              onReset={handleReset}
+            />
+
+            <DarkCard className="!p-4 sm:!p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                  <Stethoscope className="h-4 w-4" />
+                </span>
+                <div>
+                  <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">Diagnosis result</h2>
+                  <p className="text-xs text-[var(--av-text-muted)]">AI report yahan dikhegi</p>
                 </div>
-              ) : (
-                <div className="py-8">
-                  <Microscope className="mx-auto h-12 w-12 text-[var(--av-accent)]" />
-                  <p className="mt-2 font-bold text-[var(--av-text-primary)]">Upload crop / leaf photo</p>
-                  <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">JPG, PNG up to 10MB</p>
+              </div>
+
+              {isScanning && (
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/50 py-12 text-center dark:bg-emerald-950/20">
+                  <Loader2 className="mx-auto h-10 w-10 animate-spin text-emerald-500" />
+                  <p className="mt-4 font-semibold text-emerald-700 dark:text-emerald-300">
+                    {SCAN_STEPS[scanStep]}
+                  </p>
                 </div>
               )}
-            </div>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => cameraInputRef.current?.click()}
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-2 text-sm font-bold text-[var(--av-accent)]"
-              >
-                <Camera className="h-4 w-4" />
-                {previewUrl ? "नई photo" : "कैमरा"}
-              </button>
-              <button
-                type="button"
-                onClick={() => galleryInputRef.current?.click()}
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-2 text-sm font-bold text-[var(--av-accent)]"
-              >
-                <ImagePlus className="h-4 w-4" />
-                {previewUrl ? "Change" : "Gallery"}
-              </button>
-              <button
-                type="button"
-                onClick={handleScan}
-                disabled={!selectedFile || isScanning || aiConfigured === false}
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--av-accent)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
-              >
-                {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bot className="h-4 w-4" />}
-                {isScanning ? "Analyzing..." : "Run diagnosis"}
-                <ArrowRight className="h-4 w-4" />
-              </button>
-              <button type="button" onClick={handleReset} className="rounded-xl px-4 py-2 text-sm text-[var(--av-text-muted)]">
-                Reset
-              </button>
-            </div>
-          </DarkCard>
 
-          <DarkCard delay={4}>
-            {isScanning && (
-              <div className="py-10 text-center">
-                <Loader2 className="mx-auto h-10 w-10 animate-spin text-emerald-500" />
-                <p className="mt-4 font-semibold text-emerald-600">{SCAN_STEPS[scanStep]}</p>
-              </div>
-            )}
-
-            {!isScanning && !result && (
-              <div className="py-10 text-center">
-                <Stethoscope className="mx-auto h-10 w-10 theme-text-muted" />
-                <p className="mt-3 text-sm theme-text-muted">रिपोर्ट यहाँ दिखेगी</p>
-                {symptomNotes.trim() && (
-                  <p className="mx-auto mt-3 max-w-sm rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-left text-[10px] text-[var(--av-text-muted)]">
-                    <span className="font-semibold text-[var(--av-text-primary)]">Your notes:</span> {symptomNotes}
+              {!isScanning && !result && (
+                <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface-inset)] py-12 text-center">
+                  <Stethoscope className="mx-auto h-10 w-10 text-[var(--av-text-muted)]" />
+                  <p className="mt-3 text-sm font-semibold text-[var(--av-text-muted)]">
+                    Report yahan dikhegi
                   </p>
-                )}
-              </div>
-            )}
-
-            {result && !isScanning && (
-              <div className="space-y-4 animate-fade-in">
-                {result.source === "gemini" && (
-                  <p className="rounded-lg bg-blue-500/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
-                    ✓ Google Gemini — is photo par based analysis
-                  </p>
-                )}
-
-                {result.visualObservations && (
-                  <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-3">
-                    <p className="text-[10px] font-bold uppercase text-sky-700 dark:text-sky-300">
-                      Photo mein kya dikha
+                  {symptomNotes.trim() && (
+                    <p className="mx-auto mt-3 max-w-sm rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2 text-left text-[11px] text-[var(--av-text-muted)]">
+                      <span className="font-semibold text-[var(--av-text-primary)]">Your notes:</span>{" "}
+                      {symptomNotes}
                     </p>
-                    <p className="mt-1 text-sm theme-text-primary leading-relaxed">
-                      {result.visualObservations}
+                  )}
+                </div>
+              )}
+
+              {result && !isScanning && (
+                <div className="space-y-4 animate-fade-in">
+                  {result.source === "gemini" && (
+                    <p className="rounded-xl bg-sky-500/10 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300">
+                      ✓ Google Gemini — is photo par based analysis
+                    </p>
+                  )}
+
+                  {result.visualObservations && (
+                    <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-3">
+                      <p className="text-[10px] font-bold uppercase text-sky-700 dark:text-sky-300">
+                        Photo mein kya dikha
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-[var(--av-text-primary)]">
+                        {result.visualObservations}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
+                    <p className="text-xs font-bold text-red-500">{result.riskLevel}</p>
+                    <h3 className="text-2xl font-black text-[var(--av-text-primary)]">{result.diseaseName}</h3>
+                    <p className="text-sm text-[var(--av-text-muted)]">
+                      Pathogen: <span className="font-semibold text-amber-600">{result.pathogen}</span>
                     </p>
                   </div>
-                )}
 
-                <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
-                  <p className="text-xs font-bold text-red-500">{result.riskLevel}</p>
-                  <h3 className="text-2xl font-black theme-text-primary">{result.diseaseName}</h3>
-                  <p className="text-sm theme-text-muted">
-                    Pathogen: <span className="font-semibold text-amber-600">{result.pathogen}</span>
-                  </p>
-                </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2.5">
+                      <p className="text-[10px] text-[var(--av-text-muted)]">Confidence</p>
+                      <p className="font-black text-[var(--av-text-primary)]">{result.confidence}%</p>
+                    </div>
+                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2.5">
+                      <p className="text-[10px] text-[var(--av-text-muted)]">Severity</p>
+                      <p className="font-black text-red-500">{result.severity}</p>
+                    </div>
+                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2.5">
+                      <p className="text-[10px] text-[var(--av-text-muted)]">Stage</p>
+                      <p className="font-black text-[var(--av-text-primary)]">{result.stage}</p>
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-xl bg-black/5 p-2 dark:bg-white/5">
-                    <p className="text-[10px] theme-text-muted">Confidence</p>
-                    <p className="font-black theme-text-primary">{result.confidence}%</p>
-                  </div>
-                  <div className="rounded-xl bg-black/5 p-2 dark:bg-white/5">
-                    <p className="text-[10px] theme-text-muted">Severity</p>
-                    <p className="font-black text-red-500">{result.severity}</p>
-                  </div>
-                  <div className="rounded-xl bg-black/5 p-2 dark:bg-white/5">
-                    <p className="text-[10px] theme-text-muted">Stage</p>
-                    <p className="font-black theme-text-primary">{result.stage}</p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setShowWhy(!showWhy)}
-                  className="flex w-full items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-left"
-                >
-                  <span className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
-                    <ShieldCheck className="h-4 w-4" />
-                    यह क्यों हुआ? (Root cause)
-                  </span>
-                  {showWhy ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
-                {showWhy && (
-                  <ul className="space-y-2 text-sm theme-text-muted">
-                    {result.whyItHappens.map((w, i) => (
-                      <li key={i} className="rounded-lg bg-black/5 p-2 dark:bg-white/5">
-                        • {w}
+                  <button
+                    type="button"
+                    onClick={() => setShowWhy(!showWhy)}
+                    className="flex w-full items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-left"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                      <ShieldCheck className="h-4 w-4" />
+                      यह क्यों हुआ? (Root cause)
+                    </span>
+                    {showWhy ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </button>
+                  {showWhy && (
+                    <ul className="space-y-2 text-sm text-[var(--av-text-muted)]">
+                      {result.whyItHappens.map((w, i) => (
+                        <li key={i} className="rounded-lg bg-[var(--av-surface-inset)] p-2">
+                          • {w}
+                        </li>
+                      ))}
+                      <li className="text-xs font-semibold text-sky-600">
+                        मौसम: {result.environmentalFactors.join(" • ")}
                       </li>
-                    ))}
-                    <li className="text-xs font-semibold text-sky-600">
-                      मौसम: {result.environmentalFactors.join(" • ")}
-                    </li>
-                  </ul>
-                )}
+                    </ul>
+                  )}
 
-                <div className="rounded-xl border border-white/10 p-4">
-                  <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
-                    <Leaf className="h-4 w-4" />
-                    Recommended treatment
-                  </p>
-                  <ul className="mt-2 space-y-1 text-sm theme-text-muted">
-                    {result.treatments.map((t, i) => (
-                      <li key={i}>• {t}</li>
-                    ))}
-                  </ul>
-                  <div className="mt-3 space-y-2">
-                    {result.activeIngredients.map((ai, i) => (
-                      <div key={i} className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs">
-                        <span className="font-bold text-emerald-700 dark:text-emerald-300">{ai.name}</span>
-                        <span className="theme-text-muted"> — {ai.dose} ({ai.fracIrac})</span>
-                      </div>
-                    ))}
+                  <div className="rounded-xl border border-[var(--av-border)] p-4">
+                    <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
+                      <Leaf className="h-4 w-4" />
+                      Recommended treatment
+                    </p>
+                    <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
+                      {result.treatments.map((t, i) => (
+                        <li key={i}>• {t}</li>
+                      ))}
+                    </ul>
+                    <div className="mt-3 space-y-2">
+                      {result.activeIngredients.map((ai, i) => (
+                        <div key={i} className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs">
+                          <span className="font-bold text-emerald-700 dark:text-emerald-300">{ai.name}</span>
+                          <span className="text-[var(--av-text-muted)]">
+                            {" "}
+                            — {ai.dose} ({ai.fracIrac})
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+
+                  <Link
+                    href="/ask-query"
+                    className="block rounded-xl bg-emerald-700 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-emerald-700/20"
+                  >
+                    विशेषज्ञ से पुष्टि करें →
+                  </Link>
+
+                  <ShareOutbreakPrompt result={result} cropSlug={selectedCrop} photoUrl={previewUrl} />
                 </div>
+              )}
+            </DarkCard>
 
-                <Link
-                  href="/ask-query"
-                  className="block rounded-xl bg-orange-500 py-3 text-center text-sm font-bold text-white"
-                >
-                  विशेषज्ञ से पुष्टि करें →
-                </Link>
+            <AiDoctorRecentDiagnoses
+              history={history}
+              onOpenEntry={openHistoryEntry}
+              expanded={historyExpanded}
+              onClear={history.length ? clearHistory : undefined}
+            />
 
-                <ShareOutbreakPrompt
-                  result={result}
-                  cropSlug={selectedCrop}
-                  photoUrl={previewUrl}
-                />
-              </div>
-            )}
-          </DarkCard>
+            <div className="space-y-5 lg:hidden">
+              <AiDoctorRiskForecast />
+              <AiDoctorAskExpert />
+              <AiDoctorTipsHelpline />
+            </div>
+          </div>
+
+          <div className="hidden lg:block">
+            <AiDoctorDesktopSidebar />
+          </div>
         </div>
-
-        <AiDoctorRecentDiagnoses history={history} onOpenEntry={openHistoryEntry} />
-        </div>
-
-        <div className="hidden lg:block">
-          <AiDoctorDesktopSidebar />
-        </div>
-      </div>
-
-      <div className="mt-4 lg:hidden">
-        <AiDoctorDesktopSidebar />
       </div>
     </AppShell>
   );
