@@ -907,3 +907,36 @@ body {
   padding: 2rem 1.25rem;
   text-align: center;
 }
+
+/* ─── AI Doctor premium diagnosis screen ─── */
+
+.ai-doctor-page {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(16, 185, 129, 0.08), transparent 55%),
+    var(--background);
+}
+
+.ai-doctor-page .av-card {
+  box-shadow: 0 4px 20px -8px rgba(5, 150, 105, 0.12);
+}
+
+.ai-doctor-hero {
+  animation: aiDoctorHeroIn 0.45s ease-out both;
+}
+
+@keyframes aiDoctorHeroIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-doctor-hero {
+    animation: none;
+  }
+}
