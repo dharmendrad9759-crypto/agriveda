@@ -19,7 +19,6 @@ import {
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useToast } from "@/components/ui/Toast";
-import { isOtherCrop } from "@/data/ai-doctor-crops";
 import {
   claimPendingAiScan,
   dataUrlToFile,
@@ -27,7 +26,6 @@ import {
 } from "@/lib/pendingAiScan";
 import {
   AiDoctorActions,
-  AiDoctorAskExpert,
   AiDoctorCropSelect,
   AiDoctorDesktopSidebar,
   AiDoctorHero,
@@ -35,11 +33,11 @@ import {
   AiDoctorRecentDiagnoses,
   AiDoctorRiskForecast,
   AiDoctorSymptoms,
-  AiDoctorTipsHelpline,
 } from "@/components/ai-doctor/AiDoctorRedesign";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
+import { OTHER_CROP } from "@/data/ai-doctor-crops";
 
 export default function AIDoctorPage() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -47,7 +45,7 @@ export default function AIDoctorPage() {
   const { addEntry, history, clearHistory } = useAIHistory();
   const { showToast } = useToast();
 
-  const [selectedCrop, setSelectedCrop] = useState("tomato");
+  const [selectedCrop, setSelectedCrop] = useState<string>(OTHER_CROP.slug);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -219,6 +217,12 @@ export default function AIDoctorPage() {
     });
   };
 
+  const handleSelectCrop = (slug: string) => {
+    setSelectedCrop(slug);
+    setSymptomNotes("");
+    setActiveChips([]);
+  };
+
   return (
     <AppShell className="ai-doctor-page" breadcrumbs={[{ label: "Home", href: "/" }, { label: "AI Doctor" }]}>
       <div className="mx-auto w-full max-w-lg space-y-3.5 sm:max-w-none sm:space-y-5">
@@ -230,15 +234,10 @@ export default function AIDoctorPage() {
 
         <div className="grid gap-3.5 sm:gap-5 lg:grid-cols-3">
           <div id="ai-doctor-scan" className="min-w-0 space-y-3.5 sm:space-y-5 lg:col-span-2">
-            <AiDoctorCropSelect selectedCrop={selectedCrop} onSelectCrop={setSelectedCrop} />
-
-            {isOtherCrop(selectedCrop) && (
-              <p className="-mt-1 rounded-xl border border-emerald-500/20 bg-emerald-50/80 px-3 py-2 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
-                Other crop — photo se fasal pehchaan, ya symptoms mein crop likhein.
-              </p>
-            )}
+            <AiDoctorCropSelect selectedCrop={selectedCrop} onSelectCrop={handleSelectCrop} />
 
             <AiDoctorSymptoms
+              cropSlug={selectedCrop}
               value={symptomNotes}
               onChange={setSymptomNotes}
               activeChips={activeChips}
@@ -428,8 +427,6 @@ export default function AIDoctorPage() {
 
             <div className="space-y-3.5 sm:space-y-5 lg:hidden">
               <AiDoctorRiskForecast />
-              <AiDoctorAskExpert />
-              <AiDoctorTipsHelpline />
             </div>
           </div>
 

@@ -8,6 +8,10 @@ import RiskBadge from "@/components/shell/RiskBadge";
 import { GaugeChart } from "@/components/shell/charts";
 import { AV } from "@/lib/design/tokens";
 import { AI_DOCTOR_CROPS, OTHER_CROP } from "@/data/ai-doctor-crops";
+import {
+  getSymptomChipsForCrop,
+  SYMPTOM_CHIPS as DEFAULT_SYMPTOM_CHIPS,
+} from "@/data/ai-doctor-symptoms";
 import { getCropImageUrl } from "@/lib/crops/crop-display";
 import { crops } from "@/data/crops";
 import {
@@ -21,8 +25,6 @@ import {
   History,
   ImagePlus,
   Leaf,
-  MessageCircle,
-  Phone,
   ShieldCheck,
   Sparkles,
   Stethoscope,
@@ -30,46 +32,8 @@ import {
 } from "lucide-react";
 import type { AIHistoryEntry } from "@/hooks/useAIHistory";
 
-export const SYMPTOM_CHIPS = [
-  { id: "yellowing", label: "Yellowing", hi: "पीलापन" },
-  { id: "spots", label: "Spots", hi: "धब्बे" },
-  { id: "curling", label: "Curling", hi: "मुड़ना" },
-  { id: "holes", label: "Holes", hi: "छेद" },
-  { id: "wilting", label: "Wilting", hi: "मुरझाना" },
-  { id: "stunted", label: "Stunted growth", hi: "कम वृद्धि" },
-  { id: "leaf-burn", label: "Leaf burn", hi: "पत्ती जलना" },
-] as const;
-
-const EXPERTS = [
-  {
-    name: "Dr. Rakesh Sharma",
-    title: "Agronomist (PhD)",
-    exp: "15 years",
-    status: "Online",
-    photo: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=80&h=80&fit=crop",
-  },
-  {
-    name: "Dr. Priya Verma",
-    title: "Plant Pathologist",
-    exp: "12 years",
-    status: "Online",
-    photo: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=80&h=80&fit=crop",
-  },
-  {
-    name: "Dr. Amit Singh",
-    title: "Entomologist",
-    exp: "10 years",
-    status: "Busy",
-    photo: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=80&h=80&fit=crop",
-  },
-];
-
-const PROTECTION_TIPS = [
-  "Monitor your field regularly for early symptoms",
-  "Use yellow sticky traps for flying pests",
-  "Rotate crops to break pest cycles",
-  "Follow PHI before harvest spray",
-];
+/** @deprecated Prefer getSymptomChipsForCrop — kept for older imports */
+export const SYMPTOM_CHIPS = DEFAULT_SYMPTOM_CHIPS;
 
 const RISK_WHY = [
   "High humidity + warm nights favour fungal spores",
@@ -172,7 +136,41 @@ export function AiDoctorHero({
   );
 }
 
-/** Crop selection — horizontal thumb scroll for phones */
+function CropPickerButton({
+  active,
+  onClick,
+  label,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border-2 p-2 transition active:scale-[0.97] sm:w-[88px] sm:gap-2 sm:p-3 ${
+        active
+          ? "border-emerald-500 bg-emerald-50 shadow-[0_0_0_3px_rgba(16,185,129,0.2)] dark:bg-emerald-950/40"
+          : "border-[var(--av-border)] bg-[var(--av-surface)]"
+      }`}
+    >
+      {children}
+      <span
+        className={`truncate text-[10px] font-bold sm:text-[11px] ${
+          active ? "text-emerald-800 dark:text-emerald-200" : "text-[var(--av-text-primary)]"
+        }`}
+      >
+        {label}
+      </span>
+    </button>
+  );
+}
+
+/** Crop selection — Other Crops first, then horizontal scroll */
 export function AiDoctorCropSelect({
   selectedCrop,
   onSelectCrop,
@@ -181,25 +179,35 @@ export function AiDoctorCropSelect({
   onSelectCrop: (slug: string) => void;
 }) {
   const quickCrops = AI_DOCTOR_CROPS.slice(0, 9);
+  const otherActive = selectedCrop === OTHER_CROP.slug;
 
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
       <SectionLabel title="Crop" />
       <div className="-mx-0.5 flex gap-2 overflow-x-auto px-0.5 pb-0.5 scrollbar-hide">
+        <CropPickerButton
+          active={otherActive}
+          onClick={() => onSelectCrop(OTHER_CROP.slug)}
+          label={OTHER_CROP.name}
+        >
+          <span
+            className={`flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--av-surface-inset)] text-2xl sm:h-14 sm:w-14 sm:text-3xl ${
+              otherActive ? "ring-2 ring-emerald-500/40" : ""
+            }`}
+          >
+            {OTHER_CROP.emoji}
+          </span>
+        </CropPickerButton>
+
         {quickCrops.map((c) => {
           const full = crops.find((x) => x.slug === c.slug);
           const active = selectedCrop === c.slug;
           return (
-            <button
+            <CropPickerButton
               key={c.slug}
-              type="button"
+              active={active}
               onClick={() => onSelectCrop(c.slug)}
-              aria-pressed={active}
-              className={`flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border-2 p-2 transition active:scale-[0.97] sm:w-[88px] sm:gap-2 sm:p-3 ${
-                active
-                  ? "border-emerald-500 bg-emerald-50 shadow-[0_0_0_3px_rgba(16,185,129,0.2)] dark:bg-emerald-950/40"
-                  : "border-[var(--av-border)] bg-[var(--av-surface)]"
-              }`}
+              label={c.name}
             >
               <div
                 className={`relative h-12 w-12 overflow-hidden rounded-xl sm:h-14 sm:w-14 ${
@@ -219,33 +227,10 @@ export function AiDoctorCropSelect({
                   </span>
                 )}
               </div>
-              <span
-                className={`truncate text-[10px] font-bold sm:text-[11px] ${
-                  active ? "text-emerald-800 dark:text-emerald-200" : "text-[var(--av-text-primary)]"
-                }`}
-              >
-                {c.name}
-              </span>
-            </button>
+            </CropPickerButton>
           );
         })}
-        <button
-          type="button"
-          onClick={() => onSelectCrop(OTHER_CROP.slug)}
-          aria-pressed={selectedCrop === OTHER_CROP.slug}
-          className={`flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border-2 p-2 transition active:scale-[0.97] sm:w-[88px] sm:gap-2 sm:p-3 ${
-            selectedCrop === OTHER_CROP.slug
-              ? "border-emerald-500 bg-emerald-50 shadow-[0_0_0_3px_rgba(16,185,129,0.2)] dark:bg-emerald-950/40"
-              : "border-[var(--av-border)] bg-[var(--av-surface)]"
-          }`}
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--av-surface-inset)] text-2xl sm:h-14 sm:w-14 sm:text-3xl">
-            {OTHER_CROP.emoji}
-          </span>
-          <span className="text-[10px] font-bold text-[var(--av-text-primary)] sm:text-[11px]">
-            {OTHER_CROP.name}
-          </span>
-        </button>
+
         <AppLink
           href="/crops"
           className="flex w-[76px] shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-emerald-400/40 p-2 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 sm:w-[88px] sm:gap-2 sm:p-3 sm:text-[11px]"
@@ -260,20 +245,24 @@ export function AiDoctorCropSelect({
   );
 }
 
-/** Symptoms — primary path; photo is optional */
+/** Symptoms — chips change with selected crop */
 export function AiDoctorSymptoms({
+  cropSlug,
   value,
   onChange,
   activeChips,
   onToggleChip,
   voiceSlot,
 }: {
+  cropSlug: string;
   value: string;
   onChange: (v: string) => void;
   activeChips: string[];
   onToggleChip: (id: string, label: string) => void;
   voiceSlot?: ReactNode;
 }) {
+  const chips = getSymptomChipsForCrop(cropSlug);
+
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
       <SectionLabel title="Symptoms" />
@@ -285,11 +274,11 @@ export function AiDoctorSymptoms({
         className="av-input min-h-[96px] w-full resize-none text-[15px] leading-relaxed sm:min-h-[110px]"
       />
       <div className="mt-2.5 flex flex-wrap gap-1.5 sm:mt-3 sm:gap-2">
-        {SYMPTOM_CHIPS.map((chip) => {
+        {chips.map((chip) => {
           const active = activeChips.includes(chip.id);
           return (
             <button
-              key={chip.id}
+              key={`${cropSlug}-${chip.id}`}
               type="button"
               onClick={() => onToggleChip(chip.id, chip.label)}
               className={`min-h-[36px] rounded-full border px-2.5 py-1.5 text-[11px] font-semibold transition active:scale-[0.97] sm:px-3 ${
@@ -312,7 +301,7 @@ export function AiDoctorSymptoms({
   );
 }
 
-/** Photo upload — optional */
+/** Photo upload */
 export function AiDoctorPhotoUpload({
   previewUrl,
   previewFailed,
@@ -337,9 +326,7 @@ export function AiDoctorPhotoUpload({
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
       <div className="mb-2.5 flex items-center justify-between gap-2">
-        <h2 className="text-[15px] font-bold tracking-tight text-[var(--av-text-primary)]">
-          Photo <span className="font-semibold text-[var(--av-text-muted)]">(optional)</span>
-        </h2>
+        <h2 className="text-[15px] font-bold tracking-tight text-[var(--av-text-primary)]">Photo</h2>
         {hasPreview && onClear && (
           <button
             type="button"
@@ -370,13 +357,10 @@ export function AiDoctorPhotoUpload({
             </p>
           </div>
         ) : (
-          <div className="px-3 py-5 text-center sm:py-6">
-            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+          <div className="flex justify-center px-3 py-5 sm:py-6">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
               <Camera className="h-6 w-6" />
             </span>
-            <p className="mt-2 text-sm font-semibold text-[var(--av-text-primary)]">
-              Photo add karna optional hai
-            </p>
           </div>
         )}
 
@@ -604,95 +588,17 @@ export function AiDoctorRiskForecast() {
 }
 
 export function AiDoctorAskExpert() {
-  return (
-    <DarkCard className="!p-3.5 sm:!p-5">
-      <SectionLabel title="Ask expert" />
-      <ul className="space-y-2.5 sm:space-y-3">
-        {EXPERTS.map((e) => (
-          <li
-            key={e.name}
-            className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2.5 sm:p-3"
-          >
-            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-2 ring-emerald-500/20 sm:h-12 sm:w-12">
-              <Image src={e.photo} alt={e.name} fill className="object-cover" sizes="48px" />
-              <span
-                className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${
-                  e.status === "Online" ? "bg-emerald-500" : "bg-amber-400"
-                }`}
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-[var(--av-text-primary)]">{e.name}</p>
-              <p className="truncate text-[11px] text-[var(--av-text-secondary)]">
-                {e.title} · {e.exp}
-              </p>
-              <p
-                className={`mt-0.5 text-[10px] font-bold ${
-                  e.status === "Online" ? "text-emerald-600" : "text-amber-600"
-                }`}
-              >
-                {e.status}
-              </p>
-            </div>
-            <AppLink
-              href="/ask-query"
-              className="inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-xl bg-emerald-600 px-3 text-xs font-bold text-white active:scale-[0.97]"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              Chat
-            </AppLink>
-          </li>
-        ))}
-      </ul>
-      <AppLink
-        href="/ask-query"
-        className={`mt-3 flex w-full min-h-[44px] items-center justify-center sm:mt-4 ${AV.btnSecondary}`}
-      >
-        Consult Now
-      </AppLink>
-    </DarkCard>
-  );
+  return null;
 }
 
 export function AiDoctorTipsHelpline() {
-  return (
-    <div className="space-y-3 sm:space-y-4">
-      <DarkCard className="!p-3.5 sm:!p-5">
-        <SectionLabel title="Plant protection tips" />
-        <ul className="mt-1 space-y-2">
-          {PROTECTION_TIPS.map((tip) => (
-            <li key={tip} className="flex gap-2.5 text-xs leading-relaxed text-[var(--av-text-secondary)]">
-              <Leaf className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
-              {tip}
-            </li>
-          ))}
-        </ul>
-      </DarkCard>
-
-      <DarkCard className="!p-3.5 border-emerald-500/25 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/30 dark:to-[var(--av-surface)] sm:!p-5">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-500/25 sm:h-12 sm:w-12">
-            <Phone className="h-5 w-5" />
-          </span>
-          <div>
-            <p className="text-xs font-bold text-[var(--av-text-primary)]">Emergency Helpline</p>
-            <p className="text-lg font-black tracking-tight text-emerald-700 dark:text-emerald-300">
-              1800 120 2474
-            </p>
-            <p className={AV.micro}>Mon–Sat, 8 AM – 6 PM</p>
-          </div>
-        </div>
-      </DarkCard>
-    </div>
-  );
+  return null;
 }
 
 export function AiDoctorSidebarPanels() {
   return (
     <div className="space-y-4">
       <AiDoctorRiskForecast />
-      <AiDoctorAskExpert />
-      <AiDoctorTipsHelpline />
     </div>
   );
 }
