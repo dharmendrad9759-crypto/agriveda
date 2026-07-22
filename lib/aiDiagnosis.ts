@@ -94,21 +94,17 @@ export async function checkAiDoctorConfigured(): Promise<boolean> {
   }
 }
 
-/** Real plant diagnosis via Google Gemini Vision (server-side). */
-export async function analyzePlantImage(
-  imageFile: File,
-  cropSlug?: string
-): Promise<DiagnosisResult> {
-  const { base64, mimeType } = await fileToBase64Payload(imageFile);
+export type AnalyzeDiagnosisInput = {
+  cropSlug?: string;
+  symptoms?: string;
+  imageFile?: File | null;
+};
 
+async function postDiagnosis(payload: Record<string, unknown>): Promise<DiagnosisResult> {
   const res = await fetch("/api/ai-doctor/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      imageBase64: base64,
-      mimeType,
-      cropSlug: cropSlug?.trim() || "tomato",
-    }),
+    body: JSON.stringify(payload),
   });
 
   const body = await res.json().catch(() => ({}));
@@ -118,4 +114,35 @@ export async function analyzePlantImage(
   }
 
   return body.result as DiagnosisResult;
+}
+
+/** Photo and/or symptom diagnosis via Google Gemini (server-side). */
+export async function analyzeDiagnosis(input: AnalyzeDiagnosisInput): Promise<DiagnosisResult> {
+  const cropSlug = input.cropSlug?.trim() || "tomato";
+  const symptoms = input.symptoms?.trim() || "";
+
+  if (input.imageFile) {
+    const { base64, mimeType } = await fileToBase64Payload(input.imageFile);
+    return postDiagnosis({
+      imageBase64: base64,
+      mimeType,
+      cropSlug,
+      symptoms: symptoms || undefined,
+    });
+  }
+
+  if (!symptoms) {
+    throw new Error("Photo ya symptoms dein");
+  }
+
+  return postDiagnosis({ cropSlug, symptoms });
+}
+
+/** @deprecated Prefer analyzeDiagnosis — kept for pending-scan callers. */
+export async function analyzePlantImage(
+  imageFile: File,
+  cropSlug?: string,
+  symptoms?: string
+): Promise<DiagnosisResult> {
+  return analyzeDiagnosis({ imageFile, cropSlug, symptoms });
 }

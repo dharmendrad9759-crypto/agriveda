@@ -908,11 +908,11 @@ body {
   text-align: center;
 }
 
-/* ─── AI Doctor premium diagnosis screen ─── */
+/* ─── AI Doctor — mobile-first diagnosis screen ─── */
 
 .ai-doctor-page {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(16, 185, 129, 0.08), transparent 55%),
+    radial-gradient(ellipse 90% 40% at 50% -8%, rgba(16, 185, 129, 0.1), transparent 55%),
     var(--background);
 }
 
@@ -932,6 +932,17 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .ai-doctor-page {
+    /* Phone viewport: tighter type rhythm, avoid horizontal bleed */
+    overflow-x: hidden;
+  }
+
+  .ai-doctor-page .av-input {
+    font-size: 16px; /* prevent iOS zoom on focus */
   }
 }
 

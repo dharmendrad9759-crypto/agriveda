@@ -9,6 +9,7 @@ export interface AIHistoryEntry {
   id: string;
   timestamp: string;
   fileName: string;
+  /** Empty when diagnosis was symptoms-only (no photo). */
   thumbnailUrl: string;
   result: DiagnosisResult;
 }
