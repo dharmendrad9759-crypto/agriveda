@@ -22,7 +22,6 @@ import {
   ImagePlus,
   Leaf,
   MessageCircle,
-  Microscope,
   Phone,
   ShieldCheck,
   Sparkles,
@@ -373,7 +372,7 @@ export function AiDoctorPhotoUpload({
   galleryInput: ReactNode;
 }) {
   return (
-    <DarkCard className="!p-4 sm:!p-5">
+    <DarkCard className="!p-4 sm:!p-5 ring-1 ring-emerald-500/15">
       <SectionLabel
         step="3"
         title="Upload crop photo"
@@ -382,7 +381,7 @@ export function AiDoctorPhotoUpload({
       {cameraInput}
       {galleryInput}
 
-      <div className="overflow-hidden rounded-2xl border-2 border-dashed border-emerald-400/40 bg-gradient-to-b from-emerald-50/80 to-white dark:from-emerald-950/30 dark:to-[var(--av-surface-inset)]">
+      <div className="overflow-hidden rounded-2xl border-2 border-dashed border-emerald-500/45 bg-gradient-to-b from-emerald-50 to-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:from-emerald-950/35 dark:to-[var(--av-surface-inset)]">
         {previewUrl && !previewFailed ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -402,9 +401,13 @@ export function AiDoctorPhotoUpload({
             </p>
           </div>
         ) : (
-          <div className="px-4 py-12 text-center">
-            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600">
-              <Microscope className="h-8 w-8" />
+          <button
+            type="button"
+            onClick={onGallery}
+            className="w-full px-4 py-10 text-center transition active:bg-emerald-50/80 dark:active:bg-emerald-950/20"
+          >
+            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">
+              <Camera className="h-8 w-8" />
             </span>
             <p className="mt-4 text-base font-bold text-[var(--av-text-primary)]">
               Leaf / crop photo upload karein
@@ -412,14 +415,17 @@ export function AiDoctorPhotoUpload({
             <p className="mx-auto mt-1.5 max-w-xs text-xs leading-relaxed text-[var(--av-text-muted)]">
               Din ke ujaale mein, focus clear rakhein. JPG / PNG, max 10MB.
             </p>
-          </div>
+            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-600/10 px-3 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+              Tap to choose from gallery
+            </span>
+          </button>
         )}
 
-        <div className="grid grid-cols-2 gap-2 border-t border-emerald-500/10 bg-white/70 p-3 dark:bg-black/20">
+        <div className="grid grid-cols-2 gap-2.5 border-t border-emerald-500/15 bg-emerald-50/60 p-3 dark:bg-black/25">
           <button
             type="button"
             onClick={onCamera}
-            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-50 px-3 text-sm font-bold text-emerald-800 transition active:scale-[0.98] dark:bg-emerald-950/50 dark:text-emerald-200"
+            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-sm font-bold text-white shadow-md shadow-emerald-600/25 transition active:scale-[0.98]"
           >
             <Camera className="h-5 w-5" />
             {previewUrl ? "Nayi photo" : "Camera"}
@@ -427,7 +433,7 @@ export function AiDoctorPhotoUpload({
           <button
             type="button"
             onClick={onGallery}
-            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-emerald-500/25 bg-white px-3 text-sm font-bold text-emerald-800 transition active:scale-[0.98] dark:bg-[var(--av-surface)] dark:text-emerald-200"
+            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border-2 border-emerald-500/35 bg-white px-3 text-sm font-bold text-emerald-800 transition active:scale-[0.98] dark:bg-[var(--av-surface)] dark:text-emerald-200"
           >
             <ImagePlus className="h-5 w-5" />
             {previewUrl ? "Change" : "Gallery"}

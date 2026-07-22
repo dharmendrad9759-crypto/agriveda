@@ -201,22 +201,23 @@ export default function AIDoctorPage() {
   };
 
   const handleToggleChip = (id: string, label: string) => {
-    setActiveChips((prev) => {
-      if (prev.includes(id)) {
-        setSymptomNotes((notes) =>
-          notes
-            .replace(new RegExp(`\\s*${label}\\b`, "gi"), "")
-            .replace(/,\s*,/g, ",")
-            .replace(/^[\s,]+|[\s,]+$/g, "")
-            .slice(0, 300)
-        );
-        return prev.filter((c) => c !== id);
-      }
-      setSymptomNotes((notes) => {
-        const next = notes.trim() ? `${notes.trim()}, ${label}` : label;
-        return next.slice(0, 300);
-      });
-      return [...prev, id];
+    const isActive = activeChips.includes(id);
+    if (isActive) {
+      setActiveChips((prev) => prev.filter((c) => c !== id));
+      setSymptomNotes((notes) =>
+        notes
+          .replace(new RegExp(`(^|,\\s*)${label}(?=,|$)`, "gi"), "$1")
+          .replace(/,\s*,/g, ",")
+          .replace(/^[\s,]+|[\s,]+$/g, "")
+          .slice(0, 300)
+      );
+      return;
+    }
+    setActiveChips((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    setSymptomNotes((notes) => {
+      if (new RegExp(`(^|,\\s*)${label}(?=,|$)`, "i").test(notes)) return notes;
+      const next = notes.trim() ? `${notes.trim()}, ${label}` : label;
+      return next.slice(0, 300);
     });
   };
 
