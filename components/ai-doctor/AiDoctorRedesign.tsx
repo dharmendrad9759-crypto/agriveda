@@ -31,6 +31,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { AIHistoryEntry } from "@/hooks/useAIHistory";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 /** @deprecated Prefer getSymptomChipsForCrop — kept for older imports */
 export const SYMPTOM_CHIPS = DEFAULT_SYMPTOM_CHIPS;
@@ -65,6 +66,7 @@ export function AiDoctorHero({
   onHistoryClick: () => void;
   historyCount: number;
 }) {
+  const { t } = useLocale();
   return (
     <section className="ai-doctor-hero relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/40 px-4 py-4 shadow-[0_8px_30px_-12px_rgba(5,150,105,0.25)] dark:from-emerald-950/40 dark:via-[var(--av-surface)] dark:to-emerald-950/20 sm:p-5">
       <div
@@ -89,7 +91,11 @@ export function AiDoctorHero({
               }`}
             >
               <CircleDot className={`h-2.5 w-2.5 ${aiConfigured ? "text-emerald-500" : ""}`} />
-              {aiConfigured === null ? "…" : aiConfigured ? "Active" : "Setup"}
+              {aiConfigured === null
+                ? "…"
+                : aiConfigured
+                  ? t("settingsPremiumActive")
+                  : "Setup"}
             </span>
           </div>
 
@@ -99,10 +105,10 @@ export function AiDoctorHero({
             </span>
             <div className="min-w-0">
               <h1 className="text-xl font-black tracking-tight text-[var(--av-text-primary)] sm:text-2xl">
-                AI Doctor
+                {t("aiDoctorTitle")}
               </h1>
               <p className="mt-0.5 text-xs leading-snug text-[var(--av-text-secondary)] sm:text-sm">
-                Symptoms ya photo se diagnosis
+                {t("aiDoctorSubtitle")}
               </p>
             </div>
           </div>
@@ -119,7 +125,7 @@ export function AiDoctorHero({
               {historyCount > 9 ? "9+" : historyCount}
             </span>
           ) : (
-            <span className="hidden xs:inline sm:inline">History</span>
+            <span className="hidden xs:inline sm:inline">{t("recentScans")}</span>
           )}
         </button>
       </div>
@@ -262,10 +268,11 @@ export function AiDoctorSymptoms({
   voiceSlot?: ReactNode;
 }) {
   const chips = getSymptomChipsForCrop(cropSlug);
+  const { locale } = useLocale();
 
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
-      <SectionLabel title="Symptoms" />
+      <SectionLabel title={locale === "en" ? "Symptoms" : "लक्षण"} />
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value.slice(0, 300))}
@@ -322,18 +329,21 @@ export function AiDoctorPhotoUpload({
   galleryInput: ReactNode;
 }) {
   const hasPreview = Boolean(previewUrl);
+  const { locale, t } = useLocale();
 
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
       <div className="mb-2.5 flex items-center justify-between gap-2">
-        <h2 className="text-[15px] font-bold tracking-tight text-[var(--av-text-primary)]">Photo</h2>
+        <h2 className="text-[15px] font-bold tracking-tight text-[var(--av-text-primary)]">
+          {locale === "en" ? "Photo" : "फोटो"}
+        </h2>
         {hasPreview && onClear && (
           <button
             type="button"
             onClick={onClear}
             className="text-[11px] font-semibold text-[var(--av-text-muted)] active:text-red-600"
           >
-            Remove
+            {t("voiceDelete")}
           </button>
         )}
       </div>
@@ -401,6 +411,7 @@ export function AiDoctorActions({
   onScan: () => void;
   onReset: () => void;
 }) {
+  const { t } = useLocale();
   return (
     <section className="space-y-2.5">
       <button
@@ -412,12 +423,12 @@ export function AiDoctorActions({
         {isScanning ? (
           <>
             <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            Analyzing…
+            {t("analyzing")}
           </>
         ) : (
           <>
             <Bot className="h-5 w-5" />
-            Run diagnosis
+            {t("runDiagnosis")}
             <ArrowRight className="h-4 w-4" />
           </>
         )}
@@ -428,7 +439,7 @@ export function AiDoctorActions({
         disabled={!hasInput && !isScanning}
         className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-sm font-semibold text-[var(--av-text-secondary)] transition enabled:active:scale-[0.99] disabled:opacity-40"
       >
-        Reset
+        {t("reset")}
       </button>
     </section>
   );

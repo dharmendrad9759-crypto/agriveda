@@ -12,11 +12,13 @@ import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { uniqueCrops, uniqueMarkets } from "@/lib/mandi/marketAnalytics";
 import { cn } from "@/lib/cn";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 type Tab = "prices" | "alerts";
 
 export default function MandiListClient() {
   const { profile } = useFarmerProfile();
+  const { t } = useLocale();
   const state = profile.state.trim() || "Madhya Pradesh";
   const district = profile.district.trim() || undefined;
   const { data, loading, refresh } = useMandiPrices({ state, district });
@@ -47,9 +49,9 @@ export default function MandiListClient() {
   return (
     <AppShell
       className="!bg-[#f7f8fb]"
-      title="बाज़ार देखें"
-      subtitle={`${locationLabel} · ${data?.source === "live" ? "Live" : "Sample"} · ${rows.length} भाव`}
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Mandi" }]}
+      title={t("mandiTitle")}
+      subtitle={`${locationLabel} · ${data?.source === "live" ? t("liveBadge") : t("sampleBadge")} · ${rows.length}`}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("mandiTitle") }]}
       actions={
         <button
           type="button"
@@ -58,7 +60,7 @@ export default function MandiListClient() {
           className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 shadow-sm active:scale-95 disabled:opacity-60"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
-          Refresh
+          {t("refreshAction")}
         </button>
       }
     >

@@ -10,10 +10,12 @@ import { categoryOrder, getCropsByCategory, type CatalogCrop } from "@/data/crop
 import { useMyCrops, MAX_MY_CROPS } from "@/hooks/useMyCrops";
 import { useToast } from "@/components/ui/Toast";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function SelectCropsPage() {
   const navigate = useAppNavigate();
   const { showToast } = useToast();
+  const { t } = useLocale();
   const { crops, isSelected, toggleCrop, canAddMore, addCustomCrop } = useMyCrops();
   const grouped = getCropsByCategory();
   const [customName, setCustomName] = useState("");
@@ -30,9 +32,9 @@ export default function SelectCropsPage() {
 
   return (
     <AppShell
-      title="Select Your Crops"
-      subtitle={`Maximum ${MAX_MY_CROPS} crops · Selected: ${crops.length}/${MAX_MY_CROPS}`}
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Select Crops" }]}
+      title={t("selectCropsTitle")}
+      subtitle={`Maximum ${MAX_MY_CROPS} · ${crops.length}/${MAX_MY_CROPS}`}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("selectCropsTitle") }]}
     >
       {!canAddMore && (
         <DarkCard className="border-amber-500/30 bg-amber-500/10">

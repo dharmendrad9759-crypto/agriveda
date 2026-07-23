@@ -10,6 +10,7 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { Bell, IndianRupee } from "lucide-react";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const TABS = ["Farm Alerts", "Price Alerts"] as const;
 
@@ -17,32 +18,38 @@ export default function AlertsPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Farm Alerts");
   const { settings, activeCount } = usePriceAlerts();
   const { profile } = useFarmerProfile();
+  const { t } = useLocale();
   const { data } = useMandiPrices({
     state: profile.state.trim() || "Madhya Pradesh",
     district: profile.district.trim() || undefined,
   });
 
+  const tabLabels: Record<(typeof TABS)[number], string> = {
+    "Farm Alerts": t("alertsTitle"),
+    "Price Alerts": t("settingsMarketPriceAlerts"),
+  };
+
   return (
     <AppShell
       className="!bg-transparent"
-      title="Alerts"
-      subtitle="Farm predictive alerts aur mandi price targets"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Alerts" }]}
+      title={t("alertsTitle")}
+      subtitle={t("alertsSubtitle")}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("alertsTitle") }]}
     >
       <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-        {TABS.map((t) => (
+        {TABS.map((tabId) => (
           <button
-            key={t}
+            key={tabId}
             type="button"
-            onClick={() => setTab(t)}
+            onClick={() => setTab(tabId)}
             className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition ${
-              tab === t
+              tab === tabId
                 ? "bg-[var(--av-accent)]/20 text-[var(--av-accent)]"
                 : "text-[var(--av-text-muted)] hover:text-[var(--av-text-secondary)]"
             }`}
           >
-            {t}
-            {t === "Price Alerts" && activeCount > 0 && (
+            {tabLabels[tabId]}
+            {tabId === "Price Alerts" && activeCount > 0 && (
               <span className="ml-1.5 rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-400">
                 {activeCount}
               </span>

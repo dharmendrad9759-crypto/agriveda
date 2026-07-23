@@ -5,8 +5,9 @@ import { cn } from "@/lib/cn";
 
 /**
  * Language-aware heading:
- * - English locale → English only
- * - Hindi / Hinglish → English + Hindi subtitle
+ * - English → English only
+ * - Hindi → Hindi primary
+ * - Hinglish → Hindi primary + English subtitle
  */
 export default function BiHeading({
   en,
@@ -22,16 +23,30 @@ export default function BiHeading({
   hiClassName?: string;
 }) {
   const { locale } = useLocale();
-  const showHi = locale === "hi" || locale === "hinglish";
 
+  if (locale === "en") {
+    return (
+      <div className="min-w-0">
+        <Tag className={cn(className)}>{en}</Tag>
+      </div>
+    );
+  }
+
+  if (locale === "hi") {
+    return (
+      <div className="min-w-0">
+        <Tag className={cn(className)}>{hi}</Tag>
+      </div>
+    );
+  }
+
+  // hinglish — Hindi primary, English as quiet subtitle
   return (
     <div className="min-w-0">
-      <Tag className={cn(className)}>{en}</Tag>
-      {showHi && (
-        <p className={cn("mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]", hiClassName)}>
-          {hi}
-        </p>
-      )}
+      <Tag className={cn(className)}>{hi}</Tag>
+      <p className={cn("mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]", hiClassName)}>
+        {en}
+      </p>
     </div>
   );
 }

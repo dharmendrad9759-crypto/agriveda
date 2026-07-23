@@ -9,6 +9,7 @@ import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { useNavDrawer } from "./NavDrawerProvider";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 interface ShellNavDrawerProps {
   open: boolean;
@@ -19,6 +20,7 @@ interface ShellNavDrawerProps {
 export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
   const pathname = usePathname();
   const reduced = useReducedMotion();
+  const { t } = useLocale();
 
   return (
     <AnimatePresence>
@@ -31,13 +33,13 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: MOTION.fast }}
             className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
-            aria-label="Close menu"
+            aria-label={t("shellCloseMenu")}
             onClick={onClose}
           />
 
           <motion.aside
             role="dialog"
-            aria-label="Agriveda navigation"
+            aria-label={t("bottomNavLabel")}
             initial={reduced ? false : { x: "-100%" }}
             animate={{ x: 0 }}
             exit={reduced ? undefined : { x: "-100%" }}
@@ -55,19 +57,20 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
                 type="button"
                 onClick={onClose}
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--av-border)] text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)]"
-                aria-label="Close menu"
+                aria-label={t("shellCloseMenu")}
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide" aria-label="Main navigation">
+            <nav className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide" aria-label={t("bottomNavLabel")}>
               <ul className="space-y-0.5">
                 {SHELL_NAV.map((item) => {
                   const active = isNavActive(item, pathname);
                   const Icon = item.icon;
+                  const label = t(item.labelKey);
                   return (
-                    <li key={item.href + item.label}>
+                    <li key={item.href + item.labelKey}>
                       <AppLink
                         href={item.href}
                         onClick={onClose}
@@ -81,7 +84,7 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
                           <span className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-full bg-[var(--av-accent)]" />
                         )}
                         <Icon className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{item.label}</span>
+                        <span className="truncate">{label}</span>
                       </AppLink>
                     </li>
                   );
@@ -97,10 +100,12 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
               >
                 <div className="flex items-center gap-2">
                   <Crown className="h-4 w-4 text-amber-500" />
-                  <span className="text-xs font-bold text-[var(--av-text-primary)]">Go Premium</span>
+                  <span className="text-xs font-bold text-[var(--av-text-primary)]">
+                    {t("shellGoPremium")}
+                  </span>
                 </div>
                 <p className="mt-1 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                  Advanced tools & expert support
+                  {t("shellPremiumDesc")}
                 </p>
               </AppLink>
 
@@ -110,10 +115,12 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
                 className="flex min-h-[44px] items-center gap-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-muted)] px-3 py-2 text-xs font-medium text-[var(--av-text-secondary)]"
               >
                 <MessageCircle className="h-4 w-4 text-[var(--av-accent)]" />
-                Need Help? AI Assistant
+                {t("shellNeedHelp")}
               </AppLink>
 
-              <p className="px-1 text-[9px] text-[var(--av-text-muted)]">v{APP_VERSION} · Built for farmers</p>
+              <p className="px-1 text-[9px] text-[var(--av-text-muted)]">
+                v{APP_VERSION} · {t("shellBuiltForFarmers")}
+              </p>
             </div>
           </motion.aside>
         </div>
@@ -131,6 +138,7 @@ export function NavDrawerTrigger({
   className?: string;
 }) {
   const { openDrawer } = useNavDrawer();
+  const { t } = useLocale();
 
   if (variant === "brand") {
     return (
@@ -138,7 +146,7 @@ export function NavDrawerTrigger({
         type="button"
         onClick={openDrawer}
         className={`flex items-center gap-1.5 text-left ${className}`}
-        aria-label="Open Agriveda menu"
+        aria-label={t("shellOpenMenu")}
       >
         <Leaf className="h-4 w-4 text-[var(--av-accent)]" />
         <span className="text-xs font-black tracking-wide text-[var(--av-text-primary)]">{BRAND}</span>
@@ -151,7 +159,7 @@ export function NavDrawerTrigger({
       type="button"
       onClick={openDrawer}
       className={`flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:text-[var(--av-accent)] ${className}`}
-      aria-label="Open menu"
+      aria-label={t("shellOpenMenu")}
     >
       <Menu className="h-4 w-4" />
     </button>
