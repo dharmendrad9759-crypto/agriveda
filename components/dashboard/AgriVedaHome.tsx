@@ -102,11 +102,11 @@ function daysSince(dateStr: string): number | null {
   return diff >= 0 ? diff : null;
 }
 
-/** Simple, farmer-readable crop label: Hindi first, small English in ( ). */
-function cropLabel(slug: string | undefined, englishName: string, isHi: boolean): string {
+/** Simple, farmer-readable crop label: Hindi name first, small English in ( ).
+ * Hindi-first always (farmers read Hindi faster) — English stays as a hint. */
+function cropLabel(slug: string | undefined, englishName: string): string {
   const hi = getCropHindiName(slug ?? englishName.toLowerCase());
-  if (isHi && hi) return `${hi} (${englishName})`;
-  return englishName;
+  return hi ? `${hi} (${englishName})` : englishName;
 }
 
 function buildAdvice(opts: {
@@ -156,7 +156,7 @@ function buildRisk(opts: { isHi: boolean; humidityPct: number; rainChance: numbe
     };
   }
   return {
-    label: isHi ? "आज खतरा कम" : "Low risk today",
+    label: isHi ? "खतरा कम" : "Low risk",
     tone: "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300",
   };
 }
@@ -212,7 +212,7 @@ export default function AgriVedaHome() {
         }));
 
   const primary = fieldCard(sourceFields[0], 0);
-  const primaryCropLabel = cropLabel(primary.cropSlug, primary.crop, isHi);
+  const primaryCropLabel = cropLabel(primary.cropSlug, primary.crop);
   const advice = buildAdvice({
     isHi,
     rainChance,
@@ -226,7 +226,7 @@ export default function AgriVedaHome() {
     {
       icon: Sprout,
       title: isHi ? "फसल चुनो" : "Choose crop",
-      sub: isHi ? primaryCropLabel : primary.crop,
+      sub: primaryCropLabel,
     },
     {
       icon: Camera,
@@ -291,7 +291,7 @@ export default function AgriVedaHome() {
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-50 px-3 py-1.5 text-[13px] font-bold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
               <Sprout className="h-4 w-4" strokeWidth={2.25} />
-              {isHi ? `आपकी फसल: ${primaryCropLabel}` : `Your crop: ${primary.crop}`}
+              {isHi ? `आपकी फसल: ${primaryCropLabel}` : `Your crop: ${primaryCropLabel}`}
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 text-[13px] font-bold text-[var(--av-text-secondary)]">
               <MapPin className="h-4 w-4 text-sky-600" strokeWidth={2.25} />
@@ -545,7 +545,7 @@ export default function AgriVedaHome() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[16px] font-bold text-[var(--av-text-primary)]">
-                      {cropLabel(card.cropSlug, card.crop, isHi)}
+                      {cropLabel(card.cropSlug, card.crop)}
                     </p>
                     <p className="truncate text-[13px] text-[var(--av-text-muted)]">{card.name}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-1.5">
