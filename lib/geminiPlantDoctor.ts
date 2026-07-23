@@ -75,15 +75,19 @@ const RESPONSE_SCHEMA = {
   ],
 };
 
-function buildPrompt(cropSlug: string): string {
-  const isOther = isOtherCrop(cropSlug);
-  const crop = cropLabel(cropSlug);
-
-  // For "Other", let Gemini identify the crop from the photo — skip crop-specific knowledge.
-  const knowledge = isOther ? "" : buildKnowledgeContext({ cropSlug, maxChunks: 5 });
-  const knowledgeBlock = knowledge
+function knowledgeBlockFor(cropSlug: string): string {
+  if (isOtherCrop(cropSlug)) return "";
+  const knowledge = buildKnowledgeContext({ cropSlug, maxChunks: 5 });
+  return knowledge
     ? `\n\nREFERENCE KNOWLEDGE (ICAR PoP / diagnostic guides — use for doses and disease names):\n${knowledge.slice(0, 2500)}`
     : "";
+}
+
+function buildPhotoPrompt(cropSlug: string, symptoms?: string): string {
+  const isOther = isOtherCrop(cropSlug);
+  const crop = cropLabel(cropSlug);
+  const knowledgeBlock = knowledgeBlockFor(cropSlug);
+  const notes = symptoms?.trim();
 
   const cropLine = isOther
     ? `The farmer did NOT select a specific crop (chose "Other"). FIRST identify the crop/plant species from the photo yourself, then diagnose it. State the identified crop name (Hindi + English) at the start of the cropContext field.`
@@ -93,9 +97,13 @@ function buildPrompt(cropSlug: string): string {
     ? `If you see a problem, name the most likely pest, disease, or nutrient issue for the crop you identified from the photo, in the Indian context. Include the scientific pathogen/pest name in the pathogen field.`
     : `If you see a problem, name the most likely pest, disease, or nutrient issue for ${crop} in India. Include scientific pathogen/pest name in pathogen field.`;
 
+  const notesBlock = notes
+    ? `\n\nFarmer notes / symptoms (use as supporting context with the photo):\n${notes.slice(0, 500)}`
+    : "";
+
   return `You are Agriveda AI Plant Doctor — an expert agronomist helping Indian farmers.
 
-${cropLine}${knowledgeBlock}
+${cropLine}${knowledgeBlock}${notesBlock}
 
 Analyze the uploaded photo carefully. Your answer MUST be based on what you ACTUALLY SEE in this specific image — not a generic template.
 
@@ -113,8 +121,87 @@ RULES:
 Return ONLY valid JSON matching the schema.`;
 }
 
+const SYMPTOM_RESPONSE_SCHEMA = {
+  type: "object",
+  properties: {
+    diseaseName: { type: "string" },
+    pathogen: { type: "string" },
+    confidence: { type: "number" },
+    severity: { type: "string", enum: ["Low", "Medium", "High"] },
+    stage: { type: "string" },
+    riskLevel: { type: "string" },
+    whyItHappens: { type: "array", items: { type: "string" } },
+    environmentalFactors: { type: "array", items: { type: "string" } },
+    treatments: { type: "array", items: { type: "string" } },
+    activeIngredients: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          dose: { type: "string" },
+          fracIrac: { type: "string" },
+        },
+        required: ["name", "dose", "fracIrac"],
+      },
+    },
+    prevention: { type: "array", items: { type: "string" } },
+    cropContext: { type: "string" },
+    visualObservations: {
+      type: "string",
+      description: "Brief Hindi summary of the farmer-described symptoms used for this diagnosis",
+    },
+  },
+  required: [
+    "diseaseName",
+    "pathogen",
+    "confidence",
+    "severity",
+    "stage",
+    "riskLevel",
+    "whyItHappens",
+    "environmentalFactors",
+    "treatments",
+    "activeIngredients",
+    "prevention",
+    "cropContext",
+    "visualObservations",
+  ],
+};
+
+function buildSymptomsPrompt(cropSlug: string, symptoms: string): string {
+  const isOther = isOtherCrop(cropSlug);
+  const crop = cropLabel(cropSlug);
+  const knowledgeBlock = knowledgeBlockFor(cropSlug);
+
+  const cropLine = isOther
+    ? `The farmer chose "Other" crop and described symptoms in text (no photo). Infer the crop from the notes if possible, otherwise give a general field-crop diagnosis and state assumptions in cropContext.`
+    : `The farmer selected crop: ${crop}`;
+
+  return `You are Agriveda AI Plant Doctor — an expert agronomist helping Indian farmers.
+
+${cropLine}${knowledgeBlock}
+
+The farmer did NOT upload a photo. Diagnose from their symptom description only:
+
+"""
+${symptoms.slice(0, 800)}
+"""
+
+RULES:
+1. Base the diagnosis on the described symptoms for Indian farming conditions — not a generic template.
+2. confidence: 0-100; typically 40-70 without a photo. Use below 50 if symptoms are vague.
+3. severity: Low, Medium, or High only.
+4. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage) in SIMPLE HINDI. Technical chemical names can stay in English.
+5. activeIngredients: only realistic, legal products used in Indian agriculture with practical doses (ml/L or g/L or kg/acre).
+6. visualObservations: 1-2 sentences in Hindi summarizing the symptoms the farmer described.
+7. If symptoms are too vague to diagnose, set diseaseName to "अधिक जानकारी चाहिए" and ask for clearer symptoms or a photo in treatments.
+
+Return ONLY valid JSON matching the schema.`;
+}
+
 interface GeminiRawResponse {
-  isValidPlantPhoto: boolean;
+  isValidPlantPhoto?: boolean;
   rejectionReason?: string;
   diseaseName: string;
   pathogen: string;
@@ -196,15 +283,20 @@ function toDiagnosisResult(raw: GeminiRawResponse, cropSlug: string): DiagnosisR
   };
 }
 
-async function callGeminiModel(
+async function callGeminiGenerate(
   model: string,
   apiKey: string,
   prompt: string,
-  imageBase64: string,
-  mimeType: string
+  responseSchema: object,
+  image?: { base64: string; mimeType: string }
 ): Promise<GeminiRawResponse> {
   // Native Gemini endpoint — supports both legacy AIzaSy and new AQ. auth keys
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+
+  const parts: Array<Record<string, unknown>> = [{ text: prompt }];
+  if (image) {
+    parts.push({ inline_data: { mime_type: image.mimeType, data: image.base64 } });
+  }
 
   const res = await fetch(url, {
     method: "POST",
@@ -213,19 +305,12 @@ async function callGeminiModel(
       "x-goog-api-key": apiKey,
     },
     body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            { text: prompt },
-            { inline_data: { mime_type: mimeType, data: imageBase64 } },
-          ],
-        },
-      ],
+      contents: [{ parts }],
       generationConfig: {
         temperature: 0.35,
         maxOutputTokens: 4096,
         responseMimeType: "application/json",
-        responseSchema: RESPONSE_SCHEMA,
+        responseSchema,
       },
     }),
   });
@@ -244,10 +329,8 @@ async function callGeminiModel(
   return JSON.parse(text) as GeminiRawResponse;
 }
 
-export async function analyzePlantPhotoWithGemini(
-  imageBase64: string,
-  mimeType: string,
-  cropSlug: string
+async function runGeminiWithFallbacks(
+  run: (model: string, apiKey: string) => Promise<DiagnosisResult>
 ): Promise<DiagnosisResult> {
   const apiKey = getGeminiApiKey();
   if (!apiKey) {
@@ -256,26 +339,22 @@ export async function analyzePlantPhotoWithGemini(
     );
   }
 
-  const prompt = buildPrompt(cropSlug);
   let lastError: Error | null = null;
 
   for (const model of GEMINI_MODELS) {
     try {
-      const raw = await callGeminiModel(model, apiKey, prompt, imageBase64, mimeType);
-
-      if (!raw.isValidPlantPhoto) {
-        throw new Error(
-          raw.rejectionReason?.trim() ||
-            "यह plant/crop की photo नहीं लग रही। पत्ती, stem या फसल की clear photo upload करें।"
-        );
-      }
-
-      return toDiagnosisResult(raw, cropSlug);
+      return await run(model, apiKey);
     } catch (err) {
       if (err instanceof Error && err.message.includes("plant/crop")) {
         throw err;
       }
-      if (err instanceof Error && (err.message.startsWith("GEMINI_API_KEY") || err.message.includes("limit poori"))) {
+      if (err instanceof Error && err.message.includes("पत्ती")) {
+        throw err;
+      }
+      if (
+        err instanceof Error &&
+        (err.message.startsWith("GEMINI_API_KEY") || err.message.includes("limit poori"))
+      ) {
         throw err;
       }
       lastError = err instanceof Error ? err : new Error(String(err));
@@ -287,4 +366,47 @@ export async function analyzePlantPhotoWithGemini(
   }
 
   throw lastError ?? new Error("Gemini analysis failed");
+}
+
+export async function analyzePlantPhotoWithGemini(
+  imageBase64: string,
+  mimeType: string,
+  cropSlug: string,
+  symptoms?: string
+): Promise<DiagnosisResult> {
+  const prompt = buildPhotoPrompt(cropSlug, symptoms);
+
+  return runGeminiWithFallbacks(async (model, apiKey) => {
+    const raw = await callGeminiGenerate(model, apiKey, prompt, RESPONSE_SCHEMA, {
+      base64: imageBase64,
+      mimeType,
+    });
+
+    if (!raw.isValidPlantPhoto) {
+      throw new Error(
+        raw.rejectionReason?.trim() ||
+          "यह plant/crop की photo नहीं लग रही। पत्ती, stem या फसल की clear photo upload करें।"
+      );
+    }
+
+    return toDiagnosisResult(raw, cropSlug);
+  });
+}
+
+/** Text-only diagnosis when the farmer skips photo upload. */
+export async function analyzeSymptomsWithGemini(
+  symptoms: string,
+  cropSlug: string
+): Promise<DiagnosisResult> {
+  const notes = symptoms.trim();
+  if (!notes) {
+    throw new Error("Symptoms likhein ya photo upload karein");
+  }
+
+  const prompt = buildSymptomsPrompt(cropSlug, notes);
+
+  return runGeminiWithFallbacks(async (model, apiKey) => {
+    const raw = await callGeminiGenerate(model, apiKey, prompt, SYMPTOM_RESPONSE_SCHEMA);
+    return toDiagnosisResult(raw, cropSlug);
+  });
 }

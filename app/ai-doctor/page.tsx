@@ -10,11 +10,15 @@ import {
   ShieldCheck,
   Stethoscope,
 } from "lucide-react";
-import { analyzePlantImage, checkAiDoctorConfigured, type DiagnosisResult } from "@/lib/aiDiagnosis";
+import {
+  analyzeDiagnosis,
+  analyzePlantImage,
+  checkAiDoctorConfigured,
+  type DiagnosisResult,
+} from "@/lib/aiDiagnosis";
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useToast } from "@/components/ui/Toast";
-import { isOtherCrop } from "@/data/ai-doctor-crops";
 import {
   claimPendingAiScan,
   dataUrlToFile,
@@ -22,7 +26,6 @@ import {
 } from "@/lib/pendingAiScan";
 import {
   AiDoctorActions,
-  AiDoctorAskExpert,
   AiDoctorCropSelect,
   AiDoctorDesktopSidebar,
   AiDoctorHero,
@@ -30,18 +33,11 @@ import {
   AiDoctorRecentDiagnoses,
   AiDoctorRiskForecast,
   AiDoctorSymptoms,
-  AiDoctorTipsHelpline,
 } from "@/components/ai-doctor/AiDoctorRedesign";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
-
-const SCAN_STEPS = [
-  "Gemini AI photo dekh raha hai...",
-  "Patti / daag / rang pattern check...",
-  "Kisan ke liye diagnosis likh raha hai...",
-  "Upchar aur dose taiyar...",
-];
+import { OTHER_CROP } from "@/data/ai-doctor-crops";
 
 export default function AIDoctorPage() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -49,11 +45,10 @@ export default function AIDoctorPage() {
   const { addEntry, history, clearHistory } = useAIHistory();
   const { showToast } = useToast();
 
-  const [selectedCrop, setSelectedCrop] = useState("tomato");
+  const [selectedCrop, setSelectedCrop] = useState<string>(OTHER_CROP.slug);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [scanStep, setScanStep] = useState(0);
   const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
@@ -62,6 +57,11 @@ export default function AIDoctorPage() {
   const [historyExpanded, setHistoryExpanded] = useState(false);
   const [symptomNotes, setSymptomNotes] = useState("");
   const [activeChips, setActiveChips] = useState<string[]>([]);
+
+  const hasSymptoms = symptomNotes.trim().length > 0;
+  const canScan =
+    (Boolean(selectedFile) || hasSymptoms) && !isScanning && aiConfigured !== false;
+  const hasInput = Boolean(previewUrl || selectedFile || result || hasSymptoms);
 
   useEffect(() => {
     checkAiDoctorConfigured().then(setAiConfigured);
@@ -90,10 +90,6 @@ export default function AIDoctorPage() {
 
         if (pending.autoScan) {
           setIsScanning(true);
-          setScanStep(0);
-          const stepInterval = setInterval(() => {
-            setScanStep((s) => Math.min(s + 1, SCAN_STEPS.length - 1));
-          }, 900);
           try {
             const diagnosis = await analyzePlantImage(file, pending.cropSlug);
             if (!cancelled) {
@@ -110,7 +106,6 @@ export default function AIDoctorPage() {
               showToast(err instanceof Error ? err.message : "Analysis failed", "error");
             }
           } finally {
-            clearInterval(stepInterval);
             if (!cancelled) setIsScanning(false);
             releasePendingScanLock();
           }
@@ -131,7 +126,7 @@ export default function AIDoctorPage() {
 
   const openHistoryEntry = (entry: (typeof history)[0]) => {
     setResult(entry.result);
-    setPreviewUrl(entry.thumbnailUrl);
+    setPreviewUrl(entry.thumbnailUrl || null);
     setPreviewFailed(false);
     setFileName(entry.fileName);
     setSelectedFile(null);
@@ -154,50 +149,51 @@ export default function AIDoctorPage() {
     }
     setFileName(file.name);
     setSelectedFile(file);
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(URL.createObjectURL(file));
     setPreviewFailed(false);
     setResult(null);
   };
 
+  const clearPhoto = () => {
+    if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    setPreviewFailed(false);
+    setSelectedFile(null);
+    setFileName("");
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+    if (galleryInputRef.current) galleryInputRef.current.value = "";
+  };
+
   const handleScan = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile && !hasSymptoms) return;
     setIsScanning(true);
-    setScanStep(0);
-    const stepInterval = setInterval(() => {
-      setScanStep((s) => Math.min(s + 1, SCAN_STEPS.length - 1));
-    }, 900);
 
     try {
-      const diagnosis = await analyzePlantImage(selectedFile, selectedCrop);
+      const diagnosis = await analyzeDiagnosis({
+        imageFile: selectedFile,
+        cropSlug: selectedCrop,
+        symptoms: symptomNotes,
+      });
       setResult(diagnosis);
-      if (previewUrl) {
-        addEntry({
-          fileName: fileName || "scan.jpg",
-          thumbnailUrl: previewUrl,
-          result: diagnosis,
-        });
-      }
+      addEntry({
+        fileName: selectedFile ? fileName || "scan.jpg" : "symptoms.txt",
+        thumbnailUrl: previewUrl || "",
+        result: diagnosis,
+      });
       showToast("Gemini AI विश्लेषण पूर्ण ✓");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "विश्लेषण विफल", "error");
     } finally {
-      clearInterval(stepInterval);
       setIsScanning(false);
     }
   };
 
   const handleReset = () => {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(null);
-    setPreviewFailed(false);
-    setSelectedFile(null);
-    setFileName("");
+    clearPhoto();
     setResult(null);
     setSymptomNotes("");
     setActiveChips([]);
-    if (cameraInputRef.current) cameraInputRef.current.value = "";
-    if (galleryInputRef.current) galleryInputRef.current.value = "";
   };
 
   const handleToggleChip = (id: string, label: string) => {
@@ -221,26 +217,27 @@ export default function AIDoctorPage() {
     });
   };
 
+  const handleSelectCrop = (slug: string) => {
+    setSelectedCrop(slug);
+    setSymptomNotes("");
+    setActiveChips([]);
+  };
+
   return (
     <AppShell className="ai-doctor-page" breadcrumbs={[{ label: "Home", href: "/" }, { label: "AI Doctor" }]}>
-      <div className="space-y-5">
+      <div className="mx-auto w-full max-w-lg space-y-3.5 sm:max-w-none sm:space-y-5">
         <AiDoctorHero
           aiConfigured={aiConfigured}
           onHistoryClick={scrollToHistory}
           historyCount={history.length}
         />
 
-        <div className="grid gap-5 lg:grid-cols-3">
-          <div id="ai-doctor-scan" className="space-y-5 lg:col-span-2">
-            <AiDoctorCropSelect selectedCrop={selectedCrop} onSelectCrop={setSelectedCrop} />
-
-            {isOtherCrop(selectedCrop) && (
-              <p className="-mt-2 rounded-xl border border-emerald-500/20 bg-emerald-50/80 px-3 py-2 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
-                Other crop selected — AI photo se fasal pehchaan kar diagnosis dega.
-              </p>
-            )}
+        <div className="grid gap-3.5 sm:gap-5 lg:grid-cols-3">
+          <div id="ai-doctor-scan" className="min-w-0 space-y-3.5 sm:space-y-5 lg:col-span-2">
+            <AiDoctorCropSelect selectedCrop={selectedCrop} onSelectCrop={handleSelectCrop} />
 
             <AiDoctorSymptoms
+              cropSlug={selectedCrop}
               value={symptomNotes}
               onChange={setSymptomNotes}
               activeChips={activeChips}
@@ -261,6 +258,7 @@ export default function AIDoctorPage() {
               fileName={fileName}
               onCamera={() => cameraInputRef.current?.click()}
               onGallery={() => galleryInputRef.current?.click()}
+              onClear={clearPhoto}
               cameraInput={
                 <input
                   ref={cameraInputRef}
@@ -283,60 +281,52 @@ export default function AIDoctorPage() {
             />
 
             <AiDoctorActions
-              canScan={Boolean(selectedFile) && !isScanning && aiConfigured !== false}
+              canScan={canScan}
               isScanning={isScanning}
-              hasFile={Boolean(previewUrl || selectedFile || result)}
+              hasInput={hasInput}
               onScan={handleScan}
               onReset={handleReset}
             />
 
-            <DarkCard className="!p-4 sm:!p-5">
+            <DarkCard className="!p-3.5 sm:!p-5">
               <div className="mb-3 flex items-center gap-2">
                 <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
                   <Stethoscope className="h-4 w-4" />
                 </span>
-                <div>
-                  <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">Diagnosis result</h2>
-                  <p className="text-xs text-[var(--av-text-muted)]">AI report yahan dikhegi</p>
-                </div>
+                <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">Diagnosis</h2>
               </div>
 
               {isScanning && (
-                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/50 py-12 text-center dark:bg-emerald-950/20">
-                  <Loader2 className="mx-auto h-10 w-10 animate-spin text-emerald-500" />
-                  <p className="mt-4 font-semibold text-emerald-700 dark:text-emerald-300">
-                    {SCAN_STEPS[scanStep]}
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/50 py-10 text-center dark:bg-emerald-950/20 sm:py-12">
+                  <Loader2 className="mx-auto h-9 w-9 animate-spin text-emerald-500 sm:h-10 sm:w-10" />
+                  <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                    Diagnosis taiyar ho raha hai…
                   </p>
                 </div>
               )}
 
               {!isScanning && !result && (
-                <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface-inset)] py-12 text-center">
-                  <Stethoscope className="mx-auto h-10 w-10 text-[var(--av-text-muted)]" />
+                <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface-inset)] py-10 text-center sm:py-12">
+                  <Stethoscope className="mx-auto h-9 w-9 text-[var(--av-text-muted)] sm:h-10 sm:w-10" />
                   <p className="mt-3 text-sm font-semibold text-[var(--av-text-muted)]">
-                    Report yahan dikhegi
+                    Result yahan dikhega
                   </p>
-                  {symptomNotes.trim() && (
-                    <p className="mx-auto mt-3 max-w-sm rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2 text-left text-[11px] text-[var(--av-text-muted)]">
-                      <span className="font-semibold text-[var(--av-text-primary)]">Your notes:</span>{" "}
-                      {symptomNotes}
-                    </p>
-                  )}
                 </div>
               )}
 
               {result && !isScanning && (
-                <div className="space-y-4 animate-fade-in">
+                <div className="space-y-3.5 animate-fade-in sm:space-y-4">
                   {result.source === "gemini" && (
                     <p className="rounded-xl bg-sky-500/10 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300">
-                      ✓ Google Gemini — is photo par based analysis
+                      ✓ Google Gemini
+                      {previewUrl ? " — photo analysis" : " — symptoms analysis"}
                     </p>
                   )}
 
                   {result.visualObservations && (
                     <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-3">
                       <p className="text-[10px] font-bold uppercase text-sky-700 dark:text-sky-300">
-                        Photo mein kya dikha
+                        {previewUrl ? "Photo mein kya dikha" : "Symptoms summary"}
                       </p>
                       <p className="mt-1 text-sm leading-relaxed text-[var(--av-text-primary)]">
                         {result.visualObservations}
@@ -344,24 +334,26 @@ export default function AIDoctorPage() {
                     </div>
                   )}
 
-                  <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
+                  <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-3.5 sm:p-4">
                     <p className="text-xs font-bold text-red-500">{result.riskLevel}</p>
-                    <h3 className="text-2xl font-black text-[var(--av-text-primary)]">{result.diseaseName}</h3>
+                    <h3 className="text-xl font-black text-[var(--av-text-primary)] sm:text-2xl">
+                      {result.diseaseName}
+                    </h3>
                     <p className="text-sm text-[var(--av-text-muted)]">
                       Pathogen: <span className="font-semibold text-amber-600">{result.pathogen}</span>
                     </p>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2.5">
+                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
                       <p className="text-[10px] text-[var(--av-text-muted)]">Confidence</p>
                       <p className="font-black text-[var(--av-text-primary)]">{result.confidence}%</p>
                     </div>
-                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2.5">
+                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
                       <p className="text-[10px] text-[var(--av-text-muted)]">Severity</p>
                       <p className="font-black text-red-500">{result.severity}</p>
                     </div>
-                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2.5">
+                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
                       <p className="text-[10px] text-[var(--av-text-muted)]">Stage</p>
                       <p className="font-black text-[var(--av-text-primary)]">{result.stage}</p>
                     </div>
@@ -370,11 +362,11 @@ export default function AIDoctorPage() {
                   <button
                     type="button"
                     onClick={() => setShowWhy(!showWhy)}
-                    className="flex w-full items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-left"
+                    className="flex w-full min-h-[48px] items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-left"
                   >
                     <span className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                       <ShieldCheck className="h-4 w-4" />
-                      यह क्यों हुआ? (Root cause)
+                      यह क्यों हुआ?
                     </span>
                     {showWhy ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                   </button>
@@ -391,10 +383,10 @@ export default function AIDoctorPage() {
                     </ul>
                   )}
 
-                  <div className="rounded-xl border border-[var(--av-border)] p-4">
+                  <div className="rounded-xl border border-[var(--av-border)] p-3.5 sm:p-4">
                     <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
                       <Leaf className="h-4 w-4" />
-                      Recommended treatment
+                      Treatment
                     </p>
                     <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
                       {result.treatments.map((t, i) => (
@@ -416,7 +408,7 @@ export default function AIDoctorPage() {
 
                   <Link
                     href="/ask-query"
-                    className="block rounded-xl bg-emerald-700 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-emerald-700/20"
+                    className="block min-h-[48px] rounded-xl bg-emerald-700 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-emerald-700/20"
                   >
                     विशेषज्ञ से पुष्टि करें →
                   </Link>
@@ -433,10 +425,8 @@ export default function AIDoctorPage() {
               onClear={history.length ? clearHistory : undefined}
             />
 
-            <div className="space-y-5 lg:hidden">
+            <div className="space-y-3.5 sm:space-y-5 lg:hidden">
               <AiDoctorRiskForecast />
-              <AiDoctorAskExpert />
-              <AiDoctorTipsHelpline />
             </div>
           </div>
 

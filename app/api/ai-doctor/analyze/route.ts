@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { analyzePlantPhotoWithGemini, getGeminiApiKey } from "@/lib/geminiPlantDoctor";
+import {
+  analyzePlantPhotoWithGemini,
+  analyzeSymptomsWithGemini,
+  getGeminiApiKey,
+} from "@/lib/geminiPlantDoctor";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 import { readSessionFromRequest } from "@/lib/session";
 
@@ -7,6 +11,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_SYMPTOMS = 800;
 const ALLOWED_MIME = new Set([
   "image/jpeg",
   "image/jpg",
@@ -44,9 +49,19 @@ export async function POST(request: NextRequest) {
     const mimeType =
       typeof body.mimeType === "string" ? body.mimeType.toLowerCase() : "image/jpeg";
     const cropSlug = typeof body.cropSlug === "string" ? body.cropSlug.trim() : "tomato";
+    const symptoms =
+      typeof body.symptoms === "string" ? body.symptoms.trim().slice(0, MAX_SYMPTOMS) : "";
+
+    if (!imageBase64 && !symptoms) {
+      return NextResponse.json(
+        { error: "Photo ya symptoms mein se kam se kam ek jaruri hai" },
+        { status: 400 }
+      );
+    }
 
     if (!imageBase64) {
-      return NextResponse.json({ error: "Photo data missing" }, { status: 400 });
+      const result = await analyzeSymptomsWithGemini(symptoms, cropSlug);
+      return NextResponse.json({ result });
     }
 
     if (!ALLOWED_MIME.has(mimeType)) {
@@ -64,7 +79,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await analyzePlantPhotoWithGemini(imageBase64, mimeType, cropSlug);
+    const result = await analyzePlantPhotoWithGemini(
+      imageBase64,
+      mimeType,
+      cropSlug,
+      symptoms || undefined
+    );
     return NextResponse.json({ result });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Analysis failed";
@@ -72,7 +92,8 @@ export async function POST(request: NextRequest) {
       message.includes("plant") ||
       message.includes("photo") ||
       message.includes("पत्ती") ||
-      message.includes("नहीं");
+      message.includes("नहीं") ||
+      message.includes("Symptoms");
 
     console.error("[ai-doctor]", message);
     return NextResponse.json(
