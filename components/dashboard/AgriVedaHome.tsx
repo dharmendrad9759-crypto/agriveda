@@ -4,16 +4,20 @@ import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
 import { motion, useReducedMotion } from "framer-motion";
 import {
+  ArrowRight,
   BookOpen,
+  Camera,
   CloudRain,
   CloudSun,
   Droplets,
   Leaf,
+  ListChecks,
+  MapPin,
   MessageCircle,
-  ScanLine,
   ShieldCheck,
   Sparkles,
   Sprout,
+  Stethoscope,
   Thermometer,
   Wind,
   type LucideIcon,
@@ -23,6 +27,7 @@ import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { resolveCropImage } from "@/lib/crops/cropImages";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { DASHBOARD_FIELDS } from "@/data/mock/dashboard";
 import type { FarmField } from "@/lib/farm/types";
@@ -97,6 +102,13 @@ function daysSince(dateStr: string): number | null {
   return diff >= 0 ? diff : null;
 }
 
+/** Simple, farmer-readable crop label: Hindi first, small English in ( ). */
+function cropLabel(slug: string | undefined, englishName: string, isHi: boolean): string {
+  const hi = getCropHindiName(slug ?? englishName.toLowerCase());
+  if (isHi && hi) return `${hi} (${englishName})`;
+  return englishName;
+}
+
 function buildAdvice(opts: {
   isHi: boolean;
   rainChance: number;
@@ -125,6 +137,30 @@ function buildAdvice(opts: {
   };
 }
 
+/** Today's risk chip — plain-language, from humidity + rain. */
+function buildRisk(opts: { isHi: boolean; humidityPct: number; rainChance: number }): {
+  label: string;
+  tone: string;
+} {
+  const { isHi, humidityPct, rainChance } = opts;
+  if (humidityPct >= 80 || rainChance >= 60) {
+    return {
+      label: isHi ? "रोग का ज़्यादा खतरा" : "High disease risk",
+      tone: "border-rose-400/40 bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300",
+    };
+  }
+  if (humidityPct >= 65) {
+    return {
+      label: isHi ? "फफूंद का हल्का खतरा" : "Mild fungal risk",
+      tone: "border-amber-400/40 bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
+    };
+  }
+  return {
+    label: isHi ? "आज खतरा कम" : "Low risk today",
+    tone: "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300",
+  };
+}
+
 function fieldCard(field: FarmField | (typeof DASHBOARD_FIELDS)[number], index: number) {
   const crop = "crop" in field ? field.crop : "Paddy";
   const stage = "stage" in field ? field.stage : "Tillering";
@@ -134,7 +170,7 @@ function fieldCard(field: FarmField | (typeof DASHBOARD_FIELDS)[number], index: 
   const days = daysSince(sowingDate);
   const img = resolveCropImage({ slug: cropSlug || crop.toLowerCase(), name: crop });
 
-  return { crop, stage, name, days, img, key: `${name}-${index}` };
+  return { crop, cropSlug, stage, name, days, img, key: `${name}-${index}` };
 }
 
 export default function AgriVedaHome() {
@@ -155,6 +191,7 @@ export default function AgriVedaHome() {
   const wind = weather?.windSpeed ?? "8 km/h";
   const rainChance = weather?.hourlyForecast[0]?.rainChancePercent ?? 20;
   const condition = weather?.condition ?? (isHi ? "साफ़ आसमान" : "Clear skies");
+  const humidityPct = Number.parseInt(humidity, 10) || 58;
 
   const sourceFields =
     farm.fields.length > 0
@@ -175,13 +212,33 @@ export default function AgriVedaHome() {
         }));
 
   const primary = fieldCard(sourceFields[0], 0);
+  const primaryCropLabel = cropLabel(primary.cropSlug, primary.crop, isHi);
   const advice = buildAdvice({
     isHi,
     rainChance,
     humidity,
-    crop: primary.crop,
+    crop: primaryCropLabel,
     stage: primary.stage,
   });
+  const risk = buildRisk({ isHi, humidityPct, rainChance });
+
+  const steps = [
+    {
+      icon: Sprout,
+      title: isHi ? "फसल चुनो" : "Choose crop",
+      sub: isHi ? primaryCropLabel : primary.crop,
+    },
+    {
+      icon: Camera,
+      title: isHi ? "समस्या बताओ" : "Describe problem",
+      sub: isHi ? "फोटो या लक्षण" : "Photo or symptoms",
+    },
+    {
+      icon: Stethoscope,
+      title: isHi ? "समाधान लो" : "Get solution",
+      sub: isHi ? "तुरंत इलाज" : "Instant fix",
+    },
+  ];
 
   return (
     <div className="relative mx-auto min-w-0 max-w-lg overflow-x-hidden pb-2">
@@ -200,48 +257,64 @@ export default function AgriVedaHome() {
         />
       </div>
 
-      <div className="relative z-10 space-y-5 px-0.5 pt-1">
-        {/* Welcome + trust — answers “what should I do today?” framing */}
+      <div className="relative z-10 space-y-7 px-0.5 pt-1">
+        {/* Welcome + personalization — bigger, clearer */}
         <motion.section
           initial={reduced ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: MOTION.slow, ease: EASE_OUT }}
-          className="flex items-start justify-between gap-3 px-0.5"
+          className="px-0.5"
         >
-          <div className="min-w-0">
-            <p className="text-[13px] font-semibold text-[var(--av-text-secondary)]">
-              {isHi ? `नमस्ते, ${name}` : `Namaste, ${name}`}
-            </p>
-            <h1 className="mt-0.5 font-display text-[1.45rem] font-extrabold leading-snug tracking-tight text-[var(--av-text-primary)] sm:text-[1.65rem]">
-              {isHi ? "आज फसल के लिए क्या करें?" : "What should I do for my crop today?"}
-            </h1>
-            <p className="mt-1 text-[13px] leading-relaxed text-[var(--av-text-muted)]">
-              {isHi
-                ? "Agriveda आपका स्मार्ट खेत साथी — एक टैप में सही सलाह।"
-                : "Agriveda is your smart farm saathi — clear advice in one tap."}
-            </p>
-          </div>
-          <div className="shrink-0 rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-50 to-emerald-50 px-2.5 py-2 text-center shadow-[var(--av-shadow-sm)] dark:from-amber-950/40 dark:to-emerald-950/40">
-            <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:text-emerald-300">
-              <ShieldCheck className="h-4 w-4" strokeWidth={2.25} />
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[15px] font-semibold text-[var(--av-text-secondary)]">
+                {isHi ? `नमस्ते, ${name} 🙏` : `Namaste, ${name} 🙏`}
+              </p>
+              <h1 className="mt-1 font-display text-[1.7rem] font-extrabold leading-tight tracking-tight text-[var(--av-text-primary)] sm:text-[1.9rem]">
+                {isHi ? "आज खेत में क्या करें?" : "What should I do today?"}
+              </h1>
             </div>
-            <p className="mt-1 text-[10px] font-bold leading-tight text-emerald-800 dark:text-emerald-200">
-              {isHi ? "विश्वसनीय" : "Trusted"}
-            </p>
-            <p className="text-[9px] font-semibold text-amber-800/80 dark:text-amber-200/80">
-              50K+ kisan
-            </p>
+            <div className="shrink-0 rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-50 to-emerald-50 px-3 py-2 text-center shadow-[var(--av-shadow-sm)] dark:from-amber-950/40 dark:to-emerald-950/40">
+              <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:text-emerald-300">
+                <ShieldCheck className="h-5 w-5" strokeWidth={2.25} />
+              </div>
+              <p className="mt-1 text-[11px] font-bold leading-tight text-emerald-800 dark:text-emerald-200">
+                {isHi ? "विश्वसनीय" : "Trusted"}
+              </p>
+              <p className="text-[10px] font-semibold text-amber-800/80 dark:text-amber-200/80">
+                50K+ kisan
+              </p>
+            </div>
+          </div>
+
+          {/* Personalization chips: crop + location + today's risk */}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-50 px-3 py-1.5 text-[13px] font-bold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
+              <Sprout className="h-4 w-4" strokeWidth={2.25} />
+              {isHi ? `आपकी फसल: ${primaryCropLabel}` : `Your crop: ${primary.crop}`}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 text-[13px] font-bold text-[var(--av-text-secondary)]">
+              <MapPin className="h-4 w-4 text-sky-600" strokeWidth={2.25} />
+              {place}
+            </span>
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-bold ${risk.tone}`}
+            >
+              <ShieldCheck className="h-4 w-4" strokeWidth={2.25} />
+              {isHi ? `आज: ${risk.label}` : `Today: ${risk.label}`}
+            </span>
           </div>
         </motion.section>
 
-        {/* Hero — full-bleed visual plane + one CTA */}
+        {/* MAIN FLOW — the one obvious first step: choose crop → problem → solution */}
         <motion.section
           initial={reduced ? false : { opacity: 0, y: 16, scale: 0.985 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.04 }}
-          className="relative -mx-3 overflow-hidden sm:-mx-4"
+          className="overflow-hidden rounded-[26px] border border-emerald-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-lg)]"
         >
-          <div className="relative min-h-[240px] sm:min-h-[280px]">
+          {/* Hero image */}
+          <div className="relative min-h-[188px] sm:min-h-[220px]">
             <Image
               src={HERO_IMG}
               alt={
@@ -254,43 +327,78 @@ export default function AgriVedaHome() {
               sizes="(max-width: 512px) 100vw, 512px"
               className="object-cover object-[center_28%]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f16]/92 via-[#0b1f16]/35 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-              <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-200/90">
-                AgriVeda
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f16]/92 via-[#0b1f16]/45 to-[#0b1f16]/10" />
+            <div className="absolute inset-x-0 bottom-0 p-5">
+              <p className="font-display text-[12px] font-bold uppercase tracking-[0.2em] text-emerald-200/90">
+                {isHi ? "फसल का डॉक्टर" : "Your crop doctor"}
               </p>
-              <h2 className="mt-1 max-w-[16ch] font-display text-2xl font-extrabold leading-tight text-white sm:text-[1.75rem]">
-                {isHi ? "पत्ता स्कैन करें — तुरंत इलाज" : "Scan the leaf — get help now"}
+              <h2 className="mt-1.5 max-w-[18ch] font-display text-[1.65rem] font-extrabold leading-tight text-white sm:text-[1.9rem]">
+                {isHi ? "पत्ता दिखाओ — इलाज पाओ" : "Show the leaf — get the cure"}
               </h2>
-              <p className="mt-1.5 max-w-[28ch] text-[13px] leading-snug text-emerald-50/90">
-                {isHi
-                  ? "कीट या रोग दिखे तो AI Doctor से पूछें।"
-                  : "See spots or pests? Ask AI Doctor in seconds."}
-              </p>
-              <AppLink
-                href="/ai-doctor"
-                className="mt-3.5 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-5 py-3 text-[15px] font-bold text-white shadow-[0_10px_28px_rgba(5,150,105,0.45)] transition active:scale-[0.98]"
-              >
-                <ScanLine className="h-5 w-5" strokeWidth={2.25} />
-                {isHi ? "समस्या स्कैन करें" : "Scan Problem"}
-              </AppLink>
             </div>
+          </div>
+
+          {/* 3 clear steps + one big CTA (on light surface for easy reading) */}
+          <div className="p-4 sm:p-5">
+            <p className="mb-3 text-center text-[15px] font-bold text-[var(--av-text-primary)]">
+              {isHi ? "सिर्फ़ 3 आसान कदम" : "Just 3 easy steps"}
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {steps.map((step, i) => {
+                const Icon = step.icon;
+                return (
+                  <div
+                    key={step.title}
+                    className="relative rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-3 text-center"
+                  >
+                    <span className="absolute left-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-[11px] font-black text-white">
+                      {i + 1}
+                    </span>
+                    <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/12 text-emerald-700 dark:text-emerald-300">
+                      <Icon className="h-6 w-6" strokeWidth={2.1} />
+                    </span>
+                    <p className="mt-2 text-[13px] font-bold leading-tight text-[var(--av-text-primary)]">
+                      {step.title}
+                    </p>
+                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-[var(--av-text-muted)]">
+                      {step.sub}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <AppLink
+              href="/ai-doctor"
+              className="mt-4 flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-5 text-[17px] font-extrabold text-white shadow-[0_12px_30px_rgba(5,150,105,0.42)] transition active:scale-[0.98]"
+            >
+              <Camera className="h-6 w-6" strokeWidth={2.25} />
+              {isHi ? "अभी फोटो खींचें" : "Take a photo now"}
+              <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
+            </AppLink>
+            <AppLink
+              href="/crop-problem"
+              className="mt-2.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-5 text-[15px] font-bold text-[var(--av-text-secondary)] transition active:scale-[0.98]"
+            >
+              <ListChecks className="h-5 w-5 text-emerald-600" strokeWidth={2.25} />
+              {isHi ? "फोटो नहीं? लक्षण से बताओ" : "No photo? Pick symptoms"}
+            </AppLink>
           </div>
         </motion.section>
 
-        {/* Quick Actions — 6 simple icons */}
+        {/* Quick Actions — bigger labels + spacing */}
         <section>
-          <div className="mb-2.5 flex items-end justify-between px-0.5">
+          <div className="mb-3 flex items-end justify-between px-0.5">
             <div>
-              <h2 className="font-display text-base font-bold text-[var(--av-text-primary)]">
-                {isHi ? "त्वरित सेवाएँ" : "Quick Actions"}
+              <h2 className="font-display text-lg font-bold text-[var(--av-text-primary)]">
+                {isHi ? "और भी काम" : "More tools"}
               </h2>
-              <p className="text-[12px] text-[var(--av-text-muted)]">
-                {isHi ? "ज़रूरी काम — एक टैप" : "Everyday farm tools — one tap"}
+              <p className="text-[13px] text-[var(--av-text-muted)]">
+                {isHi ? "एक टैप में ज़रूरी सेवाएँ" : "Everyday farm tools — one tap"}
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 gap-3">
             {QUICK_ACTIONS.map((action, i) => {
               const Icon = action.icon;
               return (
@@ -302,10 +410,10 @@ export default function AgriVedaHome() {
                 >
                   <AppLink
                     href={action.href}
-                    className="av-tool-press group flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2 py-3 text-center shadow-[var(--av-shadow-sm)] backdrop-blur-sm transition hover:border-emerald-500/35"
+                    className="av-tool-press group flex flex-col items-center gap-2 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2 py-4 text-center shadow-[var(--av-shadow-sm)] backdrop-blur-sm transition hover:border-emerald-500/35"
                   >
                     <span
-                      className={`relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br ${action.tone} ring-1 ring-emerald-600/10`}
+                      className={`relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br ${action.tone} ring-1 ring-emerald-600/10`}
                     >
                       {action.imageSrc ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -316,10 +424,10 @@ export default function AgriVedaHome() {
                           draggable={false}
                         />
                       ) : (
-                        <Icon className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+                        <Icon className="h-6 w-6 text-emerald-700 dark:text-emerald-300" />
                       )}
                     </span>
-                    <span className="line-clamp-2 text-[11px] font-bold leading-tight text-[var(--av-text-secondary)]">
+                    <span className="line-clamp-2 text-[13px] font-bold leading-tight text-[var(--av-text-secondary)]">
                       {isHi ? action.labelHi : action.label}
                     </span>
                   </AppLink>
@@ -339,16 +447,16 @@ export default function AgriVedaHome() {
             href="/weather"
             className="block overflow-hidden rounded-[22px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]"
           >
-            <div className="flex items-center justify-between border-b border-[var(--av-border-subtle)] bg-gradient-to-r from-sky-50/80 to-emerald-50/60 px-4 py-3 dark:from-sky-950/30 dark:to-emerald-950/20">
+            <div className="flex items-center justify-between border-b border-[var(--av-border-subtle)] bg-gradient-to-r from-sky-50/80 to-emerald-50/60 px-4 py-3.5 dark:from-sky-950/30 dark:to-emerald-950/20">
               <div>
-                <h2 className="font-display text-base font-bold text-[var(--av-text-primary)]">
+                <h2 className="font-display text-lg font-bold text-[var(--av-text-primary)]">
                   {isHi ? "आज का मौसम" : "Weather Today"}
                 </h2>
-                <p className="text-[12px] text-[var(--av-text-muted)]">{place}</p>
+                <p className="text-[13px] text-[var(--av-text-muted)]">{place}</p>
               </div>
-              <CloudSun className="h-8 w-8 text-sky-600/80 dark:text-sky-300" />
+              <CloudSun className="h-9 w-9 text-sky-600/80 dark:text-sky-300" />
             </div>
-            <div className="grid grid-cols-4 gap-2 px-3 py-3.5">
+            <div className="grid grid-cols-4 gap-2 px-3 py-4">
               {[
                 {
                   icon: Thermometer,
@@ -373,54 +481,58 @@ export default function AgriVedaHome() {
               ].map(({ icon: Icon, label, value }) => (
                 <div
                   key={label}
-                  className="rounded-2xl bg-[var(--av-surface-inset)] px-2 py-2.5 text-center"
+                  className="rounded-2xl bg-[var(--av-surface-inset)] px-2 py-3 text-center"
                 >
-                  <Icon className="mx-auto h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  <p className="mt-1.5 text-[15px] font-bold tabular-nums text-[var(--av-text-primary)]">
+                  <Icon className="mx-auto h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <p className="mt-1.5 text-[17px] font-bold tabular-nums text-[var(--av-text-primary)]">
                     {value}
                   </p>
-                  <p className="mt-0.5 text-[10px] font-semibold text-[var(--av-text-muted)]">
+                  <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-muted)]">
                     {label}
                   </p>
                 </div>
               ))}
             </div>
-            <p className="px-4 pb-3 text-[12px] font-medium capitalize text-[var(--av-text-secondary)]">
-              {condition}
+            <p className="flex items-center justify-between px-4 pb-3.5 text-[13px] font-medium capitalize text-[var(--av-text-secondary)]">
+              <span>{condition}</span>
+              <span className="inline-flex items-center gap-1 font-bold text-[var(--av-accent)]">
+                {isHi ? "पूरा मौसम देखें" : "See full weather"}
+                <ArrowRight className="h-4 w-4" />
+              </span>
             </p>
           </AppLink>
         </motion.section>
 
-        {/* My Fields */}
+        {/* My Fields — Hindi crop names */}
         <motion.section
           initial={reduced ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: MOTION.slow, ease: EASE_OUT }}
         >
-          <div className="mb-2.5 flex items-center justify-between px-0.5">
+          <div className="mb-3 flex items-center justify-between px-0.5">
             <div>
-              <h2 className="font-display text-base font-bold text-[var(--av-text-primary)]">
+              <h2 className="font-display text-lg font-bold text-[var(--av-text-primary)]">
                 {isHi ? "मेरे खेत" : "My Fields"}
               </h2>
-              <p className="text-[12px] text-[var(--av-text-muted)]">
+              <p className="text-[13px] text-[var(--av-text-muted)]">
                 {isHi ? "फसल, स्टेज और दिन" : "Crop, growth stage & days"}
               </p>
             </div>
             <AppLink
               href="/my-farm"
-              className="text-[12px] font-bold text-[var(--av-accent)]"
+              className="text-[13px] font-bold text-[var(--av-accent)]"
             >
               {isHi ? "सभी →" : "All →"}
             </AppLink>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {sourceFields.map((field, index) => {
               const card = fieldCard(field, index);
               return (
                 <AppLink
                   key={card.key}
                   href="/my-farm"
-                  className="flex items-center gap-3 rounded-[22px] border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)] transition hover:border-emerald-500/35"
+                  className="flex items-center gap-3 rounded-[22px] border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-[var(--av-shadow-sm)] transition hover:border-emerald-500/35"
                 >
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-[var(--av-surface-inset)]">
                     <Image
@@ -432,15 +544,15 @@ export default function AgriVedaHome() {
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[15px] font-bold text-[var(--av-text-primary)]">
-                      {card.crop}
+                    <p className="truncate text-[16px] font-bold text-[var(--av-text-primary)]">
+                      {cropLabel(card.cropSlug, card.crop, isHi)}
                     </p>
-                    <p className="truncate text-[12px] text-[var(--av-text-muted)]">{card.name}</p>
-                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      <span className="rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                    <p className="truncate text-[13px] text-[var(--av-text-muted)]">{card.name}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[12px] font-bold text-emerald-700 dark:text-emerald-300">
                         {card.stage}
                       </span>
-                      <span className="rounded-lg bg-[var(--av-surface-inset)] px-2 py-0.5 text-[11px] font-bold text-[var(--av-text-secondary)]">
+                      <span className="rounded-lg bg-[var(--av-surface-inset)] px-2 py-0.5 text-[12px] font-bold text-[var(--av-text-secondary)]">
                         {card.days != null
                           ? isHi
                             ? `${card.days} दिन`
@@ -451,40 +563,42 @@ export default function AgriVedaHome() {
                       </span>
                     </div>
                   </div>
+                  <ArrowRight className="h-5 w-5 shrink-0 text-[var(--av-text-muted)]" />
                 </AppLink>
               );
             })}
           </div>
         </motion.section>
 
-        {/* Today's Advice — one practical recommendation */}
+        {/* Today's Advice — one practical recommendation with clear next step */}
         <motion.section
           initial={reduced ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: MOTION.slow, ease: EASE_OUT }}
-          className="rounded-[22px] border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-white to-amber-50/60 p-4 shadow-[var(--av-shadow-md)] dark:from-emerald-950/40 dark:via-[var(--av-surface)] dark:to-amber-950/20"
+          className="rounded-[22px] border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-white to-amber-50/60 p-5 shadow-[var(--av-shadow-md)] dark:from-emerald-950/40 dark:via-[var(--av-surface)] dark:to-amber-950/20"
         >
-          <div className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
-              <Sparkles className="h-4 w-4" />
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
+              <Sparkles className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700/80 dark:text-emerald-300/80">
+              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-emerald-700/80 dark:text-emerald-300/80">
                 {isHi ? "आज की सलाह" : "Today’s Advice"}
               </p>
-              <h2 className="font-display text-[1.05rem] font-bold text-[var(--av-text-primary)]">
+              <h2 className="font-display text-[1.2rem] font-bold text-[var(--av-text-primary)]">
                 {advice.title}
               </h2>
             </div>
           </div>
-          <p className="mt-3 text-[14px] leading-relaxed text-[var(--av-text-secondary)]">
+          <p className="mt-3 text-[15px] leading-relaxed text-[var(--av-text-secondary)]">
             {advice.body}
           </p>
           <AppLink
             href={advice.href}
-            className="mt-3.5 inline-flex min-h-11 items-center rounded-2xl bg-emerald-700 px-4 py-2.5 text-[13px] font-bold text-white transition hover:bg-emerald-800 active:scale-[0.98]"
+            className="mt-4 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-emerald-700 px-5 py-2.5 text-[15px] font-bold text-white transition hover:bg-emerald-800 active:scale-[0.98]"
           >
             {advice.cta}
+            <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
           </AppLink>
         </motion.section>
       </div>
