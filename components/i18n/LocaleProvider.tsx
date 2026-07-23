@@ -9,17 +9,25 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { t as translate, type AppLocale, type FarmerUiKey } from "@/lib/i18n/farmer-ui";
+import {
+  t as translate,
+  tf as translateFill,
+  type AppLocale,
+  type FarmerUiKey,
+} from "@/lib/i18n/farmer-ui";
 import { readStorage, writeStorage } from "@/lib/storage";
 
 const LOCALE_KEY = "agriveda-app-locale";
+const LOCALE_PICKED_KEY = "agriveda-locale-picked";
 const LEGACY_TRANSLATE_KEY = "agriveda-translate-lang";
 
 interface LocaleContextValue {
   locale: AppLocale;
   setLocale: (locale: AppLocale) => void;
   hydrated: boolean;
+  localePicked: boolean;
   t: (key: FarmerUiKey) => string;
+  tf: (key: FarmerUiKey, vars: Record<string, string | number>) => string;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -39,12 +47,18 @@ function readInitialLocale(): AppLocale {
   return "en";
 }
 
+export function hasLocaleBeenPicked(): boolean {
+  return readStorage<boolean>(LOCALE_PICKED_KEY, false) === true;
+}
+
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<AppLocale>("en");
+  const [localePicked, setLocalePicked] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setLocaleState(readInitialLocale());
+    setLocalePicked(hasLocaleBeenPicked());
     setHydrated(true);
   }, []);
 
@@ -55,7 +69,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   // One-time: if UI locale is Hindi but page isn't translating, apply cookie + reload
   useEffect(() => {
-    if (!hydrated || locale !== "hi") return;
+    if (!hydrated || locale !== "hi" || !localePicked) return;
     try {
       if (document.cookie.includes("googtrans=/en/hi")) return;
       if (sessionStorage.getItem("agriveda-hi-translate-boot") === "1") return;
@@ -65,11 +79,13 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore */
     }
-  }, [locale, hydrated]);
+  }, [locale, hydrated, localePicked]);
 
   const setLocale = useCallback((next: AppLocale) => {
     setLocaleState(next);
     writeStorage(LOCALE_KEY, next);
+    writeStorage(LOCALE_PICKED_KEY, true);
+    setLocalePicked(true);
   }, []);
 
   const value = useMemo(
@@ -77,9 +93,12 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       locale,
       setLocale,
       hydrated,
+      localePicked,
       t: (key: FarmerUiKey) => translate(locale, key),
+      tf: (key: FarmerUiKey, vars: Record<string, string | number>) =>
+        translateFill(locale, key, vars),
     }),
-    [locale, setLocale, hydrated]
+    [locale, setLocale, hydrated, localePicked]
   );
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;

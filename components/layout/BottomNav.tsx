@@ -6,39 +6,50 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Home, Sprout, IndianRupee, User, Stethoscope } from "lucide-react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { softTap } from "@/lib/appEssentials";
+import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 
-const SIDE_ITEMS = [
+const SIDE_ITEMS: {
+  labelKey: FarmerUiKey;
+  path: string;
+  icon: typeof Home;
+  match: (pathname: string) => boolean;
+}[] = [
   {
-    label: "Home",
+    labelKey: "navHome",
     path: "/",
     icon: Home,
-    match: (pathname: string) => pathname === "/",
+    match: (pathname) => pathname === "/",
   },
   {
-    label: "Crops",
+    labelKey: "navCrops",
     path: "/crops",
     icon: Sprout,
-    match: (pathname: string) =>
+    match: (pathname) =>
       pathname.startsWith("/crops") ||
       pathname.startsWith("/crop-details") ||
       pathname.startsWith("/select-crops"),
   },
-] as const;
+];
 
-const RIGHT_ITEMS = [
+const RIGHT_ITEMS: {
+  labelKey: FarmerUiKey;
+  path: string;
+  icon: typeof Home;
+  match: (pathname: string) => boolean;
+}[] = [
   {
-    label: "Mandi",
+    labelKey: "navMandi",
     path: "/mandi",
     icon: IndianRupee,
-    match: (pathname: string) => pathname.startsWith("/mandi"),
+    match: (pathname) => pathname.startsWith("/mandi"),
   },
   {
-    label: "Profile",
+    labelKey: "navProfile",
     path: "/profile",
     icon: User,
-    match: (pathname: string) => pathname.startsWith("/profile"),
+    match: (pathname) => pathname.startsWith("/profile"),
   },
-] as const;
+];
 
 function NavItem({
   label,
@@ -112,7 +123,9 @@ export default function BottomNav() {
           {SIDE_ITEMS.map((item) => (
             <NavItem
               key={item.path}
-              {...item}
+              label={t(item.labelKey)}
+              path={item.path}
+              icon={item.icon}
               isActive={item.match(pathname)}
               reduced={reduced}
             />
@@ -122,7 +135,7 @@ export default function BottomNav() {
             href="/ai-doctor"
             onClick={() => softTap(16)}
             className="relative -mt-6 flex min-w-[68px] flex-col items-center gap-1"
-            aria-label="AI Doctor"
+            aria-label={t("navAiDoctor")}
           >
             {!reduced && (
               <motion.span
@@ -146,14 +159,16 @@ export default function BottomNav() {
             <span
               className={`text-[9px] font-bold ${aiActive ? "text-emerald-500" : "theme-text-muted"}`}
             >
-              AI Doctor
+              {t("navAiDoctor")}
             </span>
           </AppLink>
 
           {RIGHT_ITEMS.map((item) => (
             <NavItem
               key={item.path}
-              {...item}
+              label={t(item.labelKey)}
+              path={item.path}
+              icon={item.icon}
               isActive={item.match(pathname)}
               reduced={reduced}
             />
