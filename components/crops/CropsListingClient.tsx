@@ -15,19 +15,46 @@ import {
 } from "@/lib/crops/crop-display";
 import { AV } from "@/lib/design/tokens";
 import type { Crop } from "@/types/crop";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
-const SEASON_FILTERS = ["All Seasons", "Kharif", "Rabi", "Summer"] as const;
+const SEASON_VALUES = ["All Seasons", "Kharif", "Rabi", "Summer"] as const;
+
+const CATEGORY_HI: Record<string, string> = {
+  All: "सभी फसलें",
+  Cereals: "अनाज",
+  Pulses: "दलहन",
+  Oilseeds: "तिलहन",
+  Vegetables: "सब्ज़ियाँ",
+  Fruits: "फल",
+  "Cash Crops": "नकदी फसलें",
+  Spices: "मसाले",
+  Fodder: "चारा",
+  Millets: "मिलेट्स",
+};
 
 interface Props {
   crops: Crop[];
 }
 
 export default function CropsListingClient({ crops }: Props) {
+  const { locale, t, tf } = useLocale();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CropListingCategory>("All");
-  const [season, setSeason] = useState<(typeof SEASON_FILTERS)[number]>("All Seasons");
+  const [season, setSeason] = useState<(typeof SEASON_VALUES)[number]>("All Seasons");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
+
+  const seasonLabels: Record<(typeof SEASON_VALUES)[number], string> = {
+    "All Seasons": t("cropsAllSeasons"),
+    Kharif: t("cropsSeasonKharif"),
+    Rabi: t("cropsSeasonRabi"),
+    Summer: t("cropsSeasonSummer"),
+  };
+
+  const categoryLabel = (cat: string) => {
+    if (locale === "en") return cat === "All" ? t("cropsAll") : cat;
+    return CATEGORY_HI[cat] ?? cat;
+  };
 
   const activeFilterCount =
     (category !== "All" ? 1 : 0) + (season !== "All Seasons" ? 1 : 0);
@@ -61,19 +88,19 @@ export default function CropsListingClient({ crops }: Props) {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search crops..."
+            placeholder={t("cropsSearch")}
             className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-9 pr-3 text-sm text-[var(--av-text-primary)] placeholder:text-[var(--av-text-muted)] outline-none focus:border-[var(--av-accent)]"
           />
         </div>
         <div className="flex flex-wrap gap-2">
           <select
             value={season}
-            onChange={(e) => setSeason(e.target.value as (typeof SEASON_FILTERS)[number])}
+            onChange={(e) => setSeason(e.target.value as (typeof SEASON_VALUES)[number])}
             className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-xs font-semibold text-[var(--av-text-primary)] outline-none focus:border-[var(--av-accent)]"
           >
-            {SEASON_FILTERS.map((s) => (
+            {SEASON_VALUES.map((s) => (
               <option key={s} value={s}>
-                {s}
+                {seasonLabels[s]}
               </option>
             ))}
           </select>
@@ -88,7 +115,7 @@ export default function CropsListingClient({ crops }: Props) {
             }`}
           >
             <Filter className="h-3.5 w-3.5" />
-            Filter
+            {t("cropsFilter")}
             {activeFilterCount > 0 && (
               <span className="ml-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--av-accent)] px-1 text-[10px] font-bold text-white">
                 {activeFilterCount}
@@ -108,7 +135,7 @@ export default function CropsListingClient({ crops }: Props) {
           >
             <div className="mt-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-bold text-[var(--av-text-primary)]">Filter crops</p>
+                <p className="text-xs font-bold text-[var(--av-text-primary)]">{t("cropsFilterTitle")}</p>
                 <div className="flex items-center gap-2">
                   {activeFilterCount > 0 && (
                     <button
@@ -116,23 +143,23 @@ export default function CropsListingClient({ crops }: Props) {
                       onClick={clearFilters}
                       className="text-[10px] font-bold text-[var(--av-accent)]"
                     >
-                      Clear all
+                      {t("cropsClearAll")}
                     </button>
                   )}
                   <button
                     type="button"
                     onClick={() => setFilterOpen(false)}
                     className="rounded-lg p-1 text-[var(--av-text-muted)] hover:bg-[var(--av-surface-muted)]"
-                    aria-label="Close filters"
+                    aria-label={t("closeLabel")}
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
               </div>
 
-              <p className={`mt-3 ${AV.label}`}>Season</p>
+              <p className={`mt-3 ${AV.label}`}>{t("cropsSeason")}</p>
               <div className="mt-1.5 flex flex-wrap gap-2">
-                {SEASON_FILTERS.map((s) => {
+                {SEASON_VALUES.map((s) => {
                   const active = season === s;
                   return (
                     <button
@@ -145,17 +172,16 @@ export default function CropsListingClient({ crops }: Props) {
                           : "border border-[var(--av-border)] text-[var(--av-text-muted)]"
                       }`}
                     >
-                      {s}
+                      {seasonLabels[s]}
                     </button>
                   );
                 })}
               </div>
 
-              <p className={`mt-4 ${AV.label}`}>Category</p>
+              <p className={`mt-4 ${AV.label}`}>{t("cropsCategory")}</p>
               <div className="mt-1.5 flex flex-wrap gap-2">
                 {CROP_LISTING_CATEGORIES.map((cat) => {
                   const active = category === cat;
-                  const label = cat === "All" ? "All Crops" : cat;
                   return (
                     <button
                       key={cat}
@@ -167,7 +193,7 @@ export default function CropsListingClient({ crops }: Props) {
                           : "border border-[var(--av-border)] text-[var(--av-text-muted)]"
                       }`}
                     >
-                      {label}
+                      {categoryLabel(cat)}
                     </button>
                   );
                 })}
@@ -180,7 +206,6 @@ export default function CropsListingClient({ crops }: Props) {
       <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         {CROP_LISTING_CATEGORIES.map((cat) => {
           const active = category === cat;
-          const label = cat === "All" ? "All Crops" : cat;
           return (
             <button
               key={cat}
@@ -192,7 +217,7 @@ export default function CropsListingClient({ crops }: Props) {
                   : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)]"
               }`}
             >
-              {label}
+              {categoryLabel(cat)}
             </button>
           );
         })}
@@ -200,7 +225,7 @@ export default function CropsListingClient({ crops }: Props) {
 
       <div className="mt-4 flex items-center justify-between gap-3">
         <p className="text-xs font-medium text-[var(--av-text-muted)]">
-          {filtered.length} crops available
+          {tf("cropsAvailable", { n: filtered.length })}
         </p>
         <div className="flex items-center gap-2">
           <AppLink
@@ -208,7 +233,7 @@ export default function CropsListingClient({ crops }: Props) {
             className="hidden items-center gap-1.5 rounded-xl border border-[var(--av-accent)] px-3 py-2 text-xs font-bold text-[var(--av-accent)] sm:inline-flex"
           >
             <Calendar className="h-3.5 w-3.5" />
-            View Crop Calendar
+            {t("cropsViewCalendar")}
           </AppLink>
           <div className="flex rounded-lg border border-[var(--av-border)] p-0.5">
             <button
@@ -261,8 +286,14 @@ export default function CropsListingClient({ crops }: Props) {
             exit={{ opacity: 0 }}
             className="mt-16 text-center"
           >
-            <p className="text-sm font-medium text-[var(--av-text-primary)]">कोई फसल नहीं मिली</p>
-            <p className={`mt-1 ${AV.body}`}>खोज या फ़िल्टर बदलकर देखें</p>
+            <p className="text-sm font-medium text-[var(--av-text-primary)]">
+              {locale === "en" ? "No crops found" : "कोई फसल नहीं मिली"}
+            </p>
+            <p className={`mt-1 ${AV.body}`}>
+              {locale === "en"
+                ? "Try a different search or filter"
+                : "खोज या फ़िल्टर बदलकर देखें"}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>

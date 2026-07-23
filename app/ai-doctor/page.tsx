@@ -38,8 +38,10 @@ import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
 import { OTHER_CROP } from "@/data/ai-doctor-crops";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function AIDoctorPage() {
+  const { t } = useLocale();
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const { addEntry, history, clearHistory } = useAIHistory();
@@ -224,7 +226,7 @@ export default function AIDoctorPage() {
   };
 
   return (
-    <AppShell className="ai-doctor-page" breadcrumbs={[{ label: "Home", href: "/" }, { label: "AI Doctor" }]}>
+    <AppShell className="ai-doctor-page" breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("aiDoctorTitle") }]}>
       <div className="mx-auto w-full max-w-lg space-y-3.5 sm:max-w-none sm:space-y-5">
         <AiDoctorHero
           aiConfigured={aiConfigured}

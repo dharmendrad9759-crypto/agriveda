@@ -246,7 +246,7 @@ export default function ProfilePage() {
           <span className={`flex items-center gap-2 text-sm text-[var(--av-text-secondary)]`}>
             <Languages className="h-4 w-4" /> भाषा
           </span>
-          <span className="text-xs text-[var(--av-text-muted)]">नीचे दाएँ 🌐 बटन</span>
+          <span className="text-xs text-[var(--av-text-muted)]">नीचे दाएँ भाषा बटन</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-sm text-[var(--av-text-secondary)]">थीम</span>

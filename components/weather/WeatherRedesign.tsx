@@ -6,7 +6,11 @@ import DarkCard from "@/components/shell/DarkCard";
 import { GaugeChart } from "@/components/shell/charts";
 import type { WeatherViewModel } from "@/lib/weatherApi";
 import { buildFarmDashboardData } from "@/lib/weatherDashboardData";
-import { AGRI_ADVISORY, WEATHER_ALERTS, WEATHER_DETAILS } from "@/data/mock/weather-extras";
+import {
+  getAgriAdvisory,
+  getWeatherAlerts,
+  getWeatherDetails,
+} from "@/data/mock/weather-extras";
 import {
   CloudSun,
   Droplets,
@@ -18,14 +22,22 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useMemo } from "react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+
+function MapLoadingFallback() {
+  const { locale } = useLocale();
+  return (
+    <div className="flex h-[220px] items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
+      <span className="text-xs text-[var(--av-text-muted)]">
+        {locale === "en" ? "Loading map…" : "मानचित्र लोड हो रहा है…"}
+      </span>
+    </div>
+  );
+}
 
 const RainfallMap = dynamic(() => import("@/components/weather/RainfallMap"), {
   ssr: false,
-  loading: () => (
-    <div className="flex h-[220px] items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
-      <span className="text-xs text-[var(--av-text-muted)]">मैप लोड हो रहा है…</span>
-    </div>
-  ),
+  loading: () => <MapLoadingFallback />,
 });
 
 interface Props {
@@ -36,9 +48,20 @@ interface Props {
   onEnableLocation?: () => void;
 }
 
-export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onShare, onEnableLocation }: Props) {
+export default function WeatherRedesign({
+  weather,
+  lastUpdated,
+  onRefresh,
+  onShare,
+  onEnableLocation,
+}: Props) {
+  const { locale, t, tf } = useLocale();
+  const uiLocale = locale === "en" ? "en" : "hi";
   const dash = useMemo(() => buildFarmDashboardData(weather), [weather]);
   const tempNum = parseInt(weather.temp, 10) || 32;
+  const agriTips = useMemo(() => getAgriAdvisory(uiLocale), [uiLocale]);
+  const alerts = useMemo(() => getWeatherAlerts(uiLocale), [uiLocale]);
+  const details = useMemo(() => getWeatherDetails(uiLocale), [uiLocale]);
 
   const weekForecast = dash.dayTabs.map((tab, i) => ({
     id: tab.id,
@@ -51,15 +74,22 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
   }));
 
   const statItems = [
-    { icon: Droplets, label: "Humidity", value: weather.humidity },
-    { icon: Wind, label: "Wind", value: weather.windSpeed },
-    { icon: CloudSun, label: "Rain", value: `${weather.hourlyForecast[0]?.rainChancePercent ?? 20}%` },
-    { icon: Sun, label: "UV", value: "7 High" },
+    { icon: Droplets, label: t("weatherHumidity"), value: weather.humidity },
+    { icon: Wind, label: t("weatherWind"), value: weather.windSpeed },
+    {
+      icon: CloudSun,
+      label: t("weatherRain"),
+      value: `${weather.hourlyForecast[0]?.rainChancePercent ?? 20}%`,
+    },
+    { icon: Sun, label: "UV", value: uiLocale === "en" ? "7 High" : "7 उच्च" },
   ];
+
+  const updatedTime = lastUpdated
+    ? lastUpdated.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })
+    : "";
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-3 overflow-x-hidden pb-2">
-      {/* Current hero — mobile first */}
       <DarkCard className="overflow-hidden bg-gradient-to-br from-sky-900/40 via-[#111827] to-[#0a0f1a] p-0" delay={0}>
         <div className="p-4">
           <div className="flex items-start justify-between gap-3">
@@ -67,7 +97,9 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
               <p className="truncate text-xs text-[var(--av-text-secondary)]">{weather.location}</p>
               <p className="mt-1 text-4xl font-bold text-[var(--av-text-primary)]">{weather.temp}</p>
               <p className="truncate text-base capitalize text-[var(--av-text-secondary)]">{weather.condition}</p>
-              <p className="text-xs text-[var(--av-text-muted)]">Feels like {tempNum + 4}°C</p>
+              <p className="text-xs text-[var(--av-text-muted)]">
+                {tf("weatherFeelsLike", { temp: tempNum + 4 })}
+              </p>
             </div>
             <div className="shrink-0 text-5xl" aria-hidden>
               {dash.heroIcon}
@@ -89,7 +121,7 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--av-text-secondary)]">
             <span>
-              Max {dash.heroTempHigh}° / Min {dash.heroTempLow}°
+              {t("weatherHigh")} {dash.heroTempHigh}° / {t("weatherLow")} {dash.heroTempLow}°
             </span>
             <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-amber-400">AQI 78</span>
           </div>
@@ -101,7 +133,7 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
                 onClick={onRefresh}
                 className="flex items-center gap-1 rounded-lg border border-[var(--av-border)] px-3 py-1.5 text-xs text-[var(--av-accent)]"
               >
-                <RefreshCw className="h-3.5 w-3.5" /> Refresh
+                <RefreshCw className="h-3.5 w-3.5" /> {t("weatherRefresh")}
               </button>
             )}
             {onShare && (
@@ -110,29 +142,27 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
                 onClick={onShare}
                 className="flex items-center gap-1 rounded-lg border border-[var(--av-border)] px-3 py-1.5 text-xs text-[var(--av-text-secondary)]"
               >
-                <Share2 className="h-3.5 w-3.5" /> Share
+                <Share2 className="h-3.5 w-3.5" /> {t("weatherShare")}
               </button>
             )}
           </div>
         </div>
       </DarkCard>
 
-      {/* Rainfall alert strip */}
       {weather.rainfallAlert && (
         <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2.5">
           <p className="text-xs leading-relaxed text-sky-200">{weather.rainfallAlert}</p>
         </div>
       )}
 
-      {/* Rainfall map — full width on phone */}
       <DarkCard hover delay={1} className="overflow-hidden">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Rainfall Radar Map</h3>
-            <p className="text-[10px] text-[var(--av-text-muted)]">Live precipitation · RainViewer</p>
+            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weatherRadarMap")}</h3>
+            <p className="text-[10px] text-[var(--av-text-muted)]">{t("weatherRadarHint")}</p>
           </div>
           <AppLink href="/weather/spray-advisory" className="shrink-0 text-[10px] font-bold text-[var(--av-accent)]">
-            Spray →
+            {t("weatherSprayAdvisory")} →
           </AppLink>
         </div>
         <div className="mt-3 w-full">
@@ -153,9 +183,8 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
         </div>
       </DarkCard>
 
-      {/* Hourly — horizontal scroll contained */}
       <DarkCard hover delay={2} className="overflow-hidden">
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Hourly Forecast</h3>
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weatherHourly")}</h3>
         <div className="-mx-1 mt-3 max-w-full overflow-x-auto pb-1 scrollbar-hide">
           <div className="flex w-max min-w-full gap-2 px-1">
             {weather.hourlyForecast.slice(0, 12).map((h, i) => (
@@ -163,7 +192,9 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
                 key={i}
                 className="flex w-[3.75rem] shrink-0 flex-col items-center rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-3 text-center"
               >
-                <span className="text-[9px] text-[var(--av-text-muted)]">{i === 0 ? "Now" : h.time}</span>
+                <span className="text-[9px] text-[var(--av-text-muted)]">
+                  {i === 0 ? t("weatherNow") : h.time}
+                </span>
                 <span className="my-1 text-xl">{h.icon}</span>
                 <span className="text-xs font-bold text-[var(--av-text-primary)]">{h.temp}</span>
                 <span className="text-[9px] text-sky-400">{h.rainChancePercent}%</span>
@@ -173,35 +204,39 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
         </div>
       </DarkCard>
 
-      {/* Today summary */}
       <DarkCard hover delay={1}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Today&apos;s Summary</h3>
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weatherTodaySummary")}</h3>
         <p className="text-[10px] text-[var(--av-text-muted)]">
-          {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+          {new Date().toLocaleDateString(uiLocale === "en" ? "en-IN" : "hi-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
         </p>
         <ul className="mt-3 space-y-2 text-xs text-[var(--av-text-secondary)]">
           <li className="flex justify-between gap-2">
-            <span>Max Temp</span>
+            <span>{t("weatherHigh")}</span>
             <span className="font-semibold text-[var(--av-text-primary)]">{dash.heroTempHigh}°C</span>
           </li>
           <li className="flex justify-between gap-2">
-            <span>Min Temp</span>
+            <span>{t("weatherLow")}</span>
             <span className="font-semibold text-[var(--av-text-primary)]">{dash.heroTempLow}°C</span>
           </li>
           <li className="flex justify-between gap-2">
-            <span>Rain chance</span>
+            <span>{t("weatherRainChance")}</span>
             <span className="font-semibold text-sky-400">{dash.metrics.rainChance}%</span>
           </li>
           <li className="flex justify-between gap-2">
-            <span>Expected rain</span>
-            <span className="font-semibold text-[var(--av-text-primary)]">{dash.metrics.rainMm.toFixed(1)} mm</span>
+            <span>{t("weatherExpectedRain")}</span>
+            <span className="font-semibold text-[var(--av-text-primary)]">
+              {dash.metrics.rainMm.toFixed(1)} mm
+            </span>
           </li>
         </ul>
       </DarkCard>
 
-      {/* 7 day forecast */}
       <DarkCard hover delay={2}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">7 Day Forecast</h3>
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weather7Day")}</h3>
         <ul className="mt-3 space-y-2">
           {weekForecast.map((day) => (
             <li
@@ -219,18 +254,19 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
                 <p className="text-xs font-bold text-[var(--av-text-primary)]">
                   {day.high}° / {day.low}°
                 </p>
-                <p className="text-[10px] text-sky-400">{day.rainChance}% rain</p>
+                <p className="text-[10px] text-sky-400">
+                  {tf("weatherRainPct", { pct: day.rainChance })}
+                </p>
               </div>
             </li>
           ))}
         </ul>
       </DarkCard>
 
-      {/* Agri advisory */}
       <DarkCard hover delay={1}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Agri Weather Advisory</h3>
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weatherAdvisory")}</h3>
         <ul className="mt-3 space-y-2">
-          {AGRI_ADVISORY.slice(0, 3).map((tip) => (
+          {agriTips.slice(0, 3).map((tip) => (
             <li key={tip} className="flex gap-2 text-xs leading-relaxed text-[var(--av-text-secondary)]">
               <span className="shrink-0 text-[var(--av-accent)]">•</span>
               <span>{tip}</span>
@@ -245,11 +281,10 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
         ))}
       </DarkCard>
 
-      {/* Alerts */}
       <DarkCard hover delay={2}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Weather Alerts</h3>
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weatherAlerts")}</h3>
         <ul className="mt-3 space-y-2">
-          {WEATHER_ALERTS.map((a) => (
+          {alerts.map((a) => (
             <li
               key={a.title}
               className={`rounded-lg border px-3 py-2 ${
@@ -257,7 +292,9 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
               }`}
             >
               <div className="flex items-center gap-2">
-                <AlertTriangle className={`h-4 w-4 shrink-0 ${a.priority === "high" ? "text-red-400" : "text-amber-400"}`} />
+                <AlertTriangle
+                  className={`h-4 w-4 shrink-0 ${a.priority === "high" ? "text-red-400" : "text-amber-400"}`}
+                />
                 <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.title}</p>
               </div>
               <p className="mt-1 text-[10px] leading-relaxed text-[var(--av-text-secondary)]">{a.desc}</p>
@@ -266,40 +303,44 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
         </ul>
       </DarkCard>
 
-      {/* AQI + sun/moon — 2 col on phone */}
       <div className="grid grid-cols-2 gap-3">
         <DarkCard hover delay={1} className="col-span-2 sm:col-span-1">
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Air Quality</h3>
-          <GaugeChart value={78} max={150} label="78 Moderate" />
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weatherAirQuality")}</h3>
+          <GaugeChart
+            value={78}
+            max={150}
+            label={uiLocale === "en" ? "78 Moderate" : "78 मध्यम"}
+          />
         </DarkCard>
 
         <DarkCard hover delay={2} className="col-span-2 sm:col-span-1">
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Sun & Moon</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weatherSunMoon")}</h3>
           <div className="mt-3 flex justify-around text-center">
             <div>
               <Sun className="mx-auto h-5 w-5 text-amber-400" />
               <p className="mt-1 text-[10px] font-bold text-[var(--av-text-primary)]">05:48</p>
-              <p className="text-[8px] text-[var(--av-text-muted)]">Sunrise</p>
+              <p className="text-[8px] text-[var(--av-text-muted)]">{t("weatherSunrise")}</p>
             </div>
             <div>
               <Sun className="mx-auto h-5 w-5 rotate-180 text-orange-400" />
               <p className="mt-1 text-[10px] font-bold text-[var(--av-text-primary)]">06:58</p>
-              <p className="text-[8px] text-[var(--av-text-muted)]">Sunset</p>
+              <p className="text-[8px] text-[var(--av-text-muted)]">{t("weatherSunset")}</p>
             </div>
             <div>
               <Moon className="mx-auto h-5 w-5 text-slate-300" />
-              <p className="mt-1 text-[10px] font-bold text-[var(--av-text-primary)]">Gibbous</p>
-              <p className="text-[8px] text-[var(--av-text-muted)]">Moon</p>
+              <p className="mt-1 text-[10px] font-bold text-[var(--av-text-primary)]">
+                {uiLocale === "en" ? "Gibbous" : "कुबड़ा"}
+              </p>
+              <p className="text-[8px] text-[var(--av-text-muted)]">{t("weatherMoon")}</p>
             </div>
           </div>
         </DarkCard>
       </div>
 
-      {/* Extra details */}
       <DarkCard hover delay={3}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Additional Details</h3>
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("weatherAdditional")}</h3>
         <div className="mt-3 grid grid-cols-2 gap-2">
-          {WEATHER_DETAILS.map((d) => (
+          {details.map((d) => (
             <div key={d.label} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-2">
               <p className="text-[9px] text-[var(--av-text-muted)]">{d.label}</p>
               <p className="truncate text-xs font-semibold text-[var(--av-text-primary)]">{d.value}</p>
@@ -310,14 +351,18 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
 
       {lastUpdated && (
         <p className="text-center text-[10px] text-[var(--av-text-muted)]">
-          Last updated: {lastUpdated.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+          {tf("weatherLastUpdated", { time: updatedTime })}
         </p>
       )}
 
       <div className="rounded-xl border border-[#10b981]/30 bg-[var(--av-accent)]/10 p-4">
-        <p className="text-sm text-[var(--av-text-primary)]">GPS से सटीक मौसम और रडार मैप पाएं</p>
-        <button type="button" onClick={onEnableLocation} className="av-btn av-btn-sm av-btn-primary mt-3 w-full sm:w-auto">
-          Enable Location
+        <p className="text-sm text-[var(--av-text-primary)]">{t("weatherEnableLocationHint")}</p>
+        <button
+          type="button"
+          onClick={onEnableLocation}
+          className="av-btn av-btn-sm av-btn-primary mt-3 w-full sm:w-auto"
+        >
+          {t("weatherEnableLocation")}
         </button>
       </div>
     </div>

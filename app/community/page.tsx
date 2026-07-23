@@ -19,6 +19,7 @@ import { useToast } from "@/components/ui/Toast";
 import { readStorage, writeStorage } from "@/lib/storage";
 import { AV } from "@/lib/design/tokens";
 import { Eye, MessageCircle, Flame, Users } from "lucide-react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const TABS = ["All", "My Questions", "Unanswered", "Following"] as const;
 const POLL_KEY = "agriveda-community-poll";
@@ -33,6 +34,7 @@ const GUIDELINES = [
 ];
 
 export default function CommunityPage() {
+  const { t } = useLocale();
   const { showToast } = useToast();
   const { queries: myQueries, hydrated } = useQueryHistory();
   const [tab, setTab] = useState<(typeof TABS)[number]>("All");
@@ -83,16 +85,16 @@ export default function CommunityPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="Community"
-      subtitle="Connect, share, learn and grow together"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Community" }]}
+      title={t("communityTitle")}
+      subtitle={t("communitySubtitle")}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("communityTitle") }]}
     >
       <PageHero
-        title="Kisan Community"
-        subtitle="Apne sawal phone pe save karein. Turant jawab ke liye AI Doctor use karein — expert network abhi live nahi."
+        title={t("communityTitle")}
+        subtitle={t("communitySubtitle")}
         badge="Local"
         icon={Users}
-        action={{ label: "Ask AI Doctor", href: "/ai-doctor" }}
+        action={{ label: t("shellAiDoctor"), href: "/ai-doctor" }}
       />
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">

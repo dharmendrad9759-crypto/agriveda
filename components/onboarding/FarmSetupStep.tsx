@@ -10,6 +10,7 @@ import {
   totalAreaAcres,
 } from "@/lib/farm/farmInit";
 import { cn } from "@/lib/cn";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const POPULAR_CROP_SLUGS = ["paddy", "wheat", "soybean", "maize", "cotton", "tomato", "potato", "chilli"];
 
@@ -34,6 +35,7 @@ interface FarmSetupStepProps {
 }
 
 export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmSetupStepProps) {
+  const { t, tf } = useLocale();
   const [fields, setFields] = useState<DraftField[]>([emptyDraft()]);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,15 +77,15 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
       const f = fields[i];
       const area = parseFloat(f.areaAcres);
       if (!f.name.trim()) {
-        setError(`खेत ${i + 1}: नाम भरें`);
+        setError(tf("farmErrName", { n: i + 1 }));
         return;
       }
       if (!Number.isFinite(area) || area <= 0) {
-        setError(`खेत ${i + 1}: सही रकबा (एकड़) भरें`);
+        setError(tf("farmErrArea", { n: i + 1 }));
         return;
       }
       if (!f.cropSlug) {
-        setError(`खेत ${i + 1}: फसल चुनें`);
+        setError(tf("farmErrCrop", { n: i + 1 }));
         return;
       }
       inputs.push({
@@ -102,16 +104,19 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
   return (
     <div className="space-y-4">
       <p className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-800 dark:text-emerald-200">
-        {farmerName ? `${farmerName} जी, ` : ""}
-        अपनी ज़मीन की जानकारी भरें — कुल रकबा, खेत और फसलें।
+        {farmerName
+          ? tf("farmSetupIntroNamed", { name: farmerName })
+          : t("farmSetupIntro")}
       </p>
 
       <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-3 text-center">
         <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-          कुल रकबा
+          {t("farmTotalArea")}
         </p>
         <p className="mt-1 text-2xl font-black text-[var(--av-accent)]">
-          {previewAcres > 0 ? `${previewAcres.toFixed(2)} एकड़` : "—"}
+          {previewAcres > 0
+            ? `${previewAcres.toFixed(2)} ${t("acresLabel")}`
+            : "—"}
         </p>
       </div>
 
@@ -123,14 +128,14 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
           <div className="flex items-center justify-between">
             <p className="flex items-center gap-2 text-xs font-bold text-[var(--av-text-primary)]">
               <MapPin className="h-4 w-4 text-emerald-500" />
-              खेत {index + 1}
+              {tf("farmFieldLabel", { n: index + 1 })}
             </p>
             {fields.length > 1 && (
               <button
                 type="button"
                 onClick={() => removeField(index)}
                 className="rounded-lg p-1 text-red-400 hover:bg-red-500/10"
-                aria-label="Remove field"
+                aria-label={t("dismissLabel")}
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -140,7 +145,7 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
           <input
             value={field.name}
             onChange={(e) => updateField(index, { name: e.target.value })}
-            placeholder="खेत का नाम (जैसे मुख्य खेत, उत्तर वाला)"
+            placeholder={t("farmNamePlaceholder")}
             className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
           />
 
@@ -152,7 +157,7 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
               step="0.01"
               value={field.areaAcres}
               onChange={(e) => updateField(index, { areaAcres: e.target.value })}
-              placeholder="रकबा (एकड़)"
+              placeholder={t("farmAreaPlaceholder")}
               className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
             />
             <select
@@ -162,15 +167,15 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
               }
               className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
             >
-              <option value="Owned">अपनी ज़मीन</option>
-              <option value="Leased">बटाई / किराया</option>
+              <option value="Owned">{t("farmOwned")}</option>
+              <option value="Leased">{t("farmLeased")}</option>
             </select>
           </div>
 
           <div>
             <p className="mb-2 flex items-center gap-2 text-xs font-bold text-[var(--av-text-muted)]">
               <Sprout className="h-4 w-4" />
-              फसल चुनें
+              {t("farmSelectCrop")}
             </p>
             <div className="grid grid-cols-4 gap-2">
               {popularCrops.map((crop) =>
@@ -194,7 +199,7 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
             </div>
             <details className="mt-2">
               <summary className="cursor-pointer text-xs font-semibold text-[var(--av-accent)]">
-                और फसलें देखें
+                {t("farmMoreCrops")}
               </summary>
               <div className="mt-2 grid max-h-32 grid-cols-4 gap-2 overflow-y-auto">
                 {otherCrops.map((crop) => (
@@ -225,7 +230,7 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-400/50 py-3 text-sm font-bold text-emerald-700 dark:text-emerald-300"
       >
         <Plus className="h-4 w-4" />
-        एक और खेत जोड़ें
+        {t("farmAddField")}
       </button>
 
       <button
@@ -235,7 +240,7 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white disabled:opacity-50"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-        शुरू करें
+        {t("farmStart")}
       </button>
 
       {error && (

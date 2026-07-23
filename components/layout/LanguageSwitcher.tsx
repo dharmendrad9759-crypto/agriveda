@@ -10,12 +10,12 @@ import { applyPageTranslation, TRANSLATE_LANGUAGES } from "@/lib/translator";
 
 const OPTIONS: {
   locale: AppLocale;
-  label: string;
-  hint: string;
+  labelKey: "english" | "hindi" | "langHinglish";
+  hintKey: "langEnglishHint" | "langHindiHint" | "langHinglishHint";
 }[] = [
-  { locale: "en", label: "English", hint: "Full app in English" },
-  { locale: "hi", label: "सरल हिंदी", hint: "पूरा पेज हिंदी में (रिफ्रेश होगा)" },
-  { locale: "hinglish", label: "Hinglish", hint: "Short mix — page stays English-friendly" },
+  { locale: "en", labelKey: "english", hintKey: "langEnglishHint" },
+  { locale: "hi", labelKey: "hindi", hintKey: "langHindiHint" },
+  { locale: "hinglish", labelKey: "langHinglish", hintKey: "langHinglishHint" },
 ];
 
 export default function LanguageSwitcher() {
@@ -63,15 +63,13 @@ export default function LanguageSwitcher() {
             <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
               <div>
                 <h2 className="text-base font-extrabold theme-text-primary">{t("chooseLanguage")}</h2>
-                <p className="text-[11px] theme-text-muted">
-                  हिंदी चुनें → पूरा पेज हिंदी हो जाएगा (reload)
-                </p>
+                <p className="text-[11px] theme-text-muted">{t("langSwitcherHint")}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="rounded-xl p-2 theme-text-muted"
-                aria-label="Close"
+                aria-label={t("closeLabel")}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -91,9 +89,9 @@ export default function LanguageSwitcher() {
                     )}
                   >
                     <span>
-                      {opt.label}
+                      {t(opt.labelKey)}
                       <span className="mt-0.5 block text-[10px] font-medium theme-text-muted">
-                        {opt.hint}
+                        {t(opt.hintKey)}
                       </span>
                     </span>
                     {locale === opt.locale && <Check className="h-4 w-4 text-emerald-500" />}

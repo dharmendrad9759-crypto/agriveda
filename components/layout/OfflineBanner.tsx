@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { WifiOff, X } from "lucide-react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function OfflineBanner() {
+  const { t } = useLocale();
   const [offline, setOffline] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -26,14 +28,12 @@ export default function OfflineBanner() {
   return (
     <div className="sticky top-0 z-[60] flex items-center gap-2 border-b border-amber-500/30 bg-amber-500/15 px-4 py-2 text-xs font-semibold text-amber-900 dark:text-amber-200">
       <WifiOff className="h-4 w-4 shrink-0" />
-      <p className="flex-1">
-        इंटरनेट नहीं है — मौसम, AI और mandi के लिए net ज़रूरी। सेव की हुई जानकारी दिख सकती है।
-      </p>
+      <p className="flex-1">{t("offlineBanner")}</p>
       <button
         type="button"
         onClick={() => setDismissed(true)}
         className="rounded-lg p-1 hover:bg-amber-500/20"
-        aria-label="Dismiss"
+        aria-label={t("dismissLabel")}
       >
         <X className="h-4 w-4" />
       </button>

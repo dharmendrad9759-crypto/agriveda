@@ -7,10 +7,12 @@ import { Crown, MessageCircle, Leaf } from "lucide-react";
 import { SHELL_NAV, isNavActive } from "@/lib/shell/nav";
 import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const reduced = useReducedMotion();
+  const { t } = useLocale();
 
   return (
     <aside className="av-sidebar hidden lg:flex lg:w-60 xl:w-64 lg:shrink-0 lg:flex-col">
@@ -22,17 +24,18 @@ export default function AppSidebar() {
           </span>
         </AppLink>
         <p className="mt-0.5 pl-7 text-[9px] font-medium text-[var(--av-text-muted)]">
-          Smart Farming, Better Future
+          {t("shellTagline")}
         </p>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide" aria-label="Main navigation">
+      <nav className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide" aria-label={t("bottomNavLabel")}>
         <ul className="space-y-0.5">
           {SHELL_NAV.map((item) => {
             const active = isNavActive(item, pathname);
             const Icon = item.icon;
+            const label = t(item.labelKey);
             return (
-              <li key={item.href + item.label}>
+              <li key={item.href + item.labelKey}>
                 <AppLink
                   href={item.href}
                   className={`relative flex min-h-[40px] items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors duration-150 ${
@@ -52,7 +55,7 @@ export default function AppSidebar() {
                     <span className="absolute inset-0 rounded-lg bg-[var(--av-accent-soft)] ring-1 ring-[var(--av-accent)]/25" />
                   )}
                   <Icon className="relative z-10 h-4 w-4 shrink-0" />
-                  <span className="relative z-10 truncate">{item.label}</span>
+                  <span className="relative z-10 truncate">{label}</span>
                 </AppLink>
               </li>
             );
@@ -67,12 +70,14 @@ export default function AppSidebar() {
         >
           <div className="flex items-center gap-2">
             <Crown className="h-4 w-4 text-amber-500" />
-            <span className="text-xs font-bold text-[var(--av-text-primary)]">Go Premium</span>
+            <span className="text-xs font-bold text-[var(--av-text-primary)]">{t("shellGoPremium")}</span>
           </div>
           <p className="mt-1 text-[10px] leading-snug text-[var(--av-text-muted)]">
-            Advanced tools & expert support
+            {t("shellPremiumDesc")}
           </p>
-          <span className="mt-2 inline-block text-[10px] font-bold text-[var(--av-accent)]">Upgrade Now →</span>
+          <span className="mt-2 inline-block text-[10px] font-bold text-[var(--av-accent)]">
+            {t("shellUpgradeNow")}
+          </span>
         </AppLink>
 
         <AppLink
@@ -80,10 +85,12 @@ export default function AppSidebar() {
           className="flex items-center gap-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-muted)] px-3 py-2 text-[10px] font-medium text-[var(--av-text-secondary)] hover:border-[var(--av-accent)]/30"
         >
           <MessageCircle className="h-4 w-4 text-[var(--av-accent)]" />
-          Need Help? AI Assistant
+          {t("shellNeedHelp")}
         </AppLink>
 
-        <p className="px-1 text-[9px] text-[var(--av-text-muted)]">v{APP_VERSION} · Built for farmers</p>
+        <p className="px-1 text-[9px] text-[var(--av-text-muted)]">
+          v{APP_VERSION} · {t("shellBuiltForFarmers")}
+        </p>
       </div>
     </aside>
   );

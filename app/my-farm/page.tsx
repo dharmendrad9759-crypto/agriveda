@@ -10,6 +10,7 @@ import { useFarmData } from "@/hooks/useFarmData";
 import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
 import { cropCatalog } from "@/data/crop-catalog";
 import { Tractor, Map, Sprout, Heart, Plus, Bell } from "lucide-react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const RECORD_COLORS: Record<string, string> = {
   Fertilizer: "bg-emerald-500/20 text-emerald-400",
@@ -28,6 +29,7 @@ function totalAreaLabel(fields: { area: string }[]) {
 
 export default function MyFarmPage() {
   const { showToast } = useToast();
+  const { t } = useLocale();
   const { data, stats, addField, addActivity, addNote } = useFarmData();
   const farmAlerts = useDashboardAlerts(4);
 
@@ -135,13 +137,13 @@ export default function MyFarmPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="My Farm"
+      title={t("myFarmTitle")}
       subtitle={
         data.fields.length
-          ? `${stats.totalFields} खेत · ${totalAreaLabel(data.fields)} · health ${stats.healthScore}%`
-          : "अपना खेत, रकबा और फसल खुद जोड़ें"
+          ? `${stats.totalFields} ${t("shellCrops")} · ${totalAreaLabel(data.fields)} · health ${stats.healthScore}%`
+          : t("myFarmSubtitle")
       }
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "My Farm" }]}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("myFarmTitle") }]}
       actions={
         <AppLink href="/field-advisor" className="av-btn av-btn-sm av-btn-secondary">
           Advisor

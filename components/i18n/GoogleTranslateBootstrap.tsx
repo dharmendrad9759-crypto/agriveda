@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { isCapacitorNative } from "@/lib/capacitorNav";
 
 declare global {
@@ -41,8 +43,34 @@ function injectTranslate() {
   document.body.appendChild(script);
 }
 
+/** Re-apply Google Translate after Next.js client navigations (SPA). */
+function reapplyGoogleTranslate(targetLang: string) {
+  const select = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+  if (!select) return;
+
+  const apply = () => {
+    if (select.value !== targetLang) {
+      select.value = targetLang;
+      select.dispatchEvent(new Event("change"));
+    } else {
+      // Force re-scan of newly mounted React content
+      select.value = "en";
+      select.dispatchEvent(new Event("change"));
+      window.setTimeout(() => {
+        select.value = targetLang;
+        select.dispatchEvent(new Event("change"));
+      }, 80);
+    }
+  };
+
+  window.setTimeout(apply, 120);
+}
+
 /** Loads Google Translate — deferred on native so cold open stays smooth */
 export default function GoogleTranslateBootstrap() {
+  const pathname = usePathname();
+  const { locale, hydrated } = useLocale();
+
   useEffect(() => {
     const native = isCapacitorNative();
     if (native) {
@@ -61,6 +89,12 @@ export default function GoogleTranslateBootstrap() {
 
     injectTranslate();
   }, []);
+
+  // After client-side route changes, re-trigger translation for Hindi
+  useEffect(() => {
+    if (!hydrated || locale !== "hi") return;
+    reapplyGoogleTranslate("hi");
+  }, [pathname, locale, hydrated]);
 
   return <div id="google_translate_element" className="hidden" aria-hidden />;
 }
