@@ -1,32 +1,22 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import AppLink from "@/components/ui/AppLink";
-import DarkCard from "@/components/shell/DarkCard";
-import { GaugeChart } from "@/components/shell/charts";
 import type { WeatherViewModel } from "@/lib/weatherApi";
 import { buildFarmDashboardData } from "@/lib/weatherDashboardData";
-import { AGRI_ADVISORY, WEATHER_ALERTS, WEATHER_DETAILS } from "@/data/mock/weather-extras";
 import {
   CloudSun,
   Droplets,
   Wind,
-  Sun,
-  Moon,
+  Eye,
+  CloudRain,
+  MapPin,
   RefreshCw,
   Share2,
+  CheckCircle2,
   AlertTriangle,
+  ShieldAlert,
 } from "lucide-react";
-import { useMemo } from "react";
-
-const RainfallMap = dynamic(() => import("@/components/weather/RainfallMap"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-[220px] items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
-      <span className="text-xs text-[var(--av-text-muted)]">मैप लोड हो रहा है…</span>
-    </div>
-  ),
-});
+import { useMemo, type ReactNode } from "react";
 
 interface Props {
   weather: WeatherViewModel;
@@ -36,62 +26,94 @@ interface Props {
   onEnableLocation?: () => void;
 }
 
-export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onShare, onEnableLocation }: Props) {
+function shortLocation(location: string) {
+  return location.split(",")[0]?.trim() || location;
+}
+
+export default function WeatherRedesign({
+  weather,
+  lastUpdated,
+  onRefresh,
+  onShare,
+}: Props) {
   const dash = useMemo(() => buildFarmDashboardData(weather), [weather]);
-  const tempNum = parseInt(weather.temp, 10) || 32;
+  const tempNum = parseInt(weather.temp, 10) || 28;
+  const rainNow = weather.hourlyForecast[0]?.rainChancePercent ?? dash.metrics.rainChance;
 
-  const weekForecast = dash.dayTabs.map((tab, i) => ({
-    id: tab.id,
-    label: tab.label,
-    dateLabel: tab.sublabel,
-    icon: dash.hourly[i * 3]?.icon ?? "🌤",
-    high: Math.round(dash.metrics.tempHigh - i),
-    low: Math.round(dash.metrics.tempLow - i * 0.5),
-    rainChance: dash.hourly[i * 3]?.rainPercent ?? 20,
-  }));
+  const weekForecast =
+    weather.dailyForecast.length > 0
+      ? weather.dailyForecast
+      : dash.dayTabs.map((tab, i) => ({
+          id: tab.id,
+          label: i === 0 ? "आज" : i === 1 ? "कल" : tab.label,
+          icon: dash.hourly[i * 3]?.icon ?? "🌤",
+          high: Math.round(dash.metrics.tempHigh - i),
+          low: Math.round(dash.metrics.tempLow - i * 0.5),
+          rainChance: dash.hourly[i * 3]?.rainPercent ?? 20,
+        }));
 
-  const statItems = [
-    { icon: Droplets, label: "Humidity", value: weather.humidity },
-    { icon: Wind, label: "Wind", value: weather.windSpeed },
-    { icon: CloudSun, label: "Rain", value: `${weather.hourlyForecast[0]?.rainChancePercent ?? 20}%` },
-    { icon: Sun, label: "UV", value: "7 High" },
+  const spraySafe = rainNow < 30 && dash.metrics.windKmh < 15;
+  const irrigationHold = (weekForecast[1]?.rainChance ?? 0) >= 50;
+  const diseaseHigh = dash.metrics.humidity >= 70 || rainNow >= 40;
+
+  const metrics = [
+    { icon: Droplets, label: "नमी", value: weather.humidity },
+    { icon: Wind, label: "हवा", value: weather.windSpeed },
+    { icon: CloudRain, label: "बारिश", value: `${rainNow}%` },
+    { icon: Eye, label: "दृश्यता", value: weather.visibilityKm ?? "8 km" },
   ];
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-3 overflow-x-hidden pb-2">
-      {/* Current hero — mobile first */}
-      <DarkCard className="overflow-hidden bg-gradient-to-br from-sky-900/40 via-[#111827] to-[#0a0f1a] p-0" delay={0}>
-        <div className="p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs text-[var(--av-text-secondary)]">{weather.location}</p>
-              <p className="mt-1 text-4xl font-bold text-[var(--av-text-primary)]">{weather.temp}</p>
-              <p className="truncate text-base capitalize text-[var(--av-text-secondary)]">{weather.condition}</p>
-              <p className="text-xs text-[var(--av-text-muted)]">Feels like {tempNum + 4}°C</p>
+    <div className="mx-auto w-full max-w-lg space-y-4 overflow-x-hidden pb-2">
+      {weather.isDemo && (
+        <div className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-[11px] leading-relaxed text-amber-800 dark:text-amber-200">
+          {weather.demoNotice ??
+            "Demo मौसम — live के लिए OPENWEATHER_API_KEY सेट करें।"}
+        </div>
+      )}
+
+      {/* Hero — blue weather card */}
+      <section className="relative overflow-hidden rounded-b-[1.75rem] rounded-t-2xl bg-gradient-to-br from-[#1d6fd8] via-[#2b7de0] to-[#1a5fbf] text-white shadow-[0_16px_40px_-12px_rgba(29,111,216,0.55)]">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-30"
+          style={{
+            background:
+              "radial-gradient(circle at 20% 0%, rgba(255,255,255,0.35), transparent 45%), radial-gradient(circle at 90% 80%, rgba(56,189,248,0.35), transparent 40%)",
+          }}
+        />
+        <div className="relative p-4 pb-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <CloudSun className="h-5 w-5 text-amber-200" />
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold tracking-tight">
+                मौसम
+              </h2>
             </div>
-            <div className="shrink-0 text-5xl" aria-hidden>
+            <span className="inline-flex max-w-[55%] items-center gap-1 truncate rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold backdrop-blur-md">
+              <MapPin className="h-3 w-3 shrink-0" />
+              <span className="truncate">{shortLocation(weather.location)}</span>
+            </span>
+          </div>
+
+          <div className="mt-5 flex flex-col items-center text-center">
+            <div className="text-6xl leading-none drop-shadow-sm" aria-hidden>
               {dash.heroIcon}
             </div>
+            <p className="mt-2 text-5xl font-black tracking-tight">{weather.temp}</p>
+            <p className="mt-1 text-sm font-medium text-white/90 capitalize">
+              {weather.condition}
+              <span className="text-white/70"> • अनुभव: {weather.feelsLike ?? `${tempNum + 2}°C`}</span>
+            </p>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {statItems.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-lg border border-[var(--av-border)]/80 bg-[var(--av-surface-inset)]/60 px-3 py-2"
-              >
-                <item.icon className="h-3.5 w-3.5 text-[var(--av-accent)]" />
-                <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">{item.label}</p>
-                <p className="truncate text-xs font-semibold text-[var(--av-text-primary)]">{item.value}</p>
+          <div className="mt-5 grid grid-cols-4 gap-1.5 rounded-2xl border border-white/25 bg-white/15 p-2.5 backdrop-blur-md">
+            {metrics.map((m) => (
+              <div key={m.label} className="flex flex-col items-center gap-0.5 px-0.5 py-1 text-center">
+                <m.icon className="h-4 w-4 text-sky-100" />
+                <p className="text-[11px] font-bold leading-tight">{m.value}</p>
+                <p className="text-[9px] text-white/75">{m.label}</p>
               </div>
             ))}
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--av-text-secondary)]">
-            <span>
-              Max {dash.heroTempHigh}° / Min {dash.heroTempLow}°
-            </span>
-            <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-amber-400">AQI 78</span>
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -99,226 +121,166 @@ export default function WeatherRedesign({ weather, lastUpdated, onRefresh, onSha
               <button
                 type="button"
                 onClick={onRefresh}
-                className="flex items-center gap-1 rounded-lg border border-[var(--av-border)] px-3 py-1.5 text-xs text-[var(--av-accent)]"
+                className="inline-flex items-center gap-1 rounded-lg bg-white/15 px-3 py-1.5 text-[11px] font-semibold backdrop-blur-sm"
               >
-                <RefreshCw className="h-3.5 w-3.5" /> Refresh
+                <RefreshCw className="h-3.5 w-3.5" /> रिफ्रेश
               </button>
             )}
             {onShare && (
               <button
                 type="button"
                 onClick={onShare}
-                className="flex items-center gap-1 rounded-lg border border-[var(--av-border)] px-3 py-1.5 text-xs text-[var(--av-text-secondary)]"
+                className="inline-flex items-center gap-1 rounded-lg bg-white/15 px-3 py-1.5 text-[11px] font-semibold backdrop-blur-sm"
               >
-                <Share2 className="h-3.5 w-3.5" /> Share
+                <Share2 className="h-3.5 w-3.5" /> शेयर
               </button>
             )}
+            <AppLink
+              href="/weather/spray-advisory"
+              className="ml-auto inline-flex items-center rounded-lg bg-white/90 px-3 py-1.5 text-[11px] font-bold text-[#1a5fbf]"
+            >
+              स्प्रे सलाह →
+            </AppLink>
           </div>
         </div>
-      </DarkCard>
+      </section>
 
-      {/* Rainfall alert strip */}
-      {weather.rainfallAlert && (
-        <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2.5">
-          <p className="text-xs leading-relaxed text-sky-200">{weather.rainfallAlert}</p>
-        </div>
-      )}
-
-      {/* Rainfall map — full width on phone */}
-      <DarkCard hover delay={1} className="overflow-hidden">
-        <div className="flex items-center justify-between gap-2">
-          <div className="min-w-0">
-            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Rainfall Radar Map</h3>
-            <p className="text-[10px] text-[var(--av-text-muted)]">Live precipitation · RainViewer</p>
-          </div>
-          <AppLink href="/weather/spray-advisory" className="shrink-0 text-[10px] font-bold text-[var(--av-accent)]">
-            Spray →
-          </AppLink>
-        </div>
-        <div className="mt-3 w-full">
-          <RainfallMap
-            lat={weather.lat}
-            lon={weather.lon}
-            rainChance={dash.metrics.rainChance}
-            rainMm={dash.metrics.rainMm}
-            height="220px"
+      {/* खेती सलाह */}
+      <section>
+        <h3 className="mb-2 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">खेती सलाह</h3>
+        <div className="space-y-2">
+          <AdviceRow
+            tone="good"
+            icon={<CheckCircle2 className="h-4 w-4" />}
+            title="स्प्रे"
+            detail={spraySafe ? "आज सुरक्षित" : "आज सावधानी रखें"}
+          />
+          <AdviceRow
+            tone={irrigationHold ? "warn" : "good"}
+            icon={<AlertTriangle className="h-4 w-4" />}
+            title="सिंचाई"
+            detail={
+              irrigationHold
+                ? "कल बारिश संभव, रोकें"
+                : "सिंचाई सामान्य रूप से करें"
+            }
+          />
+          <AdviceRow
+            tone={diseaseHigh ? "bad" : "good"}
+            icon={<ShieldAlert className="h-4 w-4" />}
+            title="रोग खतरा"
+            detail={diseaseHigh ? "अगले 3 दिन — अधिक" : "अगले 3 दिन — सामान्य"}
           />
         </div>
-        <div className="mt-2 flex flex-wrap gap-1 text-[8px] text-[var(--av-text-muted)]">
-          {["0-1", "1-5", "5-15", "15-30", "30-70", "70+"].map((l) => (
-            <span key={l} className="rounded bg-[#1f2937] px-1.5 py-0.5">
-              {l} mm
-            </span>
-          ))}
-        </div>
-      </DarkCard>
+      </section>
 
-      {/* Hourly — horizontal scroll contained */}
-      <DarkCard hover delay={2} className="overflow-hidden">
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Hourly Forecast</h3>
+      {/* 7 दिन का पूर्वानुमान — rain % bars */}
+      <section className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">7 दिन का पूर्वानुमान</h3>
+        <ul className="mt-3 space-y-3">
+          {weekForecast.map((day) => (
+            <li key={day.id} className="grid grid-cols-[2.25rem_1fr_auto] items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg leading-none" aria-hidden>
+                  {day.icon}
+                </span>
+              </div>
+              <div className="min-w-0">
+                <div className="mb-1 flex items-center justify-between gap-2">
+                  <p className="text-xs font-bold text-[var(--av-text-primary)]">{day.label}</p>
+                  <p className="text-[10px] font-semibold text-sky-600 dark:text-sky-400">
+                    {day.rainChance}% बारिश
+                  </p>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-sky-100 dark:bg-sky-950/60">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-sky-400 to-sky-600 transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(4, day.rainChance))}%` }}
+                  />
+                </div>
+              </div>
+              <p className="shrink-0 text-right text-xs">
+                <span className="font-bold text-orange-500">{day.high}°</span>{" "}
+                <span className="text-[var(--av-text-muted)]">{day.low}°</span>
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Hourly strip */}
+      <section className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
+        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">घंटेवार</h3>
         <div className="-mx-1 mt-3 max-w-full overflow-x-auto pb-1 scrollbar-hide">
           <div className="flex w-max min-w-full gap-2 px-1">
             {weather.hourlyForecast.slice(0, 12).map((h, i) => (
               <div
-                key={i}
-                className="flex w-[3.75rem] shrink-0 flex-col items-center rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-3 text-center"
+                key={`${h.time}-${i}`}
+                className="flex w-[3.75rem] shrink-0 flex-col items-center rounded-xl bg-[var(--av-surface-inset)] px-2 py-3 text-center"
               >
-                <span className="text-[9px] text-[var(--av-text-muted)]">{i === 0 ? "Now" : h.time}</span>
+                <span className="text-[9px] text-[var(--av-text-muted)]">
+                  {i === 0 ? "अब" : h.time}
+                </span>
                 <span className="my-1 text-xl">{h.icon}</span>
                 <span className="text-xs font-bold text-[var(--av-text-primary)]">{h.temp}</span>
-                <span className="text-[9px] text-sky-400">{h.rainChancePercent}%</span>
+                <span className="text-[9px] font-semibold text-sky-500">{h.rainChancePercent}%</span>
               </div>
             ))}
           </div>
         </div>
-      </DarkCard>
+      </section>
 
-      {/* Today summary */}
-      <DarkCard hover delay={1}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Today&apos;s Summary</h3>
-        <p className="text-[10px] text-[var(--av-text-muted)]">
-          {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-        </p>
-        <ul className="mt-3 space-y-2 text-xs text-[var(--av-text-secondary)]">
-          <li className="flex justify-between gap-2">
-            <span>Max Temp</span>
-            <span className="font-semibold text-[var(--av-text-primary)]">{dash.heroTempHigh}°C</span>
-          </li>
-          <li className="flex justify-between gap-2">
-            <span>Min Temp</span>
-            <span className="font-semibold text-[var(--av-text-primary)]">{dash.heroTempLow}°C</span>
-          </li>
-          <li className="flex justify-between gap-2">
-            <span>Rain chance</span>
-            <span className="font-semibold text-sky-400">{dash.metrics.rainChance}%</span>
-          </li>
-          <li className="flex justify-between gap-2">
-            <span>Expected rain</span>
-            <span className="font-semibold text-[var(--av-text-primary)]">{dash.metrics.rainMm.toFixed(1)} mm</span>
-          </li>
-        </ul>
-      </DarkCard>
-
-      {/* 7 day forecast */}
-      <DarkCard hover delay={2}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">7 Day Forecast</h3>
-        <ul className="mt-3 space-y-2">
-          {weekForecast.map((day) => (
-            <li
-              key={day.id}
-              className="flex items-center justify-between gap-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2"
-            >
-              <div className="flex min-w-0 items-center gap-2">
-                <span className="shrink-0 text-lg">{day.icon}</span>
-                <div className="min-w-0">
-                  <p className="truncate text-xs font-semibold text-[var(--av-text-primary)]">{day.label}</p>
-                  <p className="text-[10px] text-[var(--av-text-muted)]">{day.dateLabel}</p>
-                </div>
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="text-xs font-bold text-[var(--av-text-primary)]">
-                  {day.high}° / {day.low}°
-                </p>
-                <p className="text-[10px] text-sky-400">{day.rainChance}% rain</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </DarkCard>
-
-      {/* Agri advisory */}
-      <DarkCard hover delay={1}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Agri Weather Advisory</h3>
-        <ul className="mt-3 space-y-2">
-          {AGRI_ADVISORY.slice(0, 3).map((tip) => (
-            <li key={tip} className="flex gap-2 text-xs leading-relaxed text-[var(--av-text-secondary)]">
-              <span className="shrink-0 text-[var(--av-accent)]">•</span>
-              <span>{tip}</span>
-            </li>
-          ))}
-        </ul>
-        {weather.recommendations.map((r) => (
-          <div key={r.title} className="mt-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-2">
-            <p className="text-[10px] font-bold text-[var(--av-accent)]">{r.title}</p>
-            <p className="text-[10px] leading-relaxed text-[var(--av-text-muted)]">{r.advice}</p>
-          </div>
-        ))}
-      </DarkCard>
-
-      {/* Alerts */}
-      <DarkCard hover delay={2}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Weather Alerts</h3>
-        <ul className="mt-3 space-y-2">
-          {WEATHER_ALERTS.map((a) => (
-            <li
-              key={a.title}
-              className={`rounded-lg border px-3 py-2 ${
-                a.priority === "high" ? "border-red-500/30 bg-red-500/10" : "border-amber-500/20 bg-amber-500/5"
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <AlertTriangle className={`h-4 w-4 shrink-0 ${a.priority === "high" ? "text-red-400" : "text-amber-400"}`} />
-                <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.title}</p>
-              </div>
-              <p className="mt-1 text-[10px] leading-relaxed text-[var(--av-text-secondary)]">{a.desc}</p>
-            </li>
-          ))}
-        </ul>
-      </DarkCard>
-
-      {/* AQI + sun/moon — 2 col on phone */}
-      <div className="grid grid-cols-2 gap-3">
-        <DarkCard hover delay={1} className="col-span-2 sm:col-span-1">
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Air Quality</h3>
-          <GaugeChart value={78} max={150} label="78 Moderate" />
-        </DarkCard>
-
-        <DarkCard hover delay={2} className="col-span-2 sm:col-span-1">
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Sun & Moon</h3>
-          <div className="mt-3 flex justify-around text-center">
-            <div>
-              <Sun className="mx-auto h-5 w-5 text-amber-400" />
-              <p className="mt-1 text-[10px] font-bold text-[var(--av-text-primary)]">05:48</p>
-              <p className="text-[8px] text-[var(--av-text-muted)]">Sunrise</p>
-            </div>
-            <div>
-              <Sun className="mx-auto h-5 w-5 rotate-180 text-orange-400" />
-              <p className="mt-1 text-[10px] font-bold text-[var(--av-text-primary)]">06:58</p>
-              <p className="text-[8px] text-[var(--av-text-muted)]">Sunset</p>
-            </div>
-            <div>
-              <Moon className="mx-auto h-5 w-5 text-slate-300" />
-              <p className="mt-1 text-[10px] font-bold text-[var(--av-text-primary)]">Gibbous</p>
-              <p className="text-[8px] text-[var(--av-text-muted)]">Moon</p>
-            </div>
-          </div>
-        </DarkCard>
-      </div>
-
-      {/* Extra details */}
-      <DarkCard hover delay={3}>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Additional Details</h3>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          {WEATHER_DETAILS.map((d) => (
-            <div key={d.label} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-2">
-              <p className="text-[9px] text-[var(--av-text-muted)]">{d.label}</p>
-              <p className="truncate text-xs font-semibold text-[var(--av-text-primary)]">{d.value}</p>
-            </div>
-          ))}
+      {weather.rainfallAlert && (
+        <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2.5">
+          <p className="text-xs leading-relaxed text-sky-800 dark:text-sky-200">
+            {weather.rainfallAlert}
+          </p>
         </div>
-      </DarkCard>
+      )}
 
       {lastUpdated && (
         <p className="text-center text-[10px] text-[var(--av-text-muted)]">
-          Last updated: {lastUpdated.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+          अपडेट:{" "}
+          {lastUpdated.toLocaleTimeString("hi-IN", { hour: "2-digit", minute: "2-digit" })}
         </p>
       )}
+    </div>
+  );
+}
 
-      <div className="rounded-xl border border-[#10b981]/30 bg-[var(--av-accent)]/10 p-4">
-        <p className="text-sm text-[var(--av-text-primary)]">GPS से सटीक मौसम और रडार मैप पाएं</p>
-        <button type="button" onClick={onEnableLocation} className="av-btn av-btn-sm av-btn-primary mt-3 w-full sm:w-auto">
-          Enable Location
-        </button>
+function AdviceRow({
+  tone,
+  icon,
+  title,
+  detail,
+}: {
+  tone: "good" | "warn" | "bad";
+  icon: ReactNode;
+  title: string;
+  detail: string;
+}) {
+  const styles =
+    tone === "good"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200"
+      : tone === "warn"
+        ? "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200"
+        : "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200";
+
+  const iconBox =
+    tone === "good"
+      ? "bg-emerald-500 text-white"
+      : tone === "warn"
+        ? "bg-amber-400 text-white"
+        : "bg-rose-500 text-white";
+
+  return (
+    <div className={`flex items-center gap-3 rounded-2xl border px-3 py-3 ${styles}`}>
+      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBox}`}>
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <p className="text-[11px] font-bold uppercase tracking-wide opacity-70">{title}</p>
+        <p className="text-sm font-bold leading-snug">{detail}</p>
       </div>
     </div>
   );

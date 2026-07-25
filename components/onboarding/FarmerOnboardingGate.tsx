@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Phone, ShieldCheck, User } from "lucide-react";
+import { Check, Loader2, Phone, ShieldCheck, User } from "lucide-react";
 import FarmSetupStep from "@/components/onboarding/FarmSetupStep";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -22,13 +22,14 @@ import {
 import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
 import { getDeviceId } from "@/lib/deviceId";
 
-type Step = "phone" | "otp" | "profile" | "farm";
+type Step = "phone" | "otp" | "name" | "location" | "farm";
+
+const SETUP_STEPS: Step[] = ["name", "location", "farm"];
 
 export default function FarmerOnboardingGate({ children }: { children: React.ReactNode }) {
   const { profile, hydrated, completeOnboarding, completeFarmSetup } = useFarmerProfile();
   const { showToast } = useToast();
   const useFirebase = isFirebaseConfigured();
-  /** Preview/production without Firebase+SMS — allow entering the app to see home. */
   const allowGuestContinue = !useFirebase || process.env.NODE_ENV === "development";
 
   const needsFarmSetup = profile.onboardingComplete && !profile.farmSetupComplete;
@@ -58,7 +59,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     }
   };
 
-  /** Skip OTP + farm form and open home immediately (demo / no-SMS preview). */
   const continueWithoutOtp = () => {
     completeFarmSetup({
       ...DEMO_FARMER_PROFILE,
@@ -110,7 +110,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || "OTP नहीं भेजा जा सका");
 
-      // demoOtp only returned in local/dev when SMS is off
       if (body.demoOtp && process.env.NODE_ENV === "development") {
         setDemoOtp(String(body.demoOtp));
       }
@@ -150,7 +149,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
           throw new Error(sessionBody.error || "Session create failed");
         }
         setFirebaseUid(user.uid);
-        setStep("profile");
+        setStep("name");
         showToast("मोबाइल verify हो गया ✓");
         return;
       }
@@ -164,7 +163,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || "OTP verify नहीं हुआ");
 
-      setStep("profile");
+      setStep("name");
       showToast("मोबाइल verify हो गया ✓");
     } catch (err) {
       setError(err instanceof Error ? err.message : "OTP गलत है");
@@ -173,11 +172,16 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     }
   };
 
-  const finishProfile = () => {
+  const finishName = () => {
     if (!name.trim()) {
       setError("कृपया अपना नाम लिखें");
       return;
     }
+    setError(null);
+    setStep("location");
+  };
+
+  const finishLocation = () => {
     if (!village.trim() || !district.trim() || !state.trim()) {
       setError("गाँव, ज़िला और राज्य — तीनों भरें");
       return;
@@ -190,7 +194,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       setError("ज़िला सूची से चुनें — नाम लिखकर search करें");
       return;
     }
-
     setError(null);
     setStep("farm");
   };
@@ -212,64 +215,123 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     showToast("स्वागत है, किसान भाई! 🌾");
   };
 
-  const stepTitle =
-    step === "phone"
-      ? "पहले मोबाइल नंबर verify करें"
-      : step === "otp"
-        ? "SMS OTP डालकर verify करें"
-        : step === "profile"
-          ? "अपनी जानकारी भरें"
-          : "अपनी ज़मीन की जानकारी";
-
-  const stepHeading =
-    step === "farm" ? "खेत सेटअप" : needsFarmSetup ? "खेत सेटअप" : "किसान पंजीकरण";
+  const setupIndex = SETUP_STEPS.indexOf(step);
+  const showWelcomeChrome = setupIndex >= 0 || needsFarmSetup;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-end justify-center bg-[#030712] p-4 sm:items-center">
+    <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center">
+      {/* Atmosphere — glassmorphism backdrop */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute inset-0 scale-110 bg-cover bg-center blur-sm"
+          style={{
+            backgroundImage:
+              "linear-gradient(160deg, rgba(6,78,59,0.88) 0%, rgba(4,47,46,0.75) 45%, rgba(15,23,42,0.85) 100%), radial-gradient(circle at 20% 30%, rgba(52,211,153,0.35), transparent 40%), radial-gradient(circle at 80% 70%, rgba(16,185,129,0.25), transparent 45%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-[0.12]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.35'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+          }}
+        />
+        {/* Soft floating orbs for motion */}
+        <div className="absolute -left-10 top-16 h-40 w-40 animate-pulse rounded-full bg-emerald-400/20 blur-3xl" />
+        <div className="absolute -right-8 bottom-24 h-48 w-48 animate-pulse rounded-full bg-teal-300/15 blur-3xl [animation-delay:1s]" />
+      </div>
+
       <div
         role="dialog"
         aria-modal
-        aria-label="Farmer registration"
-        className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-3xl border border-emerald-500/25 bg-[var(--background)] shadow-2xl"
+        aria-label="Farmer onboarding"
+        className="relative z-10 max-h-[94vh] w-full max-w-md overflow-y-auto rounded-t-[1.75rem] border border-white/25 bg-white/90 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:rounded-[1.75rem]"
       >
-        <div className="border-b border-emerald-500/15 bg-emerald-600 px-6 py-5 text-white">
-          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-100">
-            Agriveda
-          </p>
-          <h2 className="mt-1 text-xl font-black">{stepHeading}</h2>
-          <p className="mt-1 text-sm text-emerald-50/90">{stepTitle}</p>
-        </div>
+        {showWelcomeChrome ? (
+          <div className="px-6 pb-2 pt-6 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
+              <Check className="h-6 w-6" strokeWidth={3} />
+            </div>
+            <h2
+              className="mt-3 text-xl font-bold tracking-tight text-[#0b1f16]"
+              style={{ fontFamily: "var(--font-display), Georgia, serif" }}
+            >
+              AgriVeda में आपका स्वागत है!
+            </h2>
+            <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
+              आपका खाता तैयार है — बस कुछ बातें बताइए ताकि आपका खेत सेट हो जाए।
+            </p>
+            <div className="mt-4 flex items-center justify-center gap-2">
+              {SETUP_STEPS.map((s, i) => {
+                const active = needsFarmSetup ? i === 2 : i === setupIndex;
+                const done = needsFarmSetup ? i < 2 : i < setupIndex;
+                return (
+                  <span
+                    key={s}
+                    className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                      active
+                        ? "scale-110 bg-amber-500"
+                        : done
+                          ? "bg-emerald-500"
+                          : "bg-gray-300"
+                    }`}
+                  />
+                );
+              })}
+            </div>
+            <p className="mt-1.5 text-xs font-semibold text-gray-500">
+              चरण {needsFarmSetup ? 3 : Math.max(1, setupIndex + 1)}/3
+            </p>
+          </div>
+        ) : (
+          <div className="border-b border-emerald-500/10 bg-gradient-to-br from-emerald-600/95 to-teal-700/95 px-6 py-5 text-white backdrop-blur-md">
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-100">
+              AgriVeda
+            </p>
+            <h2 className="mt-1 text-xl font-black">किसान पंजीकरण</h2>
+            <p className="mt-1 text-sm text-emerald-50/90">
+              {step === "phone"
+                ? "पहले मोबाइल नंबर verify करें"
+                : "SMS OTP डालकर verify करें"}
+            </p>
+          </div>
+        )}
 
-        <div className="space-y-4 p-6">
+        <div className="space-y-4 px-6 pb-6 pt-2">
           <div id={RECAPTCHA_CONTAINER_ID} className="min-h-px" />
 
           {step === "phone" && (
             <>
               {!useFirebase && (
-                <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-200">
+                <p className="rounded-xl border border-amber-400/40 bg-amber-400/15 px-3 py-2 text-xs text-amber-900">
                   Firebase config नहीं मिला — टेस्ट OTP mode चलेगा।
                 </p>
               )}
               <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-xs font-bold theme-text-muted">
+                <span className="mb-2 flex items-center gap-2 text-xs font-bold text-gray-600">
                   <Phone className="h-4 w-4" />
                   मोबाइल नंबर
                 </span>
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={10}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="10 अंकों का नंबर"
-                  className="theme-input w-full rounded-2xl border px-4 py-3 text-lg font-bold tracking-widest outline-none focus:border-emerald-500"
-                />
+                <div className="flex gap-2">
+                  <span className="inline-flex items-center rounded-2xl border border-white/60 bg-white/80 px-3 text-sm font-bold text-gray-700 shadow-sm backdrop-blur">
+                    +91
+                  </span>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                    placeholder="98765 43210"
+                    className="w-full rounded-2xl border border-emerald-500/40 bg-white/85 px-4 py-3 text-lg font-bold tracking-widest text-gray-900 outline-none backdrop-blur focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                </div>
               </label>
               <button
                 type="button"
                 onClick={sendOtp}
                 disabled={loading || phone.length !== 10}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 OTP भेजें
@@ -279,14 +341,14 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
           {step === "otp" && (
             <>
-              <p className="text-sm theme-text-muted">+91 {phone} पर OTP भेजा गया</p>
+              <p className="text-sm text-gray-600">+91 {phone} पर OTP भेजा गया</p>
               {demoOtp && (
-                <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-center text-sm font-bold text-amber-700 dark:text-amber-300">
+                <p className="rounded-xl border border-amber-400/40 bg-amber-400/15 px-3 py-2 text-center text-sm font-bold text-amber-800">
                   टेस्ट OTP: {demoOtp}
                 </p>
               )}
               <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-xs font-bold theme-text-muted">
+                <span className="mb-2 flex items-center gap-2 text-xs font-bold text-gray-600">
                   <ShieldCheck className="h-4 w-4" />
                   6 अंकों का OTP
                 </span>
@@ -297,22 +359,22 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   placeholder="• • • • • •"
-                  className="theme-input w-full rounded-2xl border px-4 py-3 text-center text-2xl font-black tracking-[0.5em] outline-none focus:border-emerald-500"
+                  className="w-full rounded-2xl border border-emerald-500/40 bg-white/85 px-4 py-3 text-center text-2xl font-black tracking-[0.5em] text-gray-900 outline-none backdrop-blur focus:border-emerald-500"
                 />
               </label>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setStep("phone")}
-                  className="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-bold theme-text-muted dark:border-white/10"
+                  className="rounded-2xl border border-gray-200 bg-white/70 px-4 py-3 text-sm font-bold text-gray-600"
                 >
-                  वापस
+                  पीछे
                 </button>
                 <button
                   type="button"
                   onClick={verifyOtp}
                   disabled={loading || otp.length !== 6}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#006432] py-3 text-sm font-black text-white disabled:opacity-50"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-sm font-black text-white disabled:opacity-50"
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                   Verify करें
@@ -321,32 +383,40 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
             </>
           )}
 
-          {step === "profile" && (
+          {step === "name" && (
             <>
+              <p className="text-base font-bold text-gray-900">आपका नाम क्या है?</p>
               <label className="block">
-                <span className="mb-1 flex items-center gap-2 text-xs font-bold theme-text-muted">
+                <span className="mb-1 flex items-center gap-2 text-xs font-bold text-gray-500">
                   <User className="h-4 w-4" />
                   नाम
                 </span>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="आपका नाम"
-                  className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                  placeholder="अपना नाम लिखें"
+                  autoFocus
+                  className="w-full rounded-2xl border-2 border-amber-400/80 bg-white px-4 py-3 text-base font-semibold text-gray-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20"
                 />
               </label>
-              <label className="block">
-                <span className="mb-1 text-xs font-bold theme-text-muted">गाँव</span>
-                <input
-                  value={village}
-                  onChange={(e) => setVillage(e.target.value)}
-                  placeholder="अपने गाँव का नाम"
-                  className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
-                />
-              </label>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={finishName}
+                  className="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white shadow-md shadow-amber-500/30 transition hover:bg-amber-600"
+                >
+                  आगे →
+                </button>
+              </div>
+            </>
+          )}
+
+          {step === "location" && (
+            <>
+              <p className="text-base font-bold text-gray-900">आपका खेत कहाँ है?</p>
               <SearchableSelect
                 label="राज्य"
-                placeholder="राज्य search करें"
+                placeholder="अपना राज्य चुनें"
                 value={state}
                 onChange={handleStateChange}
                 options={INDIAN_STATES}
@@ -355,42 +425,71 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
               <SearchableSelect
                 key={`onboard-district-${state}`}
                 label="ज़िला"
-                placeholder={state ? "ज़िला search करें" : "पहले राज्य चुनें"}
+                placeholder={state ? "अपना ज़िला चुनें" : "पहले राज्य चुनें"}
                 value={district}
                 onChange={setDistrict}
                 options={districtOptions}
                 disabled={!isValidState(state)}
                 emptyHint="ज़िला नहीं मिला"
               />
-              <button
-                type="button"
-                onClick={finishProfile}
-                className="w-full rounded-2xl bg-[#006432] py-3.5 text-sm font-black text-white"
-              >
-                आगे बढ़ें — खेत की जानकारी
-              </button>
+              <label className="block">
+                <span className="mb-1 text-xs font-bold text-gray-500">शहर / गाँव</span>
+                <input
+                  value={village}
+                  onChange={(e) => setVillage(e.target.value)}
+                  placeholder="अपना शहर या गाँव टाइप करें"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                />
+              </label>
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setStep("name")}
+                  className="text-sm font-bold text-gray-500"
+                >
+                  ← पीछे
+                </button>
+                <button
+                  type="button"
+                  onClick={finishLocation}
+                  className="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white shadow-md shadow-amber-500/30"
+                >
+                  आगे →
+                </button>
+              </div>
             </>
           )}
 
           {step === "farm" && (
-            <FarmSetupStep
-              farmerName={needsFarmSetup ? profile.name : name}
-              onComplete={finishFarmSetup}
-              loading={loading}
-            />
+            <>
+              {!needsFarmSetup && (
+                <button
+                  type="button"
+                  onClick={() => setStep("location")}
+                  className="text-sm font-bold text-gray-500"
+                >
+                  ← पीछे
+                </button>
+              )}
+              <FarmSetupStep
+                farmerName={needsFarmSetup ? profile.name : name}
+                onComplete={finishFarmSetup}
+                loading={loading}
+              />
+            </>
           )}
 
           {error && step !== "farm" && (
-            <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm font-semibold text-red-600 dark:text-red-400">
+            <p className="rounded-xl border border-red-400/40 bg-red-50 px-3 py-2 text-center text-sm font-semibold text-red-600">
               {error}
             </p>
           )}
 
-          {allowGuestContinue && step !== "farm" && !needsFarmSetup && (
+          {allowGuestContinue && (step === "phone" || step === "otp") && !needsFarmSetup && (
             <button
               type="button"
               onClick={continueWithoutOtp}
-              className="w-full rounded-2xl border border-dashed border-emerald-400/50 py-3 text-sm font-bold text-emerald-700 dark:text-emerald-300"
+              className="w-full rounded-2xl border border-dashed border-emerald-500/40 bg-white/40 py-3 text-sm font-bold text-emerald-800 backdrop-blur"
             >
               OTP के बिना Home देखें
             </button>

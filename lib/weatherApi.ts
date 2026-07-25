@@ -15,6 +15,18 @@ export interface WeatherViewModel {
   location: string;
   lat?: number;
   lon?: number;
+  feelsLike?: string;
+  visibilityKm?: string;
+  isDemo?: boolean;
+  demoNotice?: string;
+  dailyForecast: {
+    id: string;
+    label: string;
+    icon: string;
+    high: number;
+    low: number;
+    rainChance: number;
+  }[];
   hourlyForecast: {
     time: string;
     temp: string;
@@ -39,12 +51,15 @@ interface WeatherApiResponse {
   current: {
     name: string;
     sys: { country: string };
-    main: { temp: number; humidity: number };
+    main: { temp: number; humidity: number; feels_like?: number };
     weather: { main: string; description: string }[];
     wind: { speed: number };
+    visibility?: number;
   };
   forecast: { list: ForecastItem[] };
   coords?: { lat: number; lon: number };
+  source?: string;
+  demoNotice?: string;
   resolvedLocation?: {
     name: string;
     state?: string;
@@ -52,6 +67,59 @@ interface WeatherApiResponse {
     lat?: number;
     lon?: number;
   };
+}
+
+function buildDailyForecast(forecastList: ForecastItem[]) {
+  const byDay = new Map<
+    string,
+    { highs: number[]; lows: number[]; rain: number[]; mains: string[]; date: Date }
+  >();
+
+  for (const item of forecastList) {
+    const date = new Date(item.dt * 1000);
+    const key = date.toLocaleDateString("en-CA");
+    const row = byDay.get(key) ?? {
+      highs: [],
+      lows: [],
+      rain: [],
+      mains: [],
+      date,
+    };
+    row.highs.push(item.main.temp);
+    row.lows.push(item.main.temp);
+    row.rain.push(Math.round((item.pop ?? 0) * 100));
+    row.mains.push(item.weather[0]?.main ?? "Clouds");
+    byDay.set(key, row);
+  }
+
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  return Array.from(byDay.values())
+    .slice(0, 7)
+    .map((row) => {
+      const isToday =
+        row.date.getDate() === today.getDate() &&
+        row.date.getMonth() === today.getMonth();
+      const isTomorrow =
+        row.date.getDate() === tomorrow.getDate() &&
+        row.date.getMonth() === tomorrow.getMonth();
+      const weekday = row.date.toLocaleDateString("hi-IN", { weekday: "short" });
+      const dominant = row.mains.sort(
+        (a, b) =>
+          row.mains.filter((m) => m === b).length - row.mains.filter((m) => m === a).length
+      )[0];
+
+      return {
+        id: row.date.toISOString().slice(0, 10),
+        label: isToday ? "आज" : isTomorrow ? "कल" : weekday,
+        icon: weatherEmoji(dominant),
+        high: Math.round(Math.max(...row.highs)),
+        low: Math.round(Math.min(...row.lows)),
+        rainChance: Math.max(...row.rain, 0),
+      };
+    });
 }
 
 function buildRecommendations(
@@ -115,6 +183,15 @@ function mapWeatherResponse(
       ? { lat: resolvedLocation.lat, lon: resolvedLocation.lon }
       : undefined);
 
+  const feels =
+    currentData.main.feels_like != null
+      ? Math.round(currentData.main.feels_like)
+      : Math.round(currentData.main.temp + 2);
+  const visibilityKm =
+    currentData.visibility != null
+      ? `${Math.max(1, Math.round(currentData.visibility / 1000))} km`
+      : "8 km";
+
   return {
     temp: `${Math.round(currentData.main.temp)}°C`,
     condition: currentData.weather[0].description,
@@ -124,6 +201,9 @@ function mapWeatherResponse(
     location: locationLabel,
     lat: resolvedCoords?.lat,
     lon: resolvedCoords?.lon,
+    feelsLike: `${feels}°C`,
+    visibilityKm,
+    dailyForecast: buildDailyForecast(forecastList),
     hourlyForecast: hourly.map((slot) => ({
       time: slot.time,
       temp: `${Math.round(slot.tempC)}°C`,
@@ -175,6 +255,10 @@ async function fetchFromApi(params: URLSearchParams): Promise<WeatherViewModel> 
       data.resolvedLocation,
       data.coords
     );
+    if (data.source === "mock" || data.demoNotice) {
+      view.isDemo = true;
+      view.demoNotice = data.demoNotice;
+    }
     weatherCache.set(cacheKey, { data: view, at: Date.now() });
     return view;
   })();
