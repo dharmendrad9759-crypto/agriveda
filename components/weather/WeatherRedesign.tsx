@@ -67,8 +67,7 @@ export default function WeatherRedesign({
     <div className="mx-auto w-full max-w-lg space-y-4 overflow-x-hidden pb-2">
       {weather.isDemo && (
         <div className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-[11px] leading-relaxed text-amber-800 dark:text-amber-200">
-          {weather.demoNotice ??
-            "Demo मौसम — live के लिए OPENWEATHER_API_KEY सेट करें।"}
+          {weather.demoNotice ?? "Demo मौसम — live स्रोत उपलब्ध नहीं था।"}
         </div>
       )}
 

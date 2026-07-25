@@ -58,7 +58,7 @@ interface WeatherApiResponse {
   };
   forecast: { list: ForecastItem[] };
   coords?: { lat: number; lon: number };
-  source?: string;
+  source?: "open-meteo" | "openweather" | "mock" | string;
   demoNotice?: string;
   resolvedLocation?: {
     name: string;
