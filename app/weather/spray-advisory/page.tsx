@@ -1,8 +1,8 @@
 import SprayAdvisoryShell from "@/components/weather/SprayAdvisoryShell";
 
 export const metadata = {
-  title: "Spray & Spread Advisory | Agriveda",
-  description: "Live spray window status, tank-mix compatibility, and IRAC/FRAC control recommendations.",
+  title: "स्प्रे सलाह | AgriVeda",
+  description: "स्प्रे विंडो, टैंक-मिक्स जाँच और अनुशंसित खुराक — मौसम के अनुसार।",
 };
 
 export default function SprayAdvisoryPage() {
