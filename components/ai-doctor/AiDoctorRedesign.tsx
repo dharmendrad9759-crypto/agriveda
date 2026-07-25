@@ -47,10 +47,18 @@ const RISK_ADVICE = [
   "Prepare Tricyclazole spray if symptoms appear",
 ];
 
-function SectionLabel({ title }: { title: string }) {
+function SectionLabel({ title, step, hint }: { title: string; step?: number; hint?: string }) {
   return (
     <div className="mb-2.5">
-      <h2 className="text-[15px] font-bold tracking-tight text-[var(--av-text-primary)]">{title}</h2>
+      <div className="flex items-center gap-2">
+        {step != null && (
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[11px] font-black text-white">
+            {step}
+          </span>
+        )}
+        <h2 className="text-[15px] font-bold tracking-tight text-[var(--av-text-primary)]">{title}</h2>
+      </div>
+      {hint && <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">{hint}</p>}
     </div>
   );
 }
@@ -102,7 +110,7 @@ export function AiDoctorHero({
                 AI Doctor
               </h1>
               <p className="mt-0.5 text-xs leading-snug text-[var(--av-text-secondary)] sm:text-sm">
-                Symptoms ya photo se diagnosis
+                पहले फोटो → फसल → फिर लक्षण
               </p>
             </div>
           </div>
@@ -183,7 +191,7 @@ export function AiDoctorCropSelect({
 
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
-      <SectionLabel title="Crop" />
+      <SectionLabel title="फसल चुनें" step={2} hint="फोटो वाली फसल चुनें" />
       <div className="-mx-0.5 flex gap-2 overflow-x-auto px-0.5 pb-0.5 scrollbar-hide">
         <CropPickerButton
           active={otherActive}
@@ -265,11 +273,15 @@ export function AiDoctorSymptoms({
 
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
-      <SectionLabel title="Symptoms" />
+      <SectionLabel
+        title="लक्षण (Symptoms)"
+        step={3}
+        hint="वैकल्पिक — chips चुनें या लिखें"
+      />
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value.slice(0, 300))}
-        placeholder="Jaise: patti pe peele dabbe, kinare sukh rahe hain..."
+        placeholder="जैसे: पत्ती पर पीले धब्बे, किनारे सूख रहे हैं..."
         rows={3}
         className="av-input min-h-[96px] w-full resize-none text-[15px] leading-relaxed sm:min-h-[110px]"
       />
@@ -326,14 +338,14 @@ export function AiDoctorPhotoUpload({
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
       <div className="mb-2.5 flex items-center justify-between gap-2">
-        <h2 className="text-[15px] font-bold tracking-tight text-[var(--av-text-primary)]">Photo</h2>
+        <SectionLabel title="फोटो चुनें" step={1} hint="पहले पत्ती / फसल की फोटो लें" />
         {hasPreview && onClear && (
           <button
             type="button"
             onClick={onClear}
-            className="text-[11px] font-semibold text-[var(--av-text-muted)] active:text-red-600"
+            className="shrink-0 text-[11px] font-semibold text-[var(--av-text-muted)] active:text-red-600"
           >
-            Remove
+            हटाएँ
           </button>
         )}
       </div>
@@ -351,16 +363,20 @@ export function AiDoctorPhotoUpload({
         ) : previewUrl && previewFailed ? (
           <div className="px-4 py-8 text-center sm:py-10">
             <ImagePlus className="mx-auto h-10 w-10 text-emerald-600 sm:h-12 sm:w-12" />
-            <p className="mt-2 text-sm font-bold text-[var(--av-text-primary)]">Photo selected</p>
+            <p className="mt-2 text-sm font-bold text-[var(--av-text-primary)]">फोटो चुनी गई</p>
             <p className="mt-1 break-all px-2 text-xs text-[var(--av-text-secondary)]">
               {fileName || "photo"}
             </p>
           </div>
         ) : (
-          <div className="flex justify-center px-3 py-5 sm:py-6">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-              <Camera className="h-6 w-6" />
+          <div className="flex flex-col items-center justify-center px-3 py-6 sm:py-8">
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+              <Camera className="h-7 w-7" />
             </span>
+            <p className="mt-3 text-sm font-bold text-[var(--av-text-primary)]">फोटो अभी नहीं चुनी</p>
+            <p className="mt-1 text-center text-[11px] text-[var(--av-text-muted)]">
+              Camera या Gallery से पत्ती की फोटो चुनें
+            </p>
           </div>
         )}
 
@@ -371,7 +387,7 @@ export function AiDoctorPhotoUpload({
             className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition active:scale-[0.98]"
           >
             <Camera className="h-5 w-5" />
-            {hasPreview ? "Nayi" : "Camera"}
+            {hasPreview ? "नई फोटो" : "Camera"}
           </button>
           <button
             type="button"
