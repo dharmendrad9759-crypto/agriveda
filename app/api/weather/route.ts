@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildMockWeatherBundle } from "@/data/mock/weather";
 
 function readOpenWeatherKey(): string | undefined {
   const raw = process.env.OPENWEATHER_API_KEY?.trim();
@@ -76,21 +77,31 @@ async function fetchWeatherBundle(
   return { current, forecast };
 }
 
+function mockResponse(city?: string | null, lat?: string | null, lon?: string | null) {
+  const mock = buildMockWeatherBundle({
+    cityName: city?.trim() || undefined,
+    lat: lat ? Number(lat) : undefined,
+    lon: lon ? Number(lon) : undefined,
+  });
+  return NextResponse.json({
+    ...mock,
+    demoNotice:
+      "Demo मौसम दिख रहा है — live data के लिए OPENWEATHER_API_KEY .env.local में सेट करें।",
+  });
+}
+
 export async function GET(request: NextRequest) {
   const apiKey = readOpenWeatherKey();
-  if (!apiKey) {
-    return NextResponse.json(
-      {
-        error:
-          "Weather configure नहीं है — server पर OPENWEATHER_API_KEY set करें (OpenWeather dashboard से नया key बनाएं)",
-      },
-      { status: 503 }
-    );
-  }
-
   const city = request.nextUrl.searchParams.get("city");
   const lat = request.nextUrl.searchParams.get("lat");
   const lon = request.nextUrl.searchParams.get("lon");
+
+  if (!apiKey) {
+    if (!city?.trim() && !(lat && lon)) {
+      return NextResponse.json({ error: "city या lat/lon ज़रूरी है" }, { status: 400 });
+    }
+    return mockResponse(city, lat, lon);
+  }
 
   try {
     if (lat && lon) {

@@ -1,21 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
   CheckCircle2,
-  FlaskConical,
-  Info,
-  Loader2,
-  ShieldAlert,
-  Wind,
-  Thermometer,
   CloudRain,
+  Droplets,
+  FlaskConical,
+  Loader2,
+  Pencil,
+  Pill,
+  ShieldAlert,
 } from "lucide-react";
 import { useMyCrops } from "@/hooks/useMyCrops";
-import { sprayProducts, getProductsForCrop } from "@/data/spray-products";
+import { getProductsForCrop, sprayProducts } from "@/data/spray-products";
 import {
   checkTankMixCompatibility,
   formatProductOption,
@@ -23,38 +23,99 @@ import {
 } from "@/lib/tankMixCompatibility";
 import {
   getControlRecommendations,
-  moaBadgeClasses,
 } from "@/data/spray-advisory-recommendations";
 import { fetchSprayWeatherFromSaved } from "@/lib/sprayWeatherApi";
-import { getSprayWindowStatus } from "@/lib/sprayWindow";
+import { buildSprayWindowAnalysis, getSprayWindowStatus } from "@/lib/sprayWindow";
 import type { SprayWindowStatusLevel } from "@/types/spray-window";
 
-function statusConfig(status: SprayWindowStatusLevel) {
+type WindowTone = "good" | "ok" | "bad";
+
+interface DayPartWindow {
+  id: string;
+  label: string;
+  detail: string;
+  badge: string;
+  tone: WindowTone;
+}
+
+function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
   if (status === "GOOD") {
     return {
-      bg: "bg-emerald-50 border-emerald-200",
-      icon: CheckCircle2,
-      iconClass: "text-emerald-600",
-      title: "Ideal Time to Spray",
-      titleClass: "text-emerald-900",
+      title: "आज स्प्रे सुरक्षित है",
+      subtitle: reasonHi || "सुबह 7 बजे से दोपहर 11 बजे तक",
+      card: "from-emerald-700 via-emerald-600 to-teal-700",
+      Icon: CheckCircle2,
     };
   }
   if (status === "CAUTION") {
     return {
-      bg: "bg-amber-50 border-amber-200",
-      icon: AlertTriangle,
-      iconClass: "text-amber-600",
-      title: "Spray with Caution",
-      titleClass: "text-amber-900",
+      title: "आज सावधानी से स्प्रे करें",
+      subtitle: reasonHi || "हवा / नमी सीमा पर है — बड़ी droplets इस्तेमाल करें",
+      card: "from-amber-600 via-amber-500 to-orange-600",
+      Icon: AlertTriangle,
     };
   }
   return {
-    bg: "bg-red-50 border-red-200",
-    icon: ShieldAlert,
-    iconClass: "text-red-600",
-    title: "Not Recommended to Spray",
-    titleClass: "text-red-900",
+    title: "आज स्प्रे न करें",
+    subtitle: reasonHi || "बारिश या तेज़ हवा — स्प्रे टालें",
+    card: "from-rose-700 via-rose-600 to-red-700",
+    Icon: ShieldAlert,
   };
+}
+
+function parseDose(doseHint?: string) {
+  if (!doseHint) return { dose: "लेबल देखें", water: "पर्याप्त पानी में" };
+  const waterMatch = doseHint.match(/(\d+(?:\.\d+)?\s*(?:ml|g|L|kg)?\/?\s*L)/i);
+  if (waterMatch) {
+    return {
+      dose: doseHint.split("·")[0]?.trim() || doseHint,
+      water: `${waterMatch[1]} पानी में`,
+    };
+  }
+  if (/ha|हेक्ट|hectare/i.test(doseHint)) {
+    return { dose: doseHint, water: "500–750 L पानी में" };
+  }
+  return { dose: doseHint, water: "पर्याप्त पानी में" };
+}
+
+function buildDayPartWindows(
+  status: SprayWindowStatusLevel,
+  windKmh: number | null,
+  humidity: number | null,
+  rainPct: number | null
+): DayPartWindow[] {
+  const wind = windKmh ?? 8;
+  const hum = humidity ?? 68;
+  const rain = rainPct ?? 20;
+
+  const morningTone: WindowTone =
+    status === "AVOID" ? "bad" : status === "GOOD" ? "good" : "ok";
+  const afternoonTone: WindowTone = status === "AVOID" ? "bad" : "ok";
+  const eveningTone: WindowTone = rain >= 40 || status === "AVOID" ? "bad" : "ok";
+
+  return [
+    {
+      id: "morning",
+      label: "सुबह 7-11 बजे",
+      detail: `हवा ${wind} km/h, नमी ${hum}%`,
+      badge: morningTone === "good" ? "उत्तम" : morningTone === "ok" ? "ठीक है" : "न करें",
+      tone: morningTone,
+    },
+    {
+      id: "afternoon",
+      label: "दोपहर 12-3 बजे",
+      detail: "गर्मी अधिक, असर कम",
+      badge: afternoonTone === "bad" ? "न करें" : "ठीक है",
+      tone: afternoonTone,
+    },
+    {
+      id: "evening",
+      label: "शाम 4 बजे बाद",
+      detail: `बारिश की संभावना ${rain}%`,
+      badge: eveningTone === "bad" ? "न करें" : "ठीक है",
+      tone: eveningTone,
+    },
+  ];
 }
 
 function mixResultStyles(result: TankMixCheckResult | null) {
@@ -70,10 +131,10 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
 
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [windKmh, setWindKmh] = useState<number | null>(null);
-  const [tempC, setTempC] = useState<number | null>(null);
+  const [humidity, setHumidity] = useState<number | null>(null);
   const [rainPct, setRainPct] = useState<number | null>(null);
   const [sprayStatus, setSprayStatus] = useState<SprayWindowStatusLevel>("CAUTION");
-  const [statusReason, setStatusReason] = useState<string>("");
+  const [statusReason, setStatusReason] = useState("");
 
   const mixableProducts = useMemo(() => {
     const cropProducts = getProductsForCrop(cropSlug);
@@ -96,18 +157,19 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
     try {
       const bundle = await fetchSprayWeatherFromSaved();
       if (!bundle) {
-        setStatusReason("Set your location on the Weather page to see live spray conditions.");
+        setStatusReason("स्प्रे सलाह के लिए पहले मौसम पेज पर स्थान सेट करें।");
         setSprayStatus("CAUTION");
         return;
       }
-      const result = getSprayWindowStatus(bundle.current);
+      const analysis = buildSprayWindowAnalysis(bundle.current, bundle.hourly);
+      const result = analysis.current ?? getSprayWindowStatus(bundle.current);
       setWindKmh(Math.round(bundle.current.windSpeedKmh));
-      setTempC(Math.round(bundle.current.temperatureC));
+      setHumidity(Math.round(bundle.current.humidityPercent));
       setRainPct(Math.round(bundle.current.rainProbabilityNext3h * 100));
       setSprayStatus(result.status);
-      setStatusReason(result.reasonEn);
+      setStatusReason(result.reasonHi);
     } catch {
-      setStatusReason("Could not load live weather. Check connection and try again.");
+      setStatusReason("मौसम लोड नहीं हुआ। कनेक्शन जाँचकर फिर कोशिश करें।");
       setSprayStatus("CAUTION");
     } finally {
       setWeatherLoading(false);
@@ -123,8 +185,36 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
     if (defaultInsecticide && !chem2) setChem2(defaultInsecticide);
   }, [defaultFungicide, defaultInsecticide, chem1, chem2]);
 
-  const statusUi = statusConfig(sprayStatus);
-  const StatusIcon = statusUi.icon;
+  const hero = heroCopy(sprayStatus, statusReason);
+  const HeroIcon = hero.Icon;
+  const windows = buildDayPartWindows(sprayStatus, windKmh, humidity, rainPct);
+
+  const dosageCards = useMemo(() => {
+    return recommendations.slice(0, 4).map((rec) => {
+      const parsed = parseDose(rec.doseHint);
+      const badge =
+        rec.moaType === "FRAC"
+          ? "फफूंद रोग"
+          : rec.moaType === "IRAC"
+            ? "कीट नियंत्रण"
+            : "खरपतवार";
+      return {
+        id: rec.id,
+        name: rec.activeIngredient,
+        badge,
+        dose: parsed.dose,
+        water: parsed.water,
+        target: rec.target,
+      };
+    });
+  }, [recommendations]);
+
+  const todayLabel = new Date().toLocaleDateString("hi-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
   const handleCheckMix = () => {
     const result = checkTankMixCompatibility(chem1, chem2);
@@ -133,97 +223,151 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
   };
 
   return (
-    <div className={embedded ? "space-y-5" : "min-h-screen bg-[#f4f5f7] text-gray-900"}>
+    <div className={embedded ? "space-y-5" : "min-h-screen bg-[#f3f5f7] text-gray-900"}>
       {!embedded && (
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3.5">
-          <Link
-            href="/weather"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-700 transition hover:bg-gray-50"
-            aria-label="Back to weather"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate text-base font-bold tracking-tight text-gray-900">
-              Spray &amp; Spread Advisory
-            </h1>
-            <p className="truncate text-xs text-gray-500">
-              Scientific pest control · {crops[0]?.name ?? "Paddy"}
-            </p>
+        <header className="sticky top-0 z-40 border-b border-gray-200/80 bg-white/90 backdrop-blur-md">
+          <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3.5">
+            <Link
+              href="/weather"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-700"
+              aria-label="Back to weather"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div className="min-w-0 flex-1">
+              <h1 className="flex items-center gap-1.5 text-base font-bold tracking-tight text-emerald-700">
+                <Pill className="h-4 w-4" />
+                स्प्रे सलाह
+              </h1>
+              <p className="truncate text-xs text-gray-500">आज, {todayLabel}</p>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
       )}
 
       <main className={embedded ? "space-y-5" : "mx-auto max-w-lg space-y-5 px-4 py-5 pb-28"}>
-        {/* Current Status */}
-        <section>
-          <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
-            Current Status
-          </h2>
-          <div
-            className={`rounded-lg border p-4 shadow-sm ${statusUi.bg}`}
-          >
-            {weatherLoading ? (
-              <div className="flex items-center gap-3 py-4">
-                <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-                <span className="text-sm text-gray-600">Loading live conditions…</span>
+        {/* Hero status */}
+        <section
+          className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${hero.card} px-5 py-8 text-center text-white shadow-lg`}
+        >
+          {weatherLoading ? (
+            <div className="flex flex-col items-center gap-3 py-4">
+              <Loader2 className="h-8 w-8 animate-spin text-white/80" />
+              <p className="text-sm text-white/90">स्प्रे स्थिति जाँच हो रही है…</p>
+            </div>
+          ) : (
+            <>
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md">
+                <HeroIcon
+                  className={`h-8 w-8 ${
+                    sprayStatus === "GOOD"
+                      ? "text-emerald-600"
+                      : sprayStatus === "CAUTION"
+                        ? "text-amber-500"
+                        : "text-rose-600"
+                  }`}
+                />
               </div>
-            ) : (
-              <>
-                <div className="flex items-start gap-3">
-                  <StatusIcon className={`mt-0.5 h-6 w-6 shrink-0 ${statusUi.iconClass}`} />
-                  <div>
-                    <p className={`text-lg font-bold ${statusUi.titleClass}`}>{statusUi.title}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-gray-700">{statusReason}</p>
-                  </div>
-                </div>
-
-                <div className="mt-4 grid grid-cols-3 gap-2 border-t border-black/5 pt-4">
-                  <MetricPill
-                    icon={<Wind className="h-4 w-4 text-teal-600" />}
-                    label="Wind"
-                    value={windKmh != null ? `${windKmh} km/h` : "—"}
-                  />
-                  <MetricPill
-                    icon={<Thermometer className="h-4 w-4 text-orange-500" />}
-                    label="Temperature"
-                    value={tempC != null ? `${tempC}°C` : "—"}
-                  />
-                  <MetricPill
-                    icon={<CloudRain className="h-4 w-4 text-sky-600" />}
-                    label="Rain (3h)"
-                    value={rainPct != null ? `${rainPct}%` : "—"}
-                  />
-                </div>
-              </>
-            )}
-          </div>
+              <h2 className="mt-4 text-2xl font-black tracking-tight">{hero.title}</h2>
+              <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-white/90">
+                {hero.subtitle}
+              </p>
+            </>
+          )}
         </section>
 
-        {/* Tank-Mix Tester */}
-        <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex items-center gap-2">
-            <FlaskConical className="h-5 w-5 text-indigo-600" />
-            <h2 className="text-base font-bold text-gray-900">Tank-Mix Tester</h2>
-          </div>
-          <p className="mb-4 text-sm text-gray-600">
-            Select two agrochemicals to check formulation compatibility before filling your sprayer tank.
-          </p>
+        {/* Spray windows */}
+        <section>
+          <h3 className="mb-2 text-sm font-bold text-gray-900">स्प्रे विंडो</h3>
+          <ul className="space-y-2">
+            {windows.map((w) => (
+              <li
+                key={w.id}
+                className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-3.5 py-3 shadow-sm"
+              >
+                <span
+                  className={`h-3 w-3 shrink-0 rounded-full ${
+                    w.tone === "good"
+                      ? "bg-emerald-500"
+                      : w.tone === "ok"
+                        ? "bg-amber-400"
+                        : "bg-rose-500"
+                  }`}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-gray-900">{w.label}</p>
+                  <p className="text-xs text-gray-500">{w.detail}</p>
+                </div>
+                <span
+                  className={`shrink-0 text-xs font-bold ${
+                    w.tone === "good"
+                      ? "text-emerald-600"
+                      : w.tone === "ok"
+                        ? "text-amber-600"
+                        : "text-rose-600"
+                  }`}
+                >
+                  {w.badge}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
+        {/* Recommended dosage */}
+        <section>
+          <h3 className="mb-2 text-sm font-bold text-gray-900">अनुशंसित खुराक</h3>
+          <ul className="space-y-2.5">
+            {dosageCards.map((card) => (
+              <li
+                key={card.id}
+                className="rounded-2xl border border-gray-100 bg-white p-3.5 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-gray-900">{card.name}</p>
+                    <p className="mt-0.5 text-[11px] text-gray-500">लक्ष्य: {card.target}</p>
+                  </div>
+                  <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-100">
+                    {card.badge}
+                  </span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-700">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Pencil className="h-3.5 w-3.5 text-gray-400" />
+                    {card.dose}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Droplets className="h-3.5 w-3.5 text-sky-500" />
+                    {card.water}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Tank-mix (kept, Hindi labels) */}
+        <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div className="mb-3 flex items-center gap-2">
+            <FlaskConical className="h-5 w-5 text-emerald-600" />
+            <h2 className="text-sm font-bold text-gray-900">टैंक-मिक्स जाँच</h2>
+          </div>
+          <p className="mb-3 text-xs text-gray-600">
+            दो दवाएँ मिलाकर छिड़कने से पहले अनुकूलता जाँचें।
+          </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-gray-700">Agrochemical 1</span>
+              <span className="mb-1.5 block text-xs font-semibold text-gray-700">दवा 1</span>
               <select
                 value={chem1}
                 onChange={(e) => {
                   setChem1(e.target.value);
                   setMixChecked(false);
                 }}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
               >
-                <option value="">Select product…</option>
+                <option value="">चुनें…</option>
                 {mixableProducts.map((p) => (
                   <option key={p.id} value={p.id}>
                     {formatProductOption(p)}
@@ -231,18 +375,17 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
                 ))}
               </select>
             </label>
-
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-gray-700">Agrochemical 2</span>
+              <span className="mb-1.5 block text-xs font-semibold text-gray-700">दवा 2</span>
               <select
                 value={chem2}
                 onChange={(e) => {
                   setChem2(e.target.value);
                   setMixChecked(false);
                 }}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
               >
-                <option value="">Select product…</option>
+                <option value="">चुनें…</option>
                 {mixableProducts.map((p) => (
                   <option key={p.id} value={p.id}>
                     {formatProductOption(p)}
@@ -251,97 +394,27 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
               </select>
             </label>
           </div>
-
           <button
             type="button"
             onClick={handleCheckMix}
             disabled={!chem1 || !chem2}
-            className="mt-4 w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-3 w-full rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
           >
-            Check Compatibility
+            अनुकूलता जाँचें
           </button>
-
           {mixChecked && mixResult && (
-            <div
-              className={`mt-4 rounded-lg border p-4 ${mixResultStyles(mixResult)}`}
-              role="alert"
-            >
+            <div className={`mt-3 rounded-xl border p-3 ${mixResultStyles(mixResult)}`} role="alert">
               <p className="font-bold">{mixResult.title}</p>
-              <p className="mt-1.5 text-sm leading-relaxed opacity-90">{mixResult.message}</p>
+              <p className="mt-1 text-sm opacity-90">{mixResult.message}</p>
             </div>
           )}
         </section>
 
-        {/* Recommended Control Measures */}
-        <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900">Recommended Control Measures</h2>
-          <p className="mt-1 text-sm text-gray-600">
-            Evidence-based actives for {crops[0]?.name ?? "Paddy"} — aligned with IRAC / FRAC rotation principles.
-          </p>
-
-          <ul className="mt-4 space-y-3">
-            {recommendations.map((rec) => (
-              <li
-                key={rec.id}
-                className="rounded-lg border border-gray-100 bg-gray-50/80 p-4 transition hover:border-gray-200"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-gray-900">{rec.activeIngredient}</p>
-                    <p className="mt-0.5 text-xs font-medium text-gray-500">
-                      Target: <span className="text-gray-700">{rec.target}</span>
-                    </p>
-                  </div>
-                  <span
-                    className={`shrink-0 rounded-md px-2.5 py-1 text-[11px] font-bold ring-1 ${moaBadgeClasses(rec.moaType)}`}
-                  >
-                    {rec.moaBadge}
-                  </span>
-                </div>
-                {rec.doseHint && (
-                  <p className="mt-2 text-xs text-gray-600">
-                    <span className="font-semibold text-gray-700">Dose:</span> {rec.doseHint}
-                  </p>
-                )}
-                {rec.notes && (
-                  <p className="mt-1 text-xs italic text-gray-500">{rec.notes}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-4 flex gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-            <p className="text-xs leading-relaxed text-amber-900">
-              <span className="font-bold">Resistance management:</span> Never apply the same IRAC or FRAC
-              group in consecutive sprays. Rotate modes of action across the season and preserve
-              beneficial insects by spraying only at economic threshold levels (ETL).
-            </p>
-          </div>
-        </section>
-
-        <p className="text-center text-[11px] text-gray-400">
-          Always follow product label, PHI, and local agricultural officer guidance.
+        <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-gray-400">
+          <CloudRain className="h-3.5 w-3.5" />
+          लेबल, PHI और कृषि अधिकारी की सलाह हमेशा मानें
         </p>
       </main>
-    </div>
-  );
-}
-
-function MetricPill({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-lg bg-white/70 px-2 py-2 text-center">
-      <div className="flex justify-center">{icon}</div>
-      <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-gray-500">{label}</p>
-      <p className="text-sm font-bold text-gray-900">{value}</p>
     </div>
   );
 }

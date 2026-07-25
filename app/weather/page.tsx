@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MapPin, Navigation, Search, Loader2, CloudSun, RefreshCw } from "lucide-react";
+import { MapPin, Navigation, Search, Loader2, CloudSun } from "lucide-react";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import WeatherRedesign from "@/components/weather/WeatherRedesign";
@@ -84,17 +84,23 @@ export default function WeatherPage() {
 
   useEffect(() => {
     if (autoLoaded.current) return;
-    const saved = getSavedWeatherLocation();
-    if (!saved) return;
     autoLoaded.current = true;
-    if (saved.type === "gps") {
+    const saved = getSavedWeatherLocation();
+    if (saved?.type === "gps") {
       setLocationMode("gps");
       loadWeather(() => fetchWeatherByCoords(saved.lat, saved.lon));
-    } else {
+      return;
+    }
+    if (saved?.type === "city") {
       setLocationMode("manual");
       setManualCity(saved.city);
       loadWeather(() => fetchWeatherByCity(saved.city));
+      return;
     }
+    // First visit — load a demo city so the farmer dashboard is visible immediately
+    setLocationMode("manual");
+    setManualCity("Barabanki");
+    loadWeather(() => fetchWeatherByCity("Barabanki"));
   }, [loadWeather]);
 
   const shareWeather = async () => {
@@ -110,26 +116,21 @@ export default function WeatherPage() {
 
   return (
     <AppShell
-      title="Weather"
-      subtitle="Live weather updates for smarter farming decisions"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Weather" }]}
+      title="मौसम"
+      subtitle="खेती के सही फैसले के लिए लाइव मौसम"
+      breadcrumbs={[{ label: "Home", href: "/" }, { label: "मौसम" }]}
       className="overflow-x-hidden"
     >
       <DarkCard className="overflow-hidden">
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap gap-2">
-            <AppLink href="/weather/spray-advisory" className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-1.5 text-[10px] font-semibold text-indigo-400">
-              Spray Advisory
+            <AppLink href="/weather/spray-advisory" className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-300">
+              स्प्रे सलाह
             </AppLink>
-            <AppLink href="/pest-solver" className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-1.5 text-[10px] font-semibold text-fuchsia-400">
-              Symptom ID
+            <AppLink href="/pest-solver" className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-1.5 text-[10px] font-semibold text-[var(--av-text-secondary)]">
+              रोग पहचान
             </AppLink>
           </div>
-          {lastUpdated && (
-            <p className="text-[10px] text-[var(--av-text-muted)]">
-              Last updated {lastUpdated.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-            </p>
-          )}
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
@@ -140,7 +141,7 @@ export default function WeatherPage() {
             className={`inline-flex w-full justify-center gap-1.5 disabled:opacity-60 sm:w-auto ${AV.btnPrimarySm}`}
           >
             {locLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
-            Use My Location
+            मेरा स्थान
           </button>
           <div className="flex min-w-0 flex-col gap-2 sm:flex-row">
             <div className="relative min-w-0 flex-1">
@@ -149,7 +150,7 @@ export default function WeatherPage() {
                 value={manualCity}
                 onChange={(e) => setManualCity(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && searchManualCity()}
-                placeholder="Search city — Indore, Delhi..."
+                placeholder="शहर खोजें — Indore, Delhi..."
                 className="w-full min-w-0 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-10 pr-3 text-sm text-[var(--av-text-primary)] outline-none focus:border-[#10b981]"
               />
             </div>
@@ -160,30 +161,24 @@ export default function WeatherPage() {
               className={`inline-flex shrink-0 justify-center gap-1.5 ${AV.btnSecondarySm}`}
             >
               {loading && locationMode === "manual" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-              Search
+              खोजें
             </button>
           </div>
         </div>
-
-        {locationMode && weatherData && (
-          <p className="mt-2 text-[10px] font-medium text-[var(--av-accent)]">
-            📍 {locationMode === "gps" ? "GPS location" : "Manual city"} active
-          </p>
-        )}
       </DarkCard>
 
       {!loading && !weatherData && !error && (
         <DarkCard className="mt-4 text-center" delay={1}>
           <CloudSun className="mx-auto h-12 w-12 text-[var(--av-accent)]" />
-          <p className="mt-3 text-base font-bold text-[var(--av-text-primary)]">Select your location</p>
-          <p className="mt-1 text-sm text-[var(--av-text-muted)]">Use GPS or search a city to load the weather dashboard</p>
+          <p className="mt-3 text-base font-bold text-[var(--av-text-primary)]">अपना स्थान चुनें</p>
+          <p className="mt-1 text-sm text-[var(--av-text-muted)]">GPS या शहर से मौसम डैशबोर्ड खोलें</p>
         </DarkCard>
       )}
 
       {loading && (
         <div className="py-16 text-center">
           <Loader2 className="mx-auto h-10 w-10 animate-spin text-[var(--av-accent)]" />
-          <p className="mt-3 text-sm text-[var(--av-text-muted)]">Loading weather...</p>
+          <p className="mt-3 text-sm text-[var(--av-text-muted)]">मौसम लोड हो रहा है…</p>
         </div>
       )}
 

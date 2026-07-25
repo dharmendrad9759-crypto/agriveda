@@ -7,12 +7,12 @@ export default function SprayAdvisoryShell() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="Spray & Spread Advisory"
-      subtitle="Live spray window, tank-mix compatibility & IRAC/FRAC recommendations"
+      title="स्प्रे सलाह"
+      subtitle="स्प्रे विंडो, टैंक-मिक्स जाँच और अनुशंसित खुराक"
       breadcrumbs={[
         { label: "Home", href: "/" },
-        { label: "Weather", href: "/weather" },
-        { label: "Spray Advisory" },
+        { label: "मौसम", href: "/weather" },
+        { label: "स्प्रे सलाह" },
       ]}
     >
       <SprayAdvisoryDetail embedded />
