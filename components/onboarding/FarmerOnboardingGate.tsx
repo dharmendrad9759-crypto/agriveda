@@ -220,36 +220,33 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
   return (
     <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center">
-      {/* Atmosphere — glassmorphism backdrop */}
+      {/* Atmosphere — glassmorphism backdrop (crop field feel) */}
       <div className="absolute inset-0 overflow-hidden">
         <div
-          className="absolute inset-0 scale-110 bg-cover bg-center blur-sm"
+          className="absolute inset-0 scale-110"
           style={{
             backgroundImage:
-              "linear-gradient(160deg, rgba(6,78,59,0.88) 0%, rgba(4,47,46,0.75) 45%, rgba(15,23,42,0.85) 100%), radial-gradient(circle at 20% 30%, rgba(52,211,153,0.35), transparent 40%), radial-gradient(circle at 80% 70%, rgba(16,185,129,0.25), transparent 45%)",
+              "url(https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1600&q=60)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(10px) saturate(1.15)",
+            transform: "scale(1.08)",
           }}
         />
-        <div
-          className="absolute inset-0 opacity-[0.12]"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.35'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-          }}
-        />
-        {/* Soft floating orbs for motion */}
-        <div className="absolute -left-10 top-16 h-40 w-40 animate-pulse rounded-full bg-emerald-400/20 blur-3xl" />
-        <div className="absolute -right-8 bottom-24 h-48 w-48 animate-pulse rounded-full bg-teal-300/15 blur-3xl [animation-delay:1s]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/70 via-emerald-900/55 to-slate-950/75" />
+        <div className="absolute -left-10 top-16 h-44 w-44 animate-pulse rounded-full bg-emerald-400/30 blur-3xl" />
+        <div className="absolute -right-8 bottom-24 h-52 w-52 animate-pulse rounded-full bg-lime-300/20 blur-3xl [animation-delay:1s]" />
       </div>
 
       <div
         role="dialog"
         aria-modal
         aria-label="Farmer onboarding"
-        className="relative z-10 max-h-[94vh] w-full max-w-md overflow-y-auto rounded-t-[1.75rem] border border-white/25 bg-white/90 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:rounded-[1.75rem]"
+        className="relative z-10 max-h-[94vh] w-full max-w-md overflow-y-auto rounded-t-[1.75rem] border border-white/35 bg-white/55 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:rounded-[1.75rem]"
       >
         {showWelcomeChrome ? (
           <div className="px-6 pb-2 pt-6 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/90 text-white shadow-lg shadow-emerald-500/30 ring-4 ring-white/40">
               <Check className="h-6 w-6" strokeWidth={3} />
             </div>
             <h2
@@ -258,7 +255,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
             >
               AgriVeda में आपका स्वागत है!
             </h2>
-            <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
+            <p className="mt-1.5 text-sm leading-relaxed text-gray-700/90">
               आपका खाता तैयार है — बस कुछ बातें बताइए ताकि आपका खेत सेट हो जाए।
             </p>
             <div className="mt-4 flex items-center justify-center gap-2">
@@ -273,19 +270,19 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                         ? "scale-110 bg-amber-500"
                         : done
                           ? "bg-emerald-500"
-                          : "bg-gray-300"
+                          : "bg-white/70 ring-1 ring-gray-300/80"
                     }`}
                   />
                 );
               })}
             </div>
-            <p className="mt-1.5 text-xs font-semibold text-gray-500">
+            <p className="mt-1.5 text-xs font-semibold text-gray-600">
               चरण {needsFarmSetup ? 3 : Math.max(1, setupIndex + 1)}/3
             </p>
           </div>
         ) : (
-          <div className="border-b border-emerald-500/10 bg-gradient-to-br from-emerald-600/95 to-teal-700/95 px-6 py-5 text-white backdrop-blur-md">
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-100">
+          <div className="border-b border-white/25 bg-emerald-700/45 px-6 py-5 text-white backdrop-blur-md">
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-50/90">
               AgriVeda
             </p>
             <h2 className="mt-1 text-xl font-black">किसान पंजीकरण</h2>
