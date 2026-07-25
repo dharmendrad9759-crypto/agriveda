@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildMockWeatherBundle } from "@/data/mock/weather";
+import {
+  fetchOpenMeteoBundle,
+  geocodeOpenMeteo,
+} from "@/lib/openMeteo";
 
 function readOpenWeatherKey(): string | undefined {
   const raw = process.env.OPENWEATHER_API_KEY?.trim();
@@ -27,7 +31,7 @@ async function owmFetch(url: string, revalidate = 300): Promise<Response | null>
   }
 }
 
-async function geocodeCity(city: string, apiKey: string): Promise<GeoResult | null> {
+async function geocodeCityOpenWeather(city: string, apiKey: string): Promise<GeoResult | null> {
   const query = city.includes(",") ? city.trim() : `${city.trim()},IN`;
   const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=1&appid=${apiKey}`;
   const res = await owmFetch(url, 86400);
@@ -40,7 +44,7 @@ type WeatherBundleResult =
   | { current: unknown; forecast: unknown }
   | { error: string; status: number };
 
-async function fetchWeatherBundle(
+async function fetchOpenWeatherBundle(
   lat: number,
   lon: number,
   apiKey: string
@@ -85,9 +89,18 @@ function mockResponse(city?: string | null, lat?: string | null, lon?: string | 
   });
   return NextResponse.json({
     ...mock,
-    demoNotice:
-      "Demo मौसम दिख रहा है — live data के लिए OPENWEATHER_API_KEY .env.local में सेट करें।",
+    demoNotice: "Demo मौसम — Open-Meteo / network उपलब्ध नहीं था।",
   });
+}
+
+async function resolveWithOpenMeteo(
+  lat: number,
+  lon: number,
+  location: { name: string; country: string; state?: string }
+) {
+  const bundle = await fetchOpenMeteoBundle(lat, lon, location);
+  if ("error" in bundle) return bundle;
+  return NextResponse.json(bundle);
 }
 
 export async function GET(request: NextRequest) {
@@ -96,61 +109,88 @@ export async function GET(request: NextRequest) {
   const lat = request.nextUrl.searchParams.get("lat");
   const lon = request.nextUrl.searchParams.get("lon");
 
-  if (!apiKey) {
-    if (!city?.trim() && !(lat && lon)) {
-      return NextResponse.json({ error: "city या lat/lon ज़रूरी है" }, { status: 400 });
-    }
-    return mockResponse(city, lat, lon);
+  if (!city?.trim() && !(lat && lon)) {
+    return NextResponse.json({ error: "city या lat/lon ज़रूरी है" }, { status: 400 });
   }
 
   try {
+    // --- GPS / coordinates ---
     if (lat && lon) {
-      const bundle = await fetchWeatherBundle(Number(lat), Number(lon), apiKey);
-      if ("error" in bundle) {
-        return NextResponse.json({ error: bundle.error }, { status: bundle.status });
-      }
-      return NextResponse.json({
-        ...bundle,
-        coords: { lat: Number(lat), lon: Number(lon) },
+      const latN = Number(lat);
+      const lonN = Number(lon);
+      const om = await resolveWithOpenMeteo(latN, lonN, {
+        name: "आपका स्थान",
+        country: "IN",
       });
+      if (om instanceof NextResponse) return om;
+
+      // Optional OpenWeather fallback
+      if (apiKey) {
+        const owm = await fetchOpenWeatherBundle(latN, lonN, apiKey);
+        if (!("error" in owm)) {
+          return NextResponse.json({
+            ...owm,
+            source: "openweather",
+            coords: { lat: latN, lon: lonN },
+          });
+        }
+      }
+
+      return mockResponse(city, lat, lon);
     }
 
+    // --- City search ---
     if (city?.trim()) {
-      const geo = await geocodeCity(city.trim(), apiKey);
+      const geo = await geocodeOpenMeteo(city.trim());
+      if (geo) {
+        const om = await resolveWithOpenMeteo(geo.lat, geo.lon, {
+          name: geo.name,
+          country: geo.country,
+          state: geo.state,
+        });
+        if (om instanceof NextResponse) return om;
+      }
+
+      // OpenWeather geocode + weather if Open-Meteo failed and key exists
+      if (apiKey) {
+        const owmGeo = await geocodeCityOpenWeather(city.trim(), apiKey);
+        if (owmGeo) {
+          const owm = await fetchOpenWeatherBundle(owmGeo.lat, owmGeo.lon, apiKey);
+          if (!("error" in owm)) {
+            return NextResponse.json({
+              ...owm,
+              source: "openweather",
+              coords: { lat: owmGeo.lat, lon: owmGeo.lon },
+              resolvedLocation: {
+                name: owmGeo.name,
+                state: owmGeo.state,
+                country: owmGeo.country,
+                lat: owmGeo.lat,
+                lon: owmGeo.lon,
+              },
+            });
+          }
+        }
+      }
+
       if (!geo) {
         return NextResponse.json(
           {
             error:
-              "शहर नहीं मिला। अंग्रेज़ी में नाम लिखें (जैसे Aligarh, Delhi) — भारत के लिए ,IN auto लगता है।",
+              "शहर नहीं मिला। अंग्रेज़ी में नाम लिखें (जैसे Aligarh, Delhi)।",
           },
           { status: 404 }
         );
       }
 
-      const bundle = await fetchWeatherBundle(geo.lat, geo.lon, apiKey);
-      if ("error" in bundle) {
-        return NextResponse.json({ error: bundle.error }, { status: bundle.status });
-      }
-
-      return NextResponse.json({
-        ...bundle,
-        coords: { lat: geo.lat, lon: geo.lon },
-        resolvedLocation: {
-          name: geo.name,
-          state: geo.state,
-          country: geo.country,
-          lat: geo.lat,
-          lon: geo.lon,
-        },
-      });
+      return mockResponse(city, lat, lon);
     }
 
     return NextResponse.json({ error: "city या lat/lon ज़रूरी है" }, { status: 400 });
   } catch {
     return NextResponse.json(
       {
-        error:
-          "सर्वर से मौसम लोड नहीं हो सका — network slow hai ya OpenWeather block ho sakta hai।",
+        error: "सर्वर से मौसम लोड नहीं हो सका — network slow hai।",
       },
       { status: 503 }
     );
