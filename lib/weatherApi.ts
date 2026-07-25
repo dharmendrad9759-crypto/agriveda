@@ -241,7 +241,9 @@ async function fetchFromApi(params: URLSearchParams): Promise<WeatherViewModel> 
   if (inflight) return inflight;
 
   const promise = (async () => {
-    const res = await fetch(`/api/weather?${params.toString()}`);
+    const res = await fetch(`/api/weather?${params.toString()}`, {
+      cache: "no-store",
+    });
     const body = await res.json().catch(() => ({}));
 
     if (!res.ok) {
@@ -255,11 +257,20 @@ async function fetchFromApi(params: URLSearchParams): Promise<WeatherViewModel> 
       data.resolvedLocation,
       data.coords
     );
-    if (data.source === "mock" || data.demoNotice) {
+    // Only mark demo when API explicitly returns mock — never from stale cache of live data
+    if (data.source === "mock" || Boolean(data.demoNotice)) {
       view.isDemo = true;
       view.demoNotice = data.demoNotice;
+    } else {
+      view.isDemo = false;
+      view.demoNotice = undefined;
     }
-    weatherCache.set(cacheKey, { data: view, at: Date.now() });
+    // Do not keep demo payloads in cache once a live key is available
+    if (!view.isDemo) {
+      weatherCache.set(cacheKey, { data: view, at: Date.now() });
+    } else {
+      weatherCache.delete(cacheKey);
+    }
     return view;
   })();
 
