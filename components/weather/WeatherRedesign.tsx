@@ -37,7 +37,7 @@ export default function WeatherRedesign({
   onShare,
 }: Props) {
   const dash = useMemo(() => buildFarmDashboardData(weather), [weather]);
-  const tempNum = parseInt(weather.temp, 10) || 28;
+  const tempNum = parseInt(weather.temp, 10) || 0;
   const rainNow = weather.hourlyForecast[0]?.rainChancePercent ?? dash.metrics.rainChance;
 
   const weekForecast =
@@ -65,13 +65,7 @@ export default function WeatherRedesign({
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-4 overflow-x-hidden pb-2">
-      {weather.isDemo && (
-        <div className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-[11px] leading-relaxed text-amber-800 dark:text-amber-200">
-          {weather.demoNotice ?? "Demo मौसम — live स्रोत उपलब्ध नहीं था।"}
-        </div>
-      )}
-
-      {/* Hero — blue weather card */}
+      {/* Hero — blue weather card (temp = Open-Meteo current.temperature_2m) */}
       <section className="relative overflow-hidden rounded-b-[1.75rem] rounded-t-2xl bg-gradient-to-br from-[#1d6fd8] via-[#2b7de0] to-[#1a5fbf] text-white shadow-[0_16px_40px_-12px_rgba(29,111,216,0.55)]">
         <div
           className="pointer-events-none absolute inset-0 opacity-30"

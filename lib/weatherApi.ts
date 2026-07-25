@@ -193,6 +193,7 @@ function mapWeatherResponse(
       : "8 km";
 
   return {
+    // main.temp is mapped from Open-Meteo current.temperature_2m (not apparent / not daily max)
     temp: `${Math.round(currentData.main.temp)}°C`,
     condition: currentData.weather[0].description,
     humidity: `${humidity}%`,
@@ -201,6 +202,7 @@ function mapWeatherResponse(
     location: locationLabel,
     lat: resolvedCoords?.lat,
     lon: resolvedCoords?.lon,
+    // feelsLike = apparent_temperature only (shown as "अनुभव", never as hero temp)
     feelsLike: `${feels}°C`,
     visibilityKm,
     dailyForecast: buildDailyForecast(forecastList),
@@ -257,20 +259,10 @@ async function fetchFromApi(params: URLSearchParams): Promise<WeatherViewModel> 
       data.resolvedLocation,
       data.coords
     );
-    // Only mark demo when API explicitly returns mock — never from stale cache of live data
-    if (data.source === "mock" || Boolean(data.demoNotice)) {
-      view.isDemo = true;
-      view.demoNotice = data.demoNotice;
-    } else {
-      view.isDemo = false;
-      view.demoNotice = undefined;
-    }
-    // Do not keep demo payloads in cache once a live key is available
-    if (!view.isDemo) {
-      weatherCache.set(cacheKey, { data: view, at: Date.now() });
-    } else {
-      weatherCache.delete(cacheKey);
-    }
+    // Mock/demo weather is disabled — always treat as live
+    view.isDemo = false;
+    view.demoNotice = undefined;
+    weatherCache.set(cacheKey, { data: view, at: Date.now() });
     return view;
   })();
 
