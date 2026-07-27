@@ -38,12 +38,23 @@ import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
 import { OTHER_CROP } from "@/data/ai-doctor-crops";
+import { useNetworkStatus, withSlowGuard } from "@/hooks/useNetworkStatus";
+import {
+  ErrorState,
+  OfflineState,
+  PermissionDeniedState,
+  SlowNetworkState,
+  SuccessBanner,
+  ValidationHint,
+} from "@/components/ui/UiStates";
+import { openAppLocationPermissionSettings } from "@/lib/openLocationSettings";
 
 export default function AIDoctorPage() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const { addEntry, history, clearHistory } = useAIHistory();
   const { showToast } = useToast();
+  const { online, slow, setSlow } = useNetworkStatus(10000);
 
   const [selectedCrop, setSelectedCrop] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -59,6 +70,10 @@ export default function AIDoctorPage() {
   const [activeChips, setActiveChips] = useState<string[]>([]);
   /** Allow crop → symptoms without a photo (optional escape hatch) */
   const [symptomsOnlyMode, setSymptomsOnlyMode] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [validationHint, setValidationHint] = useState<string | null>(null);
+  const [cameraPermissionDenied, setCameraPermissionDenied] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const hasPhoto = Boolean(selectedFile || previewUrl);
   const hasCrop = Boolean(selectedCrop);
@@ -68,7 +83,8 @@ export default function AIDoctorPage() {
   const canScan =
     ((hasPhoto && hasCrop) || (symptomsOnlyMode && hasCrop && hasSymptoms)) &&
     !isScanning &&
-    aiConfigured !== false;
+    aiConfigured !== false &&
+    online;
   const hasInput = Boolean(previewUrl || selectedFile || result || hasSymptoms || hasCrop);
 
   useEffect(() => {
@@ -151,16 +167,29 @@ export default function AIDoctorPage() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file?.type.startsWith("image/")) {
+    if (!file) {
+      // User cancelled OR permission blocked — show camera help if no photo yet
+      if (!selectedFile && !previewUrl) {
+        setCameraPermissionDenied(true);
+        setValidationHint("फोटो नहीं मिली — Camera अनुमति चेक करें या Gallery से चुनें।");
+      }
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setValidationHint("सिर्फ़ image file चुनें (JPG / PNG)");
       showToast("सिर्फ़ image file चुनें", "error");
       return;
     }
+    setCameraPermissionDenied(false);
+    setValidationHint(null);
+    setScanError(null);
     setFileName(file.name);
     setSelectedFile(file);
     if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(URL.createObjectURL(file));
     setPreviewFailed(false);
     setResult(null);
+    setSuccessMsg(null);
     setSymptomsOnlyMode(false);
     showToast("फोटो चुनी — अब फसल चुनें", "success");
   };
@@ -181,33 +210,52 @@ export default function AIDoctorPage() {
   };
 
   const handleScan = async () => {
+    setValidationHint(null);
+    setScanError(null);
+    setSuccessMsg(null);
+
+    if (!online) {
+      setScanError("इंटरनेट नहीं है — AI diagnosis के लिए नेट ज़रूरी है।");
+      return;
+    }
     if (!selectedCrop) {
+      setValidationHint("पहले फसल चुनें");
       showToast("पहले फसल चुनें", "error");
       return;
     }
     if (!selectedFile && !hasSymptoms) {
+      setValidationHint("फोटो चुनें या लक्षण लिखें");
       showToast("फोटो चुनें या लक्षण लिखें", "error");
       return;
     }
     setIsScanning(true);
 
     try {
-      const diagnosis = await analyzeDiagnosis({
-        imageFile: selectedFile,
-        cropSlug: selectedCrop || OTHER_CROP.slug,
-        symptoms: symptomNotes,
-      });
+      const diagnosis = await withSlowGuard(
+        () =>
+          analyzeDiagnosis({
+            imageFile: selectedFile,
+            cropSlug: selectedCrop || OTHER_CROP.slug,
+            symptoms: symptomNotes,
+          }),
+        setSlow,
+        10000
+      );
       setResult(diagnosis);
       addEntry({
         fileName: selectedFile ? fileName || "scan.jpg" : "symptoms.txt",
         thumbnailUrl: previewUrl || "",
         result: diagnosis,
       });
+      setSuccessMsg(`${diagnosis.diseaseName} — confidence ${diagnosis.confidence}%`);
       showToast("Gemini AI विश्लेषण पूर्ण ✓");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "विश्लेषण विफल", "error");
+      const msg = err instanceof Error ? err.message : "विश्लेषण विफल";
+      setScanError(msg);
+      showToast(msg, "error");
     } finally {
       setIsScanning(false);
+      setSlow(false);
     }
   };
 
@@ -218,6 +266,10 @@ export default function AIDoctorPage() {
     setActiveChips([]);
     setSelectedCrop("");
     setSymptomsOnlyMode(false);
+    setScanError(null);
+    setValidationHint(null);
+    setCameraPermissionDenied(false);
+    setSuccessMsg(null);
   };
 
   const handleToggleChip = (id: string, label: string) => {
@@ -255,6 +307,45 @@ export default function AIDoctorPage() {
           onHistoryClick={scrollToHistory}
           historyCount={history.length}
         />
+
+        {!online && (
+          <OfflineState
+            title="इंटरनेट नहीं है"
+            description="AI Doctor diagnosis के लिए नेट ज़रूरी है। डेटा ON करके फिर कोशिश करें।"
+            onRetry={handleScan}
+          />
+        )}
+
+        {cameraPermissionDenied && (
+          <PermissionDeniedState
+            kind="camera"
+            onOpenSettings={() => void openAppLocationPermissionSettings()}
+            onRetry={() => {
+              setCameraPermissionDenied(false);
+              cameraInputRef.current?.click();
+            }}
+          />
+        )}
+
+        {validationHint && <ValidationHint message={validationHint} />}
+
+        {isScanning && slow && (
+          <SlowNetworkState
+            title="AI diagnosis में देर हो रही है"
+            description="फोटो विश्लेषण में 15–30 सेकंड लग सकते हैं — कृपया रुकें।"
+          />
+        )}
+
+        {scanError && !isScanning && (
+          <ErrorState
+            title="Diagnosis असफल"
+            description={scanError}
+            onRetry={handleScan}
+            actionLabel="फिर से diagnosis"
+          />
+        )}
+
+        {successMsg && result && !isScanning && <SuccessBanner message={successMsg} />}
 
         <div className="grid gap-3.5 sm:gap-5 lg:grid-cols-3">
           <div id="ai-doctor-scan" className="min-w-0 space-y-3.5 sm:space-y-5 lg:col-span-2">
