@@ -53,7 +53,8 @@ const RESPONSE_SCHEMA = {
     cropContext: { type: "string" },
     visualObservations: {
       type: "string",
-      description: "What you actually see in the photo — spots, color, holes, fungus, etc.",
+      description:
+        "1-2 short Hindi sentences: what is visible on the plant. No English jargon.",
     },
   },
   required: [
@@ -115,7 +116,7 @@ RULES:
 5. severity: Low, Medium, or High only.
 6. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage) in SIMPLE HINDI. Technical chemical names can stay in English.
 7. activeIngredients: only realistic, legal products used in Indian agriculture with practical doses (ml/L or g/L or kg/acre).
-8. visualObservations: 2-3 sentences in Hindi describing exactly what you see in THIS photo (color of spots, pattern, affected part, etc.).
+8. visualObservations: 1-2 short Hindi sentences only — what the farmer can see (रंग, धब्बे, पत्तियाँ). No English jargon, no scientific terms, no long paragraphs.
 9. Do NOT copy generic text unrelated to the visible symptoms.
 
 Return ONLY valid JSON matching the schema.`;

@@ -28,6 +28,7 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import { cropCatalog } from "@/data/crop-catalog";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { DASHBOARD_FIELDS } from "@/data/mock/dashboard";
 import type { FarmField } from "@/lib/farm/types";
@@ -102,11 +103,21 @@ function daysSince(dateStr: string): number | null {
   return diff >= 0 ? diff : null;
 }
 
-/** Simple, farmer-readable crop label: Hindi name first, small English in ( ).
- * Hindi-first always (farmers read Hindi faster) — English stays as a hint. */
+/** Farmer-readable crop label — Hindi first; English always from slug (not stale field.crop). */
 function cropLabel(slug: string | undefined, englishName: string): string {
-  const hi = getCropHindiName(slug ?? englishName.toLowerCase());
-  return hi ? `${hi} (${englishName})` : englishName;
+  const key = (slug || "").trim().toLowerCase();
+  const catalog = key ? cropCatalog.find((c) => c.slug === key) : undefined;
+  const hi = getCropHindiName(key) ?? getCropHindiName(englishName.toLowerCase());
+  const en =
+    catalog?.name ||
+    (englishName && !key ? englishName : key ? key.charAt(0).toUpperCase() + key.slice(1) : englishName);
+  return hi ? `${hi} (${en})` : en;
+}
+
+/** Compact chip text — Hindi only when available (saves wrap space). */
+function cropChipLabel(slug: string | undefined, englishName: string): string {
+  const key = (slug || "").trim().toLowerCase();
+  return getCropHindiName(key) || cropCatalog.find((c) => c.slug === key)?.name || englishName;
 }
 
 function buildAdvice(opts: {
@@ -145,13 +156,13 @@ function buildRisk(opts: { isHi: boolean; humidityPct: number; rainChance: numbe
   const { isHi, humidityPct, rainChance } = opts;
   if (humidityPct >= 80 || rainChance >= 60) {
     return {
-      label: isHi ? "रोग का ज़्यादा खतरा" : "High disease risk",
+      label: isHi ? "रोग खतरा ↑" : "High disease risk",
       tone: "border-rose-400/40 bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300",
     };
   }
   if (humidityPct >= 65) {
     return {
-      label: isHi ? "फफूंद का हल्का खतरा" : "Mild fungal risk",
+      label: isHi ? "फफूंद खतरा" : "Mild fungal risk",
       tone: "border-amber-400/40 bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
     };
   }
@@ -183,8 +194,9 @@ export default function AgriVedaHome() {
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
   const place =
-    [profile.village || profile.district, profile.state].filter(Boolean).join(", ") ||
+    [profile.district || profile.village, profile.state].filter(Boolean).join(", ") ||
     "Sehore, MP";
+  const placeShort = place.length > 22 ? `${place.slice(0, 20)}…` : place;
 
   const temp = weather?.temp ?? "32°C";
   const humidity = weather?.humidity ?? "58%";
@@ -213,6 +225,7 @@ export default function AgriVedaHome() {
 
   const primary = fieldCard(sourceFields[0], 0);
   const primaryCropLabel = cropLabel(primary.cropSlug, primary.crop);
+  const primaryCropChip = cropChipLabel(primary.cropSlug, primary.crop);
   const advice = buildAdvice({
     isHi,
     rainChance,
@@ -287,21 +300,23 @@ export default function AgriVedaHome() {
             </div>
           </div>
 
-          {/* Personalization chips: crop + location + today's risk */}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-50 px-3 py-1.5 text-[13px] font-bold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
-              <Sprout className="h-4 w-4" strokeWidth={2.25} />
-              {isHi ? `आपकी फसल: ${primaryCropLabel}` : `Your crop: ${primaryCropLabel}`}
+          {/* Compact personalization chips — single row, no tall wrap */}
+          <div className="mt-2 flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-50/90 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
+              <Sprout className="h-3 w-3 shrink-0" strokeWidth={2.25} />
+              <span className="max-w-[7.5rem] truncate">
+                {isHi ? `फसल: ${primaryCropChip}` : primaryCropChip}
+              </span>
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 text-[13px] font-bold text-[var(--av-text-secondary)]">
-              <MapPin className="h-4 w-4 text-sky-600" strokeWidth={2.25} />
-              {place}
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+              <MapPin className="h-3 w-3 shrink-0 text-sky-600" strokeWidth={2.25} />
+              <span className="max-w-[8.5rem] truncate">{placeShort}</span>
             </span>
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-bold ${risk.tone}`}
+              className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${risk.tone}`}
             >
-              <ShieldCheck className="h-4 w-4" strokeWidth={2.25} />
-              {isHi ? `आज: ${risk.label}` : `Today: ${risk.label}`}
+              <ShieldCheck className="h-3 w-3 shrink-0" strokeWidth={2.25} />
+              {risk.label}
             </span>
           </div>
         </motion.section>

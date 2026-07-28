@@ -39,6 +39,14 @@ import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
 import { OTHER_CROP } from "@/data/ai-doctor-crops";
 
+/** Keep photo notes farmer-simple — drop English (jargon) parentheses. */
+function simpleObservation(text: string): string {
+  return text
+    .replace(/\s*\([^)]*\)/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 export default function AIDoctorPage() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -107,7 +115,7 @@ export default function AIDoctorPage() {
                 thumbnailUrl: pending.dataUrl,
                 result: diagnosis,
               });
-              showToast("Gemini AI analysis complete ✓");
+              showToast("विश्लेषण पूरा ✓");
             }
           } catch (err) {
             if (!cancelled) {
@@ -203,7 +211,7 @@ export default function AIDoctorPage() {
         thumbnailUrl: previewUrl || "",
         result: diagnosis,
       });
-      showToast("Gemini AI विश्लेषण पूर्ण ✓");
+      showToast("विश्लेषण पूर्ण ✓");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "विश्लेषण विफल", "error");
     } finally {
@@ -410,20 +418,13 @@ export default function AIDoctorPage() {
 
               {result && !isScanning && (
                 <div className="space-y-3.5 animate-fade-in sm:space-y-4">
-                  {result.source === "gemini" && (
-                    <p className="rounded-xl bg-sky-500/10 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300">
-                      ✓ Google Gemini
-                      {previewUrl ? " — photo analysis" : " — symptoms analysis"}
-                    </p>
-                  )}
-
                   {result.visualObservations && (
-                    <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-3">
-                      <p className="text-[10px] font-bold uppercase text-sky-700 dark:text-sky-300">
-                        {previewUrl ? "Photo mein kya dikha" : "Symptoms summary"}
+                    <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3.5 py-3">
+                      <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
+                        {previewUrl ? "फोटो में क्या दिखा" : "लक्षण सार"}
                       </p>
-                      <p className="mt-1 text-sm leading-relaxed text-[var(--av-text-primary)]">
-                        {result.visualObservations}
+                      <p className="mt-1.5 text-[13px] leading-snug text-[var(--av-text-primary)]">
+                        {simpleObservation(result.visualObservations)}
                       </p>
                     </div>
                   )}
