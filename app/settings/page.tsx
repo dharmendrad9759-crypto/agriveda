@@ -14,6 +14,8 @@ import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
 import { shareAgriveda } from "@/lib/appEssentials";
 import { useToast } from "@/components/ui/Toast";
+import SettingsLanguagePicker from "@/components/layout/SettingsLanguagePicker";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 function ShareAgrivedaButton() {
   const { showToast } = useToast();
@@ -68,6 +70,8 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { settings, update } = useAppSettings();
   const { settings: priceSettings, setMasterEnabled } = usePriceAlerts();
+  const { locale } = useLocale();
+  const langLabel = locale === "hi" ? "सरल हिंदी" : locale === "hinglish" ? "Hinglish" : "English";
 
   return (
     <AppShell
@@ -95,8 +99,8 @@ export default function SettingsPage() {
           <div className="mt-2">
             <SettingsRow label="Display Theme" value={theme === "dark" ? "Dark Mode" : "Light Mode"} href="/settings" />
             <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="mt-2 w-full rounded-lg bg-[var(--av-surface-inset)] py-2 text-xs text-[var(--av-accent)]">Toggle Theme</button>
-            <SettingsRow label="App Language" value="English" />
-            <SettingsRow label="Content Language" value="Hindi" />
+            <SettingsRow label="App Language" value={langLabel} />
+            <SettingsLanguagePicker />
             <SettingsRow label="Font Size" value="Medium" />
           </div>
         </DarkCard>

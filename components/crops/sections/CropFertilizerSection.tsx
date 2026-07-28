@@ -17,6 +17,9 @@ import {
 } from "@/data/knowledge/fertilizer-recommendations";
 import { cn } from "@/lib/cn";
 import type { Crop } from "@/types/crop";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { parseSprayAdvice } from "@/lib/crops/parseSprayAdvice";
+import { CROP_TIMING } from "@/data/crop-detail-timing";
 
 type SubTabId = "schedule" | "foliar" | "organic" | "calculator" | "notes";
 
@@ -48,6 +51,8 @@ function nutrientTotal(detail: string): number | null {
 
 export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const { showToast } = useToast();
+  const { locale } = useLocale();
+  const isHi = locale === "hi";
   const [activeSubTab, setActiveSubTab] = useState<SubTabId>("schedule");
   const [acres, setAcres] = useState(1);
 
@@ -86,27 +91,36 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     const fromPlan =
       plan?.nutrients.filter((n) => ["Zn", "Fe", "B", "Mg", "S", "Micro"].includes(n.nutrient)) ??
       [];
+    const fromTiming =
+      CROP_TIMING[crop.slug]?.fertilizers.filter((f) =>
+        /foliar|micronutrient|zinc|boron|calcium|spray/i.test(`${f.label} ${f.dose}`)
+      ) ?? [];
 
-    const rows: { name: string; detail: string }[] = [];
-    for (const m of micros) rows.push({ name: "Micronutrient", detail: m });
-    for (const s of sprays) rows.push({ name: "Foliar spray", detail: s });
-    for (const m of fromIcar) rows.push({ name: "Guide micronutrient", detail: m });
-    for (const n of fromPlan) rows.push({ name: n.nutrient, detail: n.detail });
+    const lines: string[] = [];
+    for (const m of micros) lines.push(m);
+    for (const s of sprays) lines.push(s);
+    for (const m of fromIcar) lines.push(m);
+    for (const n of fromPlan) lines.push(`${n.nutrient}: ${n.detail}`);
+    for (const t of fromTiming) lines.push(`${t.label}: ${t.dose} — ${t.timing}`);
 
-    if (!rows.length) {
-      rows.push({
-        name: "Soil test first",
-        detail: `${crop.name}: Zn/Fe/B foliar only if deficiency — soil test every 2–3 years`,
-      });
+    if (!lines.length) {
+      lines.push(
+        isHi
+          ? `${crop.name}: Zn/Fe/B स्प्रे सिर्फ कमी दिखे तब — 2–3 साल में मिट्टी जाँच`
+          : `${crop.name}: Zn/Fe/B foliar only if deficiency — soil test every 2–3 years`
+      );
     }
-    // de-dupe by detail
+
     const seen = new Set<string>();
-    return rows.filter((r) => {
-      if (seen.has(r.detail)) return false;
-      seen.add(r.detail);
-      return true;
-    });
-  }, [crop, icar, plan]);
+    return lines
+      .filter((d) => {
+        const key = d.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map((detail) => parseSprayAdvice(detail, isHi, crop.slug));
+  }, [crop, icar, plan, isHi]);
 
   const organicRows = useMemo(() => {
     const rows: string[] = [];
@@ -291,7 +305,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                   active ? "text-emerald-700 dark:text-emerald-300" : "text-[var(--av-text-primary)]"
                 )}
               >
-                {tab.label}
+                {isHi ? tab.labelHi : tab.label}
               </span>
             </button>
           );
@@ -335,13 +349,37 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       {activeSubTab === "foliar" && (
         <DarkCard>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
-            Foliar & Micronutrients — {crop.name}
+            {isHi ? "पर्णीय स्प्रे व सूक्ष्म पोषक" : "Foliar & Micronutrients"} — {isHi ? hindi || crop.name : crop.name}
           </h3>
+          <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+            {isHi
+              ? "समय DAS/DAT · मात्रा · पानी (L / एकड़)"
+              : "Timing DAS/DAT · dose · water (L / acre)"}
+          </p>
           <ul className="mt-3 space-y-2">
             {foliarRows.map((r, i) => (
               <li key={i} className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5">
-                <p className="text-[10px] font-bold uppercase text-cyan-700 dark:text-cyan-300">{r.name}</p>
-                <p className="mt-0.5 text-xs text-[var(--av-text-secondary)]">{r.detail}</p>
+                <p className="text-xs font-bold text-[var(--av-text-primary)]">{r.name}</p>
+                <div className="mt-1.5 grid gap-1 text-[11px] text-[var(--av-text-secondary)] sm:grid-cols-3">
+                  <p>
+                    <span className="font-bold text-cyan-700 dark:text-cyan-300">
+                      {isHi ? "समय:" : "When:"}
+                    </span>{" "}
+                    {r.timing}
+                  </p>
+                  <p>
+                    <span className="font-bold text-emerald-700 dark:text-emerald-300">
+                      {isHi ? "मात्रा:" : "Dose:"}
+                    </span>{" "}
+                    {r.dose}
+                  </p>
+                  <p>
+                    <span className="font-bold text-sky-700 dark:text-sky-300">
+                      {isHi ? "पानी:" : "Water:"}
+                    </span>{" "}
+                    {r.water}
+                  </p>
+                </div>
               </li>
             ))}
           </ul>

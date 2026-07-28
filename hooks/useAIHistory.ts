@@ -22,13 +22,24 @@ export function useAIHistory() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setHistory(readStorage<AIHistoryEntry[]>(KEY, []));
+    const raw = readStorage<AIHistoryEntry[]>(KEY, []);
+    // Drop dead blob: URLs from older builds — they break after reload
+    const cleaned = raw.map((e) =>
+      e.thumbnailUrl?.startsWith("blob:") ? { ...e, thumbnailUrl: "" } : e
+    );
+    setHistory(cleaned);
+    if (cleaned.some((e, i) => e.thumbnailUrl !== raw[i]?.thumbnailUrl)) {
+      writeStorage(KEY, cleaned);
+    }
     setHydrated(true);
   }, []);
 
   const addEntry = useCallback((entry: Omit<AIHistoryEntry, "id" | "timestamp">) => {
+    const thumb =
+      entry.thumbnailUrl?.startsWith("blob:") ? "" : entry.thumbnailUrl || "";
     const full: AIHistoryEntry = {
       ...entry,
+      thumbnailUrl: thumb,
       id: randomId(),
       timestamp: new Date().toISOString(),
     };

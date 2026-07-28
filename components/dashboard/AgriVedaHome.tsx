@@ -353,7 +353,7 @@ export default function AgriVedaHome() {
                   href="/ai-doctor"
                   className="block overflow-hidden rounded-2xl border border-white/25 bg-[#0b1f16]/78 shadow-lg backdrop-blur-md"
                 >
-                  {lastScan.thumbnailUrl ? (
+                  {lastScan.thumbnailUrl && !lastScan.thumbnailUrl.startsWith("blob:") ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={lastScan.thumbnailUrl}
@@ -380,9 +380,7 @@ export default function AgriVedaHome() {
                     {isHi ? "स्कैन रिजल्ट" : "Scan result"}
                   </p>
                   <p className="mt-0.5 text-[12px] font-bold leading-snug text-white">
-                    {isHi
-                      ? `${primaryCropChip} — पत्ती धब्बा`
-                      : `${primaryCropChip} — leaf spot`}
+                    {isHi ? "फसल — पत्ती धब्बा" : "Crop — leaf spot"}
                   </p>
                   <p className="mt-0.5 text-[10px] font-semibold text-amber-200">
                     {isHi ? "उदाहरण · फोटो लो" : "Example · take photo"}
@@ -396,7 +394,7 @@ export default function AgriVedaHome() {
                 {isHi ? "AI फसल डॉक्टर" : "AI Crop Doctor"}
               </p>
               <h2 className="mt-0.5 max-w-[18ch] text-[1.3rem] font-extrabold leading-snug text-white sm:text-[1.45rem]">
-                {isHi ? `${primaryCropChip} की पत्ती दिखाओ` : `Show ${primaryCropChip} leaf`}
+                {isHi ? "फसल की पत्ती दिखाओ" : "Show crop leaf"}
               </h2>
               <p className="mt-0.5 text-[12px] font-medium text-white/85">
                 {isHi
@@ -452,34 +450,6 @@ export default function AgriVedaHome() {
               <ListChecks className="h-4 w-4 text-emerald-600" strokeWidth={2.25} />
               {isHi ? "फोटो नहीं है? लक्षण चुनें" : "No photo? Pick symptoms"}
             </AppLink>
-          </div>
-        </motion.section>
-
-        {/* Today's advice — right after doctor so farmer sees one job */}
-        <motion.section
-          initial={reduced ? false : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.06, duration: MOTION.normal, ease: EASE_OUT }}
-          className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-[var(--av-surface)] to-amber-50/50 p-3.5 dark:from-emerald-950/35 dark:via-[var(--av-surface)] dark:to-amber-950/15"
-        >
-          <div className="flex items-start gap-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white">
-              <Sparkles className="h-4 w-4" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-                {isHi ? "आज का एक काम" : "One job today"}
-              </p>
-              <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">{advice.title}</h2>
-              <p className="mt-1 text-[13px] leading-snug text-[var(--av-text-secondary)]">{advice.body}</p>
-              <AppLink
-                href={advice.href}
-                className="mt-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-emerald-700 px-3.5 text-[13px] font-bold text-white active:scale-[0.98]"
-              >
-                {advice.cta}
-                <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
-              </AppLink>
-            </div>
           </div>
         </motion.section>
 
@@ -655,6 +625,34 @@ export default function AgriVedaHome() {
                 </AppLink>
               );
             })}
+          </div>
+        </motion.section>
+
+        {/* आज का एक काम — pehle jaisi jagah: tools/weather/fields ke baad */}
+        <motion.section
+          initial={reduced ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.14, duration: MOTION.normal, ease: EASE_OUT }}
+          className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-[var(--av-surface)] to-amber-50/50 p-3.5 dark:from-emerald-950/35 dark:via-[var(--av-surface)] dark:to-amber-950/15"
+        >
+          <div className="flex items-start gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                {isHi ? "आज का एक काम" : "One job today"}
+              </p>
+              <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">{advice.title}</h2>
+              <p className="mt-1 text-[13px] leading-snug text-[var(--av-text-secondary)]">{advice.body}</p>
+              <AppLink
+                href={advice.href}
+                className="mt-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-emerald-700 px-3.5 text-[13px] font-bold text-white active:scale-[0.98]"
+              >
+                {advice.cta}
+                <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+              </AppLink>
+            </div>
           </div>
         </motion.section>
       </div>

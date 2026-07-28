@@ -19,7 +19,6 @@ import LocationBootstrap from "@/components/location/LocationBootstrap";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
-import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 import GoogleTranslateBootstrap from "@/components/i18n/GoogleTranslateBootstrap";
 import AppPremiumBackground from "@/components/ui/AppPremiumBackground";
 import PageReveal from "@/components/motion/PageReveal";
@@ -67,7 +66,6 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
                       <BottomNav />
                     </div>
                   </div>
-                  <LanguageSwitcher />
                 </NavDrawerProvider>
               </PullToRefresh>
             </FarmerOnboardingGate>

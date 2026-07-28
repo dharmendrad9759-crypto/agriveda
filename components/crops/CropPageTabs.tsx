@@ -95,16 +95,16 @@ export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
               >
                 <span
                   className={cn(
-                    "relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent ring-1",
+                    "relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white ring-1 sm:h-16 sm:w-16",
                     RING_BY_TAB[tab.id],
-                    isActive && "ring-2 ring-emerald-500/50"
+                    isActive && "ring-2 ring-emerald-500/55"
                   )}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={TAB_ICON[tab.id]}
                     alt=""
-                    className="h-full w-full scale-110 object-cover transition group-hover:scale-[1.15]"
+                    className="h-[78%] w-[78%] object-contain transition group-hover:scale-105"
                     draggable={false}
                   />
                 </span>

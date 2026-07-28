@@ -219,12 +219,18 @@ function weedTypeLabel(raw: string): string {
   return raw;
 }
 
-function chemLine(chem: FieldGuideChemical, isDisease = false): string {
-  const group = isDisease ? chem.frac_group : chem.irac_group;
+function chemLine(chem: FieldGuideChemical, _isDisease = false): string {
+  void _isDisease;
   const dose = chem.dose_per_acre?.toLowerCase().includes("unknown")
-    ? "label dose only"
+    ? "लेबल मात्रा"
     : chem.dose_per_acre;
-  return `${chem.technical} (${group ? `${isDisease ? "FRAC" : "IRAC"} ${group}` : "see label"}) — ${dose}`;
+  const water = chem.spray_water_volume && !/unknown/i.test(chem.spray_water_volume)
+    ? ` · ${chem.spray_water_volume}`
+    : "";
+  const when = chem.spray_timing && !/unknown/i.test(chem.spray_timing)
+    ? ` · ${chem.spray_timing}`
+    : "";
+  return `${chem.technical} — ${dose}${water}${when}`;
 }
 
 function chemicalsToStageSprays(

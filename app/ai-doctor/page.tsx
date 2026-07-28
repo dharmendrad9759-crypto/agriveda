@@ -22,8 +22,10 @@ import { useToast } from "@/components/ui/Toast";
 import {
   claimPendingAiScan,
   dataUrlToFile,
+  fileToDataUrl,
   releasePendingScanLock,
 } from "@/lib/pendingAiScan";
+import { fileToThumbDataUrl } from "@/lib/imageThumb";
 import {
   AiDoctorActions,
   AiDoctorCropSelect,
@@ -168,8 +170,16 @@ export default function AIDoctorPage() {
     setFileName(file.name);
     setSelectedFile(file);
     if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(URL.createObjectURL(file));
-    setPreviewFailed(false);
+    // data: URL so history / home overlay survive reload (blob: dies)
+    void fileToDataUrl(file)
+      .then((url) => {
+        setPreviewUrl(url);
+        setPreviewFailed(false);
+      })
+      .catch(() => {
+        setPreviewUrl(URL.createObjectURL(file));
+        setPreviewFailed(false);
+      });
     setResult(null);
     setSymptomsOnlyMode(false);
     showToast("फोटो चुनी — अब फसल चुनें", "success");
@@ -208,9 +218,19 @@ export default function AIDoctorPage() {
         symptoms: symptomNotes,
       });
       setResult(diagnosis);
+      let thumb = "";
+      if (selectedFile) {
+        try {
+          thumb = await fileToThumbDataUrl(selectedFile);
+        } catch {
+          thumb = previewUrl?.startsWith("data:") ? previewUrl : "";
+        }
+      } else if (previewUrl?.startsWith("data:")) {
+        thumb = previewUrl;
+      }
       addEntry({
         fileName: selectedFile ? fileName || "scan.jpg" : "symptoms.txt",
-        thumbnailUrl: previewUrl || "",
+        thumbnailUrl: thumb,
         result: diagnosis,
       });
       showToast("विश्लेषण पूर्ण ✓");
