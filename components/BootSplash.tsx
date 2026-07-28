@@ -35,9 +35,12 @@ export default function BootSplash() {
   useEffect(() => {
     if (phase === "gone") return;
 
-    // Accessibility: short. Everyone else: clear, watchable farm open (~3.2s)
-    const totalMs = a11yReduced ? 900 : 3200;
-    const exitMs = a11yReduced ? 220 : 700;
+    // Accessibility / native: shorter. Web: clear but not sluggish (~2.2s)
+    const native =
+      typeof document !== "undefined" &&
+      document.documentElement.getAttribute("data-capacitor-native") === "true";
+    const totalMs = a11yReduced ? 700 : native ? 1800 : 2200;
+    const exitMs = a11yReduced ? 180 : 450;
     const t1 = window.setTimeout(() => setPhase("exit"), totalMs - exitMs);
     const t2 = window.setTimeout(() => {
       setPhase("gone");

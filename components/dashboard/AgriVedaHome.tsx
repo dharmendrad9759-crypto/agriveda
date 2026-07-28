@@ -32,6 +32,7 @@ import { cropCatalog } from "@/data/crop-catalog";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { DASHBOARD_FIELDS } from "@/data/mock/dashboard";
 import type { FarmField } from "@/lib/farm/types";
+import { track } from "@/lib/analytics";
 
 const HERO_IMG = "/images/home/agriveda-hero-scan.jpg";
 /** Stable calendar anchor for DAS labels (avoids impure Date.now in render). */
@@ -270,50 +271,45 @@ export default function AgriVedaHome() {
         />
       </div>
 
-      <div className="relative z-10 space-y-7 px-0.5 pt-1">
-        {/* Welcome + personalization — bigger, clearer */}
+      <div className="relative z-10 space-y-4 px-0.5 pt-1">
+        {/* Welcome + personalization — compact */}
         <motion.section
           initial={reduced ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: MOTION.slow, ease: EASE_OUT }}
           className="px-0.5"
         >
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-[15px] font-semibold text-[var(--av-text-secondary)]">
-                {isHi ? `नमस्ते, ${name} 🙏` : `Namaste, ${name} 🙏`}
+              <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
+                {isHi ? `नमस्ते, ${name}` : `Namaste, ${name}`}
               </p>
-              <h1 className="mt-1 font-display text-[1.7rem] font-extrabold leading-tight tracking-tight text-[var(--av-text-primary)] sm:text-[1.9rem]">
+              <h1 className="mt-0.5 font-display text-[1.35rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)] sm:text-[1.55rem]">
                 {isHi ? "आज खेत में क्या करें?" : "What should I do today?"}
               </h1>
             </div>
-            <div className="shrink-0 rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-50 to-emerald-50 px-3 py-2 text-center shadow-[var(--av-shadow-sm)] dark:from-amber-950/40 dark:to-emerald-950/40">
-              <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:text-emerald-300">
-                <ShieldCheck className="h-5 w-5" strokeWidth={2.25} />
+            <div className="shrink-0 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-50 to-emerald-50 px-2 py-1.5 text-center dark:from-amber-950/40 dark:to-emerald-950/40">
+              <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-700 dark:text-emerald-300">
+                <ShieldCheck className="h-4 w-4" strokeWidth={2.25} />
               </div>
-              <p className="mt-1 text-[11px] font-bold leading-tight text-emerald-800 dark:text-emerald-200">
-                {isHi ? "विश्वसनीय" : "Trusted"}
-              </p>
-              <p className="text-[10px] font-semibold text-amber-800/80 dark:text-amber-200/80">
-                50K+ kisan
+              <p className="mt-0.5 text-[9px] font-bold text-emerald-800 dark:text-emerald-200">
+                {isHi ? "Trusted" : "Trusted"}
               </p>
             </div>
           </div>
 
-          {/* Compact personalization chips — single row, no tall wrap */}
-          <div className="mt-2 flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-50/90 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
+          {/* Compact chips — wrap in-screen, no sideways scroll */}
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-50/90 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
               <Sprout className="h-3 w-3 shrink-0" strokeWidth={2.25} />
-              <span className="max-w-[7.5rem] truncate">
-                {isHi ? `फसल: ${primaryCropChip}` : primaryCropChip}
-              </span>
+              <span className="truncate">{isHi ? `फसल: ${primaryCropChip}` : primaryCropChip}</span>
             </span>
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+            <span className="inline-flex max-w-[46%] items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
               <MapPin className="h-3 w-3 shrink-0 text-sky-600" strokeWidth={2.25} />
-              <span className="max-w-[8.5rem] truncate">{placeShort}</span>
+              <span className="truncate">{placeShort}</span>
             </span>
             <span
-              className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${risk.tone}`}
+              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${risk.tone}`}
             >
               <ShieldCheck className="h-3 w-3 shrink-0" strokeWidth={2.25} />
               {risk.label}
@@ -329,7 +325,7 @@ export default function AgriVedaHome() {
           className="overflow-hidden rounded-[26px] border border-emerald-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-lg)]"
         >
           {/* Hero image */}
-          <div className="relative min-h-[188px] sm:min-h-[220px]">
+          <div className="relative min-h-[148px] sm:min-h-[180px]">
             <Image
               src={HERO_IMG}
               alt={
@@ -401,34 +397,33 @@ export default function AgriVedaHome() {
           </div>
         </motion.section>
 
-        {/* Quick Actions — bigger labels + spacing */}
+        {/* Quick Actions — fit-to-screen grid */}
         <section>
-          <div className="mb-3 flex items-end justify-between px-0.5">
-            <div>
-              <h2 className="font-display text-lg font-bold text-[var(--av-text-primary)]">
-                {isHi ? "और भी काम" : "More tools"}
-              </h2>
-              <p className="text-[13px] text-[var(--av-text-muted)]">
-                {isHi ? "एक टैप में ज़रूरी सेवाएँ" : "Everyday farm tools — one tap"}
-              </p>
-            </div>
+          <div className="mb-2 px-0.5">
+            <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">
+              {isHi ? "और भी काम" : "More tools"}
+            </h2>
+            <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+              {isHi ? "एक टैप में ज़रूरी सेवाएँ" : "Everyday farm tools — one tap"}
+            </p>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             {QUICK_ACTIONS.map((action, i) => {
               const Icon = action.icon;
               return (
                 <motion.div
                   key={action.href}
-                  initial={reduced ? false : { opacity: 0, y: 12 }}
+                  initial={reduced ? false : { opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.06 + i * 0.04, duration: MOTION.normal, ease: EASE_OUT }}
+                  transition={{ delay: 0.04 + i * 0.03, duration: MOTION.fast, ease: EASE_OUT }}
                 >
                   <AppLink
                     href={action.href}
-                    className="av-tool-press group flex flex-col items-center gap-2 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2 py-4 text-center shadow-[var(--av-shadow-sm)] backdrop-blur-sm transition hover:border-emerald-500/35"
+                    onClick={() => track("tool_open", { href: action.href, label: action.label })}
+                    className="av-tool-press group flex flex-col items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-1.5 py-2.5 text-center shadow-[var(--av-shadow-sm)]"
                   >
                     <span
-                      className={`relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br ${action.tone} ring-1 ring-emerald-600/10`}
+                      className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${action.tone} ring-1 ring-emerald-600/10`}
                     >
                       {action.imageSrc ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -439,10 +434,10 @@ export default function AgriVedaHome() {
                           draggable={false}
                         />
                       ) : (
-                        <Icon className="h-6 w-6 text-emerald-700 dark:text-emerald-300" />
+                        <Icon className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
                       )}
                     </span>
-                    <span className="line-clamp-2 text-[13px] font-bold leading-tight text-[var(--av-text-secondary)]">
+                    <span className="line-clamp-2 text-[11px] font-semibold leading-tight text-[var(--av-text-secondary)]">
                       {isHi ? action.labelHi : action.label}
                     </span>
                   </AppLink>

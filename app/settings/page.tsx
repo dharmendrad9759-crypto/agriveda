@@ -192,6 +192,8 @@ export default function SettingsPage() {
           <div className="mt-3 space-y-1">
             <SettingsRow label="Terms & Conditions" href="/privacy#terms" />
             <SettingsRow label="Privacy Policy" href="/privacy" />
+            <SettingsRow label="समस्या बताएँ / Bug Report" href="/report-bug" />
+            <SettingsRow label="सहायता / Support" href="/ask-query" />
             <SettingsRow label="Rate Us on Play Store" href="/profile" />
           </div>
           <ShareAgrivedaButton />
@@ -200,9 +202,9 @@ export default function SettingsPage() {
 
       <ShellCtaBanner
         title="Need Help?"
-        description="Our support team is always here to help you."
-        buttonLabel="Contact Support"
-        href="/ask-query"
+        description="Bug या सवाल — हमें बताएँ।"
+        buttonLabel="Report a problem"
+        href="/report-bug"
       />
     </AppShell>
   );

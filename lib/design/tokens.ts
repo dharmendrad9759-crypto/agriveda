@@ -1,15 +1,15 @@
-/** Agriveda unified design tokens */
+/** Agriveda unified design tokens — keep weights consistent app-wide */
 
 export const AV = {
   radius: "rounded-xl",
   radiusLg: "rounded-2xl",
   radiusFull: "rounded-full",
 
-  sectionGap: "space-y-5",
-  gridGap: "gap-4",
-  cardPadding: "p-4 lg:p-5",
+  /** Compact spacing (farmer phone first) */
+  sectionGap: "space-y-4",
+  gridGap: "gap-2.5",
+  cardPadding: "p-3.5 sm:p-4",
 
-  /** Spacing scale */
   space1: "0.25rem",
   space2: "0.5rem",
   space3: "0.75rem",
@@ -18,14 +18,21 @@ export const AV = {
   space6: "1.5rem",
   space8: "2rem",
 
-  /** Typography */
+  /**
+   * Typography system (same weight every time):
+   * - Title / section: 700
+   * - Label / chip: 600
+   * - Body: 400–500
+   * - Micro: 500
+   */
   pageTitle: "text-xl font-bold tracking-tight text-[var(--av-text-primary)] lg:text-2xl",
-  pageSubtitle: "mt-1 text-sm text-[var(--av-text-secondary)]",
-  sectionTitle: "text-sm font-semibold text-[var(--av-text-primary)]",
-  sectionSubtitle: "text-xs text-[var(--av-text-muted)]",
-  label: "text-[11px] font-semibold uppercase tracking-wide text-[var(--av-text-muted)]",
-  body: "text-sm text-[var(--av-text-secondary)]",
-  micro: "text-[10px] text-[var(--av-text-muted)]",
+  pageSubtitle: "mt-1 text-sm font-normal text-[var(--av-text-secondary)]",
+  sectionTitle: "text-[15px] font-bold text-[var(--av-text-primary)]",
+  sectionSubtitle: "text-xs font-medium text-[var(--av-text-muted)]",
+  label: "text-[11px] font-semibold text-[var(--av-text-muted)]",
+  body: "text-sm font-normal leading-snug text-[var(--av-text-secondary)]",
+  micro: "text-[10px] font-medium text-[var(--av-text-muted)]",
+  chipText: "text-[11px] font-semibold text-[var(--av-text-secondary)]",
   statValue: "text-lg font-bold leading-tight text-[var(--av-text-primary)]",
   link: "text-xs font-semibold text-[var(--av-accent)] hover:underline",
 

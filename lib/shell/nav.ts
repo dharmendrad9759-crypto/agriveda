@@ -16,6 +16,7 @@ import {
   Wheat,
   BookOpen,
   Bell,
+  MessageSquareWarning,
 } from "lucide-react";
 
 export interface ShellNavItem {
@@ -48,6 +49,7 @@ export const SHELL_NAV: ShellNavItem[] = [
   { label: "Library", href: "/library", icon: BookOpen },
   { label: "Community", href: "/community", icon: Users },
   { label: "Settings", href: "/settings", icon: Settings, match: (p) => p.startsWith("/settings") || p === "/profile" },
+  { label: "Report Bug", href: "/report-bug", icon: MessageSquareWarning },
 ];
 
 export function isNavActive(item: ShellNavItem, pathname: string): boolean {

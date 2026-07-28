@@ -23,6 +23,7 @@ import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 import GoogleTranslateBootstrap from "@/components/i18n/GoogleTranslateBootstrap";
 import AppPremiumBackground from "@/components/ui/AppPremiumBackground";
 import PageReveal from "@/components/motion/PageReveal";
+import AnalyticsBootstrap from "@/components/analytics/AnalyticsBootstrap";
 import { MotionConfig } from "framer-motion";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { isCapacitorNative } from "@/lib/capacitorNav";
@@ -43,6 +44,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
             transition={{ duration: MOTION.normal, ease: EASE_OUT }}
           >
             <GoogleTranslateBootstrap />
+            <AnalyticsBootstrap />
             <CapacitorBootstrap />
             <NativeAppEssentials />
             <CapacitorNavigationFix />

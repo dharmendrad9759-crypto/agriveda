@@ -28,9 +28,12 @@ export async function fetchSprayLogsForFarmer(
 
   const { data, error } = await client
     .from("spray_logs")
-    .select("*")
+    .select(
+      "id,farmer_id,crop_id,field_id,product_id,spray_date,dose_used,growth_stage,created_at"
+    )
     .eq("farmer_id", farmerId)
-    .order("spray_date", { ascending: false });
+    .order("spray_date", { ascending: false })
+    .limit(100);
 
   if (error) {
     console.error("[fetchSprayLogsForFarmer]", error.message);
@@ -65,7 +68,9 @@ export async function insertSprayLogToSupabase(
   const { data, error } = await client
     .from("spray_logs")
     .insert(payload)
-    .select("*")
+    .select(
+      "id,farmer_id,crop_id,field_id,product_id,spray_date,dose_used,growth_stage,created_at"
+    )
     .single();
 
   if (error) {

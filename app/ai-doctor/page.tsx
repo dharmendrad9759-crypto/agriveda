@@ -38,6 +38,7 @@ import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import VoiceInput from "@/components/query/VoiceInput";
 import { OTHER_CROP } from "@/data/ai-doctor-crops";
+import { track } from "@/lib/analytics";
 
 /** Keep photo notes farmer-simple — drop English (jargon) parentheses. */
 function simpleObservation(text: string): string {
@@ -116,6 +117,7 @@ export default function AIDoctorPage() {
                 result: diagnosis,
               });
               showToast("विश्लेषण पूरा ✓");
+              track("ai_scan", { crop: pending.cropSlug, mode: "photo" });
             }
           } catch (err) {
             if (!cancelled) {
@@ -212,6 +214,10 @@ export default function AIDoctorPage() {
         result: diagnosis,
       });
       showToast("विश्लेषण पूर्ण ✓");
+      track("ai_scan", {
+        crop: selectedCrop || OTHER_CROP.slug,
+        mode: selectedFile ? "photo" : "symptoms",
+      });
     } catch (err) {
       showToast(err instanceof Error ? err.message : "विश्लेषण विफल", "error");
     } finally {

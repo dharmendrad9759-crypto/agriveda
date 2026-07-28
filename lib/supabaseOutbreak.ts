@@ -50,9 +50,12 @@ export async function fetchOutbreakReportsSince(
 
   const { data, error } = await client
     .from("outbreak_reports")
-    .select("*")
+    .select(
+      "id,farmer_id,crop_id,pest_or_disease,photo_url,latitude,longitude,severity,report_date,verified"
+    )
     .gte("report_date", cutoff.toISOString())
-    .order("report_date", { ascending: false });
+    .order("report_date", { ascending: false })
+    .limit(200);
 
   if (error) {
     console.error("[fetchOutbreakReportsSince]", error.message);
@@ -93,7 +96,9 @@ export async function insertOutbreakReportToSupabase(
   const { data, error } = await client
     .from("outbreak_reports")
     .insert(payload)
-    .select("*")
+    .select(
+      "id,farmer_id,crop_id,pest_or_disease,photo_url,latitude,longitude,severity,report_date,verified"
+    )
     .single();
 
   if (error) {
