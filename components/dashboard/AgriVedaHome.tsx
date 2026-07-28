@@ -17,7 +17,6 @@ import {
   ShieldCheck,
   Sparkles,
   Sprout,
-  Stethoscope,
   Thermometer,
   Wind,
   type LucideIcon,
@@ -238,28 +237,32 @@ export default function AgriVedaHome() {
 
   const steps = [
     {
-      icon: Sprout,
-      title: isHi ? "फसल चुनो" : "Choose crop",
-      sub: primaryCropLabel,
+      n: "1",
+      title: isHi ? "फसल" : "Crop",
+      sub: primaryCropChip,
     },
     {
-      icon: Camera,
-      title: isHi ? "समस्या बताओ" : "Describe problem",
-      sub: isHi ? "फोटो या लक्षण" : "Photo or symptoms",
+      n: "2",
+      title: isHi ? "फोटो" : "Photo",
+      sub: isHi ? "या लक्षण" : "or symptoms",
     },
     {
-      icon: Stethoscope,
-      title: isHi ? "समाधान लो" : "Get solution",
-      sub: isHi ? "तुरंत इलाज" : "Instant fix",
+      n: "3",
+      title: isHi ? "इलाज" : "Cure",
+      sub: isHi ? "तुरंत" : "right away",
     },
   ];
+
+  const greetName = name.trim()
+    ? name.trim().charAt(0).toUpperCase() + name.trim().slice(1)
+    : name;
 
   return (
     <div className="relative mx-auto min-w-0 max-w-lg overflow-x-hidden pb-2">
       {/* Soft earthy atmosphere — not a flat wash */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-[-20px] top-0 h-[420px] overflow-hidden"
+        className="pointer-events-none absolute inset-x-[-20px] top-0 h-[360px] overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(16,185,129,0.18),transparent_55%),radial-gradient(ellipse_at_90%_10%,rgba(180,140,70,0.12),transparent_45%),linear-gradient(180deg,#e8f6ee_0%,transparent_70%)]" />
         <div
@@ -271,34 +274,21 @@ export default function AgriVedaHome() {
         />
       </div>
 
-      <div className="relative z-10 space-y-4 px-0.5 pt-1">
-        {/* Welcome + personalization — compact */}
+      <div className="relative z-10 space-y-3.5 px-0.5 pt-1">
+        {/* Welcome */}
         <motion.section
           initial={reduced ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: MOTION.slow, ease: EASE_OUT }}
           className="px-0.5"
         >
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
-                {isHi ? `नमस्ते, ${name}` : `Namaste, ${name}`}
-              </p>
-              <h1 className="mt-0.5 font-display text-[1.35rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)] sm:text-[1.55rem]">
-                {isHi ? "आज खेत में क्या करें?" : "What should I do today?"}
-              </h1>
-            </div>
-            <div className="shrink-0 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-50 to-emerald-50 px-2 py-1.5 text-center dark:from-amber-950/40 dark:to-emerald-950/40">
-              <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-700 dark:text-emerald-300">
-                <ShieldCheck className="h-4 w-4" strokeWidth={2.25} />
-              </div>
-              <p className="mt-0.5 text-[9px] font-bold text-emerald-800 dark:text-emerald-200">
-                {isHi ? "Trusted" : "Trusted"}
-              </p>
-            </div>
-          </div>
+          <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
+            {isHi ? `नमस्ते, ${greetName} जी` : `Namaste, ${greetName}`}
+          </p>
+          <h1 className="mt-0.5 font-display text-[1.3rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)] sm:text-[1.45rem]">
+            {isHi ? "आज खेत का काम आसान" : "Make today’s farm work easy"}
+          </h1>
 
-          {/* Compact chips — wrap in-screen, no sideways scroll */}
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
             <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-50/90 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
               <Sprout className="h-3 w-3 shrink-0" strokeWidth={2.25} />
@@ -317,95 +307,123 @@ export default function AgriVedaHome() {
           </div>
         </motion.section>
 
-        {/* MAIN FLOW — the one obvious first step: choose crop → problem → solution */}
+        {/* Crop doctor — compact hero + tiny 1-2-3 + clear CTAs */}
         <motion.section
-          initial={reduced ? false : { opacity: 0, y: 16, scale: 0.985 }}
+          initial={reduced ? false : { opacity: 0, y: 14, scale: 0.99 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.04 }}
-          className="overflow-hidden rounded-[26px] border border-emerald-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-lg)]"
+          transition={{ duration: 0.45, ease: EASE_OUT, delay: 0.03 }}
+          className="overflow-hidden rounded-[22px] border border-emerald-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]"
         >
-          {/* Hero image */}
-          <div className="relative min-h-[148px] sm:min-h-[180px]">
+          <div className="relative min-h-[112px] sm:min-h-[128px]">
             <Image
               src={HERO_IMG}
               alt={
                 isHi
                   ? "किसान फसल की पत्ती को फोन से स्कैन कर रहे हैं"
-                  : "Farmer scanning a crop leaf with a phone for disease detection"
+                  : "Farmer scanning a crop leaf with a phone"
               }
               fill
               priority
               sizes="(max-width: 512px) 100vw, 512px"
-              className="object-cover object-[center_28%]"
+              className="object-cover object-[center_30%]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f16]/92 via-[#0b1f16]/45 to-[#0b1f16]/10" />
-            <div className="absolute inset-x-0 bottom-0 p-5">
-              <p className="font-display text-[12px] font-bold uppercase tracking-[0.2em] text-emerald-200/90">
-                {isHi ? "फसल का डॉक्टर" : "Your crop doctor"}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f16]/90 via-[#0b1f16]/40 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 px-4 pb-3.5 pt-8">
+              <p className="text-[11px] font-bold text-emerald-200/90">
+                {isHi ? "AI फसल डॉक्टर" : "AI Crop Doctor"}
               </p>
-              <h2 className="mt-1.5 max-w-[18ch] font-display text-[1.65rem] font-extrabold leading-tight text-white sm:text-[1.9rem]">
-                {isHi ? "पत्ता दिखाओ — इलाज पाओ" : "Show the leaf — get the cure"}
+              <h2 className="mt-0.5 max-w-[20ch] text-[1.25rem] font-extrabold leading-snug text-white sm:text-[1.35rem]">
+                {isHi ? `${primaryCropChip} की पत्ती दिखाओ` : `Show ${primaryCropChip} leaf`}
               </h2>
+              <p className="mt-0.5 text-[12px] font-medium text-white/80">
+                {isHi ? "बीमारी पहचाने — इलाज तुरंत" : "Spot disease — get cure fast"}
+              </p>
             </div>
           </div>
 
-          {/* 3 clear steps + one big CTA (on light surface for easy reading) */}
-          <div className="p-4 sm:p-5">
-            <p className="mb-3 text-center text-[15px] font-bold text-[var(--av-text-primary)]">
-              {isHi ? "सिर्फ़ 3 आसान कदम" : "Just 3 easy steps"}
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {steps.map((step, i) => {
-                const Icon = step.icon;
-                return (
-                  <div
-                    key={step.title}
-                    className="relative rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-3 text-center"
-                  >
-                    <span className="absolute left-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-[11px] font-black text-white">
-                      {i + 1}
-                    </span>
-                    <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/12 text-emerald-700 dark:text-emerald-300">
-                      <Icon className="h-6 w-6" strokeWidth={2.1} />
-                    </span>
-                    <p className="mt-2 text-[13px] font-bold leading-tight text-[var(--av-text-primary)]">
+          <div className="space-y-3 p-3.5 sm:p-4">
+            {/* Tiny numbered flow — not three tall cards */}
+            <div
+              className="flex items-center justify-between gap-1 rounded-xl bg-[var(--av-surface-inset)] px-2.5 py-2"
+              aria-label={isHi ? "तीन आसान कदम" : "Three easy steps"}
+            >
+              {steps.map((step, i) => (
+                <div key={step.n} className="flex min-w-0 flex-1 items-center gap-1.5">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-black text-white">
+                    {step.n}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[11px] font-bold leading-tight text-[var(--av-text-primary)]">
                       {step.title}
-                    </p>
-                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-[var(--av-text-muted)]">
+                    </span>
+                    <span className="block truncate text-[10px] font-medium leading-tight text-[var(--av-text-muted)]">
                       {step.sub}
-                    </p>
-                  </div>
-                );
-              })}
+                    </span>
+                  </span>
+                  {i < steps.length - 1 && (
+                    <ArrowRight
+                      className="ml-auto hidden h-3.5 w-3.5 shrink-0 text-emerald-600/50 xs:block sm:block"
+                      aria-hidden
+                    />
+                  )}
+                </div>
+              ))}
             </div>
 
             <AppLink
               href="/ai-doctor"
-              className="mt-4 flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-5 text-[17px] font-extrabold text-white shadow-[0_12px_30px_rgba(5,150,105,0.42)] transition active:scale-[0.98]"
+              onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_scan_cta" })}
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 text-[15px] font-bold text-white shadow-[0_8px_22px_rgba(5,150,105,0.35)] transition active:scale-[0.98]"
             >
-              <Camera className="h-6 w-6" strokeWidth={2.25} />
-              {isHi ? "अभी फोटो खींचें" : "Take a photo now"}
-              <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
+              <Camera className="h-5 w-5" strokeWidth={2.25} />
+              {isHi ? "फोटो से जाँच करें" : "Check with photo"}
+              <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
             </AppLink>
             <AppLink
               href="/crop-problem"
-              className="mt-2.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-5 text-[15px] font-bold text-[var(--av-text-secondary)] transition active:scale-[0.98]"
+              onClick={() => track("tool_open", { href: "/crop-problem", label: "home_symptoms_cta" })}
+              className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 text-[13px] font-semibold text-[var(--av-text-secondary)] transition active:scale-[0.98]"
             >
-              <ListChecks className="h-5 w-5 text-emerald-600" strokeWidth={2.25} />
-              {isHi ? "फोटो नहीं? लक्षण से बताओ" : "No photo? Pick symptoms"}
+              <ListChecks className="h-4 w-4 text-emerald-600" strokeWidth={2.25} />
+              {isHi ? "फोटो नहीं है? लक्षण चुनें" : "No photo? Pick symptoms"}
             </AppLink>
           </div>
         </motion.section>
 
-        {/* Quick Actions — fit-to-screen grid */}
+        {/* Today's advice — right after doctor so farmer sees one job */}
+        <motion.section
+          initial={reduced ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.06, duration: MOTION.normal, ease: EASE_OUT }}
+          className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-[var(--av-surface)] to-amber-50/50 p-3.5 dark:from-emerald-950/35 dark:via-[var(--av-surface)] dark:to-amber-950/15"
+        >
+          <div className="flex items-start gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                {isHi ? "आज का एक काम" : "One job today"}
+              </p>
+              <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">{advice.title}</h2>
+              <p className="mt-1 text-[13px] leading-snug text-[var(--av-text-secondary)]">{advice.body}</p>
+              <AppLink
+                href={advice.href}
+                className="mt-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-emerald-700 px-3.5 text-[13px] font-bold text-white active:scale-[0.98]"
+              >
+                {advice.cta}
+                <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+              </AppLink>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Quick Actions */}
         <section>
           <div className="mb-2 px-0.5">
-            <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">
-              {isHi ? "और भी काम" : "More tools"}
+            <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
+              {isHi ? "और ज़रूरी टूल्स" : "More farm tools"}
             </h2>
-            <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
-              {isHi ? "एक टैप में ज़रूरी सेवाएँ" : "Everyday farm tools — one tap"}
-            </p>
           </div>
           <div className="grid grid-cols-3 gap-2">
             {QUICK_ACTIONS.map((action, i) => {
@@ -457,16 +475,16 @@ export default function AgriVedaHome() {
             href="/weather"
             className="block overflow-hidden rounded-[22px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]"
           >
-            <div className="flex items-center justify-between border-b border-[var(--av-border-subtle)] bg-gradient-to-r from-sky-50/80 to-emerald-50/60 px-4 py-3.5 dark:from-sky-950/30 dark:to-emerald-950/20">
+            <div className="flex items-center justify-between border-b border-[var(--av-border-subtle)] bg-gradient-to-r from-sky-50/80 to-emerald-50/60 px-3.5 py-2.5 dark:from-sky-950/30 dark:to-emerald-950/20">
               <div>
-                <h2 className="font-display text-lg font-bold text-[var(--av-text-primary)]">
+                <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
                   {isHi ? "आज का मौसम" : "Weather Today"}
                 </h2>
-                <p className="text-[13px] text-[var(--av-text-muted)]">{place}</p>
+                <p className="text-[11px] text-[var(--av-text-muted)]">{placeShort}</p>
               </div>
-              <CloudSun className="h-9 w-9 text-sky-600/80 dark:text-sky-300" />
+              <CloudSun className="h-7 w-7 text-sky-600/80 dark:text-sky-300" />
             </div>
-            <div className="grid grid-cols-4 gap-2 px-3 py-4">
+            <div className="grid grid-cols-4 gap-1.5 px-2.5 py-3">
               {[
                 {
                   icon: Thermometer,
@@ -519,97 +537,60 @@ export default function AgriVedaHome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: MOTION.slow, ease: EASE_OUT }}
         >
-          <div className="mb-3 flex items-center justify-between px-0.5">
-            <div>
-              <h2 className="font-display text-lg font-bold text-[var(--av-text-primary)]">
-                {isHi ? "मेरे खेत" : "My Fields"}
-              </h2>
-              <p className="text-[13px] text-[var(--av-text-muted)]">
-                {isHi ? "फसल, स्टेज और दिन" : "Crop, growth stage & days"}
-              </p>
-            </div>
+          <div className="mb-2 flex items-center justify-between px-0.5">
+            <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
+              {isHi ? "मेरे खेत" : "My Fields"}
+            </h2>
             <AppLink
               href="/my-farm"
-              className="text-[13px] font-bold text-[var(--av-accent)]"
+              className="text-[12px] font-bold text-[var(--av-accent)]"
             >
               {isHi ? "सभी →" : "All →"}
             </AppLink>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {sourceFields.map((field, index) => {
               const card = fieldCard(field, index);
               return (
                 <AppLink
                   key={card.key}
                   href="/my-farm"
-                  className="flex items-center gap-3 rounded-[22px] border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-[var(--av-shadow-sm)] transition hover:border-emerald-500/35"
+                  className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)] transition hover:border-emerald-500/35"
                 >
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-[var(--av-surface-inset)]">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-[var(--av-surface-inset)]">
                     <Image
                       src={card.img}
                       alt={card.crop}
                       fill
-                      sizes="64px"
+                      sizes="56px"
                       className="object-cover"
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[16px] font-bold text-[var(--av-text-primary)]">
-                      {cropLabel(card.cropSlug, card.crop)}
+                    <p className="truncate text-[15px] font-bold text-[var(--av-text-primary)]">
+                      {cropChipLabel(card.cropSlug, card.crop)}
                     </p>
-                    <p className="truncate text-[13px] text-[var(--av-text-muted)]">{card.name}</p>
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span className="rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[12px] font-bold text-emerald-700 dark:text-emerald-300">
+                    <p className="truncate text-[12px] text-[var(--av-text-muted)]">{card.name}</p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                      <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
                         {card.stage}
                       </span>
-                      <span className="rounded-lg bg-[var(--av-surface-inset)] px-2 py-0.5 text-[12px] font-bold text-[var(--av-text-secondary)]">
+                      <span className="rounded-md bg-[var(--av-surface-inset)] px-1.5 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
                         {card.days != null
                           ? isHi
                             ? `${card.days} दिन`
                             : `Day ${card.days}`
                           : isHi
                             ? "दिन जोड़ें"
-                            : "Add sowing date"}
+                            : "Add date"}
                       </span>
                     </div>
                   </div>
-                  <ArrowRight className="h-5 w-5 shrink-0 text-[var(--av-text-muted)]" />
+                  <ArrowRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
                 </AppLink>
               );
             })}
           </div>
-        </motion.section>
-
-        {/* Today's Advice — one practical recommendation with clear next step */}
-        <motion.section
-          initial={reduced ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: MOTION.slow, ease: EASE_OUT }}
-          className="rounded-[22px] border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-white to-amber-50/60 p-5 shadow-[var(--av-shadow-md)] dark:from-emerald-950/40 dark:via-[var(--av-surface)] dark:to-amber-950/20"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
-              <Sparkles className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-emerald-700/80 dark:text-emerald-300/80">
-                {isHi ? "आज की सलाह" : "Today’s Advice"}
-              </p>
-              <h2 className="font-display text-[1.2rem] font-bold text-[var(--av-text-primary)]">
-                {advice.title}
-              </h2>
-            </div>
-          </div>
-          <p className="mt-3 text-[15px] leading-relaxed text-[var(--av-text-secondary)]">
-            {advice.body}
-          </p>
-          <AppLink
-            href={advice.href}
-            className="mt-4 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-emerald-700 px-5 py-2.5 text-[15px] font-bold text-white transition hover:bg-emerald-800 active:scale-[0.98]"
-          >
-            {advice.cta}
-            <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
-          </AppLink>
         </motion.section>
       </div>
     </div>
