@@ -19,12 +19,14 @@ import {
   Sprout,
   Thermometer,
   Wind,
+  ScanLine,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useLiveWeather } from "@/hooks/useLiveWeather";
+import { useAIHistory } from "@/hooks/useAIHistory";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { cropCatalog } from "@/data/crop-catalog";
@@ -191,6 +193,8 @@ export default function AgriVedaHome() {
   const { profile } = useFarmerProfile();
   const { weather, loading: weatherLoading } = useLiveWeather();
   const { data: farm } = useFarmData();
+  const { history: aiHistory } = useAIHistory();
+  const lastScan = aiHistory[0];
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
   const place =
@@ -314,7 +318,7 @@ export default function AgriVedaHome() {
           transition={{ duration: 0.45, ease: EASE_OUT, delay: 0.03 }}
           className="overflow-hidden rounded-[22px] border border-emerald-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]"
         >
-          <div className="relative min-h-[112px] sm:min-h-[128px]">
+          <div className="relative min-h-[200px] sm:min-h-[230px]">
             <Image
               src={HERO_IMG}
               alt={
@@ -325,18 +329,79 @@ export default function AgriVedaHome() {
               fill
               priority
               sizes="(max-width: 512px) 100vw, 512px"
-              className="object-cover object-[center_30%]"
+              className="object-cover object-[center_22%]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f16]/90 via-[#0b1f16]/40 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 px-4 pb-3.5 pt-8">
+            {/* Lighter overlay — farmer face/hands remain visible */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f16]/88 via-[#0b1f16]/25 to-transparent" />
+
+            {/* Scan frame hint on leaf area */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute right-[12%] top-[18%] h-16 w-16 rounded-xl border-2 border-emerald-300/80 shadow-[0_0_0_1px_rgba(16,185,129,0.35)] sm:h-20 sm:w-20"
+            >
+              <span className="absolute -left-0.5 -top-0.5 h-2.5 w-2.5 rounded-sm bg-emerald-300" />
+              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-sm bg-emerald-300" />
+              <span className="absolute -bottom-0.5 -left-0.5 h-2.5 w-2.5 rounded-sm bg-emerald-300" />
+              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-sm bg-emerald-300" />
+              <ScanLine className="absolute inset-0 m-auto h-5 w-5 animate-pulse text-emerald-200/90" />
+            </div>
+
+            {/* Result card ON the image — last real scan if any, else demo preview */}
+            <div className="absolute right-3 top-3 max-w-[58%] sm:right-4 sm:top-4">
+              {lastScan ? (
+                <AppLink
+                  href="/ai-doctor"
+                  className="block overflow-hidden rounded-2xl border border-white/25 bg-[#0b1f16]/78 shadow-lg backdrop-blur-md"
+                >
+                  {lastScan.thumbnailUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={lastScan.thumbnailUrl}
+                      alt=""
+                      className="h-14 w-full object-cover sm:h-16"
+                    />
+                  ) : null}
+                  <div className="px-2.5 py-2">
+                    <p className="text-[9px] font-bold uppercase tracking-wide text-emerald-300">
+                      {isHi ? "पिछला स्कैन" : "Last scan"}
+                    </p>
+                    <p className="mt-0.5 line-clamp-2 text-[12px] font-bold leading-snug text-white">
+                      {lastScan.result.diseaseName}
+                    </p>
+                    <p className="mt-0.5 text-[10px] font-semibold text-amber-200">
+                      {lastScan.result.confidence}% · {lastScan.result.riskLevel}
+                    </p>
+                  </div>
+                </AppLink>
+              ) : (
+                <div className="rounded-2xl border border-white/25 bg-[#0b1f16]/78 px-2.5 py-2 shadow-lg backdrop-blur-md">
+                  <p className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-emerald-300">
+                    <Sparkles className="h-3 w-3" />
+                    {isHi ? "स्कैन रिजल्ट" : "Scan result"}
+                  </p>
+                  <p className="mt-0.5 text-[12px] font-bold leading-snug text-white">
+                    {isHi
+                      ? `${primaryCropChip} — पत्ती धब्बा`
+                      : `${primaryCropChip} — leaf spot`}
+                  </p>
+                  <p className="mt-0.5 text-[10px] font-semibold text-amber-200">
+                    {isHi ? "उदाहरण · फोटो लो" : "Example · take photo"}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="absolute inset-x-0 bottom-0 px-4 pb-3.5 pt-10">
               <p className="text-[11px] font-bold text-emerald-200/90">
                 {isHi ? "AI फसल डॉक्टर" : "AI Crop Doctor"}
               </p>
-              <h2 className="mt-0.5 max-w-[20ch] text-[1.25rem] font-extrabold leading-snug text-white sm:text-[1.35rem]">
+              <h2 className="mt-0.5 max-w-[18ch] text-[1.3rem] font-extrabold leading-snug text-white sm:text-[1.45rem]">
                 {isHi ? `${primaryCropChip} की पत्ती दिखाओ` : `Show ${primaryCropChip} leaf`}
               </h2>
-              <p className="mt-0.5 text-[12px] font-medium text-white/80">
-                {isHi ? "बीमारी पहचाने — इलाज तुरंत" : "Spot disease — get cure fast"}
+              <p className="mt-0.5 text-[12px] font-medium text-white/85">
+                {isHi
+                  ? "फोटो पर ही बीमारी और इलाज दिखेगा"
+                  : "Disease + cure appear on your photo"}
               </p>
             </div>
           </div>
