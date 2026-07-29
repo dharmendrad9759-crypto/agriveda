@@ -2,41 +2,46 @@
 
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
-import { Droplets, Loader2, Sun, Wind, CloudRain, MapPin } from "lucide-react";
+import { Droplets, Loader2, Sun, Wind, Thermometer, MapPin } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 
 /** Local curated paddy photo — premium farm hero backdrop */
 const HERO_BG = "/images/crops/paddy.png";
 
-function greeting(): string {
+function greetingKey(): FarmerUiKey {
   const h = new Date().getHours();
-  if (h < 12) return "Good Morning";
-  if (h < 17) return "Good Afternoon";
-  return "Good Evening";
+  if (h < 12) return "homeGoodMorning";
+  if (h < 17) return "homeGoodAfternoon";
+  return "homeGoodEvening";
 }
 
 export default function DashboardWeatherHero() {
+  const { t } = useLocale();
   const { weather, loading, error } = useLiveWeather();
   const { profile } = useFarmerProfile();
   const reduced = useReducedMotion();
   const name = profile.name.trim() || "Kisan";
-  const place = [profile.district, profile.state].filter(Boolean).join(", ");
+  const place =
+    weather?.location?.split(",")[0]?.trim() ||
+    [profile.district, profile.state].filter(Boolean).join(", ");
 
-  const temp = weather?.temp ?? "32°C";
+  const tempNum = parseInt(weather?.temp ?? "32", 10) || 32;
   const condition = weather?.condition ?? "Sunny";
   const humidity = weather?.humidity ?? "22%";
   const wind = weather?.windSpeed ?? "8 km/h";
-  const rainChance = weather?.hourlyForecast[0]?.rainChancePercent ?? 0;
+  const feels = weather?.feelsLike ?? `${tempNum + 2}°`;
 
   return (
     <motion.section
       initial={reduced ? false : { opacity: 0, y: 16, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.55, ease: EASE_OUT }}
-      className="relative overflow-hidden rounded-[28px] border border-emerald-400/30 shadow-[0_16px_48px_rgba(0,80,40,0.22)]"
+      className="relative overflow-hidden rounded-[28px] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.28)]"
     >
       <div className="absolute inset-0">
         <Image
@@ -47,81 +52,88 @@ export default function DashboardWeatherHero() {
           priority
           sizes="(max-width: 1280px) 100vw, 100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/75 via-emerald-900/45 to-amber-950/25" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-emerald-950/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-stone-950/80 via-amber-950/45 to-sky-950/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/25" />
         {!reduced && (
           <>
             <motion.div
-              className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amber-300/30 blur-3xl"
+              className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amber-300/25 blur-3xl"
               animate={{ opacity: [0.25, 0.5, 0.25], scale: [1, 1.08, 1] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
-              className="pointer-events-none absolute -left-8 bottom-0 h-36 w-36 rounded-full bg-emerald-400/25 blur-3xl"
+              className="pointer-events-none absolute -left-8 bottom-0 h-36 w-36 rounded-full bg-sky-400/20 blur-3xl"
               animate={{ opacity: [0.2, 0.45, 0.2] }}
               transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             />
           </>
         )}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-300/55 to-transparent" />
       </div>
 
       <div className="relative z-10 p-4 sm:p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-200/80">
-              Agriveda Farm OS
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/55">
+              Agriveda
             </p>
-            <p className="mt-1 truncate font-display text-xl font-extrabold tracking-tight text-white sm:text-2xl">
-              {greeting()}, {name}
+            <p className="mt-1 truncate font-display text-lg font-extrabold tracking-tight text-white sm:text-xl">
+              {t(greetingKey())}, {name}
             </p>
             {place ? (
-              <p className="mt-1 flex items-center gap-1 text-[11px] font-medium text-emerald-100/85">
-                <MapPin className="h-3 w-3 shrink-0" />
+              <p className="mt-1 flex items-center gap-1 text-[11px] font-medium text-white/70">
+                <MapPin className="h-3 w-3 shrink-0 text-amber-200" />
                 <span className="truncate">{place}</span>
               </p>
-            ) : (
-              <p className="mt-1 text-[11px] text-emerald-100/80">आज की खेती — smart nazar</p>
-            )}
+            ) : null}
           </div>
           <AppLink
             href="/weather"
-            className="av-neon-ring relative shrink-0 rounded-full border border-white/25 bg-white/12 px-3 py-1.5 text-[10px] font-bold text-white backdrop-blur-md transition hover:bg-white/22"
+            className="shrink-0 rounded-full border border-white/20 bg-white/12 px-3 py-1.5 text-[10px] font-bold text-white backdrop-blur-md transition hover:bg-white/22"
           >
-            Weather
+            {t("homeWeatherFull")}
           </AppLink>
         </div>
 
         {loading ? (
-          <div className="mt-3 flex items-center gap-2 text-white/90">
+          <div className="mt-4 flex items-center gap-2 text-white/90">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-xs">मौसम…</span>
+            <span className="text-xs">{t("homeWeatherLoading")}</span>
           </div>
         ) : (
-          <div className="mt-2.5 flex items-end justify-between gap-3">
+          <div className="mt-4 flex items-start justify-between gap-4">
             <div>
-              <p className="text-3xl font-black tracking-tight text-white">{temp}</p>
-              <p className="text-[11px] capitalize text-emerald-100/90">{condition}</p>
+              <p className="font-display text-5xl font-semibold leading-none tracking-tight text-white">
+                {tempNum}
+                <span className="align-top text-2xl font-medium text-white/65">°</span>
+              </p>
+              <p className="mt-2 text-sm font-semibold capitalize text-amber-100/90">
+                {condition}
+              </p>
             </div>
-            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+
+            <div className="space-y-2 pt-1">
               {[
-                { icon: Droplets, label: "Hum", value: humidity },
-                { icon: Wind, label: "Wind", value: wind },
-                { icon: CloudRain, label: "Rain", value: `${rainChance}%` },
-                { icon: Sun, label: "UV", value: "Mod" },
+                { icon: Thermometer, label: t("homeFeel"), value: feels },
+                { icon: Wind, label: t("homeWind"), value: wind },
+                { icon: Droplets, label: t("homeHum"), value: humidity },
+                { icon: Sun, label: t("homeUv"), value: "Mod" },
               ].map(({ icon: Icon, label, value }, idx) => (
                 <motion.div
                   key={label}
-                  initial={reduced ? false : { opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * idx, duration: MOTION.normal, ease: EASE_OUT }}
-                  className="min-w-[58px] rounded-xl border border-white/15 bg-black/25 px-2 py-1.5 backdrop-blur-md"
+                  initial={reduced ? false : { opacity: 0, x: 8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.04 * idx, duration: MOTION.normal, ease: EASE_OUT }}
+                  className="flex items-center justify-end gap-2"
                 >
-                  <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-emerald-100/70">
-                    <Icon className="h-3 w-3" />
-                    {label}
+                  <div className="text-right">
+                    <p className="text-[9px] font-bold uppercase tracking-wide text-white/45">
+                      {label}
+                    </p>
+                    <p className="text-[11px] font-bold text-white">{value}</p>
                   </div>
-                  <p className="text-[11px] font-bold text-white">{value}</p>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-black/25 backdrop-blur-md">
+                    <Icon className="h-3 w-3 text-amber-200" />
+                  </span>
                 </motion.div>
               ))}
             </div>
@@ -129,8 +141,8 @@ export default function DashboardWeatherHero() {
         )}
 
         {error && (
-          <AppLink href="/weather" className="mt-2 inline-block text-[10px] font-semibold text-emerald-200">
-            Location set करें → live weather
+          <AppLink href="/weather" className="mt-3 inline-block text-[10px] font-semibold text-amber-100">
+            {t("homeWeatherSetLocation")}
           </AppLink>
         )}
       </div>

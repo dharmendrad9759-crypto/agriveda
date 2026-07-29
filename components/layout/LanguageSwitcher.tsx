@@ -6,16 +6,14 @@ import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
-import { applyPageTranslation, TRANSLATE_LANGUAGES } from "@/lib/translator";
 
 const OPTIONS: {
   locale: AppLocale;
   label: string;
-  hint: string;
+  hintKey: "langEnglishHint" | "langHindiHint";
 }[] = [
-  { locale: "en", label: "English", hint: "Full app in English" },
-  { locale: "hi", label: "सरल हिंदी", hint: "पूरा पेज हिंदी में (रिफ्रेश होगा)" },
-  { locale: "hinglish", label: "Hinglish", hint: "Short mix — page stays English-friendly" },
+  { locale: "en", label: "English", hintKey: "langEnglishHint" },
+  { locale: "hi", label: "सरल हिंदी", hintKey: "langHindiHint" },
 ];
 
 export default function LanguageSwitcher() {
@@ -29,17 +27,6 @@ export default function LanguageSwitcher() {
   const pick = (next: AppLocale) => {
     setLocale(next);
     setOpen(false);
-
-    // Full-page Google Translate so pest/mandi English content becomes Hindi
-    if (next === "hi") {
-      const hi = TRANSLATE_LANGUAGES.find((l) => l.code === "hi");
-      if (hi) applyPageTranslation(hi);
-      return;
-    }
-    if (next === "en") {
-      const en = TRANSLATE_LANGUAGES.find((l) => l.code === "en");
-      if (en) applyPageTranslation(en);
-    }
   };
 
   return (
@@ -63,15 +50,13 @@ export default function LanguageSwitcher() {
             <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
               <div>
                 <h2 className="text-base font-extrabold theme-text-primary">{t("chooseLanguage")}</h2>
-                <p className="text-[11px] theme-text-muted">
-                  हिंदी चुनें → पूरा पेज हिंदी हो जाएगा (reload)
-                </p>
+                <p className="text-[11px] theme-text-muted">{t("langSwitchNote")}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="rounded-xl p-2 theme-text-muted"
-                aria-label="Close"
+                aria-label={t("closeLabel")}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -91,9 +76,9 @@ export default function LanguageSwitcher() {
                     )}
                   >
                     <span>
-                      {opt.label}
+                      {opt.locale === "en" ? t("english") : t("hindi")}
                       <span className="mt-0.5 block text-[10px] font-medium theme-text-muted">
-                        {opt.hint}
+                        {t(opt.hintKey)}
                       </span>
                     </span>
                     {locale === opt.locale && <Check className="h-4 w-4 text-emerald-500" />}

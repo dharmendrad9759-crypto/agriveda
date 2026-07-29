@@ -22,7 +22,7 @@ export default function BiHeading({
   hiClassName?: string;
 }) {
   const { locale } = useLocale();
-  const showHi = locale === "hi" || locale === "hinglish";
+  const showHi = locale === "hi";
 
   return (
     <div className="min-w-0">

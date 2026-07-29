@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { t as translate, type AppLocale, type FarmerUiKey } from "@/lib/i18n/farmer-ui";
+import { t as translate, type AppLocale, type FarmerUiKey, normalizeAppLocale } from "@/lib/i18n/farmer-ui";
 import { readStorage, writeStorage } from "@/lib/storage";
 
 const LOCALE_KEY = "agriveda-app-locale";
@@ -17,7 +17,7 @@ const LEGACY_TRANSLATE_KEY = "agriveda-translate-lang";
 
 interface LocaleContextValue {
   locale: AppLocale;
-  setLocale: (locale: AppLocale) => void;
+  setLocale: (locale: AppLocale | string) => void;
   hydrated: boolean;
   t: (key: FarmerUiKey) => string;
 }
@@ -25,8 +25,12 @@ interface LocaleContextValue {
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 function readInitialLocale(): AppLocale {
-  const stored = readStorage<AppLocale | null>(LOCALE_KEY, null);
-  if (stored === "en" || stored === "hi" || stored === "hinglish") return stored;
+  const stored = readStorage<string | null>(LOCALE_KEY, null);
+  if (stored) {
+    const normalized = normalizeAppLocale(stored);
+    if (stored === "hinglish") writeStorage(LOCALE_KEY, normalized);
+    return normalized;
+  }
 
   try {
     const legacy = localStorage.getItem(LEGACY_TRANSLATE_KEY);
@@ -53,23 +57,10 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale === "en" ? "en" : "hi";
   }, [locale, hydrated]);
 
-  // One-time: if UI locale is Hindi but page isn't translating, apply cookie + reload
-  useEffect(() => {
-    if (!hydrated || locale !== "hi") return;
-    try {
-      if (document.cookie.includes("googtrans=/en/hi")) return;
-      if (sessionStorage.getItem("agriveda-hi-translate-boot") === "1") return;
-      sessionStorage.setItem("agriveda-hi-translate-boot", "1");
-      document.cookie = "googtrans=/en/hi; path=/; max-age=31536000";
-      window.location.reload();
-    } catch {
-      /* ignore */
-    }
-  }, [locale, hydrated]);
-
-  const setLocale = useCallback((next: AppLocale) => {
-    setLocaleState(next);
-    writeStorage(LOCALE_KEY, next);
+  const setLocale = useCallback((next: AppLocale | string) => {
+    const normalized = normalizeAppLocale(next);
+    setLocaleState(normalized);
+    writeStorage(LOCALE_KEY, normalized);
   }, []);
 
   const value = useMemo(

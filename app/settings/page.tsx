@@ -1,36 +1,38 @@
 "use client";
 
-import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
-import { useFarmerProfile } from "@/hooks/useFarmerProfile";
-import { useFarmData } from "@/hooks/useFarmData";
-import { usePriceAlerts } from "@/hooks/usePriceAlerts";
-import { useAppSettings } from "@/hooks/useAppSettings";
 import { useTheme } from "@/components/theme/ThemeProvider";
-import { AV } from "@/lib/design/tokens";
-import { Crown, ChevronRight, User, LogOut, Share2 } from "lucide-react";
-import { BRAND } from "@/lib/brand";
-import { APP_VERSION } from "@/lib/appMeta";
-import { shareAgriveda } from "@/lib/appEssentials";
-import { useToast } from "@/components/ui/Toast";
-import SettingsLanguagePicker from "@/components/layout/SettingsLanguagePicker";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import AppLink from "@/components/ui/AppLink";
+import { useToast } from "@/components/ui/Toast";
+import { useAppSettings } from "@/hooks/useAppSettings";
+import { useFarmData } from "@/hooks/useFarmData";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
+import { shareAgriveda } from "@/lib/appEssentials";
+import { APP_VERSION } from "@/lib/appMeta";
+import { BRAND } from "@/lib/brand";
+import { AV } from "@/lib/design/tokens";
+import { cn } from "@/lib/cn";
+import type { AppLocale } from "@/lib/i18n/farmer-ui";
+import { Check, ChevronRight, Crown, LogOut, Share2, User } from "lucide-react";
 
 function ShareAgrivedaButton() {
   const { showToast } = useToast();
+  const { t } = useLocale();
   return (
     <button
       type="button"
       onClick={async () => {
         const result = await shareAgriveda();
-        if (result === "copied") showToast("Link clipboard me copy ho gaya", "success");
-        else if (result === true) showToast("Dhanyavaad — share ho gaya", "success");
+        if (result === "copied") showToast(t("shareCopied"), "success");
+        else if (result === true) showToast(t("shareDone"), "success");
       }}
       className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-300"
     >
       <Share2 className="h-4 w-4" />
-      Share Agriveda
+      {t("shareAgriveda")}
     </button>
   );
 }
@@ -70,15 +72,19 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { settings, update } = useAppSettings();
   const { settings: priceSettings, setMasterEnabled } = usePriceAlerts();
-  const { locale } = useLocale();
-  const langLabel = locale === "hi" ? "सरल हिंदी" : locale === "hinglish" ? "Hinglish" : "English";
+  const { locale, setLocale, t } = useLocale();
+
+  const langOptions: { code: AppLocale; label: string; hint: string }[] = [
+    { code: "en", label: t("english"), hint: t("langEnglishHint") },
+    { code: "hi", label: t("hindi"), hint: t("langHindiHint") },
+  ];
 
   return (
     <AppShell
       className="!bg-transparent"
-      title="Settings"
-      subtitle="Manage your preferences, alerts, account and app settings"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Settings" }]}
+      title={t("settingsTitle")}
+      subtitle={t("settingsSubtitle")}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("settingsTitle") }]}
     >
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <DarkCard delay={0}>
@@ -86,38 +92,74 @@ export default function SettingsPage() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--av-accent)]/20">
               <User className="h-8 w-8 text-[var(--av-accent)]" />
             </div>
-            <h2 className="mt-3 text-base font-bold text-[var(--av-text-primary)]">{profile.name || "अपना नाम जोड़ें"}</h2>
-            <p className="text-xs text-[var(--av-text-muted)]">{profile.phone ? `+91 ${profile.phone}` : "मोबाइल नंबर जोड़ें"}</p>
+            <h2 className="mt-3 text-base font-bold text-[var(--av-text-primary)]">
+              {profile.name || t("settingsAddName")}
+            </h2>
+            <p className="text-xs text-[var(--av-text-muted)]">
+              {profile.phone ? `+91 ${profile.phone}` : t("settingsAddPhone")}
+            </p>
             <AppLink href="/profile" className={`mt-4 flex w-full justify-center ${AV.btnSecondarySm}`}>
-              Edit Profile
+              {t("settingsEditProfile")}
             </AppLink>
           </div>
         </DarkCard>
 
         <DarkCard delay={1}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Preferences</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("settingsPreferences")}</h3>
           <div className="mt-2">
-            <SettingsRow label="Display Theme" value={theme === "dark" ? "Dark Mode" : "Light Mode"} href="/settings" />
-            <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="mt-2 w-full rounded-lg bg-[var(--av-surface-inset)] py-2 text-xs text-[var(--av-accent)]">Toggle Theme</button>
-            <SettingsRow label="App Language" value={langLabel} />
-            <SettingsLanguagePicker />
-            <SettingsRow label="Font Size" value="Medium" />
+            <SettingsRow
+              label={t("settingsTheme")}
+              value={theme === "dark" ? t("settingsDark") : t("settingsLight")}
+            />
+            <button
+              type="button"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="mt-2 w-full rounded-lg bg-[var(--av-surface-inset)] py-2 text-xs text-[var(--av-accent)]"
+            >
+              {t("settingsToggleTheme")}
+            </button>
+            <p className="mt-4 text-sm font-semibold text-[var(--av-text-primary)]">{t("settingsLanguage")}</p>
+            <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">{t("langSwitchNote")}</p>
+            <ul className="mt-2 space-y-2">
+              {langOptions.map((opt) => (
+                <li key={opt.code}>
+                  <button
+                    type="button"
+                    onClick={() => setLocale(opt.code)}
+                    className={cn(
+                      "flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-left text-sm font-bold transition",
+                      locale === opt.code
+                        ? "border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                        : "border-[var(--av-border)] text-[var(--av-text-primary)]"
+                    )}
+                  >
+                    <span>
+                      {opt.label}
+                      <span className="mt-0.5 block text-[10px] font-medium text-[var(--av-text-muted)]">
+                        {opt.hint}
+                      </span>
+                    </span>
+                    {locale === opt.code ? <Check className="h-4 w-4 text-emerald-500" /> : null}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         </DarkCard>
 
         <DarkCard delay={2}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Alerts & Notifications</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("settingsAlerts")}</h3>
           <div className="mt-2">
-            <SettingsRow label="Weather Alerts" toggle={{ on: settings.weatherAlerts, onChange: (v) => update({ weatherAlerts: v }) }} />
-            <SettingsRow label="Pest & Disease Alerts" toggle={{ on: settings.pestAlerts, onChange: (v) => update({ pestAlerts: v }) }} />
-            <SettingsRow label="Fertilizer Reminders" toggle={{ on: settings.fertilizerReminders, onChange: (v) => update({ fertilizerReminders: v }) }} />
+            <SettingsRow label={t("settingsWeatherAlerts")} toggle={{ on: settings.weatherAlerts, onChange: (v) => update({ weatherAlerts: v }) }} />
+            <SettingsRow label={t("settingsPestAlerts")} toggle={{ on: settings.pestAlerts, onChange: (v) => update({ pestAlerts: v }) }} />
+            <SettingsRow label={t("settingsFertilizerReminders")} toggle={{ on: settings.fertilizerReminders, onChange: (v) => update({ fertilizerReminders: v }) }} />
             <SettingsRow
-              label="Market Price Alerts"
+              label={t("settingsMarketAlerts")}
               toggle={{ on: priceSettings.masterEnabled, onChange: setMasterEnabled }}
             />
-            <SettingsRow label="Manage Price Alerts" value={`${priceSettings.alerts.filter((a) => a.enabled).length} active`} href="/mandi#price-alerts" />
+            <SettingsRow label={t("settingsManagePriceAlerts")} value={`${priceSettings.alerts.filter((a) => a.enabled).length}`} href="/mandi#price-alerts" />
             <SettingsRow
-              label="Quiet Hours"
+              label={t("settingsQuietHours")}
               value="10:00 PM - 6:00 AM"
               toggle={{ on: settings.quietHoursEnabled, onChange: (v) => update({ quietHoursEnabled: v }) }}
             />

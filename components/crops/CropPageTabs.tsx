@@ -1,10 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { CROP_TABS, type CropTabId } from "@/lib/crops/crop-tabs";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
+import { CROP_TABS, type CropTabId } from "@/lib/crops/crop-tabs";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+import { motion, useReducedMotion } from "framer-motion";
 
 /** Home-style circular tool badges for crop guide sections */
 const TAB_ICON: Record<CropTabId, string> = {
@@ -64,7 +64,7 @@ interface CropPageTabsProps {
 export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
   const reduced = useReducedMotion();
   const { locale } = useLocale();
-  const isHi = locale === "hi" || locale === "hinglish";
+  const isHi = locale === "hi";
 
   return (
     <nav className="mb-5 min-w-0" aria-label="Crop sections">
@@ -95,16 +95,16 @@ export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
               >
                 <span
                   className={cn(
-                    "relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white ring-1 sm:h-16 sm:w-16",
+                    "relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent ring-1",
                     RING_BY_TAB[tab.id],
-                    isActive && "ring-2 ring-emerald-500/55"
+                    isActive && "ring-2 ring-emerald-500/50"
                   )}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={TAB_ICON[tab.id]}
                     alt=""
-                    className="h-[78%] w-[78%] object-contain transition group-hover:scale-105"
+                    className="h-full w-full scale-110 object-cover transition group-hover:scale-[1.15]"
                     draggable={false}
                   />
                 </span>

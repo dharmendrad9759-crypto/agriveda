@@ -1,31 +1,31 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import Navbar from "@/components/Navbar";
-import AppSidebar from "@/components/shell/AppSidebar";
-import { NavDrawerProvider } from "@/components/shell/NavDrawerProvider";
-import ShellTopBar from "@/components/shell/ShellTopBar";
-import MobileShellTopBar from "@/components/shell/MobileShellTopBar";
+import AnalyticsBootstrap from "@/components/analytics/AnalyticsBootstrap";
+import BootSplash from "@/components/BootSplash";
+import CapacitorBootstrap from "@/components/capacitor/CapacitorBootstrap";
+import CapacitorNavigationFix from "@/components/capacitor/CapacitorNavigationFix";
+import NativeAppEssentials from "@/components/capacitor/NativeAppEssentials";
 import Footer from "@/components/footer";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import BottomNav from "@/components/layout/BottomNav";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 import OfflineBanner from "@/components/layout/OfflineBanner";
 import PullToRefresh from "@/components/layout/PullToRefresh";
-import CapacitorNavigationFix from "@/components/capacitor/CapacitorNavigationFix";
-import CapacitorBootstrap from "@/components/capacitor/CapacitorBootstrap";
-import NativeAppEssentials from "@/components/capacitor/NativeAppEssentials";
-import BootSplash from "@/components/BootSplash";
-import FarmerOnboardingGate from "@/components/onboarding/FarmerOnboardingGate";
 import LocationBootstrap from "@/components/location/LocationBootstrap";
-import { LocaleProvider } from "@/components/i18n/LocaleProvider";
-import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { ToastProvider } from "@/components/ui/Toast";
-import GoogleTranslateBootstrap from "@/components/i18n/GoogleTranslateBootstrap";
-import AppPremiumBackground from "@/components/ui/AppPremiumBackground";
 import PageReveal from "@/components/motion/PageReveal";
-import AnalyticsBootstrap from "@/components/analytics/AnalyticsBootstrap";
-import { MotionConfig } from "framer-motion";
-import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+import Navbar from "@/components/Navbar";
+import FarmerOnboardingGate from "@/components/onboarding/FarmerOnboardingGate";
+import AppSidebar from "@/components/shell/AppSidebar";
+import MobileShellTopBar from "@/components/shell/MobileShellTopBar";
+import { NavDrawerProvider } from "@/components/shell/NavDrawerProvider";
+import ShellTopBar from "@/components/shell/ShellTopBar";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import AppPremiumBackground from "@/components/ui/AppPremiumBackground";
+import { ToastProvider } from "@/components/ui/Toast";
 import { isCapacitorNative } from "@/lib/capacitorNav";
+import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+import { MotionConfig } from "framer-motion";
+import { useState, type ReactNode } from "react";
 
 export default function ClientProviders({ children }: { children: ReactNode }) {
   // Sync on first client paint — avoids enabling heavy motion then flipping off
@@ -42,7 +42,6 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
             reducedMotion={native ? "always" : "user"}
             transition={{ duration: MOTION.normal, ease: EASE_OUT }}
           >
-            <GoogleTranslateBootstrap />
             <AnalyticsBootstrap />
             <CapacitorBootstrap />
             <NativeAppEssentials />
@@ -66,6 +65,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
                       <BottomNav />
                     </div>
                   </div>
+                  <LanguageSwitcher />
                 </NavDrawerProvider>
               </PullToRefresh>
             </FarmerOnboardingGate>

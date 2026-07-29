@@ -1,15 +1,15 @@
-import paddyGuide from "@/data/imports/agriveda-paddy-field-guide.json";
 import cucumberGuide from "@/data/imports/agriveda-cucumber-field-guide.json";
+import paddyGuide from "@/data/imports/agriveda-paddy-field-guide.json";
 import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/data/pest-disease";
 import type { ThreatDetailOverride } from "@/data/pest-disease-details";
 import type {
-  CropManagementProfile,
-  CropStage,
-  DiseaseManagement,
-  FAQItem,
-  NutrientDeficiency,
-  PestManagement,
-  WeedManagement,
+    CropManagementProfile,
+    CropStage,
+    DiseaseManagement,
+    FAQItem,
+    NutrientDeficiency,
+    PestManagement,
+    WeedManagement,
 } from "@/types/crop-management";
 import type { StageSprayRecommendation } from "@/types/crop-protection";
 import type { ThreatCategory } from "@/types/pest-disease-ui";
@@ -219,18 +219,12 @@ function weedTypeLabel(raw: string): string {
   return raw;
 }
 
-function chemLine(chem: FieldGuideChemical, _isDisease = false): string {
-  void _isDisease;
+function chemLine(chem: FieldGuideChemical, isDisease = false): string {
+  const group = isDisease ? chem.frac_group : chem.irac_group;
   const dose = chem.dose_per_acre?.toLowerCase().includes("unknown")
-    ? "लेबल मात्रा"
+    ? "label dose only"
     : chem.dose_per_acre;
-  const water = chem.spray_water_volume && !/unknown/i.test(chem.spray_water_volume)
-    ? ` · ${chem.spray_water_volume}`
-    : "";
-  const when = chem.spray_timing && !/unknown/i.test(chem.spray_timing)
-    ? ` · ${chem.spray_timing}`
-    : "";
-  return `${chem.technical} — ${dose}${water}${when}`;
+  return `${chem.technical} (${group ? `${isDisease ? "FRAC" : "IRAC"} ${group}` : "see label"}) — ${dose}`;
 }
 
 function chemicalsToStageSprays(

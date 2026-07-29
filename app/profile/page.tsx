@@ -60,7 +60,7 @@ export default function ProfilePage() {
   const { queries, clearQueries } = useQueryHistory();
   const { showToast } = useToast();
   const { t, locale } = useLocale();
-  const isHi = locale === "hi" || locale === "hinglish";
+  const isHi = locale === "hi";
 
   const [form, setForm] = useState(profile);
 

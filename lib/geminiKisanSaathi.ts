@@ -9,7 +9,7 @@ export interface SaathiMessage {
   content: string;
 }
 
-export type ReplyLanguage = "en" | "hi" | "hinglish";
+export type ReplyLanguage = "en" | "hi";
 
 export interface SaathiContext {
   cropSlug?: string;
@@ -18,21 +18,18 @@ export interface SaathiContext {
   state?: string;
   village?: string;
   lastDiagnosis?: string;
-  replyLanguage?: ReplyLanguage;
+  replyLanguage?: ReplyLanguage | "hinglish";
 }
 
-function languageRules(lang: ReplyLanguage = "hinglish"): string {
-  switch (lang) {
-    case "hi":
-      return `LANGUAGE: Jawab SIRF seedhi Devanagari Hindi mein do.
-STYLE: Poora jawab do — adhura mat chhodo. Simple bullets. Dose, samay, product naam zaroor. Spray schedule mangne par stage-wise poori list do.`;
-    case "en":
-      return `LANGUAGE: Reply ONLY in simple English for farmers.
+function languageRules(lang: ReplyLanguage | "hinglish" = "hi"): string {
+  const normalized: ReplyLanguage = lang === "en" ? "en" : "hi";
+  if (normalized === "en") {
+    return `LANGUAGE: Reply ONLY in simple English for farmers.
 STYLE: Give a COMPLETE answer — never truncate mid-advice. Use clear bullets. Include dose, timing, product names. For spray schedules list every stage fully.`;
-    default:
-      return `LANGUAGE: Jawab Roman Hinglish mein do (Hindi + English mix, jaise kisan bolte hain).
-STYLE: Poora jawab — beech mein kaatna mat. Clear bullets. Dose, samay, dawai naam. Lambi schedule ho to saari stages likho.`;
   }
+  return `LANGUAGE: Reply ONLY in simple spoken Devanagari Hindi for Indian farmers. No Roman Hinglish.
+Keep main product/tool words in English inside brackets, e.g. स्प्रे (Spray), खाद (Fertilizer).
+STYLE: Complete answer — never truncate. Simple bullets. Always include dose, timing, product names. For spray schedules list every stage fully.`;
 }
 
 export async function chatWithKisanSaathi(
@@ -52,7 +49,7 @@ export async function chatWithKisanSaathi(
       })
     : "";
 
-  const lang = context.replyLanguage ?? "hinglish";
+  const lang = context.replyLanguage === "en" ? "en" : "hi";
   const system = `${KISAN_SAATHI_SYSTEM_PROMPT}
 
 ${languageRules(lang)}

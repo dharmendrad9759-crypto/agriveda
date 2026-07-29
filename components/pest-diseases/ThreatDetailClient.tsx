@@ -140,7 +140,7 @@ function controlSectionsForPest(
 
 export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat }) {
   const { locale } = useLocale();
-  const hi = locale === "hi" || locale === "hinglish";
+  const hi = locale === "hi";
   const isWeed = threat.type === "weed";
 
   const TypeIcon = threat.type === "pest" ? Bug : threat.type === "disease" ? ShieldAlert : Leaf;

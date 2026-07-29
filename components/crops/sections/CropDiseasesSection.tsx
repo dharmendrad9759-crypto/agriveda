@@ -1,76 +1,31 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Search, ShieldAlert, AlertTriangle, Eye, Droplets } from "lucide-react";
-import AppLink from "@/components/ui/AppLink";
-import DarkCard from "@/components/shell/DarkCard";
-import StatCard from "@/components/shell/StatCard";
-import RiskBadge from "@/components/shell/RiskBadge";
 import { ShellTabBar } from "@/components/shell/AppShell";
-import { useLocale } from "@/components/i18n/LocaleProvider";
-import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
+import DarkCard from "@/components/shell/DarkCard";
+import RiskBadge from "@/components/shell/RiskBadge";
+import StatCard from "@/components/shell/StatCard";
+import AppLink from "@/components/ui/AppLink";
 import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
+import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
+import { AV } from "@/lib/design/tokens";
 import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
 import type { Crop } from "@/types/crop";
-import { AV } from "@/lib/design/tokens";
+import { AlertTriangle, Calendar, Eye, Search, ShieldAlert } from "lucide-react";
+import { useMemo, useState } from "react";
 
-type MgmtTab = "prevention" | "chemical" | "monitoring" | "cultural" | "biological";
+type MgmtTab = "prevention" | "monitoring" | "cultural" | "biological" | "chemical";
 
-const MGMT_ORDER: MgmtTab[] = ["prevention", "chemical", "monitoring", "cultural", "biological"];
-
-function tipText(item: unknown): string {
-  if (typeof item === "string") return item.replace(/^(Prevention|Monitoring|Cultural|Biological|Chemical):\s*/i, "").trim();
-  if (item && typeof item === "object") {
-    const c = item as { technical?: string; dose?: string; note?: string };
-    if (c.technical) {
-      return `${c.technical}${c.dose ? ` — ${c.dose}` : ""}${c.note ? ` · ${c.note}` : ""}`;
-    }
-  }
-  return "";
-}
-
-function fallbackTips(tab: MgmtTab, name: string, isHi: boolean): string[] {
-  if (isHi) {
-    const map: Record<MgmtTab, string[]> = {
-      prevention: [
-        "रोगमुक्त बीज / नर्सरी लें",
-        "खेत में पानी जमा न रहने दें",
-        `${name} वाले मौसम में निगरानी बढ़ाएँ`,
-      ],
-      chemical: [
-        "लक्षण दिखते ही सही दवाई — लेबल मात्रा",
-        "एक ही दवा बार-बार न दोहराएँ",
-        "कटाई से पहले PHI (इंतज़ार दिन) पूरा करें",
-      ],
-      monitoring: ["नीचे की पत्तियाँ और फल रोज/हफ्ते में देखें", "गीला मौसम = ज्यादा खतरा"],
-      cultural: ["संक्रमित पत्ते/फल हटाएँ", "फसल चक्र अपनाएँ"],
-      biological: ["ट्राइकोडर्मा / स्यूडोमोनास बीज या मिट्टी में", "नीम आधारित विकल्प पहले"],
-    };
-    return map[tab];
-  }
-  const map: Record<MgmtTab, string[]> = {
-    prevention: ["Clean seed/nursery", "Avoid standing water", `Scout more when weather favours ${name}`],
-    chemical: ["Spray at first symptoms — label dose", "Rotate fungicides", "Respect pre-harvest interval"],
-    monitoring: ["Check lower leaves & fruits weekly", "Wet weather = higher risk"],
-    cultural: ["Remove infected parts", "Rotate crops"],
-    biological: ["Trichoderma / Pseudomonas where useful", "Neem options first"],
-  };
-  return map[tab];
-}
+const MGMT_LABELS: Record<MgmtTab, string> = {
+  prevention: "Prevention",
+  monitoring: "Monitoring",
+  cultural: "Cultural",
+  biological: "Biological",
+  chemical: "Chemical",
+};
 
 export default function CropDiseasesSection({ crop }: { crop: Crop }) {
-  const { locale } = useLocale();
-  const isHi = locale === "hi";
   const [search, setSearch] = useState("");
   const [mgmtTab, setMgmtTab] = useState<MgmtTab>("prevention");
-
-  const labels: Record<MgmtTab, string> = {
-    prevention: isHi ? "रोकथाम" : "Prevention",
-    chemical: isHi ? "दवाई (स्प्रे)" : "Chemical",
-    monitoring: isHi ? "निगरानी" : "Watch",
-    cultural: isHi ? "खेती तरीका" : "Field practice",
-    biological: isHi ? "जैविक" : "Bio",
-  };
 
   const ipmDiseases = useMemo(() => getIpmDiseaseListForCrop(crop.slug), [crop.slug]);
   const fieldGuideDiseases = useMemo(() => getCropFieldGuideDiseaseListForCrop(crop.slug), [crop.slug]);
@@ -84,58 +39,48 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
     : ipmDiseases.length
       ? ipmDiseases
       : catalogDiseases.map((d) => ({
-          id: d.id,
-          name: d.name,
-          scientific: d.pathogen ?? d.scientificName,
-          risk: d.category === "viral" ? ("high" as const) : ("medium" as const),
-          type: d.category,
-          desc: d.description,
-          conditions: d.symptoms[0],
-          ipm: {
-            prevention: d.remediation.filter((r) => r.startsWith("Prevention")),
-            monitoring: [] as string[],
-            cultural: d.remediation.filter((r) => r.startsWith("Cultural")),
-            biological: [] as string[],
-            chemical: [] as string[],
-          },
-          fracNote: d.fracGroup,
-        }));
+        id: d.id,
+        name: d.name,
+        scientific: d.pathogen ?? d.scientificName,
+        risk: d.category === "viral" ? ("high" as const) : ("medium" as const),
+        type: d.category,
+        desc: d.description,
+        conditions: d.symptoms[0],
+        ipm: {
+          prevention: d.remediation.filter((r) => r.startsWith("Prevention")),
+          monitoring: [],
+          cultural: d.remediation.filter((r) => r.startsWith("Cultural")),
+          biological: [],
+          chemical: [],
+        },
+        fracNote: d.fracGroup,
+      }));
 
   const filtered = diseases.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()));
   const [selected, setSelected] = useState(filtered[0]?.id ?? "");
   const detail = filtered.find((d) => d.id === selected) ?? filtered[0];
 
   const mgmtTips = useMemo(() => {
-    if (!detail?.ipm) return fallbackTips(mgmtTab, detail?.name ?? "disease", isHi);
-    const raw = detail.ipm[mgmtTab as keyof typeof detail.ipm];
-    const list = Array.isArray(raw) ? raw.map(tipText).filter(Boolean) : [];
-    return list.length ? list : fallbackTips(mgmtTab, detail.name, isHi);
-  }, [detail, mgmtTab, isHi]);
-
-  const viralCount = diseases.filter((d) => /viral|virus|yvm|leaf curl/i.test(`${d.name} ${(d as { type?: string }).type ?? ""}`)).length;
+    if (!detail?.ipm) return [] as string[];
+    const raw = detail.ipm[mgmtTab];
+    if (!raw?.length) return [];
+    if (mgmtTab === "chemical") {
+      return (raw as { technical: string; dose: string; note?: string }[]).map(
+        (c) => `${c.technical} @ ${c.dose}${c.note ? ` — ${c.note}` : ""}`
+      );
+    }
+    return (raw as string[]).map((t) =>
+      t.replace(/^(Prevention|Monitoring|Cultural|Biological|Chemical):\s*/i, "")
+    );
+  }, [detail, mgmtTab]);
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <StatCard
-          icon={ShieldAlert}
-          label={isHi ? "मुख्य रोग" : "Main diseases"}
-          value={`${diseases.length}`}
-          sub={isHi ? "इस फसल पर" : "on this crop"}
-        />
-        <StatCard
-          icon={AlertTriangle}
-          iconColor="text-red-500"
-          label={isHi ? "वायरस सावधानी" : "Virus caution"}
-          value={viralCount ? (isHi ? "कीट रोकें" : "Stop vectors") : isHi ? "सामान्य" : "Normal watch"}
-          sub={isHi ? "वायरस का सीधा इलाज नहीं" : "No direct virus cure"}
-        />
-        <StatCard
-          icon={Eye}
-          iconColor="text-amber-500"
-          label={isHi ? "सबसे पहले" : "Watch first"}
-          value={diseases[0]?.name ?? (isHi ? "साप्ताहिक जाँच" : "Weekly scout")}
-        />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard icon={ShieldAlert} label="Diseases" value={`${diseases.length} listed`} />
+        <StatCard icon={AlertTriangle} iconColor="text-red-500" label="Viral alert" value="Vector control only" />
+        <StatCard icon={Eye} iconColor="text-amber-500" label="Source" value={ipmDiseases.length ? "IDM JSON" : "Catalog"} />
+        <StatCard icon={Calendar} label="FRAC rotate" value="Group rotation" sub="No repeat systemic" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -146,7 +91,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={isHi ? "रोग खोजें..." : "Search disease..."}
+                placeholder="Search disease..."
                 className="av-input py-2 pl-9"
               />
             </div>
@@ -166,6 +111,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
               <div className="min-w-0">
                 <p className="truncate text-xs font-bold text-[var(--av-text-primary)]">{d.name}</p>
                 <RiskBadge level={d.risk} />
+                <p className="mt-1 truncate text-[10px] italic text-[var(--av-text-muted)]">{d.scientific}</p>
               </div>
             </button>
           ))}
@@ -176,53 +122,52 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
             <>
               <DarkCard hover>
                 <h2 className="text-lg font-bold text-[var(--av-text-primary)]">{detail.name}</h2>
-                {detail.scientific && (
-                  <p className="text-xs text-[var(--av-text-muted)]">({detail.scientific})</p>
-                )}
+                <p className="text-xs italic text-[var(--av-text-muted)]">{detail.scientific}</p>
                 <RiskBadge level={detail.risk} />
-                <p className="mt-3 text-sm leading-snug text-[var(--av-text-secondary)] line-clamp-4">
-                  {detail.desc}
-                </p>
+                <p className="mt-3 text-sm text-[var(--av-text-secondary)]">{detail.desc}</p>
                 {detail.conditions && (
-                  <p className="mt-2 text-xs text-amber-500">
-                    {isHi ? "कब बढ़ता है:" : "Favours:"} {detail.conditions}
-                  </p>
+                  <p className="mt-2 text-xs text-amber-400">Favourable: {detail.conditions}</p>
+                )}
+                {detail.fracNote && (
+                  <p className="mt-1 text-[10px] text-violet-400">FRAC: {detail.fracNote}</p>
                 )}
                 <AppLink
                   href={`/pest-diseases/${crop.slug}/disease/${detail.id}`}
                   className={`mt-3 inline-flex ${AV.btnPrimarySm}`}
                 >
-                  {isHi ? "पूरी जानकारी →" : "Full detail →"}
+                  Full disease detail →
                 </AppLink>
               </DarkCard>
 
               <DarkCard delay={4}>
-                <div className="flex items-center gap-2">
-                  <Droplets className="h-4 w-4 text-[var(--av-accent)]" />
-                  <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
-                    {isHi ? "क्या करें" : "What to do"} — {detail.name}
-                  </h3>
-                </div>
+                <h3 className="text-sm font-bold text-[var(--av-text-primary)]">IDM Management Ladder</h3>
                 <ShellTabBar
-                  tabs={MGMT_ORDER.map((id) => ({ id, label: labels[id] }))}
+                  tabs={(Object.keys(MGMT_LABELS) as MgmtTab[]).map((id) => ({
+                    id,
+                    label: MGMT_LABELS[id],
+                  }))}
                   active={mgmtTab}
                   onChange={setMgmtTab}
                 />
-                <ul className="mt-1 space-y-2">
-                  {mgmtTips.map((c) => (
-                    <li key={c} className="flex gap-2 text-xs leading-snug text-[var(--av-text-secondary)]">
-                      <span className="text-[var(--av-accent)]">•</span>
-                      {c}
+                <ul className="space-y-1">
+                  {mgmtTips.length ? (
+                    mgmtTips.map((c) => (
+                      <li key={c} className="flex gap-2 text-xs text-[var(--av-text-secondary)]">
+                        <span className="text-[var(--av-accent)]">✓</span>
+                        {c}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-xs text-[var(--av-text-muted)]">
+                      See full detail page for {MGMT_LABELS[mgmtTab]} steps.
                     </li>
-                  ))}
+                  )}
                 </ul>
               </DarkCard>
             </>
           ) : (
             <DarkCard className="text-center">
-              <p className="text-sm text-[var(--av-text-muted)]">
-                {isHi ? "इस फसल के रोग डेटा जल्द।" : "No disease data for this crop yet."}
-              </p>
+              <p className="text-sm text-[var(--av-text-muted)]">No disease data for this crop yet.</p>
             </DarkCard>
           )}
         </div>

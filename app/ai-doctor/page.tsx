@@ -1,46 +1,44 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import Link from "next/link";
 import {
-  ChevronDown,
-  ChevronUp,
-  Leaf,
-  Loader2,
-  ShieldCheck,
-  Stethoscope,
-} from "lucide-react";
-import {
-  analyzeDiagnosis,
-  analyzePlantImage,
-  checkAiDoctorConfigured,
-  type DiagnosisResult,
-} from "@/lib/aiDiagnosis";
-import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
-import { useAIHistory } from "@/hooks/useAIHistory";
-import { useToast } from "@/components/ui/Toast";
-import {
-  claimPendingAiScan,
-  dataUrlToFile,
-  fileToDataUrl,
-  releasePendingScanLock,
-} from "@/lib/pendingAiScan";
-import { fileToThumbDataUrl } from "@/lib/imageThumb";
-import {
-  AiDoctorActions,
-  AiDoctorCropSelect,
-  AiDoctorDesktopSidebar,
-  AiDoctorHero,
-  AiDoctorPhotoUpload,
-  AiDoctorRecentDiagnoses,
-  AiDoctorRiskForecast,
-  AiDoctorSymptoms,
+    AiDoctorActions,
+    AiDoctorCropSelect,
+    AiDoctorDesktopSidebar,
+    AiDoctorHero,
+    AiDoctorPhotoUpload,
+    AiDoctorRecentDiagnoses,
+    AiDoctorRiskForecast,
+    AiDoctorSymptoms,
 } from "@/components/ai-doctor/AiDoctorRedesign";
+import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
+import VoiceInput from "@/components/query/VoiceInput";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
-import VoiceInput from "@/components/query/VoiceInput";
+import { useToast } from "@/components/ui/Toast";
 import { OTHER_CROP } from "@/data/ai-doctor-crops";
+import { useAIHistory } from "@/hooks/useAIHistory";
+import {
+    analyzeDiagnosis,
+    analyzePlantImage,
+    checkAiDoctorConfigured,
+    type DiagnosisResult,
+} from "@/lib/aiDiagnosis";
 import { track } from "@/lib/analytics";
+import {
+    claimPendingAiScan,
+    dataUrlToFile,
+    releasePendingScanLock,
+} from "@/lib/pendingAiScan";
+import {
+    ChevronDown,
+    ChevronUp,
+    Leaf,
+    Loader2,
+    ShieldCheck,
+    Stethoscope,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 /** Keep photo notes farmer-simple — drop English (jargon) parentheses. */
 function simpleObservation(text: string): string {
@@ -170,16 +168,8 @@ export default function AIDoctorPage() {
     setFileName(file.name);
     setSelectedFile(file);
     if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
-    // data: URL so history / home overlay survive reload (blob: dies)
-    void fileToDataUrl(file)
-      .then((url) => {
-        setPreviewUrl(url);
-        setPreviewFailed(false);
-      })
-      .catch(() => {
-        setPreviewUrl(URL.createObjectURL(file));
-        setPreviewFailed(false);
-      });
+    setPreviewUrl(URL.createObjectURL(file));
+    setPreviewFailed(false);
     setResult(null);
     setSymptomsOnlyMode(false);
     showToast("फोटो चुनी — अब फसल चुनें", "success");
@@ -218,19 +208,9 @@ export default function AIDoctorPage() {
         symptoms: symptomNotes,
       });
       setResult(diagnosis);
-      let thumb = "";
-      if (selectedFile) {
-        try {
-          thumb = await fileToThumbDataUrl(selectedFile);
-        } catch {
-          thumb = previewUrl?.startsWith("data:") ? previewUrl : "";
-        }
-      } else if (previewUrl?.startsWith("data:")) {
-        thumb = previewUrl;
-      }
       addEntry({
         fileName: selectedFile ? fileName || "scan.jpg" : "symptoms.txt",
-        thumbnailUrl: thumb,
+        thumbnailUrl: previewUrl || "",
         result: diagnosis,
       });
       showToast("विश्लेषण पूर्ण ✓");

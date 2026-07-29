@@ -26,7 +26,7 @@ export default function StageWiseSprayCard({
   continuousHarvest?: boolean;
 }) {
   const { locale } = useLocale();
-  const hi = locale === "hi" || locale === "hinglish";
+  const hi = locale === "hi";
   const farmerStages = pickFarmerStages(stages);
   if (!farmerStages.length) return null;
 

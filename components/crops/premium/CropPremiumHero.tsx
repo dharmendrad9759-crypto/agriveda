@@ -1,27 +1,26 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { Calendar, Clock, CloudSun, Droplets, Sparkles, Sprout, TrendingUp } from "lucide-react";
 import { getCropDashboard } from "@/data/crop-dashboard";
-import { getCropImageUrl, getCropHindiName } from "@/lib/crops/crop-display";
+import { getCropImageUrl } from "@/lib/crops/crop-display";
 import {
-  getCropAgroMeta,
-  getCropDiseaseRisk,
-  getCropPestRisk,
+    getCropAgroMeta,
+    getCropDiseaseRisk,
+    getCropPestRisk,
 } from "@/lib/crops/cropAgroMeta";
-import { useLocale } from "@/components/i18n/LocaleProvider";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { Crop } from "@/types/crop";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
+import { motion, useReducedMotion } from "framer-motion";
+import { Calendar, Clock, CloudSun, Droplets, Sparkles, Sprout, TrendingUp } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-const CATEGORY_LABEL: Record<Crop["category"], { en: string; hi: string }> = {
-  Cereals: { en: "Cereals", hi: "अनाज" },
-  Vegetables: { en: "Vegetables", hi: "सब्ज़ियाँ" },
-  Pulses: { en: "Pulses", hi: "दलहन" },
-  Millets: { en: "Millets", hi: "मोटे अनाज" },
-  "Cash-Crops": { en: "Cash Crops", hi: "नकदी फसल" },
+const CATEGORY_LABEL: Record<Crop["category"], string> = {
+  Cereals: "Cereals",
+  Vegetables: "Vegetables",
+  Pulses: "Pulses",
+  Millets: "Millets",
+  "Cash-Crops": "Cash Crops",
 };
 
 interface Props {
@@ -30,11 +29,8 @@ interface Props {
 }
 
 export default function CropPremiumHero({ crop, detail }: Props) {
-  const { locale } = useLocale();
-  const isHi = locale === "hi";
   const reduceMotion = useReducedMotion();
   const cropImage = getCropImageUrl(crop);
-  const hindi = getCropHindiName(crop.slug);
   const dash = getCropDashboard(crop.slug);
   const agro = getCropAgroMeta(crop.slug);
   const pestRisk = getCropPestRisk(crop, detail);
@@ -46,25 +42,12 @@ export default function CropPremiumHero({ crop, detail }: Props) {
         ? ("amber" as const)
         : ("emerald" as const);
   const watchLabel =
-    watchLevel === "amber"
-      ? isHi
-        ? "इस हफ्ते देखें"
-        : "Scout this week"
-      : isHi
-        ? "गाइड तैयार"
-        : "Guide ready";
+    watchLevel === "amber" ? "Scout this week" : "Guide ready";
   const currentStage =
     dash?.growthStages.find((s) => s.status === "current")?.name ??
     detail.growthStages[0]?.title ??
     crop.fertilizerSchedule.stageWise[0]?.stage ??
-    (isHi ? "स्थापना" : "Establishment");
-
-  const stats = [
-    { icon: Clock, label: isHi ? "अवधि" : "Duration", value: crop.durationDays },
-    { icon: TrendingUp, label: isHi ? "उपज" : "Yield", value: crop.estimatedYield },
-    { icon: Calendar, label: isHi ? "मौसम" : "Season", value: crop.suitableSeason },
-    { icon: Droplets, label: isHi ? "पानी" : "Water", value: agro.waterMm },
-  ];
+    "Establishment";
 
   return (
     <motion.section
@@ -95,17 +78,9 @@ export default function CropPremiumHero({ crop, detail }: Props) {
 
           <div className="min-w-0">
             <div className="flex flex-wrap gap-2">
-              <span className="crop-premium-badge">
-                {isHi ? CATEGORY_LABEL[crop.category].hi : CATEGORY_LABEL[crop.category].en}
-              </span>
+              <span className="crop-premium-badge">{CATEGORY_LABEL[crop.category]}</span>
               <span className="crop-premium-badge crop-premium-badge-muted">
-                {detail.establishment === "transplant"
-                  ? isHi
-                    ? "रोपाई"
-                    : "Transplant"
-                  : isHi
-                    ? "सीधी बुवाई"
-                    : "Direct sown"}
+                {detail.establishment === "transplant" ? "Transplant" : "Direct sown"}
               </span>
               <span className="crop-premium-badge crop-premium-badge-stage">
                 <Sprout className="mr-1 h-3 w-3" />
@@ -113,7 +88,7 @@ export default function CropPremiumHero({ crop, detail }: Props) {
               </span>
             </div>
             <h1 className="mt-2 text-[clamp(1.5rem,5vw,2rem)] font-black tracking-tight text-[var(--av-text-primary)]">
-              {isHi && hindi ? `${hindi} (${crop.name})` : crop.name}
+              {crop.name}
             </h1>
             <p className="mt-0.5 text-xs italic text-[var(--av-text-muted)]">{crop.scientificName}</p>
           </div>
@@ -121,9 +96,7 @@ export default function CropPremiumHero({ crop, detail }: Props) {
 
         <div className="flex shrink-0 gap-2 sm:flex-col">
           <div className="crop-premium-glass min-w-[100px] flex-1 p-3 sm:flex-none">
-            <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-              {isHi ? "खेत फोकस" : "Field focus"}
-            </p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">Field focus</p>
             <p
               className={`mt-0.5 text-sm font-black ${
                 watchLevel === "amber" ? "text-amber-500" : "text-emerald-500"
@@ -132,13 +105,13 @@ export default function CropPremiumHero({ crop, detail }: Props) {
               {watchLabel}
             </p>
             <p className="text-[10px] text-[var(--av-text-secondary)]">
-              {isHi ? "देखें:" : "Watch:"} {pestRisk.top.split(" ")[0]} / {diseaseRisk.top.split(" ")[0]}
+              Watch: {pestRisk.top.split(" ")[0]} / {diseaseRisk.top.split(" ")[0]}
             </p>
           </div>
 
           <div className="crop-premium-glass min-w-[100px] flex-1 p-3 sm:flex-none">
             <p className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-              <CloudSun className="h-3 w-3" /> {isHi ? "जलवायु" : "Climate"}
+              <CloudSun className="h-3 w-3" /> Climate
             </p>
             <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
               {agro.tempMinC}–{agro.tempMaxC}°C
@@ -148,18 +121,22 @@ export default function CropPremiumHero({ crop, detail }: Props) {
         </div>
       </div>
 
+      <p className="relative mt-4 text-sm leading-relaxed text-[var(--av-text-secondary)]">{crop.overview}</p>
+
       <div className="relative mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {stats.map((stat) => {
+        {[
+          { icon: Clock, label: "Duration", value: crop.durationDays },
+          { icon: TrendingUp, label: "Yield", value: crop.estimatedYield },
+          { icon: Calendar, label: "Season", value: crop.suitableSeason },
+          { icon: Droplets, label: "Water", value: agro.waterMm },
+        ].map((stat) => {
           const Icon = stat.icon;
           return (
             <div key={stat.label} className="crop-premium-stat">
               <Icon className="h-3.5 w-3.5 text-emerald-500" />
               <div className="min-w-0">
                 <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">{stat.label}</p>
-                <p
-                  className="text-xs font-semibold leading-snug text-[var(--av-text-primary)]"
-                  title={stat.label === (isHi ? "पानी" : "Water") ? agro.waterDetail : String(stat.value)}
-                >
+                <p className="text-xs font-semibold leading-snug text-[var(--av-text-primary)]" title={stat.label === "Water" ? agro.waterDetail : String(stat.value)}>
                   {stat.value}
                 </p>
               </div>
@@ -172,20 +149,20 @@ export default function CropPremiumHero({ crop, detail }: Props) {
         <span
           className={`crop-premium-risk ${pestRisk.level === "high" ? "crop-premium-risk-amber" : "crop-premium-risk-lime"}`}
         >
-          {isHi ? "कीट:" : "Pest:"} {pestRisk.top}
+          Pest: {pestRisk.top}
         </span>
         <span
           className={`crop-premium-risk ${diseaseRisk.level === "high" ? "crop-premium-risk-amber" : "crop-premium-risk-lime"}`}
         >
-          {isHi ? "रोग:" : "Disease:"} {diseaseRisk.top}
+          Disease: {diseaseRisk.top}
         </span>
         <Link href="/weather" className="crop-premium-cta">
           <CloudSun className="h-4 w-4" />
-          {isHi ? "मौसम" : "Live weather"}
+          Live weather
         </Link>
         <Link href="/ai-doctor" className="crop-premium-cta ml-auto">
           <Sparkles className="h-4 w-4" />
-          {isHi ? "AI डॉक्टर" : "AI Crop Doctor"}
+          AI Crop Doctor
         </Link>
       </div>
     </motion.section>
