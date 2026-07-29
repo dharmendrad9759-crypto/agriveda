@@ -75,7 +75,7 @@ const FEATURES: {
 export default function HomeFeatureGrid() {
   const reduced = useReducedMotion();
   const { locale } = useLocale();
-  const isHi = locale === "hi";
+  const isHi = locale === "hi" || locale === "hinglish";
 
   return (
     <section className="min-w-0">
