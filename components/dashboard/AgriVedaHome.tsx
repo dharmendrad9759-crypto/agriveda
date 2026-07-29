@@ -188,7 +188,7 @@ function fieldCard(field: FarmField | (typeof DASHBOARD_FIELDS)[number], index: 
 
 export default function AgriVedaHome() {
   const { locale } = useLocale();
-  const isHi = locale === "hi" || locale === "hinglish";
+  const isHi = locale === "hi";
   const reduced = useReducedMotion();
   const { profile } = useFarmerProfile();
   const { weather, loading: weatherLoading } = useLiveWeather();
