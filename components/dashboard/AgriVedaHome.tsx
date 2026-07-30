@@ -362,43 +362,43 @@ export default function AgriVedaHome() {
               <ScanLine className="absolute inset-0 m-auto h-5 w-5 animate-pulse text-emerald-200/90" />
             </div>
 
-            {/* Result card ON the image — last real scan if any, else demo preview */}
-            <div className="absolute right-3 top-3 max-w-[58%] sm:right-4 sm:top-4">
+            {/* Result card ON the image — compact on phone */}
+            <div className="absolute right-2 top-2 max-w-[42%] sm:right-4 sm:top-4 sm:max-w-[48%]">
               {lastScan ? (
                 <AppLink
                   href="/ai-doctor"
-                  className="block overflow-hidden rounded-2xl border border-white/25 bg-[#0b1f16]/78 shadow-lg backdrop-blur-md"
+                  className="block overflow-hidden rounded-xl border border-white/25 bg-[#0b1f16]/80 shadow-md backdrop-blur-md sm:rounded-2xl"
                 >
                   {lastScan.thumbnailUrl && !lastScan.thumbnailUrl.startsWith("blob:") ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={lastScan.thumbnailUrl}
                       alt=""
-                      className="h-14 w-full object-cover sm:h-16"
+                      className="h-8 w-full object-cover sm:h-14"
                     />
                   ) : null}
-                  <div className="px-2.5 py-2">
-                    <p className="text-[9px] font-bold uppercase tracking-wide text-emerald-300">
+                  <div className="px-2 py-1.5 sm:px-2.5 sm:py-2">
+                    <p className="text-[8px] font-bold uppercase tracking-wide text-emerald-300 sm:text-[9px]">
                       {isHi ? "पिछला स्कैन" : "Last scan"}
                     </p>
-                    <p className="mt-0.5 line-clamp-2 text-[12px] font-bold leading-snug text-white">
+                    <p className="mt-0.5 line-clamp-1 text-[10px] font-bold leading-tight text-white sm:line-clamp-2 sm:text-[12px] sm:leading-snug">
                       {lastScan.result.diseaseName}
                     </p>
-                    <p className="mt-0.5 text-[10px] font-semibold text-amber-200">
+                    <p className="mt-0.5 text-[9px] font-semibold text-amber-200 sm:text-[10px]">
                       {lastScan.result.confidence}% · {lastScan.result.riskLevel}
                     </p>
                   </div>
                 </AppLink>
               ) : (
-                <div className="rounded-2xl border border-white/25 bg-[#0b1f16]/78 px-2.5 py-2 shadow-lg backdrop-blur-md">
-                  <p className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-emerald-300">
-                    <Sparkles className="h-3 w-3" />
+                <div className="rounded-xl border border-white/25 bg-[#0b1f16]/80 px-2 py-1.5 shadow-md backdrop-blur-md sm:rounded-2xl sm:px-2.5 sm:py-2">
+                  <p className="flex items-center gap-1 text-[8px] font-bold uppercase tracking-wide text-emerald-300 sm:text-[9px]">
+                    <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     {isHi ? "स्कैन रिजल्ट" : "Scan result"}
                   </p>
-                  <p className="mt-0.5 text-[12px] font-bold leading-snug text-white">
+                  <p className="mt-0.5 line-clamp-1 text-[10px] font-bold leading-tight text-white sm:text-[12px]">
                     {isHi ? "फसल — पत्ती धब्बा" : "Crop — leaf spot"}
                   </p>
-                  <p className="mt-0.5 text-[10px] font-semibold text-amber-200">
+                  <p className="mt-0.5 text-[9px] font-semibold text-amber-200 sm:text-[10px]">
                     {isHi ? "उदाहरण · फोटो लो" : "Example · take photo"}
                   </p>
                 </div>

@@ -15,7 +15,7 @@ import VoiceInput from "@/components/query/VoiceInput";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { useToast } from "@/components/ui/Toast";
-import { OTHER_CROP } from "@/data/ai-doctor-crops";
+import { AI_DOCTOR_CROPS, OTHER_CROP } from "@/data/ai-doctor-crops";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import {
     analyzeDiagnosis,
@@ -23,7 +23,12 @@ import {
     checkAiDoctorConfigured,
     type DiagnosisResult,
 } from "@/lib/aiDiagnosis";
+import {
+  saveAiDoctorExpertReferral,
+  urlToDataUrl,
+} from "@/lib/aiDoctorExpertReferral";
 import { track } from "@/lib/analytics";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import {
     claimPendingAiScan,
     dataUrlToFile,
@@ -37,7 +42,7 @@ import {
     ShieldCheck,
     Stethoscope,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 /** Keep photo notes farmer-simple — drop English (jargon) parentheses. */
@@ -49,10 +54,12 @@ function simpleObservation(text: string): string {
 }
 
 export default function AIDoctorPage() {
+  const router = useRouter();
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const { addEntry, history, clearHistory } = useAIHistory();
   const { showToast } = useToast();
+  const [referringExpert, setReferringExpert] = useState(false);
 
   const [selectedCrop, setSelectedCrop] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -507,12 +514,49 @@ export default function AIDoctorPage() {
                     </div>
                   </div>
 
-                  <Link
-                    href="/ask-query"
-                    className="block min-h-[48px] rounded-xl bg-emerald-700 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-emerald-700/20"
+                  <button
+                    type="button"
+                    disabled={referringExpert}
+                    onClick={async () => {
+                      if (!result || referringExpert) return;
+                      setReferringExpert(true);
+                      try {
+                        const slug = selectedCrop || OTHER_CROP.slug;
+                        const listed = AI_DOCTOR_CROPS.find((c) => c.slug === slug);
+                        const cropName =
+                          getCropHindiName(slug, listed?.name) ??
+                          (slug === OTHER_CROP.slug ? "अन्य फसल" : listed?.name ?? slug);
+
+                        let photoDataUrl: string | null = null;
+                        if (previewUrl?.startsWith("data:")) {
+                          photoDataUrl = previewUrl;
+                        } else if (previewUrl) {
+                          photoDataUrl = await urlToDataUrl(previewUrl);
+                        } else if (selectedFile) {
+                          photoDataUrl = await new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(String(reader.result));
+                            reader.onerror = () => resolve(null);
+                            reader.readAsDataURL(selectedFile);
+                          });
+                        }
+
+                        saveAiDoctorExpertReferral({
+                          cropSlug: slug,
+                          cropName,
+                          photoDataUrl,
+                          result,
+                          createdAt: new Date().toISOString(),
+                        });
+                        router.push("/ask-query?from=ai-doctor");
+                      } finally {
+                        setReferringExpert(false);
+                      }
+                    }}
+                    className="block w-full min-h-[48px] rounded-xl bg-emerald-700 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-emerald-700/20 disabled:opacity-60"
                   >
-                    विशेषज्ञ से पुष्टि करें →
-                  </Link>
+                    {referringExpert ? "खोल रहे हैं…" : "विशेषज्ञ से पुष्टि करें →"}
+                  </button>
 
                   <ShareOutbreakPrompt result={result} cropSlug={selectedCrop} photoUrl={previewUrl} />
                 </div>

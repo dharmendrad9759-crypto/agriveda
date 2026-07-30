@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
-import { Camera, Check, ImagePlus, X } from "lucide-react";
+import { Camera, Check, ImagePlus, Stethoscope, X } from "lucide-react";
 import CropSelector from "@/components/query/CropSelector";
 import VoiceInput from "@/components/query/VoiceInput";
 import { useMyCrops } from "@/hooks/useMyCrops";
@@ -13,9 +13,17 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cropCatalog } from "@/data/crop-catalog";
+import { getCropEmoji, getCropHindiName } from "@/lib/crops/crop-display";
+import {
+  buildExpertQueryText,
+  clearAiDoctorExpertReferral,
+  readAiDoctorExpertReferral,
+  type AiDoctorExpertReferral,
+} from "@/lib/aiDoctorExpertReferral";
 import { AV } from "@/lib/design/tokens";
 
 const MAX_CHARS = 256;
+const MAX_CHARS_REFERRAL = 1200;
 
 export default function AskQueryPage() {
   const { crops, hydrated } = useMyCrops();
@@ -25,6 +33,7 @@ export default function AskQueryPage() {
   const { t } = useLocale();
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const referralAppliedRef = useRef(false);
 
   const availableCrops = hydrated
     ? crops.map((c) => ({ id: c.slug, name: c.name, emoji: c.emoji }))
@@ -39,12 +48,41 @@ export default function AskQueryPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoName, setPhotoName] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [fromAiDoctor, setFromAiDoctor] = useState(false);
+  const [referralCropName, setReferralCropName] = useState<string | null>(null);
+  const [referralSummary, setReferralSummary] = useState<AiDoctorExpertReferral | null>(null);
+
+  const maxChars = fromAiDoctor ? MAX_CHARS_REFERRAL : MAX_CHARS;
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const fromDoctor = new URLSearchParams(window.location.search).get("from") === "ai-doctor";
+    if (!fromDoctor) return;
+
+    const referral = readAiDoctorExpertReferral();
+    if (!referral) return;
+
+    setFromAiDoctor(true);
+    setReferralSummary(referral);
+    setSelectedCrop(referral.cropSlug);
+    setReferralCropName(referral.cropName);
+    setQuery(buildExpertQueryText(referral));
+    if (referral.photoDataUrl) {
+      setPhotoPreview(referral.photoDataUrl);
+      setPhotoName("ai-doctor-scan.jpg");
+    }
+    if (!referralAppliedRef.current) {
+      referralAppliedRef.current = true;
+      showToast("AI डॉक्टर निदान भर दिया गया ✓");
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    if (fromAiDoctor) return;
     if (availableCrops.length > 0 && !availableCrops.find((c) => c.id === selectedCrop)) {
       setSelectedCrop(availableCrops[0].id);
     }
-  }, [availableCrops, selectedCrop]);
+  }, [availableCrops, selectedCrop, fromAiDoctor]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,7 +107,11 @@ export default function AskQueryPage() {
     e.preventDefault();
     if (!query.trim()) return;
 
-    const cropName = availableCrops.find((c) => c.id === selectedCrop)?.name ?? selectedCrop;
+    const cropName =
+      referralCropName ??
+      availableCrops.find((c) => c.id === selectedCrop)?.name ??
+      getCropHindiName(selectedCrop, selectedCrop) ??
+      selectedCrop;
     addQuery({
       crop: selectedCrop,
       cropName,
@@ -77,9 +119,16 @@ export default function AskQueryPage() {
       image: photoPreview ?? undefined,
       farmerName: profile.name || "You",
     });
+    clearAiDoctorExpertReferral();
     setSubmitted(true);
     showToast("Saved on this phone — open AI Doctor for an answer");
   };
+
+  const lockedCropLabel =
+    referralCropName ??
+    getCropHindiName(selectedCrop) ??
+    availableCrops.find((c) => c.id === selectedCrop)?.name ??
+    selectedCrop;
 
   if (submitted) {
     return (
@@ -94,7 +143,8 @@ export default function AskQueryPage() {
           </div>
           <h2 className="mt-4 text-xl font-bold text-[var(--av-text-primary)]">Saved locally</h2>
           <p className="mt-2 max-w-sm text-sm text-[var(--av-text-muted)]">
-            Community expert inbox abhi live nahi hai. AI Doctor se {availableCrops.find((c) => c.id === selectedCrop)?.name ?? "crop"} ke baare mein turant jawab milega.
+            Community expert inbox abhi live nahi hai. AI Doctor se {lockedCropLabel} ke baare mein turant jawab
+            milega.
           </p>
           <AppLink href="/ai-doctor" className={`mt-6 ${AV.btnPrimary}`}>
             Open AI Doctor
@@ -110,52 +160,105 @@ export default function AskQueryPage() {
   return (
     <AppShell
       title={t("askExpertTitle")}
-      subtitle={t("askExpertSubtitle")}
+      subtitle={fromAiDoctor ? "AI डॉक्टर निदान भेजा गया — विशेषज्ञ से पुष्टि करें" : t("askExpertSubtitle")}
       breadcrumbs={[{ label: "Home", href: "/" }, { label: "Ask Expert" }]}
     >
       <form onSubmit={handleSubmit} className="mx-auto max-w-lg space-y-4">
-        <DarkCard>
-          <h3 className={AV.sectionTitle}>{t("selectCrop")}</h3>
-          <div className="mt-3">
-            {availableCrops.length > 0 ? (
-              <CropSelector
-                crops={availableCrops}
-                selectedId={selectedCrop}
-                onSelect={setSelectedCrop}
-              />
-            ) : (
-              <p className="text-center text-sm text-[var(--av-text-muted)]">{t("addCropsFirst")}</p>
-            )}
-          </div>
-        </DarkCard>
+        {fromAiDoctor && referralSummary && (
+          <DarkCard className="border border-emerald-600/25 bg-emerald-500/5">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-700/15 text-emerald-800">
+                <Stethoscope className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800/80">
+                  AI फसल डॉक्टर से भेजा
+                </p>
+                <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
+                  {referralSummary.result.diseaseName}
+                </p>
+                <p className="mt-0.5 text-xs text-[var(--av-text-muted)]">
+                  विश्वास {referralSummary.result.confidence}% · जोखिम {referralSummary.result.riskLevel} ·{" "}
+                  {referralSummary.result.severity}
+                </p>
+                {referralSummary.result.visualObservations && (
+                  <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-[var(--av-text-muted)]">
+                    {referralSummary.result.visualObservations
+                      .replace(/\s*\([^)]*\)/g, "")
+                      .replace(/\s{2,}/g, " ")
+                      .trim()}
+                  </p>
+                )}
+              </div>
+            </div>
+          </DarkCard>
+        )}
+
+        {fromAiDoctor ? (
+          <DarkCard>
+            <h3 className={AV.sectionTitle}>फसल</h3>
+            <div className="mt-3 flex items-center gap-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-2)] px-3 py-3">
+              <span className="text-2xl" aria-hidden>
+                {getCropEmoji(selectedCrop)}
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-[var(--av-text-primary)]">{lockedCropLabel}</p>
+                <p className="text-[11px] text-[var(--av-text-muted)]">
+                  AI डॉक्टर स्कैन से स्वतः चुनी — बदल नहीं सकते
+                </p>
+              </div>
+            </div>
+          </DarkCard>
+        ) : (
+          <DarkCard>
+            <h3 className={AV.sectionTitle}>{t("selectCrop")}</h3>
+            <div className="mt-3">
+              {availableCrops.length > 0 ? (
+                <CropSelector
+                  crops={availableCrops}
+                  selectedId={selectedCrop}
+                  onSelect={setSelectedCrop}
+                />
+              ) : (
+                <p className="text-center text-sm text-[var(--av-text-muted)]">{t("addCropsFirst")}</p>
+              )}
+            </div>
+          </DarkCard>
+        )}
 
         <DarkCard delay={1}>
-          <h3 className={AV.sectionTitle}>{t("writeQuery")}</h3>
+          <h3 className={AV.sectionTitle}>{fromAiDoctor ? "संदेश / प्रश्न" : t("writeQuery")}</h3>
           <div className="relative mt-3">
             <textarea
               value={query}
-              onChange={(e) => setQuery(e.target.value.slice(0, MAX_CHARS))}
+              onChange={(e) => setQuery(e.target.value.slice(0, maxChars))}
               placeholder={t("queryPlaceholder")}
-              rows={5}
+              rows={fromAiDoctor ? 10 : 5}
               className="av-input w-full resize-none"
             />
             <span className="absolute bottom-3 right-3 text-[11px] text-[var(--av-text-muted)] tabular-nums">
-              {query.length}/{MAX_CHARS}
+              {query.length}/{maxChars}
             </span>
           </div>
           <div className="mt-3">
             <VoiceInput
               compact
               onTranscript={(text) =>
-                setQuery((q) => `${q}${q ? " " : ""}${text}`.slice(0, MAX_CHARS))
+                setQuery((q) => `${q}${q ? " " : ""}${text}`.slice(0, maxChars))
               }
             />
           </div>
         </DarkCard>
 
         <DarkCard delay={2}>
-          <h3 className={AV.sectionTitle}>{t("addPhotoOptional")}</h3>
-          <p className={`mt-1 ${AV.micro}`}>{t("photoPermission")}</p>
+          <h3 className={AV.sectionTitle}>
+            {fromAiDoctor ? "स्कैन फोटो" : t("addPhotoOptional")}
+          </h3>
+          <p className={`mt-1 ${AV.micro}`}>
+            {fromAiDoctor
+              ? "AI डॉक्टर वाली फोटो पहले से जुड़ी है — चाहें तो बदल सकते हैं"
+              : t("photoPermission")}
+          </p>
 
           <input
             ref={galleryInputRef}
@@ -211,7 +314,7 @@ export default function AskQueryPage() {
         </DarkCard>
 
         <button type="submit" disabled={!query.trim()} className={`w-full ${AV.btnPrimary} disabled:opacity-40`}>
-          {t("submitQuery")}
+          {fromAiDoctor ? "विशेषज्ञ को भेजें" : t("submitQuery")}
         </button>
       </form>
     </AppShell>
