@@ -98,7 +98,7 @@ export default function SettingsPage() {
             <p className="text-xs text-[var(--av-text-muted)]">
               {profile.phone ? `+91 ${profile.phone}` : t("settingsAddPhone")}
             </p>
-            <AppLink href="/profile" className={`mt-4 flex w-full justify-center ${AV.btnSecondarySm}`}>
+            <AppLink href="/profile/edit" className={`mt-4 flex w-full justify-center ${AV.btnSecondarySm}`}>
               {t("settingsEditProfile")}
             </AppLink>
           </div>

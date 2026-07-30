@@ -27,7 +27,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 type PestTab = "spray" | "control";
 
 function weedIdentifyTips(threat: EnrichedThreat, hi: boolean): string[] {
-  const name = threat.name;
+  const name = hi && threat.nameHi ? threat.nameHi : threat.name;
   const sci = threat.scientificName;
   const typeHint = /sedge|cyperus/i.test(`${name} ${sci}`)
     ? hi
@@ -163,9 +163,16 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
 
   const [pestTab, setPestTab] = useState<PestTab>("spray");
 
-  const backHref = isWeed
-    ? `/pest-diseases?type=weed&crop=${threat.cropSlug}`
-    : `/pest-diseases?crop=${threat.cropSlug}`;
+  const cropTab =
+    threat.type === "weed"
+      ? "weeds"
+      : threat.type === "disease"
+        ? "diseases"
+        : "pests";
+  const backHref = `/crops/${threat.cropSlug}?tab=${cropTab}`;
+  const cropListLabel = cropHi
+    ? `${threat.cropName} (${cropHi})`
+    : threat.cropName;
 
   const pestTabs = (
     [
@@ -180,16 +187,23 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
 
   return (
     <AppShell
+      backHref={backHref}
       breadcrumbs={[
         { label: hi ? "होम" : "Home", href: "/" },
-        { label: isWeed ? (hi ? "खरपतवार" : "Weeds") : hi ? "कीट-रोग" : "Pests", href: backHref },
-        { label: threat.name },
+        { label: cropListLabel, href: `/crops/${threat.cropSlug}` },
+        {
+          label: isWeed ? (hi ? "खरपतवार" : "Weeds") : hi ? "कीट-रोग" : "Pests",
+          href: backHref,
+        },
+        { label: isWeed && hi && threat.nameHi ? threat.nameHi : threat.name },
       ]}
     >
       <header className="space-y-1">
         <div className="flex flex-wrap items-center gap-2">
           <TypeIcon className="h-5 w-5 text-[var(--av-accent)]" />
-          <h1 className={AV.pageTitle}>{threat.name}</h1>
+          <h1 className={AV.pageTitle}>
+            {isWeed && hi && threat.nameHi ? threat.nameHi : threat.name}
+          </h1>
           <RiskBadge
             level={riskLevel}
             label={
@@ -203,7 +217,14 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
             }
           />
         </div>
-        {!isWeed && <p className={`italic ${AV.micro}`}>{threat.scientificName}</p>}
+        {isWeed ? (
+          <p className={`italic ${AV.micro}`}>
+            {hi && threat.nameHi ? threat.name : threat.scientificName}
+            {threat.scientificName && hi && threat.nameHi ? ` · ${threat.scientificName}` : ""}
+          </p>
+        ) : (
+          <p className={`italic ${AV.micro}`}>{threat.scientificName}</p>
+        )}
         <p className="text-xs text-[var(--av-text-muted)]">
           {threat.cropName}
           {cropHi ? ` (${cropHi})` : ""}

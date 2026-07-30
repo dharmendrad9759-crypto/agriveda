@@ -5,19 +5,21 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { buildCropFaqs } from "@/lib/crops/buildCropFaqs";
 import type { Crop } from "@/types/crop";
 
 export default function CropFaqSection({ crop }: { crop: Crop }) {
+  const { t } = useLocale();
   const profile = getCropManagementProfile(crop.slug);
   const faqs = profile?.faqs?.length ? profile.faqs : buildCropFaqs(crop);
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <div className="space-y-3">
-      <SectionHeader title="Frequently Asked Questions" />
-      <p className="mb-3 text-xs text-[var(--av-text-muted)]">सरल हिंदी-अंग्रेज़ी जवाब</p>
+      <SectionHeader title={t("cropFaqTitle")} />
+      <p className="mb-3 text-xs text-[var(--av-text-muted)]">सरल हिंदी जवाब</p>
       {faqs.map((faq, i) => (
         <DarkCard key={faq.question} className="!p-0 overflow-hidden">
           <button

@@ -3,6 +3,7 @@ import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
 import { getIpmThreatOverride } from "@/lib/crops/ipmDataBridge";
 import { getCropFieldGuideThreatOverride } from "@/lib/crops/cropFieldGuideBridge";
+import { getWeedNameHi } from "@/lib/crops/weedNamesHi";
 import { findStageGuideForThreat } from "@/lib/cropProtectionGuide";
 import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-disease-ui";
 
@@ -177,6 +178,7 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
 }
 
 function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
+  const nameHi = weed.nameHi ?? getWeedNameHi(weed.name, weed.scientificName);
   const base: EnrichedThreat = {
     id: weed.id,
     cropSlug: crop.slug,
@@ -184,6 +186,7 @@ function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
     type: "weed",
     category: "weed",
     name: weed.name,
+    nameHi,
     scientificName: weed.scientificName,
     image: resolveThreatImage(undefined, weed.image) ?? THREAT_IMAGES.weed,
     stage: weed.criticalPeriod,

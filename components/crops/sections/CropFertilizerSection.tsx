@@ -14,11 +14,13 @@ import { cn } from "@/lib/cn";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import type { Crop } from "@/types/crop";
 import { Calculator, Download, Droplets, FileText, FlaskConical, Leaf } from "lucide-react";
 import { useMemo, useState } from "react";
 
 type SubTabId = "schedule" | "foliar" | "organic" | "calculator" | "notes";
+type FertMode = "normal" | "drip";
 
 const SUB_TABS: {
   id: SubTabId;
@@ -34,6 +36,49 @@ const SUB_TABS: {
   { id: "notes", label: "Notes", labelHi: "नोट्स", icon: FileText, ring: "ring-slate-500/40" },
 ];
 
+function toDripSchedule(
+  rows: { stage: number; time: string; apply: string }[],
+  hi: boolean
+): { stage: number; time: string; apply: string }[] {
+  if (!rows.length) {
+    return [
+      {
+        stage: 1,
+        time: hi ? "रोपाई / बुवाई के बाद" : "After transplant / sowing",
+        apply: hi
+          ? "ड्रिप से हल्की NPK (19:19:19 या 20:20:20) — 2–3 kg/एकड़, सप्ताह में 2 बार"
+          : "Start light NPK via drip (19:19:19 or 20:20:20) — 2–3 kg/acre, 2×/week",
+      },
+      {
+        stage: 2,
+        time: hi ? "वृद्धि अवस्था" : "Vegetative",
+        apply: hi
+          ? "यूरिया / कैल्शियम नाइट्रेट फर्टिगेशन — कुल N का ~40% बाँटकर"
+          : "Urea / Ca nitrate fertigation — ~40% of total N in splits",
+      },
+      {
+        stage: 3,
+        time: hi ? "फूल / फल" : "Flowering / fruiting",
+        apply: hi
+          ? "P–K बढ़ाएँ (0:52:34 / SOP) — सप्ताह में 2–3 छोटी खुराक"
+          : "Raise P–K (0:52:34 / SOP) — 2–3 small weekly pulses",
+      },
+    ];
+  }
+  return rows.map((r, i) => ({
+    ...r,
+    apply: hi
+      ? `${r.apply} · ड्रिप: कुल खुराक 4–6 छोटी खुराकों में बाँटें (हर 3–4 दिन)`
+      : `${r.apply} · Drip: split this dose into 4–6 small pulses (every 3–4 days)`,
+    time:
+      i === 0
+        ? hi
+          ? `${r.time} (ड्रिप शुरू)`
+          : `${r.time} (start drip)`
+        : r.time,
+  }));
+}
+
 /** Farmer-facing label — never show institution / PDF jargon */
 function guideSourceLabel(raw: string | undefined): string {
   if (!raw) return "Agriveda crop guide · adjust to soil test";
@@ -48,7 +93,10 @@ function nutrientTotal(detail: string): number | null {
 
 export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const { showToast } = useToast();
+  const { t, locale } = useLocale();
+  const hi = locale === "hi";
   const [activeSubTab, setActiveSubTab] = useState<SubTabId>("schedule");
+  const [fertMode, setFertMode] = useState<FertMode>("normal");
   const [acres, setAcres] = useState(1);
 
   const hindi = getCropHindiName(crop.slug);
@@ -78,6 +126,11 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     );
     return [...basal, ...stageWise];
   }, [plan, crop.fertilizerSchedule]);
+
+  const displaySchedule = useMemo(
+    () => (fertMode === "drip" ? toDripSchedule(scheduleRows, hi) : scheduleRows),
+    [fertMode, scheduleRows, hi]
+  );
 
   const foliarRows = useMemo(() => {
     const micros = crop.fertilizerSchedule.micronutrients ?? [];
@@ -291,7 +344,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                   active ? "text-emerald-700 dark:text-emerald-300" : "text-[var(--av-text-primary)]"
                 )}
               >
-                {tab.label}
+                {hi ? tab.labelHi : tab.label}
               </span>
             </button>
           );
@@ -300,16 +353,45 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
 
       {activeSubTab === "schedule" && (
         <DarkCard>
+          <div className="mb-3 grid grid-cols-2 gap-2">
+            {(
+              [
+                { id: "drip" as const, label: t("fertDrip"), hint: t("fertDripHint") },
+                { id: "normal" as const, label: t("fertNormal"), hint: t("fertNormalHint") },
+              ] as const
+            ).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setFertMode(m.id)}
+                className={cn(
+                  "rounded-xl border px-3 py-2.5 text-left transition active:scale-[0.98]",
+                  fertMode === m.id
+                    ? "border-emerald-500/45 bg-emerald-500/10"
+                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
+                )}
+              >
+                <p className="text-xs font-extrabold text-[var(--av-text-primary)]">{m.label}</p>
+                <p className="mt-0.5 text-[10px] leading-snug text-[var(--av-text-muted)]">{m.hint}</p>
+              </button>
+            ))}
+          </div>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
-            {crop.name} — Fertilizer Schedule (per acre)
+            {hi
+              ? `${crop.name} — ${fertMode === "drip" ? "ड्रिप समयसारिणी" : "सामान्य समयसारिणी"} (प्रति एकड़)`
+              : `${crop.name} — ${fertMode === "drip" ? "Drip" : "Normal"} schedule (per acre)`}
           </h3>
           <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-            Stage-wise doses for this crop — not a generic template
+            {fertMode === "drip"
+              ? t("fertDripHint")
+              : hi
+                ? "अवस्था के हिसाब से खुराक — सामान्य छिड़क / पट्टी"
+                : "Stage-wise doses — broadcast / band placement"}
           </p>
           <ul className="mt-3 space-y-2">
-            {scheduleRows.map((row) => (
+            {displaySchedule.map((row) => (
               <li
-                key={`${row.stage}-${row.time}-${row.apply.slice(0, 24)}`}
+                key={`${fertMode}-${row.stage}-${row.time}-${row.apply.slice(0, 24)}`}
                 className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5"
               >
                 <div className="flex items-start gap-2">
@@ -324,9 +406,11 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               </li>
             ))}
           </ul>
-          {!scheduleRows.length && (
+          {!displaySchedule.length && (
             <p className="mt-2 text-xs text-[var(--av-text-muted)]">
-              Schedule data loading… soil-test based dose recommended.
+              {hi
+                ? "समयसारिणी जल्द… मिट्टी जाँच के हिसाब से खुराक लें।"
+                : "Schedule data loading… soil-test based dose recommended."}
             </p>
           )}
         </DarkCard>

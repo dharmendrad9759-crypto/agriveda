@@ -12,9 +12,15 @@ interface ThreatCardProps {
 }
 
 export default function ThreatCard({ threat }: ThreatCardProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const href = threatDetailPath(threat.cropSlug, threat.type, threat.id);
   const isWeed = threat.type === "weed";
+  const weedPrimary =
+    isWeed && locale === "hi" && threat.nameHi ? threat.nameHi : threat.name;
+  const weedSecondary =
+    isWeed && locale === "hi" && threat.nameHi
+      ? `${threat.name}${threat.scientificName ? ` · ${threat.scientificName}` : ""}`
+      : threat.scientificName;
 
   if (isWeed) {
     return (
@@ -22,10 +28,12 @@ export default function ThreatCard({ threat }: ThreatCardProps) {
         href={href}
         className="av-card av-card-hover flex flex-col justify-center px-3 py-3"
       >
-        <p className="text-sm font-bold leading-snug text-[var(--av-text-primary)]">{threat.name}</p>
-        {threat.scientificName ? (
-          <p className="mt-0.5 text-[10px] italic text-[var(--av-text-muted)] line-clamp-1">
-            {threat.scientificName}
+        <p className="text-base font-extrabold leading-snug text-[var(--av-text-primary)]">
+          {weedPrimary}
+        </p>
+        {weedSecondary ? (
+          <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)] line-clamp-1">
+            {weedSecondary}
           </p>
         ) : null}
         <p className="mt-1 text-[10px] font-semibold text-[var(--av-accent)]">

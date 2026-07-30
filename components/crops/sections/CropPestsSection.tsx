@@ -6,12 +6,14 @@ import EtlGuideCard from "@/components/shell/EtlGuideCard";
 import RiskBadge from "@/components/shell/RiskBadge";
 import StatCard from "@/components/shell/StatCard";
 import AppLink from "@/components/ui/AppLink";
+import CropCollapsible from "@/components/crops/CropCollapsible";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
 import { AV } from "@/lib/design/tokens";
 import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
 import type { Crop } from "@/types/crop";
-import { Bug, Calendar, Eye, Search, Shield, ShieldCheck } from "lucide-react";
+import { Bug, Calendar, Eye, Search, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 
 type IpmTab = "prevention" | "monitoring" | "cultural" | "biological" | "chemical";
@@ -25,6 +27,7 @@ const IPM_TAB_LABELS: Record<IpmTab, string> = {
 };
 
 export default function CropPestsSection({ crop }: { crop: Crop }) {
+  const { t, locale } = useLocale();
   const [search, setSearch] = useState("");
   const [ipmTab, setIpmTab] = useState<IpmTab>("prevention");
   const [selectedPestId, setSelectedPestId] = useState<string | null>(null);
@@ -78,33 +81,42 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
   }, [activePest, ipmTab]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      <CropCollapsible
+        title={`${t("cropPestsTitle")} — ${crop.name}`}
+        subtitle={
+          locale === "hi"
+            ? `${pests.length} मुख्य कीट · ETL पर आधारित`
+            : `${pests.length} major · ETL based`
+        }
+        defaultOpen
+      >
       <EtlGuideCard
         etl={activePest?.etl}
         monitoring={activePest?.ipm?.monitoring?.[0]}
         pestName={activePest?.name}
       />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard icon={Bug} iconColor="text-red-500" label="Pests listed" value={`${pests.length} major`} />
-        <StatCard icon={Eye} iconColor="text-amber-500" label="Data source" value={ipmPests.length ? "Field IPM guide" : "Crop catalog"} />
-        <StatCard icon={ShieldCheck} label="ETL based" value="Spray at threshold" sub="Not calendar spray" />
-        <StatCard icon={Calendar} label="IRAC rotate" value="Group rotation" sub="Resistance safe" />
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard icon={Bug} iconColor="text-red-500" label={locale === "hi" ? "कीट सूची" : "Pests listed"} value={`${pests.length}`} />
+        <StatCard icon={Eye} iconColor="text-amber-500" label={locale === "hi" ? "स्रोत" : "Data source"} value={ipmPests.length ? "IPM" : "Catalog"} />
+        <StatCard icon={ShieldCheck} label="ETL" value={locale === "hi" ? "दहलीज पर स्प्रे" : "Spray at threshold"} sub={locale === "hi" ? "कैलेंडर स्प्रे नहीं" : "Not calendar spray"} />
+        <StatCard icon={Calendar} label="IRAC" value={locale === "hi" ? "ग्रुप रोटेशन" : "Group rotation"} sub={locale === "hi" ? "प्रतिरोध सुरक्षा" : "Resistance safe"} />
       </div>
 
-      <DarkCard>
+      <DarkCard className="mt-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search pest..."
+            placeholder={locale === "hi" ? "कीट खोजें..." : "Search pest..."}
             className="av-input py-2.5 pl-10"
           />
         </div>
       </DarkCard>
 
-      <div className="space-y-3">
+      <div className="mt-3 space-y-3">
         {filtered.map((pest, i) => (
           <DarkCard
             key={pest.id}
@@ -134,7 +146,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                     className={`${AV.btnPrimarySm} inline-flex`}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    Full IPM Detail →
+                    {locale === "hi" ? "पूरा विवरण →" : "Full IPM Detail →"}
                   </AppLink>
                 </div>
               </div>
@@ -142,15 +154,13 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
           </DarkCard>
         ))}
       </div>
+      </CropCollapsible>
 
       {activePest && (
-        <DarkCard delay={2}>
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-[var(--av-accent)]" />
-            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
-              IPM Ladder — {activePest.name}
-            </h3>
-          </div>
+        <CropCollapsible
+          title={locale === "hi" ? `IPM सीढ़ी — ${activePest.name}` : `IPM Ladder — ${activePest.name}`}
+          defaultOpen
+        >
           <ShellTabBar
             tabs={(Object.keys(IPM_TAB_LABELS) as IpmTab[]).map((k) => ({
               id: k,
@@ -170,7 +180,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
               <p className="text-xs text-[var(--av-text-muted)]">No {IPM_TAB_LABELS[ipmTab]} steps for this pest.</p>
             )}
           </div>
-        </DarkCard>
+        </CropCollapsible>
       )}
     </div>
   );

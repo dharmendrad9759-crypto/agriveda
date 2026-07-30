@@ -11,6 +11,8 @@ export interface EnrichedThreat {
   type: ThreatType;
   category: ThreatCategory;
   name: string;
+  /** Hindi common name when available (weeds) */
+  nameHi?: string;
   scientificName: string;
   pathogen?: string;
   image: string;

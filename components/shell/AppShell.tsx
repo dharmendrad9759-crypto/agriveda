@@ -38,13 +38,14 @@ export default function AppShell({
   actions,
   className = "",
   variant = "default",
-  backHref = "/",
+  backHref,
   badge = "AGRIVEDA",
   hubPremium = false,
 }: AppShellProps) {
   const reduced = useReducedMotion();
   const Comp = reduced ? "div" : motion.div;
   const isHub = variant === "hub";
+  const resolvedBackHref = backHref ?? "/";
 
   if (isHub) {
     return (
@@ -60,7 +61,7 @@ export default function AppShell({
           >
             <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3.5">
               <AppLink
-                href={backHref}
+                href={resolvedBackHref}
                 className={cn(
                   "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border active:scale-95",
                   hubPremium
@@ -125,21 +126,34 @@ export default function AppShell({
             })}
         className="mx-auto w-full min-w-0 max-w-lg overflow-x-hidden px-3 py-3 pb-28 sm:max-w-2xl sm:px-4 sm:py-4 md:max-w-4xl lg:max-w-7xl lg:px-6 lg:pb-8 lg:pt-5"
       >
-        {breadcrumbs && breadcrumbs.length > 0 && (
-          <nav className={`mb-3 flex flex-wrap items-center gap-1 lg:mb-4 ${AV.micro}`}>
-            {breadcrumbs.map((crumb, i) => (
-              <span key={crumb.label} className="flex items-center gap-1 text-[var(--av-text-muted)]">
-                {i > 0 && <ChevronRight className="h-3 w-3" />}
-                {crumb.href ? (
-                  <AppLink href={crumb.href} className="hover:text-[var(--av-accent)]">
-                    {crumb.label}
-                  </AppLink>
-                ) : (
-                  <span className="text-[var(--av-text-secondary)]">{crumb.label}</span>
-                )}
-              </span>
-            ))}
-          </nav>
+        {(backHref || (breadcrumbs && breadcrumbs.length > 0)) && (
+          <div className="mb-3 flex items-start gap-2 lg:mb-4">
+            {backHref ? (
+              <AppLink
+                href={backHref}
+                aria-label="Back"
+                className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-primary)] active:scale-95"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </AppLink>
+            ) : null}
+            {breadcrumbs && breadcrumbs.length > 0 ? (
+              <nav className={`min-w-0 flex flex-wrap items-center gap-1 pt-1 ${AV.micro}`}>
+                {breadcrumbs.map((crumb, i) => (
+                  <span key={`${crumb.label}-${i}`} className="flex items-center gap-1 text-[var(--av-text-muted)]">
+                    {i > 0 && <ChevronRight className="h-3 w-3" />}
+                    {crumb.href ? (
+                      <AppLink href={crumb.href} className="hover:text-[var(--av-accent)]">
+                        {crumb.label}
+                      </AppLink>
+                    ) : (
+                      <span className="text-[var(--av-text-secondary)]">{crumb.label}</span>
+                    )}
+                  </span>
+                ))}
+              </nav>
+            ) : null}
+          </div>
         )}
 
         {(title || subtitle || actions) && (

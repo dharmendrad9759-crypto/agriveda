@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "framer-motion";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import CropPageTabs from "@/components/crops/CropPageTabs";
@@ -21,7 +21,9 @@ import CropFaqSection from "@/components/crops/sections/CropFaqSection";
 import CropExpertSection from "@/components/crops/sections/CropExpertSection";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
-import { isCropTabId, CROP_TAB_IDS, type CropTabId } from "@/lib/crops/crop-tabs";
+import { isCropTabId, CROP_TAB_IDS, cropTabHref, type CropTabId } from "@/lib/crops/crop-tabs";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import type { Crop } from "@/types/crop";
 
 interface Props {
@@ -49,8 +51,11 @@ const panelMotion = {
 
 export default function CropDetailClient({ crop, initialTab = "overview" }: Props) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { t, locale } = useLocale();
   const reduceMotion = useReducedMotion();
   const detail = useMemo(() => enrichCropDetail(crop), [crop]);
+  const hindiName = getCropHindiName(crop.slug);
 
   const tabFromUrl = searchParams.get("tab");
   const resolvedInitial = isCropTabId(tabFromUrl) ? tabFromUrl : initialTab;
@@ -58,21 +63,30 @@ export default function CropDetailClient({ crop, initialTab = "overview" }: Prop
 
   useEffect(() => {
     if (isCropTabId(tabFromUrl)) setActiveTab(tabFromUrl);
-  }, [tabFromUrl]);
+    else if (!tabFromUrl) setActiveTab(initialTab);
+  }, [tabFromUrl, initialTab]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      setActiveTab(isCropTabId(tab) ? tab : "overview");
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   const timingHint =
-    detail.establishment === "transplant"
-      ? "DAT = Days After Transplanting"
-      : "DAS = Days After Sowing";
+    detail.establishment === "transplant" ? t("cropDatHint") : t("cropDasHint");
 
   const onTabChange = useCallback(
     (tab: CropTabId) => {
       setActiveTab(tab);
-      const url = tab === "overview" ? `/crops/${crop.slug}` : `/crops/${crop.slug}?tab=${tab}`;
-      window.history.replaceState(null, "", url);
+      const url = cropTabHref(crop.slug, tab);
+      router.push(url, { scroll: false });
       document.getElementById("crop-tab-content")?.scrollIntoView({ behavior: "smooth", block: "start" });
     },
-    [crop.slug]
+    [crop.slug, router]
   );
 
   const tabIndex = useMemo(() => CROP_TAB_IDS.indexOf(activeTab), [activeTab]);
@@ -97,9 +111,10 @@ export default function CropDetailClient({ crop, initialTab = "overview" }: Prop
     <div className="crop-premium-page relative min-h-screen">
       <AppShell
         className="relative z-10 !bg-transparent"
+        backHref="/crops"
         breadcrumbs={[
-          { label: "Crops", href: "/crops" },
-          { label: crop.name },
+          { label: locale === "hi" ? "फसलें" : "Crops", href: "/crops" },
+          { label: locale === "hi" && hindiName ? hindiName : crop.name },
         ]}
       >
         <CropPremiumHero crop={crop} detail={detail} />
@@ -142,9 +157,9 @@ export default function CropDetailClient({ crop, initialTab = "overview" }: Prop
         </AnimatePresence>
 
         <ShellCtaBanner
-          title="Need crop-specific advice?"
-          description="AI Doctor se photo bhejein — diagnosis, dose aur next step turant milega."
-          buttonLabel="Open AI Doctor"
+          title={t("cropNeedAdvice")}
+          description={t("cropNeedAdviceDesc")}
+          buttonLabel={t("cropOpenAiDoctor")}
           href="/ai-doctor"
         />
       </AppShell>

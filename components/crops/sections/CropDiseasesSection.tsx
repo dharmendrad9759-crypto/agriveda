@@ -5,6 +5,8 @@ import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
 import StatCard from "@/components/shell/StatCard";
 import AppLink from "@/components/ui/AppLink";
+import CropCollapsible from "@/components/crops/CropCollapsible";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
 import { AV } from "@/lib/design/tokens";
@@ -24,6 +26,7 @@ const MGMT_LABELS: Record<MgmtTab, string> = {
 };
 
 export default function CropDiseasesSection({ crop }: { crop: Crop }) {
+  const { t, locale } = useLocale();
   const [search, setSearch] = useState("");
   const [mgmtTab, setMgmtTab] = useState<MgmtTab>("prevention");
 
@@ -75,15 +78,24 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
   }, [detail, mgmtTab]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      <CropCollapsible
+        title={`${t("cropDiseasesTitle")} — ${crop.name}`}
+        subtitle={
+          locale === "hi"
+            ? `${diseases.length} रोग · FRAC रोटेशन`
+            : `${diseases.length} listed · FRAC rotate`
+        }
+        defaultOpen
+      >
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard icon={ShieldAlert} label="Diseases" value={`${diseases.length} listed`} />
-        <StatCard icon={AlertTriangle} iconColor="text-red-500" label="Viral alert" value="Vector control only" />
-        <StatCard icon={Eye} iconColor="text-amber-500" label="Source" value={ipmDiseases.length ? "IDM JSON" : "Catalog"} />
-        <StatCard icon={Calendar} label="FRAC rotate" value="Group rotation" sub="No repeat systemic" />
+        <StatCard icon={ShieldAlert} label={t("cropDiseasesTitle")} value={`${diseases.length}`} />
+        <StatCard icon={AlertTriangle} iconColor="text-red-500" label={locale === "hi" ? "वायरल" : "Viral alert"} value={locale === "hi" ? "वेक्टर नियंत्रण" : "Vector control"} />
+        <StatCard icon={Eye} iconColor="text-amber-500" label={locale === "hi" ? "स्रोत" : "Source"} value={ipmDiseases.length ? "IDM" : "Catalog"} />
+        <StatCard icon={Calendar} label="FRAC" value={locale === "hi" ? "ग्रुप रोटेशन" : "Group rotation"} sub={locale === "hi" ? "सिस्टमिक न दोहराएँ" : "No repeat systemic"} />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="mt-3 grid gap-4 lg:grid-cols-3">
         <div className="space-y-2 lg:col-span-1">
           <DarkCard>
             <div className="relative">
@@ -91,7 +103,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search disease..."
+                placeholder={locale === "hi" ? "रोग खोजें..." : "Search disease..."}
                 className="av-input py-2 pl-9"
               />
             </div>
@@ -135,12 +147,14 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
                   href={`/pest-diseases/${crop.slug}/disease/${detail.id}`}
                   className={`mt-3 inline-flex ${AV.btnPrimarySm}`}
                 >
-                  Full disease detail →
+                  {locale === "hi" ? "पूरा रोग विवरण →" : "Full disease detail →"}
                 </AppLink>
               </DarkCard>
 
               <DarkCard delay={4}>
-                <h3 className="text-sm font-bold text-[var(--av-text-primary)]">IDM Management Ladder</h3>
+                <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
+                  {locale === "hi" ? "IDM प्रबंधन सीढ़ी" : "IDM Management Ladder"}
+                </h3>
                 <ShellTabBar
                   tabs={(Object.keys(MGMT_LABELS) as MgmtTab[]).map((id) => ({
                     id,
@@ -167,11 +181,14 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
             </>
           ) : (
             <DarkCard className="text-center">
-              <p className="text-sm text-[var(--av-text-muted)]">No disease data for this crop yet.</p>
+              <p className="text-sm text-[var(--av-text-muted)]">
+                {locale === "hi" ? "इस फसल पर अभी रोग डेटा नहीं।" : "No disease data for this crop yet."}
+              </p>
             </DarkCard>
           )}
         </div>
       </div>
+      </CropCollapsible>
     </div>
   );
 }

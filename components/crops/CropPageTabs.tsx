@@ -3,6 +3,7 @@
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import { CROP_TABS, type CropTabId } from "@/lib/crops/crop-tabs";
+import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -39,20 +40,20 @@ const RING_BY_TAB: Record<CropTabId, string> = {
   expert: "ring-teal-500/40",
 };
 
-const LABEL_HI: Partial<Record<CropTabId, string>> = {
-  overview: "ओवरव्यू",
-  growth: "वृद्धि",
-  fertilizer: "उर्वरक",
-  pests: "कीट",
-  diseases: "रोग",
-  nutrients: "पोषक",
-  irrigation: "पानी",
-  weeds: "खरपतवार",
-  calendar: "कैलेंडर",
-  varieties: "किस्में",
-  harvest: "कटाई",
-  faq: "FAQ",
-  expert: "टिप्स",
+const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
+  overview: "cropTabOverview",
+  growth: "cropTabGrowth",
+  fertilizer: "cropTabFertilizer",
+  pests: "cropTabPests",
+  diseases: "cropTabDiseases",
+  nutrients: "cropTabNutrients",
+  irrigation: "cropTabIrrigation",
+  weeds: "cropTabWeeds",
+  calendar: "cropTabCalendar",
+  varieties: "cropTabVarieties",
+  harvest: "cropTabHarvest",
+  faq: "cropTabFaq",
+  expert: "cropTabExpert",
 };
 
 interface CropPageTabsProps {
@@ -63,14 +64,11 @@ interface CropPageTabsProps {
 /** Same visual language as home More Tools — circular illustrated badges */
 export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
   const reduced = useReducedMotion();
-  const { locale } = useLocale();
-  const isHi = locale === "hi";
+  const { t } = useLocale();
 
   return (
-    <nav className="mb-5 min-w-0" aria-label="Crop sections">
-      <p className="mb-1.5 px-0.5 text-xs font-bold text-[var(--av-text-primary)]">
-        {isHi ? "फसल गाइड" : "Crop guide"}
-      </p>
+    <nav className="mb-4 min-w-0" aria-label={t("cropGuide")}>
+      <p className="mb-1.5 px-0.5 text-xs font-bold text-[var(--av-text-primary)]">{t("cropGuide")}</p>
       <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7">
         {CROP_TABS.map((tab, i) => {
           const isActive = active === tab.id;
@@ -114,7 +112,7 @@ export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
                     isActive ? "text-emerald-700 dark:text-emerald-300" : "text-[var(--av-text-primary)]"
                   )}
                 >
-                  {isHi ? LABEL_HI[tab.id] ?? tab.shortLabel : tab.shortLabel}
+                  {t(TAB_I18N[tab.id])}
                 </span>
               </button>
             </motion.div>

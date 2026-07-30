@@ -8,7 +8,6 @@ import NativeAppEssentials from "@/components/capacitor/NativeAppEssentials";
 import Footer from "@/components/footer";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import BottomNav from "@/components/layout/BottomNav";
-import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 import OfflineBanner from "@/components/layout/OfflineBanner";
 import PullToRefresh from "@/components/layout/PullToRefresh";
 import LocationBootstrap from "@/components/location/LocationBootstrap";
@@ -65,7 +64,6 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
                       <BottomNav />
                     </div>
                   </div>
-                  <LanguageSwitcher />
                 </NavDrawerProvider>
               </PullToRefresh>
             </FarmerOnboardingGate>

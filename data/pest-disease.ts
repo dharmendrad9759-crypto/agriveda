@@ -30,6 +30,8 @@ export interface DiseaseItem {
 export interface WeedItem {
   id: string;
   name: string;
+  /** Optional Hindi common name — filled via weedNamesHi when missing */
+  nameHi?: string;
   scientificName: string;
   type: string;
   criticalPeriod: string;
