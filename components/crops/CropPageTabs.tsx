@@ -93,7 +93,7 @@ export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
               >
                 <span
                   className={cn(
-                    "relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent ring-1",
+                    "relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent ring-1 sm:h-[3.75rem] sm:w-[3.75rem]",
                     RING_BY_TAB[tab.id],
                     isActive && "ring-2 ring-emerald-500/50"
                   )}
@@ -102,7 +102,7 @@ export default function CropPageTabs({ active, onChange }: CropPageTabsProps) {
                   <img
                     src={TAB_ICON[tab.id]}
                     alt=""
-                    className="h-full w-full scale-110 object-cover transition group-hover:scale-[1.15]"
+                    className="h-full w-full scale-[1.18] object-cover transition group-hover:scale-[1.25]"
                     draggable={false}
                   />
                 </span>

@@ -41,13 +41,30 @@ const NUTRIENT_FILTERS = [
   { id: "Mo", label: "Mo", hindi: "मॉली" },
 ] as const;
 
-const NUTRIENT_IMAGES: Record<string, string> = {
-  nitrogen: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=280&fit=crop",
-  phosphorus: "https://images.unsplash.com/photo-1466692476867-aef1dfb1e735?w=400&h=280&fit=crop",
-  potassium: "https://images.unsplash.com/photo-1592155931584-901ac15363c7?w=400&h=280&fit=crop",
-  zinc: "https://images.unsplash.com/photo-1592840067980-057d97d26f4a?w=400&h=280&fit=crop",
-  iron: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&h=280&fit=crop",
-  default: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=280&fit=crop",
+const NUTRIENT_HI: Record<string, string> = {
+  N: "नाइट्रोजन",
+  P: "फास्फोरस",
+  K: "पोटैश",
+  S: "सल्फर",
+  Zn: "जिंक",
+  Fe: "आयरन",
+  Mn: "मैंगनीज",
+  Cu: "कॉपर",
+  B: "बोरॉन",
+  Mo: "मॉलिब्डेनम",
+};
+
+const SYM_TONE: Record<string, string> = {
+  N: "bg-emerald-500/15 text-emerald-700 ring-emerald-500/25 dark:text-emerald-300",
+  P: "bg-violet-500/15 text-violet-700 ring-violet-500/25 dark:text-violet-300",
+  K: "bg-amber-500/15 text-amber-800 ring-amber-500/25 dark:text-amber-300",
+  S: "bg-yellow-500/15 text-yellow-800 ring-yellow-500/25 dark:text-yellow-200",
+  Zn: "bg-sky-500/15 text-sky-700 ring-sky-500/25 dark:text-sky-300",
+  Fe: "bg-orange-500/15 text-orange-800 ring-orange-500/25 dark:text-orange-300",
+  Mn: "bg-teal-500/15 text-teal-700 ring-teal-500/25 dark:text-teal-300",
+  Cu: "bg-rose-500/15 text-rose-700 ring-rose-500/25 dark:text-rose-300",
+  B: "bg-lime-500/15 text-lime-800 ring-lime-500/25 dark:text-lime-300",
+  Mo: "bg-indigo-500/15 text-indigo-700 ring-indigo-500/25 dark:text-indigo-300",
 };
 
 const BALANCED_TABLE = [
@@ -110,9 +127,11 @@ function nutrientSymbol(name: string): string {
   return name.slice(0, 2);
 }
 
-function nutrientImage(name: string): string {
-  const key = name.toLowerCase().split(" ")[0];
-  return NUTRIENT_IMAGES[key] ?? NUTRIENT_IMAGES.default;
+function nutrientTitle(name: string, hi: boolean): { primary: string; secondary: string } {
+  const sym = nutrientSymbol(name);
+  const hiName = NUTRIENT_HI[sym];
+  if (hi && hiName) return { primary: hiName, secondary: `${name} (${sym})` };
+  return { primary: name, secondary: hiName ? `${hiName} · ${sym}` : sym };
 }
 
 function slugForNutrient(name: string): string {
@@ -382,17 +401,22 @@ export default function DeficienciesPageClient() {
         </div>
       </section>
 
-      {/* Deficiency cards */}
+      {/* Deficiency list — farmer-first cards */}
       <section>
         <div className="mb-3 flex items-end justify-between gap-2">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--av-accent)]">
               {t("nutrientsStep3")}
             </p>
-            <h3 className="text-base font-bold text-[var(--av-text-primary)]">
+            <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
               {displayName}
               {hindi ? ` (${hindi})` : ""} — {t("nutrientsDeficiencies")}
             </h3>
+            <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
+              {locale === "hi"
+                ? "लक्षण देखें → सुधार पढ़ें → विवरण खोलें"
+                : "Spot symptom → read fix → open detail"}
+            </p>
           </div>
           <span className="rounded-full border border-[var(--av-border)] px-2.5 py-1 text-[10px] font-bold text-[var(--av-text-muted)]">
             {tf(locale, "nutrientsFound", { n: filtered.length })}
@@ -400,89 +424,103 @@ export default function DeficienciesPageClient() {
         </div>
 
         {visible.length === 0 ? (
-          <div className="rounded-[1.5rem] border border-dashed border-[var(--av-border)] bg-[var(--av-surface)] p-8 text-center">
+          <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface)] p-8 text-center">
             <Leaf className="mx-auto h-8 w-8 text-[var(--av-text-muted)]" />
             <p className="mt-2 text-sm font-bold text-[var(--av-text-primary)]">{t("nutrientsNoFilter")}</p>
             <p className="mt-1 text-xs text-[var(--av-text-muted)]">{t("nutrientsNoFilterHint")}</p>
             <button
               type="button"
               onClick={() => setFilter("all")}
-              className="mt-3 rounded-full bg-amber-500 px-4 py-2 text-xs font-bold text-white"
+              className="mt-3 rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white"
             >
               {t("nutrientsShowAll")}
             </button>
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <ul className="space-y-2.5">
             {visible.map((d) => {
               const sym = nutrientSymbol(d.name);
+              const title = nutrientTitle(d.name, locale === "hi");
+              const symptom = d.deficiencySymptoms[0] ?? d.role;
               const fix = d.management[0] ?? d.recommendedFertilizers[0] ?? "—";
               const foliar =
-                d.recommendedFertilizers.find((r) => /foliar|spray|%/i.test(r)) ?? "—";
+                d.recommendedFertilizers.find((r) => /foliar|spray|%/i.test(r)) ?? null;
+              const tone = SYM_TONE[sym] ?? "bg-emerald-500/15 text-emerald-700 ring-emerald-500/25";
+
               return (
-                <article
-                  key={d.name}
-                  className="group flex flex-col overflow-hidden rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] transition hover:border-amber-500/40 hover:shadow-[0_16px_36px_-18px_rgba(245,158,11,0.45)]"
-                >
-                  <div className="relative h-28 w-full">
-                    <Image
-                      src={nutrientImage(d.name)}
-                      alt={d.name}
-                      fill
-                      className="object-cover transition duration-500 group-hover:scale-105"
-                      sizes="280px"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <span className="absolute left-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-amber-500 text-xs font-black text-white shadow-lg">
+                <li key={d.name}>
+                  <AppLink
+                    href={`/deficiencies/${slugForNutrient(d.name)}`}
+                    className="av-card av-card-hover flex gap-3 p-3.5"
+                  >
+                    <span
+                      className={cn(
+                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-black ring-1",
+                        tone
+                      )}
+                    >
                       {sym}
                     </span>
-                    <p className="absolute bottom-2.5 left-3 right-3 text-sm font-black text-white">
-                      {d.name} · {t("nutrientsKami")}
-                    </p>
-                  </div>
-                  <div className="flex flex-1 flex-col p-3.5">
-                    <p className="line-clamp-2 text-[11px] leading-snug text-[var(--av-text-muted)]">
-                      {d.deficiencySymptoms[0] ?? d.role}
-                    </p>
-                    <div className="mt-2.5 space-y-1.5 rounded-xl bg-[var(--av-surface-inset)] p-2.5 text-[10px]">
-                      <p className="flex gap-1.5">
-                        <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
-                        <span>
-                          <span className="font-bold text-emerald-700 dark:text-emerald-300">
-                            {t("nutrientsFix")}:
-                          </span>{" "}
-                          <span className="text-[var(--av-text-secondary)]">{fix}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-[15px] font-extrabold leading-snug text-[var(--av-text-primary)]">
+                            {title.primary}
+                            <span className="ml-1.5 text-[11px] font-bold text-rose-600 dark:text-rose-400">
+                              · {t("nutrientsKami")}
+                            </span>
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">{title.secondary}</p>
+                        </div>
+                        <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
+                      </div>
+
+                      <p className="mt-2 text-[12px] leading-snug text-[var(--av-text-secondary)]">
+                        <span className="font-bold text-[var(--av-text-primary)]">
+                          {locale === "hi" ? "लक्षण: " : "Sign: "}
                         </span>
+                        {symptom}
                       </p>
-                      <p className="flex gap-1.5">
-                        <Droplets className="mt-0.5 h-3 w-3 shrink-0 text-sky-500" />
-                        <span>
-                          <span className="font-bold text-sky-600 dark:text-sky-300">
-                            {t("nutrientsFoliar")}:
-                          </span>{" "}
-                          <span className="text-[var(--av-text-secondary)]">{foliar}</span>
-                        </span>
+
+                      <div className="mt-2.5 space-y-1.5">
+                        <div className="flex gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-2">
+                          <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                          <p className="text-[11px] leading-snug text-[var(--av-text-secondary)]">
+                            <span className="font-bold text-emerald-700 dark:text-emerald-300">
+                              {t("nutrientsFix")}:
+                            </span>{" "}
+                            {fix}
+                          </p>
+                        </div>
+                        {foliar ? (
+                          <div className="flex gap-2 rounded-xl border border-sky-500/20 bg-sky-500/5 px-2.5 py-2">
+                            <Droplets className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-600" />
+                            <p className="text-[11px] leading-snug text-[var(--av-text-secondary)]">
+                              <span className="font-bold text-sky-700 dark:text-sky-300">
+                                {t("nutrientsFoliar")}:
+                              </span>{" "}
+                              {foliar}
+                            </p>
+                          </div>
+                        ) : null}
+                      </div>
+
+                      <p className="mt-2 text-[11px] font-bold text-[var(--av-accent)]">
+                        {t("nutrientsViewDetails")} →
                       </p>
                     </div>
-                    <AppLink
-                      href={`/deficiencies/${slugForNutrient(d.name)}`}
-                      className="mt-3 inline-flex w-full items-center justify-center gap-1 rounded-xl bg-amber-500 py-2.5 text-xs font-black text-white transition hover:bg-amber-600"
-                    >
-                      {t("nutrientsViewDetails")}
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </AppLink>
-                  </div>
-                </article>
+                  </AppLink>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
 
         {filtered.length > 8 && (
           <button
             type="button"
             onClick={() => setShowAll(!showAll)}
-            className="mt-4 flex w-full items-center justify-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] py-3 text-xs font-bold text-amber-700 dark:text-amber-300"
+            className="mt-4 flex w-full items-center justify-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] py-3 text-xs font-bold text-emerald-700 dark:text-emerald-300"
           >
             {showAll ? t("nutrientsViewLess") : tf(locale, "nutrientsViewAllN", { n: filtered.length })}
             <ChevronDown className={cn("h-4 w-4 transition", showAll && "rotate-180")} />
@@ -490,65 +528,97 @@ export default function DeficienciesPageClient() {
         )}
       </section>
 
-      {/* Balanced table + tips */}
+      {/* Balanced dose + tips */}
       <div className="grid gap-4 xl:grid-cols-12">
-        <section className="overflow-hidden rounded-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] xl:col-span-7">
-          <div className="border-b border-emerald-500/15 bg-gradient-to-r from-emerald-500/10 via-transparent to-amber-500/5 px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-300">
+        <section className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] xl:col-span-7">
+          <div className="border-b border-emerald-500/15 bg-gradient-to-r from-emerald-500/10 via-transparent to-transparent px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-300">
               {t("nutrientsCheatSheet")}
             </p>
-            <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-[var(--av-text-primary)]">
+            <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
               {t("nutrientsBalanced")} — {displayName}
             </h3>
+            <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
+              {locale === "hi" ? "प्रति एकड़ गाइड खुराक" : "Per-acre guide doses"}
+            </p>
           </div>
-          <div className="overflow-x-auto p-4">
-            <table className="min-w-[520px] w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-[var(--av-border)] text-[10px] uppercase tracking-wide text-[var(--av-text-muted)]">
-                  <th className="pb-2 pr-3 font-bold">{t("nutrientsTitle")}</th>
-                  <th className="pb-2 pr-3 font-bold">{t("nutrientsBasal")}</th>
-                  <th className="pb-2 pr-3 font-bold">{t("nutrientsTopDress")}</th>
-                  <th className="pb-2 font-bold">{t("nutrientsFoliar")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {BALANCED_TABLE.map((row) => (
-                  <tr key={row.nutrient} className="border-b border-[var(--av-border)]/70 last:border-0">
-                    <td className="py-2.5 pr-3">
-                      <p className="font-bold text-[var(--av-text-primary)]">{row.hindi}</p>
-                      <p className="text-[10px] text-[var(--av-text-muted)]">{row.nutrient}</p>
-                    </td>
-                    <td className="py-2.5 pr-3 font-semibold text-[var(--av-text-secondary)]">{row.basal}</td>
-                    <td className="py-2.5 pr-3 font-semibold text-[var(--av-text-secondary)]">{row.topDress}</td>
-                    <td className="py-2.5 font-semibold text-sky-700 dark:text-sky-300">{row.foliar}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="mt-3 text-[10px] text-[var(--av-text-muted)]">{t("nutrientsNote")}</p>
-          </div>
+          <ul className="divide-y divide-[var(--av-border-subtle)]">
+            {BALANCED_TABLE.map((row) => {
+              const sym = nutrientSymbol(row.nutrient);
+              const tone = SYM_TONE[sym] ?? SYM_TONE.N;
+              return (
+                <li key={row.nutrient} className="flex gap-3 px-4 py-3">
+                  <span
+                    className={cn(
+                      "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[11px] font-black ring-1",
+                      tone
+                    )}
+                  >
+                    {sym}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-extrabold text-[var(--av-text-primary)]">
+                      {locale === "hi" ? row.hindi : row.nutrient.split(" (")[0]}
+                    </p>
+                    <p className="text-[10px] text-[var(--av-text-muted)]">
+                      {locale === "hi" ? row.nutrient : row.hindi}
+                    </p>
+                    <div className="mt-2 grid grid-cols-3 gap-1.5">
+                      <div className="rounded-lg bg-[var(--av-surface-inset)] px-2 py-1.5">
+                        <p className="text-[9px] font-bold uppercase text-[var(--av-text-muted)]">
+                          {t("nutrientsBasal")}
+                        </p>
+                        <p className="text-[11px] font-bold text-[var(--av-text-primary)]">{row.basal}</p>
+                      </div>
+                      <div className="rounded-lg bg-[var(--av-surface-inset)] px-2 py-1.5">
+                        <p className="text-[9px] font-bold uppercase text-[var(--av-text-muted)]">
+                          {t("nutrientsTopDress")}
+                        </p>
+                        <p className="text-[11px] font-bold text-[var(--av-text-primary)]">{row.topDress}</p>
+                      </div>
+                      <div className="rounded-lg bg-sky-500/5 px-2 py-1.5 ring-1 ring-sky-500/15">
+                        <p className="text-[9px] font-bold uppercase text-sky-700 dark:text-sky-300">
+                          {t("nutrientsFoliar")}
+                        </p>
+                        <p className="text-[11px] font-bold text-[var(--av-text-primary)]">{row.foliar}</p>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="border-t border-[var(--av-border-subtle)] px-4 py-3 text-[10px] text-[var(--av-text-muted)]">
+            {t("nutrientsNote")}
+          </p>
         </section>
 
         <div className="space-y-4 xl:col-span-5">
-          <section className="rounded-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
+          <section className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
             <div className="mb-3 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-amber-500" />
-              <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("nutrientsFarmerRules")}</h3>
+              <Sparkles className="h-4 w-4 text-emerald-600" />
+              <h3 className="text-sm font-extrabold text-[var(--av-text-primary)]">
+                {t("nutrientsFarmerRules")}
+              </h3>
             </div>
             <ul className="space-y-2">
               {tips.map((tip) => (
                 <li
                   key={tip.title}
-                  className="rounded-xl border border-amber-500/15 bg-amber-500/5 px-3 py-2.5"
+                  className="rounded-xl border border-emerald-500/15 bg-emerald-500/5 px-3 py-2.5"
                 >
-                  <p className="text-[11px] font-black text-amber-800 dark:text-amber-200">{tip.title}</p>
-                  <p className="mt-0.5 text-[11px] leading-snug text-[var(--av-text-secondary)]">{tip.text}</p>
+                  <p className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
+                    {tip.title}
+                  </p>
+                  <p className="mt-0.5 text-[11px] leading-snug text-[var(--av-text-secondary)]">
+                    {tip.text}
+                  </p>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="relative overflow-hidden rounded-[1.85rem] border border-emerald-500/25 bg-gradient-to-br from-stone-950 via-emerald-950 to-stone-900 p-5 text-white">
+          <section className="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950 via-emerald-900 to-stone-900 p-5 text-white">
             <div className="pointer-events-none absolute -right-6 top-0 h-28 w-28 rounded-full bg-emerald-400/20 blur-3xl" />
             <div className="relative">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-emerald-300">

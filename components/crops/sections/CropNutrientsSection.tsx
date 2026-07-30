@@ -2,12 +2,10 @@
 
 import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
-import StatCard from "@/components/shell/StatCard";
 import AppLink from "@/components/ui/AppLink";
 import { getFertilizerForCrop, haToAcre } from "@/data/knowledge/fertilizer-recommendations";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
 import type { Crop } from "@/types/crop";
-import { AlertTriangle, FlaskConical, Leaf, Sprout } from "lucide-react";
 import { useMemo } from "react";
 
 const SYMBOL_HREF: Record<string, string> = {
@@ -32,14 +30,6 @@ function riskForNutrient(name: string, solution: string): "high" | "medium" | "l
   return "low";
 }
 
-function criticalStageLabel(crop: Crop): string {
-  const stages = crop.irrigationManagement.criticalStages;
-  if (stages.length >= 2) return `${stages[0]} — ${stages[1]}`;
-  if (stages[0]) return stages[0];
-  const fert = crop.fertilizerSchedule.stageWise[0]?.stage;
-  return fert ?? "Mid growth";
-}
-
 export default function CropNutrientsSection({ crop }: { crop: Crop }) {
   const detail = useMemo(() => enrichCropDetail(crop), [crop]);
   const fert = useMemo(() => getFertilizerForCrop(crop.slug), [crop.slug]);
@@ -51,7 +41,6 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
     return [...fromCrop, ...fromFert].filter(Boolean);
   }, [crop, fert]);
 
-  const highCount = nutrients.filter((n) => riskForNutrient(n.nutrient, n.solution) === "high").length;
   const npkLabel = fert
     ? `N:P:K ${Math.round(haToAcre(fert.n, 1))} : ${Math.round(haToAcre(fert.p2o5, 1))} : ${Math.round(haToAcre(fert.k2o, 1))} kg/acre`
     : crop.fertilizerSchedule.basalDose[0] ?? "Soil-test NPK recommended";
@@ -87,18 +76,6 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard icon={Leaf} label="Nutrients covered" value={`${nutrients.length} for ${crop.name}`} />
-        <StatCard
-          icon={AlertTriangle}
-          iconColor="text-red-500"
-          label="Watch closely"
-          value={highCount ? `${highCount} high priority` : "Balanced watch"}
-        />
-        <StatCard icon={Sprout} label="Critical stage" value={criticalStageLabel(crop)} />
-        <StatCard icon={FlaskConical} label="Guide NPK" value={npkLabel} />
-      </div>
-
       <DarkCard delay={1}>
         <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
           Essential nutrients — {crop.name}

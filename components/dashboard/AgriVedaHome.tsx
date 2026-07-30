@@ -17,7 +17,6 @@ import {
   ShieldCheck,
   Sparkles,
   Sprout,
-  Thermometer,
   Wind,
   ScanLine,
   type LucideIcon,
@@ -54,6 +53,22 @@ const QUICK_ACTIONS: {
     icon: BookOpen,
     imageSrc: "/images/icons/tools/crop-planner.png",
     tone: "from-emerald-500/15 to-teal-500/10",
+  },
+  {
+    label: "Nutrients",
+    labelHi: "पोषक तत्व",
+    href: "/deficiencies",
+    icon: Leaf,
+    imageSrc: "/images/icons/tools/nutrients.png",
+    tone: "from-lime-500/15 to-emerald-500/10",
+  },
+  {
+    label: "Field Advisor",
+    labelHi: "खेत सलाहकार",
+    href: "/field-advisor",
+    icon: MessageCircle,
+    imageSrc: "/images/icons/tools/advisor.png",
+    tone: "from-teal-500/15 to-cyan-500/10",
   },
   {
     label: "Weather",
@@ -331,8 +346,9 @@ export default function AgriVedaHome() {
               sizes="(max-width: 512px) 100vw, 512px"
               className="object-cover object-[center_22%]"
             />
-            {/* Lighter overlay — farmer face/hands remain visible */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f16]/88 via-[#0b1f16]/25 to-transparent" />
+            {/* Soft bottom fade — keep farmer face/hands clear */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f16]/72 via-[#0b1f16]/12 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/15 to-transparent" />
 
             {/* Scan frame hint on leaf area */}
             <div
@@ -500,7 +516,7 @@ export default function AgriVedaHome() {
           </div>
         </section>
 
-        {/* Weather Today */}
+        {/* Weather Today — farmer-first */}
         <motion.section
           initial={reduced ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -508,24 +524,68 @@ export default function AgriVedaHome() {
         >
           <AppLink
             href="/weather"
-            className="block overflow-hidden rounded-[22px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]"
+            className="block overflow-hidden rounded-[22px] border border-sky-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]"
           >
-            <div className="flex items-center justify-between border-b border-[var(--av-border-subtle)] bg-gradient-to-r from-sky-50/80 to-emerald-50/60 px-3.5 py-2.5 dark:from-sky-950/30 dark:to-emerald-950/20">
-              <div>
-                <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
-                  {isHi ? "आज का मौसम" : "Weather Today"}
-                </h2>
-                <p className="text-[11px] text-[var(--av-text-muted)]">{placeShort}</p>
+            <div className="relative overflow-hidden bg-gradient-to-br from-sky-500/20 via-cyan-500/10 to-emerald-500/15 px-4 pb-3 pt-3.5 dark:from-sky-950/50 dark:via-cyan-950/30 dark:to-emerald-950/25">
+              <div className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-amber-300/25 blur-2xl" />
+              <div className="pointer-events-none absolute -bottom-10 left-8 h-24 w-24 rounded-full bg-sky-400/20 blur-2xl" />
+
+              <div className="relative flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-sky-800/80 dark:text-sky-200/80">
+                    <CloudSun className="h-3.5 w-3.5" />
+                    {isHi ? "आज का मौसम" : "Weather today"}
+                  </p>
+                  <p className="mt-0.5 flex items-center gap-1 text-[12px] font-medium text-[var(--av-text-secondary)]">
+                    <MapPin className="h-3 w-3 shrink-0 text-sky-600" />
+                    <span className="truncate">{place}</span>
+                  </p>
+                </div>
+                <CloudSun className="h-10 w-10 shrink-0 text-amber-500/90 drop-shadow-sm" />
               </div>
-              <CloudSun className="h-7 w-7 text-sky-600/80 dark:text-sky-300" />
+
+              <div className="relative mt-3 flex items-end gap-3">
+                <p className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--av-text-primary)] tabular-nums">
+                  {weatherLoading ? "…" : temp.replace(/\s/g, "")}
+                </p>
+                <div className="mb-1 min-w-0 pb-0.5">
+                  <p className="text-[15px] font-bold capitalize leading-snug text-[var(--av-text-primary)]">
+                    {weatherLoading ? "…" : condition}
+                  </p>
+                  {weather?.feelsLike ? (
+                    <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+                      {isHi ? `महसूस: ${weather.feelsLike}` : `Feels like ${weather.feelsLike}`}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+
+              {/* Farmer field tip */}
+              <div
+                className={`relative mt-3 rounded-xl border px-3 py-2 text-[12px] font-semibold leading-snug ${
+                  rainChance >= 55
+                    ? "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100"
+                    : humidityPct >= 80
+                      ? "border-rose-500/25 bg-rose-500/10 text-rose-900 dark:text-rose-100"
+                      : "border-emerald-500/25 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
+                }`}
+              >
+                {rainChance >= 55
+                  ? isHi
+                    ? `बारिश संभावना ${rainChance}% — आज स्प्रे न करें`
+                    : `${rainChance}% rain chance — skip spray today`
+                  : humidityPct >= 80
+                    ? isHi
+                      ? "नमी ज्यादा — पत्तों पर रोग का खतरा देखें"
+                      : "High humidity — watch leaves for disease"
+                    : isHi
+                      ? "मौसम खेत के काम के लिए ठीक"
+                      : "Good conditions for field work"}
+              </div>
             </div>
-            <div className="grid grid-cols-4 gap-1.5 px-2.5 py-3">
+
+            <div className="grid grid-cols-3 gap-px bg-[var(--av-border-subtle)]">
               {[
-                {
-                  icon: Thermometer,
-                  label: isHi ? "तापमान" : "Temp",
-                  value: weatherLoading ? "…" : temp,
-                },
                 {
                   icon: Droplets,
                   label: isHi ? "नमी" : "Humidity",
@@ -544,24 +604,20 @@ export default function AgriVedaHome() {
               ].map(({ icon: Icon, label, value }) => (
                 <div
                   key={label}
-                  className="rounded-2xl bg-[var(--av-surface-inset)] px-2 py-3 text-center"
+                  className="flex flex-col items-center bg-[var(--av-surface)] px-2 py-3 text-center"
                 >
-                  <Icon className="mx-auto h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                  <p className="mt-1.5 text-[17px] font-bold tabular-nums text-[var(--av-text-primary)]">
+                  <Icon className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                  <p className="mt-1 text-[16px] font-extrabold tabular-nums text-[var(--av-text-primary)]">
                     {value}
                   </p>
-                  <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-muted)]">
-                    {label}
-                  </p>
+                  <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">{label}</p>
                 </div>
               ))}
             </div>
-            <p className="flex items-center justify-between px-4 pb-3.5 text-[13px] font-medium capitalize text-[var(--av-text-secondary)]">
-              <span>{condition}</span>
-              <span className="inline-flex items-center gap-1 font-bold text-[var(--av-accent)]">
-                {isHi ? "पूरा मौसम देखें" : "See full weather"}
-                <ArrowRight className="h-4 w-4" />
-              </span>
+
+            <p className="flex items-center justify-between px-4 py-3 text-[13px] font-bold text-[var(--av-accent)]">
+              <span>{isHi ? "पूरा मौसम और स्प्रे सलाह" : "Full weather & spray advice"}</span>
+              <ArrowRight className="h-4 w-4" />
             </p>
           </AppLink>
         </motion.section>
