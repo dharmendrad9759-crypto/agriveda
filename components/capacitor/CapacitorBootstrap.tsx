@@ -20,8 +20,9 @@ export default function CapacitorBootstrap() {
       if (!native) return;
       try {
         const { SplashScreen } = await import("@capacitor/splash-screen");
-        // Hide ASAP — long native splash + JS boot felt like the app was stuck
-        await SplashScreen.hide({ fadeOutDuration: 200 });
+        // Brief branded native splash, then hand off to web BootSplash
+        await new Promise((r) => window.setTimeout(r, 700));
+        await SplashScreen.hide({ fadeOutDuration: 350 });
       } catch {
         /* plugin optional */
       }
