@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 
-const SESSION_KEY = "agriveda-boot-shown-v2";
-const HERO = "/images/home/agriveda-hero-scan.jpg";
+const SESSION_KEY = "agriveda-boot-shown-v3";
+const HERO = "/splash/agriveda-splash.png";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 function readBootDone(): boolean {
@@ -38,11 +38,9 @@ export default function BootSplash() {
   useEffect(() => {
     if (phase === "gone") return;
 
-    const native =
-      typeof document !== "undefined" &&
-      document.documentElement.getAttribute("data-capacitor-native") === "true";
-    const totalMs = a11yReduced ? 650 : native ? 2200 : 2800;
-    const exitMs = a11yReduced ? 160 : 520;
+    // Always ≥ 4s (user request); a11y slightly shorter but still readable
+    const totalMs = a11yReduced ? 1200 : 4200;
+    const exitMs = a11yReduced ? 200 : 550;
     const t1 = window.setTimeout(() => setPhase("exit"), totalMs - exitMs);
     const t2 = window.setTimeout(() => {
       setPhase("gone");

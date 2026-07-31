@@ -42,9 +42,10 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 1800,
-      launchAutoHide: true,
-      launchFadeOutDuration: 400,
+      // Full Agriveda splash.png must stay ≥ 4s (user asked)
+      launchShowDuration: 4200,
+      launchAutoHide: false,
+      launchFadeOutDuration: 450,
       backgroundColor: "#04140f",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP",

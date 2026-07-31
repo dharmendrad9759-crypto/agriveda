@@ -20,9 +20,9 @@ export default function CapacitorBootstrap() {
       if (!native) return;
       try {
         const { SplashScreen } = await import("@capacitor/splash-screen");
-        // Brief branded native splash, then hand off to web BootSplash
-        await new Promise((r) => window.setTimeout(r, 700));
-        await SplashScreen.hide({ fadeOutDuration: 350 });
+        // Keep full Agriveda splash on screen for ≥ 4 seconds
+        await new Promise((r) => window.setTimeout(r, 4200));
+        await SplashScreen.hide({ fadeOutDuration: 450 });
       } catch {
         /* plugin optional */
       }
