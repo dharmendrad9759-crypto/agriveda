@@ -855,9 +855,6 @@ export default function CropPlannerClient() {
               {hindi ? ` (${hindi})` : ""} · {seasonMeta ? t(seasonMeta.labelKey) : season} · {acres}{" "}
               {acreUnit}
             </p>
-            <p className="mt-0.5 text-[11px] text-emerald-50/85">
-              {generated ? t("plannerReadyHint") : t("plannerTapHint")}
-            </p>
           </div>
           <button
             type="button"

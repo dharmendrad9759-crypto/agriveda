@@ -6,7 +6,6 @@ async function openAndroidIntent(intentUrl: string): Promise<boolean> {
     if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== "android") {
       return false;
     }
-    // Capacitor WebView resolves Android intents via location navigation
     window.location.href = intentUrl;
     return true;
   } catch {
@@ -14,6 +13,7 @@ async function openAndroidIntent(intentUrl: string): Promise<boolean> {
   }
 }
 
+/** GPS / Location master switch (system Location settings). */
 export async function openDeviceLocationSettings(): Promise<void> {
   if (typeof window === "undefined") return;
 
@@ -23,18 +23,33 @@ export async function openDeviceLocationSettings(): Promise<void> {
   if (opened) return;
 
   window.alert(
-    "Phone Settings → Location (या Apps → Agriveda → Permissions → Location) ON करें, फिर ऐप वापस खोलें।"
+    "फ़ोन Settings → Location ON करें, फिर Agriveda ऐप वापस खोलें।"
   );
 }
 
-/** Open Agriveda app permission details (when permission permanently denied). */
+/**
+ * App-specific Location permission screen.
+ * Prefer this when permission was denied — opens Agriveda app info → Permissions.
+ */
 export async function openAppLocationPermissionSettings(): Promise<void> {
   if (typeof window === "undefined") return;
 
-  const opened = await openAndroidIntent(
+  // Direct app details — farmer taps Permissions → Location
+  const appDetails = await openAndroidIntent(
     "intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;data=package:com.agriveda.app;end"
   );
-  if (opened) return;
+  if (appDetails) return;
+
+  // Some OEMs support app permission controller deep link
+  const perms = await openAndroidIntent(
+    "intent:#Intent;action=android.settings.APP_PERMISSION_SETTINGS;end"
+  );
+  if (perms) return;
 
   await openDeviceLocationSettings();
+}
+
+/** Best action after denial: open location permission path immediately. */
+export async function openBestLocationSettings(): Promise<void> {
+  await openAppLocationPermissionSettings();
 }
