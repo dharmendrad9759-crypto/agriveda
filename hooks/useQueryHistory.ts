@@ -22,26 +22,28 @@ export function useQueryHistory() {
       query: string;
       image?: string;
       farmerName?: string;
+      expertResponse?: CommunityQuery["expertResponse"];
     }) => {
+      const today = new Date().toLocaleDateString("hi-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
       const entry: CommunityQuery = {
         id: `user-${Date.now()}`,
-        farmerName: input.farmerName || "You",
+        farmerName: input.farmerName || "आप",
         crop: input.cropName,
-        date: new Date().toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        }),
+        date: today,
         query: input.query,
         hasAudio: false,
         audioDuration: "0:00",
         image: input.image,
         isMine: true,
-        expertResponse: {
+        expertResponse: input.expertResponse ?? {
           expertName: "Agriveda Expert",
-          date: "Pending review",
+          date: "समीक्षा में",
           preview:
-            "आपकी query प्राप्त हो गई है। हमारा कृषि विशेषज्ञ 24–48 घंटे में जवाब देगा। तब तक AI Doctor से तुरंत जांच कर सकते हैं।",
+            "आपकी query प्राप्त हो गई है। कृषि विशेषज्ञ जल्द जवाब देंगे। तब तक AI Doctor से तुरंत जांच कर सकते हैं।",
         },
       };
       setQueries((prev) => {

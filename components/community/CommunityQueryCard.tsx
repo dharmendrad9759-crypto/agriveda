@@ -30,12 +30,12 @@ export default function CommunityQueryCard({ query }: CommunityQueryCardProps) {
             <span className="text-xs text-[var(--av-text-muted)]">• {query.crop}</span>
             {query.isMine && (
               <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-600">
-                You
+                आप
               </span>
             )}
             {pending && (
               <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold text-sky-500">
-                Unanswered
+                प्रतीक्षा
               </span>
             )}
           </div>

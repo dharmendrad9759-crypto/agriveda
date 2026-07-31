@@ -92,9 +92,6 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
                 <p className="mt-0.5 text-[11px] italic text-[var(--av-text-muted)] line-clamp-1">
                   {d.scientific}
                 </p>
-                {"fracNote" in d && d.fracNote ? (
-                  <p className="mt-1 text-[10px] font-semibold text-violet-500">FRAC: {d.fracNote}</p>
-                ) : null}
               </div>
               <ChevronRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
             </AppLink>

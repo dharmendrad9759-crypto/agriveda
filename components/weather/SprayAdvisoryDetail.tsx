@@ -26,6 +26,7 @@ import {
 } from "@/data/spray-advisory-recommendations";
 import { fetchSprayWeatherFromSaved } from "@/lib/sprayWeatherApi";
 import { buildSprayWindowAnalysis, getSprayWindowStatus } from "@/lib/sprayWindow";
+import { formatFarmerDose } from "@/lib/units/farmerDose";
 import type { SprayWindowStatusLevel } from "@/types/spray-window";
 
 type WindowTone = "good" | "ok" | "bad";
@@ -63,19 +64,18 @@ function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
   };
 }
 
-function parseDose(doseHint?: string) {
-  if (!doseHint) return { dose: "लेबल देखें", water: "पर्याप्त पानी में" };
-  const waterMatch = doseHint.match(/(\d+(?:\.\d+)?\s*(?:ml|g|L|kg)?\/?\s*L)/i);
+function parseDose(doseHint?: string): { dose: string | null; water: string | null } {
+  if (!doseHint) return { dose: "लेबल देखें", water: null };
+  const cleaned = formatFarmerDose(doseHint);
+  const waterMatch = cleaned.match(/(\d+(?:\.\d+)?\s*(?:ml|g|L|kg)?\/?\s*L)/i);
   if (waterMatch) {
-    return {
-      dose: doseHint.split("·")[0]?.trim() || doseHint,
-      water: `${waterMatch[1]} पानी में`,
-    };
+    // Keep only the farmer-friendly water line (avoid duplicate 0.4 ml/L)
+    return { dose: null, water: `${waterMatch[1]} पानी में` };
   }
-  if (/ha|हेक्ट|hectare/i.test(doseHint)) {
-    return { dose: doseHint, water: "500–750 L पानी में" };
+  if (/acre|एकड़/i.test(cleaned)) {
+    return { dose: cleaned, water: null };
   }
-  return { dose: doseHint, water: "पर्याप्त पानी में" };
+  return { dose: cleaned, water: "पर्याप्त पानी में" };
 }
 
 function buildDayPartWindows(
@@ -333,14 +333,18 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
                   </span>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-700">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Pencil className="h-3.5 w-3.5 text-gray-400" />
-                    {card.dose}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Droplets className="h-3.5 w-3.5 text-sky-500" />
-                    {card.water}
-                  </span>
+                  {card.dose ? (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Pencil className="h-3.5 w-3.5 text-gray-400" />
+                      {card.dose}
+                    </span>
+                  ) : null}
+                  {card.water ? (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Droplets className="h-3.5 w-3.5 text-sky-500" />
+                      {card.water}
+                    </span>
+                  ) : null}
                 </div>
               </li>
             ))}

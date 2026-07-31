@@ -50,8 +50,10 @@ Farmer-first Android (Capacitor) + Next.js web app. Production shell loads the V
 
 - `lib/analytics.ts` + `POST /api/analytics` — page_view, tool_open, bug_report
 - In-app **Report bug**: `/report-bug`
-- Support / ask: `/ask-query`
-
+- Support / ask: `/ask-query` → creates `expert_queries` ticket + AI advice
+- Farmer inbox: `/my-queries`
+- **Expert Admin console**: `/admin` (password `ADMIN_PANEL_SECRET`) → `/admin/queries`
+- Schema: `supabase/expert-queries.sql` (run in Supabase SQL editor)
 ## Deliberately not in v1 polish
 
 - Full Play Billing lifecycle hardening

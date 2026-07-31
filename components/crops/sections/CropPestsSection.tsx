@@ -32,7 +32,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
           scientific: p.scientificName,
           desc: p.description,
           damage: p.symptoms[0]?.slice(0, 60) ?? "—",
-          spread: p.iracGroup ?? "—",
+          spread: p.stage ?? "—",
           loss: "Yield loss if untreated",
           etl: p.etl,
           attackStage: p.stage,

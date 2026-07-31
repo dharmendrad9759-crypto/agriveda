@@ -24,9 +24,11 @@ import {
     type DiagnosisResult,
 } from "@/lib/aiDiagnosis";
 import {
+  compressPhotoForReferral,
   saveAiDoctorExpertReferral,
   urlToDataUrl,
 } from "@/lib/aiDoctorExpertReferral";
+import { formatFarmerDose } from "@/lib/units/farmerDose";
 import { track } from "@/lib/analytics";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import {
@@ -498,7 +500,7 @@ export default function AIDoctorPage() {
                     </p>
                     <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
                       {result.treatments.map((t, i) => (
-                        <li key={i}>• {t}</li>
+                        <li key={i}>• {formatFarmerDose(t)}</li>
                       ))}
                     </ul>
                     <div className="mt-3 space-y-2">
@@ -507,7 +509,7 @@ export default function AIDoctorPage() {
                           <span className="font-bold text-emerald-700 dark:text-emerald-300">{ai.name}</span>
                           <span className="text-[var(--av-text-muted)]">
                             {" "}
-                            — {ai.dose} ({ai.fracIrac})
+                            — {formatFarmerDose(ai.dose)}
                           </span>
                         </div>
                       ))}
@@ -527,19 +529,22 @@ export default function AIDoctorPage() {
                           getCropHindiName(slug, listed?.name) ??
                           (slug === OTHER_CROP.slug ? "अन्य फसल" : listed?.name ?? slug);
 
-                        let photoDataUrl: string | null = null;
+                        let photoRaw: string | null = null;
                         if (previewUrl?.startsWith("data:")) {
-                          photoDataUrl = previewUrl;
+                          photoRaw = previewUrl;
                         } else if (previewUrl) {
-                          photoDataUrl = await urlToDataUrl(previewUrl);
+                          photoRaw = await urlToDataUrl(previewUrl);
                         } else if (selectedFile) {
-                          photoDataUrl = await new Promise((resolve) => {
+                          photoRaw = await new Promise((resolve) => {
                             const reader = new FileReader();
                             reader.onload = () => resolve(String(reader.result));
                             reader.onerror = () => resolve(null);
                             reader.readAsDataURL(selectedFile);
                           });
                         }
+                        const photoDataUrl = photoRaw
+                          ? await compressPhotoForReferral(photoRaw)
+                          : null;
 
                         saveAiDoctorExpertReferral({
                           cropSlug: slug,

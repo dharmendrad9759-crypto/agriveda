@@ -1,0 +1,346 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createSupabaseServiceClient, hasSupabaseServiceRole } from "@/lib/supabase";
+import { randomBytes } from "crypto";
+
+export type ExpertQueryStatus = "pending" | "in_review" | "answered" | "closed";
+export type ExpertQuerySource = "ask-query" | "ai-doctor";
+
+export type AiDiagnosisPayload = {
+  diseaseName?: string;
+  pathogen?: string;
+  confidence?: number;
+  severity?: string;
+  riskLevel?: string;
+  stage?: string;
+  treatments?: string[];
+  visualObservations?: string;
+  cropContext?: string;
+};
+
+export type ExpertQueryRow = {
+  id: string;
+  farmer_id: string | null;
+  device_id: string | null;
+  farmer_name: string | null;
+  farmer_phone: string | null;
+  farmer_village: string | null;
+  farmer_district: string | null;
+  farmer_state: string | null;
+  crop_slug: string | null;
+  crop_name: string;
+  query_text: string;
+  photo_url: string | null;
+  ai_diagnosis: AiDiagnosisPayload | null;
+  source: ExpertQuerySource;
+  status: ExpertQueryStatus;
+  expert_reply: string | null;
+  expert_name: string | null;
+  answered_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateExpertQueryInput = {
+  farmerId?: string | null;
+  deviceId: string;
+  farmerName?: string;
+  farmerPhone?: string;
+  farmerVillage?: string;
+  farmerDistrict?: string;
+  farmerState?: string;
+  cropSlug?: string;
+  cropName: string;
+  queryText: string;
+  photoDataUrl?: string | null;
+  aiDiagnosis?: AiDiagnosisPayload | null;
+  source?: ExpertQuerySource;
+};
+
+type MemoryStore = {
+  rows: ExpertQueryRow[];
+};
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __agrivedaExpertQueryStore: MemoryStore | undefined;
+}
+
+function memoryStore(): MemoryStore {
+  if (!globalThis.__agrivedaExpertQueryStore) {
+    globalThis.__agrivedaExpertQueryStore = { rows: [] };
+  }
+  return globalThis.__agrivedaExpertQueryStore;
+}
+
+export function expertQueriesBackendReady(): boolean {
+  return hasSupabaseServiceRole() || process.env.NODE_ENV !== "production";
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+/** Compress / strip oversized data URLs before storage upload. */
+export function sanitizePhotoDataUrl(raw: string | null | undefined): string | null {
+  if (!raw || typeof raw !== "string") return null;
+  if (!raw.startsWith("data:image/")) return null;
+  // ~350KB text ≈ safe for API + storage
+  if (raw.length > 350_000) return null;
+  return raw;
+}
+
+async function uploadPhoto(
+  client: SupabaseClient,
+  deviceId: string,
+  dataUrl: string
+): Promise<string | null> {
+  try {
+    const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(dataUrl);
+    if (!match) return null;
+    const mime = match[1];
+    const b64 = match[2];
+    const ext = mime.includes("png") ? "png" : mime.includes("webp") ? "webp" : "jpg";
+    const bytes = Buffer.from(b64, "base64");
+    if (bytes.length > 2.5 * 1024 * 1024) return null;
+
+    const path = `${deviceId.slice(0, 40)}/${Date.now()}-${randomBytes(4).toString("hex")}.${ext}`;
+    const { error } = await client.storage.from("expert-query-photos").upload(path, bytes, {
+      contentType: mime,
+      upsert: false,
+    });
+    if (error) {
+      console.error("[expertQueries] photo upload", error.message);
+      return null;
+    }
+    const { data } = client.storage.from("expert-query-photos").getPublicUrl(path);
+    return data.publicUrl || null;
+  } catch (err) {
+    console.error("[expertQueries] photo upload failed", err);
+    return null;
+  }
+}
+
+function mapRow(raw: Record<string, unknown>): ExpertQueryRow {
+  return {
+    id: String(raw.id),
+    farmer_id: (raw.farmer_id as string) ?? null,
+    device_id: (raw.device_id as string) ?? null,
+    farmer_name: (raw.farmer_name as string) ?? null,
+    farmer_phone: (raw.farmer_phone as string) ?? null,
+    farmer_village: (raw.farmer_village as string) ?? null,
+    farmer_district: (raw.farmer_district as string) ?? null,
+    farmer_state: (raw.farmer_state as string) ?? null,
+    crop_slug: (raw.crop_slug as string) ?? null,
+    crop_name: String(raw.crop_name ?? ""),
+    query_text: String(raw.query_text ?? ""),
+    photo_url: (raw.photo_url as string) ?? null,
+    ai_diagnosis: (raw.ai_diagnosis as AiDiagnosisPayload) ?? null,
+    source: (raw.source as ExpertQuerySource) ?? "ask-query",
+    status: (raw.status as ExpertQueryStatus) ?? "pending",
+    expert_reply: (raw.expert_reply as string) ?? null,
+    expert_name: (raw.expert_name as string) ?? null,
+    answered_at: (raw.answered_at as string) ?? null,
+    created_at: String(raw.created_at ?? nowIso()),
+    updated_at: String(raw.updated_at ?? nowIso()),
+  };
+}
+
+export async function createExpertQuery(
+  input: CreateExpertQueryInput,
+  client = createSupabaseServiceClient()
+): Promise<ExpertQueryRow | null> {
+  const queryText = input.queryText.trim();
+  const cropName = input.cropName.trim();
+  if (!queryText || !cropName || !input.deviceId.trim()) return null;
+
+  const photoData = sanitizePhotoDataUrl(input.photoDataUrl);
+  let photoUrl: string | null = null;
+  if (client && photoData) {
+    photoUrl = await uploadPhoto(client, input.deviceId, photoData);
+  }
+
+  const payload = {
+    farmer_id: input.farmerId ?? null,
+    device_id: input.deviceId.slice(0, 80),
+    farmer_name: input.farmerName?.trim().slice(0, 80) || null,
+    farmer_phone: input.farmerPhone?.replace(/\D/g, "").slice(0, 15) || null,
+    farmer_village: input.farmerVillage?.trim().slice(0, 80) || null,
+    farmer_district: input.farmerDistrict?.trim().slice(0, 80) || null,
+    farmer_state: input.farmerState?.trim().slice(0, 80) || null,
+    crop_slug: input.cropSlug?.trim().slice(0, 64) || null,
+    crop_name: cropName.slice(0, 80),
+    query_text: queryText.slice(0, 4000),
+    photo_url: photoUrl,
+    ai_diagnosis: input.aiDiagnosis ?? null,
+    source: input.source ?? "ask-query",
+    status: "pending" as const,
+  };
+
+  if (client) {
+    const { data, error } = await client
+      .from("expert_queries")
+      .insert(payload)
+      .select(
+        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+      )
+      .single();
+
+    if (error) {
+      console.error("[expertQueries] insert", error.message);
+      // Fall through to memory in non-prod so local UI still works before SQL migration
+      if (process.env.NODE_ENV === "production") return null;
+    } else if (data) {
+      return mapRow(data as Record<string, unknown>);
+    }
+  }
+
+  if (process.env.NODE_ENV === "production" && !client) return null;
+
+  const row: ExpertQueryRow = {
+    id: `mem-${Date.now()}-${randomBytes(3).toString("hex")}`,
+    ...payload,
+    photo_url: photoUrl ?? (photoData ? photoData.slice(0, 120_000) : null),
+    expert_reply: null,
+    expert_name: null,
+    answered_at: null,
+    created_at: nowIso(),
+    updated_at: nowIso(),
+  };
+  memoryStore().rows.unshift(row);
+  return row;
+}
+
+export async function listExpertQueriesForDevice(
+  deviceId: string,
+  client = createSupabaseServiceClient()
+): Promise<ExpertQueryRow[]> {
+  if (!deviceId) return [];
+
+  if (client) {
+    const { data, error } = await client
+      .from("expert_queries")
+      .select(
+        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+      )
+      .eq("device_id", deviceId)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (!error && data) {
+      return (data as Record<string, unknown>[]).map(mapRow);
+    }
+  }
+
+  return memoryStore().rows.filter((r) => r.device_id === deviceId).slice(0, 50);
+}
+
+export async function listExpertQueriesAdmin(opts: {
+  status?: ExpertQueryStatus | "all";
+  limit?: number;
+  client?: SupabaseClient | null;
+}): Promise<ExpertQueryRow[]> {
+  const client = opts.client ?? createSupabaseServiceClient();
+  const limit = Math.min(200, Math.max(1, opts.limit ?? 80));
+  const status = opts.status ?? "all";
+
+  if (client) {
+    let q = client
+      .from("expert_queries")
+      .select(
+        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+      )
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (status !== "all") {
+      q = q.eq("status", status);
+    }
+
+    const { data, error } = await q;
+    if (!error && data) {
+      return (data as Record<string, unknown>[]).map(mapRow);
+    }
+  }
+
+  let rows = [...memoryStore().rows];
+  if (status !== "all") rows = rows.filter((r) => r.status === status);
+  return rows.slice(0, limit);
+}
+
+export async function getExpertQueryById(
+  id: string,
+  client = createSupabaseServiceClient()
+): Promise<ExpertQueryRow | null> {
+  if (client) {
+    const { data, error } = await client
+      .from("expert_queries")
+      .select(
+        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+      )
+      .eq("id", id)
+      .maybeSingle();
+    if (!error && data) return mapRow(data as Record<string, unknown>);
+  }
+  return memoryStore().rows.find((r) => r.id === id) ?? null;
+}
+
+export async function replyToExpertQuery(
+  id: string,
+  reply: string,
+  expertName: string,
+  client = createSupabaseServiceClient()
+): Promise<ExpertQueryRow | null> {
+  const text = reply.trim().slice(0, 8000);
+  const name = expertName.trim().slice(0, 80) || "Agriveda Expert";
+  if (!id || !text) return null;
+
+  const patch = {
+    expert_reply: text,
+    expert_name: name,
+    status: "answered" as const,
+    answered_at: nowIso(),
+    updated_at: nowIso(),
+  };
+
+  if (client && !id.startsWith("mem-")) {
+    const { data, error } = await client
+      .from("expert_queries")
+      .update(patch)
+      .eq("id", id)
+      .select(
+        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+      )
+      .single();
+    if (!error && data) return mapRow(data as Record<string, unknown>);
+  }
+
+  const store = memoryStore();
+  const idx = store.rows.findIndex((r) => r.id === id);
+  if (idx < 0) return null;
+  store.rows[idx] = { ...store.rows[idx], ...patch };
+  return store.rows[idx];
+}
+
+export async function setExpertQueryStatus(
+  id: string,
+  status: ExpertQueryStatus,
+  client = createSupabaseServiceClient()
+): Promise<ExpertQueryRow | null> {
+  const patch = { status, updated_at: nowIso() };
+  if (client && !id.startsWith("mem-")) {
+    const { data, error } = await client
+      .from("expert_queries")
+      .update(patch)
+      .eq("id", id)
+      .select(
+        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+      )
+      .single();
+    if (!error && data) return mapRow(data as Record<string, unknown>);
+  }
+  const store = memoryStore();
+  const idx = store.rows.findIndex((r) => r.id === id);
+  if (idx < 0) return null;
+  store.rows[idx] = { ...store.rows[idx], ...patch };
+  return store.rows[idx];
+}

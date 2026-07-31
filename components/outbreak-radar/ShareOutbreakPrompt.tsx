@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MapPin, Share2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, MapPin, Radio, Shield } from "lucide-react";
 import type { DiagnosisResult } from "@/lib/aiDiagnosis";
 import {
   diagnosisSeverityToOutbreak,
@@ -12,6 +12,7 @@ import {
 import { useReportOutbreak } from "@/hooks/useReportOutbreak";
 import { useToast } from "@/components/ui/Toast";
 import { cropCatalog } from "@/data/crop-catalog";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import { threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { ThreatType } from "@/types/pest-disease-ui";
 
@@ -32,10 +33,14 @@ export default function ShareOutbreakPrompt({
   const [threatRef, setThreatRef] = useState<DiagnosisThreatRef | null>(null);
 
   const mapped = threatRef ?? mapDiagnosisToThreat(result, cropSlug);
+  const cropLabel =
+    getCropHindiName(mapped?.cropId ?? cropSlug) ??
+    cropCatalog.find((c) => c.slug === (mapped?.cropId ?? cropSlug))?.name ??
+    cropSlug;
 
   const handleShare = async () => {
     if (!mapped) {
-      showToast("Could not map diagnosis to pest catalog", "error");
+      showToast("कैटलॉग से मिलान नहीं हो सका", "error");
       return;
     }
     setThreatRef(mapped);
@@ -48,9 +53,9 @@ export default function ShareOutbreakPrompt({
     });
     if (res) {
       setShared(true);
-      showToast("Report shared with nearby farmers ✓");
+      showToast("नज़दीकी किसानों को चेतावनी भेज दी ✓");
       if (res.clusters.length > 0) {
-        showToast("Outbreak cluster detected in your area", "info");
+        showToast("आपके इलाके में क्लस्टर मिला", "info");
       }
     }
   };
@@ -60,56 +65,84 @@ export default function ShareOutbreakPrompt({
       ? threatDetailPath(mapped.cropId, mapped.threatType as ThreatType, mapped.pestOrDiseaseId)
       : "/pest-outbreak-radar";
     return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
-        <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">
-          धन्यवाद! आपकी रिपोर्ट नज़दीकी किसानों के साथ साझा हो गई।
-        </p>
-        <Link
-          href="/pest-outbreak-radar"
-          className="mt-2 inline-block text-xs font-bold text-emerald-600 underline"
-        >
-          View Nearby Alerts →
-        </Link>
-        <Link href={advisory} className="ml-3 text-xs font-bold text-emerald-600 underline">
-          Advisory
-        </Link>
+      <div className="overflow-hidden rounded-[20px] border border-emerald-500/25 bg-emerald-500/8 p-4">
+        <div className="flex items-start gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white">
+            <CheckCircle2 className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-emerald-800 dark:text-emerald-200">
+              रिपोर्ट साझा हो गई
+            </p>
+            <p className="mt-0.5 text-xs text-[var(--av-text-muted)]">
+              आस-पास के किसानों को अलर्ट मिल सकता है — नाम गुप्त रहेगा।
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link
+                href="/pest-outbreak-radar"
+                className="rounded-xl bg-emerald-700 px-3 py-2 text-[11px] font-bold text-white"
+              >
+                नज़दीकी अलर्ट →
+              </Link>
+              <Link
+                href={advisory}
+                className="rounded-xl border border-emerald-500/30 px-3 py-2 text-[11px] font-bold text-emerald-800 dark:text-emerald-200"
+              >
+                सलाह देखें
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-orange-500/30 bg-orange-500/5 p-4">
-      <p className="flex items-center gap-2 text-sm font-extrabold text-orange-700 dark:text-orange-300">
-        <Share2 className="h-4 w-4" />
-        Share this with nearby farmers?
-      </p>
-      <p className="mt-1 text-xs theme-text-muted">
-        नज़दीकी किसानों को जल्दी चेतावनी मिले — आपकी पहचान गुप्त रहेगी, सिर्फ़ फसल + कीट/रोग + लगभग लोकेशन दिखेगा।
-      </p>
-      {mapped && (
-        <p className="mt-2 text-xs font-bold text-emerald-600">
-          Will report: {mapped.threatName} on{" "}
-          {cropCatalog.find((c) => c.slug === mapped.cropId)?.name ?? mapped.cropId}
-        </p>
-      )}
+    <div className="overflow-hidden rounded-[20px] border border-amber-500/25 bg-gradient-to-br from-amber-500/10 via-[var(--av-surface)] to-orange-500/5 p-4 shadow-[var(--av-shadow-sm)]">
+      <div className="flex items-start gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-700 dark:text-amber-300">
+          <Radio className="h-5 w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold text-[var(--av-text-primary)]">
+            आस-पास किसानों को बताएँ?
+          </p>
+          <p className="mt-1 text-[12px] leading-relaxed text-[var(--av-text-muted)]">
+            एक टैप से इलाके में चेतावनी। नाम नहीं दिखेगा — सिर्फ फसल, रोग/कीट और लगभग जगह।
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        <span className="inline-flex items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2.5 py-1 text-[10px] font-semibold text-[var(--av-text-secondary)]">
+          <Shield className="h-3 w-3 text-emerald-600" />
+          पहचान गुप्त
+        </span>
+        {mapped ? (
+          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-[10px] font-semibold text-amber-900 dark:text-amber-100">
+            {mapped.threatName} · {cropLabel}
+          </span>
+        ) : null}
+      </div>
+
       <button
         type="button"
         onClick={handleShare}
-        disabled={submitting}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 py-3 text-sm font-black text-white disabled:opacity-60"
+        disabled={submitting || !mapped}
+        className="mt-3.5 flex w-full min-h-[48px] items-center justify-center gap-2 rounded-xl bg-amber-600 py-3 text-sm font-bold text-white shadow-md shadow-amber-700/20 disabled:opacity-50"
       >
         {submitting ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <MapPin className="h-4 w-4" />
         )}
-        One-tap share (GPS location)
+        {submitting ? "भेज रहे हैं…" : "एक टैप में साझा करें"}
       </button>
       <Link
         href="/pest-outbreak-radar/report"
-        className="mt-2 block text-center text-[10px] font-bold text-emerald-600 underline"
+        className="mt-2 block text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-300"
       >
-        Adjust location before sharing
+        पहले जगह ठीक करें →
       </Link>
     </div>
   );

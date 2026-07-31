@@ -24,6 +24,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { isCapacitorNative } from "@/lib/capacitorNav";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { MotionConfig } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
 export default function ClientProviders({ children }: { children: ReactNode }) {
@@ -31,6 +32,8 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
   const [native] = useState(() =>
     typeof window !== "undefined" ? isCapacitorNative() : false
   );
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin") ?? false;
 
   return (
     <ThemeProvider>
@@ -45,31 +48,35 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
             <CapacitorBootstrap />
             <NativeAppEssentials />
             <CapacitorNavigationFix />
-            <FarmerOnboardingGate>
-              <LocationBootstrap />
-              <PullToRefresh>
-                <NavDrawerProvider>
-                  <OfflineBanner />
-                  <div className="app-premium-shell relative flex min-h-screen flex-col lg:flex-row">
-                    <AppPremiumBackground />
-                    <AppSidebar />
-                    <div className="relative z-10 flex min-h-screen min-w-0 flex-1 flex-col overflow-x-hidden">
-                      <MobileShellTopBar />
-                      <Navbar />
-                      <ShellTopBar />
-                      <main className="min-w-0 flex-grow overflow-x-hidden bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">
-                        <PageReveal>{children}</PageReveal>
-                      </main>
-                      <Footer />
-                      <BottomNav />
+            {isAdminRoute ? (
+              children
+            ) : (
+              <FarmerOnboardingGate>
+                <LocationBootstrap />
+                <PullToRefresh>
+                  <NavDrawerProvider>
+                    <OfflineBanner />
+                    <div className="app-premium-shell relative flex min-h-screen flex-col lg:flex-row">
+                      <AppPremiumBackground />
+                      <AppSidebar />
+                      <div className="relative z-10 flex min-h-screen min-w-0 flex-1 flex-col overflow-x-hidden">
+                        <MobileShellTopBar />
+                        <Navbar />
+                        <ShellTopBar />
+                        <main className="min-w-0 flex-grow overflow-x-hidden bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">
+                          <PageReveal>{children}</PageReveal>
+                        </main>
+                        <Footer />
+                        <BottomNav />
+                      </div>
                     </div>
-                  </div>
-                </NavDrawerProvider>
-              </PullToRefresh>
-            </FarmerOnboardingGate>
+                  </NavDrawerProvider>
+                </PullToRefresh>
+              </FarmerOnboardingGate>
+            )}
           </MotionConfig>
           {/* Outside MotionConfig so phone UI jank-fix doesn't kill the open animation */}
-          <BootSplash />
+          {!isAdminRoute ? <BootSplash /> : null}
         </ToastProvider>
       </LocaleProvider>
     </ThemeProvider>

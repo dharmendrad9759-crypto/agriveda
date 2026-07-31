@@ -344,6 +344,19 @@ export default function ProfilePage() {
               </div>
 
               <AppLink
+                href="/my-queries"
+                className="flex items-center justify-between gap-3 px-4 py-3.5 transition hover:bg-[var(--av-surface-inset)]/60"
+              >
+                <span className="flex items-center gap-2.5 text-sm font-semibold text-[var(--av-text-primary)]">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                    <MessageCircle className="h-4 w-4" />
+                  </span>
+                  {isHi ? "मेरे सवाल / जवाब" : "My queries / replies"}
+                </span>
+                <ChevronRight className="h-4 w-4 text-[var(--av-text-muted)]" />
+              </AppLink>
+
+              <AppLink
                 href="/settings"
                 className="flex items-center justify-between gap-3 px-4 py-3.5 transition hover:bg-[var(--av-surface-inset)]/60"
               >

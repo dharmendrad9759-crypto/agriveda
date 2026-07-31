@@ -118,9 +118,51 @@ export async function GET(request: NextRequest) {
     if (lat && lon) {
       const latN = Number(lat);
       const lonN = Number(lon);
+
+      let placeName = "आपका स्थान";
+      let placeState: string | undefined;
+      try {
+        const nomRes = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${latN}&lon=${lonN}&format=json&addressdetails=1&zoom=10`,
+          {
+            headers: {
+              Accept: "application/json",
+              "User-Agent": "AgrivedaFarmApp/1.0 (weather-location)",
+            },
+            next: { revalidate: 86400 },
+            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+          }
+        );
+        if (nomRes.ok) {
+          const data = (await nomRes.json()) as {
+            address?: {
+              state?: string;
+              state_district?: string;
+              county?: string;
+              district?: string;
+              city?: string;
+              town?: string;
+              village?: string;
+            };
+          };
+          const a = data.address ?? {};
+          const district =
+            a.state_district || a.county || a.district || a.city || a.town || a.village || "";
+          const state = a.state || "";
+          const label = [district, state].filter(Boolean).join(", ");
+          if (label) {
+            placeName = label;
+            placeState = state || undefined;
+          }
+        }
+      } catch {
+        /* keep fallback name */
+      }
+
       const om = await resolveWithOpenMeteo(latN, lonN, {
-        name: "आपका स्थान",
+        name: placeName,
         country: "IN",
+        state: placeState,
       });
       if (om instanceof NextResponse) return om;
 
@@ -128,8 +170,22 @@ export async function GET(request: NextRequest) {
       if (apiKey) {
         const owm = await fetchOpenWeatherBundle(latN, lonN, apiKey);
         if (!("error" in owm)) {
+          const withName =
+            placeName !== "आपका स्थान" && owm.current
+              ? {
+                  ...owm,
+                  current: { ...owm.current, name: placeName },
+                  resolvedLocation: {
+                    name: placeName,
+                    state: placeState,
+                    country: "IN",
+                    lat: latN,
+                    lon: lonN,
+                  },
+                }
+              : owm;
           return NextResponse.json({
-            ...owm,
+            ...withName,
             source: "openweather",
             coords: { lat: latN, lon: lonN },
           });

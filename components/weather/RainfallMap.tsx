@@ -63,6 +63,7 @@ interface RainfallMapProps {
   rainChance?: number;
   rainMm?: number;
   height?: string;
+  locationLabel?: string;
 }
 
 export default function RainfallMap({
@@ -71,6 +72,7 @@ export default function RainfallMap({
   rainChance = 0,
   rainMm = 0,
   height = "220px",
+  locationLabel,
 }: RainfallMapProps) {
   const [radarPath, setRadarPath] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -163,7 +165,7 @@ export default function RainfallMap({
 
       <div className="pointer-events-none absolute bottom-2 left-2 right-2 flex items-end justify-between gap-2">
         <div className="rounded-lg bg-black/60 px-2 py-1 text-[9px] text-white backdrop-blur-sm">
-          {hasCoords ? "आपका स्थान" : "भारत — रडार"}
+          {hasCoords ? locationLabel?.trim() || "आपका स्थान" : "भारत — रडार"}
         </div>
         <div className="rounded-lg bg-black/60 px-2 py-1 text-[9px] text-sky-200 backdrop-blur-sm">
           {rainChance}% rain
