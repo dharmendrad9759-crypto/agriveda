@@ -38,77 +38,122 @@ const HERO_IMG = "/images/home/agriveda-hero-scan.jpg";
 /** Stable calendar anchor for DAS labels (avoids impure Date.now in render). */
 const HOME_DAY_ANCHOR_MS = Date.parse("2026-07-16T12:00:00Z");
 
-const QUICK_ACTIONS: {
+const FARM_COMMAND: {
   label: string;
   labelHi: string;
   href: string;
   icon: LucideIcon;
   imageSrc?: string;
   tone: string;
+  ring: string;
 }[] = [
   {
-    label: "Crop Guide",
-    labelHi: "फसल गाइड",
-    href: "/crops",
+    label: "My Farm",
+    labelHi: "मेरा खेत",
+    href: "/my-farm",
+    icon: Sprout,
+    imageSrc: "/images/icons/tools/my-farm.png",
+    tone: "from-emerald-500/20 to-teal-500/10",
+    ring: "ring-emerald-500/25",
+  },
+  {
+    label: "Calendar",
+    labelHi: "कैलेंडर",
+    href: "/crop-calendar",
     icon: BookOpen,
     imageSrc: "/images/icons/tools/crop-planner.png",
-    tone: "from-emerald-500/15 to-teal-500/10",
+    tone: "from-teal-500/20 to-cyan-500/10",
+    ring: "ring-teal-500/25",
   },
   {
-    label: "Nutrients",
-    labelHi: "पोषक तत्व",
-    href: "/deficiencies",
-    icon: Leaf,
-    imageSrc: "/images/icons/tools/nutrients.png",
-    tone: "from-lime-500/15 to-emerald-500/10",
-  },
-  {
-    label: "Field Advisor",
-    labelHi: "खेत सलाहकार",
+    label: "Advisor",
+    labelHi: "सलाहकार",
     href: "/field-advisor",
     icon: MessageCircle,
     imageSrc: "/images/icons/tools/advisor.png",
-    tone: "from-teal-500/15 to-cyan-500/10",
+    tone: "from-cyan-500/20 to-sky-500/10",
+    ring: "ring-cyan-500/25",
   },
   {
-    label: "Weather",
-    labelHi: "मौसम",
-    href: "/weather",
-    icon: CloudSun,
-    imageSrc: "/images/icons/tools/weather.png",
-    tone: "from-sky-500/15 to-cyan-500/10",
-  },
-  {
-    label: "Spray Advisory",
-    labelHi: "स्प्रे सलाह",
-    href: "/weather/spray-advisory",
-    icon: Droplets,
-    imageSrc: "/images/icons/tools/spray-advisory.png",
-    tone: "from-lime-500/15 to-emerald-500/10",
-  },
-  {
-    label: "Fertilizer Planner",
-    labelHi: "खाद योजना",
-    href: "/services/fertilizer-calculator",
-    icon: Sprout,
-    imageSrc: "/images/icons/tools/fertilizer.png",
-    tone: "from-amber-500/15 to-yellow-500/10",
-  },
-  {
-    label: "Pest & Disease",
+    label: "Pests",
     labelHi: "कीट-रोग",
     href: "/pest-diseases",
     icon: Leaf,
     imageSrc: "/images/icons/tools/pest-scanner.png",
-    tone: "from-rose-500/12 to-orange-500/10",
+    tone: "from-rose-500/18 to-orange-500/10",
+    ring: "ring-rose-500/25",
   },
   {
-    label: "Ask Community",
-    labelHi: "समुदाय",
-    href: "/community",
+    label: "Weeds",
+    labelHi: "खरपतवार",
+    href: "/pest-diseases?type=weed",
+    icon: Leaf,
+    imageSrc: "/images/icons/tools/weed-guide.png",
+    tone: "from-lime-500/20 to-amber-500/10",
+    ring: "ring-lime-500/25",
+  },
+  {
+    label: "Nutrients",
+    labelHi: "पोषक",
+    href: "/deficiencies",
+    icon: Leaf,
+    imageSrc: "/images/icons/tools/nutrients.png",
+    tone: "from-lime-500/20 to-emerald-500/12",
+    ring: "ring-lime-500/30",
+  },
+  {
+    label: "Fertilizer",
+    labelHi: "खाद",
+    href: "/services/fertilizer-calculator",
+    icon: Sprout,
+    imageSrc: "/images/icons/tools/fertilizer.png",
+    tone: "from-amber-500/20 to-yellow-500/10",
+    ring: "ring-amber-500/30",
+  },
+  {
+    label: "Library",
+    labelHi: "लाइब्रेरी",
+    href: "/library",
+    icon: BookOpen,
+    imageSrc: "/images/icons/tools/sowing-window.png",
+    tone: "from-violet-500/15 to-emerald-500/10",
+    ring: "ring-violet-500/25",
+  },
+  {
+    label: "Spray",
+    labelHi: "स्प्रे",
+    href: "/weather/spray-advisory",
+    icon: Droplets,
+    imageSrc: "/images/icons/tools/spray-advisory.png",
+    tone: "from-sky-500/18 to-cyan-500/10",
+    ring: "ring-sky-500/25",
+  },
+  {
+    label: "Crops",
+    labelHi: "फसलें",
+    href: "/crops",
+    icon: BookOpen,
+    imageSrc: "/images/icons/tools/crop-planner.png",
+    tone: "from-emerald-500/18 to-green-500/10",
+    ring: "ring-emerald-500/30",
+  },
+  {
+    label: "Alerts",
+    labelHi: "अलर्ट",
+    href: "/alerts",
+    icon: ShieldCheck,
+    imageSrc: "/images/icons/tools/farm-alert.png",
+    tone: "from-red-500/15 to-orange-500/10",
+    ring: "ring-red-500/25",
+  },
+  {
+    label: "Ask",
+    labelHi: "पूछें",
+    href: "/ask-query",
     icon: MessageCircle,
     imageSrc: "/images/icons/tools/advisor.png",
-    tone: "from-teal-500/15 to-emerald-500/10",
+    tone: "from-teal-500/18 to-emerald-500/10",
+    ring: "ring-teal-500/25",
   },
 ];
 
@@ -469,44 +514,73 @@ export default function AgriVedaHome() {
           </div>
         </motion.section>
 
-        {/* Quick Actions */}
-        <section>
-          <div className="mb-2 px-0.5">
-            <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
-              {isHi ? "और ज़रूरी टूल्स" : "More farm tools"}
-            </h2>
+        {/* Farm Command — compact futuristic hub */}
+        <motion.section
+          initial={reduced ? false : { opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.06, duration: MOTION.slow, ease: EASE_OUT }}
+          className="relative overflow-hidden rounded-[22px] border border-emerald-500/20 bg-[var(--av-surface)]/85 p-3 shadow-[var(--av-shadow-md)] backdrop-blur-md sm:p-3.5"
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full bg-emerald-400/15 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-14 -left-8 h-28 w-28 rounded-full bg-cyan-400/10 blur-3xl"
+          />
+
+          <div className="relative mb-2.5 flex items-end justify-between gap-2 px-0.5">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700/75 dark:text-emerald-300/80">
+                Agriveda
+              </p>
+              <h2 className="font-display text-[15px] font-bold tracking-tight text-[var(--av-text-primary)] sm:text-base">
+                {isHi ? "खेत कमांड" : "Farm Command"}
+              </h2>
+            </div>
+            <p className="pb-0.5 text-[10px] font-semibold text-[var(--av-text-muted)]">
+              {isHi ? "एक टैप · सब टूल" : "One tap · all tools"}
+            </p>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            {QUICK_ACTIONS.map((action, i) => {
+
+          <div className="relative grid grid-cols-4 gap-2 sm:gap-2.5">
+            {FARM_COMMAND.map((action, i) => {
               const Icon = action.icon;
               return (
                 <motion.div
-                  key={action.href}
-                  initial={reduced ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.04 + i * 0.03, duration: MOTION.fast, ease: EASE_OUT }}
+                  key={`${action.href}-${action.label}`}
+                  initial={reduced ? false : { opacity: 0, y: 10, scale: 0.94 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.05 + i * 0.025, duration: 0.35, ease: EASE_OUT }}
+                  whileHover={reduced ? undefined : { y: -2 }}
+                  whileTap={reduced ? undefined : { scale: 0.96 }}
                 >
                   <AppLink
                     href={action.href}
                     onClick={() => track("tool_open", { href: action.href, label: action.label })}
-                    className="av-tool-press group flex flex-col items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-1.5 py-2.5 text-center shadow-[var(--av-shadow-sm)]"
+                    className="av-tool-press group flex flex-col items-center gap-1 rounded-2xl border border-emerald-500/10 bg-[var(--av-surface-inset)]/70 px-1 py-2 text-center transition hover:border-emerald-500/35 hover:bg-[var(--av-surface)] hover:shadow-[0_8px_24px_-10px_rgba(5,150,105,0.45)]"
                   >
                     <span
-                      className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${action.tone} ring-1 ring-emerald-600/10`}
+                      className={`relative flex h-[3.35rem] w-[3.35rem] items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br ${action.tone} shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] ring-1 ${action.ring} sm:h-16 sm:w-16`}
                     >
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_55%)]"
+                      />
                       {action.imageSrc ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={action.imageSrc}
                           alt=""
-                          className="h-full w-full object-cover"
+                          className="relative h-full w-full scale-[1.22] object-cover transition duration-300 group-hover:scale-[1.3]"
                           draggable={false}
                         />
                       ) : (
-                        <Icon className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+                        <Icon className="relative h-7 w-7 text-emerald-700 dark:text-emerald-300" />
                       )}
                     </span>
-                    <span className="line-clamp-2 text-[11px] font-semibold leading-tight text-[var(--av-text-secondary)]">
+                    <span className="line-clamp-1 max-w-full px-0.5 text-[10px] font-bold leading-tight text-[var(--av-text-primary)] sm:text-[11px]">
                       {isHi ? action.labelHi : action.label}
                     </span>
                   </AppLink>
@@ -514,7 +588,7 @@ export default function AgriVedaHome() {
               );
             })}
           </div>
-        </section>
+        </motion.section>
 
         {/* Weather Today — farmer-first */}
         <motion.section
