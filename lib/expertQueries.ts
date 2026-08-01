@@ -190,14 +190,27 @@ export async function createExpertQuery(
   }
 
   if (client) {
-    const attemptInsert = async (data: typeof payload) =>
-      client
-        .from("expert_queries")
-        .insert(data)
-        .select(
-          "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
-        )
-        .single();
+    const attemptInsert = async (data: typeof payload) => {
+      try {
+        return await client
+          .from("expert_queries")
+          .insert(data)
+          .select(
+            "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+          )
+          .single();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return {
+          data: null,
+          error: { message: msg, code: "FETCH", details: "" } as {
+            message: string;
+            code: string;
+            details: string;
+          },
+        };
+      }
+    };
 
     let { data, error } = await attemptInsert(payload);
 
@@ -219,8 +232,10 @@ export async function createExpertQuery(
         const rawMsg = error.message || "";
         const looksHtml = rawMsg.includes("<!DOCTYPE") || rawMsg.includes("<html");
         const friendly = looksHtml
-          ? "Supabase URL गलत है — Vercel में NEXT_PUBLIC_SUPABASE_URL = https://wpayiyyzxbmyrdqflzya.supabase.co (supabase.com वेबसाइट नहीं)"
-          : rawMsg.toLowerCase().includes("invalid path") || error.code === "PGRST125"
+          ? "Supabase URL गलत है — Project URL Settings → API से कॉपी करें"
+          : rawMsg.toLowerCase().includes("fetch failed") || error.code === "FETCH"
+            ? "Supabase तक पहुँच नहीं (fetch failed) — Project Pause/Delete तो नहीं? Dashboard में Project URL दोबारा कॉपी करके Vercel में डालो + Redeploy"
+            : rawMsg.toLowerCase().includes("invalid path") || error.code === "PGRST125"
             ? `${rawMsg.slice(0, 120)} — URL सिर्फ https://PROJECT.supabase.co हो (बिना /rest/v1)`
             : rawMsg.includes("relation") || error.code === "42P01"
               ? `${rawMsg.slice(0, 120)} — expert_queries SQL चलाएँ`
