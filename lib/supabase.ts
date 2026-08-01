@@ -6,16 +6,25 @@ let browserClient: SupabaseClient | null = null;
  * Project URL only: https://xxxx.supabase.co
  * Strips /rest/v1, quotes, trailing slashes — those cause PGRST125
  * "Invalid path specified in request URL".
+ * Rejects dashboard/marketing hosts (supabase.com) which return HTML 404.
  */
 export function normalizeSupabaseUrl(raw: string | undefined | null): string | null {
   if (!raw) return null;
   let s = raw.trim().replace(/^["']+|["']+$/g, "");
   if (!s) return null;
   try {
-    // Allow missing protocol in pasted values
     if (!/^https?:\/\//i.test(s)) s = `https://${s}`;
     const u = new URL(s);
-    // Drop any path/query (/rest/v1, /project/..., etc.)
+    const host = u.host.toLowerCase();
+    // Must be project API host — not www/dashboard marketing site
+    if (host === "supabase.com" || host === "www.supabase.com" || host.endsWith(".supabase.com")) {
+      return null;
+    }
+    if (!host.endsWith(".supabase.co") && !host.includes("supabase")) {
+      // Allow self-hosted later; for Agriveda require *.supabase.co
+      if (!host.endsWith(".supabase.co")) return null;
+    }
+    if (!host.endsWith(".supabase.co")) return null;
     return `${u.protocol}//${u.host}`;
   } catch {
     return null;

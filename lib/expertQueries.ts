@@ -216,20 +216,20 @@ export async function createExpertQuery(
     if (error) {
       console.error("[expertQueries] insert", error.message, error.code, error.details);
       if (process.env.NODE_ENV === "production") {
-        return {
-          row: null,
-          error: `DB insert failed: ${error.message}${
-            error.message.toLowerCase().includes("invalid path") || error.code === "PGRST125"
-              ? " — Vercel में NEXT_PUBLIC_SUPABASE_URL सिर्फ https://xxxx.supabase.co हो (बिना /rest/v1)"
-              : error.message.includes("relation") || error.code === "42P01"
-                ? " — expert_queries SQL चलाएँ"
-                : error.message.toLowerCase().includes("jwt") ||
-                    error.message.toLowerCase().includes("api key") ||
-                    error.message.toLowerCase().includes("invalid api")
-                  ? " — SERVICE_ROLE key गलत हो सकती है (anon मत डालो)"
-                  : ""
-          }`,
-        };
+        const rawMsg = error.message || "";
+        const looksHtml = rawMsg.includes("<!DOCTYPE") || rawMsg.includes("<html");
+        const friendly = looksHtml
+          ? "Supabase URL गलत है — Vercel में NEXT_PUBLIC_SUPABASE_URL = https://wpayiyyzxbmyrdqflzya.supabase.co (supabase.com वेबसाइट नहीं)"
+          : rawMsg.toLowerCase().includes("invalid path") || error.code === "PGRST125"
+            ? `${rawMsg.slice(0, 120)} — URL सिर्फ https://PROJECT.supabase.co हो (बिना /rest/v1)`
+            : rawMsg.includes("relation") || error.code === "42P01"
+              ? `${rawMsg.slice(0, 120)} — expert_queries SQL चलाएँ`
+              : rawMsg.toLowerCase().includes("jwt") ||
+                  rawMsg.toLowerCase().includes("api key") ||
+                  rawMsg.toLowerCase().includes("invalid api")
+                ? `${rawMsg.slice(0, 120)} — SERVICE_ROLE key गलत (anon मत डालो)`
+                : rawMsg.slice(0, 200);
+        return { row: null, error: `DB insert failed: ${friendly}` };
       }
     } else if (data) {
       return { row: mapRow(data as Record<string, unknown>) };

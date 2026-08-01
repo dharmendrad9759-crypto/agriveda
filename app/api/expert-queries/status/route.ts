@@ -34,12 +34,12 @@ export async function GET() {
     supabaseAnon: hasAnon,
     supabaseServiceRole: hasService,
     configured: isSupabaseConfigured(),
-    hint: rawHadExtraPath
-      ? "NEXT_PUBLIC_SUPABASE_URL में /rest/v1 या extra path है — सिर्फ https://PROJECT.supabase.co रखो, फिर Redeploy"
-      : !hasService
-        ? "Vercel में SUPABASE_SERVICE_ROLE_KEY (service_role, anon नहीं) डालकर Redeploy करें"
-        : !normalized
-          ? "NEXT_PUBLIC_SUPABASE_URL missing/invalid"
+    hint: !normalized
+      ? "NEXT_PUBLIC_SUPABASE_URL गलत — सही: https://wpayiyyzxbmyrdqflzya.supabase.co (supabase.com या dashboard लिंक नहीं)"
+      : rawHadExtraPath
+        ? "NEXT_PUBLIC_SUPABASE_URL में /rest/v1 या extra path है — सिर्फ https://PROJECT.supabase.co रखो, फिर Redeploy"
+        : !hasService
+          ? "Vercel में SUPABASE_SERVICE_ROLE_KEY (service_role, anon नहीं) डालकर Redeploy करें"
           : "OK — अगर फिर भी fail हो तो Supabase Table Editor में expert_queries टेबल चेक करें",
     normalizeCheck: normalizeSupabaseUrl("https://demo.supabase.co/rest/v1/") === "https://demo.supabase.co",
   });
