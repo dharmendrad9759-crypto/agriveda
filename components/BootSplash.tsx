@@ -26,15 +26,33 @@ function markBootDone() {
 }
 
 /**
- * Premium boot splash — once per browser/session.
- * Starts hidden until client mount so SoftNav / hardNavigate reloads
- * do NOT flash the splash on every crop/tool click.
+ * Premium boot splash — web / laptop once per session.
+ * Phone uses NativeLaunchSplash instead (more reliable in Capacitor WebView).
  */
 export default function BootSplash() {
   const a11yReduced = useReducedMotion();
   const [phase, setPhase] = useState<"idle" | "show" | "exit" | "gone">("idle");
 
   useEffect(() => {
+    // Phone: NativeLaunchSplash handles the 4s brand screen
+    if (
+      typeof document !== "undefined" &&
+      document.documentElement.getAttribute("data-capacitor-native") === "true"
+    ) {
+      setPhase("gone");
+      return;
+    }
+    // Also detect Capacitor before attribute is set
+    try {
+      const w = window as Window & { Capacitor?: { isNativePlatform?: () => boolean } };
+      if (w.Capacitor?.isNativePlatform?.()) {
+        setPhase("gone");
+        return;
+      }
+    } catch {
+      /* web */
+    }
+
     if (readBootDone()) {
       setPhase("gone");
       return;

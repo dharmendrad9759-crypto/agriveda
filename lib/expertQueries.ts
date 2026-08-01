@@ -148,10 +148,12 @@ function mapRow(raw: Record<string, unknown>): ExpertQueryRow {
 export async function createExpertQuery(
   input: CreateExpertQueryInput,
   client = createSupabaseServiceClient()
-): Promise<ExpertQueryRow | null> {
+): Promise<{ row: ExpertQueryRow | null; error?: string }> {
   const queryText = input.queryText.trim();
   const cropName = input.cropName.trim();
-  if (!queryText || !cropName || !input.deviceId.trim()) return null;
+  if (!queryText || !cropName || !input.deviceId.trim()) {
+    return { row: null, error: "queryText, cropName, deviceId required" };
+  }
 
   const photoData = sanitizePhotoDataUrl(input.photoDataUrl);
   let photoUrl: string | null = null;
@@ -174,7 +176,18 @@ export async function createExpertQuery(
     ai_diagnosis: input.aiDiagnosis ?? null,
     source: input.source ?? "ask-query",
     status: "pending" as const,
+    updated_at: nowIso(),
   };
+
+  if (!client) {
+    if (process.env.NODE_ENV === "production") {
+      return {
+        row: null,
+        error:
+          "SUPABASE_SERVICE_ROLE_KEY missing on server — Vercel env check + Redeploy",
+      };
+    }
+  }
 
   if (client) {
     const { data, error } = await client
@@ -186,15 +199,28 @@ export async function createExpertQuery(
       .single();
 
     if (error) {
-      console.error("[expertQueries] insert", error.message);
-      // Fall through to memory in non-prod so local UI still works before SQL migration
-      if (process.env.NODE_ENV === "production") return null;
+      console.error("[expertQueries] insert", error.message, error.code, error.details);
+      if (process.env.NODE_ENV === "production") {
+        return {
+          row: null,
+          error: `DB insert failed: ${error.message}${
+            error.message.includes("relation") || error.code === "42P01"
+              ? " — expert_queries SQL चलाएँ"
+              : error.message.toLowerCase().includes("jwt") ||
+                  error.message.toLowerCase().includes("api key")
+                ? " — SERVICE_ROLE key गलत हो सकती है (anon मत डालो)"
+                : ""
+          }`,
+        };
+      }
     } else if (data) {
-      return mapRow(data as Record<string, unknown>);
+      return { row: mapRow(data as Record<string, unknown>) };
     }
   }
 
-  if (process.env.NODE_ENV === "production" && !client) return null;
+  if (process.env.NODE_ENV === "production" && !client) {
+    return { row: null, error: "Supabase client unavailable" };
+  }
 
   const row: ExpertQueryRow = {
     id: `mem-${Date.now()}-${randomBytes(3).toString("hex")}`,
@@ -207,7 +233,7 @@ export async function createExpertQuery(
     updated_at: nowIso(),
   };
   memoryStore().rows.unshift(row);
-  return row;
+  return { row };
 }
 
 export async function listExpertQueriesForDevice(

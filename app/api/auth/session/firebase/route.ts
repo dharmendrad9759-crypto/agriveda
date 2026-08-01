@@ -62,15 +62,33 @@ export async function POST(request: NextRequest) {
       await ensureFarmerRecord(deviceId, client, { phone });
     }
 
-    const token = signSession({
-      phone,
-      deviceId,
-      firebaseUid: user.localId,
-    });
+    let token: string;
+    try {
+      token = signSession({
+        phone,
+        deviceId,
+        firebaseUid: user.localId,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.includes("SESSION_SECRET")) {
+        return NextResponse.json(
+          {
+            error:
+              "SESSION_SECRET missing — Vercel → Settings → Environment Variables में SESSION_SECRET डालकर Redeploy करें",
+          },
+          { status: 500 }
+        );
+      }
+      throw err;
+    }
+
     const res = NextResponse.json({ success: true, phone });
     applySessionCookie(res, token);
     return res;
-  } catch {
-    return NextResponse.json({ error: "Session create failed" }, { status: 500 });
+  } catch (err) {
+    console.error("[firebase-session]", err);
+    const msg = err instanceof Error ? err.message : "Session create failed";
+    return NextResponse.json({ error: msg || "Session create failed" }, { status: 500 });
   }
 }

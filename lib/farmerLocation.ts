@@ -25,6 +25,16 @@ export function setLocationPermissionStatus(status: LocationPermissionStatus) {
   }
 }
 
+/** Clear stale denied so we can ask the system dialog again. */
+export function clearLocationPermissionCache() {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(STATUS_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 export interface ResolvedFarmerLocation {
   lat: number;
   lon: number;
@@ -46,7 +56,9 @@ export async function resolveFarmerLocationFromGps(): Promise<ResolvedFarmerLoca
   let displayName = "";
 
   try {
-    const res = await fetch(`/api/geo/reverse?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`);
+    const res = await fetch(
+      `/api/geo/reverse?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`
+    );
     if (res.ok) {
       const data = (await res.json()) as {
         state?: string;

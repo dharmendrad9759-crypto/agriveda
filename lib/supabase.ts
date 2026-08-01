@@ -11,8 +11,8 @@ export function isSupabaseConfigured(): boolean {
 
 export function hasSupabaseServiceRole(): boolean {
   return !!(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
   );
 }
 
@@ -53,8 +53,8 @@ function createSupabaseAnonServerClient(): SupabaseClient | null {
  * Required for spray/outbreak/farmer APIs after anon policies are removed.
  */
 export function createSupabaseServiceClient(): SupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
   if (!url || !key) return null;
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },

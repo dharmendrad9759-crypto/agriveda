@@ -8,10 +8,11 @@ import {
   expertQueriesBackendReady,
   listExpertQueriesForDevice,
   type AiDiagnosisPayload,
+  type ExpertQueryRow,
   type ExpertQuerySource,
 } from "@/lib/expertQueries";
 
-function publicQuery(row: Awaited<ReturnType<typeof createExpertQuery>>) {
+function publicQuery(row: ExpertQueryRow | null) {
   if (!row) return null;
   return {
     id: row.id,
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
       ? (body.aiDiagnosis as AiDiagnosisPayload)
       : null;
 
-  const row = await createExpertQuery(
+  const created = await createExpertQuery(
     {
       farmerId,
       deviceId,
@@ -135,9 +136,15 @@ export async function POST(request: NextRequest) {
     client
   );
 
-  if (!row) {
-    return NextResponse.json({ error: "सवाल सेव नहीं हो सका — बाद में कोशिश करें" }, { status: 500 });
+  if (!created.row) {
+    return NextResponse.json(
+      {
+        error: created.error || "सवाल सेव नहीं हो सका — बाद में कोशिश करें",
+        configured: hasSupabaseServiceRole(),
+      },
+      { status: 500 }
+    );
   }
 
-  return NextResponse.json({ ok: true, query: publicQuery(row) }, { status: 201 });
+  return NextResponse.json({ ok: true, query: publicQuery(created.row) }, { status: 201 });
 }

@@ -7,6 +7,7 @@ import DarkCard from "@/components/shell/DarkCard";
 import {
   Camera,
   Check,
+  Clock3,
   ImagePlus,
   Loader2,
   MessageCircle,
@@ -28,7 +29,6 @@ import {
   readAiDoctorExpertReferral,
   type AiDoctorExpertReferral,
 } from "@/lib/aiDoctorExpertReferral";
-import { clientKisanSaathiFallback } from "@/lib/kisanSaathiClient";
 import { getDeviceId } from "@/lib/deviceId";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
@@ -36,15 +36,9 @@ import { cn } from "@/lib/cn";
 const MAX_CHARS = 256;
 const MAX_CHARS_REFERRAL = 1200;
 
-function previewText(full: string, max = 180): string {
-  const clean = full.replace(/\s+/g, " ").trim();
-  if (clean.length <= max) return clean;
-  return `${clean.slice(0, max).trim()}…`;
-}
-
 /** Shrink large camera photos before upload to expert inbox. */
-async function compressDataUrlForUpload(dataUrl: string, maxSide = 1280): Promise<string> {
-  if (!dataUrl.startsWith("data:image/") || dataUrl.length < 180_000) return dataUrl;
+async function compressDataUrlForUpload(dataUrl: string, maxSide = 960): Promise<string | null> {
+  if (!dataUrl.startsWith("data:image/")) return null;
   try {
     const img = await new Promise<HTMLImageElement>((resolve, reject) => {
       const el = new Image();
@@ -59,11 +53,17 @@ async function compressDataUrlForUpload(dataUrl: string, maxSide = 1280): Promis
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return dataUrl;
+    if (!ctx) return dataUrl.length <= 220_000 ? dataUrl : null;
     ctx.drawImage(img, 0, 0, w, h);
-    return canvas.toDataURL("image/jpeg", 0.72);
+    let quality = 0.7;
+    let out = canvas.toDataURL("image/jpeg", quality);
+    while (out.length > 220_000 && quality > 0.4) {
+      quality -= 0.1;
+      out = canvas.toDataURL("image/jpeg", quality);
+    }
+    return out.length <= 280_000 ? out : null;
   } catch {
-    return dataUrl;
+    return dataUrl.length <= 180_000 ? dataUrl : null;
   }
 }
 
@@ -92,7 +92,6 @@ export default function AskQueryPage() {
   const [photoName, setPhotoName] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [expertAnswer, setExpertAnswer] = useState<string | null>(null);
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [ticketError, setTicketError] = useState<string | null>(null);
   const [fromAiDoctor, setFromAiDoctor] = useState(false);
@@ -170,92 +169,58 @@ export default function AskQueryPage() {
     if (!query.trim() || submitting) return;
 
     const cropName = lockedCropLabel;
-    const cropSlug = selectedCrop === "other" ? undefined : selectedCrop;
-    const lastDiagnosis = referralSummary
-      ? [
-          referralSummary.result.diseaseName,
-          `${referralSummary.result.confidence}%`,
-          referralSummary.result.severity,
-          referralSummary.result.riskLevel,
-        ]
-          .filter(Boolean)
-          .join(" · ")
-      : undefined;
-
-    const context = {
-      cropSlug,
-      cropName,
-      district: profile.district || undefined,
-      state: profile.state || undefined,
-      village: profile.village || undefined,
-      lastDiagnosis,
-      replyLanguage: (isHi ? "hi" : "en") as "hi" | "en",
-    };
-
-    const userMessage = fromAiDoctor
-      ? `${query.trim()}\n\n(कृपया AI डॉक्टर निदान की पुष्टि करें — सही/गलत बताएँ, और खेत के हिसाब से स्पष्ट अगला कदम दें।)`
+    // Expert-only path: AI Doctor answers only on /ai-doctor. Ask Query / referral → human expert.
+    const queryTextForExpert = fromAiDoctor
+      ? `${query.trim()}\n\n(किसान ने AI डॉक्टर निदान एक्सपर्ट से जाँचने को कहा है।)`
       : query.trim();
 
     setSubmitting(true);
     setTicketError(null);
-    let reply = "";
-    try {
-      const res = await fetch("/api/kisan-saathi/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: userMessage }],
-          context,
-        }),
-      });
-      const data = (await res.json()) as { reply?: string; error?: string };
-      if (res.ok && data.reply?.trim()) {
-        reply = data.reply.trim();
-      } else {
-        reply = clientKisanSaathiFallback(userMessage, context);
-      }
-    } catch {
-      reply = clientKisanSaathiFallback(userMessage, context);
-    }
 
-    // Parallel: send ticket to admin expert inbox
     let createdTicketId: string | null = null;
     try {
       const deviceId = getDeviceId();
       const photoDataUrl = photoPreview
         ? await compressDataUrlForUpload(photoPreview)
         : null;
-      const ticketRes = await fetch("/api/expert-queries", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          deviceId,
-          farmerName: profile.name || undefined,
-          farmerPhone: profile.phone || undefined,
-          farmerVillage: profile.village || undefined,
-          farmerDistrict: profile.district || undefined,
-          farmerState: profile.state || undefined,
-          cropSlug: selectedCrop,
-          cropName,
-          queryText: query.trim(),
-          photoDataUrl,
-          source: fromAiDoctor ? "ai-doctor" : "ask-query",
-          aiDiagnosis: referralSummary
-            ? {
-                diseaseName: referralSummary.result.diseaseName,
-                pathogen: referralSummary.result.pathogen,
-                confidence: referralSummary.result.confidence,
-                severity: referralSummary.result.severity,
-                riskLevel: referralSummary.result.riskLevel,
-                stage: referralSummary.result.stage,
-                treatments: referralSummary.result.treatments,
-                visualObservations: referralSummary.result.visualObservations,
-                cropContext: referralSummary.result.cropContext,
-              }
-            : null,
-        }),
-      });
+
+      const postTicket = async (photo: string | null) =>
+        fetch("/api/expert-queries", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            deviceId,
+            farmerName: profile.name || undefined,
+            farmerPhone: profile.phone || undefined,
+            farmerVillage: profile.village || undefined,
+            farmerDistrict: profile.district || undefined,
+            farmerState: profile.state || undefined,
+            cropSlug: selectedCrop,
+            cropName,
+            queryText: queryTextForExpert,
+            photoDataUrl: photo,
+            source: fromAiDoctor ? "ai-doctor" : "ask-query",
+            aiDiagnosis: referralSummary
+              ? {
+                  diseaseName: referralSummary.result.diseaseName,
+                  pathogen: referralSummary.result.pathogen,
+                  confidence: referralSummary.result.confidence,
+                  severity: referralSummary.result.severity,
+                  riskLevel: referralSummary.result.riskLevel,
+                  stage: referralSummary.result.stage,
+                  treatments: referralSummary.result.treatments,
+                  visualObservations: referralSummary.result.visualObservations,
+                  cropContext: referralSummary.result.cropContext,
+                }
+              : null,
+          }),
+        });
+
+      let ticketRes = await postTicket(photoDataUrl);
+      if (!ticketRes.ok && photoDataUrl) {
+        ticketRes = await postTicket(null);
+      }
       const ticketData = (await ticketRes.json()) as {
         query?: { id?: string };
         error?: string;
@@ -263,10 +228,15 @@ export default function AskQueryPage() {
       if (ticketRes.ok && ticketData.query?.id) {
         createdTicketId = ticketData.query.id;
       } else {
-        setTicketError(ticketData.error || (isHi ? "एडमिन पैनल तक नहीं पहुँचा" : "Could not reach admin panel"));
+        setTicketError(
+          ticketData.error ||
+            (isHi ? "एक्सपर्ट तक नहीं पहुँचा" : "Could not reach expert")
+        );
       }
     } catch {
-      setTicketError(isHi ? "नेटवर्क से एडमिन पैनल तक नहीं पहुँचा" : "Network error sending to admin");
+      setTicketError(
+        isHi ? "नेटवर्क त्रुटि — फिर कोशिश करें" : "Network error — try again"
+      );
     }
 
     const today = new Date().toLocaleDateString("hi-IN", {
@@ -274,48 +244,52 @@ export default function AskQueryPage() {
       month: "short",
     });
 
-    addQuery({
-      crop: selectedCrop,
-      cropName,
-      query: query.trim(),
-      image: photoPreview ?? undefined,
-      farmerName: profile.name || (isHi ? "आप" : "You"),
-      expertResponse: {
-        expertName: isHi ? "Agriveda AI सलाह" : "Agriveda AI advice",
-        date: today,
-        preview: previewText(reply),
-        fullAnswer: reply,
-      },
-    });
-    clearAiDoctorExpertReferral();
-    setTicketId(createdTicketId);
-    setExpertAnswer(reply);
-    setSubmitted(true);
+    if (createdTicketId) {
+      addQuery({
+        crop: selectedCrop,
+        cropName,
+        query: query.trim(),
+        image: photoPreview ?? undefined,
+        farmerName: profile.name || (isHi ? "आप" : "You"),
+        expertResponse: {
+          expertName: isHi ? "एक्सपर्ट (प्रतीक्षा)" : "Expert (pending)",
+          date: today,
+          preview: isHi
+            ? "एक्सपर्ट जवाब की प्रतीक्षा — “मेरे सवाल” में दिखेगा।"
+            : "Waiting for expert — check My queries.",
+          fullAnswer: isHi
+            ? "आपका सवाल एक्सपर्ट को भेज दिया गया है। जवाब आने पर “मेरे सवाल” में दिखेगा। AI यहाँ जवाब नहीं देता।"
+            : "Your question was sent to an expert. The reply will appear in My queries. AI does not answer here.",
+        },
+      });
+      clearAiDoctorExpertReferral();
+      setTicketId(createdTicketId);
+      setSubmitted(true);
+      showToast(
+        isHi ? "एक्सपर्ट को भेज दिया ✓" : "Sent to expert ✓"
+      );
+    } else {
+      showToast(
+        isHi ? "एक्सपर्ट तक नहीं पहुँचा" : "Could not reach expert",
+        "error"
+      );
+    }
     setSubmitting(false);
-    showToast(
-      createdTicketId
-        ? isHi
-          ? "एडमिन को भेज दिया · AI सलाह भी तैयार ✓"
-          : "Sent to admin · AI advice ready ✓"
-        : isHi
-          ? "AI सलाह तैयार (एडमिन सिंक बाद में)"
-          : "AI advice ready (admin sync pending)"
-    );
   };
 
-  if (submitted && expertAnswer) {
+  if (submitted) {
     return (
       <AppShell
         className="!bg-transparent"
-        title={isHi ? "सलाह मिल गई" : "Advice ready"}
+        title={isHi ? "एक्सपर्ट को भेजा" : "Sent to expert"}
         subtitle={
           fromAiDoctor
             ? isHi
-              ? "AI डॉक्टर निदान की पुष्टि / अगला कदम"
-              : "Confirmation of AI Doctor diagnosis"
+              ? "AI डॉक्टर निदान — अब असली एक्सपर्ट जवाब देगा"
+              : "AI Doctor diagnosis — a human expert will reply"
             : isHi
-              ? "आपके सवाल का जवाब"
-              : "Answer to your question"
+              ? "आपके सवाल का जवाब एक्सपर्ट देगा"
+              : "An expert will answer your question"
         }
         breadcrumbs={[
           { label: isHi ? "होम" : "Home", href: "/" },
@@ -325,19 +299,30 @@ export default function AskQueryPage() {
         <div className="mx-auto max-w-lg space-y-4 pb-6">
           <DarkCard className="flex flex-col items-center py-6 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-500/40 bg-emerald-500/15">
-              <Check className="h-7 w-7 text-emerald-600" />
+              {ticketId ? (
+                <Check className="h-7 w-7 text-emerald-600" />
+              ) : (
+                <Clock3 className="h-7 w-7 text-amber-600" />
+              )}
             </div>
             <h2 className="mt-3 font-display text-xl font-bold text-[var(--av-text-primary)]">
-              {isHi ? "सलाह + एडमिन को भेजा" : "Advice + sent to admin"}
+              {ticketId
+                ? isHi
+                  ? "एक्सपर्ट के पास पहुँच गया"
+                  : "Reached the expert desk"
+                : isHi
+                  ? "भेजने में समस्या"
+                  : "Could not send"}
             </h2>
             <p className="mt-1.5 max-w-sm text-sm text-[var(--av-text-muted)]">
               {ticketId
                 ? isHi
-                  ? "आपका सवाल Expert Admin पैनल पर पहुँच गया। जवाब आने पर “मेरे सवाल” में दिखेगा।"
-                  : "Your query reached the Expert Admin panel. Replies appear in My queries."
-                : isHi
-                  ? "नीचे तुरंत AI सलाह है। एडमिन सिंक: " + (ticketError || "बाद में कोशिश करें")
-                  : `AI advice below. Admin sync: ${ticketError || "try later"}`}
+                  ? "यहाँ AI जवाब नहीं आएगा। असली एक्सपर्ट जवाब “मेरे सवाल” में दिखेगा।"
+                  : "No AI reply here. The human expert’s answer will appear in My queries."
+                : ticketError ||
+                  (isHi
+                    ? "Vercel में SUPABASE_SERVICE_ROLE_KEY चेक करें"
+                    : "Check SUPABASE_SERVICE_ROLE_KEY on Vercel")}
             </p>
             {ticketId ? (
               <p className="mt-2 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
@@ -346,7 +331,7 @@ export default function AskQueryPage() {
             ) : null}
           </DarkCard>
 
-          {(photoPreview || fromAiDoctor) && (
+          {(photoPreview || fromAiDoctor || query) && (
             <DarkCard className="!p-3">
               <div className="flex gap-3">
                 {photoPreview ? (
@@ -361,8 +346,8 @@ export default function AskQueryPage() {
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700/80">
                     {fromAiDoctor
                       ? isHi
-                        ? "AI डॉक्टर संदर्भ"
-                        : "AI Doctor context"
+                        ? "AI डॉक्टर संदर्भ (एक्सपर्ट को)"
+                        : "AI Doctor context (to expert)"
                       : isHi
                         ? "आपका सवाल"
                         : "Your question"}
@@ -370,39 +355,38 @@ export default function AskQueryPage() {
                   <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
                     {referralSummary?.result.diseaseName ?? lockedCropLabel}
                   </p>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-[var(--av-text-muted)]">
+                  <p className="mt-0.5 line-clamp-3 text-xs text-[var(--av-text-muted)]">
                     {referralSummary
                       ? `${referralSummary.result.confidence}% · ${referralSummary.result.severity}`
-                      : query.slice(0, 120)}
+                      : query.slice(0, 160)}
                   </p>
                 </div>
               </div>
             </DarkCard>
           )}
 
-          <DarkCard>
+          <DarkCard className="border border-amber-500/25 bg-amber-500/5">
             <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700">
-                <Stethoscope className="h-4 w-4" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/15 text-amber-800">
+                <Clock3 className="h-4 w-4" />
               </span>
               <div>
                 <p className="text-sm font-bold text-[var(--av-text-primary)]">
-                  {isHi ? "Agriveda विशेषज्ञ" : "Agriveda Expert"}
+                  {isHi ? "एक्सपर्ट जवाब की प्रतीक्षा" : "Waiting for expert reply"}
                 </p>
                 <p className="text-[11px] text-[var(--av-text-muted)]">
-                  {isHi ? "AI आधारित पुष्टि सलाह" : "AI-assisted confirmation"}
+                  {isHi
+                    ? "AI डॉक्टर सिर्फ स्कैन पर जवाब देता है — यहाँ नहीं"
+                    : "AI Doctor only answers on the scan screen — not here"}
                 </p>
               </div>
-            </div>
-            <div className="mt-3 whitespace-pre-wrap rounded-xl border border-emerald-500/15 bg-[var(--av-surface-inset)] px-3.5 py-3 text-sm leading-relaxed text-[var(--av-text-secondary)]">
-              {expertAnswer}
             </div>
           </DarkCard>
 
           <div className="grid gap-2 sm:grid-cols-2">
             <AppLink href="/my-queries" className={cn("inline-flex justify-center gap-2", AV.btnPrimary)}>
               <MessageCircle className="h-4 w-4" />
-              {isHi ? "मेरे सवाल / जवाब" : "My queries / replies"}
+              {isHi ? "मेरे सवाल देखें" : "View My queries"}
             </AppLink>
             <AppLink
               href={fromAiDoctor ? "/ai-doctor" : "/ask-query"}
@@ -428,8 +412,8 @@ export default function AskQueryPage() {
       subtitle={
         fromAiDoctor
           ? isHi
-            ? "AI डॉक्टर निदान भेजा गया — पुष्टि सलाह लें"
-            : "AI Doctor diagnosis shared — get confirmation"
+            ? "AI निदान एक्सपर्ट को भेजें — जवाब एक्सपर्ट देगा"
+            : "Send AI diagnosis to expert — expert will reply"
           : t("askExpertSubtitle")
       }
       breadcrumbs={[

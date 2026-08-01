@@ -33,7 +33,10 @@ async function sendViaMsg91(phone: string, otp: string): Promise<boolean> {
 async function sendViaTwilio(phone: string, otp: string): Promise<boolean> {
   const accountSid = process.env.TWILIO_ACCOUNT_SID?.trim();
   const authToken = process.env.TWILIO_AUTH_TOKEN?.trim();
-  const from = process.env.TWILIO_PHONE_NUMBER?.trim();
+  // Accept either name — .env.example historically used TWILIO_FROM_NUMBER
+  const from =
+    process.env.TWILIO_PHONE_NUMBER?.trim() ||
+    process.env.TWILIO_FROM_NUMBER?.trim();
   if (!accountSid || !authToken || !from) return false;
 
   const to = `+${indianMobile(phone)}`;
@@ -63,11 +66,14 @@ async function sendViaTwilio(phone: string, otp: string): Promise<boolean> {
 }
 
 export function isSmsConfigured(): boolean {
+  const twilioFrom =
+    process.env.TWILIO_PHONE_NUMBER?.trim() ||
+    process.env.TWILIO_FROM_NUMBER?.trim();
   return Boolean(
     process.env.MSG91_AUTH_KEY?.trim() ||
       (process.env.TWILIO_ACCOUNT_SID?.trim() &&
         process.env.TWILIO_AUTH_TOKEN?.trim() &&
-        process.env.TWILIO_PHONE_NUMBER?.trim())
+        twilioFrom)
   );
 }
 

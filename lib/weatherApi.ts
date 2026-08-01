@@ -337,12 +337,14 @@ async function requestNativeLocation(): Promise<GeolocationPosition> {
 
   const { Geolocation } = await import("@capacitor/geolocation");
 
-  const status = await Geolocation.checkPermissions();
+  // Always hit the system permission prompt when not granted
+  let status = await Geolocation.checkPermissions();
   if (status.location !== "granted" && status.coarseLocation !== "granted") {
-    const requested = await Geolocation.requestPermissions();
-    if (requested.location !== "granted" && requested.coarseLocation !== "granted") {
-      throw Object.assign(new Error("permission denied"), { code: 1 });
-    }
+    status = await Geolocation.requestPermissions();
+  }
+
+  if (status.location !== "granted" && status.coarseLocation !== "granted") {
+    throw Object.assign(new Error("permission denied"), { code: 1 });
   }
 
   const position = await Geolocation.getCurrentPosition({
@@ -397,6 +399,13 @@ export function geolocationErrorMessage(err: unknown): string {
     const msg = err.message.toLowerCase();
     if (msg.includes("permission") || msg.includes("denied")) {
       return "लोकेशन permission बंद है। Phone Settings → Apps → Agriveda → Permissions → Location → Allow करें, फिर फिर से क्लिक करें।";
+    }
+    if (
+      msg.includes("location services") ||
+      msg.includes("not enabled") ||
+      msg.includes("disabled")
+    ) {
+      return "फ़ोन का Location / GPS बंद है। Settings → Location ON करें, फिर फिर कोशिश करें।";
     }
     return err.message;
   }
