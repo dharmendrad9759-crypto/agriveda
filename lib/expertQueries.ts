@@ -103,7 +103,7 @@ async function uploadPhoto(
     const bytes = Buffer.from(b64, "base64");
     if (bytes.length > 2.5 * 1024 * 1024) return null;
 
-    const path = `${deviceId.slice(0, 40)}/${Date.now()}-${randomBytes(4).toString("hex")}.${ext}`;
+    const path = `${deviceId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40) || "device"}/${Date.now()}-${randomBytes(4).toString("hex")}.${ext}`;
     const { error } = await client.storage.from("expert-query-photos").upload(path, bytes, {
       contentType: mime,
       upsert: false,
@@ -219,13 +219,15 @@ export async function createExpertQuery(
         return {
           row: null,
           error: `DB insert failed: ${error.message}${
-            error.message.includes("relation") || error.code === "42P01"
-              ? " — expert_queries SQL चलाएँ"
-              : error.message.toLowerCase().includes("jwt") ||
-                  error.message.toLowerCase().includes("api key") ||
-                  error.message.toLowerCase().includes("invalid api")
-                ? " — SERVICE_ROLE key गलत हो सकती है (anon मत डालो)"
-                : ""
+            error.message.toLowerCase().includes("invalid path") || error.code === "PGRST125"
+              ? " — Vercel में NEXT_PUBLIC_SUPABASE_URL सिर्फ https://xxxx.supabase.co हो (बिना /rest/v1)"
+              : error.message.includes("relation") || error.code === "42P01"
+                ? " — expert_queries SQL चलाएँ"
+                : error.message.toLowerCase().includes("jwt") ||
+                    error.message.toLowerCase().includes("api key") ||
+                    error.message.toLowerCase().includes("invalid api")
+                  ? " — SERVICE_ROLE key गलत हो सकती है (anon मत डालो)"
+                  : ""
           }`,
         };
       }

@@ -2,18 +2,36 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let browserClient: SupabaseClient | null = null;
 
+/**
+ * Project URL only: https://xxxx.supabase.co
+ * Strips /rest/v1, quotes, trailing slashes — those cause PGRST125
+ * "Invalid path specified in request URL".
+ */
+export function normalizeSupabaseUrl(raw: string | undefined | null): string | null {
+  if (!raw) return null;
+  let s = raw.trim().replace(/^["']+|["']+$/g, "");
+  if (!s) return null;
+  try {
+    // Allow missing protocol in pasted values
+    if (!/^https?:\/\//i.test(s)) s = `https://${s}`;
+    const u = new URL(s);
+    // Drop any path/query (/rest/v1, /project/..., etc.)
+    return `${u.protocol}//${u.host}`;
+  } catch {
+    return null;
+  }
+}
+
+export function getSupabaseUrl(): string | null {
+  return normalizeSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
+}
+
 export function isSupabaseConfigured(): boolean {
-  return !!(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+  return !!(getSupabaseUrl() && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim());
 }
 
 export function hasSupabaseServiceRole(): boolean {
-  return !!(
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
-  );
+  return !!(getSupabaseUrl() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim());
 }
 
 /**
@@ -23,13 +41,12 @@ export function hasSupabaseServiceRole(): boolean {
  */
 export function getSupabase(): SupabaseClient | null {
   if (typeof window === "undefined") return null;
-  if (!isSupabaseConfigured()) return null;
+  const url = getSupabaseUrl();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  if (!url || !key) return null;
 
   if (!browserClient) {
-    browserClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    browserClient = createClient(url, key);
   }
   return browserClient;
 }
@@ -40,12 +57,12 @@ export function createSupabaseServerClient(): SupabaseClient | null {
 }
 
 function createSupabaseAnonServerClient(): SupabaseClient | null {
-  if (!isSupabaseConfigured()) return null;
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { persistSession: false, autoRefreshToken: false } }
-  );
+  const url = getSupabaseUrl();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  if (!url || !key) return null;
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
 /**
@@ -53,8 +70,8 @@ function createSupabaseAnonServerClient(): SupabaseClient | null {
  * Required for spray/outbreak/farmer APIs after anon policies are removed.
  */
 export function createSupabaseServiceClient(): SupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const url = getSupabaseUrl();
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim().replace(/^["']+|["']+$/g, "");
   if (!url || !key) return null;
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
