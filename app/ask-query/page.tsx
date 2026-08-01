@@ -228,15 +228,21 @@ export default function AskQueryPage() {
       if (ticketRes.ok && ticketData.query?.id) {
         createdTicketId = ticketData.query.id;
       } else {
-        setTicketError(
+        const detail =
           ticketData.error ||
-            (isHi ? "एक्सपर्ट तक नहीं पहुँचा" : "Could not reach expert")
-        );
+          (isHi ? "एडमिन पैनल तक नहीं पहुँचा" : "Could not reach admin panel");
+        setTicketError(detail);
+        showToast(detail.slice(0, 120), "error");
       }
-    } catch {
-      setTicketError(
-        isHi ? "नेटवर्क त्रुटि — फिर कोशिश करें" : "Network error — try again"
-      );
+    } catch (err) {
+      const detail =
+        err instanceof Error
+          ? err.message
+          : isHi
+            ? "नेटवर्क त्रुटि — फिर कोशिश करें"
+            : "Network error — try again";
+      setTicketError(detail);
+      showToast(detail.slice(0, 120), "error");
     }
 
     const today = new Date().toLocaleDateString("hi-IN", {
@@ -265,14 +271,7 @@ export default function AskQueryPage() {
       clearAiDoctorExpertReferral();
       setTicketId(createdTicketId);
       setSubmitted(true);
-      showToast(
-        isHi ? "एक्सपर्ट को भेज दिया ✓" : "Sent to expert ✓"
-      );
-    } else {
-      showToast(
-        isHi ? "एक्सपर्ट तक नहीं पहुँचा" : "Could not reach expert",
-        "error"
-      );
+      showToast(isHi ? "एक्सपर्ट को भेज दिया ✓" : "Sent to expert ✓");
     }
     setSubmitting(false);
   };
@@ -422,6 +421,20 @@ export default function AskQueryPage() {
       ]}
     >
       <form onSubmit={handleSubmit} className="mx-auto max-w-lg space-y-4">
+        {ticketError ? (
+          <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-3 text-sm font-semibold text-amber-950 dark:text-amber-100">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-amber-800/80">
+              {isHi ? "एक्सपर्ट तक नहीं पहुँचा" : "Could not reach expert"}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed font-medium opacity-95">{ticketError}</p>
+            <p className="mt-2 text-[11px] font-medium text-amber-900/80 dark:text-amber-200/80">
+              {isHi
+                ? "चेक: Vercel → SUPABASE_SERVICE_ROLE_KEY (service_role) + Redeploy · Supabase में expert_queries टेबल"
+                : "Check: Vercel SUPABASE_SERVICE_ROLE_KEY (service_role) + Redeploy · expert_queries table"}
+            </p>
+          </div>
+        ) : null}
+
         {fromAiDoctor && referralSummary && (
           <DarkCard className="border border-emerald-600/25 bg-emerald-500/5">
             <div className="flex items-start gap-3">

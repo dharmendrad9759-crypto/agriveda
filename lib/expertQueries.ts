@@ -190,13 +190,28 @@ export async function createExpertQuery(
   }
 
   if (client) {
-    const { data, error } = await client
-      .from("expert_queries")
-      .insert(payload)
-      .select(
-        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
-      )
-      .single();
+    const attemptInsert = async (data: typeof payload) =>
+      client
+        .from("expert_queries")
+        .insert(data)
+        .select(
+          "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+        )
+        .single();
+
+    let { data, error } = await attemptInsert(payload);
+
+    // FK / farmer row missing — retry without farmer_id
+    if (
+      error &&
+      (error.code === "23503" ||
+        error.message.toLowerCase().includes("foreign key") ||
+        error.message.toLowerCase().includes("farmer_id"))
+    ) {
+      const retry = await attemptInsert({ ...payload, farmer_id: null });
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       console.error("[expertQueries] insert", error.message, error.code, error.details);
@@ -207,7 +222,8 @@ export async function createExpertQuery(
             error.message.includes("relation") || error.code === "42P01"
               ? " — expert_queries SQL चलाएँ"
               : error.message.toLowerCase().includes("jwt") ||
-                  error.message.toLowerCase().includes("api key")
+                  error.message.toLowerCase().includes("api key") ||
+                  error.message.toLowerCase().includes("invalid api")
                 ? " — SERVICE_ROLE key गलत हो सकती है (anon मत डालो)"
                 : ""
           }`,
