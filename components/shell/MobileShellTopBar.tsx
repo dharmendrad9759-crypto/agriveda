@@ -5,14 +5,16 @@ import { Bell, Leaf, MapPin, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
 import { BRAND } from "@/lib/brand";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function MobileShellTopBar() {
   const { profile } = useFarmerProfile();
+  const { t } = useLocale();
   const location =
     [profile.village || profile.district, profile.state].filter(Boolean).join(", ") ||
     "Sehore, MP";
   const shortPlace = location.split(",")[0] || location;
-  const initials = (profile.name.trim() || "K")
+  const initials = (profile.name.trim() || "क")
     .split(/\s+/)
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase() ?? "")
@@ -43,7 +45,7 @@ export default function MobileShellTopBar() {
           <AppLink
             href="/alerts"
             className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-500/15 bg-[var(--av-surface)] text-[var(--av-text-secondary)] shadow-sm transition hover:border-emerald-500/35 hover:text-[var(--av-accent)]"
-            aria-label="Notifications"
+            aria-label={t("shellNotifications")}
           >
             <Bell className="h-4 w-4" />
             <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-md bg-amber-500" />
@@ -51,7 +53,7 @@ export default function MobileShellTopBar() {
           <AppLink
             href="/profile"
             className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-100 to-teal-50 text-[12px] font-extrabold text-emerald-800 shadow-sm dark:from-emerald-900/50 dark:to-teal-950/40 dark:text-emerald-200"
-            aria-label="Profile"
+            aria-label={t("navProfile")}
           >
             {initials ? (
               <span>{initials}</span>

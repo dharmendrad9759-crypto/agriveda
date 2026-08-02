@@ -4,6 +4,7 @@ import type { DiseaseManagement, PestManagement } from "@/types/crop-management"
 import type { StageSprayRecommendation } from "@/types/crop-protection";
 import type { ThreatDetailOverride } from "@/data/pest-disease-details";
 import type { ThreatCategory } from "@/types/pest-disease-ui";
+import { normalizeCropSlug } from "@/lib/crops/cropImages";
 
 export interface IpmChemical {
   technical: string;
@@ -94,7 +95,7 @@ for (const record of batch.crops) {
 }
 
 export function getIpmCrop(slug: string): IpmCropRecord | null {
-  return slugIndex.get(slug) ?? null;
+  return slugIndex.get(normalizeCropSlug(slug)) ?? null;
 }
 
 export function getIpmSlugs(): string[] {
@@ -343,7 +344,7 @@ for (const [slug, record] of slugIndex) {
 }
 
 export function getIpmCatalogEntry(slug: string): CropPestDiseaseData | null {
-  return catalogCache.get(slug) ?? null;
+  return catalogCache.get(normalizeCropSlug(slug)) ?? null;
 }
 
 export function getIpmThreatOverride(key: string): ThreatDetailOverride | undefined {

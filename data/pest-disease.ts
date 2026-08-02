@@ -352,11 +352,29 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
 import { getIpmCatalogEntry, mergeIpmCatalog } from "@/lib/crops/ipmDataBridge";
 import { mergeCropFieldGuideCatalog } from "@/lib/crops/cropFieldGuideBridge";
 import { mergeWeedAbioticCatalog } from "@/lib/crops/weedAbioticBridge";
+import { normalizeCropSlug } from "@/lib/crops/cropImages";
+
+/** Empty catalog — never silently reuse another crop's pests/diseases. */
+export function emptyCropPestDisease(slug: string): CropPestDiseaseData {
+  const key = normalizeCropSlug(slug);
+  const named = cropCatalog.find((c) => c.slug === key);
+  return {
+    slug: key,
+    name: named?.name ?? key,
+    emoji: named?.emoji ?? "🌱",
+    pests: [],
+    diseases: [],
+    weeds: [],
+  };
+}
 
 export function getCropPestDisease(slug: string): CropPestDiseaseData {
-  const base = cropPestDiseaseData[slug] ?? getIpmCatalogEntry(slug);
-  if (!base) return cropPestDiseaseData.paddy;
-  return mergeWeedAbioticCatalog(mergeCropFieldGuideCatalog(mergeIpmCatalog(base)));
+  const key = normalizeCropSlug(slug);
+  const base = cropPestDiseaseData[key] ?? getIpmCatalogEntry(key);
+  if (!base) return emptyCropPestDisease(key);
+  return mergeWeedAbioticCatalog(
+    mergeCropFieldGuideCatalog(mergeIpmCatalog({ ...base, slug: key }))
+  );
 }
 
 export const pestDiseaseCropList = [

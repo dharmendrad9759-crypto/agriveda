@@ -8,6 +8,7 @@ import Badge from "@/components/design-system/Badge";
 import { useToast } from "@/components/ui/Toast";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cropCatalog } from "@/data/crop-catalog";
 import { Tractor, Map, Sprout, Heart, Plus, Bell } from "lucide-react";
 
@@ -28,6 +29,7 @@ function totalAreaLabel(fields: { area: string }[]) {
 
 export default function MyFarmPage() {
   const { showToast } = useToast();
+  const { t } = useLocale();
   const { data, stats, addField, addActivity, addNote } = useFarmData();
   const farmAlerts = useDashboardAlerts(4);
 
@@ -135,25 +137,25 @@ export default function MyFarmPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="My Farm"
+      title={t("myFarm")}
       subtitle={
         data.fields.length
-          ? `${stats.totalFields} खेत · ${totalAreaLabel(data.fields)} · health ${stats.healthScore}%`
+          ? `${stats.totalFields} खेत · ${totalAreaLabel(data.fields)} · स्वास्थ्य ${stats.healthScore}%`
           : "अपना खेत, रकबा और फसल खुद जोड़ें"
       }
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "My Farm" }]}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("myFarm") }]}
       actions={
         <AppLink href="/field-advisor" className="av-btn av-btn-sm av-btn-secondary">
-          Advisor
+          {t("shellFieldAdvisor")}
         </AppLink>
       }
     >
       <div className="grid grid-cols-4 gap-2">
         {[
-          { label: "Fields", value: `${stats.totalFields}`, icon: Tractor },
-          { label: "Area", value: data.fields.length ? totalAreaLabel(data.fields).replace(" Acre", "ac") : "—", icon: Map },
-          { label: "Crops", value: `${stats.cropsGrowing}`, icon: Sprout },
-          { label: "Health", value: data.fields.length ? `${stats.healthScore}` : "—", icon: Heart },
+          { label: t("shellStatFields"), value: `${stats.totalFields}`, icon: Tractor },
+          { label: t("shellStatArea"), value: data.fields.length ? totalAreaLabel(data.fields).replace(" Acre", "ac") : "—", icon: Map },
+          { label: t("shellStatCrops"), value: `${stats.cropsGrowing}`, icon: Sprout },
+          { label: t("shellStatHealth"), value: data.fields.length ? `${stats.healthScore}` : "—", icon: Heart },
         ].map(({ label, value, icon: Icon }) => (
           <div
             key={label}
@@ -183,7 +185,7 @@ export default function MyFarmPage() {
       )}
 
       <div className="mt-4 flex items-center justify-between">
-        <h2 className="text-sm font-bold text-[var(--av-text-primary)]">My Fields</h2>
+        <h2 className="text-sm font-bold text-[var(--av-text-primary)]">{t("shellMyFields")}</h2>
         <button
           type="button"
           onClick={() => setShowAddField((v) => !v)}

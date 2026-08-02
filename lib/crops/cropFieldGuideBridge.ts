@@ -13,6 +13,7 @@ import type {
 } from "@/types/crop-management";
 import type { StageSprayRecommendation } from "@/types/crop-protection";
 import type { ThreatCategory } from "@/types/pest-disease-ui";
+import { normalizeCropSlug } from "@/lib/crops/cropImages";
 
 export interface FieldGuideChemical {
   technical: string;
@@ -599,7 +600,7 @@ export function mergeCropFieldGuideCatalog(base: CropPestDiseaseData): CropPestD
 }
 
 export function getCropFieldGuidePestListForCrop(slug: string) {
-  const entry = guideBySlug.get(slug);
+  const entry = guideBySlug.get(normalizeCropSlug(slug));
   if (!entry) return [];
 
   const { guide, config } = entry;
@@ -631,7 +632,7 @@ export function getCropFieldGuidePestListForCrop(slug: string) {
 }
 
 export function getCropFieldGuideDiseaseListForCrop(slug: string) {
-  const entry = guideBySlug.get(slug);
+  const entry = guideBySlug.get(normalizeCropSlug(slug));
   if (!entry) return [];
 
   const { guide, config } = entry;

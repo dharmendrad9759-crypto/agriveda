@@ -40,11 +40,11 @@ function readInitialLocale(): AppLocale {
     /* ignore */
   }
 
-  return "en";
+  return "hi";
 }
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<AppLocale>("en");
+  const [locale, setLocaleState] = useState<AppLocale>("hi");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
