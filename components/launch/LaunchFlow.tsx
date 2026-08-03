@@ -30,16 +30,6 @@ async function hideNativePluginSplash(fadeMs = 280) {
   }
 }
 
-async function holdNativePluginSplash() {
-  if (!isCapacitorNative()) return;
-  try {
-    const { SplashScreen } = await import("@capacitor/splash-screen");
-    await SplashScreen.show({ autoHide: false, fadeInDuration: 0 });
-  } catch {
-    /* optional */
-  }
-}
-
 function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -50,24 +40,22 @@ function phaseAfterSplash(): Phase {
 }
 
 /**
- * ALWAYS shows cream brand splash on cold start and when returning from background.
- * (Session skip removed — that was why phone icon open showed nothing.)
- * Then intro carousel once → existing login/onboarding gate.
+ * Cream brand splash on cold start / resume.
+ * On Capacitor we HIDE the native SplashScreen plugin as soon as React splash mounts —
+ * SplashScreen.show() sat ON TOP of the WebView, so phone users never saw the cream UI
+ * (browser had no plugin — that's why only browser worked).
  */
 export default function LaunchFlow() {
-  // Never start as "done" — every boot paints splash first
   const [phase, setPhase] = useState<Phase>("splash");
   const [locale, setLocale] = useState<"hi" | "en">("hi");
   const [reduced, setReduced] = useState(false);
   const [splashKey, setSplashKey] = useState(0);
   const backgroundedAt = useRef<number | null>(null);
-  const phaseRef = useRef(phase);
-  phaseRef.current = phase;
 
   const startSplash = useCallback(() => {
     setSplashKey((k) => k + 1);
     setPhase("splash");
-    void holdNativePluginSplash();
+    void hideNativePluginSplash(180);
   }, []);
 
   useEffect(() => {
@@ -101,7 +89,6 @@ export default function LaunchFlow() {
           backgroundedAt.current = null;
           if (bg == null) return;
           if (Date.now() - bg < RESUME_SPLASH_AFTER_MS) return;
-          // App icon / launcher resume — paint brand splash again
           startSplash();
         });
         remove = () => {
@@ -119,7 +106,7 @@ export default function LaunchFlow() {
   }, [startSplash]);
 
   const finishSplash = useCallback(() => {
-    void hideNativePluginSplash(360);
+    void hideNativePluginSplash(200);
     setPhase(phaseAfterSplash());
   }, []);
 

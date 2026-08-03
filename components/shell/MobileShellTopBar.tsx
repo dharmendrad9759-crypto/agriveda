@@ -1,7 +1,8 @@
 "use client";
 
 import AppLink from "@/components/ui/AppLink";
-import { Bell, Leaf, MapPin, User } from "lucide-react";
+import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
+import { Bell, MapPin, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
 import { BRAND } from "@/lib/brand";
@@ -28,9 +29,7 @@ export default function MobileShellTopBar() {
           <NavDrawerTrigger variant="menu" />
           <div className="flex min-w-0 items-center gap-1.5">
             <AppLink href="/" className="flex shrink-0 items-center gap-1.5" aria-label={BRAND}>
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-[0_6px_16px_rgba(5,150,105,0.35)]">
-                <Leaf className="h-4 w-4" strokeWidth={2.4} />
-              </span>
+              <AgriVedaBrandMark />
               <span className="truncate font-display text-[15px] font-extrabold tracking-tight text-[var(--av-text-primary)]">
                 AgriVeda
               </span>

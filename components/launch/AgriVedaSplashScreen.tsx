@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AgriVedaEmblem from "@/components/launch/AgriVedaEmblem";
+import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
 import { BRAND } from "@/lib/brand";
 
 const SPLASH_MS = 3000;
@@ -13,8 +13,7 @@ type Props = {
 };
 
 /**
- * Launch splash — cream field, forest emblem, Hindi tagline pill, bottom spinner.
- * 2.5s then fade into onboarding carousel.
+ * Launch splash — cream field, same Leaf logo as mobile topbar, Hindi tagline pill.
  */
 export default function AgriVedaSplashScreen({ onComplete, reducedMotion = false }: Props) {
   const [exiting, setExiting] = useState(false);
@@ -44,7 +43,6 @@ export default function AgriVedaSplashScreen({ onComplete, reducedMotion = false
           "radial-gradient(ellipse at 50% 28%, #F8F9FA 0%, #F4F6F0 55%, #EEF2E8 100%)",
       }}
     >
-      {/* Soft mint wash */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-70"
@@ -53,22 +51,16 @@ export default function AgriVedaSplashScreen({ onComplete, reducedMotion = false
             "radial-gradient(circle at 50% 40%, rgba(0,168,107,0.10) 0%, transparent 52%)",
         }}
       />
-      {/* Subtle grain / leaf dots */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 8c-6 10-6 22 0 32 6-10 6-22 0-32z' fill='%231E4D40'/%3E%3C/svg%3E\")",
-        }}
-      />
 
       <div className="agriveda-splash__brand relative z-10 flex flex-col items-center px-6 text-center">
         <div className="agriveda-splash__logo mb-5">
-          <AgriVedaEmblem className="h-[124px] w-[124px] drop-shadow-[0_18px_40px_rgba(30,77,64,0.28)]" />
+          <AgriVedaBrandMark
+            sizeClassName="h-[112px] w-[112px] rounded-[28px] shadow-[0_18px_40px_rgba(5,150,105,0.4)]"
+            iconClassName="h-14 w-14"
+          />
         </div>
 
-        <h1 className="m-0 font-sans text-[clamp(1.85rem,7vw,2.35rem)] font-bold tracking-tight text-[#1E4D40]">
+        <h1 className="m-0 font-display text-[clamp(1.85rem,7vw,2.35rem)] font-extrabold tracking-tight text-[#1E4D40]">
           {BRAND}
         </h1>
         <p className="mt-1.5 text-[13px] font-semibold tracking-[0.14em] text-[#1E4D40]/55 uppercase">
