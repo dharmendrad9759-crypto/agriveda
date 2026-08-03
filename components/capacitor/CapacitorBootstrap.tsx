@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { isCapacitorNative } from "@/lib/capacitorNav";
-import NativeLaunchSplash from "@/components/capacitor/NativeLaunchSplash";
 
 /**
- * Native WebView bootstrap: branded splash + connection help.
+ * Native WebView bootstrap: connection help.
+ * Brand splash + intro carousel live in LaunchFlow (shared web/native).
  */
 export default function CapacitorBootstrap() {
   const [connectionHelp, setConnectionHelp] = useState(false);
@@ -29,7 +29,6 @@ export default function CapacitorBootstrap() {
 
   return (
     <>
-      {native ? <NativeLaunchSplash /> : null}
       {connectionHelp ? (
         <div
           id="capacitor-connection-help"

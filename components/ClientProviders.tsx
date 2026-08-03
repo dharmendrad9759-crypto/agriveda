@@ -1,8 +1,8 @@
 "use client";
 
 import AnalyticsBootstrap from "@/components/analytics/AnalyticsBootstrap";
-import BootSplash from "@/components/BootSplash";
 import CapacitorBootstrap from "@/components/capacitor/CapacitorBootstrap";
+import LaunchFlow from "@/components/launch/LaunchFlow";
 import CapacitorNavigationFix from "@/components/capacitor/CapacitorNavigationFix";
 import NativeAppEssentials from "@/components/capacitor/NativeAppEssentials";
 import Footer from "@/components/footer";
@@ -75,8 +75,8 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
               </FarmerOnboardingGate>
             )}
           </MotionConfig>
-          {/* Outside MotionConfig so phone UI jank-fix doesn't kill the open animation */}
-          {!isAdminRoute ? <BootSplash /> : null}
+          {/* Outside MotionConfig so native reduced-motion doesn't kill splash CSS */}
+          {!isAdminRoute ? <LaunchFlow /> : null}
         </ToastProvider>
       </LocaleProvider>
     </ThemeProvider>
