@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Plain cream canvas — avoid a second "icon card" under Android 12 zoom -->
+<!-- Solid cream only — no logo / no launcher art (seamless into WebView splash) -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/splash_background" />
 </layer-list>

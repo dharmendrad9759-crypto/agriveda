@@ -1,33 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Android 12+ requires an animatedIcon. Match the app Leaf brand mark
-  (emerald tile + leaf), NOT the launcher mipmap artwork.
+  Android 12+ REQUIRES an animated icon — omitting it falls back to the launcher icon.
+  Fill with the exact cream splash color so the icon is invisible.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="288dp"
     android:height="288dp"
     android:viewportWidth="288"
     android:viewportHeight="288">
-    <!-- Soft cream field so the icon plate blends into splash_background -->
     <path
         android:fillColor="#F8F9FA"
         android:pathData="M0,0h288v288h-288z" />
-    <!-- Rounded emerald tile (same idea as topbar) -->
-    <path
-        android:fillColor="#10B981"
-        android:pathData="M96,96h96c17.7,0 32,14.3 32,32v96c0,17.7 -14.3,32 -32,32h-96c-17.7,0 -32,-14.3 -32,-32v-96c0,-17.7 14.3,-32 32,-32z" />
-    <path
-        android:fillColor="#0F766E"
-        android:pathData="M128,96h64c17.7,0 32,14.3 32,32v96c0,17.7 -14.3,32 -32,32h-64c8.8,0 16,-7.2 16,-16v-128c0,-8.8 -7.2,-16 -16,-16z"
-        android:fillAlpha="0.35" />
-    <!-- Leaf shape -->
-    <path
-        android:fillColor="#ECFDF5"
-        android:pathData="M144,188 C144,188 118,168 118,140 C118,118 132,106 144,106 C156,106 170,118 170,140 C170,168 144,188 144,188 Z" />
-    <path
-        android:pathData="M144,178 L144,122"
-        android:strokeWidth="5"
-        android:strokeColor="#059669"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000" />
 </vector>

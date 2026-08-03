@@ -12,8 +12,9 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
-    // Must run before super — keeps branded splash, blocks default launcher-icon flash
-    SplashScreen.installSplashScreen(this);
+    // Cream blank system splash — exit ASAP so WebView branded splash is the only UI
+    final SplashScreen splash = SplashScreen.installSplashScreen(this);
+    splash.setKeepOnScreenCondition(() -> false);
     registerPlugin(AgrivedaSettingsPlugin.class);
     super.onCreate(savedInstanceState);
   }
