@@ -1,7 +1,8 @@
 "use client";
 
 /**
- * @deprecated Native splash is handled by LaunchFlow (same cream brand screen on phone + web).
+ * Brand splash lives in LaunchFlow (always-on cream screen).
+ * Kept as a no-op stub so old CapacitorBootstrap imports stay safe.
  */
 export default function NativeLaunchSplash() {
   return null;

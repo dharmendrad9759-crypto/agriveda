@@ -1,32 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AgriVedaSplashScreen from "@/components/launch/AgriVedaSplashScreen";
 import IntroCarousel from "@/components/launch/IntroCarousel";
 import { isCapacitorNative } from "@/lib/capacitorNav";
 import { readStorage, writeStorage } from "@/lib/storage";
 
-const SPLASH_SESSION_KEY = "agriveda-launch-splash-v1";
 const INTRO_KEY = "agriveda-intro-carousel-v1";
+/** Resume after this long in background → show splash again (app icon re-open). */
+const RESUME_SPLASH_AFTER_MS = 5_000;
 
-type Phase = "boot" | "splash" | "intro" | "done";
-
-function readSplashDone(): boolean {
-  if (typeof window === "undefined") return true;
-  try {
-    return sessionStorage.getItem(SPLASH_SESSION_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function markSplashDone() {
-  try {
-    sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
-  } catch {
-    /* ignore */
-  }
-}
+type Phase = "splash" | "intro" | "done";
 
 function readIntroDone(): boolean {
   return readStorage<boolean>(INTRO_KEY, false) === true;
@@ -61,23 +45,30 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function resolveInitialPhase(): Phase {
-  if (typeof window === "undefined") return "boot";
-  const splashDone = readSplashDone();
-  const introDone = readIntroDone();
-  if (splashDone && introDone) return "done";
-  if (!splashDone) return "splash";
-  return introDone ? "done" : "intro";
+function phaseAfterSplash(): Phase {
+  return readIntroDone() ? "done" : "intro";
 }
 
 /**
- * Splash (2.5s) → Intro carousel (once) → existing login/onboarding gate.
- * Covers web + Capacitor; replaces legacy BootSplash / NativeLaunchSplash visuals.
+ * ALWAYS shows cream brand splash on cold start and when returning from background.
+ * (Session skip removed — that was why phone icon open showed nothing.)
+ * Then intro carousel once → existing login/onboarding gate.
  */
 export default function LaunchFlow() {
-  const [phase, setPhase] = useState<Phase>(resolveInitialPhase);
+  // Never start as "done" — every boot paints splash first
+  const [phase, setPhase] = useState<Phase>("splash");
   const [locale, setLocale] = useState<"hi" | "en">("hi");
   const [reduced, setReduced] = useState(false);
+  const [splashKey, setSplashKey] = useState(0);
+  const backgroundedAt = useRef<number | null>(null);
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
+
+  const startSplash = useCallback(() => {
+    setSplashKey((k) => k + 1);
+    setPhase("splash");
+    void holdNativePluginSplash();
+  }, []);
 
   useEffect(() => {
     setReduced(prefersReducedMotion());
@@ -91,21 +82,45 @@ export default function LaunchFlow() {
       /* default hi */
     }
 
-    // Reconcile after paint (sessionStorage / locale), keep Capacitor plugin in sync
-    const next = resolveInitialPhase();
-    setPhase(next);
-    if (next === "splash") void holdNativePluginSplash();
-    else void hideNativePluginSplash(200);
-  }, []);
+    startSplash();
+
+    let remove: (() => void) | undefined;
+    let cancelled = false;
+
+    void (async () => {
+      if (!isCapacitorNative()) return;
+      try {
+        const { App } = await import("@capacitor/app");
+        const handle = await App.addListener("appStateChange", ({ isActive }) => {
+          if (cancelled) return;
+          if (!isActive) {
+            backgroundedAt.current = Date.now();
+            return;
+          }
+          const bg = backgroundedAt.current;
+          backgroundedAt.current = null;
+          if (bg == null) return;
+          if (Date.now() - bg < RESUME_SPLASH_AFTER_MS) return;
+          // App icon / launcher resume — paint brand splash again
+          startSplash();
+        });
+        remove = () => {
+          void handle.remove();
+        };
+      } catch {
+        /* web or plugin missing */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      remove?.();
+    };
+  }, [startSplash]);
 
   const finishSplash = useCallback(() => {
-    markSplashDone();
     void hideNativePluginSplash(360);
-    if (readIntroDone()) {
-      setPhase("done");
-      return;
-    }
-    setPhase("intro");
+    setPhase(phaseAfterSplash());
   }, []);
 
   const finishIntro = useCallback(() => {
@@ -113,10 +128,16 @@ export default function LaunchFlow() {
     setPhase("done");
   }, []);
 
-  if (phase === "boot" || phase === "done") return null;
+  if (phase === "done") return null;
 
   if (phase === "splash") {
-    return <AgriVedaSplashScreen onComplete={finishSplash} reducedMotion={reduced} />;
+    return (
+      <AgriVedaSplashScreen
+        key={splashKey}
+        onComplete={finishSplash}
+        reducedMotion={reduced}
+      />
+    );
   }
 
   return <IntroCarousel onComplete={finishIntro} locale={locale} />;

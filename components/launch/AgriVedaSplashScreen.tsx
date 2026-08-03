@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import AgriVedaEmblem from "@/components/launch/AgriVedaEmblem";
 import { BRAND } from "@/lib/brand";
 
-const SPLASH_MS = 2500;
-const EXIT_MS = 420;
+const SPLASH_MS = 3000;
+const EXIT_MS = 450;
 
 type Props = {
   onComplete: () => void;

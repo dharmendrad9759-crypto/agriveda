@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ splash icon (system zooms this; keep emblem readable) -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -8,15 +9,18 @@
         android:fillColor="#1E4D40"
         android:pathData="M54,54m-34,0a34,34 0,1 1,68 0a34,34 0,1 1,-68 0" />
     <path
+        android:fillColor="#00000000"
         android:pathData="M54,82 L54,48"
         android:strokeWidth="4"
-        android:strokeColor="#A7F3D0"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000" />
+        android:strokeColor="#ECFDF5"
+        android:strokeLineCap="round" />
     <path
-        android:fillColor="#34D399"
+        android:fillColor="#00A86B"
         android:pathData="M54,58 C40,50 34,38 38,24 C50,30 54,44 54,58 Z" />
     <path
-        android:fillColor="#10B981"
+        android:fillColor="#5EEAD4"
         android:pathData="M54,62 C68,54 74,42 70,26 C58,32 54,48 54,62 Z" />
+    <path
+        android:fillColor="#D4AF37"
+        android:pathData="M46,44 m-5,0 a5,9 0 1,1 10,0 a5,9 0 1,1 -10,0" />
 </vector>
