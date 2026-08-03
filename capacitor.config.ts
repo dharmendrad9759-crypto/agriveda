@@ -42,10 +42,10 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      // Held until LaunchFlow cream splash takes over (autoHide false)
-      launchShowDuration: 3000,
-      launchAutoHide: false,
-      launchFadeOutDuration: 350,
+      // Hide ASAP so WebView cream splash is the only brand moment (icon flash = APK theme)
+      launchShowDuration: 0,
+      launchAutoHide: true,
+      launchFadeOutDuration: 0,
       backgroundColor: "#F8F9FA",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP",

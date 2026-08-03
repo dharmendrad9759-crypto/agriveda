@@ -2,28 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import AgriVedaSplashScreen from "@/components/launch/AgriVedaSplashScreen";
-import IntroCarousel from "@/components/launch/IntroCarousel";
 import { isCapacitorNative } from "@/lib/capacitorNav";
-import { readStorage, writeStorage } from "@/lib/storage";
 
-const INTRO_KEY = "agriveda-intro-carousel-v1";
 /** Resume after this long in background → show splash again (app icon re-open). */
 const RESUME_SPLASH_AFTER_MS = 5_000;
 
-type Phase = "splash" | "intro" | "done";
+type Phase = "splash" | "done";
 
-function readIntroDone(): boolean {
-  return readStorage<boolean>(INTRO_KEY, false) === true;
-}
-
-function markIntroDone() {
-  writeStorage(INTRO_KEY, true);
-}
-
-async function hideNativePluginSplash(fadeMs = 280) {
+async function hideNativePluginSplash(fadeMs = 0) {
   if (!isCapacitorNative()) return;
   try {
     const { SplashScreen } = await import("@capacitor/splash-screen");
+    // Instant hide — native plugin / Android 12 icon overlay must not sit on top
     await SplashScreen.hide({ fadeOutDuration: fadeMs });
   } catch {
     /* optional plugin */
@@ -35,19 +25,13 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function phaseAfterSplash(): Phase {
-  return readIntroDone() ? "done" : "intro";
-}
-
 /**
- * Cream brand splash on cold start / resume.
- * On Capacitor we HIDE the native SplashScreen plugin as soon as React splash mounts —
- * SplashScreen.show() sat ON TOP of the WebView, so phone users never saw the cream UI
- * (browser had no plugin — that's why only browser worked).
+ * App open → ONE cream brand splash → app.
+ * No intro carousel. Capacitor SplashScreen is hidden immediately so the icon flash
+ * is as short as possible (full remove needs new APK with cream system splash).
  */
 export default function LaunchFlow() {
   const [phase, setPhase] = useState<Phase>("splash");
-  const [locale, setLocale] = useState<"hi" | "en">("hi");
   const [reduced, setReduced] = useState(false);
   const [splashKey, setSplashKey] = useState(0);
   const backgroundedAt = useRef<number | null>(null);
@@ -55,21 +39,15 @@ export default function LaunchFlow() {
   const startSplash = useCallback(() => {
     setSplashKey((k) => k + 1);
     setPhase("splash");
-    void hideNativePluginSplash(180);
+    void hideNativePluginSplash(0);
+    // Second tick — some WebViews keep the plugin layer until next frame
+    window.setTimeout(() => {
+      void hideNativePluginSplash(0);
+    }, 50);
   }, []);
 
   useEffect(() => {
     setReduced(prefersReducedMotion());
-    try {
-      const stored = localStorage.getItem("agriveda-app-locale");
-      if (stored) {
-        const parsed = JSON.parse(stored) as string;
-        setLocale(parsed === "en" ? "en" : "hi");
-      }
-    } catch {
-      /* default hi */
-    }
-
     startSplash();
 
     let remove: (() => void) | undefined;
@@ -95,7 +73,7 @@ export default function LaunchFlow() {
           void handle.remove();
         };
       } catch {
-        /* web or plugin missing */
+        /* web */
       }
     })();
 
@@ -106,26 +84,17 @@ export default function LaunchFlow() {
   }, [startSplash]);
 
   const finishSplash = useCallback(() => {
-    void hideNativePluginSplash(200);
-    setPhase(phaseAfterSplash());
-  }, []);
-
-  const finishIntro = useCallback(() => {
-    markIntroDone();
+    void hideNativePluginSplash(0);
     setPhase("done");
   }, []);
 
   if (phase === "done") return null;
 
-  if (phase === "splash") {
-    return (
-      <AgriVedaSplashScreen
-        key={splashKey}
-        onComplete={finishSplash}
-        reducedMotion={reduced}
-      />
-    );
-  }
-
-  return <IntroCarousel onComplete={finishIntro} locale={locale} />;
+  return (
+    <AgriVedaSplashScreen
+      key={splashKey}
+      onComplete={finishSplash}
+      reducedMotion={reduced}
+    />
+  );
 }

@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+ splash icon (system zooms this; keep emblem readable) -->
+<!--
+  Android 12+ requires an animatedIcon. Match the app Leaf brand mark
+  (emerald tile + leaf), NOT the launcher mipmap artwork.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <!-- Soft cream field so the icon plate blends into splash_background -->
     <path
-        android:fillColor="#1E4D40"
-        android:pathData="M54,54m-34,0a34,34 0,1 1,68 0a34,34 0,1 1,-68 0" />
+        android:fillColor="#F8F9FA"
+        android:pathData="M0,0h288v288h-288z" />
+    <!-- Rounded emerald tile (same idea as topbar) -->
     <path
-        android:fillColor="#00000000"
-        android:pathData="M54,82 L54,48"
-        android:strokeWidth="4"
-        android:strokeColor="#ECFDF5"
-        android:strokeLineCap="round" />
+        android:fillColor="#10B981"
+        android:pathData="M96,96h96c17.7,0 32,14.3 32,32v96c0,17.7 -14.3,32 -32,32h-96c-17.7,0 -32,-14.3 -32,-32v-96c0,-17.7 14.3,-32 32,-32z" />
     <path
-        android:fillColor="#00A86B"
-        android:pathData="M54,58 C40,50 34,38 38,24 C50,30 54,44 54,58 Z" />
+        android:fillColor="#0F766E"
+        android:pathData="M128,96h64c17.7,0 32,14.3 32,32v96c0,17.7 -14.3,32 -32,32h-64c8.8,0 16,-7.2 16,-16v-128c0,-8.8 -7.2,-16 -16,-16z"
+        android:fillAlpha="0.35" />
+    <!-- Leaf shape -->
     <path
-        android:fillColor="#5EEAD4"
-        android:pathData="M54,62 C68,54 74,42 70,26 C58,32 54,48 54,62 Z" />
+        android:fillColor="#ECFDF5"
+        android:pathData="M144,188 C144,188 118,168 118,140 C118,118 132,106 144,106 C156,106 170,118 170,140 C170,168 144,188 144,188 Z" />
     <path
-        android:fillColor="#D4AF37"
-        android:pathData="M46,44 m-5,0 a5,9 0 1,1 10,0 a5,9 0 1,1 -10,0" />
+        android:pathData="M144,178 L144,122"
+        android:strokeWidth="5"
+        android:strokeColor="#059669"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
 </vector>
