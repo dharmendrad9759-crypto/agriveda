@@ -16,7 +16,7 @@ import { BRAND } from "@/lib/brand";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
-import { Check, ChevronRight, Crown, LogOut, Share2, User } from "lucide-react";
+import { Check, ChevronRight, LogOut, Share2, User } from "lucide-react";
 
 function ShareAgrivedaButton() {
   const { showToast } = useToast();
@@ -195,43 +195,13 @@ export default function SettingsPage() {
         </DarkCard>
 
         <DarkCard delay={5}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Account & Security</h3>
-          <div className="mt-2">
-            <SettingsRow label="Change Password" href="/profile" />
-            <SettingsRow label="Two-Factor Auth" toggle={{ on: settings.twoFactorAuth, onChange: (v) => update({ twoFactorAuth: v }) }} />
-            <AppLink href="/profile" className="mt-2 flex items-center gap-2 text-sm text-red-400">
-              <LogOut className="h-4 w-4" /> Logout
-            </AppLink>
-          </div>
-        </DarkCard>
-
-        <DarkCard delay={6}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Data & Sync</h3>
-          <div className="mt-2">
-            <SettingsRow label="Auto Sync" toggle={{ on: settings.autoSync, onChange: (v) => update({ autoSync: v }) }} />
-            <SettingsRow label="Last Synced" value="07 May 2024, 09:30 AM" />
-            <SettingsRow label="Clear Cache" value="45.2 MB" />
-          </div>
-        </DarkCard>
-
-        <DarkCard delay={7}>
-          <div className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-amber-400" />
-            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">AgriVeda Premium</h3>
-            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-400">Active</span>
-          </div>
-          <p className="mt-2 text-xs text-[var(--av-text-muted)]">Valid till 15 June 2025</p>
-          <ul className="mt-3 space-y-1 text-xs text-[var(--av-text-secondary)]">
-            {["Advanced AI Doctor", "Unlimited Alerts", "Expert Consultation", "Priority Support"].map((f) => (
-              <li key={f} className="flex gap-2"><span className="text-[var(--av-accent)]">✓</span>{f}</li>
-            ))}
-          </ul>
-          <AppLink href="/settings/upgrade" className={`mt-4 flex justify-center ${AV.btnPrimarySm}`}>
-            Manage Subscription
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खाता</h3>
+          <AppLink href="/profile" className="mt-2 flex items-center gap-2 text-sm text-red-400">
+            <LogOut className="h-4 w-4" /> लॉग आउट
           </AppLink>
         </DarkCard>
 
-        <DarkCard delay={8}>
+        <DarkCard delay={6}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">About {BRAND}</h3>
           <p className="mt-2 text-xs text-[var(--av-text-muted)]">v{APP_VERSION}</p>
           <p className="mt-1 text-xs text-[var(--av-text-secondary)]">Smart farming companion for Indian farmers.</p>
@@ -240,7 +210,7 @@ export default function SettingsPage() {
             <SettingsRow label="Privacy Policy" href="/privacy" />
             <SettingsRow label="समस्या बताएँ / Bug Report" href="/report-bug" />
             <SettingsRow label="सहायता / Support" href="/ask-query" />
-            <SettingsRow label="Rate Us on Play Store" href="/profile" />
+            <SettingsRow label="Play Store पर रेट करें" value="जल्द उपलब्ध" />
           </div>
           <ShareAgrivedaButton />
         </DarkCard>

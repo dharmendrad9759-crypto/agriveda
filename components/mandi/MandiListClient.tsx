@@ -12,10 +12,12 @@ import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { uniqueCrops, uniqueMarkets } from "@/lib/mandi/marketAnalytics";
 import { cn } from "@/lib/cn";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 type Tab = "prices" | "alerts";
 
 export default function MandiListClient() {
+  const { t } = useLocale();
   const { profile } = useFarmerProfile();
   const state = profile.state.trim() || "Madhya Pradesh";
   const district = profile.district.trim() || undefined;
@@ -48,8 +50,8 @@ export default function MandiListClient() {
     <AppShell
       className="!bg-[#f7f8fb]"
       title="बाज़ार देखें"
-      subtitle={`${locationLabel} · ${data?.source === "live" ? "Live" : "Sample"} · ${rows.length} भाव`}
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Mandi" }]}
+      subtitle={`${locationLabel} · ${rows.length} भाव`}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("market") }]}
       actions={
         <button
           type="button"

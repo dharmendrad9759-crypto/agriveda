@@ -9,6 +9,7 @@ import { track } from "@/lib/analytics";
 import { useToast } from "@/components/ui/Toast";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { isCapacitorNative } from "@/lib/capacitorNav";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const TOPICS = [
   { id: "bug", label: "ऐप में गड़बड़ / Bug" },
@@ -18,6 +19,7 @@ const TOPICS = [
 ] as const;
 
 export default function ReportBugPage() {
+  const { t } = useLocale();
   const { showToast } = useToast();
   const { profile } = useFarmerProfile();
   const [topic, setTopic] = useState<(typeof TOPICS)[number]["id"]>("bug");
@@ -60,7 +62,10 @@ export default function ReportBugPage() {
     }
     setSending(false);
     setMessage("");
-    showToast("रिपोर्ट मिल गई — धन्यवाद ✓", "success");
+    showToast(
+      "रिपोर्ट नोट हो गई। अभी ईमेल सिस्टम नहीं — जरूरी समस्या के लिए WhatsApp/Phone helpline इस्तेमाल करें",
+      "success"
+    );
   };
 
   return (
@@ -69,8 +74,8 @@ export default function ReportBugPage() {
       title="समस्या बताएँ"
       subtitle="Bug या सुझाव — हम सुधारेंगे"
       breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Report" },
+        { label: t("navHome"), href: "/" },
+        { label: t("shellReportBug") },
       ]}
     >
       <DarkCard>

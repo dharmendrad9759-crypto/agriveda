@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { PRICE_ALERTS } from "@/data/mock/mandi";
 import { readStorage, writeStorage } from "@/lib/storage";
 import type { PriceAlert, PriceAlertSettings } from "@/lib/mandi/types";
 
@@ -10,14 +9,7 @@ const KEY = "agriveda-price-alerts";
 function defaultSettings(): PriceAlertSettings {
   return {
     masterEnabled: true,
-    alerts: PRICE_ALERTS.map((a, i) => ({
-      id: `alert-${i + 1}`,
-      crop: a.crop,
-      target: a.target,
-      direction: "above" as const,
-      enabled: a.enabled,
-      createdAt: new Date().toISOString(),
-    })),
+    alerts: [],
   };
 }
 

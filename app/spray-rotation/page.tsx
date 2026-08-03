@@ -22,12 +22,14 @@ import { cropCatalog } from "@/data/crop-catalog";
 import { getCropPestDisease } from "@/data/pest-disease";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const TRACKER_CROPS = cropCatalog.filter((c) =>
   ["paddy", "cotton", "maize", "moongfali"].includes(c.slug)
 );
 
 export default function SprayRotationPage() {
+  const { t: uiT } = useLocale();
   const { locale, setLocale } = useSprayLocale();
   const { fields } = useSprayFields();
   const { hydrated, isOnline, pendingCount, getLogsForField } = useSprayLogs();
@@ -68,7 +70,7 @@ export default function SprayRotationPage() {
     <AppShell
       title={t(locale, "title")}
       subtitle={t(locale, "subtitle")}
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Spray Rotation" }]}
+      breadcrumbs={[{ label: uiT("navHome"), href: "/" }, { label: uiT("sprayRotation") }]}
     >
       <div className="flex justify-end">
         {isOnline ? (

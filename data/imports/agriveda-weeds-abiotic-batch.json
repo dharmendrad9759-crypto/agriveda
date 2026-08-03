@@ -6,189 +6,189 @@
   "compiledAt": "2026-07-10T06:04:23.027Z",
   "crops": [
     {
-      "crop": "Paddy / Dhaan",
+      "crop": "धान / चावल",
       "scientificName": "Oryza sativa",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa crus-galli/colona (sawank, grassy)",
-          "Cyperus rotundus/difformis (motha, sedge)",
-          "Ammania, Monochoria, Ludwigia (broadleaf)",
+          "Echinochloa crus-galli/colona (सांवा, घास)",
+          "Cyperus rotundus/difformis (मोथा, नरस)",
+          "Ammania, Monochoria, Ludwigia (चौड़ी पत्ती)",
           "Leptochloa, Ischaemum"
         ],
-        "criticalPeriod": "First 30-45 DAT (transplanted); 15-45 DAS (DSR)",
+        "criticalPeriod": "पहले 30-45 DAT (प्रत्यारोपित); 15-45 DAS (DSR)",
         "management": {
           "prevention": [
-            "Clean/certified seed free of weed seed",
-            "Well-levelled field + good puddling smothers weeds",
-            "Healthy competitive crop stand"
+            "साफ/प्रमाणित बीज, खरपतवार के बीज से मुक्त",
+            "अच्छी तरह से समतल खेत + अच्छी पोखर से खरपतवार नष्ट हो जाते हैं",
+            "स्वस्थ, घनी फसल खड़ी"
           ],
           "monitoring": [
-            "Scout weed flush at 15 & 30 DAT; identify grass vs sedge vs BLW to pick herbicide"
+            "15 और 30 DAT पर खरपतवार की फ्लश जाँचें; शाकनाशी चुनने के लिए घास, नरस और चौड़ी पत्ती अलग पहचानें"
           ],
           "cultural": [
-            "Maintain 3-5 cm standing water (biggest suppressor in transplanted rice)",
-            "Stale seedbed before DSR",
-            "Rotary/cono-weeder at 20 & 40 DAT in wider spacing",
-            "Green manure (dhaincha) smothers weeds"
+            "3-5 सेमी पानी जमा रखें (रोपाई किए गए चावल में सबसे बड़ा अवरोधक)",
+            "DSR से पहले बासी बीज क्यारी",
+            "20 और 40 DAT पर रोटरी/कोनो-वीडर (चौड़ी दूरी पर)",
+            "हरी खाद (ढैंचा) खरपतवार को नष्ट कर देती है"
           ],
           "chemical": [
             {
               "technical": "Pretilachlor 50% EC (with safener)",
               "dose": "600 ml/acre",
               "timing": "PE (0-3 DAT)",
-              "targets": "grasses + sedges",
-              "note": "Apply on thin water film; standing rice"
+              "targets": "घास + सेज",
+              "note": "पतली पानी की फिल्म पर लागू करें; खड़े चावल"
             },
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
               "timing": "PE",
-              "targets": "grasses + some BLW",
-              "note": "Good in DSR"
+              "targets": "घास + कुछ BLW",
+              "note": "DSR में अच्छा है"
             },
             {
               "technical": "Pyrazosulfuron-ethyl 10% WP",
               "dose": "80-100 g/acre",
               "timing": "PE/EPoE",
-              "targets": "sedges + BLW",
-              "note": "DSR & transplanted"
+              "targets": "सेज + BLW",
+              "note": "DSR और प्रत्यारोपित किया गया"
             },
             {
               "technical": "Bispyribac-sodium 10% SC",
               "dose": "100 ml/acre",
               "timing": "EPoE (15-20 DAT)",
-              "targets": "broad-spectrum: grasses+sedges+BLW",
-              "note": "The workhorse post-em; drain then re-flood after 2 days"
+              "targets": "व्यापक-स्पेक्ट्रम: घास+सेज+BLW",
+              "note": "मुख्य पोस्ट-इमर्जेंस; 2 दिन बाद पानी निकालें, फिर फिर से भरें"
             },
             {
               "technical": "Cyhalofop-butyl 10% EC + Ethoxysulfuron 15% WG (tank-mix)",
               "dose": "400 ml + 40 g/acre",
               "timing": "EPoE",
-              "targets": "grasses (cyhalofop) + sedge/BLW (ethoxysulfuron)",
-              "note": "Complete-spectrum combo"
+              "targets": "घास (cyhalofop) + सेज/BLW (ethoxysulfuron)",
+              "note": "पूर्ण-स्पेक्ट्रम कॉम्बो"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Zinc deficiency (Khaira)",
-          "symptoms": "Bronze/rusty spots on lower leaves 2-3 wk after transplant, stunting, delayed tillering",
-          "cause": "Low available Zn, high-pH/calcareous & continuously flooded soils",
+          "stress": "जिंक की कमी (खैरा)",
+          "symptoms": "रोपाई के 2-3 सप्ताह बाद निचली पत्तियों पर कांस्य/जंग जैसे धब्बे, बौना पौध, देर से कल्ले",
+          "cause": "कम उपलब्ध Zn, उच्च pH/कैलेकेरियस और लगातार बाढ़ वाली मिट्टी",
           "management": {
             "prevention": [
-              "Soil apply Zinc sulphate 10 kg/acre basal in Zn-deficient soils"
+              "Zn-कमी वाली मिट्टी में Zinc sulphate 10 किग्रा/एकड़ बेसल मिट्टी लगाएं"
             ],
             "monitoring": [
-              "Watch bronzing on lower leaves 15-20 DAT"
+              "15-20 DAT पर निचली पत्तियों पर कांस्य रंग देखें"
             ],
             "cultural": [
-              "Intermittent drainage improves Zn availability"
+              "रुक-रुक कर जल निकासी से उपलब्धता में सुधार होता है"
             ],
             "chemical": [
               {
-                "input": "Zinc sulphate 21% + lime foliar",
-                "dose": "1 kg ZnSO4 + 0.5 kg lime in 200 L/acre",
-                "stage": "on symptoms, repeat 10 days",
-                "note": "Neutralise with lime to avoid leaf scorch"
+                "input": "Zinc sulphate 21% + lime (पत्ती छिड़काव)",
+                "dose": "1 kg ZnSO4 + 0.5 kg lime, 200 L/acre पानी में",
+                "stage": "लक्षण दिखने पर, 10 दिन बाद दोहराएँ",
+                "note": "पत्ती को झुलसने से बचाने के लिए चूने से निष्क्रिय करें"
               }
             ]
           }
         },
         {
-          "stress": "Iron deficiency (in aerobic/DSR)",
-          "symptoms": "Interveinal yellowing of young leaves, whitening in severe",
-          "cause": "Aerobic soil, high pH, DSR condition",
+          "stress": "आयरन की कमी (एरोबिक/DSR में)",
+          "symptoms": "नई पत्तियों का अंतःशिरा पीला पड़ना, गंभीर रूप से सफेद होना",
+          "cause": "एरोबिक मिट्टी, उच्च pH, DSR स्थिति",
           "management": {
             "prevention": [
-              "Maintain reduced/flooded condition where possible"
+              "जहां संभव हो कम/बाढ़ की स्थिति बनाए रखें"
             ],
             "monitoring": [
-              "Young-leaf chlorosis in DSR"
+              "DSR में युवा पत्ती क्लोरोसिस"
             ],
             "cultural": [
-              "Flush irrigation"
+              "फ्लश सिंचाई"
             ],
             "chemical": [
               {
-                "input": "Ferrous sulphate foliar",
+                "input": "Ferrous sulphate पत्तेदार",
                 "dose": "5 g/L (1 kg/acre)",
-                "stage": "2-3 sprays 7-day interval",
+                "stage": "7 दिन के अंतराल पर 2-3 छिड़काव करें",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Submergence / flash flood",
-          "symptoms": "Complete submergence, yellowing, plant death if prolonged",
-          "cause": "Flash flooding, poor drainage",
+          "stress": "जलमग्नता/आकस्मिक बाढ़",
+          "symptoms": "लंबे समय तक पौधे का पूरी तरह जलमग्न होना, पीला पड़ना, पौधे का मरना",
+          "cause": "आकस्मिक बाढ़, खराब जल निकासी",
           "management": {
             "prevention": [
-              "Sub1 submergence-tolerant varieties (Swarna-Sub1)",
-              "Field bunding & drainage channels"
+              "Sub1 जलमग्नता-सहिष्णु किस्में (Swarna-Sub1)",
+              "खेत की मेड़बंदी एवं जल निकासी चैनल"
             ],
             "monitoring": [
-              "Watch water level in flood-prone fields"
+              "बाढ़ की आशंका वाले खेतों में जल स्तर पर नजर रखें"
             ],
             "cultural": [
-              "Drain excess water fast; avoid N just before flood"
+              "अतिरिक्त पानी तेजी से निकालें; बाढ़ से ठीक पहले N से बचें"
             ],
             "chemical": [
               {
-                "input": "None (variety + drainage based)",
+                "input": "कोई नहीं (विविधता+जल निकासी आधारित)",
                 "dose": "-",
                 "stage": "-",
-                "note": "Top-dress N after water recedes to aid recovery"
+                "note": "पानी कम होने के बाद रिकवरी में सहायता के लिए टॉप-ड्रेस N"
               }
             ]
           }
         },
         {
-          "stress": "Salinity / alkalinity",
-          "symptoms": "Leaf-tip burn, poor tillering, patchy stunted growth on salt-affected patches",
-          "cause": "Saline/sodic soils, poor-quality irrigation water",
+          "stress": "लवणता/क्षारीयता",
+          "symptoms": "पत्ती की नोक जलना, कम कल्ले फूटना, नमक से प्रभावित क्षेत्रों पर धब्बेदार रुका हुआ विकास",
+          "cause": "लवणीय/क्षारीय मिट्टी, खराब गुणवत्ता वाला सिंचाई जल",
           "management": {
             "prevention": [
-              "Salt-tolerant varieties (CSR-30, CSR-36)",
-              "Gypsum for sodic soils"
+              "नमक सहिष्णु किस्में (CSR-30, CSR-36)",
+              "Gypsum सोडिक मिट्टी के लिए"
             ],
             "monitoring": [
-              "Map affected patches; test EC/pH"
+              "मानचित्र प्रभावित पैच; परीक्षण EC/pH"
             ],
             "cultural": [
-              "Leaching with good water; gypsum + green manure; raised-bed transplanting"
+              "अच्छे पानी से निक्षालन; gypsum + हरी खाद; ऊँचे बिस्तर पर रोपाई"
             ],
             "chemical": [
               {
-                "input": "Gypsum soil amendment",
+                "input": "Gypsum मिट्टी संशोधन",
                 "dose": "per soil-test (e.g. 2-4 q/acre)",
-                "stage": "pre-planting",
+                "stage": "रोपण पूर्व",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Lodging",
-          "symptoms": "Crop falls over at grain filling, grain loss, harvest difficulty",
-          "cause": "Excess N, dense crop, tall varieties, wind/rain",
+          "stress": "अस्थायी आवास",
+          "symptoms": "अनाज भरने पर फसल गिर जाती है, अनाज नष्ट हो जाता है, कटाई में कठिनाई होती है",
+          "cause": "अधिक N, घनी फसल, लम्बी किस्में, हवा/बारिश",
           "management": {
             "prevention": [
-              "Semi-dwarf varieties; balanced N (split); avoid excess N"
+              "अर्ध-बौनी किस्में; संतुलित N (विभाजन); अधिकता से बचें N"
             ],
             "monitoring": [
-              "Watch canopy density & N status"
+              "कैनोपी घनत्व और N स्थिति देखें"
             ],
             "cultural": [
-              "Proper spacing; drain before heavy wind events; silicon/K nutrition strengthens stem"
+              "उचित दूरी; भारी हवा की घटनाओं से पहले जल निकासी; सिलिकॉन/K पोषण तने को मजबूत बनाता है"
             ],
             "chemical": [
               {
-                "input": "Potash top-dress",
+                "input": "पोटाश टॉप-ड्रेस",
                 "dose": "per schedule",
-                "stage": "tillering-panicle",
-                "note": "K improves stem strength"
+                "stage": "टिलरिंग-पैनिकल",
+                "note": "K तने की ताकत में सुधार करता है"
               }
             ]
           }
@@ -196,157 +196,157 @@
       ]
     },
     {
-      "crop": "Maize / Makka",
+      "crop": "मक्का/मक्का",
       "scientificName": "Zea mays",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Digitaria, Eleusine (grasses)",
-          "Cyperus (sedge)",
-          "Amaranthus, Commelina, Celosia, Trianthema (broadleaf)"
+          "Echinochloa, Digitaria, Eleusine (घास)",
+          "Cyperus (नरस)",
+          "Amaranthus, Commelina, Celosia, Trianthema (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 20-45 DAS",
+        "criticalPeriod": "पहले 20-45 DAS",
         "management": {
           "prevention": [
-            "Clean seed; proper plant population for canopy shading"
+            "स्वच्छ बीज; चंदवा छायांकन के लिए उचित पौध की आबादी"
           ],
           "monitoring": [
-            "Scout flush at 15 & 30 DAS; classify grass/sedge/BLW"
+            "जाँच flush at 15 & 30 DAS; घास/सेज/BLW को वर्गीकृत करें"
           ],
           "cultural": [
-            "Inter-row hoeing/earthing-up at 30-35 DAS (dual: weeds + fall-armyworm-free soil in whorl)",
-            "Intercropping with legumes smothers weeds"
+            "अंतर-पंक्ति निराई/मिट्टी लगाना-up at 30-35 DAS (दोहरी: खरपतवार + पतझड़-सेना-कृमि रहित मिट्टी)",
+            "फलियों के साथ अंतरफसल लगाने से खरपतवार नष्ट हो जाते हैं"
           ],
           "chemical": [
             {
               "technical": "Atrazine 50% WP",
               "dose": "400-500 g/acre",
               "timing": "PE (0-3 DAS)",
-              "targets": "broad-spectrum grass+BLW",
-              "note": "Do NOT use in maize+pulse/veg intercrop; moist soil"
+              "targets": "ब्रॉड-स्पेक्ट्रम घास+BLW",
+              "note": "मक्का+दलहन/सब्जी अंतरफसल में उपयोग न करें; नम मिट्टी"
             },
             {
               "technical": "Atrazine + Pendimethalin (tank-mix)",
               "dose": "400 g + 700 ml/acre",
               "timing": "PE",
-              "targets": "longer grass control",
-              "note": "Sole maize only"
+              "targets": "लंबे समय तक घास नियंत्रण",
+              "note": "केवल एकमात्र मक्का"
             },
             {
               "technical": "Tembotrione 34.4% SC + surfactant",
               "dose": "115 ml/acre + 0.5% surfactant",
               "timing": "PoE (20-25 DAS)",
-              "targets": "broad-spectrum incl. escaped grass+BLW",
-              "note": "Best rescue post-em in maize"
+              "targets": "ब्रॉड-स्पेक्ट्रम सहित। बची हुई घास+BLW",
+              "note": "मक्के में सर्वोत्तम बचाव पोस्ट-एम"
             },
             {
               "technical": "Topramezone 33.6% SC",
               "dose": "30 ml/acre",
               "timing": "PoE",
-              "targets": "grasses+BLW",
-              "note": "Rotation partner"
+              "targets": "घास+BLW",
+              "note": "रोटेशन पार्टनर"
             },
             {
               "technical": "2,4-D Na salt 80% WP",
               "dose": "250 g/acre",
               "timing": "PoE",
-              "targets": "broadleaf only",
-              "note": "Avoid drift to nearby broadleaf crops"
+              "targets": "केवल चौड़ी पत्ती वाला",
+              "note": "पास की चौड़ी पत्ती वाली फसल की ओर जाने से बचें"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Nitrogen deficiency",
-          "symptoms": "V-shaped yellowing from tip of lower/older leaves along midrib",
-          "cause": "Low N, leaching after heavy rain, waterlogging",
+          "stress": "नाइट्रोजन की कमी",
+          "symptoms": "मध्यशिरा के साथ निचली/पुरानी पत्तियों की नोक से वी-आकार का पीलापन",
+          "cause": "कम N, भारी बारिश के बाद लीचिंग, जलभराव",
           "management": {
             "prevention": [
-              "Split N application (basal + knee-high + tasseling)"
+              "स्प्लिट N अनुप्रयोग (बेसल + घुटने-ऊँचा + टैसलिंग)"
             ],
             "monitoring": [
-              "Leaf-colour chart; watch older-leaf V-yellowing"
+              "पत्ती-रंग चार्ट; पुरानी पत्ती वी-पीली होते हुए देखें"
             ],
             "cultural": [
-              "Timely top-dressing; drain waterlogged patches"
+              "समय पर टॉप-ड्रेसिंग; जलजमाव वाले स्थानों की निकासी करें"
             ],
             "chemical": [
               {
-                "input": "Urea top-dress / foliar",
+                "input": "Urea टॉप-ड्रेस / फोलियर",
                 "dose": "soil per schedule; foliar 2% (20 g/L)",
-                "stage": "knee-high & pre-tassel",
-                "note": "Foliar for quick correction"
+                "stage": "घुटने तक ऊँचा और प्री-टैसल",
+                "note": "त्वरित सुधार के लिए पत्ते"
               }
             ]
           }
         },
         {
-          "stress": "Zinc deficiency",
-          "symptoms": "Broad white/yellow interveinal band on young leaves (white bud), stunting",
-          "cause": "High-pH soils, high P, sandy soils",
+          "stress": "जिंक की कमी",
+          "symptoms": "नई पत्तियों (सफ़ेद कली) पर चौड़ी सफ़ेद/पीली अंतःशिरा पट्टी, बौनापन",
+          "cause": "ऊँची pH मिट्टी, ऊँची P, रेतीली मिट्टी",
           "management": {
             "prevention": [
-              "Basal Zinc sulphate 10 kg/acre in deficient soils"
+              "कमी वाली मिट्टी में बेसल Zinc sulphate 10 किग्रा/एकड़"
             ],
             "monitoring": [
-              "Young-leaf banding at 2-4 weeks"
+              "युवा-leaf banding at 2-4 weeks"
             ],
             "cultural": [
-              "Avoid over-application of P"
+              "P के अधिक प्रयोग से बचें"
             ],
             "chemical": [
               {
-                "input": "Zinc sulphate + lime foliar",
+                "input": "Zinc sulphate + टेम्पलेट का पत्ता",
                 "dose": "1 kg ZnSO4 + 0.5 kg lime/200 L/acre",
-                "stage": "on symptoms",
+                "stage": "लक्षणों पर",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Waterlogging",
-          "symptoms": "Yellowing, purpling, stunting, root death in low spots after rain",
-          "cause": "Poor drainage, heavy rain (maize very sensitive)",
+          "stress": "जल भराव",
+          "symptoms": "बारिश के बाद निचले स्थानों में पीलापन, बैंगनीपन, बौनापन, जड़ों का मरना",
+          "cause": "खराब जल निकासी, भारी बारिश (मक्का बहुत संवेदनशील)",
           "management": {
             "prevention": [
-              "Ridge-furrow/raised-bed planting; field drainage channels"
+              "रिज-फरो/उठाए गए बिस्तर पर रोपण; क्षेत्र जल निकासी चैनल"
             ],
             "monitoring": [
-              "Watch low spots after rain"
+              "बारिश के बाद निचले स्थानों पर नजर रखें"
             ],
             "cultural": [
-              "Drain within 24-48h; earthing-up on ridges"
+              "Drain within 24-48 घंटे; मेड़ों पर मिट्टी डालना"
             ],
             "chemical": [
               {
-                "input": "Foliar N + micronutrient after drainage",
+                "input": "जल निकासी के बाद पर्ण N + सूक्ष्म पोषक तत्व",
                 "dose": "2% urea + 0.5% MgSO4",
-                "stage": "post-drainage recovery",
+                "stage": "जल निकासी के बाद पुनर्प्राप्ति",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Moisture stress at silking",
-          "symptoms": "Poor cob fill, tip barrenness, kernel abortion",
-          "cause": "Drought at flowering/silking (most sensitive stage)",
+          "stress": "रेशम बनाते समय नमी का तनाव",
+          "symptoms": "खराब भुट्टे का भराव, सिरे का बंजरपन, गिरी का गर्भपात",
+          "cause": "फूल आने/रेश आने पर सूखा (सबसे संवेदनशील चरण)",
           "management": {
             "prevention": [
-              "Ensure irrigation at knee-high, tasseling, silking, grain-fill"
+              "घुटनों तक सिंचाई, टैसलिंग, सिल्किंग, दाना भराव सुनिश्चित करें"
             ],
             "monitoring": [
-              "Track soil moisture at flowering"
+              "फूल आने पर मिट्टी की नमी को ट्रैक करें"
             ],
             "cultural": [
-              "Mulching; life-saving irrigation at silking"
+              "शहतूत; सिल्किंग में जीवन रक्षक सिंचाई"
             ],
             "chemical": [
               {
-                "input": "KNO3 foliar (anti-stress)",
+                "input": "KNO3 पर्णहरित (तनावरोधी)",
                 "dose": "1% (10 g/L)",
-                "stage": "at silking under stress",
+                "stage": "तनाव में सिल्किंग पर",
                 "note": ""
               }
             ]
@@ -355,144 +355,144 @@
       ]
     },
     {
-      "crop": "Bajra / Pearl Millet",
+      "crop": "बाजरा/बाजरा",
       "scientificName": "Pennisetum glaucum",
       "weeds": {
         "keyWeeds": [
-          "Digitaria, Echinochloa, Cenchrus, Eleusine (grasses)",
+          "Digitaria, Echinochloa, Cenchrus, Eleusine (घास)",
           "Trianthema portulacastrum (BLW, major in kharif)",
           "Amaranthus, Celosia, Commelina"
         ],
-        "criticalPeriod": "First 20-35 DAS",
+        "criticalPeriod": "पहले 20-35 DAS",
         "management": {
           "prevention": [
-            "Clean seed; adequate plant stand for canopy cover"
+            "स्वच्छ बीज; कैनोपी कवर के लिए पर्याप्त प्लांट स्टैंड"
           ],
           "monitoring": [
-            "Scout Trianthema flush after first rains"
+            "स्काउट Trianthema flush after पहली बारिश"
           ],
           "cultural": [
-            "1-2 inter-row hoeings at 20 & 35 DAS (usually most economical for this fast dryland crop)",
-            "Higher seed rate for competition"
+            "1-2 अंतर-row hoeings at 20 & 35 DAS (आमतौर पर इस तेज़ शुष्क भूमि वाली फसल के लिए सबसे किफायती)",
+            "प्रतियोगिता के लिए उच्च बीज दर"
           ],
           "chemical": [
             {
               "technical": "Atrazine 50% WP",
               "dose": "200-300 g/acre",
               "timing": "PE (0-3 DAS)",
-              "targets": "grass+BLW",
-              "note": "Lower rate (light soils); moist soil"
+              "targets": "घास+BLW",
+              "note": "कम दर (हल्की मिट्टी); नम मिट्टी"
             },
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
               "timing": "PE",
-              "targets": "grasses + some BLW",
-              "note": "Alternative to atrazine"
+              "targets": "घास + कुछ BLW",
+              "note": "atrazine का विकल्प"
             },
             {
               "technical": "2,4-D Na salt 80% WP",
               "dose": "250 g/acre",
               "timing": "PoE (20-25 DAS)",
-              "targets": "broadleaf (Trianthema)",
-              "note": "Rescue for BLW escapes"
+              "targets": "त्रिफल (Trianthema)",
+              "note": "BLW भागने के लिए बचाव"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Drought / moisture stress",
-          "symptoms": "Leaf rolling, wilting, poor tillering & grain fill (though bajra is drought-hardy)",
-          "cause": "Erratic monsoon, sandy low-retention soils",
+          "stress": "सूखा/नमी का तनाव",
+          "symptoms": "पत्तियां लुढ़कना, मुरझाना, कम कल्ले निकलना और दाना भरना (हालाँकि बाजरा सूखा प्रतिरोधी है)",
+          "cause": "अनियमित मानसून, रेतीली कम धारण क्षमता वाली मिट्टी",
           "management": {
             "prevention": [
-              "Drought-tolerant hybrids; sow with monsoon onset"
+              "सूखा-सहिष्णु संकर; मानसून की शुरुआत के साथ बुआई करें"
             ],
             "monitoring": [
-              "Watch leaf rolling in dry spells"
+              "सूखे के मौसम में पत्तों को लुढ़कते हुए देखें"
             ],
             "cultural": [
-              "Mulching; conserve moisture; thin to optimal stand"
+              "शहतूत; नमी का संरक्षण करें; पतले से इष्टतम स्टैंड"
             ],
             "chemical": [
               {
-                "input": "KNO3 / potash foliar (anti-stress)",
+                "input": "KNO3 / पोटाश पर्ण (तनावरोधी)",
                 "dose": "1% (10 g/L)",
-                "stage": "at stress / flowering",
+                "stage": "तनाव / फूलने पर",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Iron deficiency",
-          "symptoms": "Interveinal yellowing of young leaves on calcareous/sandy soils",
-          "cause": "High-pH light soils, low available Fe",
+          "stress": "आयरन की कमी",
+          "symptoms": "शांत/रेतीली मिट्टी पर युवा पत्तियों का अंतःशिरा पीलापन",
+          "cause": "उच्च pH हल्की मिट्टी, कम उपलब्ध Fe",
           "management": {
             "prevention": [
-              "Organic matter; avoid over-liming"
+              "कार्बनिक पदार्थ; अधिक नींबू पानी पीने से बचें"
             ],
             "monitoring": [
-              "Young-leaf chlorosis"
+              "युवा पत्ती क्लोरोसिस"
             ],
             "cultural": [
-              "FYM incorporation"
+              "FYM निगमन"
             ],
             "chemical": [
               {
-                "input": "Ferrous sulphate foliar",
+                "input": "Ferrous sulphate पत्तेदार",
                 "dose": "5 g/L (1 kg/acre)",
-                "stage": "2 sprays 10-day interval",
+                "stage": "10 दिन के अंतराल पर 2 छिड़काव करें",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Nitrogen deficiency",
-          "symptoms": "Older-leaf yellowing, thin stand, poor tillering",
-          "cause": "Low N, leaching, sandy soils",
+          "stress": "नाइट्रोजन की कमी",
+          "symptoms": "पुरानी पत्तियाँ पीली पड़ रही हैं, डंठल पतला है, कल्ले कम फूट रहे हैं",
+          "cause": "कम N, लीचिंग, रेतीली मिट्टी",
           "management": {
             "prevention": [
-              "Split N (basal + 25-30 DAS)"
+              "विभाजन N (बेसल + 25-30 DAS)"
             ],
             "monitoring": [
-              "Older-leaf colour"
+              "पुराने पत्ते का रंग"
             ],
             "cultural": [
-              "Timely top-dress with adequate moisture"
+              "पर्याप्त नमी के साथ समय पर टॉप-ड्रेस"
             ],
             "chemical": [
               {
-                "input": "Urea top-dress / 2% foliar",
+                "input": "Urea टॉप-ड्रेस / 2% फोलियर",
                 "dose": "per schedule / 20 g/L foliar",
-                "stage": "tillering",
+                "stage": "कल्ले निकलना",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Heat stress at flowering",
-          "symptoms": "Poor grain set, chaffy earheads",
-          "cause": ">42C during flowering",
+          "stress": "फूल आने पर गर्मी का तनाव",
+          "symptoms": "ख़राब अनाज, फटी बालियाँ",
+          "cause": "> फूल आने के दौरान 42C",
           "management": {
             "prevention": [
-              "Adjust sowing so flowering avoids peak heat",
-              "Heat-tolerant hybrids"
+              "बुआई को समायोजित करें ताकि फूल आने पर अत्यधिक गर्मी से बचा जा सके",
+              "गर्मी-सहिष्णु संकर"
             ],
             "monitoring": [
-              "Track flowering vs heatwave forecast"
+              "पुष्पन बनाम लू के पूर्वानुमान पर नज़र रखें"
             ],
             "cultural": [
-              "Life-saving irrigation to cool canopy"
+              "छत्रछाया को ठंडा करने के लिए जीवनरक्षक सिंचाई"
             ],
             "chemical": [
               {
-                "input": "KNO3 foliar",
+                "input": "KNO3 पत्तेदार",
                 "dose": "1%",
-                "stage": "pre-flowering under heat",
+                "stage": "गर्मी के तहत फूल आने से पहले",
                 "note": ""
               }
             ]
@@ -501,158 +501,158 @@
       ]
     },
     {
-      "crop": "Soybean",
+      "crop": "सोयाबीन",
       "scientificName": "Glycine max",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Digitaria, Eleusine (grasses)",
-          "Cyperus (sedge)",
-          "Amaranthus, Commelina, Celosia, Euphorbia (broadleaf)"
+          "Echinochloa, Digitaria, Eleusine (घास)",
+          "Cyperus (नरस)",
+          "Amaranthus, Commelina, Celosia, Euphorbia (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 20-45 DAS",
+        "criticalPeriod": "पहले 20-45 DAS",
         "management": {
           "prevention": [
-            "Clean seed; optimal plant population for early canopy cover"
+            "स्वच्छ बीज; प्रारंभिक चंदवा कवर के लिए इष्टतम पौध की आबादी"
           ],
           "monitoring": [
-            "Scout flush at 15 & 30 DAS; classify grass/sedge/BLW"
+            "जाँच flush at 15 & 30 DAS; घास/सेज/BLW को वर्गीकृत करें"
           ],
           "cultural": [
-            "Inter-row hoeing at 20 & 40 DAS",
-            "Stale seedbed; residue mulch"
+            "अंतर-row hoeing at 20 & 40 DAS",
+            "बासी बीजशाला; अवशेष गीली घास"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
               "timing": "PE (0-3 DAS)",
-              "targets": "grasses + some BLW",
-              "note": "Moist soil"
+              "targets": "घास + कुछ BLW",
+              "note": "नम मिट्टी"
             },
             {
               "technical": "Diclosulam 84% WDG",
               "dose": "12.4 g/acre",
               "timing": "PE",
-              "targets": "broad-spectrum BLW+sedge, long residual",
+              "targets": "ब्रॉड-स्पेक्ट्रम BLW+सेज, लंबा अवशिष्ट",
               "note": ""
             },
             {
               "technical": "Imazethapyr 10% SL",
               "dose": "300 ml/acre",
               "timing": "EPoE (15-20 DAS)",
-              "targets": "grasses+BLW+sedge",
-              "note": "Soybean-selective workhorse"
+              "targets": "घास+BLW+सेज",
+              "note": "सोयाबीन-चयनात्मक वर्कहॉर्स"
             },
             {
               "technical": "Imazethapyr 35% + Imazamox 35% WG (ready-mix)",
               "dose": "40 g/acre",
               "timing": "EPoE",
-              "targets": "broad-spectrum",
-              "note": "Complete post-em"
+              "targets": "व्यापक परछाई",
+              "note": "पूरा पोस्ट-इम"
             },
             {
               "technical": "Quizalofop-ethyl 5% EC",
               "dose": "400 ml/acre",
               "timing": "PoE",
-              "targets": "grasses only",
-              "note": "Tank-mix partner where BLW handled separately"
+              "targets": "केवल घास",
+              "note": "टैंक-मिक्स पार्टनर जहां BLW को अलग से संभाला जाता है"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Iron-deficiency chlorosis",
-          "symptoms": "Interveinal yellowing of young leaves, whitening in severe",
-          "cause": "High-pH/calcareous soils, waterlogging",
+          "stress": "आयरन की कमी से क्लोरोसिस",
+          "symptoms": "नई पत्तियों का अंतःशिरा पीला पड़ना, गंभीर रूप से सफेद होना",
+          "cause": "उच्च-pH/कैलेकेरियस मिट्टी, जल-जमाव",
           "management": {
             "prevention": [
-              "Avoid over-liming; tolerant varieties"
+              "अधिक मात्रा में पानी पीने से बचें; सहनशील किस्में"
             ],
             "monitoring": [
-              "Young-leaf chlorosis at 20-30 DAS"
+              "युवा-leaf chlorosis at 20-30 DAS"
             ],
             "cultural": [
-              "Improve drainage; FYM"
+              "जल निकासी में सुधार; FYM"
             ],
             "chemical": [
               {
-                "input": "Ferrous sulphate foliar",
+                "input": "Ferrous sulphate पत्तेदार",
                 "dose": "5 g/L (0.5%) + 1 g/L citric acid",
-                "stage": "2 sprays 10-day interval",
+                "stage": "10 दिन के अंतराल पर 2 छिड़काव करें",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Sulphur deficiency",
-          "symptoms": "Uniform yellowing of YOUNG leaves (unlike N which hits old leaves), thin stems",
-          "cause": "S-deficient soils, no S in fertiliser",
+          "stress": "सल्फर की कमी",
+          "symptoms": "नई पत्तियों का एक समान पीला पड़ना (विपरीत N जो पुरानी पत्तियों पर हमला करता है), पतले तने",
+          "cause": "एस-कमी वाली मिट्टी, उर्वरक में कोई एस नहीं",
           "management": {
             "prevention": [
-              "Apply Gypsum/SSP or elemental S basal (oilseed needs S)"
+              "Gypsum/एसएसपी या मौलिक एस बेसल लागू करें (तिलहन को एस की आवश्यकता है)"
             ],
             "monitoring": [
-              "Young-leaf yellowing"
+              "युवा पत्ती का पीला पड़ना"
             ],
             "cultural": [
-              "Use SSP instead of DAP to add S"
+              "S जोड़ने के लिए DAP के स्थान पर SSP का उपयोग करें"
             ],
             "chemical": [
               {
-                "input": "Bentonite sulphur soil / Gypsum",
+                "input": "बेंटोनाइट सल्फर मिट्टी / Gypsum",
                 "dose": "8-10 kg S/acre basal",
-                "stage": "basal",
+                "stage": "बुनियादी",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Waterlogging",
-          "symptoms": "Yellowing, wilting, root rot, stand loss in low spots",
-          "cause": "Heavy rain, poor drainage (soybean sensitive)",
+          "stress": "जल भराव",
+          "symptoms": "पीला पड़ना, मुरझाना, जड़ सड़न, निचले स्थानों में नुकसान",
+          "cause": "भारी बारिश, ख़राब जल निकासी (सोयाबीन संवेदनशील)",
           "management": {
             "prevention": [
-              "Broad-bed-furrow (BBF) planting; drainage channels"
+              "ब्रॉड-बेड-फ़रो (BBF) रोपण; जल निकासी चैनल"
             ],
             "monitoring": [
-              "Watch low spots after rain"
+              "बारिश के बाद निचले स्थानों पर नजर रखें"
             ],
             "cultural": [
-              "Drain within 24-48h; BBF system"
+              "Drain within 24-48 घंटे; BBF प्रणाली"
             ],
             "chemical": [
               {
-                "input": "Foliar 2% urea + micronutrient post-drainage",
+                "input": "पर्ण 2% urea + जल निकासी के बाद सूक्ष्म पोषक तत्व",
                 "dose": "20 g/L urea",
-                "stage": "recovery",
+                "stage": "वसूली",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Flower & pod drop",
-          "symptoms": "Excessive shedding of flowers/young pods",
-          "cause": "Moisture/heat stress, poor nutrition at flowering",
+          "stress": "फूल और फली का गिरना",
+          "symptoms": "फूलों/नयी फलियों का अत्यधिक झड़ना",
+          "cause": "फूल आने पर नमी/गर्मी का तनाव, खराब पोषण",
           "management": {
             "prevention": [
-              "Ensure moisture at flowering-podding"
+              "फूल-फली लगने के समय नमी सुनिश्चित करें"
             ],
             "monitoring": [
-              "Track shedding at R1-R3"
+              "R1-R3 पर ट्रैक शेडिंग"
             ],
             "cultural": [
-              "Irrigate at flowering & pod-fill"
+              "फूल आने एवं फली भरने पर सिंचाई करें"
             ],
             "chemical": [
               {
-                "input": "2% DAP or KNO3 foliar",
+                "input": "2% DAP या KNO3 पत्तेदार",
                 "dose": "20 g/L",
-                "stage": "flowering & 15 days later",
-                "note": "Reduces drop, boosts pod-fill"
+                "stage": "फूल आना और 15 days बाद में",
+                "note": "ड्रॉप को कम करता है, पॉड-फिल को बढ़ावा देता है"
               }
             ]
           }
@@ -660,145 +660,145 @@
       ]
     },
     {
-      "crop": "Groundnut / Mungfali",
+      "crop": "मूंगफली/मुंगफली",
       "scientificName": "Arachis hypogaea",
       "weeds": {
         "keyWeeds": [
-          "Digitaria, Dactyloctenium, Echinochloa (grasses)",
-          "Cyperus (sedge)",
-          "Trianthema, Amaranthus, Commelina (broadleaf)"
+          "Digitaria, Dactyloctenium, Echinochloa (घास)",
+          "Cyperus (नरस)",
+          "Trianthema, Amaranthus, Commelina (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 20-45 DAS; keep weed-free at pegging (40-60 DAS)",
+        "criticalPeriod": "पहले 20-45 DAS; पेगिंग के समय खरपतवार-मुक्त रखें (40-60 DAS)",
         "management": {
           "prevention": [
-            "Clean seed; optimal population"
+            "स्वच्छ बीज; इष्टतम जनसंख्या"
           ],
           "monitoring": [
-            "Scout flush at 15 & 30 DAS"
+            "जाँच flush at 15 & 30 DAS"
           ],
           "cultural": [
-            "Inter-row hoeing at 20 & 40 DAS BUT stop soil disturbance after pegging (damages pegs)",
-            "Earthing-up before pegging"
+            "अंतर-row hoeing at 20 & 40 DAS लेकिन पेगिंग के बाद मिट्टी में गड़बड़ी रोकें (खूंटों को नुकसान पहुंचाता है)",
+            "पेगिंग से पहले मिट्टी भरना"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1-1.3 L/acre",
               "timing": "PE (0-3 DAS)",
-              "targets": "grasses + BLW",
-              "note": "Moist soil"
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी"
             },
             {
               "technical": "Imazethapyr 10% SL",
               "dose": "300 ml/acre",
               "timing": "EPoE (15-20 DAS)",
-              "targets": "grass+BLW+sedge",
-              "note": "Groundnut-selective"
+              "targets": "घास+BLW+सेज",
+              "note": "मूंगफली-चयनात्मक"
             },
             {
               "technical": "Quizalofop-ethyl 5% EC",
               "dose": "400 ml/acre",
               "timing": "PoE",
-              "targets": "grasses only",
-              "note": "For grassy escapes"
+              "targets": "केवल घास",
+              "note": "घास से बचने के लिए"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Calcium deficiency at pegging (pops/unfilled pods)",
-          "symptoms": "Empty pods (pops), dark plumule, poor kernel fill",
-          "cause": "Low Ca in pegging zone, sandy soils",
+          "stress": "पेगिंग के समय कैल्शियम की कमी (पॉप/अनफिल्ड पॉड)",
+          "symptoms": "खाली फलियाँ (पॉप), गहरे रंग का प्लम्यूल, ख़राब गिरी भराव",
+          "cause": "पेगिंग जोन में कम Ca, रेतीली मिट्टी",
           "management": {
             "prevention": [
-              "Apply Gypsum at flowering/pegging (the classic groundnut practice)"
+              "फूल आने/खून लगने पर Gypsum लगाएं (क्लासिक मूंगफली अभ्यास)"
             ],
             "monitoring": [
-              "Check pod fill at maturity"
+              "परिपक्वता पर पॉड भरने की जाँच करें"
             ],
             "cultural": [
-              "Earthing-up to bring Ca to pegging zone"
+              "सीए को पेगिंग जोन में लाने के लिए अर्थिंग-अप"
             ],
             "chemical": [
               {
-                "input": "Gypsum (CaSO4) soil at pegging",
-                "dose": "100 kg/acre at flowering",
-                "stage": "40-45 DAS (flowering-pegging)",
-                "note": "Also supplies S"
+                "input": "पेगिंग पर Gypsum (CaSO4) मिट्टी",
+                "dose": "100 kg/acre at फूल आना",
+                "stage": "40-45 DAS (फूल-पेगिंग)",
+                "note": "एस भी सप्लाई करता है"
               }
             ]
           }
         },
         {
-          "stress": "Iron-deficiency chlorosis",
-          "symptoms": "Interveinal yellowing of young leaves on calcareous soils",
-          "cause": "High-pH/calcareous soils",
+          "stress": "आयरन की कमी से क्लोरोसिस",
+          "symptoms": "चने की मिट्टी पर युवा पत्तियों का अंतःशिरा पीलापन",
+          "cause": "उच्च-pH/कैलेकेरियस मिट्टी",
           "management": {
             "prevention": [
-              "Tolerant varieties; avoid over-liming"
+              "सहनशील किस्में; अधिक नींबू पानी पीने से बचें"
             ],
             "monitoring": [
-              "Young-leaf chlorosis"
+              "युवा पत्ती क्लोरोसिस"
             ],
             "cultural": [
               "FYM; gypsum"
             ],
             "chemical": [
               {
-                "input": "Ferrous sulphate foliar",
+                "input": "Ferrous sulphate पत्तेदार",
                 "dose": "5 g/L + citric acid 1 g/L",
-                "stage": "2-3 sprays 10-day interval",
+                "stage": "10 दिन के अंतराल पर 2-3 छिड़काव करें",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Drought / moisture stress at pegging-pod-fill",
-          "symptoms": "Reduced pegging, poor pod fill, yield loss",
-          "cause": "Dry spell at critical pegging/pod-development stages",
+          "stress": "पेगिंग-पॉड-फिल पर सूखा/नमी का तनाव",
+          "symptoms": "कम पेगिंग, खराब फली भरना, उपज में कमी",
+          "cause": "पेगिंग/फली-विकास के महत्वपूर्ण चरणों में शुष्क अवधि",
           "management": {
             "prevention": [
-              "Irrigate at flowering, pegging, pod-development"
+              "फूल आने, फूटने, फलियां बनने पर सिंचाई करें"
             ],
             "monitoring": [
-              "Soil moisture at pegging"
+              "पेगिंग पर मिट्टी की नमी"
             ],
             "cultural": [
-              "Mulch; life-saving irrigation"
+              "गीली घास; जीवनरक्षक सिंचाई"
             ],
             "chemical": [
               {
-                "input": "KNO3 foliar anti-stress",
+                "input": "KNO3 पर्ण-विरोधी तनाव",
                 "dose": "1%",
-                "stage": "under stress at pegging",
+                "stage": "पेगिंग पर तनाव में",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Aflatoxin risk (storage/end-season drought)",
-          "symptoms": "Aspergillus contamination of kernels (post-harvest safety, drought-linked)",
-          "cause": "End-season drought + delayed harvest + poor drying",
+          "stress": "एफ्लाटॉक्सिन जोखिम (भंडारण/मौसम के अंत में सूखा)",
+          "symptoms": "गुठली का एस्परगिलस संदूषण (कटाई के बाद की सुरक्षा, सूखे से जुड़ा हुआ)",
+          "cause": "सीज़न के अंत में सूखा + देरी से फसल + ख़राब सूखना",
           "management": {
             "prevention": [
-              "Avoid end-season moisture stress; timely harvest",
-              "Dry kernels to <8% moisture before storage"
+              "मौसम के अंत में नमी के तनाव से बचें; समय पर फसल",
+              "भंडारण से पहले दानों को <8% नमी तक सुखा लें"
             ],
             "monitoring": [
-              "Check pod moisture at harvest"
+              "कटाई के समय फली की नमी की जाँच करें"
             ],
             "cultural": [
-              "Proper curing/drying; avoid mechanical damage; hygienic storage"
+              "उचित इलाज/सुखाने; यांत्रिक क्षति से बचें; स्वच्छ भंडारण"
             ],
             "chemical": [
               {
-                "input": "None (management-based)",
+                "input": "कोई नहीं (प्रबंधन-आधारित)",
                 "dose": "-",
-                "stage": "harvest-storage",
-                "note": "Calcium/gypsum-fed crops show lower aflatoxin"
+                "stage": "फसल-भंडारण",
+                "note": "कैल्शियम/gypsum-पोषित फसलें कम एफ्लाटॉक्सिन दिखाती हैं"
               }
             ]
           }
@@ -806,142 +806,142 @@
       ]
     },
     {
-      "crop": "Moong / Green Gram",
+      "crop": "मूंग/मूंग",
       "scientificName": "Vigna radiata",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Digitaria (grasses)",
-          "Cyperus (sedge)",
-          "Trianthema, Amaranthus, Commelina (broadleaf)"
+          "Echinochloa, Digitaria (घास)",
+          "Cyperus (नरस)",
+          "Trianthema, Amaranthus, Commelina (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 20-40 DAS (short crop, early weed-free vital)",
+        "criticalPeriod": "प्रथम 20-40 DAS (छोटी फसल, शीघ्र खरपतवार रहित जीवन)",
         "management": {
           "prevention": [
-            "Clean seed; dense stand for quick canopy"
+            "स्वच्छ बीज; त्वरित छत्रछाया के लिए सघन स्टैंड"
           ],
           "monitoring": [
-            "Scout flush at 15 & 30 DAS"
+            "जाँच flush at 15 & 30 DAS"
           ],
           "cultural": [
-            "1-2 hand weedings at 20 & 40 DAS (often most economical for short Zaid/kharif crop)"
+            "1-2 hand weedings at 20 & 40 DAS (अक्सर छोटी ज़ायद/kharif फसल के लिए सबसे किफायती)"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
               "timing": "PE (0-3 DAS)",
-              "targets": "grasses + BLW",
-              "note": "Moist soil"
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी"
             },
             {
               "technical": "Imazethapyr 10% SL",
               "dose": "250-300 ml/acre",
               "timing": "EPoE (15-20 DAS)",
-              "targets": "grass+BLW+sedge",
-              "note": "Pulse-selective"
+              "targets": "घास+BLW+सेज",
+              "note": "पल्स-चयनात्मक"
             },
             {
               "technical": "Quizalofop-ethyl 5% EC",
               "dose": "400 ml/acre",
               "timing": "PoE",
-              "targets": "grasses only",
-              "note": "Grassy escapes"
+              "targets": "केवल घास",
+              "note": "घास बच जाती है"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Waterlogging (Zaid/kharif)",
-          "symptoms": "Yellowing, wilting, root rot, stand loss",
-          "cause": "Poor drainage, heavy rain (moong very sensitive)",
+          "stress": "(ज़ायद/kharif)",
+          "symptoms": "पीला पड़ना, मुरझाना, जड़ सड़न, स्टैंड लॉस",
+          "cause": "खराब जल निकासी, भारी बारिश (मूंग बहुत संवेदनशील)",
           "management": {
             "prevention": [
-              "Raised-bed/ridge sowing; drainage"
+              "ऊँचे बिस्तर/मेड़ पर बुआई; जलनिकास"
             ],
             "monitoring": [
-              "Low-spot watch after rain"
+              "बारिश के बाद निचले स्थान पर निगरानी"
             ],
             "cultural": [
-              "Drain within 24h"
+              "Drain within 24ह"
             ],
             "chemical": [
               {
-                "input": "2% urea foliar post-drainage",
+                "input": "2% urea पर्ण-पश्चात जल निकासी",
                 "dose": "20 g/L",
-                "stage": "recovery",
+                "stage": "वसूली",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Sulphur / phosphorus deficiency",
-          "symptoms": "S: young-leaf yellowing; P: dull dark-green/purpling, poor nodulation",
-          "cause": "Low S/P soils, no biofertiliser",
+          "stress": "सल्फर/फॉस्फोरस की कमी",
+          "symptoms": "एस: युवा पत्ती का पीला पड़ना; P: हल्का गहरा हरा/बैंगनी रंग, ख़राब गांठ",
+          "cause": "निम्न S/P मिट्टी, कोई जैवउर्वरक नहीं",
           "management": {
             "prevention": [
-              "SSP basal (adds P+S); Rhizobium+PSB seed treatment"
+              "एसएसपी बेसल (P+एस जोड़ता है); Rhizobium+PSB बीज उपचार"
             ],
             "monitoring": [
-              "Leaf colour + nodulation check"
+              "पत्ती का रंग + नोड्यूलेशन जांच"
             ],
             "cultural": [
-              "Biofertiliser inoculation"
+              "जैवउर्वरक टीकाकरण"
             ],
             "chemical": [
               {
-                "input": "2% DAP foliar",
+                "input": "2% DAP पत्तेदार",
                 "dose": "20 g/L",
-                "stage": "pre-flowering",
-                "note": "Quick P boost"
+                "stage": "पूर्व फूल",
+                "note": "त्वरित P बढ़ावा"
               }
             ]
           }
         },
         {
-          "stress": "Flower/pod drop",
-          "symptoms": "Heavy shedding of flowers/young pods",
-          "cause": "Heat/moisture stress at flowering",
+          "stress": "फूल/फली का गिरना",
+          "symptoms": "फूलों/नयी फलियों का भारी झड़ना",
+          "cause": "फूल आने पर गर्मी/नमी का तनाव",
           "management": {
             "prevention": [
-              "Irrigate at flowering-podding"
+              "फूल-फली लगने पर सिंचाई करें"
             ],
             "monitoring": [
-              "Shedding watch at flowering"
+              "फूल आने पर शेडिंग घड़ी"
             ],
             "cultural": [
-              "Avoid stress at flowering"
+              "फूल आने पर तनाव से बचें"
             ],
             "chemical": [
               {
-                "input": "KNO3 / 2% DAP foliar",
+                "input": "KNO3 / 2% DAP पर्ण",
                 "dose": "1% / 20 g/L",
-                "stage": "flowering + 10 days",
+                "stage": "फूलना + 10 days",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Heat stress (Zaid)",
-          "symptoms": "Flower drop, poor pod set in peak summer",
-          "cause": ">40C at flowering in summer moong",
+          "stress": "ताप तनाव (ज़ायद)",
+          "symptoms": "अत्यधिक गर्मी में फूल गिरना, खराब फली लगना",
+          "cause": "ग्रीष्मकालीन मूंग में फूल आने पर >40C",
           "management": {
             "prevention": [
-              "Time sowing so flowering avoids peak heat; heat-tolerant varieties"
+              "बुआई का समय ताकि फूल आने से चरम गर्मी से बचा जा सके; गर्मी-सहिष्णु किस्में"
             ],
             "monitoring": [
-              "Flowering vs heatwave"
+              "पुष्पन बनाम लू"
             ],
             "cultural": [
-              "Adequate irrigation to cool canopy"
+              "छतरी को ठंडा करने के लिए पर्याप्त सिंचाई"
             ],
             "chemical": [
               {
-                "input": "KNO3 foliar",
+                "input": "KNO3 पत्तेदार",
                 "dose": "1%",
-                "stage": "pre-flowering",
+                "stage": "पूर्व फूल",
                 "note": ""
               }
             ]
@@ -950,45 +950,45 @@
       ]
     },
     {
-      "crop": "Arhar / Pigeon Pea / Tur",
+      "crop": "अरहर/अरहर/अरहर",
       "scientificName": "Cajanus cajan",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Digitaria (grasses)",
-          "Cyperus (sedge)",
-          "Amaranthus, Celosia, Commelina, Trianthema (broadleaf)"
+          "Echinochloa, Digitaria (घास)",
+          "Cyperus (नरस)",
+          "Amaranthus, Celosia, Commelina, Trianthema (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 45-60 DAS (slow early growth = long weedy window)",
+        "criticalPeriod": "पहले 45-60 DAS (धीमी प्रारंभिक वृद्धि = लंबी खरपतवार वाली खिड़की)",
         "management": {
           "prevention": [
-            "Clean seed; optimal spacing"
+            "स्वच्छ बीज; इष्टतम रिक्ति"
           ],
           "monitoring": [
-            "Scout flush at 20 & 45 DAS"
+            "जाँच flush at 20 & 45 DAS"
           ],
           "cultural": [
-            "2 inter-row hoeings at 25 & 50 DAS; intercropping (with short pulses) smothers weeds & uses early wide gaps"
+            "2 इंटर-row hoeings at 25 & 50 DAS; अंतरफसल (छोटी दालों के साथ) से खरपतवार नष्ट हो जाते हैं और शुरुआती चौड़े अंतराल का उपयोग होता है"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1-1.3 L/acre",
               "timing": "PE (0-3 DAS)",
-              "targets": "grasses + BLW",
-              "note": "Moist soil"
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी"
             },
             {
               "technical": "Imazethapyr 10% SL",
               "dose": "300 ml/acre",
               "timing": "EPoE (15-20 DAS)",
-              "targets": "grass+BLW+sedge",
-              "note": "Pulse-selective; not in every intercrop"
+              "targets": "घास+BLW+सेज",
+              "note": "पल्स-चयनात्मक; हर अंतरफसल में नहीं"
             },
             {
               "technical": "Quizalofop-ethyl 5% EC",
               "dose": "400 ml/acre",
               "timing": "PoE",
-              "targets": "grasses only",
+              "targets": "केवल घास",
               "note": ""
             }
           ]
@@ -996,96 +996,96 @@
       },
       "abioticStress": [
         {
-          "stress": "Waterlogging (very sensitive)",
-          "symptoms": "Yellowing, wilting, root death, collapse in low spots",
-          "cause": "Poor drainage, heavy rain (arhar highly waterlogging-sensitive)",
+          "stress": "जलभराव (बहुत संवेदनशील)",
+          "symptoms": "पीला पड़ना, मुरझाना, जड़ मरना, निचले स्थानों में गिरना",
+          "cause": "खराब जल निकासी, भारी बारिश (अरहर अत्यधिक जलभराव के प्रति संवेदनशील)",
           "management": {
             "prevention": [
-              "Ridge/broad-bed planting; drainage channels; avoid low-lying fields"
+              "रिज/चौड़े बिस्तर पर रोपण; जल निकासी चैनल; निचले क्षेत्रों से बचें"
             ],
             "monitoring": [
-              "Low-spot watch after rain"
+              "बारिश के बाद निचले स्थान पर निगरानी"
             ],
             "cultural": [
-              "Drain fast; ridge planting is key"
+              "तेजी से नाली; रिज रोपण प्रमुख है"
             ],
             "chemical": [
               {
-                "input": "2% urea foliar post-drainage",
+                "input": "2% urea पर्ण-पश्चात जल निकासी",
                 "dose": "20 g/L",
-                "stage": "recovery",
+                "stage": "वसूली",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Flower & pod drop",
-          "symptoms": "Heavy shedding of flowers/young pods (arhar naturally sheds a lot)",
-          "cause": "Moisture stress, heat, poor nutrition, cloudy weather at flowering",
+          "stress": "फूल और फली का गिरना",
+          "symptoms": "फूलों/नयी फलियों का भारी झड़ना (अरहर प्राकृतिक रूप से बहुत अधिक झड़ता है)",
+          "cause": "फूल आने पर नमी का तनाव, गर्मी, खराब पोषण, बादल वाला मौसम",
           "management": {
             "prevention": [
-              "Irrigate at flowering & pod-fill"
+              "फूल आने एवं फली भरने पर सिंचाई करें"
             ],
             "monitoring": [
-              "Track shedding at flowering"
+              "फूल आने पर ट्रैक शेडिंग"
             ],
             "cultural": [
-              "Avoid stress; balanced nutrition"
+              "तनाव से बचें; संतुलित पोषण"
             ],
             "chemical": [
               {
-                "input": "NAA (planofix) OR 2% DAP foliar",
+                "input": "एनएए (प्लानोफिक्स) या 2% DAP पर्ण",
                 "dose": "NAA 4-5 ml/15L; DAP 20 g/L",
-                "stage": "flower initiation + 15 days",
-                "note": "NAA reduces drop"
+                "stage": "पुष्प दीक्षा + 15 days",
+                "note": "एनएए गिरावट को कम करता है"
               }
             ]
           }
         },
         {
-          "stress": "Iron/Zinc deficiency",
-          "symptoms": "Fe: young-leaf interveinal chlorosis; Zn: small leaves, interveinal yellowing",
-          "cause": "High-pH soils, low micronutrients",
+          "stress": "Iron/Zinc कमी",
+          "symptoms": "Fe: युवा पत्ती इंटरवेनल क्लोरोसिस; Zn: छोटी पत्तियाँ, शिराओं के बीच का पीलापन",
+          "cause": "उच्च-मिट्टी, कम सूक्ष्म पोषक तत्व",
           "management": {
             "prevention": [
-              "Basal ZnSO4 10 kg/acre; FYM"
+              "बेसल ZnSO4 10 किग्रा/एकड़; FYM"
             ],
             "monitoring": [
-              "Young-leaf chlorosis"
+              "युवा पत्ती क्लोरोसिस"
             ],
             "cultural": [
-              "Organic matter"
+              "कार्बनिक पदार्थ"
             ],
             "chemical": [
               {
-                "input": "FeSO4 5 g/L + ZnSO4 5 g/L foliar",
+                "input": "FeSO4 5 जी/एल + ZnSO4 5 जी/एल पत्ते",
                 "dose": "as stated",
-                "stage": "on symptoms",
+                "stage": "लक्षणों पर",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Frost / cold (long-duration types)",
-          "symptoms": "Flower/pod damage, blackening in cold snaps",
-          "cause": "Frost during winter flowering of long-duration arhar",
+          "stress": "पाला / ठंड (लंबी अवधि के प्रकार)",
+          "symptoms": "फूल/फली को नुकसान, ठंड के मौसम में काला पड़ना",
+          "cause": "लंबी अवधि के अरहर में शीत ऋतु में फूल आने पर पाला पड़ता है",
           "management": {
             "prevention": [
-              "Choose duration so flowering avoids frost window"
+              "अवधि चुनें ताकि फूल आने पर पाले से बचा जा सके"
             ],
             "monitoring": [
-              "Frost forecast at flowering"
+              "फूल आने पर पाले का पूर्वानुमान"
             ],
             "cultural": [
-              "Light evening irrigation before frost night; smoke"
+              "ठंढी रात से पहले हल्की शाम की सिंचाई; धुआँ"
             ],
             "chemical": [
               {
-                "input": "KNO3 foliar",
+                "input": "KNO3 पत्तेदार",
                 "dose": "1%",
-                "stage": "before forecast frost",
+                "stage": "पूर्वानुमानित ठंढ से पहले",
                 "note": ""
               }
             ]
@@ -1094,174 +1094,174 @@
       ]
     },
     {
-      "crop": "Sugarcane / Ganna",
+      "crop": "गन्ना/गन्ना",
       "scientificName": "Saccharum officinarum",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Dactyloctenium, Cynodon (grasses)",
+          "Echinochloa, Dactyloctenium, Cynodon (घास)",
           "Cyperus rotundus (major sedge)",
-          "Trianthema, Amaranthus, Convolvulus, Parthenium (broadleaf)"
+          "Trianthema, Amaranthus, Convolvulus, Parthenium (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 60-120 DAP (wide spacing + slow start = heavy prolonged pressure)",
+        "criticalPeriod": "पहले 60-120 DAP (चौड़ा अंतर + धीमी शुरुआत = भारी लंबे समय तक दबाव)",
         "management": {
           "prevention": [
-            "Clean setts; optimal planting geometry"
+            "साफ सेट; इष्टतम रोपण ज्यामिति"
           ],
           "monitoring": [
-            "Scout flush at 30, 60, 90 DAP"
+            "जाँच flush at 30, 60 DAP"
           ],
           "cultural": [
-            "Inter-cultivation + earthing-up; trash mulching between rows smothers weeds & conserves moisture",
-            "Intercropping (potato/onion/pulse) in early wide gaps"
+            "अंतर-खेती + मिट्टी चढ़ाना; कतारों के बीच कूड़े से मल्चिंग करने से खरपतवार कम होते हैं और नमी संरक्षित रहती है",
+            "प्रारंभिक व्यापक अंतरालों में अंतरफसल (आलू/प्याज/दाल)।"
           ],
           "chemical": [
             {
               "technical": "Atrazine 50% WP",
               "dose": "800 g-1 kg/acre",
               "timing": "PE (0-3 DAP)",
-              "targets": "broad-spectrum grass+BLW",
-              "note": "Moist soil"
+              "targets": "ब्रॉड-स्पेक्ट्रम घास+BLW",
+              "note": "नम मिट्टी"
             },
             {
               "technical": "Metribuzin 70% WP",
               "dose": "500 g/acre",
               "timing": "PE/EPoE",
-              "targets": "grass+BLW",
-              "note": "Rotation partner"
+              "targets": "घास+BLW",
+              "note": "रोटेशन पार्टनर"
             },
             {
               "technical": "2,4-D Na salt 80% WP",
               "dose": "400 g/acre",
               "timing": "PoE (30-45 DAP)",
-              "targets": "broadleaf incl. Convolvulus",
+              "targets": "ब्रॉडलीफ सहित। कन्वोल्वुलस",
               "note": ""
             },
             {
               "technical": "Glyphosate 41% SL (directed/hooded)",
               "dose": "800 ml-1 L/acre",
-              "timing": "PoE inter-row",
-              "targets": "perennial grass+sedge (Cyperus, Cynodon)",
-              "note": "Directed only, avoid cane foliage"
+              "timing": "PoE अंतर-पंक्ति",
+              "targets": "बारहमासी घास+सेज (Cyperus, सिनोडोन)",
+              "note": "केवल निर्देशित, गन्ने के पत्तों से बचें"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Waterlogging",
-          "symptoms": "Yellowing, stunted growth, reduced tillering, root death; worsens red rot",
-          "cause": "Poor drainage, prolonged flooding",
+          "stress": "जल भराव",
+          "symptoms": "पीलापन, रुका हुआ विकास, कम कल्ले निकलना, जड़ों का मरना; लाल सड़न को बदतर बना देता है",
+          "cause": "खराब जल निकासी, लंबे समय तक बाढ़",
           "management": {
             "prevention": [
-              "Field drainage; ridge-furrow; avoid low spots"
+              "खेत जल निकासी; रिज-फरो; निचले स्थानों से बचें"
             ],
             "monitoring": [
-              "Standing water after rain"
+              "बारिश के बाद जमा हुआ पानी"
             ],
             "cultural": [
-              "Drain excess; trench drainage in waterlogged belts"
+              "अतिरिक्त निकास; जलजमाव वाले क्षेत्रों में खाई जल निकासी"
             ],
             "chemical": [
               {
-                "input": "Foliar N + micronutrient after drainage",
+                "input": "जल निकासी के बाद पर्ण N + सूक्ष्म पोषक तत्व",
                 "dose": "2% urea",
-                "stage": "recovery",
+                "stage": "वसूली",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Drought / moisture stress",
-          "symptoms": "Leaf rolling, dried tips, poor internode elongation, low tonnage & sugar",
-          "cause": "Dry spells in formative/grand-growth phase",
+          "stress": "सूखा/नमी का तनाव",
+          "symptoms": "पत्तों का लुढ़कना, सूखे सिरे, खराब इंटर्नोड बढ़ाव, कम टन भार और चीनी",
+          "cause": "प्रारंभिक/भव्य-विकास चरण में शुष्क दौर",
           "management": {
             "prevention": [
-              "Drip irrigation (best for cane); ensure formative-phase irrigation"
+              "ड्रिप सिंचाई (गन्ना के लिए सर्वोत्तम); प्रारंभिक-चरण सिंचाई सुनिश्चित करें"
             ],
             "monitoring": [
-              "Leaf rolling in grand-growth"
+              "भव्य-विकास में पत्ता लुढ़कना"
             ],
             "cultural": [
-              "Trash mulch conserves moisture; drip; skip-furrow in scarcity"
+              "कूड़े की गीली घास नमी को संरक्षित करती है; टपकना; अभाव में छोड़ना"
             ],
             "chemical": [
               {
-                "input": "KNO3 / potash foliar anti-stress",
+                "input": "KNO3 / पोटाश पत्ते तनावरोधी",
                 "dose": "1-2%",
-                "stage": "under stress",
+                "stage": "तनाव में",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Iron deficiency chlorosis",
-          "symptoms": "Interveinal yellowing/whitening of young/top leaves",
-          "cause": "Calcareous/high-pH soils, waterlogging",
+          "stress": "आयरन की कमी से क्लोरोसिस",
+          "symptoms": "युवा/शीर्ष पत्तियों का अंतःशिरा पीलापन/सफ़ेद होना",
+          "cause": "कैल्केरियास/उच्च pH मिट्टी, जलजमाव",
           "management": {
             "prevention": [
-              "Organic matter; avoid over-liming; drainage"
+              "कार्बनिक पदार्थ; अत्यधिक नींबू पानी पीने से बचें; जलनिकास"
             ],
             "monitoring": [
-              "Top-leaf chlorosis"
+              "शीर्ष पत्ती क्लोरोसिस"
             ],
             "cultural": [
-              "FYM/press-mud incorporation"
+              "FYM/प्रेस-कीचड़ निगमन"
             ],
             "chemical": [
               {
-                "input": "Ferrous sulphate foliar",
+                "input": "Ferrous sulphate पत्तेदार",
                 "dose": "5 g/L (2-3 sprays)",
-                "stage": "on symptoms",
+                "stage": "लक्षणों पर",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Lodging",
-          "symptoms": "Canes fall over in grand-growth/mature phase, sugar loss, harvest difficulty",
-          "cause": "Excess N, tall dense crop, wind, waterlogging",
+          "stress": "अस्थायी आवास",
+          "symptoms": "गन्ने की बड़ी वृद्धि/परिपक्व अवस्था में गिरना, चीनी की हानि, कटाई में कठिनाई",
+          "cause": "अधिक N, लम्बी घनी फसल, हवा, जलभराव",
           "management": {
             "prevention": [
-              "Balanced N; adequate K; propping/tying"
+              "संतुलित N; पर्याप्त K; सहारा देना/बाँधना"
             ],
             "monitoring": [
-              "Watch canopy height & wind events"
+              "चंदवा की ऊंचाई और हवा की घटनाओं को देखें"
             ],
             "cultural": [
-              "Earthing-up; trash-twist propping/tying of canes; detrashing"
+              "मिट्टी भरना; कूड़ा-कचरा मोड़ना/बेंतों को बांधना; नष्ट करना"
             ],
             "chemical": [
               {
-                "input": "Potash top-dress",
+                "input": "पोटाश टॉप-ड्रेस",
                 "dose": "per schedule",
-                "stage": "grand-growth",
-                "note": "K improves stalk strength"
+                "stage": "भव्य-विकास",
+                "note": "K डंठल की ताकत में सुधार करता है"
               }
             ]
           }
         },
         {
-          "stress": "Tiller mortality / poor germination",
-          "symptoms": "Gaps, low tiller survival, uneven stand",
-          "cause": "Poor sett quality, moisture stress, temperature extremes at planting",
+          "stress": "टिलर की मृत्यु/खराब अंकुरण",
+          "symptoms": "अंतराल, कम टिलर अस्तित्व, असमान स्टैंड",
+          "cause": "रोपण के समय खराब जमाव गुणवत्ता, नमी का तनाव, अत्यधिक तापमान",
           "management": {
             "prevention": [
-              "Quality 3-budded setts; sett treatment; optimal planting temp/moisture"
+              "गुणवत्तापूर्ण 3-बड सेट; निपटान उपचार; इष्टतम रोपण तापमान/नमी"
             ],
             "monitoring": [
-              "Germination & tiller counts"
+              "अंकुरण एवं टिलर संख्या"
             ],
             "cultural": [
-              "Gap-filling; light irrigation post-planting; earthing-up to promote tillering"
+              "खाली जगह भरना; रोपण के बाद हल्की सिंचाई; कल्ले फूटने को बढ़ावा देने के लिए मिट्टी चढ़ाना"
             ],
             "chemical": [
               {
-                "input": "Foliar N to promote tillering",
+                "input": "टिलरिंग को बढ़ावा देने के लिए पर्ण N",
                 "dose": "2% urea",
-                "stage": "tillering phase",
+                "stage": "टिलरिंग चरण",
                 "note": ""
               }
             ]
@@ -1270,144 +1270,144 @@
       ]
     },
     {
-      "crop": "Brinjal / Baingan",
+      "crop": "बैंगन/बैंगन",
       "scientificName": "Solanum melongena",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Digitaria (grasses)",
-          "Cyperus (sedge)",
-          "Amaranthus, Portulaca, Trianthema, Commelina (broadleaf)"
+          "Echinochloa, Digitaria (घास)",
+          "Cyperus (नरस)",
+          "Amaranthus, Portulaca, Trianthema, Commelina (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 30-60 DAT (transplanted, long-duration)",
+        "criticalPeriod": "पहले 30-60 DAT (प्रत्यारोपित, लंबी अवधि)",
         "management": {
           "prevention": [
-            "Clean transplants; weed-free nursery"
+            "स्वच्छ प्रत्यारोपण; खरपतवार मुक्त नर्सरी"
           ],
           "monitoring": [
-            "Scout flush at 20 & 45 DAT"
+            "जाँच flush at 20 & 45 DAT"
           ],
           "cultural": [
-            "Black plastic mulch (controls weeds + conserves moisture)",
-            "Inter-row hoeing + earthing-up at 30 & 55 DAT"
+            "काली प्लास्टिक गीली घास (खरपतवार को नियंत्रित करती है + नमी को संरक्षित करती है)",
+            "अंतर-पंक्ति निराई + अर्थिंग-up at 30 & 55 DAT"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
-              "timing": "PE (pre-transplant, incorporate)",
-              "targets": "grasses + BLW",
-              "note": "Apply before transplanting on moist soil"
+              "timing": "PE (पूर्व-प्रत्यारोपण, सम्मिलित करना)",
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी पर रोपाई से पहले लगाएं"
             },
             {
               "technical": "Fluchloralin 45% EC",
               "dose": "800 ml/acre",
-              "timing": "PPI (pre-plant incorporated)",
-              "targets": "grasses + BLW",
-              "note": "Soil-incorporate"
+              "timing": "पीपीआई (प्री-प्लांट निगमित)",
+              "targets": "घास + BLW",
+              "note": "मिट्टी-सम्मिलित"
             },
             {
               "technical": "Quizalofop-ethyl 5% EC (directed)",
               "dose": "400 ml/acre",
               "timing": "PoE",
-              "targets": "grasses only",
-              "note": "Directed between rows"
+              "targets": "केवल घास",
+              "note": "पंक्तियों के बीच निर्देशित"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Flower drop / poor fruit set",
-          "symptoms": "Excessive flower drop, few fruits",
-          "cause": "Heat/cold extremes, moisture stress, low B, poor pollination",
+          "stress": "फूल गिरना/खराब फल सेट होना",
+          "symptoms": "अत्यधिक फूल झड़ना, कम फल",
+          "cause": "अत्यधिक गर्मी/ठंड, नमी का तनाव, कम बी, खराब परागण",
           "management": {
             "prevention": [
-              "Consistent irrigation; balanced nutrition incl. boron"
+              "लगातार सिंचाई; संतुलित पोषण सहित. बोरान"
             ],
             "monitoring": [
-              "Track flower drop"
+              "ट्रैक फूल ड्रॉप"
             ],
             "cultural": [
-              "Mulch for even moisture"
+              "समान नमी के लिए गीली घास डालें"
             ],
             "chemical": [
               {
-                "input": "Borax + NAA foliar",
+                "input": "बोरेक्स + एनएए पत्ते",
                 "dose": "Borax 1 g/L + NAA 4-5 ml/15L",
-                "stage": "flowering",
-                "note": "Improves set"
+                "stage": "कुसुमित",
+                "note": "सेट में सुधार करता है"
               }
             ]
           }
         },
         {
-          "stress": "Potassium deficiency",
-          "symptoms": "Marginal leaf scorching/browning on older leaves, poor fruit quality",
-          "cause": "Low K, sandy soils, heavy fruiting drain",
+          "stress": "पोटैशियम की कमी",
+          "symptoms": "पुरानी पत्तियों पर सीमांत पत्ती का झुलसना/भूरा होना, फल की गुणवत्ता खराब होना",
+          "cause": "नीची K, रेतीली मिट्टी, भारी फलने वाली नाली",
           "management": {
             "prevention": [
-              "Adequate MOP basal + top-dress"
+              "पर्याप्त MOP बेसल + टॉप-ड्रेस"
             ],
             "monitoring": [
-              "Older-leaf margin scorch"
+              "पुरानी पत्ती का किनारा झुलसा"
             ],
             "cultural": [
-              "Split K application"
+              "विभाजित K अनुप्रयोग"
             ],
             "chemical": [
               {
-                "input": "0-0-50 (SOP) foliar",
+                "input": "0-0-50 (एसओपी) पर्ण",
                 "dose": "5 g/L",
-                "stage": "fruiting",
+                "stage": "फलने",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Waterlogging",
-          "symptoms": "Yellowing, wilting, root rot, worsens bacterial wilt",
-          "cause": "Poor drainage",
+          "stress": "जल भराव",
+          "symptoms": "पीलापन, मुरझाना, जड़ सड़न, जीवाणुजन्य मुरझान को बढ़ाता है",
+          "cause": "ख़राब जल निकासी",
           "management": {
             "prevention": [
-              "Raised beds; drainage"
+              "ऊंचे बिस्तर; जलनिकास"
             ],
             "monitoring": [
-              "Low-spot watch after rain"
+              "बारिश के बाद निचले स्थान पर निगरानी"
             ],
             "cultural": [
-              "Drain fast; ridge planting"
+              "तेजी से नाली; रिज रोपण"
             ],
             "chemical": [
               {
-                "input": "2% urea foliar post-drainage",
+                "input": "2% urea पर्ण-पश्चात जल निकासी",
                 "dose": "20 g/L",
-                "stage": "recovery",
+                "stage": "वसूली",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Fruit sun-scald & cracking",
-          "symptoms": "Pale scalded patches / cracks on exposed fruit",
-          "cause": "Intense sun on exposed fruit, irregular irrigation",
+          "stress": "फल धूप में जलने और टूटने लगते हैं",
+          "symptoms": "खुले फलों पर हल्के जले हुए धब्बे/दरारें",
+          "cause": "खुले फलों पर तेज़ धूप, अनियमित सिंचाई",
           "management": {
             "prevention": [
-              "Maintain canopy; even irrigation"
+              "छत्र बनाए रखें; यहां तक ​​कि सिंचाई भी"
             ],
             "monitoring": [
-              "Watch exposed fruit in summer"
+              "गर्मियों में खुले फल देखें"
             ],
             "cultural": [
-              "Avoid over-pruning; mulch for steady moisture; timely harvest"
+              "अत्यधिक काट-छाँट से बचें; स्थिर नमी के लिए गीली घास; समय पर फसल"
             ],
             "chemical": [
               {
-                "input": "Calcium + boron foliar",
+                "input": "कैल्शियम + बोरोन पर्ण",
                 "dose": "CaNO3 4 g/L + Borax 1 g/L",
-                "stage": "fruit development",
-                "note": "Reduces cracking"
+                "stage": "फल विकास",
+                "note": "क्रैकिंग कम कर देता है"
               }
             ]
           }
@@ -1415,142 +1415,142 @@
       ]
     },
     {
-      "crop": "Chilli / Mirch",
+      "crop": "मिर्च/मिर्च",
       "scientificName": "Capsicum annuum",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Digitaria (grasses)",
-          "Cyperus (sedge)",
-          "Amaranthus, Parthenium, Trianthema, Commelina (broadleaf)"
+          "Echinochloa, Digitaria (घास)",
+          "Cyperus (नरस)",
+          "Amaranthus, Parthenium, Trianthema, Commelina (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 30-60 DAT",
+        "criticalPeriod": "पहले 30-60 DAT",
         "management": {
           "prevention": [
-            "Weed-free nursery; clean transplants"
+            "खरपतवार मुक्त नर्सरी; स्वच्छ प्रत्यारोपण"
           ],
           "monitoring": [
-            "Scout flush at 20 & 45 DAT"
+            "जाँच flush at 20 & 45 DAT"
           ],
           "cultural": [
-            "Black plastic/straw mulch; inter-row hoeing at 30 & 55 DAT"
+            "काला प्लास्टिक/पुआल गीली घास; अंतर-row hoeing at 30 & 55 DAT"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
-              "timing": "PE (pre-transplant)",
-              "targets": "grasses + BLW",
-              "note": "Moist soil"
+              "timing": "PE (पूर्व-प्रत्यारोपण)",
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी"
             },
             {
               "technical": "Oxyfluorfen 23.5% EC",
               "dose": "200 ml/acre",
-              "timing": "PE (pre-transplant)",
-              "targets": "grass+BLW",
-              "note": "Do not spray onto transplants"
+              "timing": "PE (पूर्व-प्रत्यारोपण)",
+              "targets": "घास+BLW",
+              "note": "रोपाई पर स्प्रे न करें"
             },
             {
               "technical": "Quizalofop-ethyl 5% EC (directed)",
               "dose": "400 ml/acre",
               "timing": "PoE",
-              "targets": "grasses only",
-              "note": "Directed inter-row"
+              "targets": "केवल घास",
+              "note": "अंतर-पंक्ति निर्देशित"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Flower & bud drop",
-          "symptoms": "Heavy shedding of flowers/buds, low fruit set",
-          "cause": "Heat >35C, moisture stress, low boron, N excess",
+          "stress": "फूल और कली का गिरना",
+          "symptoms": "फूलों/कलियों का भारी झड़ना, कम फल बनना",
+          "cause": "गर्मी>35C, नमी का तनाव, कम बोरान, N अधिकता",
           "management": {
             "prevention": [
-              "Even irrigation; balanced N; boron"
+              "यहाँ तक कि सिंचाई भी; संतुलित N; बोरान"
             ],
             "monitoring": [
-              "Track bud/flower drop in heat"
+              "गर्मी में कली/फूल का गिरना ट्रैक करें"
             ],
             "cultural": [
-              "Mulch; avoid moisture swings"
+              "गीली घास; नमी के उतार-चढ़ाव से बचें"
             ],
             "chemical": [
               {
-                "input": "NAA + Borax foliar",
+                "input": "एनएए + बोरेक्स पत्ते",
                 "dose": "NAA 4-5 ml/15L + Borax 1 g/L",
-                "stage": "flowering",
-                "note": "Reduces drop"
+                "stage": "कुसुमित",
+                "note": "गिरावट कम कर देता है"
               }
             ]
           }
         },
         {
-          "stress": "Die-back look-alike from nutrient stress",
-          "symptoms": "Tip die-back, general decline (distinguish from anthracnose)",
-          "cause": "K/Ca deficiency + stress (often confused with disease)",
+          "stress": "पोषक तत्वों के तनाव से एक जैसा दिखने वाला डाई-बैक",
+          "symptoms": "टिप डाई-बैक, सामान्य गिरावट (एन्थ्रेक्नोज से अलग)",
+          "cause": "K/Ca की कमी + तनाव (अक्सर बीमारी समझ लिया जाता है)",
           "management": {
             "prevention": [
-              "Balanced K/Ca nutrition"
+              "संतुलित K/Ca पोषण"
             ],
             "monitoring": [
-              "Rule out anthracnose (acervuli) before treating as nutrient"
+              "पोषक तत्व के रूप में उपचार करने से पहले एन्थ्रेक्नोज (एसरवुलि) को हटा दें"
             ],
             "cultural": [
-              "Even irrigation; mulch"
+              "यहाँ तक कि सिंचाई भी; गीली घास"
             ],
             "chemical": [
               {
-                "input": "CaNO3 + SOP foliar",
+                "input": "CaNO3 + SOP पर्ण",
                 "dose": "CaNO3 4 g/L + SOP 5 g/L",
-                "stage": "fruiting",
+                "stage": "फलने",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Fruit sun-scald",
-          "symptoms": "Bleached leathery patches on exposed fruit",
-          "cause": "Intense sun, sparse canopy",
+          "stress": "फल धूप से जलने वाला",
+          "symptoms": "खुले फलों पर प्रक्षालित चमड़े के धब्बे",
+          "cause": "तेज़ धूप, विरल छत्रछाया",
           "management": {
             "prevention": [
-              "Maintain canopy; adequate K"
+              "छत्र बनाए रखें; पर्याप्त K"
             ],
             "monitoring": [
-              "Exposed fruit in peak summer"
+              "चरम गर्मी में उजागर फल"
             ],
             "cultural": [
-              "Avoid over-pruning; timely picking; mulch"
+              "अत्यधिक काट-छाँट से बचें; समय पर चुनना; गीली घास"
             ],
             "chemical": [
               {
-                "input": "Kaolin/anti-transpirant",
+                "input": "काओलिन/एंटी-ट्रांसपिरेंट",
                 "dose": "per label",
-                "stage": "peak heat",
+                "stage": "चरम गर्मी",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Iron deficiency",
-          "symptoms": "Interveinal yellowing of young leaves",
-          "cause": "High-pH soils, waterlogging",
+          "stress": "आयरन की कमी",
+          "symptoms": "युवा पत्तियों का अंतःशिरा पीलापन",
+          "cause": "ऊँची मिट्टी, जलभराव",
           "management": {
             "prevention": [
-              "Good drainage; avoid over-liming"
+              "अच्छी जल निकासी; अधिक नींबू पानी पीने से बचें"
             ],
             "monitoring": [
-              "Young-leaf chlorosis"
+              "युवा पत्ती क्लोरोसिस"
             ],
             "cultural": [
               "FYM"
             ],
             "chemical": [
               {
-                "input": "FeSO4 foliar",
+                "input": "FeSO4 पत्तेदार",
                 "dose": "5 g/L",
-                "stage": "on symptoms",
+                "stage": "लक्षणों पर",
                 "note": ""
               }
             ]
@@ -1559,128 +1559,128 @@
       ]
     },
     {
-      "crop": "Capsicum / Shimla Mirch",
+      "crop": "शिमला मिर्च / शिमला मिर्च",
       "scientificName": "Capsicum annuum var. grossum",
       "weeds": {
         "keyWeeds": [
-          "Under mulch/polyhouse weeds minimal",
+          "Under मल्च/polyhouse weeds minimal",
           "Open field: Echinochloa, Cyperus, Amaranthus, Commelina"
         ],
-        "criticalPeriod": "First 30-45 DAT",
+        "criticalPeriod": "पहले 30-45 DAT",
         "management": {
           "prevention": [
-            "Black plastic mulch (standard in capsicum, near-total weed control)",
-            "Clean media in protected culture"
+            "काली प्लास्टिक गीली घास (शिमला मिर्च में मानक, लगभग पूर्ण खरपतवार नियंत्रण)",
+            "संरक्षित संस्कृति में स्वच्छ मीडिया"
           ],
           "monitoring": [
-            "Check planting holes & aisles"
+            "रोपण छेद और गलियारों की जाँच करें"
           ],
           "cultural": [
-            "Mulch + manual removal in holes/aisles; no herbicide needed under polyhouse"
+            "गीली घास + छिद्रों/गलियारों में मैन्युअल निष्कासन; पॉलीहाउस के अंतर्गत किसी शाकनाशी की आवश्यकता नहीं है"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC (open field only)",
               "dose": "1 L/acre",
-              "timing": "PE (pre-transplant)",
-              "targets": "grass+BLW",
-              "note": "Not needed where mulched"
+              "timing": "PE (पूर्व-प्रत्यारोपण)",
+              "targets": "घास+BLW",
+              "note": "जहाँ मल्च किया गया हो वहाँ इसकी आवश्यकता नहीं है"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Blossom-end rot (BER)",
-          "symptoms": "Sunken dark leathery rot at blossom end of fruit (NOT a disease)",
-          "cause": "Calcium deficiency + irregular irrigation/humidity swings (common in polyhouse)",
+          "stress": "ब्लॉसम-एंड रोट (बीईआर)",
+          "symptoms": "फल के फूल के सिरे पर धँसा हुआ गहरा चमड़े जैसा सड़न (कोई बीमारी नहीं)",
+          "cause": "कैल्शियम की कमी + अनियमित सिंचाई/आर्द्रता में उतार-चढ़ाव (पॉलीहाउस में आम)",
           "management": {
             "prevention": [
-              "Steady irrigation (drip + fertigation); adequate Ca; avoid moisture swings & excess N/K"
+              "स्थिर सिंचाई (ड्रिप + फर्टिगेशन); पर्याप्त सीए; नमी में उतार-चढ़ाव और अधिकता N/K से बचें"
             ],
             "monitoring": [
-              "Inspect fruit blossom end"
+              "फल के फूल के सिरे का निरीक्षण करें"
             ],
             "cultural": [
-              "Consistent drip scheduling; mulch"
+              "लगातार ड्रिप शेड्यूलिंग; गीली घास"
             ],
             "chemical": [
               {
-                "input": "Calcium nitrate foliar",
+                "input": "कैल्शियम नाइट्रेट पत्ते",
                 "dose": "4-5 g/L",
-                "stage": "early fruit development, repeat weekly",
-                "note": "Classic BER fix"
+                "stage": "प्रारंभिक फल विकास, साप्ताहिक दोहराएं",
+                "note": "क्लासिक बीईआर फिक्स"
               }
             ]
           }
         },
         {
-          "stress": "Flower & fruit drop",
-          "symptoms": "Shedding of flowers/young fruit",
-          "cause": "Temp extremes (>32C day / cold nights), low light, humidity swings, poor pollination in polyhouse",
+          "stress": "फूल और फल गिरना",
+          "symptoms": "फूलों/नये फलों का गिरना",
+          "cause": "अत्यधिक तापमान (>32C दिन/ठंडी रातें), कम रोशनी, नमी में परिवर्तन, पॉलीहाउस में खराब परागण",
           "management": {
             "prevention": [
-              "Ventilation/cooling; foggers; maintain 20-30C"
+              "वेंटिलेशन/शीतलन; फॉगर्स; 20-30C बनाए रखें"
             ],
             "monitoring": [
-              "Track drop vs temp/humidity log"
+              "ट्रैक ड्रॉप बनाम तापमान/आर्द्रता लॉग"
             ],
             "cultural": [
-              "Shade-net in summer; pollination aid (air blower/gentle shake)"
+              "गर्मियों में छाया-जाल; परागण सहायता (वायु धौंकनी/हल्का हिलाना)"
             ],
             "chemical": [
               {
-                "input": "NAA foliar",
+                "input": "एनएए पर्ण",
                 "dose": "4-5 ml/15L",
-                "stage": "flowering",
+                "stage": "कुसुमित",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Sun-scald / heat stress",
-          "symptoms": "Bleached scalded patches on exposed fruit, wilting midday",
-          "cause": "High light/heat, sparse canopy, poor cooling",
+          "stress": "धूप की तपिश/गर्मी का तनाव",
+          "symptoms": "खुले फलों पर प्रक्षालित जले हुए धब्बे, दोपहर में मुरझाए हुए",
+          "cause": "उच्च प्रकाश/गर्मी, विरल छत्रछाया, खराब शीतलन",
           "management": {
             "prevention": [
-              "Shade-net (35-50%) in summer; maintain canopy"
+              "गर्मियों में शेड-नेट (35-50%); छत्र बनाए रखें"
             ],
             "monitoring": [
-              "Fruit exposure & midday wilt"
+              "फलों का एक्सपोज़र और दोपहर का मुरझाना"
             ],
             "cultural": [
-              "Foggers/evaporative cooling; timely harvest"
+              "फॉगर्स/बाष्पीकरणीय शीतलन; समय पर फसल"
             ],
             "chemical": [
               {
-                "input": "Kaolin/anti-transpirant + Ca",
+                "input": "काओलिन/एंटी-ट्रांसपिरेंट + Ca",
                 "dose": "per label",
-                "stage": "peak heat",
+                "stage": "चरम गर्मी",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Nutrient imbalance (Fe/Mg deficiency in fertigation)",
-          "symptoms": "Fe: young-leaf interveinal chlorosis; Mg: older-leaf interveinal yellowing",
-          "cause": "Imbalanced fertigation, high-pH media/water",
+          "stress": "पोषक तत्वों का असंतुलन (Fe/Mg प्रजनन क्षमता में कमी)",
+          "symptoms": "Fe: युवा पत्ती इंटरवेनल क्लोरोसिस; Mg: पुरानी पत्ती की अंतःशिराओं का पीला पड़ना",
+          "cause": "असंतुलित फर्टिगेशन, उच्च-मीडिया/पानी",
           "management": {
             "prevention": [
-              "Balanced water-soluble fertigation; monitor media EC/pH"
+              "संतुलित पानी में घुलनशील फर्टिगेशन; मीडिया की निगरानी करें EC/pH"
             ],
             "monitoring": [
-              "Leaf symptoms + EC/pH log"
+              "पत्ती लक्षण + EC/pH लॉग"
             ],
             "cultural": [
-              "Correct water pH to 5.5-6.5"
+              "सही water pH to 5.5-6.5"
             ],
             "chemical": [
               {
-                "input": "Chelated Fe (Fe-EDDHA) / MgSO4 foliar",
+                "input": "चेलेटेड Fe (Fe-ईडीडीएचए) / MgSO4 पर्ण",
                 "dose": "Fe 0.5 g/L; MgSO4 5 g/L",
-                "stage": "on symptoms",
+                "stage": "लक्षणों पर",
                 "note": ""
               }
             ]
@@ -1689,38 +1689,38 @@
       ]
     },
     {
-      "crop": "Cauliflower / Phool Gobhi",
+      "crop": "फूलगोभी/फूलगोभी",
       "scientificName": "Brassica oleracea var. botrytis",
       "weeds": {
         "keyWeeds": [
-          "Chenopodium (bathua), Anagallis, Melilotus (broadleaf, Rabi)",
-          "Poa, Phalaris (grasses)",
-          "Cyperus (sedge)"
+          "Chenopodium (bathua), Anagallis, Melilotus (broadleaf, रबी)",
+          "Poa, Phalaris (घास)",
+          "Cyperus (नरस)"
         ],
-        "criticalPeriod": "First 30-45 DAT",
+        "criticalPeriod": "पहले 30-45 DAT",
         "management": {
           "prevention": [
-            "Weed-free nursery; clean transplants"
+            "खरपतवार मुक्त नर्सरी; स्वच्छ प्रत्यारोपण"
           ],
           "monitoring": [
-            "Scout flush at 15 & 30 DAT"
+            "जाँच flush at 15 & 30 DAT"
           ],
           "cultural": [
-            "Inter-row hoeing + earthing-up at 25 & 45 DAT; mulching"
+            "अंतर-पंक्ति निराई + अर्थिंग-up at 25 & 45 DAT; पलवार"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
-              "timing": "PE (pre-transplant / 2-3 DAT)",
-              "targets": "grasses + BLW",
-              "note": "Moist soil; do not spray on foliage"
+              "timing": "PE (पूर्व-प्रत्यारोपण / 2-3 DAT)",
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी; पत्तों पर छिड़काव न करें"
             },
             {
               "technical": "Oxyfluorfen 23.5% EC",
               "dose": "200 ml/acre",
-              "timing": "PE (pre-transplant)",
-              "targets": "grass+BLW",
+              "timing": "PE (पूर्व-प्रत्यारोपण)",
+              "targets": "घास+BLW",
               "note": ""
             }
           ]
@@ -1728,94 +1728,94 @@
       },
       "abioticStress": [
         {
-          "stress": "Whiptail (Molybdenum deficiency)",
-          "symptoms": "Strap-like/ribbon narrow distorted leaves, poor/no curd; interveinal chlorosis first",
-          "cause": "Mo deficiency, acidic soils (low pH)",
+          "stress": "व्हिपटेल (मोलिब्डेनम की कमी)",
+          "symptoms": "पट्टा-जैसी/रिबन संकीर्ण विकृत पत्तियां, खराब/कोई दही नहीं; सबसे पहले इंटरवेनल क्लोरोसिस",
+          "cause": "मो की कमी, अम्लीय मिट्टी (कम pH)",
           "management": {
             "prevention": [
-              "Lime acidic soils to pH 6.5; adequate Mo"
+              "नींबू अम्लीय soils to pH 6.5; पर्याप्त मो"
             ],
             "monitoring": [
-              "Watch strappy new leaves in nursery/early field"
+              "नर्सरी/प्रारंभिक खेत में स्ट्रैपी नई पत्तियाँ देखें"
             ],
             "cultural": [
-              "Liming; treat nursery beds with Mo"
+              "सीमित करना; मो के साथ नर्सरी बेड का इलाज करें"
             ],
             "chemical": [
               {
-                "input": "Sodium molybdate foliar",
+                "input": "सोडियम मोलिब्डेट पर्ण",
                 "dose": "1 g/L",
-                "stage": "nursery + early field on symptoms",
-                "note": "Classic whiptail fix"
+                "stage": "लक्षणों पर नर्सरी + प्रारंभिक क्षेत्र",
+                "note": "क्लासिक व्हिपटेल फिक्स"
               }
             ]
           }
         },
         {
-          "stress": "Browning / Hollow stem (Boron deficiency)",
-          "symptoms": "Brown/rusty water-soaked patches on curd, hollow/cracked stem, bitter curd",
-          "cause": "B deficiency, light/high-pH soils, dry spells",
+          "stress": "भूरापन / खोखला तना (बोरॉन की कमी)",
+          "symptoms": "दही पर भूरे/जंग लगे पानी से लथपथ धब्बे, खोखला/फटा हुआ तना, कड़वा दही",
+          "cause": "बी की कमी, हल्की/उच्च मिट्टी, शुष्क अवधि",
           "management": {
             "prevention": [
-              "Basal Borax 4-5 kg/acre in B-deficient soils"
+              "बी-कमी वाली मिट्टी में बेसल बोरेक्स 4-5 kg/acre"
             ],
             "monitoring": [
-              "Inspect curd & split stem at curding"
+              "जमने के समय दही और फटे तने का निरीक्षण करें"
             ],
             "cultural": [
-              "Maintain even moisture (B uptake drops in dry soil)"
+              "समान नमी बनाए रखें (सूखी मिट्टी में बी अवशोषण की बूंदें)"
             ],
             "chemical": [
               {
-                "input": "Borax foliar",
+                "input": "बोरेक्स पत्ते",
                 "dose": "1-2 g/L",
-                "stage": "pre-curd & curd initiation",
-                "note": "Classic browning fix"
+                "stage": "प्री-दही और दही की शुरुआत",
+                "note": "क्लासिक ब्राउनिंग फिक्स"
               }
             ]
           }
         },
         {
-          "stress": "Buttoning (tiny premature curd)",
-          "symptoms": "Small useless curds form too early on undersized plants",
-          "cause": "Wrong maturity-group variety for season, N deficiency, cold/stress at seedling",
+          "stress": "बटनिंग (छोटी समयपूर्व दही)",
+          "symptoms": "छोटे आकार के पौध पर छोटे बेकार दही बहुत जल्दी बन जाते हैं",
+          "cause": "मौसम के अनुसार गलत परिपक्वता-समूह किस्म, N की कमी, अंकुरण पर ठंड/तनाव",
           "management": {
             "prevention": [
-              "Pick correct early/mid/late variety for the sowing window; healthy N nutrition"
+              "बुआई के लिए सही अगेती/मध्यम/पछेती किस्म चुनें; स्वस्थ N पोषण"
             ],
             "monitoring": [
-              "Watch early curd on small plants"
+              "छोटे पौध पर जल्दी जमाव देखें"
             ],
             "cultural": [
-              "Avoid transplant shock/stress; adequate N early"
+              "प्रत्यारोपण के सदमे/तनाव से बचें; पर्याप्त N जल्दी"
             ],
             "chemical": [
               {
-                "input": "2% urea foliar to push vegetative growth",
+                "input": "वनस्पति विकास को बढ़ावा देने के लिए 2% urea पर्णसमूह",
                 "dose": "20 g/L",
-                "stage": "early growth",
+                "stage": "प्रारंभिक विकास",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Riceyness / fuzzy curd (heat)",
-          "symptoms": "Curd surface becomes loose, ricey, fuzzy (bracts/flower stalks show)",
-          "cause": "High temperature during curd development, delayed harvest",
+          "stress": "चावल जैसापन / रोएंदार दही (गर्मी)",
+          "symptoms": "दही की सतह ढीली, चावल जैसी, रोएँदार हो जाती है (छांटें/फूल के डंठल दिखाई देते हैं)",
+          "cause": "दही के विकास के दौरान उच्च तापमान, कटाई में देरी",
           "management": {
             "prevention": [
-              "Season-appropriate variety; timely sowing"
+              "मौसम-उपयुक्त किस्म; समय पर बुआई"
             ],
             "monitoring": [
-              "Watch curd texture in warm spells"
+              "गर्म मौसम में दही की बनावट देखें"
             ],
             "cultural": [
-              "Harvest promptly at compact stage; shade in heat"
+              "सघन अवस्था में तुरंत कटाई करें; गर्मी में छाया"
             ],
             "chemical": [
               {
-                "input": "None (variety/timing based)",
+                "input": "कोई नहीं (विविधता/समय आधारित)",
                 "dose": "-",
                 "stage": "-",
                 "note": ""
@@ -1826,38 +1826,38 @@
       ]
     },
     {
-      "crop": "Cabbage / Gobhi (Patta Gobhi)",
+      "crop": "पत्तागोभी/गोभी (पत्ता गोभी)",
       "scientificName": "Brassica oleracea var. capitata",
       "weeds": {
         "keyWeeds": [
-          "Chenopodium, Melilotus, Anagallis (broadleaf, Rabi)",
-          "Poa, Phalaris (grasses)",
-          "Cyperus (sedge)"
+          "Chenopodium, Melilotus, Anagallis (चौड़ी पत्ती, रबी)",
+          "Poa, Phalaris (घास)",
+          "Cyperus (नरस)"
         ],
-        "criticalPeriod": "First 30-45 DAT",
+        "criticalPeriod": "पहले 30-45 DAT",
         "management": {
           "prevention": [
-            "Weed-free nursery; clean transplants"
+            "खरपतवार मुक्त नर्सरी; स्वच्छ प्रत्यारोपण"
           ],
           "monitoring": [
-            "Scout flush at 15 & 30 DAT"
+            "जाँच flush at 15 & 30 DAT"
           ],
           "cultural": [
-            "Inter-row hoeing + earthing-up at 25 & 45 DAT; mulching"
+            "अंतर-पंक्ति निराई + अर्थिंग-up at 25 & 45 DAT; पलवार"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
-              "timing": "PE (pre-transplant / 2-3 DAT)",
-              "targets": "grasses + BLW",
-              "note": "Moist soil"
+              "timing": "PE (पूर्व-प्रत्यारोपण / 2-3 DAT)",
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी"
             },
             {
               "technical": "Oxyfluorfen 23.5% EC",
               "dose": "200 ml/acre",
-              "timing": "PE (pre-transplant)",
-              "targets": "grass+BLW",
+              "timing": "PE (पूर्व-प्रत्यारोपण)",
+              "targets": "घास+BLW",
               "note": ""
             }
           ]
@@ -1865,70 +1865,70 @@
       },
       "abioticStress": [
         {
-          "stress": "Head splitting / cracking",
-          "symptoms": "Mature heads split open, quality & market loss",
-          "cause": "Sudden heavy irrigation/rain after dry spell (rapid water uptake) at maturity, delayed harvest",
+          "stress": "सिर फूटना/फटकना",
+          "symptoms": "परिपक्व सिर फूट गए, गुणवत्ता और बाजार में हानि",
+          "cause": "परिपक्वता के समय सूखे के बाद अचानक भारी सिंचाई/बारिश (तेजी से पानी का उपभोग), फसल में देरी",
           "management": {
             "prevention": [
-              "Even irrigation; avoid heavy irrigation after dry spell near maturity"
+              "यहाँ तक कि सिंचाई भी; परिपक्वता के निकट शुष्क अवधि के बाद भारी सिंचाई से बचें"
             ],
             "monitoring": [
-              "Watch mature heads after rain"
+              "बारिश के बाद परिपक्व सिरों को देखें"
             ],
             "cultural": [
-              "Harvest promptly at firm stage; root-pruning (twist plant) slows uptake to delay split"
+              "ठोस अवस्था में तुरंत कटाई करें; जड़-कांट-छांट (पौधे को मोड़ना) विभाजन को विलंबित करने के लिए विकास को धीमा कर देता है"
             ],
             "chemical": [
               {
-                "input": "None (water management based)",
+                "input": "कोई नहीं (जल प्रबंधन आधारित)",
                 "dose": "-",
-                "stage": "maturity",
+                "stage": "परिपक्वता",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Tip-burn (Calcium deficiency)",
-          "symptoms": "Brown scorched margins of inner wrapper leaves inside head",
-          "cause": "Ca deficiency + rapid growth/moisture swings + high N/K",
+          "stress": "टिप-बर्न (कैल्शियम की कमी)",
+          "symptoms": "सिर के अंदर पत्तियों के भीतरी आवरण के भूरे झुलसे हुए किनारे",
+          "cause": "सीए की कमी + तेजी से विकास/नमी में बदलाव + उच्च N/K",
           "management": {
             "prevention": [
-              "Steady irrigation; adequate Ca; avoid excess N"
+              "स्थिर सिंचाई; पर्याप्त सीए; अधिकता N से बचें"
             ],
             "monitoring": [
-              "Cut sample heads to inspect inner leaf margins"
+              "पत्ती के भीतरी किनारों का निरीक्षण करने के लिए नमूना शीर्षों को काटें"
             ],
             "cultural": [
-              "Even moisture; mulch"
+              "नमी भी; गीली घास"
             ],
             "chemical": [
               {
-                "input": "Calcium nitrate foliar",
+                "input": "कैल्शियम नाइट्रेट पत्ते",
                 "dose": "4 g/L",
-                "stage": "head development",
+                "stage": "सिर का विकास",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Bolting (premature flowering)",
-          "symptoms": "Plant sends up flower stalk without forming proper head",
-          "cause": "Prolonged low temperature (vernalisation) on over-mature transplants",
+          "stress": "बोल्टिंग (समय से पहले फूल आना)",
+          "symptoms": "पौधा उचित सिर बनाए बिना फूल के डंठल को ऊपर भेज देता है",
+          "cause": "अधिक परिपक्व प्रत्यारोपणों पर लंबे समय तक कम तापमान (वर्नलाइज़ेशन)।",
           "management": {
             "prevention": [
-              "Right variety for season; correct transplant age; avoid too-early cold-season sowing"
+              "मौसम के लिए सही किस्म; सही प्रत्यारोपण आयु; ठंड के मौसम में बहुत जल्दी बुआई करने से बचें"
             ],
             "monitoring": [
-              "Watch for stalk elongation"
+              "डंठल के बढ़ाव पर ध्यान दें"
             ],
             "cultural": [
-              "Use young healthy transplants; season-appropriate variety"
+              "युवा स्वस्थ प्रत्यारोपण का प्रयोग करें; मौसम-उपयुक्त किस्म"
             ],
             "chemical": [
               {
-                "input": "None (variety/timing based)",
+                "input": "कोई नहीं (विविधता/समय आधारित)",
                 "dose": "-",
                 "stage": "-",
                 "note": ""
@@ -1937,24 +1937,24 @@
           }
         },
         {
-          "stress": "Boron/Mg deficiency",
-          "symptoms": "B: hollow/cracked stem, corky head; Mg: interveinal yellowing of older leaves",
-          "cause": "Light/high-pH soils, heavy leaching",
+          "stress": "बोरोन/Mg की कमी",
+          "symptoms": "बी: खोखला/फटा हुआ तना, कॉर्की सिर; Mg: पुरानी पत्तियों का अंतःशिरा पीला पड़ना",
+          "cause": "हल्की/उच्च pH मिट्टी, भारी निक्षालन",
           "management": {
             "prevention": [
-              "Basal Borax 4-5 kg/acre; adequate Mg"
+              "बेसल बोरेक्स 4-5 kg/acre; पर्याप्त Mg"
             ],
             "monitoring": [
-              "Split stem; older-leaf yellowing"
+              "विभाजित तना; पुरानी पत्ती का पीला पड़ना"
             ],
             "cultural": [
-              "Balanced nutrition; even moisture"
+              "संतुलित पोषण; यहां तक ​​कि नमी भी"
             ],
             "chemical": [
               {
-                "input": "Borax 1-2 g/L / MgSO4 5 g/L foliar",
+                "input": "बोरेक्स 1-2 g/L / MgSO4 5 जी/एल पत्ते",
                 "dose": "as stated",
-                "stage": "on symptoms",
+                "stage": "लक्षणों पर",
                 "note": ""
               }
             ]
@@ -1963,135 +1963,135 @@
       ]
     },
     {
-      "crop": "Cucumber / Khira",
+      "crop": "खीरा/खीरा",
       "scientificName": "Cucumis sativus",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Digitaria (grasses)",
-          "Cyperus (sedge)",
-          "Amaranthus, Trianthema, Commelina (broadleaf)"
+          "Echinochloa, Digitaria (घास)",
+          "Cyperus (नरस)",
+          "Amaranthus, Trianthema, Commelina (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 25-45 DAS",
+        "criticalPeriod": "पहले 25-45 DAS",
         "management": {
           "prevention": [
-            "Clean seed; plastic mulch on beds"
+            "स्वच्छ बीज; बिस्तरों पर प्लास्टिक की गीली घास"
           ],
           "monitoring": [
-            "Scout flush at 15 & 30 DAS"
+            "जाँच flush at 15 & 30 DAS"
           ],
           "cultural": [
-            "Black plastic mulch (best: weeds + moisture + clean fruit + less fruit rot); trellising; hand weeding in furrows"
+            "काली प्लास्टिक गीली घास (सर्वोत्तम: खरपतवार + नमी + साफ फल + कम सड़न); जालीदार; खाँचों में हाथ से निराई करना"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
               "timing": "PE (0-3 DAS)",
-              "targets": "grasses + BLW",
-              "note": "Moist soil; along planting rows"
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी; रोपण पंक्तियों के साथ"
             },
             {
               "technical": "Quizalofop-ethyl 5% EC (directed)",
               "dose": "400 ml/acre",
               "timing": "PoE",
-              "targets": "grasses only",
-              "note": "Directed inter-row"
+              "targets": "केवल घास",
+              "note": "अंतर-पंक्ति निर्देशित"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Poor fruit set / mis-shapen fruit",
-          "symptoms": "Flower drop, curved/crooked/nubby fruit",
-          "cause": "Poor pollination (low bee activity/polyhouse), temp extremes, K/B deficiency, moisture stress",
+          "stress": "खराब फल सेट/गलत आकार का फल",
+          "symptoms": "फूल झड़ना, घुमावदार/टेढ़ा/नुकीला फल",
+          "cause": "खराब परागण (कम मधुमक्खी गतिविधि/पॉलीहाउस), अत्यधिक तापमान, K/बी की कमी, नमी का तनाव",
           "management": {
             "prevention": [
-              "Ensure pollinators (open field); gynoecious hybrids need pollinizer or parthenocarpic types in polyhouse"
+              "परागणकर्ताओं को सुनिश्चित करें (खुला मैदान); गाइनोसियस संकरों को पॉलीहाउस में परागणकर्ता या पार्थेनोकार्पिक प्रकार की आवश्यकता होती है"
             ],
             "monitoring": [
-              "Track set & fruit shape"
+              "ट्रैक सेट और फल का आकार"
             ],
             "cultural": [
-              "Introduce bees; even irrigation; balanced K/B"
+              "मधुमक्खियों का परिचय दें; सिंचाई भी; संतुलित K/बी"
             ],
             "chemical": [
               {
-                "input": "Borax + SOP foliar",
+                "input": "बोरेक्स + एसओपी पर्ण",
                 "dose": "Borax 1 g/L + SOP 5 g/L",
-                "stage": "flowering-fruiting",
+                "stage": "फूलना-फलना",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Bitterness in fruit",
-          "symptoms": "Bitter fruit (cucurbitacin buildup)",
-          "cause": "Moisture/temperature stress, wide swings, low fertility",
+          "stress": "फल में कड़वापन",
+          "symptoms": "कड़वा फल (कुकुर्बिटासिन बिल्डअप)",
+          "cause": "नमी/तापमान तनाव, व्यापक उतार-चढ़ाव, कम प्रजनन क्षमता",
           "management": {
             "prevention": [
-              "Steady irrigation; avoid stress; balanced nutrition"
+              "स्थिर सिंचाई; तनाव से बचें; संतुलित पोषण"
             ],
             "monitoring": [
-              "Taste-check under stress spells"
+              "तनाव मंत्रों के तहत स्वाद-जांच करें"
             ],
             "cultural": [
-              "Consistent moisture (drip + mulch); avoid drought-then-flood"
+              "लगातार नमी (ड्रिप + गीली घास); सूखे और फिर बाढ़ से बचें"
             ],
             "chemical": [
               {
-                "input": "Balanced KNO3 foliar",
+                "input": "संतुलित KNO3 पर्णसमूह",
                 "dose": "1%",
-                "stage": "fruiting under stress",
+                "stage": "तनाव में फल देना",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Waterlogging",
-          "symptoms": "Yellowing, wilting, root rot, vine collapse",
-          "cause": "Poor drainage, heavy rain",
+          "stress": "जल भराव",
+          "symptoms": "पीलापन, मुरझाना, जड़ सड़न, बेल गिरना",
+          "cause": "खराब जल निकासी, भारी बारिश",
           "management": {
             "prevention": [
-              "Raised beds + drainage; plastic mulch sheds water"
+              "ऊंचे बिस्तर + जल निकासी; प्लास्टिक मल्च पानी बहाता है"
             ],
             "monitoring": [
-              "Low-spot watch after rain"
+              "बारिश के बाद निचले स्थान पर निगरानी"
             ],
             "cultural": [
-              "Drain within 24h; grow on ridges"
+              "Drain within 24h; मेड़ों पर उगना"
             ],
             "chemical": [
               {
-                "input": "2% urea foliar post-drainage",
+                "input": "2% urea पर्ण-पश्चात जल निकासी",
                 "dose": "20 g/L",
-                "stage": "recovery",
+                "stage": "वसूली",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Nitrogen / Magnesium deficiency",
-          "symptoms": "N: older-leaf yellowing, pale vines; Mg: interveinal yellowing older leaves",
-          "cause": "Leaching (sandy soils), heavy fruiting drain",
+          "stress": "नाइट्रोजन/मैग्नीशियम की कमी",
+          "symptoms": "N: पुरानी पत्तियों का पीला पड़ना, पीली लताएँ; Mg: पुरानी पत्तियों के बीच की शिराओं का पीला पड़ना",
+          "cause": "लीचिंग (रेतीली मिट्टी), भारी फलने वाली नाली",
           "management": {
             "prevention": [
-              "Split N via fertigation; adequate Mg"
+              "फर्टिगेशन के माध्यम से N को विभाजित करें; पर्याप्त Mg"
             ],
             "monitoring": [
-              "Leaf-colour by age"
+              "उम्र के अनुसार पत्ती का रंग"
             ],
             "cultural": [
-              "Fertigation scheduling"
+              "फर्टिगेशन शेड्यूलिंग"
             ],
             "chemical": [
               {
-                "input": "2% urea / MgSO4 5 g/L foliar",
+                "input": "2% urea / MgSO4 5 जी/एल पत्ते",
                 "dose": "as stated",
-                "stage": "on symptoms",
+                "stage": "लक्षणों पर",
                 "note": ""
               }
             ]
@@ -2100,135 +2100,135 @@
       ]
     },
     {
-      "crop": "Bhindi / Okra",
+      "crop": "भिंडी/ओकरा",
       "scientificName": "Abelmoschus esculentus",
       "weeds": {
         "keyWeeds": [
-          "Echinochloa, Digitaria, Dactyloctenium (grasses)",
-          "Cyperus (sedge)",
-          "Amaranthus, Trianthema, Commelina (broadleaf)"
+          "Echinochloa, Digitaria, Dactyloctenium (घास)",
+          "Cyperus (नरस)",
+          "Amaranthus, Trianthema, Commelina (चौड़ी पत्ती)"
         ],
-        "criticalPeriod": "First 40-45 DAS",
+        "criticalPeriod": "पहले 40-45 DAS",
         "management": {
           "prevention": [
-            "Clean seed; optimal population"
+            "स्वच्छ बीज; इष्टतम जनसंख्या"
           ],
           "monitoring": [
-            "Scout flush at 20 & 40 DAS"
+            "जाँच flush at 20 & 40 DAS"
           ],
           "cultural": [
-            "1-2 inter-row hoeings at 20 & 40 DAS; mulching; keep weed-free first 40-45 days"
+            "1-2 अंतर-row hoeings at 20 & 40 DAS; मल्चिंग; खरपतवार-free first 40-45 days रखें"
           ],
           "chemical": [
             {
               "technical": "Pendimethalin 30% EC",
               "dose": "1 L/acre",
               "timing": "PE (0-3 DAS)",
-              "targets": "grasses + BLW",
-              "note": "Moist soil"
+              "targets": "घास + BLW",
+              "note": "नम मिट्टी"
             },
             {
               "technical": "Quizalofop-ethyl 5% EC (directed)",
               "dose": "400 ml/acre",
               "timing": "PoE",
-              "targets": "grasses only",
-              "note": "For grassy escapes"
+              "targets": "केवल घास",
+              "note": "घास से बचने के लिए"
             }
           ]
         }
       },
       "abioticStress": [
         {
-          "stress": "Flower & bud drop",
-          "symptoms": "Shedding of buds/flowers, poor pod set",
-          "cause": "Heat >40C, moisture stress, N excess, low boron",
+          "stress": "फूल और कली का गिरना",
+          "symptoms": "कलियों/फूलों का झड़ना, खराब फली लगाना",
+          "cause": "ताप >40C, नमी का तनाव, N अधिकता, कम बोरॉन",
           "management": {
             "prevention": [
-              "Even irrigation; balanced N; boron"
+              "यहाँ तक कि सिंचाई भी; संतुलित N; बोरान"
             ],
             "monitoring": [
-              "Track drop in heat"
+              "गर्मी में गिरावट को ट्रैक करें"
             ],
             "cultural": [
-              "Mulch; avoid moisture swings"
+              "गीली घास; नमी के उतार-चढ़ाव से बचें"
             ],
             "chemical": [
               {
-                "input": "NAA + Borax foliar",
+                "input": "एनएए + बोरेक्स पत्ते",
                 "dose": "NAA 4-5 ml/15L + Borax 1 g/L",
-                "stage": "flowering",
+                "stage": "कुसुमित",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Fibrous / hard pods",
-          "symptoms": "Pods turn woody, fibrous, unmarketable",
-          "cause": "Delayed/infrequent picking, moisture stress, over-maturity",
+          "stress": "रेशेदार/कठोर फलियाँ",
+          "symptoms": "फलियाँ लकड़ीदार, रेशेदार, विपणन योग्य नहीं रह जाती हैं",
+          "cause": "देरी से/कभी-कभार तुड़ाई, नमी की कमी, अधिक परिपक्वता",
           "management": {
             "prevention": [
-              "Pick every 2-3 days at tender stage; steady irrigation"
+              "Pick every 2-3 days निविदा अवस्था में; स्थिर सिंचाई"
             ],
             "monitoring": [
-              "Pod tenderness at each pick"
+              "प्रत्येक पिक पर फली की कोमलता"
             ],
             "cultural": [
-              "Frequent harvest; mulch for even moisture"
+              "बार-बार कटाई; समान नमी के लिए गीली घास डालें"
             ],
             "chemical": [
               {
-                "input": "None (harvest management based)",
+                "input": "कोई नहीं (फसल प्रबंधन आधारित)",
                 "dose": "-",
-                "stage": "harvest",
+                "stage": "फसल",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Iron / Zinc deficiency",
-          "symptoms": "Fe: young-leaf interveinal chlorosis; Zn: small leaves, interveinal yellowing, stunting",
-          "cause": "High-pH/sandy soils, heavy cropping",
+          "stress": "आयरन/जिंक की कमी",
+          "symptoms": "Fe: युवा पत्ती इंटरवेनल क्लोरोसिस; Zn: छोटी पत्तियाँ, शिराओं के बीच का पीलापन, बौनापन",
+          "cause": "ऊँची-pH/रेतीली मिट्टी, भारी फसल",
           "management": {
             "prevention": [
-              "Basal ZnSO4 10 kg/acre; FYM"
+              "बेसल ZnSO4 10 किग्रा/एकड़; FYM"
             ],
             "monitoring": [
-              "Young-leaf chlorosis"
+              "युवा पत्ती क्लोरोसिस"
             ],
             "cultural": [
-              "Organic matter"
+              "कार्बनिक पदार्थ"
             ],
             "chemical": [
               {
-                "input": "FeSO4 5 g/L + ZnSO4 5 g/L foliar",
+                "input": "FeSO4 5 जी/एल + ZnSO4 5 जी/एल पत्ते",
                 "dose": "as stated",
-                "stage": "on symptoms",
+                "stage": "लक्षणों पर",
                 "note": ""
               }
             ]
           }
         },
         {
-          "stress": "Waterlogging",
-          "symptoms": "Yellowing, wilting, stunting, root rot",
-          "cause": "Poor drainage, heavy rain",
+          "stress": "जल भराव",
+          "symptoms": "पीलापन, मुरझाना, बौनापन, जड़ सड़न",
+          "cause": "खराब जल निकासी, भारी बारिश",
           "management": {
             "prevention": [
-              "Ridge sowing; drainage"
+              "मेड़ पर बुआई; जलनिकास"
             ],
             "monitoring": [
-              "Low-spot watch after rain"
+              "बारिश के बाद निचले स्थान पर निगरानी"
             ],
             "cultural": [
-              "Drain within 24h"
+              "Drain within 24ह"
             ],
             "chemical": [
               {
-                "input": "2% urea foliar post-drainage",
+                "input": "2% urea पर्ण-पश्चात जल निकासी",
                 "dose": "20 g/L",
-                "stage": "recovery",
+                "stage": "वसूली",
                 "note": ""
               }
             ]

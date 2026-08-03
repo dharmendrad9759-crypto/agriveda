@@ -24,7 +24,16 @@ function totalAreaLabel(fields: { area: string }[]) {
     const match = f.area.match(/([\d.]+)/);
     return sum + (match ? parseFloat(match[1]) : 0);
   }, 0);
-  return acres > 0 ? `${acres.toFixed(1)} Acre` : "—";
+  return acres > 0 ? `${acres.toFixed(1)} एकड़` : "—";
+}
+
+function ownershipLabel(ownership: string) {
+  return ownership === "Owned" ? "अपनी ज़मीन" : "बटाई / किराया";
+}
+
+function fieldStatusLabel(status: string) {
+  if (status === "Active") return "सक्रिय";
+  return status;
 }
 
 export default function MyFarmPage() {
@@ -107,31 +116,31 @@ export default function MyFarmPage() {
 
   const handleAddNote = () => {
     if (!noteTitle.trim() || !noteBody.trim()) {
-      showToast("Note title aur detail bharein", "error");
+      showToast("नोट का शीर्षक और विवरण भरें", "error");
       return;
     }
     addNote({ title: noteTitle.trim(), body: noteBody.trim(), pinned: false });
     setNoteTitle("");
     setNoteBody("");
     setShowAddNote(false);
-    showToast("Note saved ✓");
+    showToast("नोट सेव हो गया ✓");
   };
 
   const handleAddActivity = () => {
     if (!activityTask.trim() || !activityField.trim()) {
-      showToast("Task aur field bharein", "error");
+      showToast("कार्य और खेत का नाम भरें", "error");
       return;
     }
     addActivity({
       task: activityTask.trim(),
       field: activityField.trim(),
-      date: activityDate.trim() || "This week",
+      date: activityDate.trim() || "इस हफ्ते",
     });
     setActivityTask("");
     setActivityField("");
     setActivityDate("");
     setShowAddActivity(false);
-    showToast("Activity saved ✓");
+    showToast("कार्य सेव हो गया ✓");
   };
 
   return (
@@ -153,7 +162,7 @@ export default function MyFarmPage() {
       <div className="grid grid-cols-4 gap-2">
         {[
           { label: t("shellStatFields"), value: `${stats.totalFields}`, icon: Tractor },
-          { label: t("shellStatArea"), value: data.fields.length ? totalAreaLabel(data.fields).replace(" Acre", "ac") : "—", icon: Map },
+          { label: t("shellStatArea"), value: data.fields.length ? totalAreaLabel(data.fields).replace(" एकड़", "ac") : "—", icon: Map },
           { label: t("shellStatCrops"), value: `${stats.cropsGrowing}`, icon: Sprout },
           { label: t("shellStatHealth"), value: data.fields.length ? `${stats.healthScore}` : "—", icon: Heart },
         ].map(({ label, value, icon: Icon }) => (
@@ -191,7 +200,7 @@ export default function MyFarmPage() {
           onClick={() => setShowAddField((v) => !v)}
           className="av-btn av-btn-sm av-btn-primary inline-flex gap-1"
         >
-          <Plus className="h-3.5 w-3.5" /> Add Field
+          <Plus className="h-3.5 w-3.5" /> खेत जोड़ें
         </button>
       </div>
 
@@ -259,10 +268,10 @@ export default function MyFarmPage() {
           <DarkCard key={f.id} hover delay={i} className="w-56 shrink-0">
             <div className="flex h-24 items-center justify-center rounded-lg bg-[var(--av-surface-inset)] text-4xl">{f.emoji}</div>
             <p className="mt-2 text-xs font-bold text-[var(--av-text-primary)]">{f.name}</p>
-            <p className="text-[10px] text-[var(--av-text-muted)]">{f.area} · {f.ownership}</p>
+            <p className="text-[10px] text-[var(--av-text-muted)]">{f.area.replace(/\s*Acre$/i, " एकड़")} · {ownershipLabel(f.ownership)}</p>
             <p className="text-[10px] text-[var(--av-text-secondary)]">{f.crop}</p>
             <span className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[9px] font-bold ${f.status === "Active" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}>
-              {f.status}
+              {fieldStatusLabel(f.status)}
             </span>
           </DarkCard>
         ))}
@@ -271,8 +280,8 @@ export default function MyFarmPage() {
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <DarkCard hover delay={1}>
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Current Crops Overview</h3>
-            <AppLink href="/crop-calendar" className="text-xs text-[var(--av-accent)]">Crop Calendar →</AppLink>
+            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">चल रही फसलों का सारांश</h3>
+            <AppLink href="/crop-calendar" className="text-xs text-[var(--av-accent)]">{t("shellViewCropCalendar")} →</AppLink>
           </div>
           <ul className="mt-3 space-y-2">
             {activeCrops.length > 0 ? (
@@ -294,29 +303,29 @@ export default function MyFarmPage() {
                 </li>
               ))
             ) : (
-              <li className="text-xs text-[var(--av-text-muted)]">Add a field to see crops here.</li>
+              <li className="text-xs text-[var(--av-text-muted)]">फसल देखने के लिए पहले खेत जोड़ें।</li>
             )}
           </ul>
         </DarkCard>
 
         <DarkCard hover delay={2}>
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Upcoming Activities (Next 7 Days)</h3>
+            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">आने वाले कार्य (अगले 7 दिन)</h3>
             <button
               type="button"
               onClick={() => setShowAddActivity((v) => !v)}
               className="text-xs font-semibold text-[var(--av-accent)]"
             >
-              + Add
+              + जोड़ें
             </button>
           </div>
           {showAddActivity && (
             <div className="mt-2 space-y-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3">
-              <input value={activityTask} onChange={(e) => setActivityTask(e.target.value)} placeholder="Task" className="av-input text-xs" />
-              <input value={activityField} onChange={(e) => setActivityField(e.target.value)} placeholder="Field" className="av-input text-xs" />
-              <input value={activityDate} onChange={(e) => setActivityDate(e.target.value)} placeholder="Date (optional)" className="av-input text-xs" />
+              <input value={activityTask} onChange={(e) => setActivityTask(e.target.value)} placeholder="कार्य (जैसे — खाद डालना)" className="av-input text-xs" />
+              <input value={activityField} onChange={(e) => setActivityField(e.target.value)} placeholder="खेत का नाम" className="av-input text-xs" />
+              <input value={activityDate} onChange={(e) => setActivityDate(e.target.value)} placeholder="तारीख (वैकल्पिक)" className="av-input text-xs" />
               <button type="button" onClick={handleAddActivity} className="av-btn av-btn-sm av-btn-primary">
-                Save Activity
+                कार्य सेव करें
               </button>
             </div>
           )}
@@ -337,14 +346,14 @@ export default function MyFarmPage() {
           <div className="flex items-center justify-between gap-2">
             <h3 className="flex items-center gap-2 text-sm font-bold text-[var(--av-text-primary)]">
               <Bell className="h-4 w-4 text-amber-400" />
-              Active Farm Alerts
+              सक्रिय खेत अलर्ट
             </h3>
             <Badge variant={farmAlerts.length ? "warning" : "success"}>{farmAlerts.length}</Badge>
           </div>
           <ul className="mt-3 space-y-2">
             {farmAlerts.length === 0 ? (
               <li className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-3 text-center text-xs text-emerald-400">
-                No active alerts
+                कोई सक्रिय अलर्ट नहीं
               </li>
             ) : (
               farmAlerts.map((a) => (
@@ -358,24 +367,24 @@ export default function MyFarmPage() {
             )}
           </ul>
           <AppLink href="/alerts" className="mt-2 inline-block text-xs font-semibold text-[var(--av-accent)]">
-            View all alerts →
+            सभी अलर्ट देखें →
           </AppLink>
         </DarkCard>
 
         <DarkCard hover delay={2} className="border-emerald-500/15 bg-gradient-to-br from-emerald-500/5 to-transparent">
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Weather Forecast</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">मौसम पूर्वानुमान (Weather)</h3>
           <p className="mt-2 text-xs text-[var(--av-text-muted)]">
-            Live weather, spray advisory aur 7-day forecast ke liye{" "}
+            लाइव मौसम, स्प्रे सलाह (Spray) और 7 दिन का पूर्वानुमान —{" "}
             <AppLink href="/weather" className="font-semibold text-[var(--av-accent)]">
-              Weather page
+              {t("weatherTitle")}
             </AppLink>{" "}
-            dekhein.
+            पर देखें।
           </p>
         </DarkCard>
       </div>
 
       <DarkCard hover delay={1} className="mt-4 border-emerald-500/10">
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Farm Insights</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खेत की झलक</h3>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {farmInsights.map((ins) => (
               <div key={ins.label} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3 text-center">
@@ -389,17 +398,17 @@ export default function MyFarmPage() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <DarkCard hover delay={1}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Recent Farm Records</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">हाल के खेत रिकॉर्ड</h3>
           <ul className="mt-3 space-y-2">
             {data.activities.length === 0 ? (
               <li className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-3 text-center text-xs text-[var(--av-text-muted)]">
-                अभी कोई रिकॉर्ड नहीं — ऊपर Activity जोड़ें
+                अभी कोई रिकॉर्ड नहीं — ऊपर कार्य जोड़ें
               </li>
             ) : (
               data.activities.slice(0, 6).map((r) => (
                 <li key={r.id} className="flex items-center justify-between rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2">
                   <div>
-                    <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${RECORD_COLORS.Activity}`}>Activity</span>
+                    <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${RECORD_COLORS.Activity}`}>कार्य</span>
                     <p className="mt-1 text-xs text-[var(--av-text-primary)]">{r.task}</p>
                     <p className="text-[10px] text-[var(--av-text-muted)]">{r.field}</p>
                   </div>
@@ -412,27 +421,27 @@ export default function MyFarmPage() {
 
         <DarkCard hover delay={2}>
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Farm Notes</h3>
+            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खेत नोट</h3>
             <button
               type="button"
               onClick={() => setShowAddNote((v) => !v)}
               className="text-xs font-semibold text-[var(--av-accent)]"
             >
-              + Add Note
+              + नोट जोड़ें
             </button>
           </div>
           {showAddNote && (
             <div className="mt-2 space-y-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3">
-              <input value={noteTitle} onChange={(e) => setNoteTitle(e.target.value)} placeholder="Title" className="av-input text-xs" />
-              <textarea value={noteBody} onChange={(e) => setNoteBody(e.target.value)} placeholder="Note detail" rows={2} className="av-input w-full resize-none text-xs" />
+              <input value={noteTitle} onChange={(e) => setNoteTitle(e.target.value)} placeholder="शीर्षक" className="av-input text-xs" />
+              <textarea value={noteBody} onChange={(e) => setNoteBody(e.target.value)} placeholder="नोट का विवरण" rows={2} className="av-input w-full resize-none text-xs" />
               <button type="button" onClick={handleAddNote} className="av-btn av-btn-sm av-btn-primary">
-                Save Note
+                नोट सेव करें
               </button>
             </div>
           )}
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {data.notes.length === 0 ? (
-              <p className="text-xs text-[var(--av-text-muted)]">कोई नोट नहीं — Add Note से जोड़ें</p>
+              <p className="text-xs text-[var(--av-text-muted)]">कोई नोट नहीं — नोट जोड़ें से जोड़ें</p>
             ) : (
               data.notes.map((n) => (
                 <div key={n.id} className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3">
@@ -447,9 +456,9 @@ export default function MyFarmPage() {
       </div>
 
       <ShellCtaBanner
-        title="Need Expert Help for Your Farm?"
-        description="Chat with our AI Farm Assistant or connect with agriculture experts."
-        buttonLabel="Ask AI Farm Assistant"
+        title="खेत के लिए विशेषज्ञ मदद चाहिए?"
+        description="एआई खेत सहायक (AI) से बात करें या कृषि विशेषज्ञ से जुड़ें।"
+        buttonLabel={t("toolKisanSaathi")}
         href="/kisan-saathi"
       />
     </AppShell>

@@ -16,12 +16,14 @@ import { cropCatalog } from "@/data/crop-catalog";
 import type { SprayProduct } from "@/types/spray-rotation";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const SPRAY_CROPS = cropCatalog.filter((c) =>
   ["paddy", "cotton", "maize", "moongfali"].includes(c.slug)
 );
 
 export default function LogSprayPage() {
+  const { t: uiT } = useLocale();
   const navigate = useAppNavigate();
   const { locale, setLocale } = useSprayLocale();
   const { fields, addField } = useSprayFields();
@@ -83,9 +85,9 @@ export default function LogSprayPage() {
       title={t(locale, "logSpray")}
       subtitle="IRAC rotation ke liye spray record karein"
       breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Spray Rotation", href: "/spray-rotation" },
-        { label: "Log Spray" },
+        { label: uiT("navHome"), href: "/" },
+        { label: uiT("sprayRotation"), href: "/spray-rotation" },
+        { label: uiT("sprayLogSpray") },
       ]}
     >
       <DarkCard>

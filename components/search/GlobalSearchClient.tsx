@@ -8,6 +8,7 @@ import { Card } from "@/components/design-system";
 import { Badge } from "@/components/design-system";
 import { globalSearch, searchTypeLabel } from "@/lib/search/globalSearch";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const TYPE_BADGE: Record<string, "success" | "info" | "warning" | "neutral"> = {
   crop: "success",
@@ -20,15 +21,16 @@ const TYPE_BADGE: Record<string, "success" | "info" | "warning" | "neutral"> = {
 };
 
 export default function GlobalSearchClient() {
+  const { t } = useLocale();
   const [searchQuery, setSearchQuery] = useState("");
   const results = useMemo(() => globalSearch(searchQuery), [searchQuery]);
 
   return (
     <AppShell
       className="!bg-transparent"
-      title="खोजें"
+      title={t("searchTitle")}
       subtitle="फसल, कीट, रोग, पोषक तत्व, टूल — सब कुछ एक जगह"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Search" }]}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("searchTitle") }]}
     >
       <Card>
         <div className="relative">

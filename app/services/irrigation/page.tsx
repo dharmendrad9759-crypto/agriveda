@@ -9,8 +9,10 @@ import { getCropDashboard } from "@/data/crop-dashboard";
 import { cropCatalog } from "@/data/crop-catalog";
 import { Droplets } from "lucide-react";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function IrrigationServicePage() {
+  const { t } = useLocale();
   const { crops, hydrated } = useMyCrops();
   const catalog = hydrated && crops.length > 0
     ? crops.map((c) => ({ slug: c.slug, name: c.name, emoji: c.emoji }))
@@ -22,12 +24,12 @@ export default function IrrigationServicePage() {
 
   return (
     <AppShell
-      title="Irrigation Guide"
+      title={t("irrigationTitle")}
       subtitle="Crop-wise water schedule — critical stages aur timing"
       breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Services", href: "/" },
-        { label: "Irrigation" },
+        { label: t("navHome"), href: "/" },
+        { label: t("mainServices"), href: "/" },
+        { label: t("irrigationTitle") },
       ]}
     >
       <DarkCard>

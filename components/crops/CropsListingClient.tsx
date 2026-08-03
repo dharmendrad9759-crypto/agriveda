@@ -15,6 +15,7 @@ import {
 } from "@/lib/crops/crop-display";
 import { AV } from "@/lib/design/tokens";
 import type { Crop } from "@/types/crop";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const SEASON_FILTERS = ["All Seasons", "Kharif", "Rabi", "Summer"] as const;
 
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export default function CropsListingClient({ crops }: Props) {
+  const { t } = useLocale();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CropListingCategory>("All");
   const [season, setSeason] = useState<(typeof SEASON_FILTERS)[number]>("All Seasons");
@@ -155,7 +157,7 @@ export default function CropsListingClient({ crops }: Props) {
               <div className="mt-1.5 flex flex-wrap gap-2">
                 {CROP_LISTING_CATEGORIES.map((cat) => {
                   const active = category === cat;
-                  const label = cat === "All" ? "All Crops" : cat;
+                  const label = cat === "All" ? t("allCrops") : cat;
                   return (
                     <button
                       key={cat}
@@ -180,7 +182,7 @@ export default function CropsListingClient({ crops }: Props) {
       <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         {CROP_LISTING_CATEGORIES.map((cat) => {
           const active = category === cat;
-          const label = cat === "All" ? "All Crops" : cat;
+          const label = cat === "All" ? t("allCrops") : cat;
           return (
             <button
               key={cat}

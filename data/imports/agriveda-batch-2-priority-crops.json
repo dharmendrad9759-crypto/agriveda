@@ -1,553 +1,553 @@
 {
- "exportVersion": "1.0",
- "sourceDocuments": [
- "Agriveda — 1. Cereals — Paddy, Wheat, Maize, Bajra",
- "Agriveda — 2. Oilseeds & Pulses — Soybean, Groundnut, French Beans",
- "Agriveda — 3. Cash Crops — Cotton, Sugarcane",
- "Agriveda — 4. Solanaceous — Tomato, Brinjal, Chilli, Capsicum, Potato",
- "ICAR / State PoP / NFSM standard recommendations (India)",
- "PIB / CACP MSP references for 2025-26 where applicable"
- ],
- "crops": [
- {
- "managementProfile": {
- "basicInfo": {
- "name": "Soybean",
- "hindiName": "सोयाबीन",
- "scientificName": "Glycine max",
- "category": "Oilseed",
- "summary": "A major Kharif oilseed-pulse crop of central India, sensitive to waterlogging and highly responsive to timely sowing and early weed control.",
- "overview": "Soybean is the backbone Kharif oilseed crop of Madhya Pradesh, Maharashtra and adjoining belts. Yield is driven by three things more than anything else: timely sowing with the first effective monsoon, keeping the crop weed-free for the first 30 to 40 days, and protecting foliage and pods from girdle beetle, defoliators, rust and YMV vector pressure. The crop hates prolonged waterlogging and severe moisture stress during flowering and pod filling.",
- "climate": "Warm humid Kharif climate, 20-30C ideal. Well-distributed rainfall of about 600-1000 mm suits the crop. Heavy continuous rain and water stagnation sharply reduce stand and nodulation.",
- "soil": "Well-drained medium to black soils, loam to clay-loam, pH about 6.0-7.5. Avoid poorly drained low pockets and hard crusting soils."
- },
- "landAndSowing": {
- "landPreparation": [
- "Prepare a fine, firm and level seedbed with one deep ploughing and 2-3 harrowings.",
- "Ensure drainage channels before sowing because soybean fails fast under standing water.",
- "Incorporate well-decomposed FYM 2-4 t/acre before final harrowing where available.",
- "Form broad-bed-furrow in heavy black soils to reduce waterlogging."
- ],
- "seedSelection": [
- "Use region-suited high-yielding varieties like JS-95-60, JS-20-29, JS-20-34, NRC lines or locally recommended state varieties.",
- "Prefer YMV-tolerant and lodging-tolerant varieties in whitefly-prone belts.",
- "Use bold, clean, high-germination certified seed."
- ],
- "seedTreatment": [
- "Fungicide: Carbendazim + Thiram @ 3 g/kg seed or equivalent broad-spectrum seed treatment.",
- "Bio-treatment: Trichoderma viride @ 5-10 g/kg seed where damping-off, collar rot or seedling rot is common.",
- "Insecticidal protection against stem fly/early sucking pests: Thiamethoxam 30% FS @ 10 ml/kg seed where recommended.",
- "After chemical treatment, inoculate with Rhizobium + PSB culture as per label just before sowing."
- ],
- "sowingTime": [
- "Best sowing window: with first effective monsoon, generally mid-June to early July.",
- "Very early sowing into dry soil gives patchy stand; very late sowing reduces branching, pod count and yield.",
- "In central India, finishing sowing by the first fortnight of July is usually safest."
- ],
- "seedRate": [
- "Seed rate usually 25-30 kg/acre depending on seed size and branching habit.",
- "Closer spacing / smaller-seeded varieties may use slightly lower seed rate.",
- "Late sowing often needs the upper end of the seed-rate range."
- ],
- "spacing": [
- "Rows 30-45 cm apart depending on variety and rainfall zone.",
- "Plant-to-plant spacing about 5-7 cm within row.",
- "Narrow rows help early canopy cover but require good drainage."
- ],
- "nursery": [
- "Not applicable. Soybean is direct-seeded."
- ],
- "transplanting": [
- "Not applicable. Soybean is not transplanted."
- ]
- },
- "growthStages": [
- {
- "title": "Germination / Establishment",
- "period": "0-12 DAS",
- "keyPoints": [
- "Seed germinates and establishes initial stand under adequate moisture.",
- "Uniform emergence is critical for branching and pod load later.",
- "Waterlogging or crusting at this stage causes major stand loss."
- ]
- },
- {
- "title": "Vegetative Growth / Branching",
- "period": "12-30 DAS",
- "keyPoints": [
- "Plants build canopy, trifoliate leaves and branches.",
- "This is the key weed-competition window and the crop must stay clean.",
- "Girdle beetle and defoliators may begin appearing."
- ]
- },
- {
- "title": "Flower Initiation / Early Flowering",
- "period": "30-45 DAS",
- "keyPoints": [
- "Flower initiation begins and the crop becomes sensitive to moisture stress.",
- "Sucking pests and YMV-vector whitefly need close scouting.",
- "Excess rain with dense canopy raises disease pressure."
- ]
- },
- {
- "title": "Pod Formation",
- "period": "45-65 DAS",
- "keyPoints": [
- "Pods set on main stem and branches, fixing yield potential.",
- "Defoliators, girdle beetle and rust can cut photosynthesis badly here.",
- "Avoid both drought stress and standing water."
- ]
- },
- {
- "title": "Seed Filling / Pod Development",
- "period": "65-95 DAS",
- "keyPoints": [
- "Seeds fill rapidly and leaf health now drives final yield.",
- "Rust, charcoal rot and late defoliator outbreaks can hurt grain fill.",
- "Moisture stress during this phase shrinks seed size."
- ]
- },
- {
- "title": "Maturity",
- "period": "95-110 DAS",
- "keyPoints": [
- "Leaves yellow and drop, pods turn straw to brown and seeds harden.",
- "Timely harvest prevents shattering and weather damage.",
- "Delay after maturity reduces grain quality in rain-prone areas."
- ]
- }
- ],
- "irrigation": [
- "Mostly rainfed crop, but one life-saving irrigation at flowering can protect yield in dry spells.",
- "Flower initiation to pod filling is the most moisture-sensitive window.",
- "Do not allow standing water at any stage, especially establishment and podding.",
- "If irrigation is available, light irrigation at flowering and pod filling is more useful than frequent shallow watering.",
- "Provide quick drainage after heavy rain in black soils."
- ],
- "fertilizer": [
- "Typical recommendation around 8:24:16 kg/acre N:P2O5:K2O, adjusted by soil test and state PoP.",
- "Apply full basal fertilizer at sowing because soybean is usually not top-dressed heavily like cereals.",
- "DAP/complex fertilizer placement 3-5 cm below seed improves early growth.",
- "Sulphur 8-10 kg/acre improves oil formation in deficient soils.",
- "Avoid heavy nitrogen doses because soybean is a legume and excess N suppresses nodulation."
- ],
- "micronutrients": [
- "Sulphur deficiency is common in light and intensively cropped soils: apply gypsum or sulphur source at sowing.",
- "Zinc deficiency in deficient soils can be corrected with ZnSO4 10 kg/acre basal or foliar 0.5% spray.",
- "Molybdenum and boron may help in deficient pockets but should be guided by soil test or known regional deficiency."
- ],
- "weeds": [
- {
- "name": "Echinochloa spp.",
- "type": "Grassy",
- "criticalPeriod": "0-35 DAS",
- "herbicide": "Pendimethalin 30% EC / Quizalofop-ethyl 5% EC",
- "hrac": "K1 / A-1",
- "dose": "Pendimethalin 1 L/acre pre-emergence; Quizalofop 400 ml/acre post-emergence"
- },
- {
- "name": "Commelina / broadleaf complex",
- "type": "Broadleaf",
- "criticalPeriod": "15-40 DAS",
- "herbicide": "Diclosulam 84% WDG / Imazethapyr 10% SL",
- "hrac": "B-2",
- "dose": "Diclosulam 12.4 g/acre pre-emergence; Imazethapyr 300 ml/acre early post"
- },
- {
- "name": "Cyperus spp.",
- "type": "Sedge",
- "criticalPeriod": "15-35 DAS",
- "herbicide": "Imazethapyr / Imazethapyr + Imazamox",
- "hrac": "B-2",
- "dose": "Imazethapyr 300 ml/acre or ready-mix 400 ml/acre early post"
- }
- ],
- "pests": [
- {
- "name": "Girdle Beetle",
- "identification": "Obereopsis brevis; adult makes characteristic double girdling on stem/petiole and affected top dries above the cut",
- "symptoms": "Drying and hanging of top portion or petiole above girdled ring, broken branches and yield loss from cut stems",
- "etl": "First fresh girdling or about 10% plants affected in susceptible fields",
- "bioControl": "Clip and destroy girdled plant portions early; keep field scouted from branching onward",
- "chemicalControl": "Thiamethoxam 25% WG @ 40 g/acre or Triazophos 40% EC @ 320 ml/acre early; rotate to labeled newer options if pressure continues",
- "irac": "4A / 1B",
- "activeIngredient": "Thiamethoxam 25% WG / Triazophos 40% EC",
- "dose": "Thiamethoxam 40 g/acre or Triazophos 320 ml/acre"
- },
- {
- "name": "Defoliator Complex",
- "identification": "Includes semilooper, tobacco caterpillar and hairy caterpillar feeding on foliage",
- "symptoms": "Irregular chewing, skeletonized leaves, rapid defoliation and reduced pod filling",
- "etl": "About 2-3 larvae per meter row or economically important defoliation in vegetative to pod stage",
- "bioControl": "Azadirachtin, pheromone traps for Spodoptera, SlNPV where available, bird perches and conservation of predators",
- "chemicalControl": "Emamectin benzoate 5% SG @ 80-90 g/acre early; Chlorantraniliprole 18.5% SC @ 60 ml/acre or Spinetoram 11.7% SC @ 100 ml/acre under heavy defoliation",
- "irac": "6 / 28 / 5",
- "activeIngredient": "Emamectin benzoate / Chlorantraniliprole / Spinetoram",
- "dose": "Emamectin 80-90 g/acre; Chlorantraniliprole 60 ml/acre; Spinetoram 100 ml/acre"
- },
- {
- "name": "Stem Fly",
- "identification": "Melanagromyza sojae; maggot mines stem and petiole in early crop",
- "symptoms": "Yellowing, mining in stem, weak plants and poor early growth",
- "etl": "Preventive management mainly at seed stage in known infested fields",
- "bioControl": "Timely sowing and healthy vigorous stand reduce damage severity",
- "chemicalControl": "Seed treatment with Thiamethoxam 30% FS @ 10 ml/kg seed is the main protection",
- "irac": "4A",
- "activeIngredient": "Thiamethoxam 30% FS",
- "dose": "10 ml/kg seed"
- },
- {
- "name": "Whitefly",
- "identification": "Bemisia tabaci; tiny white insects on undersides, also vectors YMV",
- "symptoms": "Sucking damage, honeydew, sooty mould and spread of yellow mosaic virus",
- "etl": "Vector threshold is low because virus spread matters more than direct feeding",
- "bioControl": "Yellow sticky traps, rouging infected plants, avoid unnecessary pyrethroids",
- "chemicalControl": "Thiamethoxam 25% WG @ 40 g/acre early, Diafenthiuron 50% WP @ 240 g/acre or Pyriproxyfen under heavy vector build-up",
- "irac": "4A / 12A / 7C",
- "activeIngredient": "Thiamethoxam / Diafenthiuron / Pyriproxyfen",
- "dose": "Thiamethoxam 40 g/acre; Diafenthiuron 240 g/acre"
- }
- ],
- "diseases": [
- {
- "name": "Yellow Mosaic Virus",
- "pathogen": "Mungbean yellow mosaic virus complex, vectored by whitefly",
- "type": "Viral",
- "symptoms": "Bright yellow mosaic and mottling on leaves, stunting, reduced flowering and poor pod fill",
- "conditions": "High whitefly activity, warm humid weather and infected volunteer hosts",
- "ipm": "No chemical cure. Rogue infected plants early, control whitefly, use tolerant varieties and keep field weed-free",
- "frac": "N/A",
- "activeIngredient": "Vector management with Thiamethoxam, Diafenthiuron or Pyriproxyfen",
- "dose": "Thiamethoxam 40 g/acre; Diafenthiuron 240 g/acre",
- "phi": "Follow label for insecticides"
- },
- {
- "name": "Rust",
- "pathogen": "Phakopsora pachyrhizi",
- "type": "Fungal",
- "symptoms": "Tan to reddish-brown pustules mainly on lower leaf surface leading to rapid yellowing and defoliation",
- "conditions": "Humid cloudy weather, dense canopy and late Kharif wet periods",
- "ipm": "Start fungicide at first pustules, maintain canopy aeration and timely sowing",
- "frac": "3 / 11+3",
- "activeIngredient": "Hexaconazole 5% EC or Propiconazole 25% EC early; Azoxystrobin + Difenoconazole advanced",
- "dose": "Hexaconazole 400 ml/acre; Propiconazole 200 ml/acre; combo 200 ml/acre",
- "phi": "Follow label, usually around 15 days"
- },
- {
- "name": "Anthracnose / Pod Blight",
- "pathogen": "Colletotrichum truncatum complex",
- "type": "Fungal",
- "symptoms": "Dark lesions on petiole, stem and pods, shriveled seed and patchy blighting",
- "conditions": "Wet weather and infected seed or residue",
- "ipm": "Seed treatment first, crop rotation and timely fungicide where outbreak begins",
- "frac": "1 / M3",
- "activeIngredient": "Carbendazim 50% WP after seed treatment support sprays where required",
- "dose": "Carbendazim 200 g/acre",
- "phi": "Follow label"
- },
- {
- "name": "Charcoal Rot",
- "pathogen": "Macrophomina phaseolina",
- "type": "Fungal / stress-linked",
- "symptoms": "Premature drying, shredding stem tissue and poor seed fill, more common under drought stress",
- "conditions": "High temperature, intermittent drought and weak root system",
- "ipm": "Avoid stress, ensure balanced nutrition, seed treatment with Trichoderma and timely sowing",
- "frac": "N/A",
- "activeIngredient": "Seed and root-zone preventive management, no dependable late curative spray",
- "dose": "Preventive only",
- "phi": "N/A"
- }
- ],
- "nutrientDeficiencies": [
- {
- "nutrient": "Nitrogen (N)",
- "symptoms": "General pale green crop with poor vigour where nodulation failed",
- "fix": "Check Rhizobium inoculation, avoid waterlogging and apply starter N only as recommended"
- },
- {
- "nutrient": "Phosphorus (P)",
- "symptoms": "Stunted plants, poor root growth and delayed flowering",
- "fix": "Apply full P basal at sowing and place fertilizer below seed"
- },
- {
- "nutrient": "Potassium (K)",
- "symptoms": "Leaf margin scorch and weaker drought tolerance",
- "fix": "Apply MOP as per soil test, especially in low-K soils"
- },
- {
- "nutrient": "Sulphur (S)",
- "symptoms": "Uniform yellowing of younger leaves and low oil content",
- "fix": "Apply gypsum or sulphur source supplying about 8-10 kg S/acre"
- },
- {
- "nutrient": "Zinc (Zn)",
- "symptoms": "Interveinal chlorosis and reduced growth in deficient soils",
- "fix": "ZnSO4 10 kg/acre basal or foliar 0.5% spray"
- }
- ],
- "harvestAndYield": {
- "whenToHarvest": "Harvest when most leaves have dropped, pods turn straw to brown and seeds are hard with safe threshing moisture.",
- "maturitySigns": "Yellowing and drying of plants, rattling mature seed in pods, uniform pod browning.",
- "yieldRange": "Well-managed rainfed soybean typically about 6-10 q/acre, higher in good irrigated or exceptional fields but strongly rainfall-dependent.",
- "storage": "Dry grain to about 10-12% moisture and store clean, dry and insect-safe to preserve oil quality and seed viability."
- },
- "market": {
- "majorMandis": "Indore, Ujjain, Dewas, Mandsaur, Kota, Akola and other central India oilseed mandis.",
- "demand": "Strong demand from solvent plants, feed, oil and export-linked processing chains.",
- "msp": "Soybean MSP about Rs 5328/qtl for 2025-26, verify current procurement conditions locally.",
- "priceTrend": "Prices swing with monsoon output, edible oil imports and crushing demand; harvest-time arrivals often soften prices."
- },
- "faqs": [
- {
- "q": "सोयाबीन की बुवाई कब सबसे अच्छी रहती है?",
- "a": "पहली प्रभावी मानसूनी बारिश के बाद, आमतौर पर मध्य जून से शुरुआती जुलाई सबसे सही रहती है।"
- },
- {
- "q": "सोयाबीन में सबसे जरूरी खरपतवार नियंत्रण कब है?",
- "a": "पहले 30 से 40 दिन सबसे महत्वपूर्ण हैं. इसी समय खेत साफ रखा तो yield बचती है।"
- },
- {
- "q": "पीला मोज़ेक दिख जाए तो क्या करें?",
- "a": "वायरस का इलाज नहीं है. संक्रमित पौधे निकालें और सफेद मक्खी पर तुरंत नियंत्रण करें।"
- },
- {
- "q": "सोयाबीन में पानी खड़ा रहने से क्या होता है?",
- "a": "जड़ें और गांठें खराब होती हैं, पौधे पीले पड़ते हैं और yield तेज़ी से गिरती है।"
- }
- ]
- },
- "cropListing": {
- "duration": "95-110 days",
- "yield": "6-10 quintal/acre",
- "season": "Kharif",
- "soil": "Well-drained loam to black soils, pH about 6.0-7.5",
- "climate": "Warm humid season with good rainfall but no water stagnation",
- "sowingGuide": {
- "sowingTime": "Mid-June to early July with first effective monsoon",
- "seedRate": "25-30 kg/acre",
- "spacing": "30-45 cm rows, 5-7 cm within row",
- "method": "Direct seeding on flat bed or broad-bed furrow",
- "seedTreatment": "Carbendazim + Thiram, then Rhizobium + PSB; Thiamethoxam FS in stem-fly prone areas"
- },
- "fertilizer": {
- "basal": "Around 8:24:16 kg/acre N:P2O5:K2O plus sulphur where deficient, all as basal",
- "stageWise": [
- {
- "stage": "At sowing",
- "dose": "Full basal fertilizer with P emphasis, no major top-dress schedule"
- }
- ]
- },
- "irrigationSummary": "Mostly rainfed. Protect flowering to pod filling from moisture stress, and drain water fast after heavy rain.",
- "cropProtection": {
- "pests": [
- "Girdle beetle",
- "Defoliator complex",
- "Stem fly",
- "Whitefly"
- ],
- "diseases": [
- "Yellow mosaic virus",
- "Rust",
- "Anthracnose / pod blight",
- "Charcoal rot"
- ],
- "weeds": [
- "Echinochloa",
- "Commelina / broadleaf complex",
- "Cyperus"
- ],
- "symptoms": "Girdled stems, chewing defoliation, yellow mosaic leaves and rust pustules are the key red flags.",
- "prevention": "Timely sowing, good drainage, seed treatment, early weed-free crop and vector control",
- "control": "Emamectin or Chlorantraniliprole for caterpillars, Thiamethoxam for girdle beetle/whitefly, triazoles or combo fungicides for rust"
- },
- "nutrientDeficiency": [
- {
- "nutrient": "Sulphur",
- "symptoms": "Young leaves yellow, low oil content",
- "cause": "Low S in light or continuously cropped soils",
- "solution": "Apply gypsum or sulphur source"
- },
- {
- "nutrient": "Phosphorus",
- "symptoms": "Poor roots and slow growth",
- "cause": "Low available P",
- "solution": "Basal P at sowing"
- },
- {
- "nutrient": "Zinc",
- "symptoms": "Interveinal chlorosis",
- "cause": "Zn-deficient soils",
- "solution": "ZnSO4 basal or foliar"
- },
- {
- "nutrient": "Nitrogen",
- "symptoms": "Pale stunted crop when nodulation fails",
- "cause": "Poor nodulation or waterlogging",
- "solution": "Improve inoculation and drainage"
- }
- ],
- "harvestSummary": "Harvest when pods brown and leaves drop; dry grain well before storage.",
- "marketSummary": "Soybean MSP about Rs 5328/qtl for 2025-26, but mandi prices still move with arrivals and oil market."
- },
- "dashboard": {
- "emoji": "🫘",
- "currentStageName": "Pod Formation",
- "growthStages": [
- {
- "id": "soybean-1",
- "name": "Germination / Establishment",
- "das": "0-12 DAS",
- "status": "completed",
- "emoji": "🌱"
- },
- {
- "id": "soybean-2",
- "name": "Vegetative Growth / Branching",
- "das": "12-30 DAS",
- "status": "completed",
- "emoji": "🌿"
- },
- {
- "id": "soybean-3",
- "name": "Flower Initiation / Early Flowering",
- "das": "30-45 DAS",
- "status": "completed",
- "emoji": "🌼"
- },
- {
- "id": "soybean-4",
- "name": "Pod Formation",
- "das": "45-65 DAS",
- "status": "current",
- "emoji": "🫛"
- },
- {
- "id": "soybean-5",
- "name": "Seed Filling / Pod Development",
- "das": "65-95 DAS",
- "status": "upcoming",
- "emoji": "🫘"
- },
- {
- "id": "soybean-6",
- "name": "Maturity",
- "das": "95-110 DAS",
- "status": "upcoming",
- "emoji": "🌾"
- }
- ],
- "topPests": [
- "Girdle beetle",
- "Defoliator complex",
- "Whitefly",
- "Rust",
- "Yellow mosaic virus"
- ],
- "expertAdvice": [
- "If the crop isn't clean by 30 DAS, soybean yield starts leaking fast. Weed control first, heroics later.",
- "See first rust pustules? Don't wait for full lower-canopy burn. Hit early and protect leaves for pod fill."
- ],
- "sections": {
- "sowing": {
- "summary": "Sow with the first effective monsoon in a well-drained field.",
- "fields": {
- "seedRate": "25-30 kg/acre",
- "spacing": "30-45 cm rows",
- "sowingTime": "Mid-June to early July",
- "method": "Direct seeded, flat bed or BBF",
- "seedTreatment": "Fungicide + Rhizobium + PSB"
- },
- "tips": [
- "Finish sowing on time. Late soybean gets punished hard.",
- "Drainage matters more than perfect tilth in black soils."
- ]
- },
- "fertilizer": {
- "summary": "Soybean likes balanced basal fertilizer, not heavy nitrogen.",
- "fields": {
- "basal": "Around 8:24:16 kg/acre NPK",
- "phosphorus": "Full dose at sowing",
- "sulphur": "8-10 kg/acre where deficient",
- "zinc": "ZnSO4 in Zn-poor soils",
- "note": "Avoid excess N"
- },
- "tips": [
- "Excess nitrogen kills nodulation logic. Don't do dumb cereal-style feeding.",
- "Sulphur often pays back quietly through better seed and oil."
- ]
- },
- "irrigation": {
- "summary": "Usually rainfed, but flowering and pod filling must not go dry.",
- "fields": {
- "critical": "Flowering to pod filling",
- "risk1": "Waterlogging at any stage",
- "risk2": "Dry spell during flowering",
- "support": "Life-saving irrigation if available"
- },
- "tips": [
- "Soybean hates standing water more than it likes extra irrigation.",
- "Open drainage after every heavy rain."
- ]
- },
- "nutrients": {
- "summary": "Watch sulphur, phosphorus and failed nodulation.",
- "fields": {
- "sulphur": "Young leaves yellow, low oil",
- "phosphorus": "Poor roots and slow growth",
- "zinc": "Interveinal chlorosis",
- "nitrogen": "Pale crop where nodules failed"
- },
- "tips": [
- "If nodules are weak and roots smell bad, drainage is the real problem.",
- "Sulphur is the quiet limiter in many soybean belts."
- ]
- },
- "harvest": {
- "summary": "Harvest on time once pods brown and seeds harden.",
- "fields": {
- "timing": "95-110 days",
- "sign": "Leaves dropped, pods brown",
- "yield": "6-10 quintal/acre",
- "storage": "Dry to 10-12% moisture"
- },
- "tips": [
- "Delaying harvest in rainy weather invites shattering and quality loss.",
- "Dry grain properly before bagging."
- ]
- },
- "market": {
- "summary": "Soybean is processor-driven, so arrivals and oil imports move price fast.",
- "fields": {
- "msp": "Rs 5328/qtl for 2025-26",
- "majorMandis": "Indore, Dewas, Ujjain, Akola",
- "demand": "Crushing, oil and feed",
- "trend": "Volatile at harvest arrivals"
- },
- "tips": [
- "Harvest glut usually softens rates, classic soybean behavior.",
- "Moisture discount at mandi is real, dry it right."
- ]
- }
- }
- },
- "_meta": {
- "slug": "soybean",
- "growthStageCount": 6,
- "growthStageTitlesInOrder": [
- "Germination / Establishment",
- "Vegetative Growth / Branching",
- "Flower Initiation / Early Flowering",
- "Pod Formation",
- "Seed Filling / Pod Development",
- "Maturity"
- ],
- "uncertainFields": [
- "yield ranges vary strongly by rainfall and variety",
- "market pricing beyond MSP remains mandi-driven",
- "dashboard expert advice is condensed UI wording"
- ]
- }
- }
- ]
+  "exportVersion": "1.0",
+  "sourceDocuments": [
+    "Agriveda — 1. Cereals — Paddy, Wheat, Maize, Bajra",
+    "Agriveda — 2. Oilseeds & Pulses — Soybean, Groundnut, French Beans",
+    "Agriveda — 3. Cash Crops — Cotton, Sugarcane",
+    "Agriveda — 4. Solanaceous — Tomato, Brinjal, Chilli, Capsicum, Potato",
+    "ICAR / State PoP / NFSM standard recommendations (India)",
+    "PIB / CACP MSP references for 2025-26 where applicable"
+  ],
+  "crops": [
+    {
+      "managementProfile": {
+        "basicInfo": {
+          "name": "Soybean",
+          "hindiName": "सोयाबीन",
+          "scientificName": "Glycine max",
+          "category": "तिलहन",
+          "summary": "मध्य भारत की एक प्रमुख खरीफ तिलहन-दलहन फसल, जलभराव के प्रति संवेदनशील और समय पर बुआई और शीघ्र खरपतवार नियंत्रण के प्रति अत्यधिक संवेदनशील।",
+          "overview": "सोयाबीन मध्य प्रदेश, महाराष्ट्र और आसपास के क्षेत्रों की मुख्य खरीफ तिलहन फसल है। उपज सबसे ज़्यादा तीन बातों पर निर्भर करती है: पहली प्रभावी बारिश के साथ समय पर बुवाई, पहले 30–40 दिन खेत खरपतवार-मुक्त रखना, और पत्ते व फली को गर्डल बीटल, पत्ती खाने वाले, रतुआ और YMV वाहक से बचाना। फूल और फली भरने के समय लंबे जलभराव और तेज़ सूखे से यह फसल बुरी तरह प्रभावित होती है।",
+          "climate": "गर्म-नम खरीफ जलवायu, 20–30°C आदर्श। लगभग 600–1000 mm अच्छी वर्षा फसल के लिए उपयुक्त है। लगातार भारी बारिश और खड़ा पानी से खड़ी और गांठ दोनों तेज़ी से कमज़ोर होते हैं।",
+          "soil": "अच्छी जल-निकास वाली मध्यम से काली मिट्टी, दोमट से चिकनी-दोमट, pH लगभग 6.0–7.5। खराब निकास वाली निचली जगह और कठोर पपड़ी वाली मिट्टी से बचें।"
+        },
+        "landAndSowing": {
+          "landPreparation": [
+            "एक गहरी जुताई और 2-3 बखरों से बारीक, सख्त और समतल बीज क्यारी तैयार करें।",
+            "बुआई से पहले जल निकासी नालियाँ सुनिश्चित करें क्योंकि खड़े पानी में सोयाबीन जल्दी खराब हो जाता है।",
+            "जहां उपलब्ध हो वहां अंतिम हैरोइंग से पहले अच्छी तरह से विघटित FYM 2-4 t/acre को शामिल करें।",
+            "जलभराव को कम करने के लिए भारी काली मिट्टी में चौड़ी क्यारी-खाड़ी बनाएं।"
+          ],
+          "seedSelection": [
+            "क्षेत्र-अनुकूल उच्च उपज देने वाली किस्मों जैसे JS-95-60, JS-20-29, JS-20-34, एनआरसी लाइन या स्थानीय रूप से अनुशंसित राज्य किस्मों का उपयोग करें।",
+            "सफेद मक्खी-प्रवण बेल्टों में YMV-सहिष्णु और आवास-सहिष्णु किस्मों को प्राथमिकता दें।",
+            "मोटे, स्वच्छ, उच्च अंकुरण वाले प्रमाणित बीज का प्रयोग करें।"
+          ],
+          "seedTreatment": [
+            "कवकनाशी: Carbendazim + Thiram @ 3 g/kg seed या समकक्ष व्यापक स्पेक्ट्रम बीज उपचार।",
+            "जैव-उपचार: Trichoderma विराइड @ 5-10 g/kg seed जहां डैम्पिंग-ऑफ़, कॉलर रोट या अंकुर सड़न आम है।",
+            "तना मक्खी/जल्दी चूसने वाले कीटों के विरुद्ध कीटनाशक सुरक्षा: Thiamethoxam 30% FS @ 10 ml/kg seed जहां अनुशंसित हो।",
+            "रासायनिक उपचार के बाद, बुआई से ठीक पहले लेबल के अनुसार Rhizobium + PSB कल्चर का टीका लगाएं।"
+          ],
+          "sowingTime": [
+            "सर्वोत्तम बुआई विंडो: पहले प्रभावी मानसून के साथ, आम तौर पर mid-June से early July।",
+            "सूखी मिट्टी में बहुत जल्दी बुआई करने से स्थिति ख़राब हो जाती है; बहुत देर से बुआई करने से शाखाओं की संख्या, फलियों की संख्या और उपज कम हो जाती है।",
+            "मध्य भारत में, आमतौर पर जुलाई के पहले पखवाड़े तक बुआई ख़त्म करना सबसे सुरक्षित होता है।"
+          ],
+          "seedRate": [
+            "बीज दर आमतौर पर 25-30 kg/acre बीज के आकार और शाखा लगाने की आदत पर निर्भर करती है।",
+            "कम दूरी वाली/छोटी बीज वाली किस्मों में थोड़ी कम बीज दर का उपयोग किया जा सकता है।",
+            "देर से बुआई के लिए अक्सर बीज-दर सीमा के ऊपरी सिरे की आवश्यकता होती है।"
+          ],
+          "spacing": [
+            "विविधता और वर्षा क्षेत्र के आधार पर पंक्तियों में 30-45 से.मी. की दूरी रखें।",
+            "पौधे से पंक्ति के भीतर plant spacing about 5-7 सेमी.",
+            "संकीर्ण पंक्तियाँ प्रारंभिक चंदवा को कवर करने में मदद करती हैं लेकिन अच्छी जल निकासी की आवश्यकता होती है।"
+          ],
+          "nursery": [
+            "लागू नहीं. सोयाबीन सीधी बुआई है।"
+          ],
+          "transplanting": [
+            "लागू नहीं. सोयाबीन की रोपाई नहीं की जाती है."
+          ]
+        },
+        "growthStages": [
+          {
+            "title": "अंकुरण/स्थापना",
+            "period": "0-12 DAS",
+            "keyPoints": [
+              "पर्याप्त नमी के तहत बीज अंकुरित होता है और प्रारंभिक स्थिति स्थापित करता है।",
+              "बाद में शाखाओं में बंटने और फली लोड करने के लिए एक समान उद्भव महत्वपूर्ण है।",
+              "इस स्तर पर जलभराव या पपड़ी जमने से स्टैंड को बड़ा नुकसान होता है।"
+            ]
+          },
+          {
+            "title": "वनस्पति विकास / शाखाकरण",
+            "period": "12-30 DAS",
+            "keyPoints": [
+              "पौधे छत्र, त्रिपर्णीय पत्तियाँ और शाखाएँ बनाते हैं।",
+              "यह खरपतवार-प्रतिस्पर्धा की मुख्य खिड़की है और फसल साफ रहनी चाहिए।",
+              "गर्डल बीटल और डिफोलिएटर्स दिखाई देने लग सकते हैं।"
+            ]
+          },
+          {
+            "title": "फूल की शुरूआत / जल्दी फूल आना",
+            "period": "30-45 DAS",
+            "keyPoints": [
+              "फूल आना शुरू हो जाता है और फसल नमी के प्रति संवेदनशील हो जाती है।",
+              "चूसक कीटों और YMV-वेक्टर सफ़ेद मक्खी की बारीकी से निगरानी करने की आवश्यकता है।",
+              "सघन छत्रछाया के साथ अधिक वर्षा से रोग का दबाव बढ़ जाता है।"
+            ]
+          },
+          {
+            "title": "फली निर्माण",
+            "period": "45-65 DAS",
+            "keyPoints": [
+              "मुख्य तने और शाखाओं पर फलियाँ लगती हैं, जिससे उपज क्षमता निश्चित हो जाती है।",
+              "डिफोलिएटर्स, गर्डल बीटल और जंग can यहां प्रकाश संश्लेषण को बुरी तरह से बाधित करते हैं।",
+              "सूखे के तनाव और रुके हुए पानी दोनों से बचें।"
+            ]
+          },
+          {
+            "title": "बीज भरना/फली विकास",
+            "period": "65-95 DAS",
+            "keyPoints": [
+              "बीज तेजी से भरते हैं और पत्तियों का स्वास्थ्य अब अंतिम उपज प्रदान करता है।",
+              "जंग, लकड़ी का कोयला सड़ना और देर से पत्ते गिरने का प्रकोप can अनाज के भराव को नुकसान पहुँचाता है।",
+              "इस चरण के दौरान नमी का तनाव बीज के आकार को छोटा कर देता है।"
+            ]
+          },
+          {
+            "title": "परिपक्वता",
+            "period": "95-110 DAS",
+            "keyPoints": [
+              "पत्तियाँ पीली होकर गिर जाती हैं, फलियाँ भूसे की भूरी हो जाती हैं और बीज सख्त हो जाते हैं।",
+              "समय पर कटाई से फसल टूटने और मौसम से होने वाले नुकसान से बचा जा सकता है।",
+              "परिपक्वता के बाद देरी से वर्षा-प्रवण क्षेत्रों में अनाज की गुणवत्ता कम हो जाती है।"
+            ]
+          }
+        ],
+        "irrigation": [
+          "अधिकांशतः वर्षा आधारित फसल, लेकिन फूल आने पर एक जीवनरक्षक सिंचाई सूखे समय में उपज की रक्षा करती है।",
+          "फली भरने के लिए फूलों की शुरुआत सबसे अधिक नमी-संवेदनशील खिड़की है।",
+          "किसी भी स्तर पर, विशेषकर स्थापना और पोडिंग में पानी जमा न होने दें।",
+          "यदि सिंचाई उपलब्ध है, तो फूल आने और फली भरने के समय हल्की सिंचाई बार-बार उथले पानी देने की तुलना में अधिक उपयोगी होती है।",
+          "काली मिट्टी में भारी वर्षा के बाद त्वरित जल निकासी प्रदान करें।"
+        ],
+        "fertilizer": [
+          "Typical recommendation around 8:24:16 kg/acre N:P2O5:K2O, मिट्टी परीक्षण और अवस्था PoP द्वारा समायोजित।",
+          "बुआई के समय पूर्ण बेसल उर्वरक लगाएं क्योंकि सोयाबीन आमतौर पर अनाज की तरह भारी मात्रा में तैयार नहीं होता है।",
+          "DAP/complex fertilizer placement 3-5 सेमी नीचे बीज से प्रारंभिक वृद्धि में सुधार होता है।",
+          "सल्फर 8-10 kg/acre कमी वाली मिट्टी में तेल निर्माण में सुधार करता है।",
+          "भारी नाइट्रोजन खुराक से बचें क्योंकि सोयाबीन एक फलियां है और इसकी अधिकता नोड्यूलेशन को दबा देती है।"
+        ],
+        "micronutrients": [
+          "हल्की और गहन फसल वाली मिट्टी में सल्फर की कमी आम है: बुआई के समय gypsum या सल्फर स्रोत का प्रयोग करें।",
+          "कमी वाली मिट्टी में जिंक की कमी को ZnSO4 10 किग्रा/एकड़ basal or foliar 0.5% spरे से ठीक किया जा सकता है।",
+          "मोलिब्डेनम और बोरॉन कमी वाले क्षेत्रों में मदद कर सकते हैं लेकिन मिट्टी परीक्षण या ज्ञात क्षेत्रीय कमी से निर्देशित होना चाहिए।"
+        ],
+        "weeds": [
+          {
+            "name": "Echinochloa spp.",
+            "type": "Grassy",
+            "criticalPeriod": "0-35 DAS",
+            "herbicide": "Pendimethalin 30% EC / Quizalofop-ethyl 5% EC",
+            "hrac": "K1 / A-1",
+            "dose": "Pendimethalin 1 L/acre pre-emergence; Quizalofop 400 ml/acre post-emergence"
+          },
+          {
+            "name": "Commelina / broadleaf complex",
+            "type": "Broadleaf",
+            "criticalPeriod": "15-40 DAS",
+            "herbicide": "Diclosulam 84% WDG / Imazethapyr 10% SL",
+            "hrac": "B-2",
+            "dose": "Diclosulam 12.4 g/acre pre-emergence; Imazethapyr 300 ml/acre early post"
+          },
+          {
+            "name": "Cyperus spp.",
+            "type": "Sedge",
+            "criticalPeriod": "15-35 DAS",
+            "herbicide": "Imazethapyr / Imazethapyr + Imazamox",
+            "hrac": "B-2",
+            "dose": "Imazethapyr 300 ml/acre or ready-mix 400 ml/acre early post"
+          }
+        ],
+        "pests": [
+          {
+            "name": "गर्डल बीटल",
+            "identification": "Obereopsis brevis; वयस्क तने/डंठल पर विशिष्ट दोहरी घेरा बनाता है और प्रभावित शीर्ष कट के ऊपर सूख जाता है",
+            "symptoms": "ऊपरी हिस्से या पेटीओल का बेल्ट रिंग के ऊपर सूखना और लटकना, शाखाओं का टूटना और कटे हुए तनों से उपज का नुकसान",
+            "etl": "अतिसंवेदनशील खेतों में पहले ताजे girdling or about 10% पौधे प्रभावित",
+            "bioControl": "घेरेदार पौधे के हिस्सों को जल्दी से काटकर नष्ट कर दें; आगे से शाखाओं में बँटने से पहले क्षेत्र की निगरानी रखें",
+            "chemicalControl": "Thiamethoxam 25% WG @ 40 g/acre or Triazophos 40% EC @ 320 ml/acre शीघ्र; यदि दबाव जारी रहता है तो लेबल वाले नए विकल्प की ओर मुड़ते हैं",
+            "irac": "4A / 1B",
+            "activeIngredient": "Thiamethoxam 25% WG / Triazophos 40% EC",
+            "dose": "Thiamethoxam 40 g/acre or Triazophos 320 ml/acre"
+          },
+          {
+            "name": "पत्ती खाने वाले Complex",
+            "identification": "इसमें सेमीलूपर, तम्बाकू कैटरपिलर और बालों वाली कैटरपिलर शामिल हैं जो पत्ते खाते हैं",
+            "symptoms": "अनियमित चबाना, पत्तियाँ कंकालयुक्त होना, पत्तियों का तेजी से गिरना और फलियों का भरना कम होना",
+            "etl": "प्रति मीटर पंक्ति में लगभग 2-3 लार्वा या वानस्पतिक से फली अवस्था में आर्थिक रूप से महत्वपूर्ण पत्ते का गिरना",
+            "bioControl": "Azadirachtin, Spodoptera, SlNPV के लिए फेरोमोन जाल जहां उपलब्ध हो, पक्षियों के बैठने की जगह और शिकारियों का संरक्षण",
+            "chemicalControl": "Emamectin बेंज़ोएट 5% एसजी @ 80-90 g/acre प्रारंभिक; Chlorantraniliprole 18.5% एससी @ 60 ml/acre या Spinetoram 11.7% एससी @ 100 ml/acre भारी पतझड़ के अंतर्गत",
+            "irac": "6 / 28 / 5",
+            "activeIngredient": "Emamectin benzoate / Chlorantraniliprole / Spinetoram",
+            "dose": "Emamectin 80-90 g/acre; Chlorantraniliprole 60 ml/acre; Spinetoram 100 ml/acre"
+          },
+          {
+            "name": "Stem Fly",
+            "identification": "Melanagromyza sojae; अगेती फसल में मैगॉट माइंस तने और डंठल को नष्ट कर देता है",
+            "symptoms": "तने में पीलापन, पीलापन, कमजोर पौधे और कम प्रारंभिक वृद्धि",
+            "etl": "ज्ञात संक्रमित क्षेत्रों में मुख्य रूप से बीज अवस्था में निवारक प्रबंधन",
+            "bioControl": "समय पर बुआई और स्वस्थ जोरदार स्टैंड क्षति की गंभीरता को कम करते हैं",
+            "chemicalControl": "Thiamethoxam 30% FS @ 10 ml/kg seed से बीज उपचार मुख्य बचाव है",
+            "irac": "4A",
+            "activeIngredient": "Thiamethoxam 30% FS",
+            "dose": "10 ml/kg seed"
+          },
+          {
+            "name": "सफेद मक्खी",
+            "identification": "Bemisia tabaci; नीचे की तरफ छोटी सफ़ेद दुकानदारी YMV",
+            "symptoms": "चूसने से होने वाली क्षति, शहद का ओस, कालिखयुक्त फफूंद और पीले मोज़ेक वायरस का प्रसार",
+            "etl": "वेक्टर सीमा कम है क्योंकि वायरस का प्रसार प्रत्यक्ष फीडिंग से अधिक मायने रखता है",
+            "bioControl": "पीले चिपचिपे जाल, संक्रमित पौध को रगड़ना, अनावश्यक पाइरेथ्रोइड्स से बचें",
+            "chemicalControl": "Thiamethoxam 25% WG @ 40 g/acre प्रारंभिक, Diafenthiuron 50% WP @ 240 g/acre या Pyriproxyfen भारी वॉल्यूम बिल्ड-अप के अंतर्गत",
+            "irac": "4A / 12A / 7C",
+            "activeIngredient": "Thiamethoxam / Diafenthiuron / Pyriproxyfen",
+            "dose": "Thiamethoxam 40 g/acre; Diafenthiuron 240 g/acre"
+          }
+        ],
+        "diseases": [
+          {
+            "name": "Yellow Mosaic Virus",
+            "pathogen": "Mungbean yellow mosaic virus complex, vectored by सफेद मक्खी",
+            "type": "Viral",
+            "symptoms": "चमकीले पीले मोज़ेक और पत्तियों पर धब्बे, बौनापन, फूल कम आना और फलियों का कम भरा होना",
+            "conditions": "सफ़ेद मक्खी की उच्च गतिविधि, गर्म आर्द्र मौसम और संक्रमित स्वयंसेवक मेजबान",
+            "ipm": "कोई रासायनिक इलाज नहीं. रोगग्रस्त पौध को जल्दी नष्ट करें, सफेद मक्खी को नियंत्रित करें, सहनशील किस्मों का उपयोग करें और खेत को खरपतवार मुक्त रखें",
+            "frac": "N/A",
+            "activeIngredient": "वाहक management with Thiamethoxam, Diafenthiuron or Pyriproxyfen",
+            "dose": "Thiamethoxam 40 g/acre; Diafenthiuron 240 g/acre",
+            "phi": "Follow label for insecticides"
+          },
+          {
+            "name": "Rust",
+            "pathogen": "Phakopsora pachyrhizi",
+            "type": "Fungal",
+            "symptoms": "मुख्य रूप से निचली पत्ती की सतह पर भूरे से लाल-भूरे रंग के दाने हो जाते हैं, जिससे तेजी से पीलापन आ जाता है और पत्तियां गिर जाती हैं",
+            "conditions": "आर्द्र बादल वाला मौसम, घनी छतरी और देर से खरीफ गीली अवधि",
+            "ipm": "पहली फुंसियों पर फफूंदनाशी शुरू करें, चंदवा में हवा का संचार बनाए रखें और समय पर बुआई करें",
+            "frac": "3 / 11+3",
+            "activeIngredient": "Hexaconazole 5% EC or Propiconazole 25% EC early; Azoxystrobin + Difenoconazole advanced",
+            "dose": "Hexaconazole 400 ml/acre; Propiconazole 200 ml/acre; combo 200 ml/acre",
+            "phi": "Follow label, usually around 15 days"
+          },
+          {
+            "name": "Anthracnose / Pod Blight",
+            "pathogen": "Colletotrichum truncatum complex",
+            "type": "Fungal",
+            "symptoms": "डंठल, तने और फलियों पर काले घाव, सिकुड़े हुए बीज और धब्बेदार झुलसा",
+            "conditions": "गीला मौसम और संक्रमित बीज या अवशेष",
+            "ipm": "जहां प्रकोप शुरू हो वहां पहले बीज उपचार, फसल चक्र और समय पर कवकनाशी करें",
+            "frac": "1 / M3",
+            "activeIngredient": "Carbendazim 50% WP after बीज उपचार support sprays where required",
+            "dose": "Carbendazim 200 g/acre",
+            "phi": "Follow label"
+          },
+          {
+            "name": "Charcoal Rot",
+            "pathogen": "Macrophomina phaseolina",
+            "type": "Fungal / stress-linked",
+            "symptoms": "समय से पहले सूखना, तने के ऊतकों का टूटना और बीज का ख़राब भराव, सूखे के तनाव में अधिक आम है",
+            "conditions": "उच्च तापमान, रुक-रुक कर सूखा और कमजोर जड़ प्रणाली",
+            "ipm": "तनाव से बचें, संतुलित पोषण, Trichoderma से बीज उपचार और समय पर बुआई सुनिश्चित करें",
+            "frac": "N/A",
+            "activeIngredient": "Seed and root-zone preventive management, no dependable late curative spray",
+            "dose": "Preventive only",
+            "phi": "N/A"
+          }
+        ],
+        "nutrientDeficiencies": [
+          {
+            "nutrient": "नाइट्रोजन (N)",
+            "symptoms": "सामान्य रूप से हल्की हरी फसल, कमजोर ताकत के साथ जहां नोड्यूलेशन विफल हो गया",
+            "fix": "Rhizobium टीकाकरण की जाँच करें, जलभराव से बचें और केवल अनुशंसित अनुसार ही स्टार्टर N लगाएं"
+          },
+          {
+            "nutrient": "फास्फोरस (P)",
+            "symptoms": "पौध का रुकना, जड़ों का कम विकास और देर से फूल आना",
+            "fix": "बुआई के समय पूरा P बेसल लगाएं और उर्वरक को बीज के नीचे रखें"
+          },
+          {
+            "nutrient": "पोटेशियम (K)",
+            "symptoms": "पत्ती मार्जिन झुलसा और कमज़ोर सूखा सहनशीलता",
+            "fix": "MOP मिट्टी परीक्षण के अनुसार लागू करें, विशेषकर कम K मिट्टी में"
+          },
+          {
+            "nutrient": "सल्फर (एस)",
+            "symptoms": "नई पत्तियों का एक समान पीला होना और तेल की मात्रा कम होना",
+            "fix": "gypsum या source supplying about 8-10 किलो प्रति टुकड़ा"
+          },
+          {
+            "nutrient": "जिंक (Zn)",
+            "symptoms": "अंतरशिरा क्लोरोसिस और कमी वाली मिट्टी में वृद्धि में कमी",
+            "fix": "ZnSO4 10 किग्रा/एकड़ basal or foliar 0.5% spरे"
+          }
+        ],
+        "harvestAndYield": {
+          "whenToHarvest": "जब अधिकांश पत्तियाँ झड़ जाएँ तब कटाई करें, फलियाँ भूसे को भूरे रंग में बदल देती हैं और बीज सुरक्षित थ्रेसिंग नमी के कारण सख्त हो जाते हैं।",
+          "maturitySigns": "पौध का पीला पड़ना और सूखना, फलियों में परिपक्व बीज का खड़खड़ाना, फलियों का एक समान भूरा होना।",
+          "yieldRange": "अच्छी तरह से प्रबंधित वर्षा आधारित सोयाबीन आमतौर पर लगभग 6-10 q/acre, अच्छे सिंचित या असाधारण क्षेत्रों में अधिक लेकिन दृढ़ता से वर्षा पर निर्भर है।",
+          "storage": "सूखी grain to about 10-12% नमी और तेल की गुणवत्ता और बीज व्यवहार्यता को संरक्षित करने के लिए साफ, सूखा और कीट-सुरक्षित संग्रहित करें।"
+        },
+        "market": {
+          "majorMandis": "इंदौर, उज्जैन, देवास, मंदसौर, कोटा, अकोला और अन्य मध्य भारत की तिलहन मंडियाँ।",
+          "demand": "विलायक संयंत्रों, चारा, तेल और निर्यात से जुड़ी प्रसंस्करण श्रृंखलाओं से मजबूत मांग।",
+          "msp": "सोयाबीन MSP about Rs 5328/qtl for 2025-26, स्थानीय स्तर पर वर्तमान खरीद स्थितियों की पुष्टि करें।",
+          "priceTrend": "मानसून उत्पादन, खाद्य तेल आयात और क्रशिंग मांग के कारण कीमतें बदलती रहती हैं; फसल के समय की आवक अक्सर कीमतों को नरम कर देती है।"
+        },
+        "faqs": [
+          {
+            "q": "सोयाबीन की बुवाई कब सबसे अच्छी रहती है?",
+            "a": "पहली प्रभावी मानसूनी बारिश के बाद, आमतौर पर मध्य जून से शुरुआती जुलाई सबसे सही रहती है।"
+          },
+          {
+            "q": "सोयाबीन में सबसे जरूरी खरपतवार नियंत्रण कब है?",
+            "a": "पहले 30 से 40 दिन सबसे महत्वपूर्ण हैं. इसी समय खेत साफ रखा तो उपज बचती है।"
+          },
+          {
+            "q": "पीला मोज़ेक दिख जाए तो क्या करें?",
+            "a": "वायरस का इलाज नहीं है. संक्रमित पौधे निकालें और सफेद मक्खी पर तुरंत नियंत्रण करें।"
+          },
+          {
+            "q": "सोयाबीन में पानी खड़ा रहने से क्या होता है?",
+            "a": "जड़ें और गांठें खराब होती हैं, पौधे पीले पड़ते हैं और उपज तेज़ी से गिरती है।"
+          }
+        ]
+      },
+      "cropListing": {
+        "duration": "95-110 days",
+        "yield": "6-10 quintal/acre",
+        "season": "खरीफ",
+        "soil": "अच्छी जल निकास वाली दोमट से काली मिट्टी, pH about 6.0-7.5",
+        "climate": "अच्छी वर्षा के साथ गर्म आर्द्र मौसम लेकिन पानी का कोई ठहराव नहीं",
+        "sowingGuide": {
+          "sowingTime": "पहले प्रभावशाली के साथ Mid-June से early July",
+          "seedRate": "25-30 kg/acre",
+          "spacing": "पंक्तियाँ 30-45 सेमी, पंक्ति के भीतर 5-7 सेमी",
+          "method": "समतल क्यारी या चौड़ी क्यारी वाले कुंड पर सीधी बुआई करें",
+          "seedTreatment": "Carbendazim + Thiram, फिर Rhizobium + PSB; Thiamethoxam FS ताना-मक्खी प्रवण क्षेत्र में"
+        },
+        "fertilizer": {
+          "basal": "लगभग 8:24:16 kg/acre N:P2O5:K2O प्लस सल्फर जहां कमी है, सभी बेसल के रूप में",
+          "stageWise": [
+            {
+              "stage": "बुआई के समय",
+              "dose": "Full basal fertilizer with P emphasis, no major top-dress schedule"
+            }
+          ]
+        },
+        "irrigationSummary": "अधिकतर वर्षा आधारित। फूल आने से लेकर फली भरने तक को नमी के तनाव से बचाएं, और भारी बारिश के बाद पानी की तेजी से निकासी करें।",
+        "cropProtection": {
+          "pests": [
+            "करधनी भृंग",
+            "डिफोलिएटर कॉम्प्लेक्स",
+            "तना मक्खी",
+            "सफ़ेद मक्खी"
+          ],
+          "diseases": [
+            "पीला मोज़ेक वायरस",
+            "जंग",
+            "एन्थ्रेक्नोज / पॉड ब्लाइट",
+            "लकड़ी का कोयला सड़ना"
+          ],
+          "weeds": [
+            "Echinochloa",
+            "Commelina / ब्रॉडलीफ कॉम्प्लेक्स",
+            "Cyperus"
+          ],
+          "symptoms": "घेरेदार तने, चबाने योग्य पत्ते, पीले मोज़ेक पत्ते और जंग के दाने प्रमुख लाल झंडे हैं।",
+          "prevention": "समय पर बुआई, अच्छी जल निकासी, बीज उपचार, जल्दी खरपतवार मुक्त फसल और रोगवाहक नियंत्रण",
+          "control": "Emamectin या Chlorantraniliprole कैटरपिलर के लिए, Thiamethoxam गार्डल बीटल/व्हाइटफ्लाई के लिए, ट्रैक्टज़ोल्स या जंग के लिए रेनॉल्ड कवकनाशी"
+        },
+        "nutrientDeficiency": [
+          {
+            "nutrient": "गंधक",
+            "symptoms": "नई पत्तियाँ पीली, तेल की मात्रा कम",
+            "cause": "हल्की या लगातार फसल वाली मिट्टी में कम एस",
+            "solution": "gypsum या सल्फर स्रोत लागू करें"
+          },
+          {
+            "nutrient": "फास्फोरस",
+            "symptoms": "ख़राब जड़ें और धीमी वृद्धि",
+            "cause": "कम उपलब्ध P",
+            "solution": "बुआई के समय बेसल P"
+          },
+          {
+            "nutrient": "जस्ता",
+            "symptoms": "इंटरवेनल क्लोरोसिस",
+            "cause": "Zn-अपूर्ण मिट्टी",
+            "solution": "ZnSO4 बेसल या पत्तेदार"
+          },
+          {
+            "nutrient": "नाइट्रोजन",
+            "symptoms": "नोड्यूलेशन विफल होने पर फसल का रंग फीका पड़ जाता है",
+            "cause": "ख़राब नोड्यूलेशन या जलभराव",
+            "solution": "टीकाकरण और जल निकासी में सुधार करें"
+          }
+        ],
+        "harvestSummary": "जब फलियाँ भूरी हो जाएँ और पत्तियाँ गिरने लगें तो कटाई करें; भंडारण से पहले अनाज को अच्छी तरह सुखा लें।",
+        "marketSummary": "सोयाबीन MSP about Rs 5328/qtl for 2025-26, लेकिन मंडी की कीमतें अभी भी आवक और तेल बाजार के साथ बदलती रहती हैं।"
+      },
+      "dashboard": {
+        "emoji": "🫘",
+        "currentStageName": "फली निर्माण",
+        "growthStages": [
+          {
+            "id": "soybean-1",
+            "name": "अंकुरण / Establishment",
+            "das": "0-12 DAS",
+            "status": "completed",
+            "emoji": "🌱"
+          },
+          {
+            "id": "soybean-2",
+            "name": "वनस्पति Growth / Branching",
+            "das": "12-30 DAS",
+            "status": "completed",
+            "emoji": "🌿"
+          },
+          {
+            "id": "soybean-3",
+            "name": "Flower Initiation / Early फूल आना",
+            "das": "30-45 DAS",
+            "status": "completed",
+            "emoji": "🌼"
+          },
+          {
+            "id": "soybean-4",
+            "name": "Pod Formation",
+            "das": "45-65 DAS",
+            "status": "current",
+            "emoji": "🫛"
+          },
+          {
+            "id": "soybean-5",
+            "name": "Seed Filling / Pod Development",
+            "das": "65-95 DAS",
+            "status": "upcoming",
+            "emoji": "🫘"
+          },
+          {
+            "id": "soybean-6",
+            "name": "Maturity",
+            "das": "95-110 DAS",
+            "status": "upcoming",
+            "emoji": "🌾"
+          }
+        ],
+        "topPests": [
+          "करधनी भृंग",
+          "डिफोलिएटर कॉम्प्लेक्स",
+          "सफ़ेद मक्खी",
+          "जंग",
+          "पीला मोज़ेक वायरस"
+        ],
+        "expertAdvice": [
+          "यदि फसल clean by 30 DAS नहीं है, तो सोयाबीन की उपज तेजी से कम होने लगती है। खरपतवार नियंत्रण पहले, वीरता बाद में।",
+          "पहले जंग के दाने देखें? निचली छतरी के पूरी तरह जलने की प्रतीक्षा न करें। जल्दी मारें और फली भरने के लिए पत्तियों की रक्षा करें।"
+        ],
+        "sections": {
+          "sowing": {
+            "summary": "पहले प्रभावी मानसून के साथ अच्छे जल निकास वाले खेत में बुआई करें।",
+            "fields": {
+              "seedRate": "25-30 kg/acre",
+              "spacing": "पंक्तियाँ 30-45 सेमी",
+              "sowingTime": "Mid-June से early July",
+              "method": "सीधी बुआई, समतल बिस्तर या BBF",
+              "seedTreatment": "कवकनाशी + Rhizobium + PSB"
+            },
+            "tips": [
+              "समय पर बुआई समाप्त करें. देर से सोयाबीन लाने पर कड़ी सजा मिलती है.",
+              "काली मिट्टी में उत्तम जुताई से अधिक जल निकासी मायने रखती है।"
+            ]
+          },
+          "fertilizer": {
+            "summary": "सोयाबीन को संतुलित बेसल उर्वरक पसंद है, भारी नाइट्रोजन नहीं।",
+            "fields": {
+              "basal": "लगभग 8:24:16 kg/acre NPK",
+              "phosphorus": "बुआई के समय पूरी खुराक",
+              "sulphur": "8-10 kg/acre जहां कमी है",
+              "zinc": "ZnSO4 Zn-खराब मिट्टी में",
+              "note": "अधिक N से बचें"
+            },
+            "tips": [
+              "अतिरिक्त नाइट्रोजन नोड्यूलेशन लॉजिक को ख़त्म कर देता है। मूर्खतापूर्ण अनाज-शैली का आहार न खिलाएं।",
+              "सल्फर अक्सर बेहतर बीज और तेल के माध्यम से चुपचाप भुगतान करता है।"
+            ]
+          },
+          "irrigation": {
+            "summary": "आमतौर पर वर्षा आधारित, लेकिन फूल और फली का भराव सूखना नहीं चाहिए।",
+            "fields": {
+              "critical": "फली भरने तक फूल आना",
+              "risk1": "किसी भी स्तर पर जलजमाव",
+              "risk2": "फूल आने के दौरान शुष्क अवधि",
+              "support": "यदि उपलब्ध हो तो जीवनरक्षक सिंचाई"
+            },
+            "tips": [
+              "सोयाबीन को अतिरिक्त सिंचाई पसंद होने की तुलना में खड़े पानी से अधिक नफरत है।",
+              "हर भारी बारिश के बाद खुली जल निकासी।"
+            ]
+          },
+          "nutrients": {
+            "summary": "सल्फर, फास्फोरस और असफल नोड्यूलेशन देखें।",
+            "fields": {
+              "sulphur": "नई पत्तियाँ पीली, कम तेल वाली",
+              "phosphorus": "ख़राब जड़ें और धीमी वृद्धि",
+              "zinc": "इंटरवेनल क्लोरोसिस",
+              "nitrogen": "जहां गांठें विफल हो गईं, वहां पीली फसल"
+            },
+            "tips": [
+              "यदि गांठें कमजोर हैं और जड़ों से दुर्गंध आती है, तो जल निकासी वास्तविक समस्या है।",
+              "कई सोयाबीन बेल्टों में सल्फर एक शांत अवरोधक है।"
+            ]
+          },
+          "harvest": {
+            "summary": "फलियाँ भूरे होने और बीज सख्त हो जाने पर समय पर कटाई करें।",
+            "fields": {
+              "timing": "95-110 days",
+              "sign": "पत्तियाँ झड़ गईं, फलियाँ भूरी हो गईं",
+              "yield": "6-10 quintal/acre",
+              "storage": "Dry to 10-12% नमी"
+            },
+            "tips": [
+              "बरसात के मौसम में फसल की कटाई में देरी से फसल टूटती है और गुणवत्ता में कमी आती है।",
+              "बैग में रखने से पहले अनाज को अच्छी तरह सुखा लें।"
+            ]
+          },
+          "market": {
+            "summary": "सोयाबीन प्रोसेसर-चालित है, इसलिए आवक और तेल आयात से कीमतें तेजी से बढ़ती हैं।",
+            "fields": {
+              "msp": "Rs 5328/qtl for 2025-26",
+              "majorMandis": "इंदौर, देवास, उज्जैन, अकोला",
+              "demand": "कुचलना, तेल लगाना और खिलाना",
+              "trend": "फसल की आवक में उतार-चढ़ाव"
+            },
+            "tips": [
+              "फसल की प्रचुरता आमतौर पर दरों को नरम कर देती है, क्लासिक सोयाबीन व्यवहार।",
+              "मंडी में नमी की छूट वास्तविक है, इसे ठीक से सुखा लें।"
+            ]
+          }
+        }
+      },
+      "_meta": {
+        "slug": "soybean",
+        "growthStageCount": 6,
+        "growthStageTitlesInOrder": [
+          "अंकुरण/स्थापना",
+          "वनस्पति विकास / शाखाकरण",
+          "फूल की शुरूआत / जल्दी फूल आना",
+          "फली निर्माण",
+          "बीज भरना/फली विकास",
+          "परिपक्वता"
+        ],
+        "uncertainFields": [
+          "उपज सीमा वर्षा और विविधता के आधार पर काफी भिन्न होती है",
+          "MSP से परे बाज़ार मूल्य निर्धारण मंडी-संचालित रहता है",
+          "डैशबोर्ड विशेषज्ञ सलाह संक्षिप्त यूआई शब्दांकन है"
+        ]
+      }
+    }
+  ]
 }

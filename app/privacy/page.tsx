@@ -59,9 +59,9 @@ export default function PrivacyPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="Privacy Policy"
+      title="गोपनीयता नीति"
       subtitle="गोपनीयता नीति — आपका डेटा सुरक्षित रखने का वादा"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Privacy" }]}
+      breadcrumbs={[{ label: "होम", href: "/" }, { label: "गोपनीयता" }]}
     >
       <DarkCard>
         <p className="text-sm text-[var(--av-text-secondary)]">

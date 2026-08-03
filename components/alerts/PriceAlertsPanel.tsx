@@ -34,8 +34,11 @@ export default function PriceAlertsPanel({ rows = [], compact = false, className
   return (
     <DarkCard className={className} hover={!compact}>
       <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Alert Setup</h3>
+      <p className={`mt-1 ${AV.micro}`}>
+        अभी सिर्फ ऐप के अंदर दिखेगा — push/SMS notification अभी live नहीं है।
+      </p>
       {!settings.masterEnabled && (
-        <p className={`mt-1 ${AV.micro}`}>Master toggle OFF — enable in Settings to get notifications.</p>
+        <p className={`mt-1 ${AV.micro}`}>Master toggle OFF — Settings में चालू करें।</p>
       )}
       <div className="mt-3 flex flex-wrap gap-2">
         <input

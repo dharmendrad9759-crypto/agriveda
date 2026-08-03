@@ -12,8 +12,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Paddy NPK & sowing (NFSM)",
     crops: ["paddy"],
     topics: ["fertilizer", "sowing"],
-    lang: "en",
-    text: "Recommended NPK kg/ha: upland 90:60:60, lowland 100:60:60, hybrid rice 120-150 N + 60 P2O5 + 60 K2O + 25 kg ZnSO4. Sowing: last week May to first week June. Transplant 25-day seedlings 20×10 cm, 2-3 seedlings/hill. Maintain 2-5 cm water. Resistant varieties: stem borer (Ratna, Vikas), blast (Rasi, KRH-2), BLB (Karjat-1). Weeds: Pretilachlor, Butachlor, Bispyribac-sodium post-emergence.",
+    lang: "hi",
+    text: "अनुशंसित NPK kg/ha: upland 90:60:60, lowland 100:60:60, hybrid rice 120-150 N + 60 P2O5 + 60 K2O + 25 kg ZnSO4। बुवाई: मई के अंतिम सप्ताह से जून के पहले सप्ताह। 25 दिन के पौधे 20×10 cm, 2-3 पौधे/टीला रोपाई। 2-5 cm पानी बनाए रखें। रोगप्रतिरोधी किस्में: stem borer (Ratna, Vikas), blast (Rasi, KRH-2), BLB (Karjat-1)। खरपतवार: Pretilachlor, Butachlor, Bispyribac-sodium post-emergence।",
   },
   {
     id: "paddy-weed-hrac",
@@ -21,8 +21,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Paddy weed management HRAC",
     crops: ["paddy"],
     topics: ["herbicide", "general"],
-    lang: "en",
-    text: "Barnyard grass: Pretilachlor 50 EC @ 0.6-0.75 kg a.i./ha (HRAC 15) at 3 DAS. Post-emergence: Bispyribac-sodium 10 SC @ 25 g a.i./ha (HRAC 2) at 15-20 DAS. Flat sedge: Pretilachlor + Pyrazosulfuron. Monochoria: 2,4-D Na salt 80 WP @ 0.5 kg a.i./ha direct-seeded only (HRAC 4). Hand weeding at 20 & 40 DAS in transplanted rice.",
+    lang: "hi",
+    text: "Barnyard grass: Pretilachlor 50 EC @ 0.6-0.75 kg a.i./ha (HRAC 15) 3 DAS पर। Post-emergence: Bispyribac-sodium 10 SC @ 25 g a.i./ha (HRAC 2) 15-20 DAS पर। Flat sedge: Pretilachlor + Pyrazosulfuron। Monochoria: 2,4-D Na salt 80 WP @ 0.5 kg a.i./ha केवल direct-seeded (HRAC 4)। Transplanted rice में 20 और 40 DAS पर हाथ से निराई।",
   },
   // ——— MAIZE ———
   {
@@ -31,8 +31,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Maize package Andhra Pradesh",
     crops: ["maize"],
     topics: ["fertilizer", "sowing", "herbicide"],
-    lang: "en",
-    text: "Kharif sowing June 15-July 15. Seed rate 7-8 kg/acre hybrids. Spacing 60×20 cm. Kharif fertilizer: 72-80 kg N, 24 kg P2O5, 20 kg K2O per acre in 3 splits (sowing, knee-high, flowering). Pre-emergence Atrazine 50 WP @ 800-1200 g/acre within 3 DAS. ZnSO4 20 kg/acre if deficient. Fall Armyworm: scout whorl, Chlorantraniliprole/Emamectin evening spray.",
+    lang: "hi",
+    text: "Kharif बुवाई 15 जून-15 जुलाई। Hybrid बीज दर 7-8 kg/acre। दूरी 60×20 cm। Kharif उर्वरक: 72-80 kg N, 24 kg P2O5, 20 kg K2O प्रति acre, 3 भागों में (बुवाई, घुटने-ऊँचाई, फूल)। Pre-emergence Atrazine 50 WP @ 800-1200 g/acre 3 DAS के भीतर। ZnSO4 20 kg/acre यदि कमी हो। Fall Armyworm: whorl की जाँच, Chlorantraniliprole/Emamectin शाम छिड़काव।",
   },
   // ——— COTTON ———
   {
@@ -41,8 +41,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Cotton package of practices",
     crops: ["cotton"],
     topics: ["sowing", "fertilizer", "irrigation", "herbicide"],
-    lang: "en",
-    text: "Cotton needs 21-27°C vegetative, frost-free. Sowing: North irrigated March-May, rainfed June-July with monsoon. Bt hybrid spacing 90×60 cm, seed rate 1.5 kg/ha. Water 700-1200 mm; critical at flowering and boll development. Weed-free 0-70 DAS — yield loss 50-85% if unchecked. Pre-plant: Fluchloralin or Pendimethalin @ 1 kg a.i./ha + one hand weeding. NPK Central hybrids: 100-240 N, 50-120 P, 50-120 K kg/ha in splits at squaring and peak flowering.",
+    lang: "hi",
+    text: "कपास को 21-27°C वनस्पति अवस्था, frost-free चाहिए। बुवाई: उत्तर सिंचित मार्च-मई, rainfed जून-जुलाई मानसून। Bt hybrid दूरी 90×60 cm, बीज दर 1.5 kg/ha। पानी 700-1200 mm; फूल और boll विकास पर महत्वपूर्ण। 0-70 DAS खरपतवार-मुक्त — अनियंत्रित हो तो 50-85% उपज घट। Pre-plant: Fluchloralin या Pendimethalin @ 1 kg a.i./ha + एक बार हाथ निराई। Central hybrids NPK: 100-240 N, 50-120 P, 50-120 K kg/ha, squaring और peak flowering में भागों में।",
   },
   {
     id: "cotton-pest-irac",
@@ -50,8 +50,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Cotton major pests control",
     crops: ["cotton"],
     topics: ["pest", "ipm"],
-    lang: "en",
-    text: "Pink bollworm, spotted bollworm, jassids, whitefly, aphids major pests. IPM: light traps, pheromone traps, avoid same IRAC group back-to-back. Bollworm: Emamectin benzoate (IRAC 6) or Chlorantraniliprole (IRAC 28). Sucking pests: Imidacloprid (4A) seed treatment; rotate with Diafenthiuron (12A) or Pyriproxyfen (7C) for whitefly. Do not spray during peak bee hours.",
+    lang: "hi",
+    text: "Pink bollworm, spotted bollworm, jassids, whitefly, aphids प्रमुख कीट। IPM: light traps, pheromone traps, एक ही IRAC समूह लगातार न दें। Bollworm: Emamectin benzoate (IRAC 6) या Chlorantraniliprole (IRAC 28)। Sucking pests: Imidacloprid (4A) बीज उपचार; whitefly के लिए Diafenthiuron (12A) या Pyriproxyfen (7C) से बदलकर छिड़कें। मधुमक्खी के चरम समय में छिड़काव न करें।",
   },
   // ——— SOYBEAN ———
   {
@@ -60,8 +60,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Soybean ICAR-IISR agronomy",
     crops: ["soybean"],
     topics: ["sowing", "fertilizer", "general"],
-    lang: "en",
-    text: "Well-drained sandy loam to clay, pH near neutral. Summer deep plough. FYM 5-10 t/ha. Gypsum 150-200 kg/ha with FYM if no sulphur. Grow 3-4 varieties different maturity (varietal cafeteria). BBF/Ridge-Furrow for moisture conservation. Rhizobium + PSB seed treatment. Fixes 60-100 kg N — avoid excess nitrogen. Popular intercrops: soybean+pigeonpea, soybean+maize 4:2.",
+    lang: "hi",
+    text: "अच्छी जल निकास वाली sandy loam से clay, pH लगभग neutral। गर्मी में गहरी जुताई। FYM 5-10 t/ha। FYM के साथ Gypsum 150-200 kg/ha यदि sulphur न हो। 3-4 किस्में अलग-अलग परिपक्वता (varietal cafeteria)। BBF/Ridge-Furrow नमी संरक्षण। Rhizobium + PSB बीज उपचार। 60-100 kg N स्थिर — अधिक nitrogen न दें। लोकप्रिय अंतरफसल: soybean+pigeonpea, soybean+maize 4:2।",
   },
   {
     id: "soybean-pest-disease",
@@ -69,8 +69,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Soybean pest and disease",
     crops: ["soybean"],
     topics: ["pest", "disease"],
-    lang: "en",
-    text: "Girdle beetle, stem fly, semilooper, whitefly. Seed treatment Carbendazim + Imidacloprid. Rust, charcoal rot, yellow mosaic virus. Rogue YMV plants. Rust: Propiconazole or Tebuconazole (FRAC 3). Stem fly: early sowing, seed treatment Thiamethoxam. Harvest when leaves turn yellow and pods brown — moisture 12% for storage.",
+    lang: "hi",
+    text: "Girdle beetle, stem fly, semilooper, whitefly। बीज उपचार Carbendazim + Imidacloprid। Rust, charcoal rot, yellow mosaic virus। YMV वाले पौधे हटाएँ। Rust: Propiconazole या Tebuconazole (FRAC 3)। Stem fly: शीघ्र बुवाई, बीज उपचार Thiamethoxam। पत्ते पीले और फली भूरी होने पर कटाई — भंडारण के लिए नमी 12%।",
   },
   // ——— BAJRA ———
   {
@@ -79,8 +79,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Pearl millet (Bajra) PoP",
     crops: ["bajra"],
     topics: ["sowing", "fertilizer", "herbicide", "pest"],
-    lang: "en",
-    text: "Kharif sowing first fortnight July. Seed rate 3-4 kg/ha, spacing 45×10-15 cm, population 1.75-2 lakh/ha. Fertilizer semi-arid: 60N+30P kg/ha; arid 40N+20P. Half N on sandy soils at sowing, half at 25 DAS. Atrazine 0.5 kg/ha pre-emergence + one hand weeding. ZnSO4 10 kg/ha or 0.2% foliar. Downy mildew: metalaxyl seed treatment 6 g/kg. Shoot fly: carbofuran 3G @ 10 kg/ha at sowing.",
+    lang: "hi",
+    text: "Kharif बुवाई जुलाई के पहले पखवाड़े। बीज दर 3-4 kg/ha, दूरी 45×10-15 cm, जनसंख्या 1.75-2 lakh/ha। Semi-arid उर्वरक: 60N+30P kg/ha; arid 40N+20P। रेतीली मिट्टी में आधा N बुवाई पर, आधा 25 DAS। Pre-emergence Atrazine 0.5 kg/ha + एक बार हाथ निराई। ZnSO4 10 kg/ha या 0.2% foliar। Downy mildew: metalaxyl बीज उपचार 6 g/kg। Shoot fly: carbofuran 3G @ 10 kg/ha बुवाई पर।",
   },
   // ——— MOONGFALI ———
   {
@@ -89,8 +89,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Groundnut (Moongfali) PoP",
     crops: ["moongfali"],
     topics: ["fertilizer", "irrigation", "herbicide", "pest"],
-    lang: "en",
-    text: "Kharif June-July, Rabi Nov-Dec. RDF Kharif: 20N+40P+50K kg/ha basal. Gypsum 500 kg/ha at flowering. Rhizobium+PSB. Weed-free 45 DAS. Pre-emergence Pendimethalin 2.5-3 L/ha or Oxyfluorfen. Critical irrigation: flowering, peg penetration, pod development. Intercrop groundnut+redgram 7:1. Leaf spot/rust: Tebuconazole or Hexaconazole. Aphids/jassids: Imidacloprid; termites: chlorpyrifos seed treatment.",
+    lang: "hi",
+    text: "Kharif जून-जुलाई, Rabi नवंबर-दिसंबर। RDF Kharif: 20N+40P+50K kg/ha basal। फूल पर Gypsum 500 kg/ha। Rhizobium+PSB। 45 DAS तक खरपतवार-मुक्त। Pre-emergence Pendimethalin 2.5-3 L/ha या Oxyfluorfen। महत्वपूर्ण सिंचाई: फूल, peg penetration, pod विकास। अंतरफसल groundnut+redgram 7:1। Leaf spot/rust: Tebuconazole या Hexaconazole। Aphids/jassids: Imidacloprid; termites: chlorpyrifos बीज उपचार।",
   },
   // ——— CHILLI ———
   {
@@ -99,8 +99,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Chilli cultivation practices",
     crops: ["chilli"],
     topics: ["sowing", "fertilizer"],
-    lang: "en",
-    text: "Ideal 20-25°C; avoid 37°C+ during fruiting. Loam pH 6.5-7.5. Nursery June-July, Sept-Oct, Jan-Feb. Hybrid seed 100 g/acre, varieties 400 g/acre. Trichoderma 4 g/kg seed. Transplant spacing 60×45 cm drip. Thrips and mites major — yellow sticky traps 20/acre. Leaf curl virus: rogue infected plants, whitefly vector control Pyriproxyfen.",
+    lang: "hi",
+    text: "आदर्श 20-25°C; फल अवस्था में 37°C+ से बचें। Loam pH 6.5-7.5। Nursery जून-जुलाई, सितंबर-अक्टूबर, जनवरी-फरवरी। Hybrid बीज 100 g/acre, किस्में 400 g/acre। Trichoderma 4 g/kg बीज। Drip पर रोपाई दूरी 60×45 cm। Thrips और mites प्रमुख — yellow sticky traps 20/acre। Leaf curl virus: संक्रमित पौधे हटाएँ, whitefly नियंत्रण Pyriproxyfen।",
   },
   // ——— TOMATO ———
   {
@@ -109,8 +109,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Tomato precision farming drip",
     crops: ["tomato"],
     topics: ["fertilizer", "irrigation", "sowing"],
-    lang: "en",
-    text: "Hybrid seed 100 g/ha nursery. Fertigation NPK 200:250:250 kg/ha split every 3 days via drip. FYM 25 t/ha. Paired row 90×60×60 cm. Pre-emergence Pendimethalin 3 L/ha before transplant. African marigold trap crop every 16 rows. Staking at 30 DAT. Pseudomonas 0.5% foliar fortnightly. Early blight/late blight: Mancozeb + Metalaxyl rotation.",
+    lang: "hi",
+    text: "Hybrid बीज 100 g/ha nursery। Drip fertigation NPK 200:250:250 kg/ha हर 3 दिन भागों में। FYM 25 t/ha। Paired row 90×60×60 cm। Pre-emergence Pendimethalin 3 L/ha रोपाई से पहले। African marigold trap crop हर 16 पंक्ति। 30 DAT पर staking। Pseudomonas 0.5% foliar पखवाड़े में। Early blight/late blight: Mancozeb + Metalaxyl rotation।",
   },
   {
     id: "tomato-disease-atlas",
@@ -118,8 +118,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Tomato disease symptoms guide",
     crops: ["tomato"],
     topics: ["disease"],
-    lang: "en",
-    text: "Early blight: concentric rings on older leaves. Late blight: water-soaked lesions, white sporulation underside in humid weather. Leaf curl: upward curling, stunting — virus, no cure, vector control. Septoria: small circular spots with grey centre. Bacterial wilt: sudden wilt, brown vascular tissue. Blossom end rot: calcium deficiency, irregular irrigation. Target spot: brown spots with yellow halo.",
+    lang: "hi",
+    text: "Early blight: पुराने पत्तों पर संकेंद्रित वलय। Late blight: पानी से भरे घाव, आर्द्र मौसम में नीचे सफेद sporulation। Leaf curl: ऊपर की ओर मुड़ना, रुकाव — virus, कोई इलाज नहीं, vector नियंत्रण। Septoria: छोटे गोल धब्बे, भूरा केंद्र। Bacterial wilt: अचानक मुरझाना, भूरी vascular ऊतक। Blossom end rot: calcium की कमी, अनियमित सिंचाई। Target spot: पीले halo वाले भूरे धब्बे।",
   },
   // ——— POTATO ———
   {
@@ -128,8 +128,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Potato cultivation",
     crops: ["potato"],
     topics: ["fertilizer", "disease"],
-    lang: "en",
-    text: "Seed rate 10-12 quintal/ha. NPK 150:100:120 kg/ha mostly basal. Earthing up critical. Late blight: Metalaxyl+Mancozeb (FRAC 4+M3) preventive in humid weather. Early blight: Mancozeb. Aphids vector PVY — Imidacloprid, rogue virus plants. Tuber moth storage: Malathion dust. Harvest when vines dry; cure tubers before storage.",
+    lang: "hi",
+    text: "बीज दर 10-12 quintal/ha। NPK 150:100:120 kg/ha अधिकतर basal। Earthing up महत्वपूर्ण। Late blight: आर्द्र मौसम में Metalaxyl+Mancozeb (FRAC 4+M3) निवारक। Early blight: Mancozeb। Aphids PVY vector — Imidacloprid, virus पौधे हटाएँ। Tuber moth भंडारण: Malathion dust। बेल सूखने पर कटाई; भंडारण से पहले tuber cure।",
   },
   // ——— PESTICIDE SAFETY HINDI ———
   {
@@ -139,7 +139,7 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     crops: [],
     topics: ["safety", "general"],
     lang: "hi",
-    text: "खंड 1: दवा खरीदते, रखते और छिड़कते समय PPE ज़रूरी — मास्क, दस्ताने, चश्मा। पैकेट पर लाल/पीला/नीला/हरा निशान ज़हर का स्तर बताता है। इमरजेंसी: ज़हर लगने पर पहला इलाज और एंटीडोट लेबल पर देखें। खंड 2: सिस्टमिक दवा पौधे में फैलती है; कॉन्टैक्ट छूते ही मारती है। एक ही दवा बार-बार — resistance। सही मात्रा, पानी और समय महत्वपूर्ण।",
+    text: "खंड 1: दवा खरीदते, रखते और छिड़कते समय व्यक्तिगत सुरक्षा उपकरण ज़रूरी — मास्क, दस्ताने, चश्मा। पैकेट पर लाल/पीला/नीला/हरा निशान ज़हर का स्तर बताता है। आपात: ज़हर लगने पर पहला उपचार और एंटीडोट लेबल पर देखें। खंड 2: सिस्टमिक दवा पौधे में फैलती है; संपर्क दवा छूते ही मारती है। एक ही दवा बार-बार — प्रतिरोध। सही मात्रा, पानी और समय महत्वपूर्ण।",
   },
   {
     id: "fungicide-herbicide-hi",
@@ -148,7 +148,7 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     crops: [],
     topics: ["safety", "herbicide", "disease"],
     lang: "hi",
-    text: "फफूंदनाशक: निवारक (रोग से पहले) और उपचारात्मक (बाद में)। सिस्टमिक बनाम कॉन्टैक्ट। FRAC समूह बदलकर छिड़कें। खरपतवारनाशक: Pre-emergence मिट्टी पर बुवाई से पहले/तुरंत बाद; Post-emergence खरपतवार निकलने पर। HRAC समूह रोटेशन ज़रूरी — ALS (2) में resistance जल्दी आता है।",
+    text: "फफूंदनाशक: निवारक (रोग से पहले) और उपचारात्मक (बाद में)। सिस्टमिक बनाम संपर्क। FRAC समूह बदलकर छिड़कें। खरपतवारनाशक: Pre-emergence मिट्टी पर बुवाई से पहले/तुरंत बाद; Post-emergence खरपतवार निकलने पर। HRAC समूह रोटेशन ज़रूरी — ALS (2) में प्रतिरोध जल्दी आता है।",
   },
   // ——— IRAC ———
   {
@@ -157,8 +157,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "IRAC insecticide rotation",
     crops: [],
     topics: ["pest", "ipm", "safety"],
-    lang: "en",
-    text: "IRAC MoA rotation prevents resistance. Never apply same group twice consecutively. Key groups: 3A Pyrethroids, 4A Neonicotinoids, 5 Spinosyns, 6 Avermectins, 28 Diamides (Chlorantraniliprole), 22A Metaflumizone. Mixtures count as both groups. Prefer biologicals and IVM before chemical escalation.",
+    lang: "hi",
+    text: "IRAC MoA rotation से प्रतिरोध रोकें। एक ही समूह लगातार दो बार न दें। प्रमुख समूह: 3A Pyrethroids, 4A Neonicotinoids, 5 Spinosyns, 6 Avermectins, 28 Diamides (Chlorantraniliprole), 22A Metaflumizone। मिश्रण दोनों समूह गिनते हैं। रासायनिक बढ़ाने से पहले जैविक और IVM पसंद करें।",
   },
   // ——— IPM ———
   {
@@ -167,8 +167,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Integrated Pest Management",
     crops: [],
     topics: ["ipm", "pest"],
-    lang: "en",
-    text: "IPM combines cultural (crop rotation, clean cultivation), mechanical (traps, hand picking), biological (Trichoderma, NPV, parasitoids), and chemical (only at ETL). Monitor with pheromone/yellow sticky traps. Economic Threshold Level before spray. Avoid calendar spraying. Preserve natural enemies — avoid broad-spectrum pyrethroids early season.",
+    lang: "hi",
+    text: "IPM में सांस्कृतिक (फसल चक्र, स्वच्छ खेती), यांत्रिक (जाल, हाथ से उठाना), जैविक (Trichoderma, NPV, parasitoids) और रासायनिक (केवल ETL पर) शामिल। Pheromone/yellow sticky traps से निगरानी। छिड़काव से पहले Economic Threshold Level। कैलेंडर छिड़काव से बचें। प्राकृतिक शत्रु बचाएँ — शुरुआत में broad-spectrum pyrethroids न दें।",
   },
   // ——— NUTRIENT ———
   {
@@ -177,8 +177,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Plant nutrient deficiency basics",
     crops: [],
     topics: ["deficiency", "fertilizer"],
-    lang: "en",
-    text: "N deficiency: older leaves yellow first (mobile). P deficiency: purplish leaves, stunted roots. K deficiency: leaf margin scorch. Zn deficiency: interveinal chlorosis in maize/rice. B deficiency: flower/fruit drop, hollow fruits in chilli/tomato. Fe deficiency: young leaves pale on calcareous soils. Foliar correction faster; soil application longer lasting. Split N application reduces leaching.",
+    lang: "hi",
+    text: "N की कमी: पुराने पत्ते पहले पीले (mobile)। P की कमी: बैंगनी पत्ते, जड़ें छोटी। K की कमी: पत्ते के किनारे जलना। Zn की कमी: maize/rice में शिराओं के बीच chlorosis। B की कमी: फूल/फल झड़ना, chilli/tomato में खोखले फल। Fe की कमी: चूने वाली मिट्टी में नए पत्ते फीके। Foliar सुधार तेज; मिट्टी में देना लंबे समय तक। N को भागों में देने से leaching कम।",
   },
   {
     id: "soil-fertigation",
@@ -187,7 +187,7 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     crops: ["tomato", "chilli", "potato"],
     topics: ["fertilizer", "irrigation"],
     lang: "hi",
-    text: "ड्रिप फर्टिगेशन से NPK छोटी मात्रा में बार-बार दें — उपयोग क्षमता 80-90%। पहले पानी, फिर खाद। EC और pH का पानी पर ध्यान। FYM/कम्पोस्ट से मिट्टी जीवाणु बढ़ाएँ। अत्यधिक नाइट्रोजन से कीट बढ़ते हैं। फूल अवस्था पर K और Ca ज़रूरी।",
+    text: "ड्रिप फर्टिगेशन से NPK छोटी मात्रा में बार-बार दें — उपयोग क्षमता 80-90%। पहले पानी, फिर खाद। पानी का EC और pH ध्यान दें। FYM/कम्पोस्ट से मिट्टी जीवाणु बढ़ाएँ। अत्यधिक nitrogen से कीट बढ़ते हैं। फूल अवस्था पर K और Ca ज़रूरी।",
   },
   // ——— ORGANIC ———
   {
@@ -196,9 +196,9 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Organic soybean-chickpea Chhattisgarh",
     crops: ["soybean"],
     topics: ["organic", "sowing"],
-    lang: "en",
+    lang: "hi",
     state: "Chhattisgarh",
-    text: "Organic systems: Soybean-Chickpea, Soybean-Onion, Rice-Chickpea. Soybean JS-335, sow second fortnight June, harvest second fortnight October. Seed rate 70-75 kg/ha. Spacing 30×10 cm. FYM 2 t/ha + vermicompost 0.8 t/ha + neem cake 0.2 t/ha. Rhizobium + PSB + Trichoderma seed treatment. No chemical pesticides — neem, trap crops, hand weeding.",
+    text: "जैविक प्रणाली: Soybean-Chickpea, Soybean-Onion, Rice-Chickpea। Soybean JS-335, बुवाई जून का दूसरा पखवाड़ा, कटाई अक्टूबर का दूसरा पखवाड़ा। बीज दर 70-75 kg/ha। दूरी 30×10 cm। FYM 2 t/ha + vermicompost 0.8 t/ha + neem cake 0.2 t/ha। Rhizobium + PSB + Trichoderma बीज उपचार। रासायनिक कीटनाशक नहीं — neem, trap crops, हाथ निराई।",
   },
   // ——— SUGARCANE ———
   {
@@ -207,8 +207,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Sugarcane diseases",
     crops: ["sugarcane"],
     topics: ["disease"],
-    lang: "en",
-    text: "Red rot: red internal tissue with alcohol smell — use resistant varieties, hot water seed treatment. Smut: black whip from crown — rogue and burn. Wilt: yellowing and drying — avoid ratoon in infected fields. Grassy shoot: phytoplasma, leafhopper vector. Yellow leaf virus: aphid vector. Intercropping and balanced nutrition reduce disease pressure.",
+    lang: "hi",
+    text: "Red rot: अंदर लाल ऊतक, शराब जैसी गंध — प्रतिरोधी किस्में, गर्म पानी बीज उपचार। Smut: मुकुट से काली कोड़ी — हटाकर जलाएँ। Wilt: पीला होकर सूखना — संक्रमित खेत में ratoon न करें। Grassy shoot: phytoplasma, leafhopper vector। Yellow leaf virus: aphid vector। अंतरफसल और संतुलित पोषण से रोग दबाव कम।",
   },
   // ——— ALL CROPS ———
   {
@@ -217,8 +217,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Multi-crop important points",
     crops: ["paddy", "wheat", "maize", "cotton", "soybean", "tomato", "chilli"],
     topics: ["general"],
-    lang: "en",
-    text: "Certified seed, timely sowing, seed treatment, balanced NPK per soil test, weed-free first 45 days, pest monitoring at ETL, MoA rotation for chemicals, harvest at right maturity, dry grains to safe moisture before storage.",
+    lang: "hi",
+    text: "प्रमाणित बीज, समय पर बुवाई, बीज उपचार, मिट्टी परीक्षण अनुसार संतुलित NPK, पहले 45 दिन खरपतवार-मुक्त, ETL पर कीट निगरानी, रसायनों के लिए MoA rotation, सही परिपक्वता पर कटाई, भंडारण से पहले अनाज सुरक्षित नमी तक सुखाएँ।",
   },
   // ——— STATE ADVISORIES (samples) ———
   {
@@ -229,7 +229,7 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     topics: ["advisory", "sowing"],
     lang: "hi",
     state: "Madhya Pradesh",
-    text: "सोयाबीन जून में बुवाई; विभिन्न परिपक्वता की 3-4 किस्में। मक्का/बाजरा मानसून शुरू। कपास Bt हाइब्रिड — खरपतवार 70 DAS तक नियंत्रण। भारी बारिश में जल निकासी। मिट्टी परीक्षण पर आधारित उर्वरक।",
+    text: "सोयाबीन जून में बुवाई; विभिन्न परिपक्वता की 3-4 किस्में। मक्का/बाजरा मानसून शुरू। कपास Bt हाइब्रिड — 70 DAS तक खरपतवार नियंत्रण। भारी बारिश में जल निकासी। मिट्टी परीक्षण पर आधारित उर्वरक।",
   },
   {
     id: "icar-punjab-kharif",
@@ -239,7 +239,7 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     topics: ["advisory"],
     lang: "hi",
     state: "Punjab",
-    text: "धान रोपाई जून प्रथम सप्ताह। कपास जून-जुलाई। PAU Kharif 2026 PoP के अनुसार किस्म चुनें। सिंचित खेत में समय पर निराई-गुड़ाई।",
+    text: "धान रोपाई जून के पहले सप्ताह। कपास जून-जुलाई। PAU Kharif 2026 PoP के अनुसार किस्म चुनें। सिंचित खेत में समय पर निराई-गुड़ाई।",
   },
   {
     id: "icar-mh-kharif",
@@ -258,8 +258,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "HRAC herbicide classification 2024",
     crops: [],
     topics: ["herbicide"],
-    lang: "en",
-    text: "HRAC global numeric groups for herbicide rotation. Group 1 ACCase (grassy post-em), 2 ALS (broadleaf/sedge), 3 Microtubule (pendimethalin), 4 Auxins (2,4-D), 5 PSII (atrazine), 15 VLCFA (pretilachlor/butachlor), 27 HPPD (tembotrione). Rotate groups across seasons to delay resistance.",
+    lang: "hi",
+    text: "HRAC वैश्विक संख्यात्मक समूह खरपतवारनाशक rotation के लिए। समूह 1 ACCase (grassy post-em), 2 ALS (broadleaf/sedge), 3 Microtubule (pendimethalin), 4 Auxins (2,4-D), 5 PSII (atrazine), 15 VLCFA (pretilachlor/butachlor), 27 HPPD (tembotrione)। प्रतिरोध देर से आए, इसलिए मौसमों में समूह बदलें।",
   },
   // ——— BRINJAL ———
   {
@@ -268,8 +268,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Brinjal pest management",
     crops: ["brinjal"],
     topics: ["pest", "disease"],
-    lang: "en",
-    text: "Shoot and fruit borer major pest year-round brinjal. Fruit and shoot borer: Emamectin or Indoxacarb at fruit initiation, remove infested fruits. Jassids and whitefly: Imidacloprid rotation. Little leaf phytoplasma: leafhopper vector, rogue plants. Avoid excess pesticides — focus IPM and balanced fertilizer per soil test.",
+    lang: "hi",
+    text: "Shoot and fruit borer बैंगन का वर्षभर प्रमुख कीट। Fruit and shoot borer: फल शुरू होने पर Emamectin या Indoxacarb, संक्रमित फल हटाएँ। Jassids और whitefly: Imidacloprid rotation। Little leaf phytoplasma: leafhopper vector, पौधे हटाएँ। अधिक कीटनाशक न दें — IPM और मिट्टी परीक्षण अनुसार संतुलित उर्वरक।",
   },
   // ——— WHEAT ———
   {
@@ -278,8 +278,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Wheat basics",
     crops: ["wheat"],
     topics: ["fertilizer", "disease"],
-    lang: "en",
-    text: "NPK 120:60:40 kg/ha typical. CRI irrigation ~21 DAS critical. Yellow rust: Propiconazole at first stripe. Karnal bunt: avoid late sowing, carboxin seed treatment. Weeds: Pendimethalin pre-emergence, Clodinafop for Phalaris minor post-emergence (HRAC 1).",
+    lang: "hi",
+    text: "NPK 120:60:40 kg/ha सामान्य। CRI सिंचाई ~21 DAS महत्वपूर्ण। Yellow rust: पहली धारी पर Propiconazole। Karnal bunt: देर बुवाई से बचें, carboxin बीज उपचार। खरपतवार: Pre-emergence Pendimethalin, Phalaris minor post-emergence Clodinafop (HRAC 1)।",
   },
   // ——— CROP PROTECTION MASTER GUIDE (PDF) ———
   {
@@ -288,8 +288,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "FRAC/IRAC rotation rule",
     crops: [],
     topics: ["pest", "disease", "herbicide", "ipm"],
-    lang: "en",
-    text: "Never spray same FRAC fungicide group or IRAC insecticide group more than twice in a row. Rotate modes of action. Early stage (<5-10% incidence): contact protectants Mancozeb, Chlorothalonil, Copper. Advanced (>10-25% or favourable weather): systemic+contact combos Azoxystrobin+Difenoconazole, Chlorantraniliprole, Emamectin. Dose per acre assumes ~200 L spray volume vegetables, 150-200 L field crops. 1 knapsack = 15 L.",
+    lang: "hi",
+    text: "एक ही FRAC fungicide समूह या IRAC insecticide समूह लगातार दो बार से अधिक न छिड़कें। क्रिया के तरीके बदलें। शुरुआती (<5-10% संक्रमण): संपर्क protectants Mancozeb, Chlorothalonil, Copper। उन्नत (>10-25% या अनुकूल मौसम): systemic+contact combos Azoxystrobin+Difenoconazole, Chlorantraniliprole, Emamectin। प्रति acre मात्रा ~200 L spray volume सब्जियों, 150-200 L खेत फसल। 1 knapsack = 15 L।",
   },
   {
     id: "cp-paddy-blast",
@@ -297,8 +297,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Paddy blast stage-wise",
     crops: ["paddy"],
     topics: ["disease"],
-    lang: "en",
-    text: "Blast (Pyricularia): Early Tricyclazole 75% WP @ 120 g/acre or Isoprothiolane 40% EC @ 300 ml/acre. Advanced neck-blast risk: Tricyclazole+Hexaconazole WG @ 200 g/acre or Azoxystrobin+Difenoconazole @ 200 ml/acre at boot and 50% heading. Rotate FRAC 16.1 with FRAC 11+3. Avoid excess late nitrogen.",
+    lang: "hi",
+    text: "Blast (Pyricularia): शुरुआत Tricyclazole 75% WP @ 120 g/acre या Isoprothiolane 40% EC @ 300 ml/acre। उन्नत neck-blast जोखिम: boot और 50% heading पर Tricyclazole+Hexaconazole WG @ 200 g/acre या Azoxystrobin+Difenoconazole @ 200 ml/acre। FRAC 16.1 को FRAC 11+3 से बदलें। अंत में अधिक nitrogen न दें।",
   },
   {
     id: "cp-tomato-late-blight",
@@ -306,8 +306,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Tomato late blight 3-stage ladder",
     crops: ["tomato", "potato"],
     topics: ["disease"],
-    lang: "en",
-    text: "Late blight Phytophthora: STAGE 1 preventive Mancozeb 500-600 g/acre or Chlorothalonil every 7-10 days in risk weather. STAGE 2 early Cymoxanil+Mancozeb 600 g/acre or Ridomil Gold 500 g/acre. STAGE 3 advanced Dimethomorph+Mancozeb, Cyazofamid 120 ml/acre, or Famoxadone+Cymoxanil — 5-7 day interval. Do not repeat Metalaxyl FRAC 4 — rotate FRAC 4→40→21→27 always with Mancozeb FRAC M3.",
+    lang: "hi",
+    text: "Late blight Phytophthora: चरण 1 निवारक Mancozeb 500-600 g/acre या Chlorothalonil जोखिम मौसम में हर 7-10 दिन। चरण 2 शुरुआत Cymoxanil+Mancozeb 600 g/acre या Ridomil Gold 500 g/acre। चरण 3 उन्नत Dimethomorph+Mancozeb, Cyazofamid 120 ml/acre, या Famoxadone+Cymoxanil — 5-7 दिन अंतराल। Metalaxyl FRAC 4 दोहराएँ नहीं — FRAC 4→40→21→27 हमेशा Mancozeb FRAC M3 के साथ बदलें।",
   },
   {
     id: "cp-maize-faw",
@@ -315,8 +315,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Maize Fall Armyworm IRAC rotation",
     crops: ["maize"],
     topics: ["pest"],
-    lang: "en",
-    text: "Fall Armyworm: Early 0-25% whorl damage Azadirachtin 400 ml/acre or Spinetoram 100 ml/acre or Emamectin 80 g/acre direct into whorl. Advanced >25% Chlorantraniliprole 60 ml/acre IRAC 28. Rotate IRAC 5→6→28 never back-to-back. Spray morning/evening into whorl. Poison bait rice bran+jaggery+Thiodicarb for late whorl.",
+    lang: "hi",
+    text: "Fall Armyworm: शुरुआत 0-25% whorl क्षति Azadirachtin 400 ml/acre या Spinetoram 100 ml/acre या Emamectin 80 g/acre सीधे whorl में। उन्नत >25% Chlorantraniliprole 60 ml/acre IRAC 28। IRAC 5→6→28 बदलें, लगातार एक समूह न दें। सुबह/शाम whorl में छिड़काव। Poison bait चावल चोकर+गुड़+Thiodicarb देर whorl के लिए।",
   },
   {
     id: "cp-cotton-pbw",
@@ -324,8 +324,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Cotton pink bollworm",
     crops: ["cotton"],
     topics: ["pest", "ipm"],
-    lang: "en",
-    text: "Pink bollworm: Early pheromone traps 8/acre + Profenophos 400 ml/acre or Thiodicarb at squaring. Advanced boll stage rotate Chlorantraniliprole 60 ml/acre → Emamectin 88 g/acre → Spinosad 60 ml/acre. Destroy rosette flowers and damaged bolls. Bt refuge border rows, timely crop termination, avoid early pyrethroids (whitefly flare).",
+    lang: "hi",
+    text: "Pink bollworm: शुरुआत pheromone traps 8/acre + squaring पर Profenophos 400 ml/acre या Thiodicarb। उन्नत boll अवस्था Chlorantraniliprole 60 ml/acre → Emamectin 88 g/acre → Spinosad 60 ml/acre बदलकर। Rosette फूल और क्षतिग्रस्त boll नष्ट करें। Bt refuge border rows, समय पर फसल समाप्ति, शुरुआत में pyrethroids न दें (whitefly बढ़ सकती है)।",
   },
   {
     id: "cp-bhindi-yvmv",
@@ -333,8 +333,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     title: "Bhindi YVMV and shoot borer",
     crops: ["bhindi"],
     topics: ["disease", "pest"],
-    lang: "en",
-    text: "Yellow Vein Mosaic Virus: no cure — use Arka Anamika/Kashi Kranti resistant varieties, control whitefly Thiamethoxam 40 g/acre early, Diafenthiuron 240 g/acre advanced, rogue plants, yellow sticky traps. Shoot fruit borer Earias: clip bored shoots weekly + pheromone traps + Bt early; Emamectin 88 g/acre → Chlorantraniliprole 60 ml/acre advanced. Short PHI — harvest every 2-3 days.",
+    lang: "hi",
+    text: "Yellow Vein Mosaic Virus: कोई इलाज नहीं — Arka Anamika/Kashi Kranti प्रतिरोधी किस्में, शुरुआत whitefly Thiamethoxam 40 g/acre, उन्नत Diafenthiuron 240 g/acre, पौधे हटाएँ, yellow sticky traps। Shoot fruit borer Earias: साप्ताहिक bored shoots काटें + pheromone traps + Bt शुरुआत; Emamectin 88 g/acre → Chlorantraniliprole 60 ml/acre उन्नत। छोटा PHI — हर 2-3 दिन कटाई।",
   },
 ];
 

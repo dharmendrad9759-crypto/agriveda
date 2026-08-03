@@ -9,9 +9,9 @@ import {
 import { getSavedWeatherLocation } from "@/lib/sprayWeatherApi";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 
-function profileCity(district: string, state: string): string {
+function profileCity(district: string, state: string): string | null {
   const parts = [district, state].filter(Boolean);
-  return parts.length ? parts.join(", ") : "Sehore, Madhya Pradesh";
+  return parts.length ? parts.join(", ") : null;
 }
 
 export function useLiveWeather() {
@@ -33,7 +33,12 @@ export function useLiveWeather() {
         setWeather(await fetchWeatherByCity(saved.city));
         return;
       }
-      setWeather(await fetchWeatherByCity(profileCity(profile.district, profile.state)));
+      const city = profileCity(profile.district, profile.state);
+      if (!city) {
+        setWeather(null);
+        return;
+      }
+      setWeather(await fetchWeatherByCity(city));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Weather load failed");
       setWeather(null);

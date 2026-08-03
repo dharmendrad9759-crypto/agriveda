@@ -24,7 +24,13 @@ export interface SolutionCardData {
   shopDistance?: string;
 }
 
-export default function SolutionCard({ data }: { data: SolutionCardData }) {
+export default function SolutionCard({
+  data,
+  showFeedback = true,
+}: {
+  data: SolutionCardData;
+  showFeedback?: boolean;
+}) {
   return (
     <article className="overflow-hidden rounded-2xl border-2 border-gray-200 bg-white shadow-lg dark:border-white/10 dark:bg-black/30">
       <div className="bg-gradient-to-r from-emerald-700 to-teal-700 px-4 py-3">
@@ -105,7 +111,7 @@ export default function SolutionCard({ data }: { data: SolutionCardData }) {
           </p>
         )}
 
-        <CommunityFeedbackBar solutionId={data.id} />
+        {showFeedback && <CommunityFeedbackBar solutionId={data.id} />}
 
         <div className="flex gap-2">
           <Link

@@ -3,7 +3,7 @@
 import AppLink from "@/components/ui/AppLink";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { Crown, MessageCircle, Leaf } from "lucide-react";
+import { MessageCircle, Leaf } from "lucide-react";
 import { SHELL_NAV, isNavActive } from "@/lib/shell/nav";
 import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
@@ -63,22 +63,6 @@ export default function AppSidebar() {
       </nav>
 
       <div className="space-y-2 border-t border-[var(--av-border)] p-3">
-        <AppLink
-          href="/settings/upgrade"
-          className="block rounded-xl border border-[var(--av-accent)]/30 bg-[var(--av-accent-soft)] p-3 transition hover:border-[var(--av-accent)]/50"
-        >
-          <div className="flex items-center gap-2">
-            <Crown className="h-4 w-4 text-amber-500" />
-            <span className="text-xs font-bold text-[var(--av-text-primary)]">{t("shellGoPremium")}</span>
-          </div>
-          <p className="mt-1 text-[10px] leading-snug text-[var(--av-text-muted)]">
-            {t("shellPremiumDesc")}
-          </p>
-          <span className="mt-2 inline-block text-[10px] font-bold text-[var(--av-accent)]">
-            {t("shellUpgradeNow")}
-          </span>
-        </AppLink>
-
         <AppLink
           href="/kisan-saathi"
           className="flex items-center gap-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-muted)] px-3 py-2 text-[10px] font-medium text-[var(--av-text-secondary)] hover:border-[var(--av-accent)]/30"

@@ -9,9 +9,13 @@ import { useMemo } from "react";
 export default function ShellTopBar() {
   const { profile } = useFarmerProfile();
 
+  const hasLocation = useMemo(
+    () => Boolean(profile.district || profile.state || profile.village),
+    [profile]
+  );
   const location = useMemo(() => {
-    const parts = [profile.district, profile.state].filter(Boolean);
-    return parts.length ? parts.join(", ") : "Sehore, MP";
+    const parts = [profile.village || profile.district, profile.state].filter(Boolean);
+    return parts.length ? parts.join(", ") : "स्थान सेट करें";
   }, [profile]);
 
   const pill =
@@ -19,7 +23,10 @@ export default function ShellTopBar() {
 
   return (
     <header className="av-topbar sticky top-0 z-40 hidden items-center justify-end gap-3 px-4 py-2 lg:flex">
-      <AppLink href="/profile" className={`${pill} hover:border-[var(--av-accent)]/40`}>
+      <AppLink
+        href={hasLocation ? "/profile" : "/profile/edit"}
+        className={`${pill} hover:border-[var(--av-accent)]/40`}
+      >
         <MapPin className="h-3.5 w-3.5 text-[var(--av-accent)]" />
         {location}
         <ChevronDown className="h-3 w-3 text-[var(--av-text-muted)]" />

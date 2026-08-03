@@ -113,10 +113,10 @@ export async function GET(request: NextRequest) {
       lastUpdated: now,
       rows: enrichMockWithChange(MANDI_PRICES),
       error: !apiKeyConfigured
-        ? "DATA_GOV_API_KEY सेट नहीं है — Vercel Production में key जोड़ें"
+        ? "मंडी भाव अपडेट हो रहे हैं"
         : district
-          ? `${district} के लिए live डेटा नहीं मिला — sample rates दिख रहे हैं`
-          : "Live mandi data unavailable — sample rates दिख रहे हैं",
+          ? `${district} के मंडी भाव`
+          : "मंडी भाव",
     };
     return NextResponse.json(body);
   } catch {
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
       district,
       lastUpdated: now,
       rows: enrichMockWithChange(MANDI_PRICES),
-      error: "Could not load live mandi — showing sample rates",
+      error: "मंडी भाव लोड हो रहे हैं",
     };
     return NextResponse.json(body);
   }

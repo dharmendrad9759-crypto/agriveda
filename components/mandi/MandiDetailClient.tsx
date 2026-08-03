@@ -18,6 +18,7 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { cn } from "@/lib/cn";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 function avg(nums: number[]): number {
   if (!nums.length) return 0;
@@ -97,6 +98,7 @@ function PeriodCard({
 }
 
 export default function MandiDetailClient({ id }: { id: string }) {
+  const { t } = useLocale();
   const { profile } = useFarmerProfile();
   const state = profile.state.trim() || "Madhya Pradesh";
   const district = profile.district.trim() || undefined;
@@ -135,8 +137,8 @@ export default function MandiDetailClient({ id }: { id: string }) {
     <AppShell
       className="!bg-[#f7f8fb]"
       breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Mandi", href: "/mandi" },
+        { label: t("navHome"), href: "/" },
+        { label: t("market"), href: "/mandi" },
         { label: row?.cropHi || row?.crop || "Detail" },
       ]}
     >

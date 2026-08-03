@@ -4,6 +4,7 @@ import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { Bug, Leaf, Search, Sprout } from "lucide-react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const LIBRARY_LINKS = [
   { href: "/crops", label: "फसल गाइड", desc: "बुवाई से कटाई तक — हर फसल का पूरा विवरण", icon: Sprout },
@@ -13,12 +14,14 @@ const LIBRARY_LINKS = [
 ];
 
 export default function LibraryPage() {
+  const { t } = useLocale();
+
   return (
     <AppShell
       className="!bg-transparent"
-      title="Agri Library"
+      title={t("shellLibrary")}
       subtitle="कृषि ज्ञान — फसल, कीट, रोग और पोषण"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Library" }]}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("shellLibrary") }]}
     >
       <div className="grid gap-3 sm:grid-cols-2">
         {LIBRARY_LINKS.map(({ href, label, desc, icon: Icon }) => (

@@ -43,10 +43,12 @@ export default function CommunityFeedbackBar({ solutionId }: { solutionId: strin
           💬 बताओ क्या हुआ
         </Link>
       </div>
-      <p className="mt-3 text-xs font-semibold text-gray-700 dark:text-gray-300">
-        👥 {stats.helpful.toLocaleString("en-IN")} किसानों ने यह solution try किया · ⭐ {helpfulPercent}%
-        को फ़ायदा
-      </p>
+      {stats.helpful + stats.notHelpful > 0 ? (
+        <p className="mt-3 text-xs font-semibold text-gray-700 dark:text-gray-300">
+          👥 {stats.helpful.toLocaleString("en-IN")} किसानों ने यह solution try किया · ⭐ {helpfulPercent}%
+          को फ़ायदा
+        </p>
+      ) : null}
       {stats.comments.length > 0 && (
         <ul className="mt-2 space-y-1.5 border-t border-gray-100 pt-2 dark:border-white/10">
           {stats.comments.map((c, i) => (

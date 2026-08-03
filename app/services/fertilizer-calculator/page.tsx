@@ -60,7 +60,7 @@ export default function FertilizerCalculatorPage() {
   return (
     <Agriveda2Shell
       title="खाद कैलकुलेटर"
-      subtitle="N, P, K, Ca, Mg, S, Zn, Fe, B — fasal ke hisaab se"
+      subtitle="N, P, K, Ca, Mg, S, Zn, Fe, B — फसल के हिसाब से"
       backHref="/dashboard"
     >
       <DarkCard className="space-y-4 p-4">
@@ -84,13 +84,13 @@ export default function FertilizerCalculatorPage() {
             animate={{ opacity: 1, y: 0 }}
             className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-800"
           >
-            {selected.emoji} {selected.name} — niche poora poshan schedule
+            {selected.emoji} {selected.name} — नीचे पूरा पोषण कार्यक्रम
           </motion.p>
         )}
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-bold theme-text-muted">खेत area</label>
+            <label className="text-xs font-bold theme-text-muted">खेत का क्षेत्र</label>
             <input
               type="number"
               min="0.1"
@@ -101,7 +101,7 @@ export default function FertilizerCalculatorPage() {
             />
           </div>
           <div>
-            <label className="text-xs font-bold theme-text-muted">Unit</label>
+            <label className="text-xs font-bold theme-text-muted">इकाई</label>
             <select
               value={unit}
               onChange={(e) => setUnit(e.target.value as AreaUnit)}
@@ -133,12 +133,12 @@ export default function FertilizerCalculatorPage() {
           >
               <p className="rounded-lg bg-emerald-500/10 p-2 text-[10px] theme-text-muted">
                 {plan.unitNote}
-                {plan.source === "guide" && " · Crop guide estimate — adjust with soil test"}
+                {plan.source === "guide" && " · फसल गाइड अनुमान — मिट्टी जाँच से समायोजित करें"}
               </p>
 
               <div>
                 <p className="text-xs font-extrabold theme-text-primary">
-                  🌱 Poshan — {plan.cropKey} ({area} {unit} ≈ {plan.acres} acre)
+                  🌱 पोषण — {plan.cropKey} ({area} {unit} ≈ {plan.acres} एकड़)
                 </p>
                 <motion.div
                   variants={staggerContainer}
@@ -184,7 +184,7 @@ export default function FertilizerCalculatorPage() {
                   transition={{ delay: 0.15 }}
                   className="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 p-3 text-sm shadow-sm"
                 >
-                  <p className="font-extrabold text-emerald-800">Total bags ({plan.acres} acre)</p>
+                  <p className="font-extrabold text-emerald-800">कुल बोरियाँ ({plan.acres} एकड़)</p>
                   <ul className="mt-2 space-y-1 text-xs">
                     {plan.bags.map((b, i) => (
                       <motion.li
@@ -202,7 +202,7 @@ export default function FertilizerCalculatorPage() {
 
               {plan.schedule.length > 0 && (
                 <div>
-                  <p className="text-xs font-bold theme-text-primary">Schedule</p>
+                  <p className="text-xs font-bold theme-text-primary">कार्यक्रम</p>
                   <motion.ul
                     variants={staggerContainer}
                     initial="hidden"
@@ -227,7 +227,7 @@ export default function FertilizerCalculatorPage() {
               {plan.source === "verified" && (
                 <details className="text-[10px] theme-text-muted">
                   <summary className="cursor-pointer font-bold theme-text-primary">
-                    Conversion formulas
+                    रूपांतरण सूत्र
                   </summary>
                   <ul className="mt-2 space-y-2">
                     {Object.entries(FERTILIZER_SOURCES).map(([group, formulas]) => (
@@ -246,7 +246,7 @@ export default function FertilizerCalculatorPage() {
           </motion.div>
         ) : (
           <p className="text-center text-sm theme-text-muted">
-            Area daalein — khad plan yahan aayega
+            क्षेत्र भरें — खाद योजना यहाँ दिखेगी
           </p>
         )}
       </DarkCard>

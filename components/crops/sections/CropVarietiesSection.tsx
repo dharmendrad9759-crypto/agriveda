@@ -5,6 +5,7 @@ import SectionHeader from "@/components/shell/SectionHeader";
 import CropCollapsible from "@/components/crops/CropCollapsible";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getVarietiesForCrop, type MarketVarietyRec } from "@/lib/crops/cropVarieties";
+import { stageLabelHi, varietyTraitHi } from "@/lib/i18n/farmer-display";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { Crop } from "@/types/crop";
 import { MapPin, TrendingUp } from "lucide-react";
@@ -14,10 +15,12 @@ function VarietyCard({
   v,
   index,
   highlighted,
+  hi,
 }: {
   v: MarketVarietyRec;
   index: number;
   highlighted?: boolean;
+  hi: boolean;
 }) {
   return (
     <div
@@ -32,10 +35,12 @@ function VarietyCard({
           <p className="text-sm font-bold text-[var(--av-text-primary)]">
             {index}. {v.name}
           </p>
-          <p className="mt-0.5 text-xs text-[var(--av-text-secondary)]">{v.trait}</p>
+          <p className="mt-0.5 text-xs text-[var(--av-text-secondary)]">
+            {hi ? varietyTraitHi(v.trait) : v.trait}
+          </p>
         </div>
         <span className="shrink-0 rounded-full bg-[var(--av-accent-soft)] px-2 py-0.5 text-[9px] font-bold text-[var(--av-accent)]">
-          {v.season}
+          {hi ? stageLabelHi(v.season) : v.season}
         </span>
       </div>
       <p className="mt-1.5 flex items-start gap-1 text-[10px] text-[var(--av-text-muted)]">
@@ -78,7 +83,7 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
           {title}
         </p>
         {list.map((v, i) => (
-          <VarietyCard key={v.name} v={v} index={i + 1} highlighted={highlight} />
+          <VarietyCard key={v.name} v={v} index={i + 1} highlighted={highlight} hi={hi} />
         ))}
       </div>
     );

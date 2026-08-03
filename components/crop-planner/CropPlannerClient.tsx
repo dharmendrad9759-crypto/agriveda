@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import { tf, type FarmerUiKey } from "@/lib/i18n/farmer-ui";
+import { isHindiLocale, tf, type FarmerUiKey } from "@/lib/i18n/farmer-ui";
+import { stageLabelHi } from "@/lib/i18n/farmer-display";
 import { crops } from "@/data/crops";
 import { getCropManagementProfile } from "@/data/crop-management";
 import {
@@ -80,6 +81,7 @@ export default function CropPlannerClient() {
   const { profile } = useFarmerProfile();
   const { showToast } = useToast();
   const { t, locale } = useLocale();
+  const hi = isHindiLocale(locale);
   const planRef = useRef<HTMLDivElement>(null);
 
   const [cropSlug, setCropSlug] = useState("paddy");
@@ -147,28 +149,30 @@ export default function CropPlannerClient() {
   );
 
   const timeline = useMemo(() => {
+    const labelStage = (name: string) => (hi ? stageLabelHi(name) : name);
     const stages = mgmt?.growthStages;
     if (!stages?.length) {
       return [
-        { stage: "Buwai", days: shortenFarmerLine(crop.sowingGuide.bestSowingTime, 28), icon: "🌱" },
-        { stage: "Badhaw", days: "Shuruat", icon: "🌿" },
-        { stage: "Phool/dana", days: "Beech", icon: "🌸" },
-        { stage: "Kataai", days: shortenFarmerLine(crop.harvestAndYield.harvestingTime, 28), icon: "✅" },
+        { stage: labelStage("Buwai"), days: shortenFarmerLine(crop.sowingGuide.bestSowingTime, 28), icon: "🌱" },
+        { stage: labelStage("Badhaw"), days: hi ? "शुरुआत" : "Shuruat", icon: "🌿" },
+        { stage: labelStage("Phool/dana"), days: hi ? "बीच" : "Beech", icon: "🌸" },
+        { stage: labelStage("Kataai"), days: shortenFarmerLine(crop.harvestAndYield.harvestingTime, 28), icon: "✅" },
       ];
     }
     return stages.slice(0, 6).map((s, i) => ({
-      stage: shortenFarmerLine(s.title.split(/[—(]/)[0]?.trim() || s.title, 16),
+      stage: labelStage(shortenFarmerLine(s.title.split(/[—(]/)[0]?.trim() || s.title, 16)),
       days: shortenFarmerLine(s.period, 24),
       icon: STAGE_ICONS[i] ?? "🌱",
     }));
-  }, [mgmt, crop, planStamp]);
+  }, [mgmt, crop, planStamp, hi]);
 
   const scheduleRows = useMemo(() => {
+    const labelStage = (name: string) => (hi ? stageLabelHi(name) : name);
     const stages = mgmt?.growthStages;
     if (!stages?.length) {
       return [
         {
-          stage: "Buwai",
+          stage: labelStage("Buwai"),
           days: shortenFarmerLine(crop.sowingGuide.bestSowingTime, 32),
           activities: stageTipsFromPoints(
             [
@@ -176,33 +180,33 @@ export default function CropPlannerClient() {
               crop.sowingGuide.seedTreatment,
               crop.sowingGuide.sowingMethod,
             ],
-            "Certified beej + sahi spacing"
+            hi ? "प्रमाणित बीज + सही दूरी" : "Certified beej + sahi spacing"
           ),
         },
         {
-          stage: "Dekhbhal",
+          stage: labelStage("Dekhbhal"),
           days: shortenFarmerLine(crop.durationDays, 32),
           activities: stageTipsFromPoints(
             crop.irrigationManagement.schedule,
-            "Paani mitti dekh ke dein"
+            hi ? "मिट्टी देखकर पानी दें" : "Paani mitti dekh ke dein"
           ),
         },
         {
-          stage: "Kataai",
+          stage: labelStage("Kataai"),
           days: shortenFarmerLine(crop.harvestAndYield.harvestingTime, 32),
           activities: stageTipsFromPoints(
             crop.harvestAndYield.maturitySigns,
-            "Pakne ke nishaan dekh ke kaatein"
+            hi ? "पकने के निशान देखकर काटें" : "Pakne ke nishaan dekh ke kaatein"
           ),
         },
       ];
     }
     return stages.slice(0, 6).map((s) => ({
-      stage: shortenFarmerLine(s.title.split(/[—(]/)[0]?.trim() || s.title, 22),
+      stage: labelStage(shortenFarmerLine(s.title.split(/[—(]/)[0]?.trim() || s.title, 22)),
       days: shortenFarmerLine(s.period, 28),
       activities: stageTipsFromPoints(s.keyPoints, s.title),
     }));
-  }, [mgmt, crop, planStamp]);
+  }, [mgmt, crop, planStamp, hi]);
 
   const reminders = useMemo(() => {
     const list: { tone: "good" | "warn" | "info" | "hot"; text: string }[] = [];
@@ -210,13 +214,18 @@ export default function CropPlannerClient() {
     if (fert) {
       list.push({
         tone: "good",
-        text: shortenFarmerLine(`Khad: ${fert.time} — ${fert.apply}`, 78),
+        text: shortenFarmerLine(
+          hi ? `खाद: ${fert.time} — ${fert.apply}` : `Khad: ${fert.time} — ${fert.apply}`,
+          78
+        ),
       });
     } else if (crop.fertilizerSchedule.stageWise[0]) {
+      const sw = crop.fertilizerSchedule.stageWise[0];
+      const stage = hi ? stageLabelHi(sw.stage) : sw.stage;
       list.push({
         tone: "good",
         text: shortenFarmerLine(
-          `Khad (${crop.fertilizerSchedule.stageWise[0].stage}): ${crop.fertilizerSchedule.stageWise[0].details[0]}`,
+          hi ? `खाद (${stage}): ${sw.details[0]}` : `Khad (${sw.stage}): ${sw.details[0]}`,
           78
         ),
       });
@@ -225,24 +234,36 @@ export default function CropPlannerClient() {
     if (pest) {
       list.push({
         tone: "warn",
-        text: shortenFarmerLine(`Keet: ${pest.pestName} — field check karte rahein`, 78),
+        text: shortenFarmerLine(
+          hi
+            ? `कीट: ${pest.pestName} — खेत की नियमित जाँच करें`
+            : `Keet: ${pest.pestName} — field check karte rahein`,
+          78
+        ),
       });
     }
     if (crop.irrigationManagement.criticalStages[0]) {
+      const critical = crop.irrigationManagement.criticalStages
+        .slice(0, 2)
+        .map((s) => (hi ? stageLabelHi(s) : s))
+        .join(", ");
       list.push({
         tone: "info",
         text: shortenFarmerLine(
-          `Paani zaroori: ${crop.irrigationManagement.criticalStages.slice(0, 2).join(", ")}`,
+          hi ? `पानी ज़रूरी: ${critical}` : `Paani zaroori: ${critical}`,
           78
         ),
       });
     }
     list.push({
       tone: "hot",
-      text: shortenFarmerLine(`Kataai: ${crop.harvestAndYield.harvestingTime}`, 78),
+      text: shortenFarmerLine(
+        hi ? `कटाई: ${crop.harvestAndYield.harvestingTime}` : `Kataai: ${crop.harvestAndYield.harvestingTime}`,
+        78
+      ),
     });
     return list.slice(0, 4);
-  }, [fertPlan, mgmt, crop, planStamp]);
+  }, [fertPlan, mgmt, crop, planStamp, hi]);
 
   const seasonLabel = (id: PlannerSeasonId) => {
     const meta = SEASONS.find((s) => s.id === id);

@@ -55,9 +55,9 @@ export default function PestDiseasesContent() {
   );
 
   const cropInfo = selectedSlug === "all" ? null : pestDiseaseCropList.find((c) => c.slug === selectedSlug);
-  const pageTitle = isWeedHub ? "Weeds" : t("pestDiseasesTitle");
+  const pageTitle = isWeedHub ? t("weeds") : t("pestDiseasesTitle");
   const pageSubtitle = isWeedHub
-    ? "Problematic weeds — identification & management by crop"
+    ? "नुकसानकारी खरपतवार — फसल के हिसाब से पहचान और प्रबंधन"
     : t("pestsDiseases");
 
   return (
@@ -65,8 +65,8 @@ export default function PestDiseasesContent() {
       title={pageTitle}
       subtitle={pageSubtitle}
       breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: isWeedHub ? "Weeds" : "Pests & Diseases" },
+        { label: t("navHome"), href: "/" },
+        { label: isWeedHub ? t("weeds") : t("pestsDiseases") },
       ]}
     >
       {!isWeedHub && (
@@ -75,8 +75,8 @@ export default function PestDiseasesContent() {
           className="av-card av-card-hover flex items-center justify-between p-4"
         >
           <div>
-            <p className="text-sm font-semibold text-[var(--av-text-primary)]">Not sure what it is?</p>
-            <p className={`mt-0.5 ${AV.micro}`}>Identify by symptom → Pest &amp; Disease Solver</p>
+            <p className="text-sm font-semibold text-[var(--av-text-primary)]">पक्का नहीं क्या है?</p>
+            <p className={`mt-0.5 ${AV.micro}`}>लक्षण से पहचानें → कीट-रोग समाधान</p>
           </div>
           <span className="text-lg font-bold text-[var(--av-accent)]">→</span>
         </AppLink>
@@ -100,7 +100,7 @@ export default function PestDiseasesContent() {
               )}
             >
               <span className="text-xl">🌿</span>
-              <span className="text-[10px] font-semibold text-[var(--av-accent)]">All Crops</span>
+              <span className="text-[10px] font-semibold text-[var(--av-accent)]">सभी फसलें</span>
             </button>
           )}
           {pestDiseaseCropList.map((crop) => (
@@ -158,8 +158,8 @@ export default function PestDiseasesContent() {
           <p className="text-sm font-semibold text-[var(--av-text-primary)]">कोई परिणाम नहीं</p>
           <p className={`mt-1 ${AV.micro}`}>
             {allThreats.length === 0
-              ? `${cropInfo?.name ?? "This crop"} के लिए data उपलब्ध नहीं — दूसरी crop try करें।`
-              : "Search या filter बदलें।"}
+              ? `${cropInfo?.name ?? "इस फसल"} के लिए जानकारी उपलब्ध नहीं — दूसरी फसल आज़माएँ।`
+              : "खोज या फ़िल्टर बदलें।"}
           </p>
         </DarkCard>
       )}

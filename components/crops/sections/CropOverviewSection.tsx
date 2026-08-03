@@ -6,6 +6,9 @@ import SectionHeader from "@/components/shell/SectionHeader";
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
 import MotionCard from "@/components/motion/MotionCard";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { isHindiLocale } from "@/lib/i18n/farmer-ui";
+import { riskLabelHi, stageLabelHi } from "@/lib/i18n/farmer-display";
 import { AV } from "@/lib/design/tokens";
 import {
   formatClimateCard,
@@ -32,6 +35,20 @@ function MiniStat({ label, value, index }: { label: string; value: string; index
   );
 }
 
+function watchLevelLabel(
+  level: "high" | "medium" | "low",
+  hi: boolean
+): string {
+  if (!hi) {
+    return level === "high" ? "Priority" : level === "medium" ? "Monitor" : "Low";
+  }
+  return level === "high"
+    ? riskLabelHi("priority")
+    : level === "medium"
+      ? riskLabelHi("monitor")
+      : riskLabelHi("low");
+}
+
 interface CropOverviewSectionProps {
   crop: Crop;
   detail: EnrichedCropDetail;
@@ -39,6 +56,8 @@ interface CropOverviewSectionProps {
 }
 
 export default function CropOverviewSection({ crop, detail, onTabChange }: CropOverviewSectionProps) {
+  const { t, locale } = useLocale();
+  const hi = isHindiLocale(locale);
   const { profile } = useFarmerProfile();
   const topDiseases = detail.diseases.slice(0, 3);
   const topPests = detail.pests.slice(0, 3);
@@ -50,74 +69,76 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
   const irrigation = getCropIrrigationSummary(crop);
   const expertTip = getCropExpertTip(crop);
 
+  const stageName = (name: string) => (hi ? stageLabelHi(name) : name);
+  const riskName = (level: string) => (hi ? riskLabelHi(level) : level);
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <MiniStat label="Duration" value={crop.durationDays} index={0} />
-        <MiniStat label="Yield" value={crop.estimatedYield} index={1} />
-        <MiniStat label="Soil" value={crop.suitableSoil} index={2} />
-        <MiniStat label="Season" value={crop.suitableSeason} index={3} />
-        <MiniStat label="Seed Rate" value={crop.seedRate} index={4} />
-        <MiniStat label="Spacing" value={crop.spacing} index={5} />
-        <MiniStat label="Climate" value={formatClimateCard(crop.slug, crop.climate)} index={6} />
-        <MiniStat label="Sowing" value={formatSowingCard(crop.slug, crop.sowingGuide.bestSowingTime)} index={7} />
+        <MiniStat label={t("cropDuration")} value={crop.durationDays} index={0} />
+        <MiniStat label={t("cropYield")} value={crop.estimatedYield} index={1} />
+        <MiniStat label={t("soil")} value={crop.suitableSoil} index={2} />
+        <MiniStat label={t("cropSeason")} value={crop.suitableSeason} index={3} />
+        <MiniStat label={t("seedRate")} value={crop.seedRate} index={4} />
+        <MiniStat label={t("spacing")} value={crop.spacing} index={5} />
+        <MiniStat label={t("cropClimate")} value={formatClimateCard(crop.slug, crop.climate)} index={6} />
+        <MiniStat label={t("sowing")} value={formatSowingCard(crop.slug, crop.sowingGuide.bestSowingTime)} index={7} />
       </div>
 
       <div className="grid gap-3 lg:grid-cols-12">
         <DarkCard className="lg:col-span-4" delay={0}>
-          <SectionHeader title="Tasks Due" action={{ label: "Calendar", href: "/crop-calendar" }} />
+          <SectionHeader title={t("cropTasksDue")} action={{ label: t("shellCropCalendar"), href: "/crop-calendar" }} />
           <ul className="mt-3 space-y-2">
-            {tasksDue.map((t) => (
-              <li key={t.id} className="av-card-inset">
+            {tasksDue.map((task) => (
+              <li key={task.id} className="av-card-inset">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-xs font-semibold text-[var(--av-text-primary)]">{t.task}</p>
-                  <RiskBadge level={t.priority} label={t.priority} />
+                  <p className="text-xs font-semibold text-[var(--av-text-primary)]">{task.task}</p>
+                  <RiskBadge level={task.priority} label={riskName(task.priority)} />
                 </div>
-                <p className={`mt-1 ${AV.micro}`}>{t.due}</p>
+                <p className={`mt-1 ${AV.micro}`}>{task.due}</p>
               </li>
             ))}
           </ul>
         </DarkCard>
 
         <DarkCard className="lg:col-span-4" delay={1}>
-          <SectionHeader title="Pest & Disease Risk" />
+          <SectionHeader title={t("cropPestDiseaseRisk")} />
           <div className="mt-3 space-y-3">
             <button type="button" onClick={() => onTabChange("pests")} className="av-card-inset flex w-full items-center justify-between text-left">
               <div>
                 <p className={AV.label}>
-                  Pest watch · {pestRisk.level === "high" ? "Priority" : pestRisk.level === "medium" ? "Monitor" : "Low"}
+                  {t("cropPestWatch")} · {watchLevelLabel(pestRisk.level, hi)}
                 </p>
                 <p className="text-sm font-semibold text-[var(--av-text-primary)]">{pestRisk.top}</p>
               </div>
-              <RiskBadge level={pestRisk.level} />
+              <RiskBadge level={pestRisk.level} label={hi ? riskLabelHi(pestRisk.level) : undefined} />
             </button>
             <button type="button" onClick={() => onTabChange("diseases")} className="av-card-inset flex w-full items-center justify-between text-left">
               <div>
                 <p className={AV.label}>
-                  Disease watch ·{" "}
-                  {diseaseRisk.level === "high" ? "Priority" : diseaseRisk.level === "medium" ? "Monitor" : "Low"}
+                  {t("cropDiseaseWatch")} · {watchLevelLabel(diseaseRisk.level, hi)}
                 </p>
                 <p className="text-sm font-semibold text-[var(--av-text-primary)]">{diseaseRisk.top}</p>
               </div>
-              <RiskBadge level={diseaseRisk.level} />
+              <RiskBadge level={diseaseRisk.level} label={hi ? riskLabelHi(diseaseRisk.level) : undefined} />
             </button>
           </div>
         </DarkCard>
 
         <DarkCard className="lg:col-span-4" delay={2}>
-          <SectionHeader title="Irrigation" />
+          <SectionHeader title={t("irrigation")} />
           <div className="mt-3 space-y-2 text-sm">
             <p className="flex justify-between gap-2">
-              <span className={AV.micro}>Total water</span>
+              <span className={AV.micro}>{t("cropTotalWater")}</span>
               <span className="text-right font-semibold text-[var(--av-text-primary)]">{irrigation.totalWater}</span>
             </p>
             <p className="flex justify-between gap-2">
-              <span className={AV.micro}>Schedule</span>
+              <span className={AV.micro}>{t("cropSchedule")}</span>
               <span className="text-right font-semibold text-[var(--av-text-primary)]">{irrigation.frequency}</span>
             </p>
             <p className={`text-[10px] text-[var(--av-text-muted)]`}>{irrigation.criticalNote}</p>
             <button type="button" onClick={() => onTabChange("irrigation")} className={`mt-2 w-full text-left text-xs text-[var(--av-accent)]`}>
-              Full irrigation guide →
+              {t("cropFullIrrigation")} →
             </button>
           </div>
         </DarkCard>
@@ -125,7 +146,7 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
 
       <div className="grid gap-3 lg:grid-cols-3">
         <DarkCard delay={1}>
-          <SectionHeader title="Top Diseases" />
+          <SectionHeader title={t("cropTopDiseases")} />
           <ul className="mt-2 space-y-2 text-xs">
             {topDiseases.map((d, i) => (
               <li key={d.name} className="flex justify-between">
@@ -138,36 +159,54 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
                         ? "medium"
                         : "low"
                   }
+                  label={
+                    hi
+                      ? riskLabelHi(
+                          i === 0
+                            ? diseaseRisk.level
+                            : diseaseRisk.level === "high"
+                              ? "medium"
+                              : "low"
+                        )
+                      : undefined
+                  }
                 />
               </li>
             ))}
           </ul>
           <button type="button" onClick={() => onTabChange("diseases")} className="mt-3 text-[10px] font-bold text-[var(--av-accent)]">
-            View all diseases →
+            {t("cropViewAllDiseases")} →
           </button>
         </DarkCard>
 
         <DarkCard delay={2}>
-          <SectionHeader title="Top Pests" />
+          <SectionHeader title={t("cropTopPests")} />
           <ul className="mt-2 space-y-2 text-xs">
             {topPests.map((p, i) => (
               <li key={p.name} className="flex justify-between">
                 <span className="text-[var(--av-text-secondary)]">{p.name}</span>
                 <RiskBadge
                   level={i === 0 ? pestRisk.level : pestRisk.level === "high" ? "medium" : "low"}
+                  label={
+                    hi
+                      ? riskLabelHi(
+                          i === 0 ? pestRisk.level : pestRisk.level === "high" ? "medium" : "low"
+                        )
+                      : undefined
+                  }
                 />
               </li>
             ))}
           </ul>
           <button type="button" onClick={() => onTabChange("pests")} className="mt-3 text-[10px] font-bold text-[var(--av-accent)]">
-            View all pests →
+            {t("cropViewAllPests")} →
           </button>
         </DarkCard>
 
         <DarkCard delay={3}>
-          <SectionHeader title="Recommended Varieties" />
+          <SectionHeader title={t("cropRecommendedVarieties")} />
           <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-            {crop.name} — top popular varieties
+            {crop.name} — {t("cropVarietiesSubtitle")}
           </p>
           <ul className="mt-2 space-y-2">
             {varieties.map((v) => (
@@ -182,21 +221,21 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
             onClick={() => onTabChange("varieties")}
             className="mt-3 text-[10px] font-bold text-[var(--av-accent)]"
           >
-            सभी किस्में देखें →
+            {t("viewAll")} →
           </button>
         </DarkCard>
       </div>
 
       <DarkCard delay={2}>
-        <SectionHeader title="Stage-wise Alerts" />
+        <SectionHeader title={t("cropStageAlerts")} />
         <ul className="mt-3 space-y-2">
           {stageAlerts.map((a) => (
             <li key={a.id} className="av-card-inset flex gap-2">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-[var(--av-text-primary)]">{a.stage}</p>
-                  <RiskBadge level={a.level} />
+                  <p className="text-xs font-semibold text-[var(--av-text-primary)]">{stageName(a.stage)}</p>
+                  <RiskBadge level={a.level} label={hi ? riskLabelHi(a.level) : undefined} />
                 </div>
                 <p className={`mt-0.5 ${AV.micro}`}>{a.alert}</p>
               </div>
@@ -206,25 +245,25 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
       </DarkCard>
 
       <DarkCard delay={3}>
-        <SectionHeader title="Expert Tip" action={expertTip.action} />
+        <SectionHeader title={t("expertAdvice")} action={expertTip.action} />
         <p className={`mt-2 ${AV.body}`}>{expertTip.tip}</p>
       </DarkCard>
 
       <DarkCard delay={4}>
         <div className="flex items-center justify-between">
-          <SectionHeader title="Growth Stages" />
+          <SectionHeader title={t("growthStages")} />
           <button type="button" onClick={() => onTabChange("growth")} className={AV.link}>
-            Full timeline →
+            {t("cropFullTimeline")} →
           </button>
         </div>
         <div className="mt-3 flex flex-wrap gap-3 overflow-x-auto scrollbar-hide">
           {detail.growthStages.map((stage, i) => (
             <div key={stage.title} className="av-card-inset min-w-[100px] shrink-0 text-center">
               <p className="text-[10px] font-bold text-[var(--av-accent)]">{stage.period}</p>
-              <p className="mt-1 text-[10px] font-semibold text-[var(--av-text-primary)]">{stage.title}</p>
+              <p className="mt-1 text-[10px] font-semibold text-[var(--av-text-primary)]">{stageName(stage.title)}</p>
               {i === 2 && (
                 <span className="mt-1 inline-block rounded bg-[var(--av-accent-soft)] px-1.5 py-0.5 text-[8px] font-bold text-[var(--av-accent)]">
-                  Current
+                  {t("currentStage")}
                 </span>
               )}
             </div>
@@ -234,10 +273,10 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
 
       <div className="flex flex-wrap gap-2">
         <AppLink href={`/pest-diseases?crop=${crop.slug}`} className={`${AV.btnSecondarySm}`}>
-          Spray guide <ChevronRight className="h-3 w-3" />
+          {t("cropSprayGuide")} <ChevronRight className="h-3 w-3" />
         </AppLink>
         <AppLink href="/ai-doctor" className={AV.btnPrimarySm}>
-          AI Doctor
+          {t("toolAi")}
         </AppLink>
       </div>
     </div>

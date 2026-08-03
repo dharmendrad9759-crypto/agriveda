@@ -53,16 +53,16 @@ export function checkTankMixCompatibility(
   if (!a || !b) {
     return {
       status: "caution",
-      title: "Select both products",
-      message: "Choose two agrochemicals from the dropdowns to run a compatibility check.",
+      title: "दोनों उत्पाद चुनें",
+      message: "मिलान जाँच के लिए दोनों ड्रॉपडाउन से कृषि रसायन चुनें।",
     };
   }
 
   if (a.id === b.id) {
     return {
       status: "caution",
-      title: "Same product selected",
-      message: "Select two different products to test tank-mix compatibility.",
+      title: "एक ही उत्पाद चुना",
+      message: "टैंक मिक्स (Tank mix) जाँच के लिए दो अलग उत्पाद चुनें।",
     };
   }
 
@@ -71,9 +71,9 @@ export function checkTankMixCompatibility(
   if (isHerbicide(a) && isHerbicide(b)) {
     return {
       status: "incompatible",
-      title: "Incompatible — Herbicide clash",
+      title: "असंगत — दो खरपतवारनाशक",
       message:
-        "Two herbicides in one tank are rarely compatible and may cause antagonism or crop injury. Apply separately unless using a registered premix.",
+        "एक टैंक में दो खरपतवारनाशक (Herbicide) शायद ही मिलते हैं — विरोध या फसल को नुकसान हो सकता है। पंजीकृत प्रीमिक्स (Premix) के बिना अलग-अलग छिड़काव करें।",
     };
   }
 
@@ -83,9 +83,9 @@ export function checkTankMixCompatibility(
   ) {
     return {
       status: "incompatible",
-      title: "Incompatible — Non-selective herbicide",
+      title: "असंगत — गैर-चयनात्मक खरपतवारनाशक",
       message:
-        "Glyphosate, Paraquat, or 2,4-D must not be tank-mixed with insecticides/fungicides. Risk of phytotoxicity and formulation breakdown.",
+        "Glyphosate, Paraquat या 2,4-D को कीटनाशक/फफूंदनाशक के साथ टैंक में न मिलाएँ। पौधे को नुकसान और फॉर्म्युलेशन खराब होने का जोखिम।",
     };
   }
 
@@ -94,13 +94,13 @@ export function checkTankMixCompatibility(
     if (other.category === "insecticide" && other.moaType === "IRAC") {
       return {
         status: "incompatible",
-        title: "Incompatible — Copper + insecticide",
+        title: "असंगत — ताँबा + कीटनाशक",
         message:
-          "Copper fungicides often react with alkaline-sensitive insecticides, causing precipitation and loss of efficacy. Risk of nozzle clogging and leaf burn.",
+          "ताँबा वाले फफूंदनाशक अक्सर क्षार-संवेदनशील कीटनाशकों से प्रतिक्रिया करते हैं — अवक्षेप और असर कम। नोजल जाम और पत्ती जलने का जोखिम।",
       };
     }
     if (other.category === "fungicide") {
-      reasons.push("copper with another fungicide");
+      reasons.push("ताँबा + दूसरा फफूंदनाशक");
     }
   }
 
@@ -112,9 +112,9 @@ export function checkTankMixCompatibility(
   ) {
     return {
       status: "incompatible",
-      title: "Incompatible — Cholinesterase inhibitors",
+      title: "असंगत — कोलीनएस्टरेज़ अवरोधक",
       message:
-        "Organophosphates (IRAC 1B) and carbamates (IRAC 1A/14) must not be mixed — synergistic toxicity to applicator and non-target organisms.",
+        "Organophosphates (IRAC 1B) और Carbamates (IRAC 1A/14) एक साथ न मिलाएँ — छिड़कावकर्ता और गैर-लक्षित जीवों के लिए जोड़ा हुआ विषैलापन।",
     };
   }
 
@@ -125,8 +125,8 @@ export function checkTankMixCompatibility(
   ) {
     return {
       status: "caution",
-      title: "Caution — Same MoA group",
-      message: `Both products share ${a.moaType} Group ${a.moaGroup}. Physically they may mix, but combining same MoA accelerates resistance — use sequentially, not in one tank.`,
+      title: "सावधानी — एक ही MoA समूह",
+      message: `दोनों उत्पाद ${a.moaType} Group ${a.moaGroup} साझा करते हैं। शारीरिक रूप से मिल सकते हैं, पर एक MoA मिलाने से प्रतिरोध जल्दी बढ़ता है — एक टैंक में नहीं, क्रम से छिड़कें।`,
     };
   }
 
@@ -137,9 +137,9 @@ export function checkTankMixCompatibility(
   if (ecWpMismatch) {
     return {
       status: "caution",
-      title: "Caution — Formulation mismatch",
+      title: "सावधानी — फॉर्म्युलेशन मेल नहीं",
       message:
-        "EC/SC liquids with WP/WG powders can settle or gel. Always run a jar test (1:10 dilution) and spray within 30 minutes of mixing.",
+        "EC/SC तरल और WP/WG पाउडर तल में बैठ या जैल बन सकते हैं। हमेशा जार टेस्ट (1:10 घोल) करें और मिलाने के 30 मिनट में छिड़कें।",
     };
   }
 
@@ -150,24 +150,24 @@ export function checkTankMixCompatibility(
   if (fungInsect) {
     return {
       status: "safe",
-      title: "Safe to Mix",
-      message: `${a.productName} + ${b.productName} is a common fungicide–insecticide combination. Add WP first, then liquid, with constant agitation. Jar-test before full tank.`,
+      title: "मिलान सुरक्षित",
+      message: `${a.productName} + ${b.productName} सामान्य फफूंदनाशक–कीटनाशक संयोजन है। पहले WP, फिर तरल, लगातार हलचल के साथ। पूरे टैंक से पहले जार टेस्ट करें।`,
     };
   }
 
   if (reasons.length > 0) {
     return {
       status: "caution",
-      title: "Caution — Verify before mixing",
-      message: `Potential issue: ${reasons.join(", ")}. Conduct a jar compatibility test and follow label order of addition.`,
+      title: "सावधानी — मिलाने से पहले जाँचें",
+      message: `संभावित समस्या: ${reasons.join(", ")}। जार मिलान परीक्षण करें और लेबल के अनुसार मिलाने का क्रम मानें।`,
     };
   }
 
   return {
     status: "safe",
-    title: "Likely Compatible",
+    title: "संभवतः संगत",
     message:
-      "No major incompatibility flags detected. Still perform a jar test, maintain constant agitation, and spray within 2 hours of mixing.",
+      "कोई बड़ी असंगतता नहीं मिली। फिर भी जार टेस्ट करें, लगातार हलचल रखें और मिलाने के 2 घंटे में छिड़कें।",
   };
 }
 

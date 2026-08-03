@@ -30,7 +30,6 @@ import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { cropCatalog } from "@/data/crop-catalog";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
-import { DASHBOARD_FIELDS } from "@/data/mock/dashboard";
 import type { FarmField } from "@/lib/farm/types";
 import { track } from "@/lib/analytics";
 
@@ -111,15 +110,6 @@ const FARM_COMMAND: {
     ring: "ring-amber-500/30",
   },
   {
-    label: "Library",
-    labelHi: "लाइब्रेरी",
-    href: "/library",
-    icon: BookOpen,
-    imageSrc: "/images/icons/tools/sowing-window.png",
-    tone: "from-violet-500/15 to-emerald-500/10",
-    ring: "ring-violet-500/25",
-  },
-  {
     label: "Spray",
     labelHi: "स्प्रे",
     href: "/weather/spray-advisory",
@@ -127,15 +117,6 @@ const FARM_COMMAND: {
     imageSrc: "/images/icons/tools/spray-advisory.png",
     tone: "from-sky-500/18 to-cyan-500/10",
     ring: "ring-sky-500/25",
-  },
-  {
-    label: "Crops",
-    labelHi: "फसलें",
-    href: "/crops",
-    icon: BookOpen,
-    imageSrc: "/images/icons/tools/crop-planner.png",
-    tone: "from-emerald-500/18 to-green-500/10",
-    ring: "ring-emerald-500/30",
   },
   {
     label: "Alerts",
@@ -234,12 +215,12 @@ function buildRisk(opts: { isHi: boolean; humidityPct: number; rainChance: numbe
   };
 }
 
-function fieldCard(field: FarmField | (typeof DASHBOARD_FIELDS)[number], index: number) {
-  const crop = "crop" in field ? field.crop : "Paddy";
-  const stage = "stage" in field ? field.stage : "Tillering";
-  const name = "name" in field ? field.name : "Main Farm";
-  const sowingDate = "sowingDate" in field ? field.sowingDate : "";
-  const cropSlug = "cropSlug" in field ? field.cropSlug : undefined;
+function fieldCard(field: FarmField, index: number) {
+  const crop = field.crop;
+  const stage = field.stage;
+  const name = field.name;
+  const sowingDate = field.sowingDate;
+  const cropSlug = field.cropSlug;
   const days = daysSince(sowingDate);
   const img = resolveCropImage({ slug: cropSlug || crop.toLowerCase(), name: crop });
 
@@ -251,53 +232,59 @@ export default function AgriVedaHome() {
   const isHi = locale === "hi";
   const reduced = useReducedMotion();
   const { profile } = useFarmerProfile();
-  const { weather, loading: weatherLoading } = useLiveWeather();
+  const { weather, loading: weatherLoading, error: weatherError } = useLiveWeather();
   const { data: farm } = useFarmData();
   const { history: aiHistory } = useAIHistory();
   const lastScan = aiHistory[0];
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
-  const place =
-    [profile.district || profile.village, profile.state].filter(Boolean).join(", ") ||
-    "Sehore, MP";
-  const placeShort = place.length > 22 ? `${place.slice(0, 20)}…` : place;
+  const hasLocation = Boolean(profile.village || profile.district || profile.state);
+  const place = hasLocation
+    ? [profile.district || profile.village, profile.state].filter(Boolean).join(", ")
+    : null;
+  const placeShort = place
+    ? place.length > 22
+      ? `${place.slice(0, 20)}…`
+      : place
+    : "स्थान सेट करें";
 
-  const temp = weather?.temp ?? "32°C";
-  const humidity = weather?.humidity ?? "58%";
-  const wind = weather?.windSpeed ?? "8 km/h";
-  const rainChance = weather?.hourlyForecast[0]?.rainChancePercent ?? 20;
-  const condition = weather?.condition ?? (isHi ? "साफ़ आसमान" : "Clear skies");
-  const humidityPct = Number.parseInt(humidity, 10) || 58;
+  const weatherIsSample = Boolean(weather?.isDemo || weatherError);
+  const weatherLive = Boolean(weather && !weather.isDemo && !weatherError);
+  const temp = weatherLoading ? "…" : weather?.temp ?? "—";
+  const humidity = weatherLoading ? "…" : weather?.humidity ?? "—";
+  const wind = weatherLoading ? "…" : weather?.windSpeed ?? "—";
+  const rainChance = weatherLive ? (weather?.hourlyForecast[0]?.rainChancePercent ?? 0) : null;
+  const condition = weatherLoading ? "…" : weather?.condition ?? "—";
+  const humidityPct = weatherLive ? Number.parseInt(weather!.humidity, 10) || 0 : 0;
 
-  const sourceFields =
-    farm.fields.length > 0
-      ? farm.fields.slice(0, 2)
-      : DASHBOARD_FIELDS.slice(0, 2).map((f, i) => ({
-          id: `demo-${i}`,
-          name: f.name,
-          area: f.area,
-          ownership: "Own",
-          crop: f.crop,
-          cropSlug: f.crop.toLowerCase(),
-          status: f.status,
-          // Stable demo sowing anchors (avoid Date.now in render)
-          sowingDate: f.crop === "Paddy" ? "2026-06-18" : "2026-05-30",
-          emoji: "🌾",
-          health: f.health,
-          stage: f.stage,
-        }));
+  const sourceFields = farm.fields.slice(0, 2);
+  const hasFields = sourceFields.length > 0;
 
-  const primary = fieldCard(sourceFields[0], 0);
-  const primaryCropLabel = cropLabel(primary.cropSlug, primary.crop);
-  const primaryCropChip = cropChipLabel(primary.cropSlug, primary.crop);
+  const primary = hasFields ? fieldCard(sourceFields[0], 0) : null;
+  const primaryCropLabel = primary
+    ? cropLabel(primary.cropSlug, primary.crop)
+    : isHi
+      ? "आपकी फसल"
+      : "Your crop";
+  const primaryCropChip = primary
+    ? cropChipLabel(primary.cropSlug, primary.crop)
+    : isHi
+      ? "फसल जोड़ें"
+      : "Add crop";
   const advice = buildAdvice({
     isHi,
-    rainChance,
+    rainChance: rainChance ?? 0,
     humidity,
     crop: primaryCropLabel,
-    stage: primary.stage,
+    stage: primary?.stage ?? (isHi ? "—" : "—"),
   });
-  const risk = buildRisk({ isHi, humidityPct, rainChance });
+  const risk =
+    weatherLive && rainChance != null
+      ? buildRisk({ isHi, humidityPct, rainChance })
+      : {
+          label: isHi ? "मौसम —" : "Weather —",
+          tone: "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]",
+        };
 
   const steps = [
     {
@@ -358,10 +345,20 @@ export default function AgriVedaHome() {
               <Sprout className="h-3 w-3 shrink-0" strokeWidth={2.25} />
               <span className="truncate">{isHi ? `फसल: ${primaryCropChip}` : primaryCropChip}</span>
             </span>
-            <span className="inline-flex max-w-[46%] items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-              <MapPin className="h-3 w-3 shrink-0 text-sky-600" strokeWidth={2.25} />
-              <span className="truncate">{placeShort}</span>
-            </span>
+            {hasLocation ? (
+              <span className="inline-flex max-w-[46%] items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+                <MapPin className="h-3 w-3 shrink-0 text-sky-600" strokeWidth={2.25} />
+                <span className="truncate">{placeShort}</span>
+              </span>
+            ) : (
+              <AppLink
+                href="/profile/edit"
+                className="inline-flex max-w-[46%] items-center gap-1 rounded-full border border-sky-500/30 bg-sky-50/90 px-2 py-0.5 text-[11px] font-semibold text-sky-800 dark:bg-sky-950/30 dark:text-sky-200"
+              >
+                <MapPin className="h-3 w-3 shrink-0" strokeWidth={2.25} />
+                <span className="truncate">{placeShort}</span>
+              </AppLink>
+            )}
             <span
               className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${risk.tone}`}
             >
@@ -612,8 +609,15 @@ export default function AgriVedaHome() {
                   </p>
                   <p className="mt-0.5 flex items-center gap-1 text-[12px] font-medium text-[var(--av-text-secondary)]">
                     <MapPin className="h-3 w-3 shrink-0 text-sky-600" />
-                    <span className="truncate">{place}</span>
+                    <span className={`truncate ${!hasLocation ? "text-sky-700 dark:text-sky-300" : ""}`}>
+                      {hasLocation ? place : placeShort}
+                    </span>
                   </p>
+                  {weatherIsSample && !weatherLoading ? (
+                    <span className="mt-1 inline-flex rounded-full border border-amber-400/40 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                      नमूना — लाइव नहीं
+                    </span>
+                  ) : null}
                 </div>
                 <CloudSun className="h-10 w-10 shrink-0 text-amber-500/90 drop-shadow-sm" />
               </div>
@@ -624,9 +628,9 @@ export default function AgriVedaHome() {
                 </p>
                 <div className="mb-1 min-w-0 pb-0.5">
                   <p className="text-[15px] font-bold capitalize leading-snug text-[var(--av-text-primary)]">
-                    {weatherLoading ? "…" : condition}
+                    {condition}
                   </p>
-                  {weather?.feelsLike ? (
+                  {weatherLive && weather?.feelsLike ? (
                     <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
                       {isHi ? `महसूस: ${weather.feelsLike}` : `Feels like ${weather.feelsLike}`}
                     </p>
@@ -635,27 +639,33 @@ export default function AgriVedaHome() {
               </div>
 
               {/* Farmer field tip */}
-              <div
-                className={`relative mt-3 rounded-xl border px-3 py-2 text-[12px] font-semibold leading-snug ${
-                  rainChance >= 55
-                    ? "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100"
-                    : humidityPct >= 80
-                      ? "border-rose-500/25 bg-rose-500/10 text-rose-900 dark:text-rose-100"
-                      : "border-emerald-500/25 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
-                }`}
-              >
-                {rainChance >= 55
-                  ? isHi
-                    ? `बारिश संभावना ${rainChance}% — आज स्प्रे न करें`
-                    : `${rainChance}% rain chance — skip spray today`
-                  : humidityPct >= 80
+              {weatherLive && rainChance != null ? (
+                <div
+                  className={`relative mt-3 rounded-xl border px-3 py-2 text-[12px] font-semibold leading-snug ${
+                    rainChance >= 55
+                      ? "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100"
+                      : humidityPct >= 80
+                        ? "border-rose-500/25 bg-rose-500/10 text-rose-900 dark:text-rose-100"
+                        : "border-emerald-500/25 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
+                  }`}
+                >
+                  {rainChance >= 55
                     ? isHi
-                      ? "नमी ज्यादा — पत्तों पर रोग का खतरा देखें"
-                      : "High humidity — watch leaves for disease"
-                    : isHi
-                      ? "मौसम खेत के काम के लिए ठीक"
-                      : "Good conditions for field work"}
-              </div>
+                      ? `बारिश संभावना ${rainChance}% — आज स्प्रे न करें`
+                      : `${rainChance}% rain chance — skip spray today`
+                    : humidityPct >= 80
+                      ? isHi
+                        ? "नमी ज्यादा — पत्तों पर रोग का खतरा देखें"
+                        : "High humidity — watch leaves for disease"
+                      : isHi
+                        ? "मौसम खेत के काम के लिए ठीक"
+                        : "Good conditions for field work"}
+                </div>
+              ) : !weatherLoading ? (
+                <div className="relative mt-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-[12px] font-semibold text-[var(--av-text-muted)]">
+                  {isHi ? "लाइव मौसम उपलब्ध नहीं — स्थान सेट करें या मौसम पेज खोलें" : "Live weather unavailable — set location or open weather page"}
+                </div>
+              ) : null}
             </div>
 
             <div className="grid grid-cols-3 gap-px bg-[var(--av-border-subtle)]">
@@ -673,7 +683,7 @@ export default function AgriVedaHome() {
                 {
                   icon: CloudRain,
                   label: isHi ? "बारिश" : "Rain",
-                  value: weatherLoading ? "…" : `${rainChance}%`,
+                  value: weatherLoading ? "…" : rainChance != null ? `${rainChance}%` : "—",
                 },
               ].map(({ icon: Icon, label, value }) => (
                 <div
@@ -714,47 +724,60 @@ export default function AgriVedaHome() {
             </AppLink>
           </div>
           <div className="space-y-2.5">
-            {sourceFields.map((field, index) => {
-              const card = fieldCard(field, index);
-              return (
-                <AppLink
-                  key={card.key}
-                  href="/my-farm"
-                  className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)] transition hover:border-emerald-500/35"
-                >
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-[var(--av-surface-inset)]">
-                    <Image
-                      src={card.img}
-                      alt={card.crop}
-                      fill
-                      sizes="56px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[15px] font-bold text-[var(--av-text-primary)]">
-                      {cropChipLabel(card.cropSlug, card.crop)}
-                    </p>
-                    <p className="truncate text-[12px] text-[var(--av-text-muted)]">{card.name}</p>
-                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
-                        {card.stage}
-                      </span>
-                      <span className="rounded-md bg-[var(--av-surface-inset)] px-1.5 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-                        {card.days != null
-                          ? isHi
-                            ? `${card.days} दिन`
-                            : `Day ${card.days}`
-                          : isHi
-                            ? "दिन जोड़ें"
-                            : "Add date"}
-                      </span>
+            {hasFields ? (
+              sourceFields.map((field, index) => {
+                const card = fieldCard(field, index);
+                return (
+                  <AppLink
+                    key={card.key}
+                    href="/my-farm"
+                    className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)] transition hover:border-emerald-500/35"
+                  >
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-[var(--av-surface-inset)]">
+                      <Image
+                        src={card.img}
+                        alt={card.crop}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                      />
                     </div>
-                  </div>
-                  <ArrowRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
-                </AppLink>
-              );
-            })}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[15px] font-bold text-[var(--av-text-primary)]">
+                        {cropChipLabel(card.cropSlug, card.crop)}
+                      </p>
+                      <p className="truncate text-[12px] text-[var(--av-text-muted)]">{card.name}</p>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                        <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                          {card.stage}
+                        </span>
+                        <span className="rounded-md bg-[var(--av-surface-inset)] px-1.5 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+                          {card.days != null
+                            ? isHi
+                              ? `${card.days} दिन`
+                              : `Day ${card.days}`
+                            : isHi
+                              ? "दिन जोड़ें"
+                              : "Add date"}
+                        </span>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
+                  </AppLink>
+                );
+              })
+            ) : (
+              <AppLink
+                href="/my-farm"
+                className="flex min-h-[72px] items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-500/35 bg-emerald-50/50 px-4 py-5 text-center dark:bg-emerald-950/20"
+              >
+                <Sprout className="h-5 w-5 text-emerald-600" strokeWidth={2.25} />
+                <span className="text-[15px] font-bold text-emerald-800 dark:text-emerald-200">
+                  अपना खेत जोड़ें
+                </span>
+                <ArrowRight className="h-4 w-4 text-emerald-600" />
+              </AppLink>
+            )}
           </div>
         </motion.section>
 

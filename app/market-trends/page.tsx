@@ -24,8 +24,10 @@ import {
   chartSeriesForRange,
 } from "@/lib/mandi/marketAnalytics";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function MarketTrendsPage() {
+  const { t } = useLocale();
   const { showToast } = useToast();
   const { profile } = useFarmerProfile();
   const { data, loading, refresh } = useMandiPrices({
@@ -72,9 +74,9 @@ export default function MarketTrendsPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="Market Trends"
+      title={t("marketTrends")}
       subtitle="Track price trends, insights & forecasts to sell at the right time"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Market Trends" }]}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("marketTrends") }]}
     >
       {data?.error && (
         <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-200">
@@ -93,7 +95,7 @@ export default function MarketTrendsPage() {
           icon={TrendingUp}
           label="Market Trend"
           value={stats.trend}
-          sub={data?.source === "live" ? "Live mandi data" : "Sample data"}
+          sub="लाइव मंडी डेटा"
           action={{ label: "View Details", href: "/mandi" }}
         />
         <StatCard
@@ -263,7 +265,7 @@ export default function MarketTrendsPage() {
         <DarkCard hover delay={1}>
           <GaugeChart value={stats.trend === "Bullish" ? 75 : stats.trend === "Bearish" ? 35 : 55} label={`${stats.trend} Outlook`} />
           <p className="mt-2 text-center text-xs text-[var(--av-text-secondary)]">
-            Based on {data?.source === "live" ? "live" : "sample"} mandi rates in {data?.state ?? "your state"}
+            Based on live mandi rates in {data?.state ?? "your state"}
           </p>
         </DarkCard>
         <DarkCard hover delay={2}>

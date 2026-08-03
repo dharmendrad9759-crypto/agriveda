@@ -10,8 +10,10 @@ import { categoryOrder, getCropsByCategory, type CatalogCrop } from "@/data/crop
 import { useMyCrops, MAX_MY_CROPS } from "@/hooks/useMyCrops";
 import { useToast } from "@/components/ui/Toast";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function SelectCropsPage() {
+  const { t } = useLocale();
   const navigate = useAppNavigate();
   const { showToast } = useToast();
   const { crops, isSelected, toggleCrop, canAddMore, addCustomCrop } = useMyCrops();
@@ -25,14 +27,14 @@ export default function SelectCropsPage() {
       return;
     }
     setCustomName("");
-    showToast(`${result.crop.emoji} ${result.crop.name} Home पर जोड़ दी`);
+    showToast(`${result.crop.emoji} ${result.crop.name} ${t("navHome")} पर जोड़ दी`);
   };
 
   return (
     <AppShell
-      title="Select Your Crops"
+      title={t("selectCrops")}
       subtitle={`Maximum ${MAX_MY_CROPS} crops · Selected: ${crops.length}/${MAX_MY_CROPS}`}
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Select Crops" }]}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("selectCrops") }]}
     >
       {!canAddMore && (
         <DarkCard className="border-amber-500/30 bg-amber-500/10">
@@ -43,7 +45,7 @@ export default function SelectCropsPage() {
       )}
 
       <DarkCard className="mb-4 border-emerald-500/20">
-        <p className="text-xs font-bold text-[var(--av-text-primary)]">Custom crop (Home के लिए)</p>
+        <p className="text-xs font-bold text-[var(--av-text-primary)]">Custom crop ({t("navHome")} के लिए)</p>
         <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
           सूची में नहीं है तो नाम लिखकर जोड़ें
         </p>
@@ -110,7 +112,7 @@ export default function SelectCropsPage() {
         onClick={() => navigate("/")}
         className={`mt-4 w-full ${AV.btnPrimary}`}
       >
-        Save & Go to Home ({crops.length} selected)
+        Save & Go to {t("navHome")} ({crops.length} selected)
       </button>
     </AppShell>
   );

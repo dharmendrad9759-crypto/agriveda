@@ -137,11 +137,11 @@ export default function CropProblemHub() {
       <DarkCard className="p-4">
         <p className="flex items-center gap-2 text-xs font-black uppercase text-emerald-600">
           <Sparkles className="h-4 w-4" />
-          Sample Solution Card
+          नमूना कार्ड
         </p>
       </DarkCard>
 
-      <SolutionCard data={solutionFromIssue(sampleIssue)} />
+      <SolutionCard data={solutionFromIssue(sampleIssue)} showFeedback={false} />
     </div>
   );
 }

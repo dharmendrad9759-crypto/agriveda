@@ -35,7 +35,7 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
             stage: "advanced",
             label: "Defoliation risk",
             chemistry: "Azoxystrobin + Difenoconazole",
-            dose: "200 ml/acre — 15 din baad repeat",
+            dose: "200 ml/acre — 15 दिन बाद repeat",
           },
         ],
       },
@@ -50,8 +50,8 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "First girdling",
-            chemistry: "Thiamethoxam 25% WG ya Triazophos 40% EC",
-            dose: "40 g/acre ya 320 ml/acre",
+            chemistry: "Thiamethoxam 25% WG या Triazophos 40% EC",
+            dose: "40 g/acre या 320 ml/acre",
           },
           {
             stage: "advanced",
@@ -69,14 +69,14 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "Small larvae",
-            chemistry: "Azadirachtin 1500 ppm ya Emamectin benzoate 5% SG",
-            dose: "400 ml/acre ya 80-90 g/acre (IRAC 6)",
+            chemistry: "Azadirachtin 1500 ppm या Emamectin benzoate 5% SG",
+            dose: "400 ml/acre या 80-90 g/acre (IRAC 6)",
           },
           {
             stage: "advanced",
             label: "Heavy defoliation",
-            chemistry: "Chlorantraniliprole 18.5% SC ya Spinetoram ya Indoxacarb",
-            dose: "60 ml/acre ya 100 ml/acre ya 200 ml/acre + pheromone traps",
+            chemistry: "Chlorantraniliprole 18.5% SC या Spinetoram या Indoxacarb",
+            dose: "60 ml/acre या 100 ml/acre या 200 ml/acre + pheromone traps",
           },
         ],
       },
@@ -90,8 +90,8 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
           {
             stage: "preventive",
             label: "Pre-emergence",
-            chemistry: "Pendimethalin ya Diclosulam 84% WDG",
-            dose: "1 L/acre ya 12.4 g/acre",
+            chemistry: "Pendimethalin या Diclosulam 84% WDG",
+            dose: "1 L/acre या 12.4 g/acre",
           },
           {
             stage: "early",
@@ -118,12 +118,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         type: "disease",
         symptoms: ["Brown spots yellow halo (early); darker rough underside (late)"],
         stages: [
-          { stage: "early", label: "30-40 DAS", chemistry: "Mancozeb ya Chlorothalonil", dose: "600 g/acre ya 500 g/acre" },
+          { stage: "early", label: "30-40 DAS", chemistry: "Mancozeb या Chlorothalonil", dose: "600 g/acre या 500 g/acre" },
           {
             stage: "advanced",
             label: "Spreading + rust",
-            chemistry: "Hexaconazole ya Tebuconazole+Trifloxystrobin ya Azoxystrobin+Difenoconazole",
-            dose: "400 ml/acre ya 100 g/acre ya 200 ml/acre — 2-3 sprays 15 din",
+            chemistry: "Hexaconazole या Tebuconazole+Trifloxystrobin या Azoxystrobin+Difenoconazole",
+            dose: "400 ml/acre या 100 g/acre या 200 ml/acre — 2-3 sprays 15 दिन",
           },
         ],
       },
@@ -135,12 +135,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         scientificName: "Aproaerema modicella",
         type: "pest",
         stages: [
-          { stage: "early", label: "Mines", chemistry: "Quinalphos 25% EC ya Dimethoate", dose: "400 ml/acre ya 300 ml/acre" },
+          { stage: "early", label: "Mines", chemistry: "Quinalphos 25% EC या Dimethoate", dose: "400 ml/acre या 300 ml/acre" },
           {
             stage: "advanced",
             label: "Heavy",
-            chemistry: "Chlorantraniliprole ya Emamectin",
-            dose: "60 ml/acre ya 80 g/acre",
+            chemistry: "Chlorantraniliprole या Emamectin",
+            dose: "60 ml/acre या 80 g/acre",
           },
         ],
       },
@@ -155,7 +155,7 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "Critical pegging (40-60 DAS)",
-            chemistry: "Weed-free rakhein — soil disturb mat karein after pegging",
+            chemistry: "Weed-free रखें — soil disturb मत करें after pegging",
             dose: "Imazethapyr POST if needed @ 300 ml/acre",
           },
         ],
@@ -211,8 +211,8 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "Pheromone traps / first flowers",
-            chemistry: "Pheromone traps 8/acre + Profenophos 50% EC ya Thiodicarb at squaring",
-            dose: "400 ml/acre ya 400 g/acre",
+            chemistry: "Pheromone traps 8/acre + Profenophos 50% EC या Thiodicarb at squaring",
+            dose: "400 ml/acre या 400 g/acre",
           },
           {
             stage: "advanced",
@@ -221,7 +221,7 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
             dose: "60 ml/acre → 88 g/acre → 60 ml/acre — destroy rosette flowers",
           },
         ],
-        rotationNotes: "Bt refuge rows, timely crop termination, pyrethroid se bachna (whitefly flare).",
+        rotationNotes: "Bt refuge rows, timely crop termination, pyrethroid से बचें (whitefly flare)।",
       },
       {
         id: "whitefly",
@@ -230,12 +230,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         type: "pest",
         iracGroup: "IRAC 12A / 7C",
         stages: [
-          { stage: "early", label: "Shuruat", chemistry: "Diafenthiuron 50% WP ya Flonicamid 50% WG", dose: "240 g/acre ya 60 g/acre" },
+          { stage: "early", label: "शुरुआत", chemistry: "Diafenthiuron 50% WP या Flonicamid 50% WG", dose: "240 g/acre या 60 g/acre" },
           {
             stage: "advanced",
             label: "Heavy",
-            chemistry: "Pyriproxyfen 10% EC ya Spiromesifen 22.9% SC",
-            dose: "200 ml/acre ya 200 ml/acre",
+            chemistry: "Pyriproxyfen 10% EC या Spiromesifen 22.9% SC",
+            dose: "200 ml/acre या 200 ml/acre",
           },
         ],
       },
@@ -246,7 +246,7 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         name: "Weed Management",
         type: "weed",
         stages: [
-          { stage: "preventive", label: "Pre-emergence", chemistry: "Pendimethalin ya Diuron", dose: "1.3 L/acre ya 400 g/acre" },
+          { stage: "preventive", label: "Pre-emergence", chemistry: "Pendimethalin या Diuron", dose: "1.3 L/acre या 400 g/acre" },
           {
             stage: "early",
             label: "Post-directed",
@@ -285,12 +285,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         name: "Powdery Mildew",
         type: "disease",
         stages: [
-          { stage: "early", label: "Shuruat", chemistry: "Wettable sulphur 80% WG", dose: "500 g/acre" },
+          { stage: "early", label: "शुरुआत", chemistry: "Wettable sulphur 80% WG", dose: "500 g/acre" },
           {
             stage: "advanced",
             label: "Heavy",
-            chemistry: "Hexaconazole ya Azoxystrobin",
-            dose: "400 ml/acre ya 200 ml/acre",
+            chemistry: "Hexaconazole या Azoxystrobin",
+            dose: "400 ml/acre या 200 ml/acre",
           },
         ],
       },
@@ -302,12 +302,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         type: "pest",
         continuousHarvest: true,
         stages: [
-          { stage: "early", label: "Shuruat", chemistry: "Thiamethoxam 25% WG ya Acetamiprid", dose: "40 g/acre" },
+          { stage: "early", label: "शुरुआत", chemistry: "Thiamethoxam 25% WG या Acetamiprid", dose: "40 g/acre" },
           {
             stage: "advanced",
             label: "Heavy",
-            chemistry: "Diafenthiuron ya Pyriproxyfen ya Spiromesifen",
-            dose: "240 g/acre ya 200 ml/acre ya 200 ml/acre",
+            chemistry: "Diafenthiuron या Pyriproxyfen या Spiromesifen",
+            dose: "240 g/acre या 200 ml/acre या 200 ml/acre",
           },
         ],
       },
@@ -323,13 +323,13 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
             stage: "early",
             label: "IPM",
             chemistry: "Clip bored shoots + pheromone traps + Bt/Azadirachtin",
-            dose: "Weekly clipping sabse important",
+            dose: "Weekly clipping सबसे important",
           },
           {
             stage: "advanced",
             label: "Escalation",
             chemistry: "Emamectin → Chlorantraniliprole → Flubendiamide",
-            dose: "88 → 60 → 40 ml/acre — short PHI, harvest har 2-3 din",
+            dose: "88 → 60 → 40 ml/acre — short PHI, harvest हर 2-3 दिन",
           },
         ],
       },
@@ -367,12 +367,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         type: "disease",
         symptoms: ["Angular yellow patches bounded by veins, purplish downy underside"],
         stages: [
-          { stage: "early", label: "Shuruat", chemistry: "Mancozeb ya Chlorothalonil", dose: "500 g/acre ya 400 g/acre" },
+          { stage: "early", label: "शुरुआत", chemistry: "Mancozeb या Chlorothalonil", dose: "500 g/acre या 400 g/acre" },
           {
             stage: "advanced",
             label: "Humid spread",
-            chemistry: "Metalaxyl-M+Mancozeb ya Dimethomorph ya Cymoxanil+Mancozeb",
-            dose: "500 g/acre ya 400 g/acre ya 600 g/acre",
+            chemistry: "Metalaxyl-M+Mancozeb या Dimethomorph या Cymoxanil+Mancozeb",
+            dose: "500 g/acre या 400 g/acre या 600 g/acre",
           },
         ],
       },
@@ -383,15 +383,15 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         stages: [
           {
             stage: "early",
-            label: "Shuruat",
+            label: "शुरुआत",
             chemistry: "Wettable sulphur 80% WG",
-            dose: "500 g/acre (melon par garm din sulphur se bachna)",
+            dose: "500 g/acre (melon पर गर्म दिन sulphur से बचें)",
           },
           {
             stage: "advanced",
             label: "Heavy",
-            chemistry: "Azoxystrobin ya Hexaconazole ya Myclobutanil",
-            dose: "200 ml/acre ya 400 ml/acre ya 160 g/acre",
+            chemistry: "Azoxystrobin या Hexaconazole या Myclobutanil",
+            dose: "200 ml/acre या 400 ml/acre या 160 g/acre",
           },
         ],
       },
@@ -408,7 +408,7 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
             stage: "early",
             label: "Traps + baits (primary)",
             chemistry: "Cue-lure pheromone traps 8-10/acre + poison bait (jaggery+Malathion spots)",
-            dose: "Spray alone fail hota hai — fallen fruits daily collect karein",
+            dose: "Spray alone फेल होता है — fallen fruits daily collect करें",
           },
           {
             stage: "advanced",
@@ -423,13 +423,13 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         name: "Red Pumpkin Beetle",
         scientificName: "Aulacophora foveicollis",
         type: "pest",
-        symptoms: ["Cotyledon stage par seedlings kha jata hai"],
+        symptoms: ["Cotyledon stage पर seedlings खा जाता है"],
         stages: [
           {
             stage: "early",
             label: "Cotyledon — most vulnerable",
-            chemistry: "Carbaryl 50% WP ya Malathion 50% EC",
-            dose: "600 g/acre ya 400 ml/acre; subah ash dust low-cost option",
+            chemistry: "Carbaryl 50% WP या Malathion 50% EC",
+            dose: "600 g/acre या 400 ml/acre; सुबह ash dust low-cost option",
           },
         ],
       },
@@ -445,7 +445,7 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
             stage: "early",
             label: "Best practice",
             chemistry: "Plastic mulch on bed + trellising",
-            dose: "Fruit fly + fruit rot bhi kam hota hai",
+            dose: "Fruit fly + fruit rot भी कम होता है",
           },
         ],
       },
@@ -466,7 +466,7 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         scientificName: "Albugo candida",
         type: "disease",
         stages: [
-          { stage: "early", label: "Shuruat", chemistry: "Mancozeb 75% WP", dose: "500 g/acre" },
+          { stage: "early", label: "शुरुआत", chemistry: "Mancozeb 75% WP", dose: "500 g/acre" },
           {
             stage: "advanced",
             label: "Heavy",
@@ -480,10 +480,10 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         name: "Alternaria Leaf Spot",
         type: "disease",
         stages: [
-          { stage: "early", label: "Shuruat", chemistry: "Mancozeb", dose: "500 g/acre" },
+          { stage: "early", label: "शुरुआत", chemistry: "Mancozeb", dose: "500 g/acre" },
           {
             stage: "advanced",
-            label: "Fail raha hai",
+            label: "फैल रहा है",
             chemistry: "Azoxystrobin + Difenoconazole",
             dose: "200 ml/acre",
           },
@@ -496,12 +496,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         name: "Aphids",
         type: "pest",
         stages: [
-          { stage: "early", label: "Colonies", chemistry: "Thiamethoxam 25% WG ya Dimethoate", dose: "40 g/acre ya 300 ml/acre" },
+          { stage: "early", label: "Colonies", chemistry: "Thiamethoxam 25% WG या Dimethoate", dose: "40 g/acre या 300 ml/acre" },
           {
             stage: "advanced",
             label: "Heavy",
-            chemistry: "Imidacloprid 17.8% SL ya Acetamiprid",
-            dose: "60 ml/acre ya 40 g/acre",
+            chemistry: "Imidacloprid 17.8% SL या Acetamiprid",
+            dose: "60 ml/acre या 40 g/acre",
           },
         ],
       },
@@ -514,14 +514,14 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "Small larvae",
-            chemistry: "Bt @ 400 g/acre ya Spinosad 45% SC",
-            dose: "400 g/acre ya 60 ml/acre + sticker",
+            chemistry: "Bt @ 400 g/acre या Spinosad 45% SC",
+            dose: "400 g/acre या 60 ml/acre + sticker",
           },
           {
             stage: "advanced",
             label: "Resistance-prone",
-            chemistry: "Spinetoram ya Chlorantraniliprole ya Emamectin",
-            dose: "100 ml/acre ya 60 ml/acre ya 88 g/acre — strict rotation",
+            chemistry: "Spinetoram या Chlorantraniliprole या Emamectin",
+            dose: "100 ml/acre या 60 ml/acre या 88 g/acre — strict rotation",
           },
         ],
       },
@@ -552,12 +552,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         name: "Downy Mildew",
         type: "disease",
         stages: [
-          { stage: "early", label: "Shuruat + sticker", chemistry: "Mancozeb 75% WP", dose: "500 g/acre + 0.5 ml/L sticker" },
+          { stage: "early", label: "शुरुआत + sticker", chemistry: "Mancozeb 75% WP", dose: "500 g/acre + 0.5 ml/L sticker" },
           {
             stage: "advanced",
-            label: "Curd par bhi",
-            chemistry: "Metalaxyl-M+Mancozeb ya Dimethomorph",
-            dose: "500 g/acre ya 400 g/acre",
+            label: "Curd पर भी",
+            chemistry: "Metalaxyl-M+Mancozeb या Dimethomorph",
+            dose: "500 g/acre या 400 g/acre",
           },
         ],
       },
@@ -586,14 +586,14 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "Biologicals first",
-            chemistry: "Bt @ 400 g/acre ya Spinosad",
-            dose: "400 g/acre ya 60 ml/acre",
+            chemistry: "Bt @ 400 g/acre या Spinosad",
+            dose: "400 g/acre या 60 ml/acre",
           },
           {
             stage: "advanced",
             label: "Escalation",
-            chemistry: "Spinetoram ya Chlorantraniliprole ya Emamectin + sticker",
-            dose: "100/60/88 — DBM sab kuch resist kar leta hai",
+            chemistry: "Spinetoram या Chlorantraniliprole या Emamectin + sticker",
+            dose: "100/60/88 — DBM सब कुछ resist कर लेता है",
           },
         ],
       },
@@ -625,7 +625,7 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         type: "disease",
         symptoms: ["#1 onion disease"],
         stages: [
-          { stage: "early", label: "Shuruat + sticker mandatory", chemistry: "Mancozeb", dose: "500 g/acre + sticker" },
+          { stage: "early", label: "शुरुआत + sticker mandatory", chemistry: "Mancozeb", dose: "500 g/acre + sticker" },
           {
             stage: "advanced",
             label: "Heavy",
@@ -641,12 +641,12 @@ export const OTHER_PROFILES: CropProtectionProfile[] = [
         name: "Thrips",
         type: "pest",
         stages: [
-          { stage: "early", label: "Shuruat", chemistry: "Fipronil 5% SC ya Spinosad", dose: "400 ml/acre ya 60 ml/acre" },
+          { stage: "early", label: "शुरुआत", chemistry: "Fipronil 5% SC या Spinosad", dose: "400 ml/acre या 60 ml/acre" },
           {
             stage: "advanced",
             label: "Heavy",
-            chemistry: "Spinetoram ya Cyantraniliprole",
-            dose: "100 ml/acre ya 360 ml/acre",
+            chemistry: "Spinetoram या Cyantraniliprole",
+            dose: "100 ml/acre या 360 ml/acre",
           },
         ],
       },

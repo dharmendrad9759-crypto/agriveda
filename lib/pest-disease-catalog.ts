@@ -114,17 +114,17 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
     stage: pest.stage,
     description:
       merged?.description ??
-      `${pest.scientificName} is a major insect pest of ${crop.name}. It damages the crop during ${pest.stage} stage and requires integrated management combining monitoring, biological control, and targeted chemical intervention only at Economic Threshold Level (ETL).`,
+      `${pest.scientificName} ${crop.name} की एक प्रमुख कीट समस्या है। यह ${pest.stage} अवस्था में फसल को नुकसान पहुँचाता है। समेकित प्रबंधन में निगरानी, जैविक नियंत्रण और Economic Threshold Level (ETL) पर ही लक्षित रासायनिक उपचार शामिल है।`,
     symptoms: merged?.symptoms ?? [
-      `Visible feeding damage during ${pest.stage}`,
-      "Reduced plant vigour and yield potential",
-      "Honeydew or frass may be present on affected plant parts",
+      `${pest.stage} अवस्था में दिखने वाला चबाने/चूसने का नुकसान`,
+      "पौधे की वृद्धि और उपज की क्षमता कम होना",
+      "प्रभावित भागों पर honeydew या frass दिख सकता है",
     ],
     remediation: merged?.remediation ?? [
-      pest.control ?? "Follow package of practices for recommended control",
-      "Scout field twice weekly during vulnerable crop stage",
-      "Conserve natural enemies — avoid broad-spectrum insecticides",
-      "Rotate insecticide modes of action (IRAC groups) to prevent resistance",
+      pest.control ?? "अनुशंसित नियंत्रण के लिए package of practices का पालन करें",
+      "संवेदनशील अवस्था में सप्ताह में दो बार खेत की जाँच करें",
+      "प्राकृतिक शत्रुओं को बचाएँ — broad-spectrum कीटनाशकों से बचें",
+      "प्रतिरोध रोकने के लिए कीटनाशक के MoA (IRAC groups) बदलते रहें",
     ],
     iracGroup: pest.iracGroup,
     activeIngredient: merged?.activeIngredient ?? pest.control,
@@ -157,18 +157,18 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
     stage: disease.stage,
     description:
       merged?.description ??
-      `${disease.name} is caused by ${disease.pathogen}. It affects ${crop.name} during ${disease.stage} and spreads under favourable weather conditions. Early identification and integrated disease management are critical to prevent yield loss.`,
+      `${disease.name} ${disease.pathogen} से होता है। यह ${crop.name} में ${disease.stage} अवस्था में प्रभावित करता है और अनुकूल मौसम में फैलता है। उपज क्षति रोकने के लिए शीघ्र पहचान और समेकित रोग प्रबंधन जरूरी है।`,
     symptoms: merged?.symptoms ?? [
-      `Characteristic lesions or symptoms during ${disease.stage}`,
-      "Progressive spread if humidity and temperature are favourable",
-      "Yield reduction proportional to disease severity and timing",
+      `${disease.stage} अवस्था में विशिष्ट दाग या लक्षण`,
+      "आर्द्रता और तापमान अनुकूल होने पर धीरे-धीरे फैलाव",
+      "रोग की गंभीरता और समय के अनुसार उपज में कमी",
     ],
     remediation: merged?.remediation ?? [
-      disease.control ?? "Apply recommended fungicide/bactericide as per local advisory",
-      "Remove and destroy infected plant debris",
-      "Improve drainage and reduce leaf wetness duration",
-      "Use resistant varieties where available",
-      "Rotate crops to break disease cycle",
+      disease.control ?? "स्थानीय सलाह के अनुसार अनुशंसित fungicide/bactericide लगाएँ",
+      "संक्रमित पौधों के अवशेष हटाकर नष्ट करें",
+      "जल निकासी सुधारें और पत्तियों पर गीला रहने का समय कम करें",
+      "जहाँ उपलब्ध हो, प्रतिरोधी किस्में अपनाएँ",
+      "रोग चक्र तोड़ने के लिए फसल चक्र अपनाएँ",
     ],
     fracGroup: disease.fracGroup,
     activeIngredient: merged?.activeIngredient ?? disease.control,
@@ -190,16 +190,16 @@ function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
     scientificName: weed.scientificName,
     image: resolveThreatImage(undefined, weed.image) ?? THREAT_IMAGES.weed,
     stage: weed.criticalPeriod,
-    description: `${weed.scientificName} (${weed.type} weed) competes with ${crop.name} for nutrients, water, and light. Critical competition period is ${weed.criticalPeriod}. Timely weed management is essential for protecting yield.`,
+    description: `${weed.scientificName} (${weed.type} खरपतवार) ${crop.name} के साथ पोषक तत्व, पानी और रोशनी के लिए प्रतिस्पर्धा करता है। महत्वपूर्ण प्रतिस्पर्धा अवधि ${weed.criticalPeriod} है। उपज बचाने के लिए समय पर खरपतवार नियंत्रण जरूरी है।`,
     symptoms: [
-      `Competition during critical period: ${weed.criticalPeriod}`,
-      "Reduced crop stand and vigour if uncontrolled",
-      "Nutrient and moisture stress in crop plants",
+      `महत्वपूर्ण अवधि में प्रतिस्पर्धा: ${weed.criticalPeriod}`,
+      "नियंत्रण न होने पर फसल की घनत्व और वृद्धि कम",
+      "फसल के पौधों में पोषक और नमी की कमी",
     ],
     remediation: [
-      `Chemical: Pre-emergence: ${weed.preEmergence}`,
-      `Chemical: Post-emergence: ${weed.postEmergence}`,
-      weed.culturalControl ? `Cultural: ${weed.culturalControl}` : "",
+      `रासायनिक — Pre-emergence: ${weed.preEmergence}`,
+      `रासायनिक — Post-emergence: ${weed.postEmergence}`,
+      weed.culturalControl ? `सांस्कृतिक: ${weed.culturalControl}` : "",
     ].filter(Boolean),
   };
 

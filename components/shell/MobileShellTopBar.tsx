@@ -10,10 +10,11 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 export default function MobileShellTopBar() {
   const { profile } = useFarmerProfile();
   const { t } = useLocale();
-  const location =
-    [profile.village || profile.district, profile.state].filter(Boolean).join(", ") ||
-    "Sehore, MP";
-  const shortPlace = location.split(",")[0] || location;
+  const hasLocation = Boolean(profile.village || profile.district || profile.state);
+  const location = hasLocation
+    ? [profile.village || profile.district, profile.state].filter(Boolean).join(", ")
+    : null;
+  const shortPlace = location ? location.split(",")[0] || location : "स्थान सेट करें";
   const initials = (profile.name.trim() || "क")
     .split(/\s+/)
     .slice(0, 2)
@@ -25,20 +26,30 @@ export default function MobileShellTopBar() {
       <div className="mx-auto flex max-w-lg items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <NavDrawerTrigger variant="menu" />
-          <AppLink href="/" className="flex min-w-0 items-center gap-1.5" aria-label={BRAND}>
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-[0_6px_16px_rgba(5,150,105,0.35)]">
-              <Leaf className="h-4 w-4" strokeWidth={2.4} />
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate font-display text-[15px] font-extrabold tracking-tight text-[var(--av-text-primary)]">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <AppLink href="/" className="flex shrink-0 items-center gap-1.5" aria-label={BRAND}>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-[0_6px_16px_rgba(5,150,105,0.35)]">
+                <Leaf className="h-4 w-4" strokeWidth={2.4} />
+              </span>
+              <span className="truncate font-display text-[15px] font-extrabold tracking-tight text-[var(--av-text-primary)]">
                 AgriVeda
               </span>
-              <span className="flex items-center gap-0.5 text-[10px] font-semibold text-[var(--av-text-muted)]">
+            </AppLink>
+            {hasLocation ? (
+              <span className="flex min-w-0 items-center gap-0.5 text-[10px] font-semibold text-[var(--av-text-muted)]">
                 <MapPin className="h-2.5 w-2.5 shrink-0 text-emerald-600" />
                 <span className="truncate">{shortPlace}</span>
               </span>
-            </span>
-          </AppLink>
+            ) : (
+              <AppLink
+                href="/profile/edit"
+                className="flex min-w-0 items-center gap-0.5 text-[10px] font-semibold text-sky-700 dark:text-sky-300"
+              >
+                <MapPin className="h-2.5 w-2.5 shrink-0" />
+                <span className="truncate">{shortPlace}</span>
+              </AppLink>
+            )}
+          </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
@@ -48,7 +59,6 @@ export default function MobileShellTopBar() {
             aria-label={t("shellNotifications")}
           >
             <Bell className="h-4 w-4" />
-            <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-md bg-amber-500" />
           </AppLink>
           <AppLink
             href="/profile"

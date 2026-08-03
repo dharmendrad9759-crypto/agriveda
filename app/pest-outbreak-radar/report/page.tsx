@@ -14,12 +14,14 @@ import { requestUserLocation } from "@/lib/weatherApi";
 import type { OutbreakSeverity } from "@/types/outbreak";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const OutbreakMap = dynamic(() => import("@/components/outbreak-radar/OutbreakMap"), {
   ssr: false,
 });
 
 export default function ReportOutbreakPage() {
+  const { t } = useLocale();
   const navigate = useAppNavigate();
   const { showToast } = useToast();
   const { submit, submitting } = useReportOutbreak();
@@ -96,9 +98,9 @@ export default function ReportOutbreakPage() {
       title="Report an Issue"
       subtitle="Nearby farmers ko alert — GPS location zaroori"
       breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Outbreak Radar", href: "/pest-outbreak-radar" },
-        { label: "Report" },
+        { label: t("navHome"), href: "/" },
+        { label: t("toolOutbreak"), href: "/pest-outbreak-radar" },
+        { label: t("outbreakReport") },
       ]}
     >
       <DarkCard>

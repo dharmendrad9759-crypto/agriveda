@@ -32,12 +32,12 @@ export interface EnrichedThreat {
 }
 
 export const CATEGORY_LABELS: Record<ThreatCategory, string> = {
-  fungal: "Fungal",
-  bacterial: "Bacterial",
-  viral: "Viral",
-  insect: "Insect",
-  weed: "Weed",
-  other: "Other",
+  fungal: "फफूंद (Fungal)",
+  bacterial: "बैक्टीरिया",
+  viral: "वायरस",
+  insect: "कीट",
+  weed: "खरपतवार",
+  other: "अन्य",
 };
 
 export const CATEGORY_COLORS: Record<ThreatCategory, string> = {

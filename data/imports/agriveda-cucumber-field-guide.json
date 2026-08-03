@@ -1,503 +1,503 @@
 {
-  "crop_name": "Cucumber",
+  "crop_name": "खीरा",
   "crop_basics": {
     "growth_stages": [
       {
-        "stage": "Land preparation and bed preparation",
-        "typical_period": "7-10 days before sowing",
-        "field_practical_notes": "Prepare well-drained raised beds or ridges. Cucumber is sensitive to waterlogging. Incorporate well-decomposed FYM or compost at 20-25 tonnes per hectare. Ensure good drainage channels between beds. Select a sunny location with protection from strong winds."
+        "stage": "भूमि तैयारी और क्यारी बनाना",
+        "typical_period": "बुवाई से 7-10 दिन पहले",
+        "field_practical_notes": "अच्छी जल निकासी वाली ऊँची क्यारियाँ या मेड़ बनाएँ। खीरा जलभराव के प्रति संवेदनशील है। 20-25 टन प्रति हेक्टेयर अच्छी तरह सड़ी हुई गोबर की खाद या कम्पोस्ट मिलाएँ। क्यारियों के बीच अच्छी जल निकासी नालियाँ बनाएँ। तेज़ हवा से सुरक्षित धूप वाली जगह चुनें।"
       },
       {
-        "stage": "Seed selection and treatment",
-        "typical_period": "1-2 days before sowing",
-        "field_practical_notes": "Use certified hybrid or open-pollinated variety seed suitable for the season and local market. Treat seed with recommended fungicide to prevent damping-off. Soak seeds in water for 3-4 hours before sowing to improve germination uniformity."
+        "stage": "बीज चयन और उपचार",
+        "typical_period": "बुवाई से 1-2 दिन पहले",
+        "field_practical_notes": "मौसम और स्थानीय बाज़ार के अनुकूल प्रमाणित हाइब्रिड या ओपन-पोलिनेटेड किस्म का बीज उपयोग करें। डैम्पिंग-ऑफ रोकने के लिए अनुशंसित कवकनाशी से बीज उपचार करें। अंकुरण की एकरूपता बढ़ाने के लिए बुवाई से पहले बीज को 3-4 घंटे पानी में भिगोएँ।"
       },
       {
-        "stage": "Germination",
-        "typical_period": "0-7 days after sowing (Day 0-7)",
-        "field_practical_notes": "Maintain consistent soil moisture without waterlogging. Light irrigation morning and evening if needed. Protect from heavy rain. Monitor for damping-off and root rot. Remove weak or diseased seedlings. Avoid walking on beds."
+        "stage": "अंकुरण",
+        "typical_period": "बुवाई के बाद 0-7 दिन (दिन 0-7)",
+        "field_practical_notes": "जलभराव के बिना मिट्टी में लगातार नमी बनाए रखें। ज़रूरत हो तो सुबह-शाम हल्की सिंचाई करें। भारी बारिश से बचाएँ। डैम्पिंग-ऑफ और जड़ सड़न की निगरानी करें। कमज़ोर या रोगग्रस्त पौधे हटाएँ। क्यारियों पर चलकर नुकसान न करें।"
       },
       {
-        "stage": "Seedling establishment and first true leaves",
-        "typical_period": "7-15 days after sowing (Day 7-15)",
-        "field_practical_notes": "Thin to recommended spacing if direct-seeded (usually 45-60 cm between plants, 1.5-2 m between rows). Apply first light nitrogen dose. Monitor for aphids, whiteflies and damping-off. Provide light staking or support preparation if using trellising system."
+        "stage": "पौधे की स्थापना और पहली सच्ची पत्तियाँ",
+        "typical_period": "बुवाई के बाद 7-15 दिन (दिन 7-15)",
+        "field_practical_notes": "सीधी बुवाई हो तो अनुशंसित दूरी पर पौधे पतला करें (आमतौर पर पौधों के बीच 45-60 सेमी, पंक्तियों के बीच 1.5-2 मी)। पहली हल्की नाइट्रोजन खुराक दें। एफिड, सफेद मक्खी और डैम्पिंग-ऑफ की निगरानी करें। बेल सहारा प्रणाली उपयोग कर रहे हों तो हल्का स्टेकिंग या सहारा तैयार करें।"
       },
       {
-        "stage": "Vine development and vegetative growth",
-        "typical_period": "15-30 days after sowing (Day 15-30)",
-        "field_practical_notes": "Rapid vine and leaf expansion. Install trellis or support system if using vertical training. Apply second nitrogen and potassium dose. Monitor for cucumber beetles, aphids, powdery mildew and downy mildew. Light earthing-up around the base. Remove weeds carefully without damaging shallow roots."
+        "stage": "बेल विकास और शाकीय वृद्धि",
+        "typical_period": "बुवाई के बाद 15-30 दिन (दिन 15-30)",
+        "field_practical_notes": "बेल और पत्तियों का तेज़ विस्तार। ऊर्ध्वाधर प्रशिक्षण उपयोग कर रहे हों तो बेल सहारा या ट्रेलिस लगाएँ। दूसरी नाइट्रोजन और पोटाश खुराक दें। खीरे के भृंग, एफिड, पाउडरी फफूंद और डाउनी फफूंद की निगरानी करें। जड़ के पास हल्का मिट्टी चढ़ाना। ऊपरी जड़ों को नुकसान पहुँचाए बिना खरपतवार सावधानी से हटाएँ।"
       },
       {
-        "stage": "Pre-flowering and flowering initiation",
-        "typical_period": "30-40 days after sowing (Day 30-40)",
-        "field_practical_notes": "First flowers appear, usually male flowers first followed by female flowers. Ensure adequate bee pollination in open-pollinated types. Monitor fruit fly activity. Apply third fertilizer dose with emphasis on potassium for fruit quality. Check for early signs of viral diseases transmitted by aphids or whiteflies."
+        "stage": "पूर्व-फूल और फूल आरंभ",
+        "typical_period": "बुवाई के बाद 30-40 दिन (दिन 30-40)",
+        "field_practical_notes": "पहले फूल दिखते हैं, आमतौर पर पहले नर फूल, फिर मादा फूल। ओपन-पोलिनेटेड किस्मों में पर्याप्त मधुमक्खी परागण सुनिश्चित करें। फल मक्खी गतिविधि की निगरानी करें। फल की गुणवत्ता के लिए पोटाश पर जोर देते हुए तीसरी उर्वरक खुराक दें। एफिड या सफेद मक्खी से फैलने वाले वायरल रोगों के शुरुआती लक्षण देखें।"
       },
       {
-        "stage": "Active flowering and fruit setting",
-        "typical_period": "40-50 days after sowing (Day 40-50)",
-        "field_practical_notes": "Peak flowering and fruit set. Maintain consistent soil moisture—fluctuations cause fruit bitterness and deformity. Monitor for fruit borers, fruit flies, powdery mildew, anthracnose and bacterial wilt. Remove misshapen or diseased fruits. Apply fourth fertilizer dose."
+        "stage": "सक्रिय फूल और फल बनना",
+        "typical_period": "बुवाई के बाद 40-50 दिन (दिन 40-50)",
+        "field_practical_notes": "फूल और फल बनने की चरम अवस्था। मिट्टी में लगातार नमी बनाए रखें—उतार-चढ़ाव से फल कड़वे और विकृत होते हैं। फल छेदक, फल मक्खी, पाउडरी फफूंद, एंथ्रेक्नोज और जीवाणु मुरझाहट की निगरानी करें। विकृत या रोगग्रस्त फल हटाएँ। चौथी उर्वरक खुराक दें।"
       },
       {
-        "stage": "First harvest and continuous fruiting",
-        "typical_period": "50-65 days after sowing (Day 50-65)",
-        "field_practical_notes": "Begin harvest when fruits reach market size (typically 15-20 cm for slicing types). Harvest every 2-3 days to maintain quality and encourage continued production. Monitor for fruit rot, blossom-end rot and pest damage. Apply fifth fertilizer dose to support continued fruiting."
+        "stage": "पहली कटाई और निरंतर फलन",
+        "typical_period": "बुवाई के बाद 50-65 दिन (दिन 50-65)",
+        "field_practical_notes": "फल बाज़ार आकार तक पहुँचने पर कटाई शुरू करें (स्लाइसिंग किस्मों के लिए आमतौर पर 15-20 सेमी)। गुणवत्ता बनाए रखने और उत्पादन जारी रखने के लिए हर 2-3 दिन कटाई करें। फल सड़न, फूल-सिरा सड़न और कीट क्षति की निगरानी करें। निरंतर फलन के लिए पाँचवीं उर्वरक खुराक दें।"
       },
       {
-        "stage": "Peak harvest",
-        "typical_period": "65-80 days after sowing (Day 65-80)",
-        "field_practical_notes": "Maximum fruit production period. Harvest daily or every alternate day. Maintain strict pest and disease monitoring. Continue foliar sprays as needed respecting PHI. Remove overripe, damaged or diseased fruits. Apply sixth fertilizer dose if crop vigor remains good."
+        "stage": "चरम कटाई",
+        "typical_period": "बुवाई के बाद 65-80 दिन (दिन 65-80)",
+        "field_practical_notes": "अधिकतम फल उत्पादन अवधि। रोज़ या एक दिन छोड़कर कटाई करें। कीट और रोग की सख्त निगरानी जारी रखें। PHI का पालन करते हुए आवश्यकतानुसार पर्ण स्प्रे जारी रखें। अधिपक्व, क्षतिग्रस्त या रोगग्रस्त फल हटाएँ। फसल की शक्ति अच्छी रहे तो छठी उर्वरक खुराक दें।"
       },
       {
-        "stage": "Late harvest and decline",
-        "typical_period": "80-95 days after sowing (Day 80-95)",
-        "field_practical_notes": "Production begins to decline. Older leaves show senescence. Continue harvesting marketable fruits. Stop fertilizer application. Plan for crop termination and field cleanup. Monitor for secondary pest infestations moving from other declining crops."
+        "stage": "देर कटाई और गिरावट",
+        "typical_period": "बुवाई के बाद 80-95 दिन (दिन 80-95)",
+        "field_practical_notes": "उत्पादन घटने लगता है। पुरानी पत्तियों में वृद्धावस्था दिखती है। बाज़ार योग्य फल काटते रहें। उर्वरक देना बंद करें। फसल समाप्ति और खेत सफाई की योजना बनाएँ। अन्य घटती फसलों से आने वाले द्वितीयक कीट संक्रमण की निगरानी करें।"
       },
       {
-        "stage": "Final harvest and field sanitation",
-        "typical_period": "95-100 days after sowing (Day 95-100)",
-        "field_practical_notes": "Final harvest of remaining marketable fruits. Remove and destroy all crop residue to prevent pest and disease carryover. Do not compost diseased material. Clean and sanitize support structures. Prepare land for next crop rotation—avoid cucurbit family for at least one season."
+        "stage": "अंतिम कटाई और खेत स्वच्छता",
+        "typical_period": "बुवाई के बाद 95-100 दिन (दिन 95-100)",
+        "field_practical_notes": "शेष बाज़ार योग्य फलों की अंतिम कटाई। कीट और रोग के अगले सीज़न में रहने से रोकने के लिए सारा फसल अवशेष हटाकर नष्ट करें। रोगग्रस्त सामग्री को कम्पोस्ट न करें। सहारा संरचनाएँ साफ़ और स्वच्छ करें। अगली फसल चक्र के लिए भूमि तैयार करें—कम से कम एक सीज़न ककड़ी वर्ग परिवार की फसल न लगाएँ।"
       }
     ],
     "fertilizer_schedule": {
-      "important_limitation": "Fertilizer recommendations vary with soil type, organic matter, soil test results, variety, season and irrigation method. Always base final doses on soil test and local State Agricultural University or Horticulture Department recommendations.",
-      "general_recommendation": "A common reference for cucumber under good management is approximately 100-120 kg N, 50-60 kg P2O5, and 50-60 kg K2O per hectare. Actual requirement depends on soil fertility and yield target.",
-      "basal_application": "Apply well-decomposed FYM or compost at 20-25 tonnes per hectare during land preparation. Apply full dose of phosphorus (as SSP or DAP) and 25% of nitrogen and potassium as basal before sowing or transplanting. Mix thoroughly in the planting zone.",
+      "important_limitation": "उर्वरक सिफारिशें मिट्टी के प्रकार, जैविक पदार्थ, मिट्टी परीक्षण परिणाम, किस्म, मौसम और सिंचाई विधि से बदलती हैं। अंतिम खुराक हमेशा मिट्टी परीक्षण और स्थानीय राज्य कृषि विश्वविद्यालय या बागवानी विभाग की सिफारिशों पर आधारित करें।",
+      "general_recommendation": "अच्छे प्रबंधन में खीरे के लिए एक सामान्य संदर्भ लगभग 100-120 kg N, 50-60 kg P2O5, और 50-60 kg K2O प्रति हेक्टेयर है। वास्तविक आवश्यकता मिट्टी की उर्वरता और उपज लक्ष्य पर निर्भर करती है।",
+      "basal_application": "भूमि तैयारी के दौरान 20-25 टन प्रति हेक्टेयर अच्छी तरह सड़ी हुई गोबर की खाद या कम्पोस्ट दें। फास्फोरस की पूरी खुराक (SSP या DAP के रूप में) और नाइट्रोजन व पोटाश का 25% बुवाई या रोपाई से पहले बेसल रूप में दें। रोपण क्षेत्र में अच्छी तरह मिलाएँ।",
       "fertigation_schedule": [
         {
           "day": "0-7",
-          "stage": "Germination",
+          "stage": "अंकुरण",
           "N_kg_per_acre": "0",
           "P2O5_kg_per_acre": "Full basal dose already applied",
           "K2O_kg_per_acre": "0",
-          "notes": "No additional fertilizer. Light irrigation only."
+          "notes": "कोई अतिरिक्त उर्वरक नहीं। केवल हल्की सिंचाई।"
         },
         {
           "day": "10-12",
-          "stage": "Seedling establishment",
+          "stage": "पौधे की स्थापना",
           "N_kg_per_acre": "4-5",
           "P2O5_kg_per_acre": "0",
           "K2O_kg_per_acre": "2-3",
-          "notes": "First top-dress or fertigation. Use water-soluble NPK 19:19:19 or urea + MOP. Light dose to avoid seedling burn."
+          "notes": "पहली ऊपरी मलन या फर्टिगेशन। घुलनशील NPK 19:19:19 या यूरिया + MOP उपयोग करें। पौधे जलने से बचाने के लिए हल्की खुराक।"
         },
         {
           "day": "20-22",
-          "stage": "Vegetative growth",
+          "stage": "शाकीय वृद्धि",
           "N_kg_per_acre": "6-8",
           "P2O5_kg_per_acre": "0",
           "K2O_kg_per_acre": "4-5",
-          "notes": "Second top-dress. Encourage vigorous vine and leaf growth. Apply around plant base and irrigate immediately."
+          "notes": "दूसरी ऊपरी मलन। बेल और पत्तियों की तीव्र वृद्धि को प्रोत्साहित करें। पौधे के आधे चारों ओर दें और तुरंत सिंचाई करें।"
         },
         {
           "day": "30-32",
-          "stage": "Pre-flowering",
+          "stage": "पूर्व-फूल",
           "N_kg_per_acre": "6-8",
           "P2O5_kg_per_acre": "0",
           "K2O_kg_per_acre": "5-6",
-          "notes": "Third application. Increase potassium proportion for flower and fruit development. Can add micronutrient foliar spray (Zn, B, Ca)."
+          "notes": "तीसरा प्रयोग। फूल और फल विकास के लिए पोटाश का अनुपात बढ़ाएँ। सूक्ष्म पोषक पर्ण स्प्रे (Zn, B, Ca) जोड़ सकते हैं।"
         },
         {
           "day": "40-42",
-          "stage": "Flowering and fruit set",
+          "stage": "फूल और फल बनना",
           "N_kg_per_acre": "5-6",
           "P2O5_kg_per_acre": "0",
           "K2O_kg_per_acre": "6-7",
-          "notes": "Fourth application. Potassium-rich feed supports fruit quality and disease resistance. Avoid excessive nitrogen which delays fruiting."
+          "notes": "चौथा प्रयोग। पोटाश युक्त खाद फल की गुणवत्ता और रोग प्रतिरोधकता में सहायक। अत्यधिक नाइट्रोजन से फलन देर होता है, इससे बचें।"
         },
         {
           "day": "50-52",
-          "stage": "First harvest phase",
+          "stage": "पहली कटाई अवस्था",
           "N_kg_per_acre": "4-5",
           "P2O5_kg_per_acre": "0",
           "K2O_kg_per_acre": "5-6",
-          "notes": "Fifth application. Maintain balanced nutrition during harvest. Monitor for nutrient deficiency symptoms on leaves."
+          "notes": "पाँचवाँ प्रयोग। कटाई के दौरान संतुलित पोषण बनाए रखें। पत्तियों पर पोषक तत्व की कमी के लक्षण देखें।"
         },
         {
           "day": "60-65",
-          "stage": "Peak fruiting",
+          "stage": "चरम फलन",
           "N_kg_per_acre": "4-5",
           "P2O5_kg_per_acre": "0",
           "K2O_kg_per_acre": "5-6",
-          "notes": "Sixth application. Continue potassium emphasis. Can add calcium nitrate if blossom-end rot is observed."
+          "notes": "छठा प्रयोग। पोटाश पर जोर जारी रखें। फूल-सिरा सड़न दिखे तो calcium nitrate जोड़ सकते हैं।"
         },
         {
           "day": "75-80",
-          "stage": "Late harvest",
+          "stage": "देर कटाई",
           "N_kg_per_acre": "2-3 (optional)",
           "P2O5_kg_per_acre": "0",
           "K2O_kg_per_acre": "3-4 (optional)",
-          "notes": "Final light dose only if crop vigor is good and harvest will continue beyond 90 days. Stop fertilizer if crop is declining."
+          "notes": "अंतिम हल्की खुराक केवल तभी जब फसल की शक्ति अच्छी हो और 90 दिन से अधिक कटाई जारी रहेगी। फसल घट रही हो तो उर्वरक देना बंद करें।"
         }
       ],
-      "foliar_nutrition": "Apply foliar spray of micronutrients (19:19:19 + micronutrient mix or specific Zn, B, Ca formulations) at 15-day intervals starting from 25 days after sowing. Spray early morning or late evening. Add 1-2 ml per liter of non-ionic surfactant for better absorption. Calcium and boron foliar sprays reduce blossom-end rot and improve fruit quality.",
-      "organic_inputs": "Use well-decomposed FYM, vermicompost, neem cake and bio-fertilizers (Azotobacter, Azospirillum, phosphate-solubilizing bacteria) as supplements. Their nutrient contribution should reduce mineral fertilizer requirement by approximately 25%.",
+      "foliar_nutrition": "बुवाई के 25 दिन बाद से 15 दिन के अंतराल पर सूक्ष्म पोषक तत्व का पर्ण स्प्रे करें (19:19:19 + सूक्ष्म पोषक मिश्रण या विशिष्ट Zn, B, Ca फॉर्म्युलेशन)। सुबह जल्दी या शाम को स्प्रे करें। बेहतर अवशोषण के लिए प्रति लीटर 1-2 ml non-ionic surfactant मिलाएँ। कैल्शियम और बोरॉन पर्ण स्प्रे फूल-सिरा सड़न कम करते हैं और फल की गुणवत्ता बढ़ाते हैं।",
+      "organic_inputs": "अच्छी तरह सड़ी गोबर की खाद, vermicompost, neem cake और bio-fertilizers (Azotobacter, Azospirillum, phosphate-solubilizing bacteria) पूरक के रूप में उपयोग करें। इनका पोषक योगदान खनिज उर्वरक की आवश्यकता लगभग 25% कम कर देना चाहिए।",
       "field_checks": [
-        "Conduct soil test before crop for accurate nutrient planning.",
-        "Never apply fertilizer to dry soil; irrigate before or immediately after top-dressing.",
-        "Avoid touching foliage with concentrated fertilizer to prevent leaf burn.",
-        "Split applications maintain steady nutrient supply and reduce leaching.",
-        "Monitor leaf color and fruit quality; pale leaves and poor fruit set indicate nutrient imbalance.",
-        "Excessive nitrogen causes lush foliage, delayed flowering, soft growth susceptible to disease and bitter fruits."
+        "सटीक पोषक योजना के लिए फसल से पहले मिट्टी परीक्षण कराएँ।",
+        "सूखी मिट्टी में कभी उर्वरक न डालें; ऊपरी मलनing से पहले या तुरंत बाद सिंचाई करें।",
+        "पत्ती जलने से बचाने के लिए केंद्रित उर्वरक से पत्तियों को छूने से बचें।",
+        "खुराक विभाजित करने से लगातार पोषक आपूर्ति रहती है और lixiviation कम होती है।",
+        "पत्ती का रंग और फल की गुणवत्ता देखें; पीली पत्तियाँ और कम फल बनना पोषक असंतुलन दर्शाता है।",
+        "अत्यधिक नाइट्रोजन से घने पत्ते, देर से फूल, रोग के प्रति कमज़ोर नरम वृद्धि और कड़वे फल होते हैं।"
       ]
     },
-    "irrigation_schedule": "Cucumber requires consistent soil moisture throughout the crop cycle. Critical stages are germination, flowering and fruiting. Use drip irrigation where available for water-use efficiency and disease reduction. Furrow irrigation should be light and frequent, avoiding waterlogging. Irrigate every 2-3 days during germination and seedling stage (light irrigation). During vegetative growth, irrigate every 3-4 days depending on soil type and weather. Increase frequency to every 2-3 days during flowering and fruiting—moisture stress causes bitter fruits, poor set and fruit drop. In drip systems, run daily or alternate days with shorter duration. Stop or reduce irrigation 2-3 days before each harvest to improve fruit firmness and shelf life. Avoid overhead irrigation during flowering and fruiting to reduce foliar disease pressure. Mulching with plastic or organic material conserves moisture and reduces weed competition.",
-    "harvest": "Harvest cucumber when fruits reach marketable size and uniform color, typically 50-65 days after sowing for early harvest and continuing until 95-100 days. For slicing types, harvest at 15-20 cm length; for pickling types, 8-12 cm. Harvest early morning when fruits are turgid and cool. Use a sharp knife or secateurs to cut the fruit with a short stalk; avoid pulling which damages vines. Harvest every 2-3 days during peak production to maintain fruit quality and encourage continuous flowering. Overripe fruits become seedy, bitter and yellow, reducing market value. Handle gently to avoid bruising. Wash, grade and pack in ventilated crates. Store in a cool shaded area; cucumber is highly perishable. Market within 24-48 hours for best quality, or store at 10-12°C with 90-95% relative humidity for up to 1 week.",
+    "irrigation_schedule": "खीरे को पूरी फसल अवधि में मिट्टी में लगातार नमी चाहिए। महत्वपूर्ण अवस्थाएँ अंकुरण, फूल और फलन हैं। उपलब्ध हो तो पानी की बचत और रोग कम करने के लिए drip सिंचाई उपयोग करें। नाली सिंचाई हल्की और बार-बार हो, जलभराव से बचें। अंकुरण और पौधे अवस्था में हर 2-3 दिन सिंचाई करें (हल्की)। शाकीय वृद्धि में मिट्टी और मौसम के अनुसार हर 3-4 दिन सिंचाई करें। फूल और फलन में हर 2-3 दिन की आवृत्ति बढ़ाएँ—नमी का तनाव कड़वे फल, कम फल बनना और फल झड़ना करता है। drip प्रणाली में रोज़ या एक दिन छोड़कर कम समय के लिए चलाएँ। फल की दृढ़ता और भंडारण जीवन बढ़ाने के लिए हर कटाई से 2-3 दिन पहले सिंचाई कम या बंद करें। पर्ण रोग दबाव कम करने के लिए फूल और फलन में overhead सिंचाई से बचें। प्लास्टिक या जैविक मल्चing नमी बचाती है और खरपतवार प्रतिस्पर्धा कम करती है।",
+    "harvest": "फल बाज़ार योग्य आकार और एकसमान रंग पर पहुँचने पर कटाई करें, प्रारंभिक कटाई आमतौर पर बुवाई के 50-65 दिन बाद और 95-100 दिन तक जारी। स्लाइसिंग किस्मों के लिए 15-20 सेमी लंबाई; pickling किस्मों के लिए 8-12 सेमी। सुबह जल्दी काटें जब फल भरी और ठंडे हों। तेज़ चाकू या कैंची से छोटे डंठल सहित फल काटें; खींचने से बेल को नुकसान होता है, इससे बचें। चरम उत्पादन में गुणवत्ता बनाए रखने और निरंतर फूलन के लिए हर 2-3 दिन कटाई करें। अधिपक्व फल बीजदार, कड़वे और पीले हो जाते हैं, बाज़ार मूल्य घटता है। चोट से बचाने के लिए धीरे से संभालें। धोकर, ग्रेड करके ventilated crates में पैक करें। ठंडी छाया में रखें; खीरा अत्यधिक खराब होने वाला है। सर्वोत्तम गुणवत्ता के लिए 24-48 घंटे में बाज़ार पहुँचाएँ, या 10-12°C और 90-95% सापेक्ष आर्द्रता पर एक सप्ताह तक भंडारित करें।",
     "faq": [
       {
-        "question": "Why are my cucumber fruits bitter?",
-        "answer": "Bitterness results from irregular watering (moisture stress followed by heavy irrigation), high temperature stress, nutrient imbalance (especially excessive nitrogen or low potassium), genetic factors in some varieties, or pest and disease stress. Maintain consistent soil moisture and balanced fertilization."
+        "question": "मेरे खीरे के फल कड़वे क्यों हैं?",
+        "answer": "कड़वाहट अनियमित सिंचाई (नमी का तनाव फिर भारी सिंचाई), उच्च ताप तनाव, पोषक असंतुलन (विशेषकर अत्यधिक नाइट्रोजन या कम पोटाश), कुछ किस्मों में आनुवंशिक कारण, या कीट-रोग तनाव से होती है। मिट्टी में लगातार नमी और संतुलित उर्वरीकरण बनाए रखें।"
       },
       {
-        "question": "What causes cucumber fruits to be deformed or curved?",
-        "answer": "Irregular watering, inadequate pollination, nutrient deficiency (especially boron or calcium), very high or low temperatures, pest damage (thrips, mites), or poor varietal genetics. Ensure good bee activity, consistent moisture and balanced micronutrients."
+        "question": "खीरे के फल विकृत या मुड़े हुए क्यों होते हैं?",
+        "answer": "अनियमित सिंचाई, अपर्याप्त परागण, पोषक कमी (विशेषकर बोरॉन या कैल्शियम), बहुत अधिक या कम तापमान, कीट क्षति (थ्रिप्स, mites), या कमज़ोर किस्म आनुवंशिकी। अच्छी मधुमक्खी गतिविधि, लगातार नमी और संतुलित सूक्ष्म पोषक तत्व सुनिश्चित करें।"
       },
       {
-        "question": "Should I remove male flowers to get more fruits?",
-        "answer": "No. Male flowers are essential for pollination in open-pollinated and hybrid varieties that require pollination. Remove only diseased or pest-infected flowers. In parthenocarpic (seedless) hybrids, fruit set occurs without pollination, but removing male flowers is unnecessary and may stress the plant."
+        "question": "क्या अधिक फल के लिए नर फूल हटाने चाहिए?",
+        "answer": "नहीं। ओपन-पोलिनेटेड और परागण आवश्यक हाइब्रिड किस्मों में नर फूल परागण के लिए आवश्यक हैं। केवल रोगग्रस्त या कीट संक्रमित फूल हटाएँ। पार्थेनोकार्पिक (बीज रहित) हाइब्रिड में परागण के बिना फल बनता है, पर नर फूल हटाना अनावश्यक है और पौधे पर तनाव डाल सकता है।"
       },
       {
-        "question": "Can I grow cucumber in the same field every season?",
-        "answer": "No. Continuous cucurbit cropping increases soil-borne diseases (Fusarium wilt, root rot), nematodes and pest carryover. Rotate with non-cucurbit crops (cereals, legumes, leafy vegetables) for at least one or two seasons."
+        "question": "क्या हर सीज़न एक ही खेत में खीरा उगा सकता हूँ?",
+        "answer": "नहीं। लगातार ककड़ी वर्ग फसल से मिट्टी जनित रोग (Fusarium मुरझाहट, root rot), nematodes और कीट अगले सीज़न में संचरण बढ़ता है। कम से कम एक या दो सीज़न non-ककड़ी वर्ग फसल (अनाज, दलहन, पत्तेदार सब्ज़ियाँ) के साथ crop rotation करें।"
       },
       {
-        "question": "Is daily harvesting necessary?",
-        "answer": "During peak production (60-80 days), harvest every 2 days or daily to maintain fruit quality, prevent overripening, encourage continuous fruiting and reduce pest and disease incidence in overripe fruits. Less frequent harvest reduces yield and quality."
+        "question": "क्या रोज़ कटाई ज़रूरी है?",
+        "answer": "चरम उत्पादन (60-80 दिन) में फल गुणवत्ता बनाए रखने, अधिपक्व होने से रोकने, निरंतर फलन को प्रोत्साहित करने और अधिपक्व फलों में कीट-रोग कम करने के लिए हर 2 दिन या रोज़ कटाई करें। कम बार कटाई से उपज और गुणवत्ता घटती है।"
       }
     ]
   },
   "pest_database": [
     {
-      "pest_name": "Fruit fly, Bactrocera cucurbitae",
-      "identification": "Adult is a small brownish-orange fly with patterned wings and a pointed abdomen. Females puncture young fruit to lay eggs beneath the skin. Maggots are creamy white legless larvae feeding inside the fruit.",
-      "life_cycle": "Eggs are laid under the fruit skin. Larvae feed inside, then drop to soil to pupate. Adults emerge and can complete several generations per season. Pupae survive in soil and crop residue.",
-      "damage_symptoms": "Female oviposition punctures on young fruits, internal maggot feeding, fruit rot, oozing, premature fruit drop and unmarketable deformed fruits. Infested fruits cannot be salvaged.",
-      "crop_stage_attacked": "Flowering through harvest; young developing fruits are most vulnerable.",
-      "favorable_conditions": "Warm humid weather, nearby infested cucurbit crops, fallen infested fruits left in field, continuous cucurbit cultivation and absence of trap-based monitoring.",
-      "why_this_happened": "Carry-over from previous cucurbit crop, failure to collect fallen fruits daily, reliance on cover sprays alone without traps and bait, and peak fly activity coinciding with fruit set.",
-      "monitoring": "Install cue-lure pheromone traps at 8-10 per acre before flowering. Monitor trap catches weekly. Inspect young fruits for puncture marks and oozing. Do not treat based on adult sightings alone.",
-      "etl": "Trap-catch based; act on first sustained catches and before maggot damage appears in fruits. Numerical ETL varies by locality; follow ICAR-IIHR or State Horticulture Department guidance.",
-      "preventive": "Early sowing to escape peak fly pressure where locally recommended, trellising to keep fruit off ground, fruit bagging in high-value crops and destruction of previous crop residue.",
-      "cultural_control": "Collect and destroy fallen or infested fruits daily to break the life cycle. Deep summer ploughing exposes pupae. Remove wild cucurbit hosts on bunds. Harvest marketable fruits promptly.",
-      "biological_control": "Conserve Opius parasitoids where present. Poison-bait and trap systems are primary; biological control supplements but does not replace sanitation and baiting.",
+      "pest_name": "फल मक्खी, Bactrocera cucurbitae",
+      "identification": "वयस्क छोटी भूरे-नारंगी मक्खी है, पंखों पर चित्र और नुकीला उदर। मादा युवा फल की त्वचा में अंडे देने के लिए छेद करती है। इल्ली क्रीमी सफेद बिना पैर वाले इल्ली हैं जो फल के अंदर खाते हैं।",
+      "life_cycle": "अंडे फल की त्वचा के नीचे दिए जाते हैं। इल्ली अंदर खाते हैं, फिर प्यूपा बनने के लिए मिट्टी में गिरते हैं। वयस्क निकलते हैं और एक सीज़न में कई पीढ़ी पूरी कर सकते हैं। प्यूपा मिट्टी और फसल अवशेष में जीवित रहते हैं।",
+      "damage_symptoms": "युवा फलों पर मादा अंडे देने के छेद, अंदर इल्ली का खाना, फल सड़न, रिसाव, समय से पहले फल झड़ना और बाज़ार अयोग्य विकृत फल। संक्रमित फल बचाए नहीं जा सकते।",
+      "crop_stage_attacked": "फूल से कटाई तक; युवा विकसित फल सबसे कमज़ोर।",
+      "favorable_conditions": "गर्म नम मौसम, पास में संक्रमित ककड़ी वर्ग फसल, खेत में पड़े संक्रमित फल, लगातार ककड़ी वर्ग खेती और trap आधारित निगरानी का अभाव।",
+      "why_this_happened": "पिछली ककड़ी वर्ग फसल से अगले सीज़न में संचरण, रोज़ गिरे फल इकट्ठा न करना, trap और bait के बिना केवल पूरे खेत का छिड़काव पर निर्भर रहना, और फल बनने के साथ मक्खी की चरम गतिविधि।",
+      "monitoring": "फूल से पहले प्रति acre 8-10 cue-lure फेरोमोन जाल लगाएँ। साप्ताहिक जाल पकड़ देखें। युवा फलों पर छेद और रिसाव की जाँच करें। केवल वयस्क देखकर उपचार न करें।",
+      "etl": "जाल पकड़ आधारित; पहले लगातार catch और इल्ली क्षति फलों में दिखने से पहले कार्रवाई करें। संख्यात्मक ETL स्थान के अनुसार बदलता है; ICAR-IIHR या राज्य बागवानी विभाग मार्गदर्शन अपनाएँ।",
+      "preventive": "स्थानीय सिफारिश हो तो चरम मक्खी दबाव से बचने के लिए जल्दी बुवाई, फल ज़मीन से ऊपर रखने के लिए बेल सहारा, उच्च मूल्य फसल में फल थैली और पिछले फसल अवशेष का नष्ट करना।",
+      "cultural_control": "जीवन चक्र तोड़ने के लिए रोज़ गिरे या संक्रमित फल इकट्ठा कर नष्ट करें। गहरी गर्मी की जुताई से प्यूपा उजागर होते हैं। बंधों पर जंगली ककड़ी वर्ग मेज़बान हटाएँ। बाज़ार योग्य फल तुरंत काटें।",
+      "biological_control": "उपस्थित हो तो Opius parasitoids का संरक्षण करें। विष चारा और trap प्रणाली मुख्य हैं; जैविक नियंत्रण पूरक है, स्वच्छता और चारा लगाना का स्थान नहीं लेता।",
       "chemical_early_curative": {
-        "technical": "Poison bait: jaggery or molasses with Malathion 50% EC formulation carrying a current CIBRC cucurbit label claim",
+        "technical": "Poison bait: jaggery या molasses with Malathion 50% EC formulation carrying a current CIBRC cucurbit label claim",
         "dose_per_acre": "Spot-spray approximately 50 bait spots per acre; exact concentration per approved label",
         "irac_group": "1B",
-        "spray_water_volume": "Low-volume spot application on leaf undersides; not a full-field cover spray",
-        "spray_timing": "At first trap catches or early fruit set, before maggot infestation becomes widespread."
+        "spray_water_volume": "पत्तियों की निचली सतह पर कम मात्रा स्थानीय छिड़काव; पूरे खेत का छिड़काव नहीं।",
+        "spray_timing": "पहले जाल पकड़ या प्रारंभिक फल बनने पर, इल्ली संक्रमण व्यापक होने से पहले।"
       },
       "chemical_hard_curative": {
         "technical": "Spinosad 45% SC bait spray formulation with a current CIBRC label claim",
         "dose_per_acre": "approximately 60 ml per acre as spot bait; verify exact label",
         "irac_group": "5",
-        "spray_water_volume": "Spot bait application per label; not a substitute for daily fruit collection",
-        "spray_timing": "When trap catches remain high and bait programme needs supplementation; maintain PHI for continuous harvest."
+        "spray_water_volume": "लेबल अनुसार स्थानीय चारा छिड़काव; रोज़ फल इकट्ठा करने का विकल्प नहीं।",
+        "spray_timing": "जब जाल पकड़ उच्च रहे और bait कार्यक्रम को पूरक की ज़रूरत हो; निरंतर कटाई के लिए PHI बनाए रखें।"
       },
-      "next_spray_logic": "Reassess trap catches and newly punctured fruits after the label interval. Continue daily collection of fallen fruits. Do not repeat the same IRAC group unnecessarily; cover sprays alone are unreliable.",
-      "resistance_management": "Rotate between bait tactics and approved cover sprays only when label permits. Do not rely on repeated organophosphate cover sprays. Integrate traps, bait, sanitation and crop residue destruction.",
-      "phi": "Product specific; critical for continuous harvest. Verify current CIBRC label before every picking cycle.",
-      "rei": "Product specific; follow label. Keep workers out until bait deposits are dry or the label interval has passed.",
-      "compatibility_notes": "Do not mix poison bait with alkaline products. Cover sprays supplement but do not replace traps and bait. Avoid spraying during peak bee activity on open-pollinated types.",
-      "safety_notes": "Wear gloves and face protection when preparing poison bait. Keep bait away from bee hives, fish ponds and livestock feed areas. Follow label disposal instructions.",
-      "farmer_tip": "A fallen infested fruit can produce dozens of new flies. Daily collection is more effective than any spray applied after maggots are already inside fruits.",
-      "common_mistakes": "Relying on cover sprays alone, leaving fallen fruits in the field, spraying without traps, ignoring PHI during daily harvest and treating punctured fruits as if they can recover.",
+      "next_spray_logic": "label अंतराल के बाद जाल पकड़ और नए छेद वाले फलों का पुनर्मूल्यांकन करें। गिरे फल रोज़ इकट्ठा करते रहें। एक ही IRAC group अनावश्यक दोहराएँ नहीं; केवल पूरे खेत का छिड़काव अविश्वसनीय हैं।",
+      "resistance_management": "label अनुमति हो तो चारा तरीके और approved पूरे खेत का छिड़काव के बीच rotation करें। बार-बार ऑर्गेनोफॉस्फेट पूरे खेत का छिड़काव पर निर्भर न रहें। trap, bait, स्वच्छता और फसल अवशेष नष्ट करना एकीकृत करें।",
+      "phi": "उत्पाद-विशिष्ट; निरंतर कटाई के लिए महत्वपूर्ण। हर कटाई चक्र से पहले वर्तमान CIBRC लेबल सत्यापित करें।",
+      "rei": "उत्पाद-विशिष्ट; लेबल का पालन करें। चारा सूखने या लेबल अंतराल पूरा होने तक कर्मचारियों को बाहर रखें।",
+      "compatibility_notes": "विष चारा को क्षारीय उत्पादों से न मिलाएँ। पूरे खेत का छिड़काव पूरक हैं, trap और bait का स्थान नहीं लेते। ओपन-पोलिनेटेड किस्मों में मधुमक्खी की चरम गतिविधि में स्प्रे न करें।",
+      "safety_notes": "विष चारा बनाते समय दस्ताने और चेहरे की सुरक्षा पहनें। bait को मधुमक्खी के छत्ते, मछली तालाब और पशु चारे से दूर रखें। लेबल निपटान निर्देशों का पालन करें।",
+      "farmer_tip": "एक गिरा संक्रमित फल दर्जनों नई मक्खियाँ पैदा कर सकता है। इल्ली पहले से फल के अंदर होने के बाद किया गया कोई भी स्प्रे रोज़ इकट्ठा करने से कम प्रभावी है।",
+      "common_mistakes": "केवल पूरे खेत का छिड़काव पर निर्भर रहना, गिरे फल खेत में छोड़ना, trap के बिना स्प्रे करना, रोज़ कटाई में PHI की अनदेखी और छेद वाले फलों को ठीक होने जैसा मानना।",
       "references": [
         "ICAR-Indian Institute of Horticultural Research cucurbit IPM guidance.",
         "Directorate of Plant Protection, Quarantine and Storage, CIBRC current List of Major Uses of Insecticides.",
         "State Horticulture Department cucurbit fruit-fly package of practices."
       ],
-      "confidence_level": "High for identification, sanitation and trap-bait IPM; medium for exact dose because formulation and label claims must be verified."
+      "confidence_level": "पहचान, स्वच्छता और trap-bait IPM के लिए उच्च; सटीक खुराक के लिए मध्यम क्योंकि formulation और label claim सत्यापित करने होंगे।"
     },
     {
-      "pest_name": "Aphids, Aphis gossypii",
-      "identification": "Small soft-bodied insects, usually greenish to black, clustered on undersides of young leaves and growing tips. They produce honeydew and may be attended by ants.",
-      "life_cycle": "Females reproduce rapidly without mating in favourable conditions. Nymphs moult through several instars. Populations can build within days under warm dry weather.",
-      "damage_symptoms": "Leaf curling, stunting, honeydew and sooty mould, reduced vigour and transmission of cucumber mosaic and other viral diseases. Virus-infected plants cannot be cured chemically.",
-      "crop_stage_attacked": "Seedling establishment through fruiting; young succulent growth is preferred.",
-      "favorable_conditions": "Warm dry weather, excessive nitrogen, absence of natural enemies, weed hosts and nearby virus-infected crops.",
-      "why_this_happened": "Rapid multiplication in favourable weather, destruction of predators through broad-spectrum sprays, high nitrogen canopy and virus carry-over from weeds or infected seedlings.",
-      "monitoring": "Inspect growing tips and leaf undersides twice weekly. Use yellow sticky traps as a monitoring aid. Rogue and destroy virus-symptom plants immediately.",
-      "etl": "Need-based; treat early when colonies are building and before virus spread. Follow local ICAR-IIHR or State Horticulture advisory.",
-      "preventive": "Use reflective or silver mulch where locally recommended, maintain balanced nitrogen, remove weed hosts and select tolerant hybrids where available.",
-      "cultural_control": "Remove weed hosts and rogue virus-infected plants. Avoid excessive nitrogen. In small plots, spray plants with a strong water jet to dislodge early colonies.",
-      "biological_control": "Conserve ladybird beetles, lacewings (Chrysoperla) and parasitoids. Avoid broad-spectrum insecticides that destroy natural enemies.",
+      "pest_name": "एफिड, Aphis gossypii",
+      "identification": "छोटे नरम शरीर वाले कीट, आमतौर पर हरे से काले, युवा पत्तियों और बढ़ते शाख-सिरों की निचली सतह पर झुंड में। मधुरस देते हैं और चींटियाँ उनके पास रह सकती हैं।",
+      "life_cycle": "अनुकूल परिस्थिति में मादा बिना नर के तेज़ी से प्रजनन करती हैं। nymph कई अवस्था में छाल उतारना करते हैं। गर्म शुष्क मौसम में कुछ दिनों में जनसंख्या बढ़ सकती है।",
+      "damage_symptoms": "पत्ती मुड़ना, रुकावट, मधुरस और काली फफूंद, कमज़ोर शक्ति और cucumber mosaic व अन्य वायरल रोग का संचरण। वायरस संक्रमित पौधे रासायनिक रूप से ठीक नहीं होते।",
+      "crop_stage_attacked": "पौधे स्थापना से फलन तक; युवा रसीली वृद्धि पसंदीदा।",
+      "favorable_conditions": "गर्म शुष्क मौसम, अत्यधिक नाइट्रोजन, प्राकृतिक शत्रुओं का अभाव, खरपतवार मेज़बान और पास वायरस संक्रमित फसल।",
+      "why_this_happened": "अनुकूल मौसम में तेज़ गुणन, विस्तृत स्पेक्ट्रम spray से शिकारी नष्ट होना, उच्च नाइट्रोजन canopy और खरपतवार या संक्रमित पौधों से वायरस अगले सीज़न में संचरण।",
+      "monitoring": "सaptाह में दो बार बढ़ते शाख-सिर और पत्ती की निचली सतह देखें। निगरानी सहायक के लिए पीले sticky trap लगाएँ। वायरस लक्षण वाले पौधे तुरंत हटाकर नष्ट करें।",
+      "etl": "आवश्यकतानुसार; झुंड बढ़ते समय और वायरस फैलने से पहले शुरुआत में उपचार करें। स्थानीय ICAR-IIHR या राज्य बागवानी सलाह अपनाएँ।",
+      "preventive": "स्थानीय सिफारिश हो तो reflective या silver मल्च, संतुलित नाइट्रोजन, खरपतवार मेज़बान हटाना और उपलब्ध tolerant हाइब्रिड चुनना।",
+      "cultural_control": "खरपतवार मेज़बान हटाएँ और वायरस संक्रमित पौधे नष्ट करें। अत्यधिक नाइट्रोजन से बचें। छोटे plot में प्रारंभिक झुंड हटाने के लिए तेज़ पानी की धार से छिड़काव करें।",
+      "biological_control": "ladybird beetles, lacewings (Chrysoperla) और parasitoids का संरक्षण करें। विस्तृत स्पेक्ट्रम कीटनाशक से बचें जो प्राकृतिक शत्रु नष्ट करते हैं।",
       "chemical_early_curative": {
         "technical": "Thiamethoxam 25% WG formulation with a current CIBRC label claim for aphids in cucurbits",
         "dose_per_acre": "approximately 40 g per acre; verify exact approved label",
         "irac_group": "4A",
-        "spray_water_volume": "Use label-specified volume with coverage of growing tips and leaf undersides",
-        "spray_timing": "At first colony establishment, before heavy honeydew and virus spread."
+        "spray_water_volume": "लेबल में निर्दिष्ट मात्रा; बढ़ते सिर और पत्ती की निचली सतह ढकें।",
+        "spray_timing": "पहले झुंड बनने पर, भारी मधुरस और वायरस फैलने से पहले।"
       },
       "chemical_hard_curative": {
         "technical": "Diafenthiuron 50% WP formulation with a current CIBRC label claim",
         "dose_per_acre": "approximately 240 g per acre; verify exact approved label",
         "irac_group": "12A",
-        "spray_water_volume": "Use label-specified volume",
-        "spray_timing": "When colonies persist above treatment threshold and virus risk remains high; rotate away from recent neonicotinoid use."
+        "spray_water_volume": "लेबल में निर्दिष्ट मात्रा उपयोग करें।",
+        "spray_timing": "जब झुंड उपचार सीमा से ऊपर रहें और वायरस जोखिम उच्च हो; हाल की neonicotinoid उपयोग से rotation करें।"
       },
-      "next_spray_logic": "Reassess live colonies and predator abundance after the label interval. Remove virus plants rather than spraying them. Rotate IRAC groups if a second application is genuinely needed.",
-      "resistance_management": "Rotate 4A to 12A or 9D groups as per label. Do not use repeated neonicotinoid applications. Integrate reflective mulch and biological conservation.",
-      "phi": "Product specific; verify current label for continuous harvest crop.",
-      "rei": "Product specific; follow label.",
-      "compatibility_notes": "Avoid tank mixes with alkaline foliar nutrients unless label permits. Do not spray during peak bee foraging on open-pollinated types.",
-      "safety_notes": "Use label-required PPE. Prevent drift to neighbouring bee-attractive crops. Wash produce per standard practice after PHI.",
-      "farmer_tip": "If leaves show mosaic mottling, spraying aphids will not cure the virus. Remove the plant and control vectors in surrounding healthy plants.",
-      "common_mistakes": "Spraying virus-infected plants, repeated neonicotinoid use, ignoring natural enemies, excessive nitrogen and treating sticky traps alone as proof of damaging population.",
+      "next_spray_logic": "label अंतराल के बाद जीवित झुंड और शिकारी की संख्या देखें। वायरस पौधों को स्प्रे करने के बजाय हटाएँ। दूसरा प्रयोग वास्तव में ज़रूरी हो तो IRAC group rotate करें।",
+      "resistance_management": "label अनुसार 4A से 12A या 9D group rotate करें। बार-बार neonicotinoid उपयोग न करें। reflective मल्च और जैविक संरक्षण एकीकृत करें।",
+      "phi": "उत्पाद-विशिष्ट; निरंतर कटाई फसल के लिए वर्तमान लेबल सत्यापित करें।",
+      "rei": "उत्पाद-विशिष्ट; लेबल का पालन करें।",
+      "compatibility_notes": "label अनुमति के बिना क्षारीय पर्ण पोषक tank mix न करें। ओपन-पोलिनेटेड किस्मों में मधुमक्खी के चरम foraging समय स्प्रे न करें।",
+      "safety_notes": "label में निर्दिष्ट सुरक्षा उपकरण पहनें। पड़ोस की मधुमक्खी आकर्षक फसलों पर वाष्प रोकें। PHI के बाद मानक practice से उत्पाद धोएँ।",
+      "farmer_tip": "पत्तियों पर mosaic धब्बे दिखें तो एफिड स्प्रे करने से वायरस ठीक नहीं होगा। पौधा हटाएँ और आस-पास स्वस्थ पौधों में वाहक नियंत्रित करें।",
+      "common_mistakes": "वायरस संक्रमित पौधों पर स्प्रे, बार-बार neonicotinoid, प्राकृतिक शत्रुओं की अनदेखी, अत्यधिक नाइट्रोजन और sticky trap को अकेले नुकसानकारक जनसंख्या का प्रमाण मानना।",
       "references": [
         "ICAR-IIHR vegetable IPM guidance.",
         "CIBRC current List of Major Uses of Insecticides.",
         "State Horticulture Department cucurbit virus-management advisory."
       ],
-      "confidence_level": "High for identification and integrated management; medium for chemical dose pending label verification."
+      "confidence_level": "पहचान और एकीकृत प्रबंधन के लिए उच्च; label सत्यापन तक रासायनिक खुराक के लिए मध्यम।"
     },
     {
-      "pest_name": "Red pumpkin beetle, Aulacophora foveicollis",
-      "identification": "Adult beetle is orange-red, about 5-8 mm long, feeding on cotyledons and leaves. Grubs are white legless larvae feeding on roots and stems near soil surface.",
-      "life_cycle": "Adults emerge from soil and feed on seedlings. Eggs are laid in soil; grubs feed on roots and pupate in soil. Multiple generations possible per season.",
-      "damage_symptoms": "Adults skeletonize cotyledons and young leaves, often killing seedlings outright. Grubs damage roots and stems, causing wilting. Ground-touching fruits may be damaged.",
-      "crop_stage_attacked": "Germination through early vine growth; cotyledon stage is most vulnerable.",
-      "favorable_conditions": "Direct seeding without protection, sandy soils, previous cucurbit cultivation, warm weather at emergence and absence of seedling monitoring.",
-      "why_this_happened": "Beetles overwinter in soil and residue, emerge at seedling stage, and can destroy unprotected direct-seeded crops within days.",
-      "monitoring": "Count beetles on seedlings at emergence daily for the first two weeks. One to two beetles per seedling can cause economic damage at cotyledon stage.",
-      "etl": "Approximately 1-2 beetles per seedling at cotyledon stage; follow local ICAR-IIHR threshold.",
-      "preventive": "Raise seedlings under net cover and transplant healthy plants, use early sowing, and practice crop rotation with non-cucurbit crops.",
-      "cultural_control": "Handpick adults in early morning when less active. Dust wood ash on seedlings at cotyledon stage as a low-cost deterrent. Remove crop residue after harvest.",
-      "biological_control": "Limited field options; entomopathogenic fungi such as Metarhizium may be considered for grub management where locally validated.",
+      "pest_name": "लाल कद्दू भृंग, Aulacophora foveicollis",
+      "identification": "वयस्क भृंग नारंगी-लाल, लगभग 5-8 mm, बीजपत्र और पत्तियाँ खाता है। grub सफेद बिना पैर वाले इल्ली हैं जो जड़ और तने को मिट्टी की सतह के पास खाते हैं।",
+      "life_cycle": "वयस्क मिट्टी से निकलकर पौधे खाते हैं। अंडे मिट्टी में दिए जाते हैं; grub जड़ खाते हैं और मिट्टी में प्यूपा बनना करते हैं। एक सीज़न में कई पीढ़ी संभव।",
+      "damage_symptoms": "वयस्क बीजपत्र और युवा पत्तियों को कंकाल बनाना करते हैं, अक्सर पौधे मार देते हैं। grub जड़ और तने को नुकसान पहुँचाते हैं, मुरझाहटing होती है। ज़मीन छूने वाले फल क्षतिग्रस्त हो सकते हैं।",
+      "crop_stage_attacked": "अंकुरण से प्रारंभिक बेल वृद्धि; बीजपत्र अवस्था सबसे कमज़ोर।",
+      "favorable_conditions": "सुरक्षा के बिना सीधी बुवाई, रेतीली मिट्टी, पिछली ककड़ी वर्ग खेती, अंकुरण पर गर्म मौसम और पौधे निगरानी का अभाव।",
+      "why_this_happened": "भृंग मिट्टी और अवशेष में सर्दी बिताते हैं, अंकुरण पर निकलते हैं और कुछ दिनों में असुरक्षित सीधी बुवाई फसल नष्ट कर सकते हैं।",
+      "monitoring": "पहले दो सप्ताह रोज़ अंकुरण पर पौधों पर भृंग गिनें। बीजपत्र अवस्था में प्रति पौधे 1-2 भृंग आर्थिक क्षति कर सकते हैं।",
+      "etl": "लगभग बीजपत्र अवस्था में प्रति पौधे 1-2 भृंग; स्थानीय ICAR-IIHR सीमा अपनाएँ।",
+      "preventive": "जाल ढककर पौधे उगाएँ और स्वस्थ पौधे रोपें, जल्दी बुवाई करें और non-ककड़ी वर्ग फसल के साथ crop rotation करें।",
+      "cultural_control": "सुबह जल्दी जब कम सक्रिय हों तो वयस्क हाथ से उठाएँ। बीजपत्र अवस्था में कम लागत deterrent के लिए लकड़ी की राख छिड़कें। कटाई के बाद फसल अवशेष हटाएँ।",
+      "biological_control": "सीमित field विकल्प; grub प्रबंधन के लिए स्थानीय रूप से मान्य हो तो Metarhizium जैसे entomopathogenic fungi पर विचार करें।",
       "chemical_early_curative": {
         "technical": "Carbaryl 50% WP formulation with a current CIBRC label claim",
         "dose_per_acre": "approximately 600 g per acre; verify exact approved label",
         "irac_group": "1A",
-        "spray_water_volume": "Use label-specified volume targeting seedlings and base of plants",
-        "spray_timing": "At cotyledon stage when 1-2 beetles per seedling are observed."
+        "spray_water_volume": "लेबल में निर्दिष्ट मात्रा; पौधे और पौधे के आधार को लक्षित करें।",
+        "spray_timing": "बीजपत्र अवस्था में जब प्रति पौधे 1-2 भृंग दिखें।"
       },
       "chemical_hard_curative": {
         "technical": "Thiamethoxam 25% WG formulation with a current CIBRC label claim",
         "dose_per_acre": "approximately 40 g per acre; verify exact approved label",
         "irac_group": "4A",
-        "spray_water_volume": "Use label-specified volume",
-        "spray_timing": "Under heavy adult pressure when carbamate treatment has been used and rotation is needed; not for routine prophylactic use."
+        "spray_water_volume": "लेबल में निर्दिष्ट मात्रा उपयोग करें।",
+        "spray_timing": "भारी वयस्क दबाव में जब carbamate उपचार हो चुका हो और rotation ज़रूरी हो; नियमित निवारक उपयोग के लिए नहीं।"
       },
-      "next_spray_logic": "Recount beetles after the label interval. Seedling stage protection is critical; late sprays cannot restore killed cotyledons. Rotate IRAC groups if second treatment is justified.",
-      "resistance_management": "Rotate 1A/1B to 4A groups. Do not use the same mode of action across consecutive generations. Combine chemical protection with net-raised seedlings where feasible.",
-      "phi": "Product specific; verify label.",
-      "rei": "Product specific; follow label.",
-      "compatibility_notes": "Seedling-stage applications require careful calibration to avoid phytotoxicity. Do not mix with unverified products.",
-      "safety_notes": "Wear gloves and mask during application. Keep pesticides away from water bodies. Follow label restrictions on bee activity.",
-      "farmer_tip": "The first week after emergence is the danger window. Inspect seedlings every morning before beetles hide in soil.",
-      "common_mistakes": "Discovering damage only after cotyledons are eaten, using transplant seedlings without checking beetles in field, repeated carbamate use and ignoring soil-borne grub damage.",
+      "next_spray_logic": "label अंतराल के बाद भृंग फिर गिनें। पौधे अवस्था की सुरक्षा महत्वपूर्ण; देर से स्प्रे मारे बीजपत्र वापस नहीं लाता। दूसरा उपचार उचित हो तो IRAC group rotate करें।",
+      "resistance_management": "1A/1B से 4A group rotate करें। लगातार पीढ़ी में एक ही mode of action न उपयोग करें। जहाँ संभव chemical सुरक्षा के साथ जाल पर उगाए पौधे मिलाएँ।",
+      "phi": "उत्पाद-विशिष्ट; लेबल सत्यापित करें।",
+      "rei": "उत्पाद-विशिष्ट; लेबल का पालन करें।",
+      "compatibility_notes": "पौधे अवस्था में सावधान calibration से विषाक्तता से बचें। अप्रमाणित उत्पादों से न मिलाएँ।",
+      "safety_notes": "छिड़काव में दस्ताने और mask पहनें। कीटनाशक जल स्रोतों से दूर रखें। मधुमक्खी गतिविधि पर label प्रतिबंधों का पालन करें।",
+      "farmer_tip": "अंकुरण के बाद पहला सप्ताह खतरे की अवधि है। भृंग मिट्टी में छिपने से पहले हर सुबह पौधे देखें।",
+      "common_mistakes": "बीजपत्र खाने के बाद ही क्षति पता चलना, खेत में भृंग जाँचे बिना रोपित पौधे उपयोग, बार-बार carbamate और मिट्टी जनित grub क्षति की अनदेखी।",
       "references": [
         "ICAR-IIHR cucurbit pest-management guidance.",
         "CIBRC current List of Major Uses of Insecticides.",
         "State Agricultural University cucurbit package of practices."
       ],
-      "confidence_level": "High for seedling-stage damage and monitoring; medium for chemical dose pending label verification."
+      "confidence_level": "पौधे अवस्था क्षति और निगरानी के लिए उच्च; label सत्यापन तक रासायनिक खुराक के लिए मध्यम।"
     }
   ],
   "disease_database": [
     {
-      "pest_name": "Downy mildew, Pseudoperonospora cubensis",
-      "identification": "Angular yellow to pale green patches on upper leaf surface bounded by veins. Underside shows purplish-grey downy fungal growth in humid conditions.",
-      "life_cycle": "Oospores survive in crop residue. Sporangiophores produce sporangia spread by wind and splashing water. Infection cycles rapidly under cool humid nights and warm days.",
-      "damage_symptoms": "Angular leaf lesions, defoliation, reduced photosynthesis, sunscald on exposed fruits and premature vine decline. Severe epidemics can destroy the crop within days.",
-      "crop_stage_attacked": "Vegetative growth through fruiting; all leaf stages susceptible.",
-      "favorable_conditions": "High humidity, leaf wetness, cool nights, dense canopy, overhead irrigation and susceptible varieties.",
-      "why_this_happened": "Inoculum from previous cucurbit crop or nearby fields combined with prolonged leaf wetness and dense planting without preventive fungicide programme.",
-      "monitoring": "Scout leaf undersides twice weekly from 20 days after sowing. Act at first lesion; disease spreads rapidly. Distinguish from powdery mildew and nutrient disorders.",
-      "etl": "Risk and symptom based; treat at first confirmed lesions or when local advisory issues a high-risk warning.",
-      "preventive": "Use tolerant hybrids, trellising for airflow, drip irrigation, wider spacing and destruction of previous crop residue.",
-      "cultural_control": "Avoid overhead irrigation during disease-prone periods. Remove heavily infected lower leaves where practical. Rotate with non-cucurbit crops.",
-      "biological_control": "Pseudomonas fluorescens or Trichoderma-based products may be used as supplements where officially recommended; they do not replace timely fungicide at epidemic onset.",
+      "pest_name": "डाउनी फफूंद, Pseudoperonospora cubensis",
+      "identification": "पत्ती की ऊपरी सतह पर नसों से घिरे कोने वाले कोणीय पीले से हल्के हरे धब्बे। नम परिस्थिति में निचली सतह पर बैंगनी-धूसर downy fungal वृद्धि।",
+      "life_cycle": "oospores फसल अवशेष में जीवित रहते हैं। Sporangiophores sporangia बनाते हैं जो हवा और छींटे से फैलते हैं। ठंडी नम रात और गर्म दिन में संक्रमण तेज़ी से चक्रित होता है।",
+      "damage_symptoms": "कोणीय पत्ती घाव, पत्ती झड़ना, कम photosynthesis, उजागर फलों पर धूप से झुलसना और समय से पहले बेल गिरावट। गंभीर महामारी में कुछ दिनों में फसल नष्ट हो सकती है।",
+      "crop_stage_attacked": "शाकीय वृद्धि से फलन तक; सभी पत्ती अवस्थाएँ संवेदनशील।",
+      "favorable_conditions": "उच्च आर्द्रता, पत्ती गीली होना, ठंडी रातें, घना canopy, overhead सिंचाई और संवेदनशील किस्म।",
+      "why_this_happened": "पिछली ककड़ी वर्ग फसल या पास के खेत से संक्रमण स्रोत, लंबे समय पत्ती गीली रहना और preventive कवकनाशी कार्यक्रम के बिना घनी रोपाई।",
+      "monitoring": "बुवाई के 20 दिन से पत्ती की निचली सतह सaptाह में दो बार देखें। पहले घाव पर कार्रवाई; रोग तेज़ फैलता है। powdery फफूंद और पोषक disorder से अलग पहचानें।",
+      "etl": "जोखिम और लक्षण आधारित; पहले पुष्टि घाव पर या स्थानीय सलाह उच्च जोखिम चेतावनी दे तो उपचार करें।",
+      "preventive": "Tolerant हाइबrid, हवा के लिए बेल सहारा, drip सिंचाई, अधिक दूरी और पिछले फसल अवशेष का नष्ट करना।",
+      "cultural_control": "रोग-प्रone अवधि में overhead सिंचाई से बचें। जहाँ संभव हो भारी संक्रमित निचली पत्तियाँ हटाएँ। non-ककड़ी वर्ग फसल के साथ rotation करें।",
+      "biological_control": "Pseudomonas fluorescens या Trichoderma आधारित उत्पाद आधिकारिक सिफारिश हो तो पूरक उपयोग; महामारी शुरू में समय पर कवकनाशी का स्थान नहीं लेते।",
       "chemical_early_curative": {
         "technical": "Mancozeb 75% WP formulation with a current CIBRC label claim",
         "dose_per_acre": "approximately 500 g per acre with sticker; verify exact label",
         "frac_group": "M3",
-        "spray_water_volume": "Use label-specified volume for thorough leaf coverage including undersides",
-        "spray_timing": "At first symptoms or preventive spray before humid weather period."
+        "spray_water_volume": "पत्ती की निचली सतह सहित पूर्ण पत्ती कवरेज के लिए लेबल में निर्दिष्ट मात्रा।",
+        "spray_timing": "पहले लक्षण पर या नम मौसम से पहले preventive स्प्रे।"
       },
       "chemical_hard_curative": {
         "technical": "Cymoxanil 8% + Mancozeb 64% WP or Dimethomorph 50% WP formulation with current CIBRC label claim",
         "dose_per_acre": "approximately 600 g or 400 g per acre respectively; verify exact label",
         "frac_group": "27+M3 or 40",
-        "spray_water_volume": "Use label-specified volume",
-        "spray_timing": "When disease is spreading beyond first lesions; rotate FRAC groups from preventive programme."
+        "spray_water_volume": "लेबल में निर्दिष्ट मात्रा उपयोग करें।",
+        "spray_timing": "जब रोग पहले घावों से आगे फैल रहा हो; preventive कार्यक्रम से FRAC group rotate करें।"
       },
-      "next_spray_logic": "Reassess lesion spread after label interval. Alternate FRAC groups (M3, 27+M3, 40). Stop overhead irrigation. Remove dead leaves to improve airflow.",
-      "resistance_management": "Rotate Mancozeb with cymoxanil, dimethomorph or metalaxyl combinations. Do not use the same FRAC group repeatedly in one season.",
-      "phi": "Product specific; observe for continuous harvest.",
-      "rei": "Product specific; follow label.",
-      "compatibility_notes": "Add non-ionic sticker for underside coverage. Avoid alkaline tank mixes unless label permits.",
-      "safety_notes": "Wear mask and gloves. Prevent drift to sensitive crops. Follow label re-entry and harvest intervals.",
-      "farmer_tip": "Check the underside of leaves at the first yellow angular patch on top. By the time half the field shows symptoms, control is much harder.",
-      "common_mistakes": "Waiting until defoliation begins, spraying only leaf tops, overhead irrigation during epidemic, using one fungicide repeatedly and confusing with powdery mildew.",
+      "next_spray_logic": "label अंतराल के बाद घाव फैलाव देखें। FRAC group (M3, 27+M3, 40) बदलें। overhead सिंचाई बंद करें। हवा बढ़ाने के लिए मृत पत्तियाँ हटाएँ।",
+      "resistance_management": "Mancozeb को cymoxanil, dimethomorph या metalaxyl संयोजन से rotate करें। एक सीज़न में एक ही FRAC group बार-बार न उपयोग करें।",
+      "phi": "उत्पाद-विशिष्ट; निरंतर कटाई के लिए पालन करें।",
+      "rei": "उत्पाद-विशिष्ट; लेबल का पालन करें।",
+      "compatibility_notes": "निचली सतह कवरेज के लिए non-ionic चिपकाने वाला जोड़ें। label अनुमति के बिना क्षारीय tank mix न करें।",
+      "safety_notes": "Mask और दस्ताने पहनें। संवेदनशील फसलों पर वाष्प रोकें। label re-entry और harvest अंतराल का पालन करें।",
+      "farmer_tip": "ऊपर पहला पीला कोणीय धब्बा दिखे तो पत्ती की निचली सतह देखें। आधा खेत लक्षण दिखाए तब नियंत्रण बहुत कठिन हो जाता है।",
+      "common_mistakes": "पत्ती झड़ना शुरू होने तक इंतज़ार, केवल पत्ती ऊपर स्प्रे, महामारी में overhead सिंचाई, एक कवकनाशी बार-बार और powdery फफूंद से भ्रम।",
       "references": [
         "ICAR-IIHR cucurbit disease-management guidance.",
         "CIBRC current List of Major Uses of Fungicides.",
         "State Horticulture Department downy mildew advisory."
       ],
-      "confidence_level": "High for identification and management principles; medium for exact dose pending label verification."
+      "confidence_level": "पहचान और प्रबंधन सिद्धांतों के लिए उच्च; label सत्यापन तक सटीक खुराक के लिए मध्यम।"
     },
     {
-      "pest_name": "Powdery mildew, Podosphaera xanthii",
-      "identification": "White powdery fungal growth on both leaf surfaces, petioles and stems. Older infections cause leaf yellowing and premature drying.",
-      "life_cycle": "Conidia spread by wind. The fungus grows on leaf surface without requiring free water. Rapid build-up occurs in warm dry days with moderate night humidity.",
-      "damage_symptoms": "White powdery patches, leaf senescence, reduced fruit size and quality, and premature vine death in severe cases.",
-      "crop_stage_attacked": "Mid vegetative growth through late fruiting.",
-      "favorable_conditions": "Warm dry days, moderate humidity, dense canopy, shaded areas and susceptible varieties.",
-      "why_this_happened": "Dry weather favouring powdery mildew combined with dense planting, poor airflow and absence of early protective spray.",
-      "monitoring": "Scout upper leaves weekly from 25 days after sowing. Treat at first small white patches before whole leaves are covered.",
-      "etl": "Symptom based; treat at first visible colonies on leaves.",
-      "preventive": "Use tolerant hybrids, trellising, adequate spacing and balanced nutrition.",
-      "cultural_control": "Remove heavily infected leaves. Improve airflow through trellising and pruning of dense lower canopy where practical.",
-      "biological_control": "Ampelomyces quisqualis or Bacillus subtilis-based products may supplement management where locally available and recommended.",
+      "pest_name": "पाउडरी फफूंद, Podosphaera xanthii",
+      "identification": "पत्ती की दोनों सतह, petiole और तने पर सफेद powdery fungal वृद्धि। पुराने संक्रमण में पत्ती पीली होकर समय से पहले सूखती है।",
+      "life_cycle": "बीजाणु हवा से फैलते हैं। fungus मुक्त पानी के बिना पत्ती सतह पर बढ़ता है। गर्म शुष्क दिन और मध्यम रात आर्द्रता में तेज़ build-up।",
+      "damage_symptoms": "सफेद powdery धब्बे, पत्ती वृद्धावस्था, कम फल आकार और गुणवत्ता, गंभीर मामलों में समय से पहले बेल मृत्यु।",
+      "crop_stage_attacked": "मध्य शाकीय वृद्धि से देर फलन तक।",
+      "favorable_conditions": "गर्म शुष्क दिन, मध्यम आर्द्रता, घना canopy, छाया वाले क्षेत्र और संवेदनशील किस्म।",
+      "why_this_happened": "powdery फफूंद के अनुकूल शुष्क मौसम, घनी रोपाई, कम हवा और शुरुआती protective स्प्रे का अभाव।",
+      "monitoring": "बुवाई के 25 दिन से ऊपरी पत्तियाँ सaptाह में देखें। पूरी पत्ती ढकने से पहले छोटे सफेद धब्बों पर उपचार करें।",
+      "etl": "लक्षण आधारित; पत्तियों पर पहले दिखने वाले झुंड पर उपचार।",
+      "preventive": "Tolerant हाइबrid, बेल सहारा, पर्याप्त दूरी और संतुलित पोषण।",
+      "cultural_control": "भारी संक्रमित पत्तियाँ हटाएँ। बेल सहारा और जहाँ संभव घनी निचली canopy की trimming से हवा बढ़ाएँ।",
+      "biological_control": "Ampelomyces quisqualis या Bacillus subtilis आधारित उत्पाद स्थानीय रूप से उपलब्ध और सिफारिशित हो तो पूरक उपयोग।",
       "chemical_early_curative": {
         "technical": "Wettable sulphur 80% WG formulation with a current CIBRC label claim",
         "dose_per_acre": "approximately 500 g per acre; verify exact label",
         "frac_group": "M2",
-        "spray_water_volume": "Use label-specified volume",
-        "spray_timing": "At first powdery patches; avoid application on very hot sunny days on sensitive varieties."
+        "spray_water_volume": "लेबल में निर्दिष्ट मात्रा उपयोग करें।",
+        "spray_timing": "पहले powdery धब्बों पर; संवेदनशील किस्मों पर बहुत गर्म धूप वाले दिन प्रयोग न करें।"
       },
       "chemical_hard_curative": {
         "technical": "Azoxystrobin 23% SC or Hexaconazole 5% EC formulation with current CIBRC label claim",
         "dose_per_acre": "approximately 200 ml or 400 ml per acre respectively; verify exact label",
         "frac_group": "11 or 3",
-        "spray_water_volume": "Use label-specified volume",
-        "spray_timing": "When sulphur preventive programme is insufficient; rotate FRAC groups."
+        "spray_water_volume": "लेबल में निर्दिष्ट मात्रा उपयोग करें।",
+        "spray_timing": "जब sulphur preventive कार्यक्रम अपर्याप्त हो; FRAC group rotate करें।"
       },
-      "next_spray_logic": "Reassess colony coverage after label interval. Alternate M2, 11 and 3 groups. Limit Group 11 applications per season as per label.",
-      "resistance_management": "Rotate sulphur, triazoles and strobilurins. Do not repeat Group 11 excessively.",
-      "phi": "Product specific; verify label for harvest crop.",
-      "rei": "Product specific; follow label.",
-      "compatibility_notes": "Sulphur should not be mixed with oils or applied at high temperature on sensitive cucurbits. Check jar test before mixing.",
-      "safety_notes": "Wear respiratory protection when applying sulphur dust or WP. Follow label heat and timing restrictions.",
-      "farmer_tip": "Powdery mildew can spread without rain. A dry spell does not mean disease risk is low.",
-      "common_mistakes": "Confusing with downy mildew, applying sulphur on hot afternoons, overusing Group 11 and treating only visible tops while ignoring stems.",
+      "next_spray_logic": "label अंतराल के बाद झुंड कवरेज देखें। M2, 11 और 3 group बदलें। label अनुसार सीज़न में Group 11 प्रयोग सीमित रखें।",
+      "resistance_management": "Sulphur, triazoles और strobilurins rotate करें। Group 11 अत्यधिक दोहराएँ नहीं।",
+      "phi": "उत्पाद-विशिष्ट; कटाई फसल के लिए लेबल सत्यापित करें।",
+      "rei": "उत्पाद-विशिष्ट; लेबल का पालन करें।",
+      "compatibility_notes": "Sulphur को telों से न मिलाएँ और संवेदनशील ककड़ी वर्गs पर उच्च ताप पर न लगाएँ। मिलाने से पहले जार परीक्षण करें।",
+      "safety_notes": "Sulphur dust या WP लगाते समय श्वास सुरक्षा पहनें। label ताप और समय प्रतिबंधों का पालन करें।",
+      "farmer_tip": "powdery फफूंद बारिश के बिना फैल सकता है। शुष्क अवधि का मतलब रोग जोखिम कम नहीं।",
+      "common_mistakes": "downy फफूंद से भ्रम, दोपहर गर्मी में sulphur, Group 11 अधिक उपयोग और केवल ऊपरी सतह उपचार जबकि तने अनदेखे।",
       "references": [
         "ICAR-IIHR cucurbit disease-management guidance.",
         "CIBRC current List of Major Uses of Fungicides.",
         "State Horticulture Department powdery mildew advisory."
       ],
-      "confidence_level": "High for identification and FRAC rotation principles; medium for dose pending label verification."
+      "confidence_level": "पहचान और FRAC rotation सिद्धांतों के लिए उच्च; label सत्यापन तक खुराक के लिए मध्यम।"
     },
     {
-      "pest_name": "Anthracnose, Colletotrichum orbiculare",
-      "identification": "Small water-soaked spots on leaves, stems and fruits enlarging to tan or brown sunken lesions with dark margins. Fruit lesions may contain pinkish spore masses in humid weather.",
-      "life_cycle": "Fungus survives on infected seed, residue and weeds. Conidia spread by rain splash, irrigation water, tools and worker contact.",
-      "damage_symptoms": "Leaf spotting and blight, stem cankers, fruit rot and reduced marketability. Severe infection causes defoliation and vine collapse.",
-      "crop_stage_attacked": "Seedling through harvest; fruits are economically critical.",
-      "favorable_conditions": "Warm humid weather, rain splash, overhead irrigation, dense canopy and infected seed or residue.",
-      "why_this_happened": "Infected seed or crop residue, rain splash dispersal, overhead irrigation and lack of preventive fungicide during humid periods.",
-      "monitoring": "Inspect leaves, stems and fruits twice weekly during humid weather. Look for water-soaked spots on young fruits.",
-      "etl": "Symptom and risk based; treat at first lesions or preventively before rainy periods.",
-      "preventive": "Use certified disease-free seed, tolerant hybrids, trellising, drip irrigation and crop rotation.",
-      "cultural_control": "Avoid overhead irrigation. Remove infected plant debris. Disinfect stakes and trellis materials between seasons.",
-      "biological_control": "Trichoderma or Pseudomonas seed treatment and soil application may supplement where officially recommended.",
+      "pest_name": "एंथ्रेक्नोज, Colletotrichum orbiculare",
+      "identification": "पत्तियों, तने और फलों पर छोटे water-soaked धब्बे जो tan या brown sunken घाव बनते हैं, गहरे किनारे। नम मौसम में फल घावों में गुलाबी spore mass हो सकते हैं।",
+      "life_cycle": "Fungus संक्रमित बीज, अवशेष और खरपतवार पर जीवित रहता है। बीजाणु बारिश छींटे, सिंचाई पानी, औज़ार और कर्मचारी संपर्क से फैलते हैं।",
+      "damage_symptoms": "पत्ती धब्बा और blight, तना canker, फल सड़न और कम बाज़ार योग्यता। गंभीर संक्रमण में पत्ती झड़ना और बेल collapse।",
+      "crop_stage_attacked": "पौधे से कटाई तक; फल आर्थिक रूप से महत्वपूर्ण।",
+      "favorable_conditions": "गर्म नम मौसम, बारिश छींटा, overhead सिंचाई, घना canopy और संक्रमित बीज या अवशेष।",
+      "why_this_happened": "संक्रमित बीज या फसल अवशेष, बारिश छींटा, overhead सिंचाई और नम अवधि में preventive कवकनाशी का अभाव।",
+      "monitoring": "नम मौसम में पत्ती, तना और फल सaptाह में दो बार देखें। युवा फलों पर water-soaked धब्बे देखें।",
+      "etl": "लक्षण और जोखिम आधारित; पहले घाव पर या बारिश से पहले preventive उपचार।",
+      "preventive": "प्रमाणित रोग-मुक्त बीज, tolerant हाइबrid, बेल सहारा, drip सिंचाई और crop rotation।",
+      "cultural_control": "overhead सिंचाई से बचें। संक्रमित पौधा मलबा हटाएँ। सीज़नों के बीच stake और trellis सामग्री disinfect करें।",
+      "biological_control": "Trichoderma या Pseudomonas बीज उपचार और मिट्टी प्रयोग आधिकारिक सिफारिश हो तो पूरक।",
       "chemical_early_curative": {
         "technical": "Mancozeb 75% WP formulation with a current CIBRC label claim",
         "dose_per_acre": "approximately 500 g per acre; verify exact label",
         "frac_group": "M3",
-        "spray_water_volume": "Use label-specified volume covering leaves, stems and developing fruits",
-        "spray_timing": "Preventive or at first leaf or fruit spots."
+        "spray_water_volume": "पत्तियों, तनों और विकसित फलों को ढकने के लिए लेबल में निर्दिष्ट मात्रा।",
+        "spray_timing": "Preventive या पहले पत्ती या फल धब्बों पर।"
       },
       "chemical_hard_curative": {
         "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC formulation with current CIBRC label claim",
         "dose_per_acre": "approximately 200 ml per acre; verify exact label",
         "frac_group": "11+3",
-        "spray_water_volume": "Use label-specified volume",
-        "spray_timing": "When lesions are spreading on leaves, stems or fruits; rotate from Mancozeb programme."
+        "spray_water_volume": "लेबल में निर्दिष्ट मात्रा उपयोग करें।",
+        "spray_timing": "जब घाव पत्ती, तने या फलों पर फैल रहे हों; Mancozeb कार्यक्रम से rotate करें।"
       },
-      "next_spray_logic": "Reassess new lesions after label interval. Alternate M3 with 11+3 combinations. Remove severely infected fruits.",
-      "resistance_management": "Rotate contact and systemic fungicides. Limit strobilurin and triazole exposure per season.",
-      "phi": "Product specific; critical for continuous harvest.",
-      "rei": "Product specific; follow label.",
-      "compatibility_notes": "Ensure fruit and stem coverage, not leaves alone. Avoid unverified tank mixes during fruiting.",
-      "safety_notes": "Observe PHI strictly. Wear PPE. Do not harvest fruits before label-permitted interval.",
-      "farmer_tip": "Fruit spots at harvest mean infection started weeks earlier on leaves or stems. Scout the whole vine, not only marketable fruits.",
-      "common_mistakes": "Using infected seed, ignoring stem lesions, spraying only leaves while fruits are unprotected and harvesting within PHI.",
+      "next_spray_logic": "label अंतराल के बाद नए घाव देखें। M3 को 11+3 संयोजन से बदलें। गंभीर संक्रमित फल हटाएँ।",
+      "resistance_management": "contact और syतनाic कवकनाशीs rotate करें। सीज़न में strobilurin और triazole exposure सीमित रखें।",
+      "phi": "उत्पाद-विशिष्ट; निरंतर कटाई के लिए महत्वपूर्ण।",
+      "rei": "उत्पाद-विशिष्ट; लेबल का पालन करें।",
+      "compatibility_notes": "केवल पत्तियों नहीं, फल और तने कवरेज सुनिश्चित करें। फलन में अप्रमाणित tank mix न करें।",
+      "safety_notes": "PHI सख्ती से पालन करें। सुरक्षा उपकरण पहनें। label अनुमत अंतराल से पहले फल न काटें।",
+      "farmer_tip": "कटाई पर फल धब्बे का मतलब संक्रमण हफ्तों पहले पत्ती या तने पर शुरू हुआ। पूरी बेल देखें, केवल बाज़ार योग्य फल नहीं।",
+      "common_mistakes": "संक्रमित बीज उपयोग, तना घाव अनदेखी, केवल पत्ती स्प्रे जबकि फल असुरक्षित और PHI के भीतर कटाई।",
       "references": [
         "ICAR-IIHR cucurbit disease-management guidance.",
         "CIBRC current List of Major Uses of Fungicides.",
         "State Horticulture Department anthracnose advisory."
       ],
-      "confidence_level": "High for identification and integrated management; medium for dose pending label verification."
+      "confidence_level": "पहचान और एकीकृत प्रबंधन के लिए उच्च; label सत्यापन तक खुराक के लिए मध्यम।"
     }
   ],
   "nutrient_deficiency": [
     {
-      "nutrient": "Nitrogen",
-      "symptoms": "Older leaves become pale green to yellow, progressing upward from the base of the vine. Plants are stunted with weak vines, fewer flowers and small pale fruits.",
-      "why_happens": "Insufficient nitrogen application, leaching on sandy soils, imbalance with excessive potassium without nitrogen correction, or poor root function from waterlogging.",
-      "how_to_fix": "Confirm yellowing begins on older leaves. Apply light split doses of nitrogen through fertigation or top-dressing and correct waterlogging. Avoid excess nitrogen during heavy fruiting.",
-      "fertilizer_recommendation": "Urea, calcium ammonium nitrate or water-soluble 19:19:19 through drip as per fertigation schedule.",
+      "nutrient": "नाइट्रोजन",
+      "symptoms": "पुरानी पत्तियाँ हल्के हरे से पीली होती हैं, बेल के आधार से ऊपर बढ़ती हैं। पौधे रुके, कमज़ोर बेल, कम फूल और छोटे पीले फल।",
+      "why_happens": "अपर्याप्त नाइट्रोजन, रेतीली मिट्टी में lixiviation, नाइट्रोजन सुधार के बिना अत्यधिक पोटाश असंतुलन, या जलभराव से खराब जड़ क्रिया।",
+      "how_to_fix": "पीला होना पुरानी पत्तियों से शुरू होता है, यह पुष्टि करें। फर्टिगेशन या ऊपरी मलनing से नाइट्रोजन की हल्की विभाजित खुराक दें और जलभराव सुधारें। भारी फलन में अत्यधिक नाइट्रोजन से बचें।",
+      "fertilizer_recommendation": "Urea, calcium ammonium nitrate या drip से घुलनशील 19:19:19 फर्टिगेशन schedule अनुसार।",
       "dose_per_acre": "Split doses of 4-8 kg N per acre per application during vegetative and early fruiting stages; adjust per soil test and state recommendation."
     },
     {
-      "nutrient": "Phosphorus",
-      "symptoms": "Dark green to dull leaves, stunted plants, delayed flowering and poor root development. Older leaves may show purplish tint under cool conditions.",
-      "why_happens": "Low soil phosphorus, failure to apply basal phosphorus, cold soil limiting uptake, or high pH soils fixing phosphorus.",
-      "how_to_fix": "Apply basal phosphorus before sowing or transplanting. Late correction is less effective; foliar phosphorus has limited benefit in field cucumber.",
-      "fertilizer_recommendation": "DAP or single super phosphate applied basally during land preparation.",
+      "nutrient": "फास्फोरस",
+      "symptoms": "गहरे हरे से dull पत्तियाँ, रुके पौधे, देर से फूल और कमज़ोर जड़ विकास। ठंड में पुरानी पत्तियों पर बैंगनी रंग।",
+      "why_happens": "मिट्टी में कम फास्फोरस, बेसल फास्फोरस न देना, ठंडी मिट्टी में कम uptake, या उच्च pH मिट्टी में फास्फोरस fix होना।",
+      "how_to_fix": "बुवाई या रोपाई से पहले बेसल फास्फोरस दें। देर सुधार कम प्रभावी; field खीरे में पर्ण फास्फोरस सीमित लाभ।",
+      "fertilizer_recommendation": "DAP या single super phosphate भूमि तैयारी में बेसल रूप से।",
       "dose_per_acre": "Full basal P2O5 dose per soil test, typically applied once before planting; verify state recommendation."
     },
     {
-      "nutrient": "Potassium",
-      "symptoms": "Older leaf margins scorch and brown, weak vines, misshapen fruits with narrow stem end, bitter fruits under stress and poor disease tolerance.",
-      "why_happens": "Heavy fruit removal depleting potassium, inadequate K in fertigation, high nitrogen without matching potassium, or sandy leaching soils.",
-      "how_to_fix": "Increase potassium proportion during flowering and fruiting. Use muriate of potash or potassium nitrate through fertigation. Maintain consistent moisture.",
-      "fertilizer_recommendation": "MOP (muriate of potash) or potassium nitrate through drip fertigation.",
+      "nutrient": "पोटाश",
+      "symptoms": "पुरानी पत्ती किनारे scorch और भूरे, कमज़ोर बेल, संकरी तना end वाले विकृत फल, तनाव में कड़वे फल और कम रोग सहनशीलता।",
+      "why_happens": "भारी फल निकालने से पोटाश कम, फर्टिगेशन में अपर्याप्त K, मिलान पोटाश के बिना उच्च नाइट्रोजन, या रेतीली lixiviation मिट्टी।",
+      "how_to_fix": "फूल और फलन में पोटाश अनुपात बढ़ाएँ। फर्टिगेशन में muriate of potash या potassium nitrate उपयोग करें। लगातार नमी बनाए रखें।",
+      "fertilizer_recommendation": "MOP (muriate of potash) या potassium nitrate ड्रिप फर्टिगेशन से।",
       "dose_per_acre": "4-7 kg K2O per acre per split during pre-flowering through peak fruiting; adjust per soil test."
     },
     {
-      "nutrient": "Calcium",
-      "symptoms": "Blossom-end rot on fruits, tip-burn of young leaves, distorted new growth and fruit cracking under moisture fluctuation.",
-      "why_happens": "Low calcium availability, irregular irrigation, high nitrogen or potassium competing with calcium uptake, or bicarbonate-rich irrigation water.",
-      "how_to_fix": "Maintain consistent soil moisture. Apply calcium nitrate through fertigation or foliar calcium sprays. Correct wide irrigation swings.",
-      "fertilizer_recommendation": "Calcium nitrate fertigation or foliar calcium chloride or calcium nitrate spray.",
+      "nutrient": "कैल्शियम",
+      "symptoms": "फलों पर फूल-सिरा सड़न, युवा पत्तियों पर tip-burn, विकृत नई वृद्धि और नमी उतार-चढ़ाव में फल cracking।",
+      "why_happens": "कम कैल्शियम उपलब्धता, अनियमित सिंचाई, कैल्शियम uptake से प्रतिस्पर्धा करने वाला उच्च नाइट्रोजन या पोटाश, या bicarbonate युक्त सिंचाई पानी।",
+      "how_to_fix": "मिट्टी में लगातार नमी बनाए रखें। फर्टिगेशन या पर्ण कैल्शियम स्प्रे से calcium nitrate दें। व्यापक सिंचाई उतार-चढ़ाव सुधारें।",
+      "fertilizer_recommendation": "Calcium nitrate फर्टिगेशन या पर्ण calcium chloride या calcium nitrate स्प्रे।",
       "dose_per_acre": "Fertigation or foliar per label; commonly 2-5 kg calcium nitrate per acre per week during fruiting where deficiency is confirmed."
     },
     {
-      "nutrient": "Boron",
-      "symptoms": "Brittle young leaves, flower drop, misshapen and crooked fruits, hollow or cracked stems and poor fruit set.",
-      "why_happens": "Low boron in sandy soils, high pH, drought stress, or omission of micronutrient programme during flowering and fruiting.",
-      "how_to_fix": "Apply boron foliar spray at flowering and early fruiting. Avoid excess boron which is toxic. Confirm with soil or tissue test where possible.",
-      "fertilizer_recommendation": "Borax or solubor foliar spray; may combine with SOP foliar during flowering.",
+      "nutrient": "बोरॉन",
+      "symptoms": "भंगुर युवा पत्तियाँ, फूल झड़ना, विकृत और मुड़े फल, खोखले या फटे तने और कम फल बनना।",
+      "why_happens": "रेतीली मिट्टी में कम बोरॉन, उच्च pH, सूखा तनाव, या फूल और फलन में सूक्ष्म पोषक कार्यक्रम का अभाव।",
+      "how_to_fix": "फूल और प्रारंभिक फलन पर बोरॉन पर्ण स्प्रे करें। अत्यधिक बोरॉन toxic है, इससे बचें। संभव हो तो मिट्टी या tissue test से पुष्टि करें।",
+      "fertilizer_recommendation": "Borax या solubor पर्ण स्प्रे; फूलन में SOP पर्ण के साथ मिला सकते हैं।",
       "dose_per_acre": "Foliar borax approximately 200-400 g per acre equivalent or per label; never exceed recommended concentration."
     },
     {
-      "nutrient": "Magnesium",
-      "symptoms": "Interveinal chlorosis on older leaves with green veins, common in heavy-fruiting fertigated vines receiving high potassium.",
-      "why_happens": "High potassium fertilization without magnesium supplement, sandy soils, or omission from fertigation programme.",
-      "how_to_fix": "Include magnesium sulphate in fertigation or foliar programme, especially during peak fruiting on drip-irrigated crops.",
-      "fertilizer_recommendation": "Magnesium sulphate (Epsom salt) through drip or foliar spray.",
+      "nutrient": "मैग्नीशियम",
+      "symptoms": "पुरानी पत्तियों पर नसों के बीच chlorosis, हरी नसें, उच्च पोटाश fertigated बेलों में भारी फलन पर common।",
+      "why_happens": "मैग्नीशियम पूरक के बिना उच्च पोटाश उर्वरीकरण, रेतीली मिट्टी, या फर्टिगेशन कार्यक्रम से omission।",
+      "how_to_fix": "विशेषकर drip सिंचित फसल में चरम फलन पर फर्टिगेशन या पर्ण कार्यक्रम में magnesium sulphate शामिल करें।",
+      "fertilizer_recommendation": "Magnesium sulphate (Epsom salt) drip या पर्ण स्प्रे से।",
       "dose_per_acre": "Approximately 5-10 kg magnesium sulphate per acre per application during fruiting; adjust per deficiency severity."
     }
   ],
   "weed_database": [
     {
-      "weed_name": "Mixed weed flora in cucumber, Echinochloa, Digitaria, Cyperus, Amaranthus and Commelina",
-      "weed_type": "Mixed annual grasses, sedges and broadleaf weeds",
-      "identification": "Grasses such as barnyard grass (Echinochloa) and crabgrass (Digitaria) have parallel-veined leaves. Sedges (Cyperus) have triangular stems. Broadleaf weeds such as Amaranthus and Commelina have net-veined leaves and rapid early growth.",
-      "critical_competition_period": "First 25-45 days after sowing until vines cover the bed or mulch.",
-      "why_problem_occurs": "Weed seed bank in soil, contaminated irrigation water, absence of mulch, delayed hand weeding and reliance on a single herbicide without identifying weed type.",
-      "preventive": "Use clean seed, black plastic mulch on raised beds, stale seedbed where suitable and pre-emergence herbicide on planting rows.",
-      "cultural_control": "Plastic mulch is the most effective practice for cucumber—controls weeds, conserves moisture and keeps fruits clean. Trellising and hand weeding in furrows supplement mulch.",
-      "biological_control": "No dependable universal biological weed control is recommended for commercial cucumber fields.",
+      "weed_name": "खीरे में मिश्रित खरपतवार, Echinochloa, Digitaria, Cyperus, Amaranthus and Commelina",
+      "weed_type": "मिश्रित वार्षिक घास, sedge और चौड़ी पत्ती खरपतवार",
+      "identification": "barnyard grass (Echinochloa) और crabgrass (Digitaria) जैसी घास में समानांतर नस वाली पत्तियाँ। Sedge (Cyperus) में त्रिकोणीय तना। Amaranthus और Commelina जैसे चौड़ी पत्ती में जालीदार नस वाली पत्तियाँ और तेज़ प्रारंभिक वृद्धि।",
+      "critical_competition_period": "बुवाई के बाद पहले 25-45 दिन जब तक बेल क्यारी या मल्च ढक न दे।",
+      "why_problem_occurs": "मिट्टी में खरपतवार बीज भंडार, दूषित सिंचाई पानी, मल्च का अभाव, देर से हाथ से निराई और खरपतवार प्रकार पहचाने बिना एक खरपतवारनाशी पर निर्भरता।",
+      "preventive": "साफ़ बीज, ऊँची क्यारियों पर black plastic मल्च, उपयुक्त हो तो पुरानी बीजबेड और रोपण पंक्तियों पर अंकुरण-पूर्व खरपतवारनाशी।",
+      "cultural_control": "खीरे के लिए plastic मल्च सबसे प्रभावी—खरपतवार नियंत्रित, नमी बचती है और फल साफ़ रहते हैं। बेल सहारा और furrow में हाथ निराई मल्च का पूरक।",
+      "biological_control": "व्यावसायिक खीरे खेतों के लिए कोई विश्वसनीय सार्वभौमिक जैविक खरपतवार नियंत्रण सिफारिशित नहीं।",
       "chemical_management": {
-        "pre_emergence": "Pendimethalin 30% EC formulation with a current CIBRC label claim for cucurbit crops on moist soil within 0-3 days after sowing.",
-        "early_post_emergence": "Quizalofop-ethyl 5% EC directed spray between rows for grass control only, avoiding contact with cucumber foliage.",
-        "late_post_emergence": "Hand weeding or directed grass herbicide only; broadleaf weeds in crop row require hand removal once vines are established.",
+        "pre_emergence": "Pendimethalin 30% EC — वर्तमान CIBRC लेबल दावे के साथ ककड़ी वर्ग फसलों पर नम मिट्टी में बुवाई के 0-3 दिन के भीतर।",
+        "early_post_emergence": "Quizalofop-ethyl 5% EC — केवल घास नियंत्रण के लिए पंक्तियों के बीच निर्देशित छिड़काव; खीरे की पत्तियों से संपर्क से बचें।",
+        "late_post_emergence": "हाथ निराई or directed grass खरपतवारनाशी only; चौड़ी पत्ती खरपतवार crop row में बेल स्थापित होने के बाद हाथ से हटाना पड़ता है।",
         "dose_per_acre": "Pendimethalin approximately 1 L per acre pre-emergence; quizalofop-ethyl approximately 400 ml per acre directed; verify exact label",
-        "application_timing": "Pre-emergence on moist soil along planting rows immediately after sowing. Post-emergence directed grass spray at 2-4 leaf weed stage in furrows only.",
+        "application_timing": "बुवाई के तुरंत बाद रोपण पंक्तियों की नम मिट्टी पर अंकुरण-पूर्व। अंकुरण-पश्चात केवल नालियों में 2-4 पत्ती अवस्था की घास पर निर्देशित छिड़काव।",
         "hrac_group": "Pendimethalin: Group 3; quizalofop-ethyl: Group 1"
       },
-      "resistance_management": "Rotate herbicide groups across seasons, use mulch to reduce herbicide dependence and prevent seed set from surviving weeds.",
-      "safety_and_compatibility": "Do not allow quizalofop or pendimethalin to contact cucumber leaves. Calibrate sprayer for directed application. Do not mix herbicides with insecticides unless label permits.",
-      "farmer_tip": "Black plastic mulch on raised beds often saves more labour and improves fruit quality than repeated herbicide sprays alone.",
+      "resistance_management": "सीज़नों में खरपतवारनाशी group rotate करें, खरपतवारनाशी निर्भरता कम करने मल्च उपयोग करें और बचे खरपतवार से बीज बनने से रोकें।",
+      "safety_and_compatibility": "Quizalofop या pendimethalin को खीरे की पत्तियों से contact न होने दें। directed प्रयोग के लिए स्प्रेयर कैलिब्रेट करें। label अनुमति के बिना खरपतवारनाशी कीटनाशक से न मिलाएँ।",
+      "farmer_tip": "ऊँची क्यारियों पर black plastic मल्च अक्सर बार-बार खरपतवारनाशी स्प्रे से अधिक श्रम बचाता है और फल गुणवत्ता बढ़ाता है।",
       "references": [
         "ICAR-Directorate of Weed Research vegetable weed-management guidance.",
         "ICAR-IIHR cucumber production package.",
         "CIBRC current List of Major Uses of Herbicides.",
         "State Horticulture Department cucumber package of practices."
       ],
-      "confidence_level": "High for critical weed period and mulch recommendation; exact herbicide dose is label dependent."
+      "confidence_level": "महत्वपूर्ण खरपतवार अवधि और मल्च सिफारिश के लिए उच्च; सटीक खरपतवारनाशी खुराक label पर निर्भर।"
     }
   ]
 }

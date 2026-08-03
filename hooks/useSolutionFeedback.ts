@@ -13,28 +13,10 @@ export interface SolutionFeedbackStats {
 
 type FeedbackStore = Record<string, SolutionFeedbackStats>;
 
-const SEED_STATS: FeedbackStore = {
-  "paddy-ysb-cta": {
-    helpful: 847,
-    notHelpful: 83,
-    comments: [
-      { text: "तीन spray में फर्क दिखा", author: "सुरेश, बुलंदशहर", at: "2025" },
-      { text: "साथ में Zinc भी डाला तो और जल्दी ठीक हुआ", author: "महेश, मेरठ", at: "2025" },
-    ],
-  },
-  "tomato-early-blight": {
-    helpful: 612,
-    notHelpful: 45,
-    comments: [
-      { text: "Mancozeb + neem oil rotation worked", author: "Ravi, Karnal", at: "2025" },
-    ],
-  },
-};
+const EMPTY_STATS: SolutionFeedbackStats = { helpful: 0, notHelpful: 0, comments: [] };
 
 export function useSolutionFeedback(solutionId: string) {
-  const [stats, setStats] = useState<SolutionFeedbackStats>(
-    SEED_STATS[solutionId] ?? { helpful: 120, notHelpful: 12, comments: [] }
-  );
+  const [stats, setStats] = useState<SolutionFeedbackStats>(EMPTY_STATS);
   const [userVote, setUserVote] = useState<"helpful" | "not_helpful" | null>(null);
 
   useEffect(() => {
@@ -44,11 +26,7 @@ export function useSolutionFeedback(solutionId: string) {
       {}
     );
     setUserVote(votes[solutionId] ?? null);
-    if (store[solutionId]) {
-      setStats({ ...SEED_STATS[solutionId], ...store[solutionId] });
-    } else if (SEED_STATS[solutionId]) {
-      setStats(SEED_STATS[solutionId]);
-    }
+    setStats(store[solutionId] ?? EMPTY_STATS);
   }, [solutionId]);
 
   const vote = useCallback(

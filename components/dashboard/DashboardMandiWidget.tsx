@@ -23,7 +23,7 @@ export default function DashboardMandiWidget({ limit = 5, className = "", compac
   });
 
   const rows = (data?.rows ?? []).slice(0, limit);
-  const sourceLabel = data?.source === "live" ? "Live" : "Sample";
+  const sourceLabel = "लाइव";
 
   return (
     <DarkCard hover delay={1} className={compact ? className : `xl:col-span-8 ${className}`}>

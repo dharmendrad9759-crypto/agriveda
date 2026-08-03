@@ -22,7 +22,14 @@ import {
   issueDetailHref,
   type SolverIssue,
   type SymptomCategory,
+  type SymptomSeverity,
 } from "@/data/symptom-solver";
+
+const SEVERITY_LABELS_HI: Record<SymptomSeverity, string> = {
+  low: "कम",
+  medium: "मध्यम",
+  high: "ज्यादा",
+};
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { fileToDataUrl, savePendingAiScan } from "@/lib/pendingAiScan";
 import { useToast } from "@/components/ui/Toast";
@@ -81,7 +88,7 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
   const handleCameraCapture = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file?.type.startsWith("image/")) {
-      showToast("Please select an image file", "error");
+      showToast("कृपया एक इमेज फ़ाइल चुनें", "error");
       return;
     }
     try {
@@ -94,7 +101,7 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
       });
       navigate("/ai-doctor");
     } catch {
-      showToast("Could not process photo", "error");
+      showToast("फोटो प्रोसेस नहीं हो सकी", "error");
     } finally {
       if (cameraInputRef.current) cameraInputRef.current.value = "";
     }
@@ -109,16 +116,16 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
             type="button"
             onClick={goBack}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border-2 border-gray-200 bg-white text-gray-800"
-            aria-label="Go back"
+            aria-label="वापस जाएँ"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-extrabold tracking-tight text-gray-950">
-              Pest &amp; Disease Solver
+              कीट और रोग समाधान
             </h1>
             <p className="truncate text-xs font-semibold text-gray-600">
-              {crops[0]?.emoji} {crops[0]?.name ?? "Paddy"} · Symptom guide
+              {crops[0]?.emoji} {crops[0]?.name ?? "धान"} · लक्षण गाइड
             </p>
           </div>
           <Stethoscope className="h-6 w-6 shrink-0 text-emerald-600" aria-hidden />
@@ -130,9 +137,9 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
         {/* Categories grid */}
         {view === "categories" && (
           <section>
-            <h2 className="text-xl font-extrabold text-gray-950">What are you observing?</h2>
+            <h2 className="text-xl font-extrabold text-gray-950">आप क्या देख रहे हैं?</h2>
             <p className="mt-1 text-sm font-medium text-gray-700">
-              Tap a symptom to see likely causes and what to do next.
+              लक्षण टैप करें — संभावित कारण और अगला कदम देखें।
             </p>
 
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-2">
@@ -161,10 +168,10 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
                       {category.labelHi ?? category.label}
                     </span>
                     <span className="relative mt-1 line-clamp-2 text-[11px] font-medium leading-snug text-gray-800">
-                      {category.description}
+                      {category.descriptionHi ?? category.description}
                     </span>
                     <span className="relative mt-2 text-[10px] font-bold uppercase tracking-wide text-gray-700">
-                      {matchCount} possible {matchCount === 1 ? "cause" : "causes"}
+                      {matchCount} संभावित कारण
                     </span>
                   </button>
                 );
@@ -178,21 +185,21 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
           <section>
             <div className="mb-4">
               <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
-                Matching symptoms
+                मेल खाते लक्षण
               </p>
               <h2 className="mt-1 text-xl font-extrabold text-gray-950">
-                {selectedCategory.label}
+                {selectedCategory.labelHi ?? selectedCategory.label}
               </h2>
               <p className="mt-1 text-sm font-medium text-gray-700">
-                {selectedCategory.description}
+                {selectedCategory.descriptionHi ?? selectedCategory.description}
               </p>
             </div>
 
             {issueList.length === 0 ? (
               <div className="rounded-2xl border-2 border-gray-200 bg-gray-50 p-6 text-center">
-                <p className="font-bold text-gray-900">No matches for your crop yet</p>
+                <p className="font-bold text-gray-900">आपकी फसल के लिए अभी कोई मेल नहीं</p>
                 <p className="mt-2 text-sm text-gray-600">
-                  Try another symptom or use AI scan below for instant diagnosis.
+                  दूसरा लक्षण आज़माएँ या नीचे एआई स्कैन से तुरंत पहचान करें।
                 </p>
               </div>
             ) : (
@@ -209,7 +216,7 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
         {view === "detail" && selectedIssue && selectedCategory && (
           <IssueDetailView
             issue={selectedIssue}
-            categoryLabel={selectedCategory.label}
+            categoryLabel={selectedCategory.labelHi ?? selectedCategory.label}
           />
         )}
       </main>
@@ -231,7 +238,7 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
           className="mx-auto flex w-full max-w-lg items-center justify-center gap-3 rounded-2xl bg-emerald-600 px-5 py-4 text-base font-extrabold text-white shadow-lg transition hover:bg-emerald-700 active:scale-[0.99]"
         >
           <Camera className="h-6 w-6" strokeWidth={2.5} />
-          Scan Leaf with AI
+          एआई से पत्ती स्कैन करें
         </button>
       </div>
     </div>
@@ -259,7 +266,7 @@ function IssueListCard({ issue, onSelect }: { issue: SolverIssue; onSelect: () =
           <span
             className={`mt-1.5 inline-block rounded-md px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide ring-1 ${severity.className}`}
           >
-            Severity: {severity.label}
+            गंभीरता: {SEVERITY_LABELS_HI[issue.severity]}
           </span>
         </div>
         <ChevronRight className="h-5 w-5 shrink-0 text-gray-400" />
@@ -289,7 +296,7 @@ function IssueDetailView({
           <span
             className={`mt-2 inline-block rounded-md px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide ring-1 ${severity.className}`}
           >
-            {severity.label} severity
+            {SEVERITY_LABELS_HI[issue.severity]} गंभीरता
           </span>
         </div>
       </div>
@@ -297,14 +304,14 @@ function IssueDetailView({
       <section className="rounded-2xl border-2 border-gray-200 bg-gray-50 p-4 shadow-sm">
         <h3 className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-wide text-gray-800">
           <Shield className="h-4 w-4 text-emerald-600" />
-          Diagnosis
+          निदान
         </h3>
         <p className="mt-2 text-sm font-medium leading-relaxed text-gray-800">{issue.diagnosis}</p>
       </section>
 
       <section className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-4 shadow-sm">
         <h3 className="text-sm font-extrabold uppercase tracking-wide text-emerald-900">
-          Immediate Action
+          तुरंत कार्रवाई
         </h3>
         <ol className="mt-3 space-y-2.5">
           {issue.immediateActions.map((step, i) => (
@@ -319,7 +326,7 @@ function IssueDetailView({
       </section>
 
       <section className="rounded-2xl border-2 border-sky-200 bg-sky-50 p-4 shadow-sm">
-        <h3 className="text-sm font-extrabold uppercase tracking-wide text-sky-900">Prevention</h3>
+        <h3 className="text-sm font-extrabold uppercase tracking-wide text-sky-900">रोकथाम</h3>
         <ul className="mt-3 space-y-2">
           {issue.prevention.map((tip, i) => (
             <li key={i} className="flex gap-2 text-sm font-medium leading-relaxed text-gray-800">
@@ -335,7 +342,7 @@ function IssueDetailView({
           href={fullGuideHref}
           className="flex items-center justify-center gap-2 rounded-2xl border-2 border-gray-300 bg-white py-3.5 text-sm font-extrabold text-gray-900 shadow-sm"
         >
-          Full scientific guide
+          पूरी वैज्ञानिक गाइड
           <ExternalLink className="h-4 w-4" />
         </Link>
       )}

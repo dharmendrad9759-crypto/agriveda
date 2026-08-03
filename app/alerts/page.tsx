@@ -10,10 +10,12 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { Bell, IndianRupee } from "lucide-react";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const TABS = ["Farm Alerts", "Price Alerts"] as const;
 
 export default function AlertsPage() {
+  const { t } = useLocale();
   const [tab, setTab] = useState<(typeof TABS)[number]>("Farm Alerts");
   const { settings, activeCount } = usePriceAlerts();
   const { profile } = useFarmerProfile();
@@ -25,9 +27,9 @@ export default function AlertsPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="Alerts"
+      title={t("toolAlerts")}
       subtitle="Farm predictive alerts aur mandi price targets"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Alerts" }]}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("toolAlerts") }]}
     >
       <div className="flex gap-1 overflow-x-auto scrollbar-hide">
         {TABS.map((t) => (

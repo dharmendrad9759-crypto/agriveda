@@ -2,7 +2,7 @@
 
 import AppLink from "@/components/ui/AppLink";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Crown, Leaf, Menu, MessageCircle, X } from "lucide-react";
+import { Leaf, Menu, MessageCircle, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { SHELL_NAV, isNavActive } from "@/lib/shell/nav";
 import { BRAND } from "@/lib/brand";
@@ -92,20 +92,6 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
             </nav>
 
             <div className="space-y-2 border-t border-[var(--av-border)] p-3">
-              <AppLink
-                href="/settings/upgrade"
-                onClick={onClose}
-                className="block rounded-xl border border-[var(--av-accent)]/30 bg-[var(--av-accent-soft)] p-3"
-              >
-                <div className="flex items-center gap-2">
-                  <Crown className="h-4 w-4 text-amber-500" />
-                  <span className="text-xs font-bold text-[var(--av-text-primary)]">{t("shellGoPremium")}</span>
-                </div>
-                <p className="mt-1 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                  {t("shellPremiumDesc")}
-                </p>
-              </AppLink>
-
               <AppLink
                 href="/kisan-saathi"
                 onClick={onClose}

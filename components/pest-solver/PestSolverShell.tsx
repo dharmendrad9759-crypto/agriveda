@@ -2,14 +2,17 @@
 
 import AppShell from "@/components/shell/AppShell";
 import PestDiseaseSolver from "@/components/pest-solver/PestDiseaseSolver";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function PestSolverShell() {
+  const { t } = useLocale();
+
   return (
     <AppShell
       className="!bg-transparent"
-      title="Pest & Disease Solver"
-      subtitle="Symptom guide — likely causes and treatment plans"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Pest Solver" }]}
+      title="कीट और रोग समाधान"
+      subtitle="लक्षण गाइड — संभावित कारण और उपचार योजना"
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("toolPestSolver") }]}
     >
       <PestDiseaseSolver embedded />
     </AppShell>

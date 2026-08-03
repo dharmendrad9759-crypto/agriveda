@@ -20,6 +20,7 @@ import OutbreakListView from "@/components/outbreak-radar/OutbreakListView";
 import { useOutbreakRadar } from "@/hooks/useOutbreakRadar";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const OutbreakMap = dynamic(() => import("@/components/outbreak-radar/OutbreakMap"), {
   ssr: false,
@@ -31,6 +32,7 @@ const OutbreakMap = dynamic(() => import("@/components/outbreak-radar/OutbreakMa
 });
 
 export default function PestOutbreakRadarPage() {
+  const { t } = useLocale();
   const [view, setView] = useState<"map" | "list">("map");
   const {
     lat,
@@ -52,9 +54,9 @@ export default function PestOutbreakRadarPage() {
 
   return (
     <AppShell
-      title="प्रकोप रडार"
+      title={t("toolOutbreak")}
       subtitle="नज़दीकी कीट/रोग चेतावनी — map ya list"
-      breadcrumbs={[{ label: "Home", href: "/" }, { label: "Outbreak Radar" }]}
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("toolOutbreak") }]}
     >
       <div className="flex justify-end">
         <button

@@ -1,21 +1,21 @@
 /** Global stewardship notes from Agriveda Crop Protection Master Guide */
 
 export const STEWARDSHIP_NOTES = [
-  "Kabhi bhi same FRAC group (fungicide) ya IRAC group (insecticide) lagatar 2 baar se zyada mat chalao — resistance se bachne ke liye rotate karein.",
-  "Waxy/hairy patti wali faslon (gobhi, tori, kheera) par hamesha sticker/spreader @ 0.5 ml/L milayein.",
-  "Bordeaux/lime jaisi alkaline cheezon ko zyada tar insecticide/EC ke saath mat milayein jab tak label na kahe.",
-  "Sabziyon mein PHI strictly follow karein — harvest ke paas Azadirachtin, Spinosad, Emamectin, Bacillus prefer karein.",
-  "Viral bimari (leaf curl, mosaic, YVMV) ka koi chemical ilaj nahi — vector (whitefly/thrips/aphid) control + infected paudhe ukhad kar fenk dein.",
-  "Spray diary rakhein har khet ke liye — Spray Rotation module isi se kaam karta hai.",
-  "Neeche ki dose ICAR/SAU/CIB&RC label ke hisaab se hain — bechne se pehle apne rajya KVK se verify karein.",
+  "कभी भी same FRAC group (fungicide) या IRAC group (insecticide) लगातार 2 बार से ज़्यादा मत चलाएँ — resistance से बचने के लिए rotate करें।",
+  "Waxy/hairy पत्ती वाली फ़सलों (गोभी, तोरी, खीरा) पर हमेशा sticker/spreader @ 0.5 ml/L मिलाएँ।",
+  "Bordeaux/lime जैसी alkaline चीज़ों को ज़्यादातर insecticide/EC के साथ मत मिलाएँ जब तक label न कहे।",
+  "सब्ज़ियों में PHI strictly follow करें — harvest के पास Azadirachtin, Spinosad, Emamectin, Bacillus prefer करें।",
+  "Viral बीमारी (leaf curl, mosaic, YVMV) का कोई chemical इलाज नहीं — vector (whitefly/thrips/aphid) control + infected पौधे उखाड़ कर फेंक दें।",
+  "Spray diary रखें हर खेत के लिए — Spray Rotation module इसी से काम करता है।",
+  "नीचे की dose ICAR/SAU/CIB&RC label के हिसाब से हैं — बेचने से पहले अपने राज्य KVK से verify करें।",
 ];
 
 export const DOSE_CONVENTIONS = [
-  "/acre = product per acre (~200 L spray volume/acre sabzi, 150-200 L kharif fasal)",
+  "/acre = product per acre (~200 L spray volume/acre सब्ज़ी, 150-200 L kharif फ़सल)",
   "1 knapsack pump = 15 L",
-  "DAS/DAT = buwai / ropai ke din",
-  "Early = halki lag (5-10% paude/patti)",
-  "Advanced = tezi se fail raha (>10-25%) ya favourable weather",
+  "DAS/DAT = बुवाई / रोपाई के दिन",
+  "Early = हल्की लग (5-10% पौधे/पत्ती)",
+  "Advanced = तेज़ी से फैल रहा (>10-25%) या favourable weather",
 ];
 
 export const CROP_PROTECTION_GROUPS = [
