@@ -595,11 +595,19 @@ export default function AgriVedaHome() {
         >
           <AppLink
             href="/weather"
-            className="block overflow-hidden rounded-[22px] border border-sky-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]"
+            className="av-weather-card block overflow-hidden rounded-[22px] border border-sky-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]"
           >
             <div className="relative overflow-hidden bg-gradient-to-br from-sky-500/20 via-cyan-500/10 to-emerald-500/15 px-4 pb-3 pt-3.5 dark:from-sky-950/50 dark:via-cyan-950/30 dark:to-emerald-950/25">
-              <div className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-amber-300/25 blur-2xl" />
-              <div className="pointer-events-none absolute -bottom-10 left-8 h-24 w-24 rounded-full bg-sky-400/20 blur-2xl" />
+              <div className="av-weather-glow pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-amber-300/25 blur-2xl" />
+              <div className="av-weather-glow-2 pointer-events-none absolute -bottom-10 left-8 h-24 w-24 rounded-full bg-sky-400/20 blur-2xl" />
+              <div
+                aria-hidden
+                className="av-weather-drift pointer-events-none absolute right-10 top-3 h-8 w-14 rounded-full bg-white/35 blur-[1px]"
+              />
+              <div
+                aria-hidden
+                className="av-weather-drift-slow pointer-events-none absolute right-20 top-8 h-5 w-10 rounded-full bg-white/25 blur-[1px]"
+              />
 
               <div className="relative flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -619,11 +627,11 @@ export default function AgriVedaHome() {
                     </span>
                   ) : null}
                 </div>
-                <CloudSun className="h-10 w-10 shrink-0 text-amber-500/90 drop-shadow-sm" />
+                <CloudSun className="av-weather-sun h-10 w-10 shrink-0 text-amber-500/90 drop-shadow-sm" />
               </div>
 
               <div className="relative mt-3 flex items-end gap-3">
-                <p className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--av-text-primary)] tabular-nums">
+                <p className="av-weather-temp text-[2.75rem] font-black leading-none tracking-tight text-[var(--av-text-primary)] tabular-nums">
                   {weatherLoading ? "…" : temp.replace(/\s/g, "")}
                 </p>
                 <div className="mb-1 min-w-0 pb-0.5">
@@ -641,7 +649,7 @@ export default function AgriVedaHome() {
               {/* Farmer field tip */}
               {weatherLive && rainChance != null ? (
                 <div
-                  className={`relative mt-3 rounded-xl border px-3 py-2 text-[12px] font-semibold leading-snug ${
+                  className={`av-weather-tip relative mt-3 overflow-hidden rounded-xl border px-3 py-2 text-[12px] font-semibold leading-snug ${
                     rainChance >= 55
                       ? "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100"
                       : humidityPct >= 80
@@ -649,6 +657,7 @@ export default function AgriVedaHome() {
                         : "border-emerald-500/25 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
                   }`}
                 >
+                  <span className="av-weather-tip-shine pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent" />
                   {rainChance >= 55
                     ? isHi
                       ? `बारिश संभावना ${rainChance}% — आज स्प्रे न करें`
@@ -688,7 +697,7 @@ export default function AgriVedaHome() {
               ].map(({ icon: Icon, label, value }) => (
                 <div
                   key={label}
-                  className="flex flex-col items-center bg-[var(--av-surface)] px-2 py-3 text-center"
+                  className="av-weather-stat flex flex-col items-center bg-[var(--av-surface)] px-2 py-3 text-center"
                 >
                   <Icon className="h-4 w-4 text-sky-600 dark:text-sky-400" />
                   <p className="mt-1 text-[16px] font-extrabold tabular-nums text-[var(--av-text-primary)]">
@@ -701,8 +710,43 @@ export default function AgriVedaHome() {
 
             <p className="flex items-center justify-between px-4 py-3 text-[13px] font-bold text-[var(--av-accent)]">
               <span>{isHi ? "पूरा मौसम और स्प्रे सलाह" : "Full weather & spray advice"}</span>
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
             </p>
+            <style>{`
+              .av-weather-sun { animation: av-weather-pulse 2.8s ease-in-out infinite; }
+              .av-weather-glow { animation: av-weather-breathe 4s ease-in-out infinite; }
+              .av-weather-glow-2 { animation: av-weather-breathe 5.2s ease-in-out infinite reverse; }
+              .av-weather-drift { animation: av-weather-drift 7s ease-in-out infinite; }
+              .av-weather-drift-slow { animation: av-weather-drift 10s ease-in-out infinite reverse; }
+              .av-weather-tip-shine { animation: av-weather-shine 3.2s ease-in-out infinite; }
+              .av-weather-stat { transition: transform 0.2s ease, background 0.2s ease; }
+              .av-weather-card:active .av-weather-stat { transform: translateY(1px); }
+              @keyframes av-weather-pulse {
+                0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.92; }
+                50% { transform: scale(1.08) rotate(4deg); opacity: 1; }
+              }
+              @keyframes av-weather-breathe {
+                0%, 100% { opacity: 0.55; transform: scale(1); }
+                50% { opacity: 0.95; transform: scale(1.12); }
+              }
+              @keyframes av-weather-drift {
+                0%, 100% { transform: translateX(0); opacity: 0.35; }
+                50% { transform: translateX(-18px); opacity: 0.65; }
+              }
+              @keyframes av-weather-shine {
+                0% { transform: translateX(-120%); opacity: 0; }
+                35% { opacity: 0.7; }
+                100% { transform: translateX(280%); opacity: 0; }
+              }
+              @media (prefers-reduced-motion: reduce) {
+                .av-weather-sun,
+                .av-weather-glow,
+                .av-weather-glow-2,
+                .av-weather-drift,
+                .av-weather-drift-slow,
+                .av-weather-tip-shine { animation: none !important; }
+              }
+            `}</style>
           </AppLink>
         </motion.section>
 

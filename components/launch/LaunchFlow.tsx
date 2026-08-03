@@ -1,22 +1,48 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AgriVedaSplashScreen from "@/components/launch/AgriVedaSplashScreen";
+import IntroCarousel from "@/components/launch/IntroCarousel";
 import { isCapacitorNative } from "@/lib/capacitorNav";
+import { readStorage, writeStorage } from "@/lib/storage";
 
-/** Resume after this long in background → show splash again (app icon re-open). */
-const RESUME_SPLASH_AFTER_MS = 5_000;
+/** Once per WebView process — SoftNav hardNavigate remounts React but keeps sessionStorage */
+const SPLASH_SESSION_KEY = "agriveda-open-splash-v2";
+const INTRO_KEY = "agriveda-intro-carousel-v2";
 
-type Phase = "splash" | "done";
+type Phase = "checking" | "splash" | "intro" | "done";
+
+function splashAlreadyShown(): boolean {
+  try {
+    return sessionStorage.getItem(SPLASH_SESSION_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markSplashShown() {
+  try {
+    sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+function introDone(): boolean {
+  return readStorage<boolean>(INTRO_KEY, false) === true;
+}
+
+function markIntroDone() {
+  writeStorage(INTRO_KEY, true);
+}
 
 async function hideNativePluginSplash(fadeMs = 0) {
   if (!isCapacitorNative()) return;
   try {
     const { SplashScreen } = await import("@capacitor/splash-screen");
-    // Instant hide — native plugin / Android 12 icon overlay must not sit on top
     await SplashScreen.hide({ fadeOutDuration: fadeMs });
   } catch {
-    /* optional plugin */
+    /* optional */
   }
 }
 
@@ -25,76 +51,50 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function resolvePhase(): Phase {
+  if (typeof window === "undefined") return "checking";
+  if (!splashAlreadyShown()) return "splash";
+  if (!introDone()) return "intro";
+  return "done";
+}
+
 /**
- * App open → ONE cream brand splash → app.
- * No intro carousel. Capacitor SplashScreen is hidden immediately so the icon flash
- * is as short as possible (full remove needs new APK with cream system splash).
+ * Cold open only: cream splash → onboarding (once) → app.
+ * SoftNav full reloads do NOT re-show splash (sessionStorage).
+ * No appStateChange resume splash — that felt like “every button opens splash”.
  */
 export default function LaunchFlow() {
-  const [phase, setPhase] = useState<Phase>("splash");
+  const [phase, setPhase] = useState<Phase>(() => resolvePhase());
   const [reduced, setReduced] = useState(false);
-  const [splashKey, setSplashKey] = useState(0);
-  const backgroundedAt = useRef<number | null>(null);
-
-  const startSplash = useCallback(() => {
-    setSplashKey((k) => k + 1);
-    setPhase("splash");
-    void hideNativePluginSplash(0);
-    // Second tick — some WebViews keep the plugin layer until next frame
-    window.setTimeout(() => {
-      void hideNativePluginSplash(0);
-    }, 50);
-  }, []);
 
   useEffect(() => {
     setReduced(prefersReducedMotion());
-    startSplash();
-
-    let remove: (() => void) | undefined;
-    let cancelled = false;
-
-    void (async () => {
-      if (!isCapacitorNative()) return;
-      try {
-        const { App } = await import("@capacitor/app");
-        const handle = await App.addListener("appStateChange", ({ isActive }) => {
-          if (cancelled) return;
-          if (!isActive) {
-            backgroundedAt.current = Date.now();
-            return;
-          }
-          const bg = backgroundedAt.current;
-          backgroundedAt.current = null;
-          if (bg == null) return;
-          if (Date.now() - bg < RESUME_SPLASH_AFTER_MS) return;
-          startSplash();
-        });
-        remove = () => {
-          void handle.remove();
-        };
-      } catch {
-        /* web */
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-      remove?.();
-    };
-  }, [startSplash]);
+    const next = resolvePhase();
+    setPhase(next);
+    if (next === "splash" || next === "intro") {
+      void hideNativePluginSplash(0);
+    } else {
+      void hideNativePluginSplash(0);
+    }
+  }, []);
 
   const finishSplash = useCallback(() => {
+    markSplashShown();
     void hideNativePluginSplash(0);
+    setPhase(introDone() ? "done" : "intro");
+  }, []);
+
+  const finishIntro = useCallback(() => {
+    markIntroDone();
+    markSplashShown();
     setPhase("done");
   }, []);
 
-  if (phase === "done") return null;
+  if (phase === "checking" || phase === "done") return null;
 
-  return (
-    <AgriVedaSplashScreen
-      key={splashKey}
-      onComplete={finishSplash}
-      reducedMotion={reduced}
-    />
-  );
+  if (phase === "splash") {
+    return <AgriVedaSplashScreen onComplete={finishSplash} reducedMotion={reduced} />;
+  }
+
+  return <IntroCarousel onComplete={finishIntro} />;
 }

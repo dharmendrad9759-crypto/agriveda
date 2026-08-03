@@ -1,137 +1,156 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
+import {
+  ArrowRight,
+  Bell,
+  CalendarDays,
+  Camera,
+  CloudSun,
+  FileSearch,
+  Leaf,
+  MapPin,
+  ShieldCheck,
+  Sprout,
+  TrendingUp,
+  IndianRupee,
+} from "lucide-react";
+
+type Feature = { icon: ReactNode; title: string; sub: string };
 
 type Slide = {
   id: string;
-  title: string;
+  hero: string;
+  /** object-position so circular crop hits the illustration */
+  heroPos: string;
   titleHi: string;
-  subtitle: string;
-  subtitleHi: string;
-  illustration: "wheat" | "ai" | "mandi" | "guide";
+  titleEn: string;
+  bodyHi: string;
+  features: Feature[];
+  ctaHi: string;
+  ctaIcon: "leaf" | "book" | "check";
 };
 
 const SLIDES: Slide[] = [
   {
     id: "farm",
-    title: "Smart Farm Management",
+    hero: "/onboarding/01-farm.png",
+    heroPos: "50% 28%",
     titleHi: "स्मार्ट खेत प्रबंधन",
-    subtitle:
-      "Track your crops, expenses, and harvests. Get profit reports for every crop cycle.",
-    subtitleHi:
-      "फसल, खर्च और उपज ट्रैक करें। हर फसल चक्र का लाभ रिपोर्ट पाएं।",
-    illustration: "wheat",
+    titleEn: "Smart Farm Management",
+    bodyHi: "फसल, खर्च और उपज ट्रैक करें। हर फसल चक्र का लाभ रिपोर्ट पाएं।",
+    features: [
+      {
+        icon: <TrendingUp className="h-5 w-5" strokeWidth={2.2} />,
+        title: "फसल ट्रेकिंग",
+        sub: "पूरी जानकारी रखें",
+      },
+      {
+        icon: <IndianRupee className="h-5 w-5" strokeWidth={2.2} />,
+        title: "खर्च & लाभ रिपोर्ट",
+        sub: "सटीक रिकॉर्ड पाएं",
+      },
+      {
+        icon: <CloudSun className="h-5 w-5" strokeWidth={2.2} />,
+        title: "मौसम अपडेट",
+        sub: "रियल-टाइम जानकारी",
+      },
+    ],
+    ctaHi: "आगे जाएं",
+    ctaIcon: "leaf",
   },
   {
     id: "ai",
-    title: "AI Crop Doctor",
+    hero: "/onboarding/02-ai-doctor.png",
+    heroPos: "50% 26%",
     titleHi: "एआई फसल डॉक्टर",
-    subtitle:
-      "Snap a leaf photo to spot pests and disease early — with clear spray guidance.",
-    subtitleHi:
-      "पत्ते की फोटो से कीट-रोग जल्दी पहचानें — साफ छिड़काव मार्गदर्शन के साथ।",
-    illustration: "ai",
+    titleEn: "AI Crop Doctor",
+    bodyHi: "पत्ते की फोटो से कीट-रोग जल्दी पहचानें — साफ छिड़काव मार्गदर्शन के साथ।",
+    features: [
+      {
+        icon: <Camera className="h-5 w-5" strokeWidth={2.2} />,
+        title: "फोटो से पहचान",
+        sub: "पत्ते की फोटो अपलोड करें",
+      },
+      {
+        icon: <FileSearch className="h-5 w-5" strokeWidth={2.2} />,
+        title: "AI विश्लेषण",
+        sub: "कीट-रोग का तुरंत पता",
+      },
+      {
+        icon: <ShieldCheck className="h-5 w-5" strokeWidth={2.2} />,
+        title: "सटीक सलाह",
+        sub: "बेहतर छिड़काव मार्गदर्शन",
+      },
+    ],
+    ctaHi: "आगे जाएं",
+    ctaIcon: "leaf",
   },
   {
     id: "mandi",
-    title: "Live Mandi Prices",
+    hero: "/onboarding/03-mandi.png",
+    heroPos: "50% 30%",
     titleHi: "लाइव मंडी भाव",
-    subtitle:
-      "Check nearby market rates and decide the best day to sell your harvest.",
-    subtitleHi:
-      "नज़दीकी मंडी के भाव देखें और बेचने का सही दिन चुनें।",
-    illustration: "mandi",
+    titleEn: "Live Mandi Prices",
+    bodyHi: "नज़दीकी मंडी के भाव देखें और बेचने का सही दिन चुनें।",
+    features: [
+      {
+        icon: <TrendingUp className="h-5 w-5" strokeWidth={2.2} />,
+        title: "लाइव भाव अपडेट",
+        sub: "हर पल के ताज़ा मंडी भाव",
+      },
+      {
+        icon: <MapPin className="h-5 w-5" strokeWidth={2.2} />,
+        title: "अपनी नज़दीकी मंडी",
+        sub: "अपने क्षेत्र की मंडी चुनें",
+      },
+      {
+        icon: <Bell className="h-5 w-5" strokeWidth={2.2} />,
+        title: "कीमत अलर्ट",
+        sub: "भाव बढ़ते ही पाएं सूचना",
+      },
+    ],
+    ctaHi: "आगे जाएं",
+    ctaIcon: "leaf",
   },
   {
     id: "guide",
-    title: "Stage-wise Guidance",
+    hero: "/onboarding/04-guidance.png",
+    heroPos: "50% 28%",
     titleHi: "चरणबद्ध सलाह",
-    subtitle:
-      "Fertilizer, irrigation, and spray tips matched to your crop growth stage.",
-    subtitleHi:
-      "खाद, सिंचाई और स्प्रे — फसल की अवस्था के मुताबिक सलाह।",
-    illustration: "guide",
+    titleEn: "Stage-wise Guidance",
+    bodyHi: "खाद, सिंचाई और स्प्रे — फसल की अवस्था के मुताबिक सलाह।",
+    features: [
+      {
+        icon: <CalendarDays className="h-5 w-5" strokeWidth={2.2} />,
+        title: "हर चरण की जानकारी",
+        sub: "बुवाई से कटाई तक",
+      },
+      {
+        icon: <Sprout className="h-5 w-5" strokeWidth={2.2} />,
+        title: "क्या करें और कब करें",
+        sub: "समय पर सही काम",
+      },
+      {
+        icon: <ShieldCheck className="h-5 w-5" strokeWidth={2.2} />,
+        title: "बेहतर उत्पादन",
+        sub: "वैज्ञानिक और भरोसेमंद सलाह",
+      },
+    ],
+    ctaHi: "शुरू करें",
+    ctaIcon: "book",
   },
 ];
 
-function SlideArt({ kind }: { kind: Slide["illustration"] }) {
-  return (
-    <div className="relative mx-auto flex h-[210px] w-[210px] items-center justify-center sm:h-[230px] sm:w-[230px]">
-      <div
-        aria-hidden
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at 35% 30%, #5EEAD4 0%, #00A86B 45%, #1E4D40 100%)",
-          boxShadow: "0 24px 50px -20px rgba(0,168,107,0.45)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-[10px] rounded-full opacity-30"
-        style={{
-          background:
-            "radial-gradient(circle at 70% 75%, rgba(212,175,55,0.55), transparent 55%)",
-        }}
-      />
-      <svg viewBox="0 0 120 120" className="relative z-10 h-[58%] w-[58%]" aria-hidden>
-        {kind === "wheat" && (
-          <>
-            <path d="M60 102 V42" stroke="#ECFDF5" strokeWidth="4" strokeLinecap="round" />
-            <ellipse cx="48" cy="48" rx="9" ry="16" fill="#D4AF37" transform="rotate(-32 48 48)" />
-            <ellipse cx="60" cy="40" rx="9" ry="16" fill="#F0D78C" />
-            <ellipse cx="72" cy="48" rx="9" ry="16" fill="#D4AF37" transform="rotate(32 72 48)" />
-            <path d="M42 70 C28 58 24 44 30 30 C42 40 46 56 42 70 Z" fill="#A7F3D0" />
-            <path d="M78 72 C92 58 96 44 90 30 C78 42 74 58 78 72 Z" fill="#6EE7B7" />
-          </>
-        )}
-        {kind === "ai" && (
-          <>
-            <rect x="28" y="34" width="64" height="52" rx="12" fill="#ECFDF5" opacity="0.95" />
-            <circle cx="60" cy="58" r="14" fill="#00A86B" />
-            <path d="M54 58 L58 62 L68 50" fill="none" stroke="#ECFDF5" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M40 92 C48 84 72 84 80 92" fill="none" stroke="#ECFDF5" strokeWidth="3" strokeLinecap="round" />
-            <circle cx="44" cy="28" r="4" fill="#D4AF37" />
-            <circle cx="76" cy="28" r="4" fill="#D4AF37" />
-          </>
-        )}
-        {kind === "mandi" && (
-          <>
-            <path d="M30 86 H90 V78 L78 48 H42 L30 78 Z" fill="#ECFDF5" opacity="0.95" />
-            <rect x="52" y="58" width="16" height="28" rx="2" fill="#1E4D40" />
-            <path d="M42 48 L60 28 L78 48" fill="none" stroke="#D4AF37" strokeWidth="4" strokeLinejoin="round" />
-            <circle cx="60" cy="40" r="5" fill="#00A86B" />
-          </>
-        )}
-        {kind === "guide" && (
-          <>
-            <path d="M40 88 V40 C40 32 50 28 60 28 C70 28 80 32 80 40 V88" fill="none" stroke="#ECFDF5" strokeWidth="5" strokeLinecap="round" />
-            <path d="M48 52 H72 M48 64 H68 M48 76 H64" stroke="#A7F3D0" strokeWidth="3.5" strokeLinecap="round" />
-            <circle cx="84" cy="36" r="12" fill="#D4AF37" />
-            <path d="M84 30 V42 M78 36 H90" stroke="#1E4D40" strokeWidth="2.5" strokeLinecap="round" />
-          </>
-        )}
-      </svg>
-    </div>
-  );
-}
+type Props = { onComplete: () => void };
 
-type Props = {
-  onComplete: () => void;
-  locale?: "hi" | "en";
-};
-
-/**
- * Post-splash intro carousel (4 slides). Skip → language/login path (caller completes).
- */
-export default function IntroCarousel({ onComplete, locale = "hi" }: Props) {
+export default function IntroCarousel({ onComplete }: Props) {
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
   const touchX = useRef<number | null>(null);
   const isLast = index >= SLIDES.length - 1;
   const slide = SLIDES[index]!;
-  const hi = locale !== "en";
 
   const go = useCallback(
     (next: number) => {
@@ -166,25 +185,32 @@ export default function IntroCarousel({ onComplete, locale = "hi" }: Props) {
       className="agriveda-intro fixed inset-0 z-[99999] flex flex-col overflow-hidden"
       style={{
         background:
-          "linear-gradient(180deg, #F8F9FA 0%, #F4F6F0 48%, #EEF3EA 100%)",
+          "radial-gradient(ellipse at 50% 0%, #FFFFFF 0%, #F7FAF6 45%, #EEF5EC 100%)",
       }}
     >
-      {/* Top bar */}
+      {/* Soft leaf decor */}
       <div
-        className="flex items-center justify-end px-5 pt-[max(0.85rem,env(safe-area-inset-top))]"
-      >
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg width='90' height='90' viewBox='0 0 90 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M45 14c-9 16-9 34 0 50 9-16 9-34 0-50z' fill='%231E4D40'/%3E%3C/svg%3E\")",
+        }}
+      />
+
+      <div className="relative z-10 flex items-center justify-end px-4 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <button
           type="button"
           onClick={onComplete}
-          className="rounded-lg px-3 py-2 text-[14px] font-semibold text-[#1E4D40]/70 transition hover:bg-[#1E4D40]/8 hover:text-[#1E4D40]"
+          className="inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-[14px] font-bold text-[#1E4D40]/75 transition active:bg-[#1E4D40]/8"
         >
-          {hi ? "आगे बढ़ें" : "Skip"}
+          आगे बढ़ें
+          <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
         </button>
       </div>
 
-      {/* Slide */}
       <div
-        className="relative flex min-h-0 flex-1 flex-col items-center justify-center px-6"
+        className="relative z-10 flex min-h-0 flex-1 flex-col px-5"
         onTouchStart={(e) => {
           touchX.current = e.changedTouches[0]?.clientX ?? null;
         }}
@@ -200,25 +226,78 @@ export default function IntroCarousel({ onComplete, locale = "hi" }: Props) {
       >
         <div
           key={slide.id}
-          className="agriveda-intro__slide flex w-full max-w-md flex-col items-center text-center"
+          className="agriveda-intro__slide mx-auto flex w-full max-w-md flex-1 flex-col items-center"
           style={{ ["--slide-dir" as string]: String(dir) }}
         >
-          <SlideArt kind={slide.illustration} />
-          <h2 className="mt-8 m-0 font-sans text-[clamp(1.45rem,5.5vw,1.85rem)] font-bold leading-tight tracking-tight text-[#1E4D40]">
-            {hi ? slide.titleHi : slide.title}
+          {/* Circular hero */}
+          <div className="relative mt-1 flex h-[min(42vw,210px)] w-[min(42vw,210px)] shrink-0 items-center justify-center sm:h-[230px] sm:w-[230px]">
+            <div
+              aria-hidden
+              className="absolute -inset-2 rounded-full opacity-50"
+              style={{
+                background:
+                  "conic-gradient(from 200deg, rgba(0,168,107,0.35), rgba(212,175,55,0.25), rgba(30,77,64,0.2), rgba(0,168,107,0.35))",
+                filter: "blur(1px)",
+              }}
+            />
+            <div className="relative h-full w-full overflow-hidden rounded-full bg-[#E8F5E9] shadow-[0_18px_40px_-16px_rgba(30,77,64,0.35)] ring-[6px] ring-white">
+              <Image
+                src={slide.hero}
+                alt=""
+                fill
+                priority
+                sizes="230px"
+                className="object-cover"
+                style={{ objectPosition: slide.heroPos }}
+              />
+            </div>
+            <Leaf
+              aria-hidden
+              className="absolute -right-1 top-6 h-8 w-8 text-[#00A86B] drop-shadow"
+              strokeWidth={1.75}
+            />
+            <Leaf
+              aria-hidden
+              className="absolute -left-2 bottom-10 h-7 w-7 -scale-x-100 text-[#1E4D40]/70 drop-shadow"
+              strokeWidth={1.75}
+            />
+          </div>
+
+          <h2 className="mt-5 m-0 text-center font-sans text-[clamp(1.45rem,5.8vw,1.85rem)] font-extrabold leading-tight tracking-tight text-[#1E4D40]">
+            {slide.titleHi}
           </h2>
-          {!hi ? null : (
-            <p className="mt-1.5 text-[13px] font-medium text-[#00A86B]">{slide.title}</p>
-          )}
-          <p className="mt-3 max-w-[34ch] text-[15px] leading-relaxed text-[#1E4D40]/72">
-            {hi ? slide.subtitleHi : slide.subtitle}
+          <div className="mt-2 flex items-center gap-2">
+            <span className="h-px w-8 bg-[#00A86B]/35" />
+            <Leaf className="h-3 w-3 text-[#00A86B]" />
+            <p className="m-0 font-display text-[13px] font-semibold italic text-[#1E4D40]/65">
+              {slide.titleEn}
+            </p>
+            <Leaf className="h-3 w-3 text-[#00A86B]" />
+            <span className="h-px w-8 bg-[#00A86B]/35" />
+          </div>
+          <p className="mt-3 max-w-[34ch] text-center text-[14px] leading-relaxed text-[#1E4D40]/70">
+            {slide.bodyHi}
           </p>
+
+          {/* Feature strip */}
+          <div className="mt-5 w-full rounded-2xl border border-[#1E4D40]/10 bg-white/80 p-3 shadow-[0_8px_24px_-18px_rgba(30,77,64,0.35)] backdrop-blur-sm">
+            <div className="grid grid-cols-3 divide-x divide-[#1E4D40]/10">
+              {slide.features.map((f) => (
+                <div key={f.title} className="flex flex-col items-center px-1.5 py-1 text-center">
+                  <div className="mb-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-[#E8F5E9] text-[#1E4D40]">
+                    {f.icon}
+                  </div>
+                  <p className="m-0 text-[11px] font-extrabold leading-snug text-[#1E4D40]">{f.title}</p>
+                  <p className="m-0 mt-0.5 text-[9px] font-medium leading-snug text-[#1E4D40]/55">{f.sub}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Bottom controls */}
-      <div className="px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2">
-        <div className="mb-5 flex items-center justify-center gap-2" aria-label={`Page ${index + 1} of ${SLIDES.length}`}>
+      <div className="relative z-10 px-5 pb-[max(1.15rem,env(safe-area-inset-bottom))] pt-3">
+        <div className="mb-4 flex items-center justify-center gap-2" aria-label={`Slide ${index + 1} of ${SLIDES.length}`}>
           {SLIDES.map((s, i) => {
             const active = i === index;
             return (
@@ -230,8 +309,8 @@ export default function IntroCarousel({ onComplete, locale = "hi" }: Props) {
                 onClick={() => go(i)}
                 className="h-2 rounded-full transition-all duration-300"
                 style={{
-                  width: active ? 28 : 8,
-                  background: active ? "#1E4D40" : "rgba(30,77,64,0.22)",
+                  width: active ? 26 : 8,
+                  background: active ? "#1E4D40" : "rgba(30,77,64,0.2)",
                 }}
               />
             );
@@ -241,31 +320,26 @@ export default function IntroCarousel({ onComplete, locale = "hi" }: Props) {
         <button
           type="button"
           onClick={next}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1E4D40] px-5 py-[15px] text-[16px] font-bold text-white shadow-[0_14px_32px_-14px_rgba(30,77,64,0.65)] transition active:scale-[0.99]"
+          className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#1E4D40] px-5 py-[15px] text-[16px] font-bold text-white shadow-[0_14px_32px_-12px_rgba(30,77,64,0.65)] transition active:scale-[0.99]"
         >
-          <span>{isLast ? (hi ? "शुरू करें" : "Get Started") : hi ? "आगे जाएं" : "Next"}</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00A86B]/35">
+            <Leaf className="h-4 w-4" strokeWidth={2.4} />
+          </span>
+          <span>{slide.ctaHi}</span>
           <ArrowRight className="h-[18px] w-[18px]" strokeWidth={2.5} />
         </button>
       </div>
 
       <style>{`
         .agriveda-intro__slide {
-          animation: agriveda-intro-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+          animation: agriveda-intro-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
         @keyframes agriveda-intro-in {
-          from {
-            opacity: 0;
-            transform: translateX(calc(var(--slide-dir, 1) * 28px));
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+          from { opacity: 0; transform: translateX(calc(var(--slide-dir, 1) * 24px)); }
+          to { opacity: 1; transform: translateX(0); }
         }
         @media (prefers-reduced-motion: reduce) {
-          .agriveda-intro__slide {
-            animation: none;
-          }
+          .agriveda-intro__slide { animation: none; }
         }
       `}</style>
     </div>
