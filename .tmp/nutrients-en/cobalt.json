@@ -1,0 +1,312 @@
+{
+  "slug": "cobalt",
+  "name": "Cobalt",
+  "symbol": "Co",
+  "category": "Beneficial Nutrient (essential for legume N-fixation & for animals)",
+  "mobility": "Limited mobility; effect mainly through nodule N-fixation in legumes",
+  "formsTakenUp": "Co2+",
+  "overview": {
+    "whyImportant": "Cobalt is essential for the Rhizobium bacteria that fix nitrogen in legume nodules (it is part of vitamin B12/cobalamin needed by the bacteria). It is not proven essential for the plant itself but is vital for legume N-fixation and for grazing animals (B12). Deficiency shows indirectly as poor nodulation/N-fixation in pulses."
+  },
+  "plantFunctions": {
+    "roleInsidePlant": "Not directly essential to higher plants; required by symbiotic Rhizobia (vitamin B12) for N-fixation.",
+    "photosynthesis": "No direct role.",
+    "rootDevelopment": "Supports effective nodulation in legumes.",
+    "vegetativeGrowth": "Indirect via improved N-fixation.",
+    "flowering": "Indirect.",
+    "fruitDevelopment": "Indirect via N nutrition.",
+    "proteinSynthesis": "Indirect (through fixed N).",
+    "enzymeActivation": "Cofactor in bacterial B12-dependent enzymes.",
+    "chlorophyllFormation": "Indirect.",
+    "yieldContribution": "In legumes, better nodulation and N-fixation; also improves fodder B12 for livestock."
+  },
+  "whyDeficiencyHappens": [
+    {
+      "condition": "Highly leached sandy/acid soils",
+      "why": "Low Co reserves; leaching."
+    },
+    {
+      "condition": "High soil pH",
+      "why": "Reduced Co availability."
+    },
+    {
+      "condition": "Heavy rainfall",
+      "why": "Leaching on light soils."
+    },
+    {
+      "condition": "Low organic matter",
+      "why": "Less Co cycling."
+    },
+    {
+      "condition": "Continuous cropping without micronutrients",
+      "why": "Slow depletion on marginal soils."
+    },
+    {
+      "condition": "Poor nodulation conditions",
+      "why": "Where Rhizobia struggle, Co shortfall worsens N-fixation."
+    },
+    {
+      "condition": "Note",
+      "why": "True Co deficiency limiting crops is UNCOMMON in India; more relevant to legume nodulation research and to animal (B12) nutrition."
+    }
+  ],
+  "symptoms": {
+    "note": "No distinct plant deficiency symptom; shows INDIRECTLY as poor nodulation/N-fixation in legumes (a nitrogen-deficiency-like look).",
+    "early": "Legumes pale, N-deficiency-like on low-Co soils.",
+    "middle": "Poor nodule number/activity, reduced N-fixation, pale plants.",
+    "severe": "N-starved legume despite inoculation, low pod yield.",
+    "oldLeaves": "Pale (N-like).",
+    "youngLeaves": "Pale in severe N shortfall.",
+    "stem": "Weak, thin.",
+    "root": "Few/ineffective nodules.",
+    "flower": "Reduced.",
+    "fruit": "Poor pod set.",
+    "seed": "Low yield.",
+    "wholePlant": "N-hungry legume with poor nodulation on low-Co soils; no unique plant symptom otherwise."
+  },
+  "cropWiseSymptoms": [
+    {
+      "crop": "Paddy",
+      "symptoms": "No recognised Co deficiency effect."
+    },
+    {
+      "crop": "Soybean",
+      "symptoms": "Poor nodulation/N-fixation on low-Co soils — responds to Co + Rhizobium seed treatment."
+    },
+    {
+      "crop": "Groundnut",
+      "symptoms": "Improved nodulation with Co on deficient soils."
+    },
+    {
+      "crop": "Chilli",
+      "symptoms": "No recognised effect (non-legume)."
+    },
+    {
+      "crop": "Capsicum",
+      "symptoms": "No recognised effect."
+    },
+    {
+      "crop": "Cauliflower",
+      "symptoms": "No recognised effect."
+    },
+    {
+      "crop": "Cabbage",
+      "symptoms": "No recognised effect."
+    },
+    {
+      "crop": "Cucumber",
+      "symptoms": "No recognised effect."
+    },
+    {
+      "crop": "Brinjal",
+      "symptoms": "No recognised effect."
+    },
+    {
+      "crop": "Okra",
+      "symptoms": "No recognised effect."
+    },
+    {
+      "crop": "Maize",
+      "symptoms": "No recognised effect."
+    },
+    {
+      "crop": "Bajra",
+      "symptoms": "No recognised effect."
+    },
+    {
+      "crop": "Moong",
+      "symptoms": "Better nodulation/N-fixation with Co on deficient soils."
+    },
+    {
+      "crop": "Arhar",
+      "symptoms": "Improved nodulation with Co on low-Co soils."
+    },
+    {
+      "crop": "Sugarcane",
+      "symptoms": "No recognised effect."
+    }
+  ],
+  "howToFix": [
+    {
+      "fertilizer": "Cobalt Sulphate (CoSO4)",
+      "nutrientContent": "~21% Co",
+      "soilApplicationDose": "very low, 100-200 g/acre (only on proven-deficient soils; usually via seed/inoculant)",
+      "foliarSprayDose": "0.01-0.05% (very dilute) per research",
+      "fertigationDose": "trace",
+      "waterQuantity": "200 L/acre",
+      "bestCropStage": "Seed treatment with Rhizobium for legumes",
+      "methodOfApplication": "Seed treatment with Rhizobium (main practical use); tiny doses only",
+      "numberOfApplications": "1",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "via improved nodulation",
+      "precautions": "Needed in TRACE amounts; excess Co is toxic to plants and animals. Do not apply without evidence of need."
+    },
+    {
+      "fertilizer": "Rhizobium inoculant (delivers the benefit)",
+      "nutrientContent": "N-fixing bacteria",
+      "soilApplicationDose": "seed treatment",
+      "foliarSprayDose": "NA",
+      "fertigationDose": "NA",
+      "waterQuantity": "slurry",
+      "bestCropStage": "At sowing (legumes)",
+      "methodOfApplication": "Seed treatment — healthy nodulation is the real goal; Co supports the bacteria",
+      "numberOfApplications": "1",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "builds through season",
+      "precautions": "Ensure quality inoculant; don't mix with fungicide simultaneously."
+    }
+  ],
+  "methodOfApplication": {
+    "broadcast": "Not typical (trace need).",
+    "bandPlacement": "NA.",
+    "spotApplication": "NA.",
+    "foliarSpray": "Very dilute, research/special cases only.",
+    "dripFertigation": "Trace, rare.",
+    "rootDrench": "NA.",
+    "seedTreatment": "MAIN route — with Rhizobium inoculant on legumes; tiny Co quantity."
+  },
+  "toxicity": {
+    "whatHappens": "Excess Co is toxic to plants and, via fodder, to animals.",
+    "plantToxicitySymptoms": "Induced iron deficiency (young-leaf chlorosis), stunting, root damage.",
+    "yieldLoss": "Via induced Fe deficiency and toxicity.",
+    "qualityReduction": "Fodder safety concern.",
+    "correctionMethods": "Stop Co; apply Fe; avoid Co on non-deficient soils; never over-apply."
+  },
+  "prevention": [
+    "Focus on Rhizobium inoculation for legumes — the practical route to good N-fixation.",
+    "Apply Co only where research/soil test shows deficiency (rare).",
+    "Use TRACE amounts if at all.",
+    "Build organic matter for micronutrient cycling.",
+    "Avoid over-liming on marginal soils.",
+    "Don't apply Co routinely (toxicity risk).",
+    "Ensure quality legume inoculant.",
+    "Maintain soil pH in a good range.",
+    "Balance micronutrients.",
+    "Prioritise proven N-fixation practices over Co fertilisation."
+  ],
+  "commonFarmerMistakes": [
+    "Applying cobalt without evidence of deficiency (toxicity risk).",
+    "Confusing Co-linked poor nodulation with simple N deficiency.",
+    "Skipping Rhizobium inoculation (the real fix for legume N).",
+    "Over-applying Co and inducing iron deficiency.",
+    "Using non-trace doses of Co.",
+    "Ignoring soil pH effects on Co.",
+    "Assuming Co is a routine crop nutrient (it isn't for most crops).",
+    "Mixing inoculant with fungicide simultaneously.",
+    "Applying Co to non-legumes expecting benefit.",
+    "Not building organic matter.",
+    "Over-liming marginal soils.",
+    "Adding Co 'just in case'.",
+    "Ignoring fodder-safety limits.",
+    "Not verifying inoculant quality.",
+    "Treating N-hungry legumes with urea instead of fixing nodulation."
+  ],
+  "expertTips": [
+    "For legume N, prioritise QUALITY Rhizobium inoculation — Co only supports the bacteria.",
+    "Apply Co only on proven-deficient soils, in TRACE amounts, via seed treatment.",
+    "Diagnose Co issue indirectly — poor nodulation + N-hunger in legumes on marginal soils.",
+    "Never routinely apply Co (toxicity is easy).",
+    "Watch for induced Fe deficiency from Co excess.",
+    "Combine Rhizobium + Mo + adequate P for best nodulation (Co is a minor add-on).",
+    "Build organic matter for trace-element balance.",
+    "Keep soil pH suitable for both Rhizobia and Co availability.",
+    "Ensure inoculant is fresh and viable.",
+    "Don't mix inoculant with chemical fungicide at the same time.",
+    "Co matters more for animal (B12) nutrition via fodder than for the plant.",
+    "Verify need by soil test/local research before use.",
+    "Balance micronutrients — avoid stacking Co with high Fe/Mn.",
+    "Use urea only as a small starter, not a substitute for nodulation.",
+    "On acid soils, correct pH to aid both nodulation and micronutrients.",
+    "Prefer proven agronomy over exotic Co products.",
+    "Judge legume health by nodule number/colour (pink = active).",
+    "Keep fodder Co within safe limits for livestock.",
+    "Log inoculation and any Co use per plot.",
+    "Treat Co as a specialist input, not a routine fertiliser."
+  ],
+  "faq": [
+    {
+      "q": "Cobalt fasal ke liye zaroori hai?",
+      "a": "Higher plant ke liye seedhe nahi, par LEGUME me Rhizobium (N-fixation) ke liye zaroori aur pashu B12 ke liye. Deficiency India me rare."
+    },
+    {
+      "q": "Legume pale + kam nodules — Co?",
+      "a": "Ho sakta hai, par pehle QUALITY Rhizobium inoculation karein; Co sirf bacteria ko support karta hai."
+    },
+    {
+      "q": "Co kitna dein?",
+      "a": "Sirf proven-deficient soil par, trace maatra (100-200 g/acre) ya seed treatment ke saath. Zyada toxic."
+    },
+    {
+      "q": "Co kaise dein?",
+      "a": "Legume me Rhizobium ke saath seed treatment — main practical route."
+    },
+    {
+      "q": "Co toxicity?",
+      "a": "Iron deficiency induce, stunting; fodder me pashu ke liye bhi khatra."
+    },
+    {
+      "q": "Non-legume me Co?",
+      "a": "Koi recognised fayda nahi."
+    },
+    {
+      "q": "Co vs N deficiency?",
+      "a": "Co-linked problem poor nodulation se N-hunger jaisa dikhta hai; nodules check karein."
+    },
+    {
+      "q": "Co routine dein?",
+      "a": "Nahi — toxicity aasaan; evidence par hi."
+    },
+    {
+      "q": "Rhizobium + Mo + P?",
+      "a": "Best nodulation combo; Co minor add-on."
+    },
+    {
+      "q": "Inoculant fungicide ke saath?",
+      "a": "Ek saath nahi — microbes mar jate hain."
+    },
+    {
+      "q": "Nodule active kaise pata?",
+      "a": "Andar se pink/laal = active N-fixation."
+    },
+    {
+      "q": "Acid soil me?",
+      "a": "pH sudhaarein — nodulation aur micronutrient dono ke liye."
+    },
+    {
+      "q": "Co product 'just in case'?",
+      "a": "Nahi — zaroorat confirm karein."
+    },
+    {
+      "q": "Fodder Co limit?",
+      "a": "Pashu B12 ke liye safe limit me rakhein."
+    },
+    {
+      "q": "Urea se nodulation problem?",
+      "a": "Zyada urea nodulation dabata hai — sirf chhota starter."
+    },
+    {
+      "q": "Co ka asar?",
+      "a": "Behtar nodulation ke through, indirect."
+    },
+    {
+      "q": "Soil test Co?",
+      "a": "Local research/soil test se hi decide karein."
+    },
+    {
+      "q": "Co beneficial ya essential?",
+      "a": "Plant ke liye beneficial; Rhizobia/animal ke liye essential."
+    },
+    {
+      "q": "Micronutrient balance?",
+      "a": "High Fe/Mn ke saath Co stack na karein."
+    },
+    {
+      "q": "Co kis crop me relevant?",
+      "a": "Sirf legumes (soybean, groundnut, moong, arhar) me nodulation ke liye."
+    }
+  ],
+  "references": [
+    "ICAR (legume/micronutrient research); IARI; SAU Package of Practices",
+    "KVK; TNAU Agritech Portal; FCO specs"
+  ]
+}

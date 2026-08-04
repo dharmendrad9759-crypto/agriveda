@@ -1,0 +1,340 @@
+{
+  "slug": "manganese",
+  "name": "Manganese",
+  "symbol": "Mn",
+  "category": "Micronutrient",
+  "mobility": "IMMOBILE (deficiency on YOUNGER leaves, but interveinal with more diffuse/greyish tone than Fe)",
+  "formsTakenUp": "Mn2+",
+  "overview": {
+    "whyImportant": "Manganese activates the water-splitting step of photosynthesis (oxygen evolution) and many enzymes. Deficiency causes interveinal chlorosis of younger leaves with grey/brown flecks; common on high-pH, sandy and heavily-limed soils."
+  },
+  "plantFunctions": {
+    "roleInsidePlant": "Activates photosynthetic oxygen-evolving complex, enzymes of respiration and N metabolism.",
+    "photosynthesis": "Essential for the water-splitting (oxygen-evolving) reaction.",
+    "rootDevelopment": "Supports enzyme systems for growth.",
+    "vegetativeGrowth": "Maintains young-leaf function.",
+    "flowering": "Indirect.",
+    "fruitDevelopment": "Indirect via photosynthesis.",
+    "proteinSynthesis": "Supports N assimilation enzymes.",
+    "enzymeActivation": "Activates many oxidoreductases.",
+    "chlorophyllFormation": "Needed for chlorophyll and photosystem function.",
+    "yieldContribution": "Sustains photosynthesis; deficiency reduces yield, esp. cereals/legumes on high-pH soils."
+  },
+  "whyDeficiencyHappens": [
+    {
+      "condition": "High soil pH / over-liming",
+      "why": "Mn oxidises to unavailable forms above pH ~6.5 — main cause."
+    },
+    {
+      "condition": "Low soil pH",
+      "why": "Rarely deficient (often toxic in very acid soils)."
+    },
+    {
+      "condition": "Sandy soils",
+      "why": "Low Mn reserves; leaching."
+    },
+    {
+      "condition": "Heavy rainfall",
+      "why": "Leaching on light soils."
+    },
+    {
+      "condition": "Waterlogging then drying",
+      "why": "Fluctuating redox alters Mn availability."
+    },
+    {
+      "condition": "Excess irrigation",
+      "why": "Leaching."
+    },
+    {
+      "condition": "Low organic matter",
+      "why": "Less Mn cycling/chelation."
+    },
+    {
+      "condition": "Nutrient imbalance / excess Fe, Zn, Cu, high P",
+      "why": "Antagonistic cations reduce Mn uptake."
+    },
+    {
+      "condition": "Excess lime/calcium",
+      "why": "Raises pH, oxidises Mn to unavailable forms."
+    },
+    {
+      "condition": "Poor root growth",
+      "why": "Immobile Mn needs active root foraging."
+    },
+    {
+      "condition": "Cold soil",
+      "why": "Slows uptake."
+    },
+    {
+      "condition": "Dry soil",
+      "why": "Limits Mn availability."
+    },
+    {
+      "condition": "Salinity/sodicity",
+      "why": "High pH reduces availability."
+    },
+    {
+      "condition": "Poor fertiliser management",
+      "why": "Over-liming and ignoring Mn on alkaline soils."
+    }
+  ],
+  "symptoms": {
+    "note": "Mn IMMOBILE — younger leaves affected; interveinal chlorosis with GREYISH tone and brown flecks/necrotic spots (finer, more diffuse than Fe).",
+    "early": "Younger leaves pale interveinal, veins green (broader green band than Fe).",
+    "middle": "Interveinal yellowing with grey/brown flecks/streaks; 'grey speck' in cereals.",
+    "severe": "Necrotic interveinal streaks, poor growth; in legumes 'marsh spot' in seeds.",
+    "oldLeaves": "Less affected.",
+    "youngLeaves": "First affected: interveinal chlorosis + brown/grey flecking.",
+    "stem": "Weak growth.",
+    "root": "Reduced growth.",
+    "flower": "Indirect.",
+    "fruit": "Reduced set/quality.",
+    "seed": "Marsh spot (brown cavity) in pulses.",
+    "wholePlant": "Younger canopy interveinal-chlorotic with brown flecks, reduced vigour on high-pH soils."
+  },
+  "cropWiseSymptoms": [
+    {
+      "crop": "Paddy",
+      "symptoms": "Interveinal chlorosis with brown flecks on younger leaves on alkaline soils."
+    },
+    {
+      "crop": "Soybean",
+      "symptoms": "Interveinal yellowing of young leaves, brown flecks; on high-pH soils."
+    },
+    {
+      "crop": "Groundnut",
+      "symptoms": "Young-leaf interveinal chlorosis with flecking."
+    },
+    {
+      "crop": "Chilli",
+      "symptoms": "Interveinal chlorosis + specks on younger leaves."
+    },
+    {
+      "crop": "Capsicum",
+      "symptoms": "Young-leaf interveinal mottling in high-pH conditions."
+    },
+    {
+      "crop": "Cauliflower",
+      "symptoms": "Interveinal chlorosis with flecks on young leaves."
+    },
+    {
+      "crop": "Cabbage",
+      "symptoms": "Young-leaf interveinal yellowing, greyish flecks."
+    },
+    {
+      "crop": "Cucumber",
+      "symptoms": "Interveinal chlorosis of young leaves, netted pattern."
+    },
+    {
+      "crop": "Brinjal",
+      "symptoms": "Young-leaf interveinal mottling."
+    },
+    {
+      "crop": "Okra",
+      "symptoms": "Interveinal chlorosis with flecking on young leaves."
+    },
+    {
+      "crop": "Maize",
+      "symptoms": "Interveinal chlorosis/olive-grey streaks on younger leaves on alkaline soils."
+    },
+    {
+      "crop": "Bajra",
+      "symptoms": "Grey interveinal streaks on young leaves (sandy alkaline soils)."
+    },
+    {
+      "crop": "Moong",
+      "symptoms": "Interveinal chlorosis + possible marsh spot in seed."
+    },
+    {
+      "crop": "Arhar",
+      "symptoms": "Young-leaf interveinal chlorosis on high-pH soils."
+    },
+    {
+      "crop": "Sugarcane",
+      "symptoms": "Interveinal chlorosis with streaks on younger leaves on alkaline soils."
+    }
+  ],
+  "howToFix": [
+    {
+      "fertilizer": "Manganese Sulphate (MnSO4)",
+      "nutrientContent": "30-32% Mn",
+      "soilApplicationDose": "8-10 kg/acre (with FYM; less efficient on high pH)",
+      "foliarSprayDose": "0.5% (5 g/L), often + urea 0.5%",
+      "fertigationDose": "2-3 kg/acre",
+      "waterQuantity": "Foliar 200 L/acre",
+      "bestCropStage": "On symptoms; young growth",
+      "methodOfApplication": "FOLIAR most effective on alkaline soils; repeat",
+      "numberOfApplications": "2-3 sprays",
+      "sprayInterval": "10-15 days",
+      "expectedRecoveryTime": "7-12 days",
+      "precautions": "Soil Mn quickly oxidised on high-pH soils — prefer foliar; don't over-lime."
+    },
+    {
+      "fertilizer": "Chelated Manganese (Mn-EDTA)",
+      "nutrientContent": "~12% Mn",
+      "soilApplicationDose": "1-2 kg/acre",
+      "foliarSprayDose": "0.5-1 g/L",
+      "fertigationDose": "per label",
+      "waterQuantity": "200 L/acre",
+      "bestCropStage": "On symptoms in fertigated crops",
+      "methodOfApplication": "Fertigation/foliar",
+      "numberOfApplications": "1-2",
+      "sprayInterval": "7-10 days",
+      "expectedRecoveryTime": "7-12 days",
+      "precautions": "Costlier; efficient uptake."
+    }
+  ],
+  "methodOfApplication": {
+    "broadcast": "Soil MnSO4 with FYM (limited on high pH).",
+    "bandPlacement": "Banded MnSO4 near roots is better than broadcast on alkaline soils.",
+    "spotApplication": "Near high-value plants.",
+    "foliarSpray": "0.5% MnSO4 (+0.5% urea) — the reliable fix on alkaline soils; repeat.",
+    "dripFertigation": "Mn-EDTA/MnSO4 via drip.",
+    "rootDrench": "Dilute Mn solution.",
+    "seedTreatment": "MnSO4 seed treatment used in some cereals/pulses on deficient soils."
+  },
+  "toxicity": {
+    "whatHappens": "Mn toxicity on very ACID soils (pH <5.5).",
+    "plantToxicitySymptoms": "Brown spots on older leaves, crinkling, stunting; interveinal in some crops.",
+    "yieldLoss": "On strongly acid soils.",
+    "qualityReduction": "Reduced growth.",
+    "correctionMethods": "Lime acid soils to raise pH; improve drainage; balance with Fe."
+  },
+  "prevention": [
+    "Avoid over-liming (keeps Mn available).",
+    "Use foliar MnSO4 on alkaline/sandy soils prone to deficiency.",
+    "Band rather than broadcast Mn on high-pH soils.",
+    "Build organic matter for Mn cycling.",
+    "Balance micronutrients (avoid excess Fe/Zn/Cu).",
+    "Maintain moisture for uptake.",
+    "Use Mn seed treatment on known-deficient soils.",
+    "Correct very acid soils to prevent Mn toxicity.",
+    "Soil-test pH and Mn.",
+    "Monitor young leaves on high-pH fields."
+  ],
+  "commonFarmerMistakes": [
+    "Over-liming and inducing Mn deficiency.",
+    "Broadcasting soil Mn on alkaline soil (quickly oxidised).",
+    "Confusing Mn (grey flecks, young leaves) with Fe (bright yellow, young leaves).",
+    "Not repeating foliar Mn.",
+    "Ignoring Mn on sandy/alkaline soils.",
+    "Over-applying Fe/Zn/Cu, blocking Mn.",
+    "Treating grey speck as a disease.",
+    "Applying Mn to dry soil.",
+    "Not banding Mn on high-pH soils.",
+    "Skipping soil pH test.",
+    "Ignoring marsh spot risk in pulses.",
+    "Using only soil Mn where foliar is needed.",
+    "Not correcting acid-soil Mn toxicity with lime.",
+    "Poor drainage altering Mn redox.",
+    "Waiting for severe necrosis."
+  ],
+  "expertTips": [
+    "Foliar 0.5% MnSO4 + 0.5% urea is the dependable correction on alkaline soils.",
+    "Diagnose Mn by YOUNG-leaf interveinal chlorosis with GREY/BROWN flecks (Fe is brighter/cleaner).",
+    "Band Mn near roots rather than broadcasting on high-pH soils.",
+    "Don't over-lime — it locks Mn.",
+    "Repeat foliar Mn 2-3 times.",
+    "Use Mn seed treatment on chronically deficient soils.",
+    "Balance micronutrients to prevent antagonism.",
+    "Watch for marsh spot in pulse seeds as a hidden Mn sign.",
+    "On very acid soils, lime to prevent Mn TOXICITY.",
+    "Keep soil moist for uptake.",
+    "Build organic matter for steady Mn supply.",
+    "Combine soil band + foliar for stubborn cases.",
+    "Mn-EDTA for clean fertigation uptake.",
+    "Test soil pH — Mn availability drops sharply above 6.5.",
+    "Spray in cool hours to avoid scorch.",
+    "New leaves respond; judge success there.",
+    "Avoid mixing Mn with high-P foliar.",
+    "Correct drainage on redox-fluctuating soils.",
+    "Monitor cereals for grey speck early.",
+    "Log deficient fields for routine foliar Mn."
+  ],
+  "faq": [
+    {
+      "q": "Nayi patti interveinal pili + brown/grey flecks — kya?",
+      "a": "Manganese ki kami. 0.5% MnSO4 (+0.5% urea) chhidkein; over-liming se bachein."
+    },
+    {
+      "q": "Mn aur Fe deficiency me farak?",
+      "a": "Dono nayi patti par interveinal, par Mn me grey/brown flecks aur diffuse tone; Fe zyada bright/clean yellow."
+    },
+    {
+      "q": "Soil MnSO4 kaam nahi kar raha — kyun?",
+      "a": "High-pH mitti me Mn oxidise hokar lock ho jata hai. Foliar karein ya band placement."
+    },
+    {
+      "q": "Over-liming se Mn kami?",
+      "a": "Haan — pH 6.5 ke upar Mn unavailable ho jata hai."
+    },
+    {
+      "q": "Kitni baar foliar Mn?",
+      "a": "2-3 baar, 10-15 din antaral."
+    },
+    {
+      "q": "Marsh spot kya hai?",
+      "a": "Pulse seed ke andar bhura cavity — Mn ki kami ka chhupa sanket."
+    },
+    {
+      "q": "Acidic soil me Mn toxicity?",
+      "a": "pH <5.5 par purani patti par brown spots — lime se pH badhayein."
+    },
+    {
+      "q": "Mn seed treatment?",
+      "a": "Chronically deficient mitti me cereals/pulses me useful."
+    },
+    {
+      "q": "Mn ka asar kitne din?",
+      "a": "Foliar 7-12 din."
+    },
+    {
+      "q": "Grey speck rog hai?",
+      "a": "Nahi — Mn deficiency; fungicide bekaar."
+    },
+    {
+      "q": "Band ya broadcast Mn?",
+      "a": "High-pH mitti me band behtar."
+    },
+    {
+      "q": "Zyada Fe/Zn se Mn?",
+      "a": "Antagonism se Mn uptake girta hai — balance rakhein."
+    },
+    {
+      "q": "Mn-EDTA kab?",
+      "a": "Fertigation/clean uptake ke liye."
+    },
+    {
+      "q": "Dry soil me Mn?",
+      "a": "Nami chahiye uptake ke liye."
+    },
+    {
+      "q": "Purani ya nayi patti?",
+      "a": "Mn kami nayi patti par."
+    },
+    {
+      "q": "Soil test kyun?",
+      "a": "pH 6.5 ke upar Mn availability tezi se girti hai."
+    },
+    {
+      "q": "Cool hours me spray kyun?",
+      "a": "Leaf scorch se bachne ke liye."
+    },
+    {
+      "q": "Mn + P foliar mix?",
+      "a": "Nahi — precipitation."
+    },
+    {
+      "q": "Success kaise judge?",
+      "a": "Nayi patti hari hoti hai; purani nahi badlegi."
+    },
+    {
+      "q": "Deficient khet ka plan?",
+      "a": "Routine foliar Mn + over-liming se bachaav."
+    }
+  ],
+  "references": [
+    "ICAR; IARI; SAU Package of Practices",
+    "KVK; TNAU Agritech Portal; FCO specs; Soil Health Card, GoI"
+  ]
+}

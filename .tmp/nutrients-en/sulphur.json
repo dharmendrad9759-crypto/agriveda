@@ -1,0 +1,383 @@
+{
+  "slug": "sulphur",
+  "name": "Sulphur",
+  "symbol": "S",
+  "category": "Secondary Nutrient",
+  "mobility": "IMMOBILE / poorly mobile (deficiency on YOUNG leaves first — looks like N but on new growth)",
+  "formsTakenUp": "Sulphate SO4^2-",
+  "overview": {
+    "whyImportant": "Sulphur is the 4th major nutrient and the #1 hidden deficiency in Indian oilseeds and pulses. It builds sulphur-containing amino acids (cysteine, methionine), proteins, oils and the enzymes of N metabolism. A crop can look N-deficient but actually be S-starved — urea won't fix it."
+  },
+  "plantFunctions": {
+    "roleInsidePlant": "Component of amino acids cysteine/methionine, proteins, coenzyme A, vitamins, and oil synthesis.",
+    "photosynthesis": "Supports chlorophyll and enzyme function.",
+    "rootDevelopment": "Supports nodulation in legumes and root growth.",
+    "vegetativeGrowth": "Needed for protein-building; deficiency yellows new growth.",
+    "flowering": "Supports flower and oil formation.",
+    "fruitDevelopment": "Drives OIL content in oilseeds and pungency in alliums/crucifers.",
+    "proteinSynthesis": "Essential — S-amino acids are the backbone of proteins.",
+    "enzymeActivation": "Part of key enzymes including those of N assimilation.",
+    "chlorophyllFormation": "Indirect but strong — deficiency causes chlorosis.",
+    "yieldContribution": "Major in oilseeds/pulses/crucifers — oil %, protein, and yield."
+  },
+  "whyDeficiencyHappens": [
+    {
+      "condition": "High soil pH",
+      "why": "Sandy alkaline soils often low in S; leaching of sulphate."
+    },
+    {
+      "condition": "Low soil pH",
+      "why": "Acid sandy soils low in organic S."
+    },
+    {
+      "condition": "Sandy soils",
+      "why": "Low organic matter (main S source) and sulphate leaches."
+    },
+    {
+      "condition": "Heavy rainfall",
+      "why": "Sulphate is mobile and leaches like nitrate."
+    },
+    {
+      "condition": "Waterlogging",
+      "why": "Sulphate reduced to sulphide, unavailable/toxic in anaerobic soil."
+    },
+    {
+      "condition": "Excess irrigation",
+      "why": "Leaches sulphate."
+    },
+    {
+      "condition": "Low organic matter",
+      "why": "Most soil S comes from organic matter mineralisation — low OM = low S."
+    },
+    {
+      "condition": "Nutrient imbalance",
+      "why": "High N without S limits protein synthesis; N:S ratio matters."
+    },
+    {
+      "condition": "Use of S-free fertilisers",
+      "why": "Shift from ammonium sulphate/SSP to urea/DAP removed the incidental S farmers used to add — the main modern cause."
+    },
+    {
+      "condition": "Poor root growth",
+      "why": "Less foraging for sulphate."
+    },
+    {
+      "condition": "Cold soil",
+      "why": "Slows organic-S mineralisation."
+    },
+    {
+      "condition": "Dry soil",
+      "why": "Slows mineralisation and uptake."
+    },
+    {
+      "condition": "Salinity",
+      "why": "Impaired uptake."
+    },
+    {
+      "condition": "Poor fertiliser management",
+      "why": "Ignoring S entirely in oilseed/pulse nutrition — extremely common."
+    }
+  ],
+  "symptoms": {
+    "note": "S is poorly mobile — deficiency starts on YOUNG/upper leaves (unlike N which hits old leaves). Uniform pale-yellow young growth.",
+    "early": "Young/upper leaves pale-green to yellow, uniform (whole leaf, not interveinal).",
+    "middle": "General yellowing of newer leaves, stunted spindly growth, delayed maturity.",
+    "severe": "Whole plant pale-yellow, stunted, thin stems, poor pods/oil; older leaves may also yellow later.",
+    "oldLeaves": "Stay greener initially (opposite of N).",
+    "youngLeaves": "First and worst: uniform pale-yellow (chlorosis of the whole young leaf).",
+    "stem": "Thin, short, woody; reddish tinge in some crops.",
+    "root": "Poor nodulation in legumes.",
+    "flower": "Delayed flowering.",
+    "fruit": "Low oil content in oilseeds, poor pod fill.",
+    "seed": "Low oil %, reduced protein and seed quality.",
+    "wholePlant": "Pale-yellow especially at the top, stunted, late-maturing — the 'N-deficiency on the wrong (young) leaves' picture."
+  },
+  "cropWiseSymptoms": [
+    {
+      "crop": "Paddy",
+      "symptoms": "Young leaves pale-yellow, stunted, delayed — on sandy/leached soils."
+    },
+    {
+      "crop": "Soybean",
+      "symptoms": "Upper leaves uniformly pale-yellow, poor nodulation, low oil — S is critical for soybean."
+    },
+    {
+      "crop": "Groundnut",
+      "symptoms": "Young-leaf yellowing, poor nodulation and low oil; responds strongly to gypsum."
+    },
+    {
+      "crop": "Chilli",
+      "symptoms": "Young leaves pale, stunted plants, poor growth."
+    },
+    {
+      "crop": "Capsicum",
+      "symptoms": "Pale new leaves in low-S fertigation."
+    },
+    {
+      "crop": "Cauliflower",
+      "symptoms": "Young-leaf yellowing, whip-like thin leaves in severe cases (crucifers are high S-users)."
+    },
+    {
+      "crop": "Cabbage",
+      "symptoms": "Pale young leaves, reduced head size (high S demand crop)."
+    },
+    {
+      "crop": "Cucumber",
+      "symptoms": "Pale upper leaves, weak vines."
+    },
+    {
+      "crop": "Brinjal",
+      "symptoms": "Young-leaf yellowing, stunted growth."
+    },
+    {
+      "crop": "Okra",
+      "symptoms": "Pale new leaves, thin plants."
+    },
+    {
+      "crop": "Maize",
+      "symptoms": "Interveinal to uniform yellowing of YOUNGER leaves (vs N on older), stunting."
+    },
+    {
+      "crop": "Bajra",
+      "symptoms": "Pale young leaves on sandy soils."
+    },
+    {
+      "crop": "Moong",
+      "symptoms": "Young-leaf yellowing, poor nodulation and pod fill."
+    },
+    {
+      "crop": "Arhar",
+      "symptoms": "Pale new growth, poor nodulation."
+    },
+    {
+      "crop": "Sugarcane",
+      "symptoms": "Young-leaf yellowing, thin canes on S-poor soils."
+    }
+  ],
+  "howToFix": [
+    {
+      "fertilizer": "Gypsum (Calcium Sulphate)",
+      "nutrientContent": "18% S + 23% Ca",
+      "soilApplicationDose": "80-120 kg/acre basal (oilseeds/pulses)",
+      "foliarSprayDose": "NA",
+      "fertigationDose": "NA",
+      "waterQuantity": "Incorporate",
+      "bestCropStage": "Basal / early growth",
+      "methodOfApplication": "Broadcast + incorporate; the cheapest S source, bonus calcium",
+      "numberOfApplications": "1",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "2-3 weeks",
+      "precautions": "Best value S for oilseeds/pulses; also improves sodic soils."
+    },
+    {
+      "fertilizer": "Bentonite Sulphur (elemental S 90%)",
+      "nutrientContent": "90% S (slow-release, oxidises to sulphate)",
+      "soilApplicationDose": "8-10 kg/acre basal",
+      "foliarSprayDose": "NA",
+      "fertigationDose": "NA",
+      "waterQuantity": "Incorporate",
+      "bestCropStage": "Basal",
+      "methodOfApplication": "Broadcast + incorporate; slow steady S release",
+      "numberOfApplications": "1",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "Needs weeks to oxidise",
+      "precautions": "Apply well before peak demand (oxidation takes time)."
+    },
+    {
+      "fertilizer": "SSP (Single Super Phosphate)",
+      "nutrientContent": "11% S + 16% P2O5 + Ca",
+      "soilApplicationDose": "100-150 kg/acre basal",
+      "foliarSprayDose": "NA",
+      "fertigationDose": "NA",
+      "waterQuantity": "Incorporate",
+      "bestCropStage": "Basal",
+      "methodOfApplication": "Broadcast/band; supplies P + S together — ideal for oilseeds/pulses",
+      "numberOfApplications": "1",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "2-3 weeks",
+      "precautions": "Two nutrients in one; prefer over DAP where S is needed."
+    },
+    {
+      "fertilizer": "Ammonium Sulphate",
+      "nutrientContent": "24% S + 20-21% N",
+      "soilApplicationDose": "50-100 kg/acre",
+      "foliarSprayDose": "NA",
+      "fertigationDose": "soluble grade 3-5 kg/acre",
+      "waterQuantity": "Moist soil",
+      "bestCropStage": "Basal/early top-dress",
+      "methodOfApplication": "Soil; supplies N + S; acidifying (good on alkaline soils)",
+      "numberOfApplications": "1-2",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "1-2 weeks",
+      "precautions": "Acidifying — caution on acid soils."
+    },
+    {
+      "fertilizer": "Magnesium Sulphate / Potassium Sulphate",
+      "nutrientContent": "MgSO4 12% S; SOP 18% S",
+      "soilApplicationDose": "as per Mg/K need",
+      "foliarSprayDose": "MgSO4 1-2%; SOP 0.5%",
+      "fertigationDose": "2-5 kg/acre",
+      "waterQuantity": "200 L/acre",
+      "bestCropStage": "As part of Mg/K correction",
+      "methodOfApplication": "Foliar/fertigation — supplies S alongside Mg/K",
+      "numberOfApplications": "2-3",
+      "sprayInterval": "7-15 days",
+      "expectedRecoveryTime": "7-10 days",
+      "precautions": "Convenient combined correction."
+    }
+  ],
+  "methodOfApplication": {
+    "broadcast": "Gypsum/bentonite-S/SSP broadcast + incorporate as basal — the main S method.",
+    "bandPlacement": "SSP/ammonium sulphate banded near seed.",
+    "spotApplication": "Near high-value plants.",
+    "foliarSpray": "For quick relief, foliar sulphate via MgSO4 (1-2%); elemental S dust also used on some crops.",
+    "dripFertigation": "Sulphate salts (MgSO4/SOP/ammonium sulphate soluble) via drip.",
+    "rootDrench": "Dilute sulphate at root zone.",
+    "seedTreatment": "Not applicable (Rhizobium seed treatment complements S in legumes)."
+  },
+  "toxicity": {
+    "whatHappens": "S toxicity is rare; excess elemental S sharply LOWERS soil pH; in waterlogged soil sulphate becomes toxic H2S/sulphide.",
+    "plantToxicitySymptoms": "Acidification stress; in rice, H2S root injury (blackened roots) in reduced soils.",
+    "yieldLoss": "Via acidity or sulphide root damage.",
+    "qualityReduction": "Minor.",
+    "correctionMethods": "Avoid over-use of elemental S; improve drainage/aeration in rice to prevent sulphide; lime if over-acidified."
+  },
+  "prevention": [
+    "Include S in EVERY oilseed and pulse nutrition plan — assume deficiency on sandy/low-OM soils.",
+    "Use SSP instead of DAP where P and S are both needed.",
+    "Apply gypsum 80-120 kg/acre basal in oilseeds/pulses.",
+    "Use ammonium sulphate as part of N to add S.",
+    "Build organic matter (main S reservoir).",
+    "Apply bentonite-S well ahead of peak demand (slow oxidation).",
+    "Maintain N:S balance (~10:1 to 12:1).",
+    "On sandy soils, expect leaching — apply S each season.",
+    "Diagnose by YOUNG-leaf yellowing (vs N on old leaves).",
+    "Soil-test for available S periodically."
+  ],
+  "commonFarmerMistakes": [
+    "Assuming urea will fix pale crop when the real problem is sulphur (young leaves yellow).",
+    "Switching fully to urea/DAP and dropping the S that SSP/ammonium sulphate used to provide.",
+    "Ignoring S in oilseeds/pulses — the biggest yield leak.",
+    "Confusing S deficiency (young leaves) with N deficiency (old leaves).",
+    "Applying bentonite-S too late (it needs time to oxidise).",
+    "Using DAP-only where SSP would add needed S.",
+    "Not applying S on sandy leached soils.",
+    "Ignoring organic matter that supplies S.",
+    "Over-applying elemental S and acidifying soil.",
+    "Applying sulphate to waterlogged rice (sulphide toxicity).",
+    "Skipping soil test for available S.",
+    "Wrong N:S ratio (too much N, no S).",
+    "Not repeating S on leaching-prone soils each season.",
+    "Believing NPK blends cover S (most don't).",
+    "Delaying S until symptoms are severe."
+  ],
+  "expertTips": [
+    "Diagnose S by uniform YELLOWING of the YOUNGEST leaves (N does the oldest).",
+    "For oilseeds/pulses, budget 80-120 kg gypsum/acre as standard.",
+    "Prefer SSP over DAP wherever both P and S are needed.",
+    "Ammonium sulphate covers N + S and suits alkaline soils.",
+    "Apply bentonite-S well ahead of demand — it must oxidise to sulphate first.",
+    "Keep N:S near 10-12:1 for efficient protein synthesis.",
+    "Build organic matter as the base S reservoir.",
+    "On sandy soils, apply S every season — sulphate leaches like nitrate.",
+    "Gypsum doubles as a Ca source and sodic-soil amender.",
+    "MgSO4/SOP conveniently supply S with Mg/K.",
+    "S drives OIL % in oilseeds — don't skip it in mustard/soybean/groundnut.",
+    "Crucifers (cauliflower/cabbage) are high S-users — plan for it.",
+    "Avoid sulphate on waterlogged rice (H2S risk); improve aeration.",
+    "Confirm with soil test for available S where response is unclear.",
+    "Combine S with Rhizobium in legumes for max nodulation + protein.",
+    "Don't over-apply elemental S — it acidifies soil.",
+    "Use foliar sulphate (MgSO4) for quick top-up while soil S builds.",
+    "Watch the crop TOP (new growth) for early S signs.",
+    "Record S inputs — it's the nutrient most often forgotten.",
+    "Pair balanced N with S so N is actually converted to protein."
+  ],
+  "faq": [
+    {
+      "q": "Upar ki (nayi) patti pili ho rahi hai, N daalun?",
+      "a": "Nahi — nayi patti pili matlab SULPHUR ki kami (N ki kami purani patti par). Gypsum/SSP/ammonium sulphate dein."
+    },
+    {
+      "q": "Oilseed/pulse me S kyun zaroori?",
+      "a": "S se oil % aur protein banta hai aur legume me nodulation sudharta hai — sabse chhupi kami yahi hai."
+    },
+    {
+      "q": "Sabse sasta S source?",
+      "a": "Gypsum (18% S + calcium), 80-120 kg/acre basal."
+    },
+    {
+      "q": "SSP ya DAP?",
+      "a": "Jahan P + S dono chahiye (oilseed/pulse), SSP behtar — P ke saath sulphur bhi."
+    },
+    {
+      "q": "Bentonite sulphur kab dein?",
+      "a": "Demand se pehle (basal) — use oxidise hone me time lagta hai."
+    },
+    {
+      "q": "N aur S deficiency me farak?",
+      "a": "N = neeche/purani patti pili; S = upar/nayi patti pili. Yahi sabse aasaan pehchaan."
+    },
+    {
+      "q": "Sandy mitti me S?",
+      "a": "Har season dein — sulphate nitrate ki tarah leach ho jata hai."
+    },
+    {
+      "q": "Ammonium sulphate ka fayda?",
+      "a": "N + S dono; alkaline mitti me acidifying effect bhi accha."
+    },
+    {
+      "q": "S ka asar kitne din me?",
+      "a": "Gypsum/SSP 2-3 hafte; foliar sulphate 7-10 din."
+    },
+    {
+      "q": "NPK blend me S hota hai?",
+      "a": "Zyadatar me nahi — alag se S plan karein."
+    },
+    {
+      "q": "Mustard me S ka asar?",
+      "a": "Oil % aur yield dono badhte hain — S mustard ke liye critical."
+    },
+    {
+      "q": "N:S ratio kya rakhein?",
+      "a": "Lagbhag 10-12:1 — tabhi N protein me badalta hai."
+    },
+    {
+      "q": "Waterlogged dhaan me S theek?",
+      "a": "Sulphate reduce hokar H2S ban sakta hai (jad kaali) — aeration/drainage rakhein."
+    },
+    {
+      "q": "Crucifer (gobhi) me S?",
+      "a": "Gobhi high S-user hai — plan me zaroor rakhein."
+    },
+    {
+      "q": "Elemental S zyada se?",
+      "a": "Mitti bahut acidic ho jati hai — seemit maatra."
+    },
+    {
+      "q": "Foliar S kaun sa?",
+      "a": "MgSO4 1-2% (S + Mg) quick top-up ke liye."
+    },
+    {
+      "q": "Legume me S + Rhizobium?",
+      "a": "Dono saath — max nodulation aur protein."
+    },
+    {
+      "q": "S kab check karein?",
+      "a": "Crop ke TOP (nayi growth) par jaldi symptom dikhta hai."
+    },
+    {
+      "q": "Gypsum se aur kya fayda?",
+      "a": "Calcium bhi milta hai aur sodic mitti sudharti hai."
+    },
+    {
+      "q": "S deficiency rog hai?",
+      "a": "Nahi — nutrient disorder; uniform young-leaf yellowing, fungicide bekaar."
+    }
+  ],
+  "references": [
+    "ICAR; IARI; SAU Package of Practices (esp. oilseed/pulse S research)",
+    "The Sulphur Institute / FAI India data",
+    "KVK; TNAU Agritech Portal; FCO specs; Soil Health Card, GoI"
+  ]
+}

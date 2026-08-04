@@ -44,5 +44,10 @@ drop policy if exists "Anyone can upload expert-query-photos" on storage.objects
 drop policy if exists "anon read expert photos" on storage.objects;
 drop policy if exists "anon upload expert photos" on storage.objects;
 
+-- Panel users (multi-expert console)
+alter table if exists public.panel_users enable row level security;
+drop policy if exists "anon_select_panel_users" on public.panel_users;
+drop policy if exists "anon_all_panel_users" on public.panel_users;
+
 -- No anon policies ⇒ default deny for anon/authenticated.
 -- Service role bypasses RLS for API routes.

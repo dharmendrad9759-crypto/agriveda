@@ -2,10 +2,12 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Leaf, Lock, Loader2 } from "lucide-react";
+import { Leaf, Lock, Loader2, User } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const [mode, setMode] = useState<"owner" | "expert">("owner");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,7 +17,7 @@ export default function AdminLoginPage() {
     fetch("/api/admin/auth", { credentials: "include" })
       .then((r) => r.json())
       .then((d: { authenticated?: boolean }) => {
-        if (d.authenticated) router.replace("/admin/queries");
+        if (d.authenticated) router.replace("/admin/home");
       })
       .finally(() => setChecking(false));
   }, [router]);
@@ -29,14 +31,18 @@ export default function AdminLoginPage() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify(
+          mode === "owner"
+            ? { password }
+            : { username, password }
+        ),
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
         setError(data.error || "Login failed");
         return;
       }
-      router.replace("/admin/queries");
+      router.replace("/admin/home");
     } catch {
       setError("Network error");
     } finally {
@@ -57,15 +63,15 @@ export default function AdminLoginPage() {
       <div className="admin-cine__enter mb-10 text-center">
         <div className="relative mx-auto inline-flex">
           <span className="admin-cine__pulse-ring" aria-hidden />
-          <div className="relative flex h-16 w-16 items-center justify-center rounded-[1.35rem] border border-emerald-400/35 bg-emerald-500/10 shadow-[0_0_48px_-8px_rgba(52,211,153,0.55)]">
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-[1.35rem] border border-emerald-400/35 bg-emerald-500/10">
             <Leaf className="h-8 w-8 text-emerald-300" strokeWidth={1.75} />
           </div>
         </div>
-        <h1 className="admin-cine__brand-glow mt-7 font-display text-[clamp(2.4rem,8vw,3.35rem)] font-bold leading-[1.05] tracking-tight text-white">
+        <h1 className="admin-cine__brand-glow mt-7 font-display text-[clamp(2.2rem,8vw,3.1rem)] font-bold text-white">
           Agriveda
         </h1>
-        <p className="mt-3 text-sm font-medium tracking-wide text-emerald-100/70">
-          Expert console · किसान सवालों का जवाब
+        <p className="mt-3 text-sm font-medium text-emerald-100/70">
+          Expert Console · Owner permissions · Expert replies
         </p>
       </div>
 
@@ -73,17 +79,62 @@ export default function AdminLoginPage() {
         onSubmit={onSubmit}
         className="admin-cine__glass admin-cine__enter-delay rounded-[1.75rem] p-6 sm:p-7"
       >
-        <label className="block text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-200/70">
-          Admin password
+        <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl bg-black/35 p-1">
+          <button
+            type="button"
+            onClick={() => setMode("owner")}
+            className={`rounded-lg py-2 text-xs font-bold ${
+              mode === "owner" ? "bg-emerald-500 text-[#052e16]" : "text-white/50"
+            }`}
+          >
+            Main Owner
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("expert")}
+            className={`rounded-lg py-2 text-xs font-bold ${
+              mode === "expert" ? "bg-emerald-500 text-[#052e16]" : "text-white/50"
+            }`}
+          >
+            Expert / Manager
+          </button>
+        </div>
+
+        {mode === "expert" ? (
+          <>
+            <label className="block text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-200/70">
+              Username
+            </label>
+            <div className="relative mt-2">
+              <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-300/55" />
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full rounded-2xl border border-white/10 bg-black/35 py-3.5 pl-11 pr-3 text-sm text-white outline-none focus:border-emerald-400/45 focus:ring-2 focus:ring-emerald-500/35"
+                placeholder="expert1"
+                required
+                autoComplete="username"
+              />
+            </div>
+          </>
+        ) : (
+          <p className="text-[11px] leading-relaxed text-white/45">
+            Main Owner: `ADMIN_PANEL_SECRET` password. Experts create Experts page से — उन्हें username
+            मिलता है।
+          </p>
+        )}
+
+        <label className="mt-4 block text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-200/70">
+          Password
         </label>
-        <div className="relative mt-3">
+        <div className="relative mt-2">
           <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-300/55" />
           <input
             type="password"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-black/35 py-3.5 pl-11 pr-3 text-sm text-white outline-none ring-emerald-500/35 placeholder:text-white/30 focus:border-emerald-400/45 focus:ring-2"
+            className="w-full rounded-2xl border border-white/10 bg-black/35 py-3.5 pl-11 pr-3 text-sm text-white outline-none focus:border-emerald-400/45 focus:ring-2 focus:ring-emerald-500/35"
             placeholder="••••••••••••"
             required
           />
@@ -91,17 +142,13 @@ export default function AdminLoginPage() {
         {error ? <p className="mt-3 text-xs font-medium text-red-300">{error}</p> : null}
         <button
           type="submit"
-          disabled={loading || !password}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-400 py-3.5 text-sm font-bold text-[#042f1e] shadow-[0_12px_40px_-12px_rgba(52,211,153,0.75)] transition hover:bg-emerald-300 disabled:opacity-40"
+          disabled={loading || !password || (mode === "expert" && !username)}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-400 py-3.5 text-sm font-bold text-[#042f1e] disabled:opacity-40"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           Enter console
         </button>
       </form>
-
-      <p className="admin-cine__enter-delay-2 mt-8 text-center text-[11px] leading-relaxed text-white/35">
-        यह पेज किसानों के ऐप में नहीं दिखता — सिर्फ आपकी टीम के लिए
-      </p>
     </div>
   );
 }

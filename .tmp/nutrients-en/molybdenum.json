@@ -1,0 +1,354 @@
+{
+  "slug": "molybdenum",
+  "name": "Molybdenum",
+  "symbol": "Mo",
+  "category": "Micronutrient",
+  "mobility": "Moderately mobile (symptoms on OLDER-to-MIDDLE leaves + young distortion; N-deficiency-like in legumes)",
+  "formsTakenUp": "Molybdate MoO4^2-",
+  "overview": {
+    "whyImportant": "Molybdenum is needed in the tiniest amounts but is essential for two key enzymes: nitrate reductase (converts nitrate to usable N) and nitrogenase (biological N-fixation in legume nodules). Deficiency is worst on ACID soils and shows as N-deficiency-like yellowing plus the classic cauliflower 'whiptail'."
+  },
+  "plantFunctions": {
+    "roleInsidePlant": "Cofactor of nitrate reductase and nitrogenase enzymes.",
+    "photosynthesis": "Indirect (via N metabolism).",
+    "rootDevelopment": "Supports nodulation in legumes.",
+    "vegetativeGrowth": "Enables N use for growth.",
+    "flowering": "Indirect.",
+    "fruitDevelopment": "Indirect via N nutrition.",
+    "proteinSynthesis": "Essential — without Mo, nitrate can't be reduced to build proteins.",
+    "enzymeActivation": "Cofactor of Mo-enzymes.",
+    "chlorophyllFormation": "Indirect.",
+    "yieldContribution": "Critical for legume N-fixation and nitrate-fed crops; large effect in pulses and crucifers."
+  },
+  "whyDeficiencyHappens": [
+    {
+      "condition": "Low soil pH (acidic) — MAIN cause",
+      "why": "Molybdate availability DROPS in acid soils (opposite of most micronutrients); liming cures it."
+    },
+    {
+      "condition": "High soil pH",
+      "why": "Usually adequate/available (Mo increases with pH)."
+    },
+    {
+      "condition": "Sandy acid soils",
+      "why": "Low Mo reserves + acidity."
+    },
+    {
+      "condition": "Heavy rainfall",
+      "why": "Leaching and acidification of light soils."
+    },
+    {
+      "condition": "Waterlogging",
+      "why": "Altered availability."
+    },
+    {
+      "condition": "Excess irrigation",
+      "why": "Leaching."
+    },
+    {
+      "condition": "Low organic matter",
+      "why": "Less Mo cycling."
+    },
+    {
+      "condition": "Nutrient imbalance / high sulphate",
+      "why": "High sulphate competes with molybdate uptake."
+    },
+    {
+      "condition": "Excess sulphur/manganese",
+      "why": "Antagonise Mo uptake."
+    },
+    {
+      "condition": "Poor root/nodule growth",
+      "why": "Poor nodulation compounds N problems in legumes."
+    },
+    {
+      "condition": "Cold soil",
+      "why": "Slows uptake and N metabolism."
+    },
+    {
+      "condition": "Dry soil",
+      "why": "Limits availability."
+    },
+    {
+      "condition": "Acidic peaty soils",
+      "why": "Strong Mo fixation."
+    },
+    {
+      "condition": "Poor fertiliser management",
+      "why": "Not liming acid soils; ignoring Mo seed treatment in legumes/crucifers."
+    }
+  ],
+  "symptoms": {
+    "note": "Because Mo runs N metabolism, deficiency LOOKS like nitrogen deficiency (pale older-mid leaves) PLUS young-leaf distortion; classic 'whiptail' in cauliflower.",
+    "early": "Pale/yellow older-to-middle leaves (N-deficiency-like), mild.",
+    "middle": "Interveinal/marginal chlorosis, upward cupping, marginal scorching; poor nodulation in legumes.",
+    "severe": "Cauliflower WHIPTAIL — leaf blades fail to expand, become thin strap/whip-like; no curd; legumes N-starved despite N present.",
+    "oldLeaves": "Pale/yellow (N-like) with marginal scorch.",
+    "youngLeaves": "Distorted, cupped, strap-like (whiptail) in severe cases.",
+    "stem": "Weak, stunted.",
+    "root": "Poor nodulation in legumes (no N-fixation).",
+    "flower": "Reduced.",
+    "fruit": "Poor set; no curd in cauliflower.",
+    "seed": "Low set and quality.",
+    "wholePlant": "N-hungry look on acid soils + whiptail leaves; legumes pale with few nodules."
+  },
+  "cropWiseSymptoms": [
+    {
+      "crop": "Paddy",
+      "symptoms": "Pale N-deficiency-like leaves on acid soils, poor growth."
+    },
+    {
+      "crop": "Soybean",
+      "symptoms": "N-deficiency look, POOR NODULATION and pale plants on acid soils — Mo seed treatment fixes it."
+    },
+    {
+      "crop": "Groundnut",
+      "symptoms": "Pale plants, poor nodulation on acid soils."
+    },
+    {
+      "crop": "Chilli",
+      "symptoms": "Pale older leaves, marginal scorch on acid soils."
+    },
+    {
+      "crop": "Capsicum",
+      "symptoms": "N-like paleness, cupped young leaves (rare, acid media)."
+    },
+    {
+      "crop": "Cauliflower",
+      "symptoms": "WHIPTAIL — thin strap-like distorted leaves and no/poor curd; THE classic Mo-deficiency crop."
+    },
+    {
+      "crop": "Cabbage",
+      "symptoms": "Cupped distorted leaves, marginal scorch, poor heading on acid soils."
+    },
+    {
+      "crop": "Cucumber",
+      "symptoms": "Pale older leaves, marginal chlorosis on acid soils."
+    },
+    {
+      "crop": "Brinjal",
+      "symptoms": "N-like paleness, marginal scorch."
+    },
+    {
+      "crop": "Okra",
+      "symptoms": "Pale older leaves, marginal chlorosis."
+    },
+    {
+      "crop": "Maize",
+      "symptoms": "Pale N-like older leaves, marginal scorch on acid soils."
+    },
+    {
+      "crop": "Bajra",
+      "symptoms": "Pale plants on acid sandy soils."
+    },
+    {
+      "crop": "Moong",
+      "symptoms": "N-deficiency look, poor nodulation on acid soils."
+    },
+    {
+      "crop": "Arhar",
+      "symptoms": "Pale plants, poor nodulation on acid soils."
+    },
+    {
+      "crop": "Sugarcane",
+      "symptoms": "Pale N-like foliage, marginal scorch on acid soils."
+    }
+  ],
+  "howToFix": [
+    {
+      "fertilizer": "Sodium Molybdate (Na2MoO4)",
+      "nutrientContent": "~39% Mo",
+      "soilApplicationDose": "200-400 g/acre (tiny — usually with FYM or mixed for even spread)",
+      "foliarSprayDose": "0.05-0.1% (0.5-1 g/L)",
+      "fertigationDose": "very low, per label",
+      "waterQuantity": "Foliar 200 L/acre",
+      "bestCropStage": "Nursery/early growth; seed treatment for legumes/crucifers",
+      "methodOfApplication": "Seed treatment (best for legumes) or foliar; tiny doses",
+      "numberOfApplications": "1-2",
+      "sprayInterval": "as needed",
+      "expectedRecoveryTime": "7-14 days",
+      "precautions": "Needed in TINY amounts — over-application is toxic to livestock (molybdenosis in grazing). Mix well for even spread."
+    },
+    {
+      "fertilizer": "Ammonium Molybdate",
+      "nutrientContent": "~54% Mo",
+      "soilApplicationDose": "100-200 g/acre",
+      "foliarSprayDose": "0.05-0.1% (0.5-1 g/L)",
+      "fertigationDose": "very low",
+      "waterQuantity": "200 L/acre",
+      "bestCropStage": "Seed treatment / early foliar",
+      "methodOfApplication": "Seed treatment or foliar",
+      "numberOfApplications": "1-2",
+      "sprayInterval": "as needed",
+      "expectedRecoveryTime": "7-14 days",
+      "precautions": "Very low dose; higher Mo content than sodium molybdate."
+    },
+    {
+      "fertilizer": "Agricultural Lime (indirect — corrects the cause)",
+      "nutrientContent": "CaCO3 (raises pH)",
+      "soilApplicationDose": "Per lime requirement on acid soils",
+      "foliarSprayDose": "NA",
+      "fertigationDose": "NA",
+      "waterQuantity": "Incorporate",
+      "bestCropStage": "Pre-sowing on acid soils",
+      "methodOfApplication": "Broadcast + incorporate — raising pH releases native soil Mo (often the real fix)",
+      "numberOfApplications": "Once per few years",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "Weeks",
+      "precautions": "Liming acid soils often cures Mo deficiency without adding Mo."
+    }
+  ],
+  "methodOfApplication": {
+    "broadcast": "Mo salts mixed with bulk (FYM/sand) for even spread of tiny doses; or lime to raise pH.",
+    "bandPlacement": "Rare (dose too small).",
+    "spotApplication": "Not typical.",
+    "foliarSpray": "0.05-0.1% Mo salt for quick correction, esp. cauliflower whiptail.",
+    "dripFertigation": "Very low dose.",
+    "rootDrench": "Rare.",
+    "seedTreatment": "BEST method for legumes/crucifers — coat seed with sodium/ammonium molybdate; tiny quantity, big effect on nodulation."
+  },
+  "toxicity": {
+    "whatHappens": "Plant tolerates fairly high Mo, but excess Mo in FODDER causes MOLYBDENOSIS in grazing cattle (Cu deficiency in animals).",
+    "plantToxicitySymptoms": "Rarely visible in plants; concern is animal health from high-Mo fodder.",
+    "yieldLoss": "Minimal to plant.",
+    "qualityReduction": "Fodder safety issue for livestock.",
+    "correctionMethods": "Avoid over-application; balance with copper in animal diet; don't over-lime + over-Mo together."
+  },
+  "prevention": [
+    "Lime acid soils — the root-cause fix that releases native Mo.",
+    "Use Mo seed treatment routinely in legumes and cauliflower on acid soils.",
+    "Apply only TINY doses (grams, not kg).",
+    "Avoid excess sulphate (competes with molybdate).",
+    "Build organic matter.",
+    "Foliar Mo preventively on whiptail-prone cauliflower.",
+    "Test soil pH; correct acidity.",
+    "Combine Mo + Rhizobium for legume nodulation.",
+    "Don't over-apply (fodder toxicity).",
+    "Mix Mo well for even field spread."
+  ],
+  "commonFarmerMistakes": [
+    "Not liming acid soils (the actual cause of most Mo deficiency).",
+    "Adding urea for cauliflower whiptail when Mo is the real fix.",
+    "Over-applying Mo (toxic to grazing livestock).",
+    "Confusing Mo deficiency (N-like + whiptail) with plain N deficiency.",
+    "Uneven spread of tiny Mo doses (mix with bulk).",
+    "Ignoring Mo seed treatment in legumes on acid soils.",
+    "Excess sulphate blocking molybdate uptake.",
+    "Skipping soil pH test.",
+    "Not combining Mo with Rhizobium in pulses.",
+    "Foliar Mo too concentrated.",
+    "Applying Mo where liming alone would fix it.",
+    "Assuming Mo deficiency on alkaline soils (usually adequate there).",
+    "Over-Mo + over-lime creating fodder risk.",
+    "Treating whiptail as a disease.",
+    "Applying Mo to dry soil."
+  ],
+  "expertTips": [
+    "On acid soils, LIME first — it usually cures Mo deficiency by raising pH.",
+    "For cauliflower whiptail, foliar 0.05-0.1% sodium molybdate + lime the soil.",
+    "Mo seed treatment is the cheapest, best fix for legume nodulation on acid soils.",
+    "Use TINY doses — Mo is needed in grams/acre.",
+    "Mix Mo with FYM/sand for even spread.",
+    "Combine Mo + Rhizobium in pulses for maximum N-fixation.",
+    "Diagnose Mo by N-like paleness on acid soils + whiptail leaves.",
+    "Avoid over-application — high-Mo fodder harms grazing cattle.",
+    "Keep sulphate moderate (it competes with molybdate).",
+    "Test soil pH; Mo availability rises with pH (opposite of most micros).",
+    "Build organic matter for Mo cycling.",
+    "On alkaline soils, Mo deficiency is unlikely — look elsewhere.",
+    "New crucifer growth responds — judge success on new leaves/curd.",
+    "Ammonium molybdate has higher Mo than sodium molybdate — adjust dose.",
+    "Don't over-lime AND over-Mo together (fodder toxicity).",
+    "Foliar Mo in cool hours to avoid scorch.",
+    "Seed treatment beats soil application for tiny-dose efficiency.",
+    "Correct acidity as the durable solution.",
+    "Watch pulses for pale + poor-nodulation as a Mo sign.",
+    "Log acid-soil fields for routine Mo seed treatment."
+  ],
+  "faq": [
+    {
+      "q": "Cauliflower me whiptail (patli strap patti, curd nahi) kya hai?",
+      "a": "Molybdenum ki kami (acid soil). Mitti me lime dein + 0.05-0.1% sodium molybdate foliar."
+    },
+    {
+      "q": "Mo kis mitti me kam hota hai?",
+      "a": "ACID (kam pH) mitti me — baaki micros ke ulta. Lime se theek hota hai."
+    },
+    {
+      "q": "Legume me pale + kam nodules — Mo?",
+      "a": "Haan — Mo nitrogenase (N-fixation) chalaता hai. Mo seed treatment + Rhizobium dein."
+    },
+    {
+      "q": "Mo kitna dein?",
+      "a": "Bahut kam — gram me (200-400 g/acre). Zyada mat dein."
+    },
+    {
+      "q": "Mo aur N deficiency me farak?",
+      "a": "Mo kami N-jaisi paleness deti hai PAR acid soil par + whiptail/distortion ke saath."
+    },
+    {
+      "q": "Sabse achha Mo tarika?",
+      "a": "Legume/crucifer me seed treatment — chhoti maatra, bada asar."
+    },
+    {
+      "q": "Lime se Mo theek hota hai?",
+      "a": "Haan — pH badhne se native Mo release hota hai; aksar bina Mo daale hi theek."
+    },
+    {
+      "q": "Mo zyada se nuksan?",
+      "a": "Plant ko kam, par high-Mo chaara pashuon me molybdenosis (Cu kami) karta hai."
+    },
+    {
+      "q": "Alkaline mitti me Mo kami?",
+      "a": "Aksar nahi — wahan Mo available hota hai; dusri wajah dekhein."
+    },
+    {
+      "q": "Sulphate zyada se Mo?",
+      "a": "Sulphate molybdate uptake se competition karta hai."
+    },
+    {
+      "q": "Mo ka asar kitne din?",
+      "a": "Foliar 7-14 din."
+    },
+    {
+      "q": "Sodium ya ammonium molybdate?",
+      "a": "Ammonium molybdate me Mo zyada (54%); dose adjust karein."
+    },
+    {
+      "q": "Mo + Rhizobium?",
+      "a": "Haan — pulses me max N-fixation ke liye saath dein."
+    },
+    {
+      "q": "Whiptail rog hai?",
+      "a": "Nahi — Mo deficiency; fungicide bekaar."
+    },
+    {
+      "q": "Mo dry soil me?",
+      "a": "Nami chahiye."
+    },
+    {
+      "q": "Mo evenly kaise?",
+      "a": "FYM/ret ke saath mila kar spread karein (tiny dose)."
+    },
+    {
+      "q": "Acidic soil ka permanent fix?",
+      "a": "Liming — durable solution."
+    },
+    {
+      "q": "Success kaise judge?",
+      "a": "Nayi patti/curd theek hoti hai."
+    },
+    {
+      "q": "Foliar Mo concentration?",
+      "a": "0.05-0.1% — bahut halka."
+    },
+    {
+      "q": "Over-lime + over-Mo?",
+      "a": "Saath me na karein — fodder toxicity ka risk."
+    }
+  ],
+  "references": [
+    "ICAR (AICRP Micronutrients); IARI; SAU Package of Practices",
+    "KVK; TNAU Agritech Portal; FCO specs; Soil Health Card, GoI"
+  ]
+}

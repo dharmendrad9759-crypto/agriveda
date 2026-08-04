@@ -1,0 +1,355 @@
+{
+  "slug": "magnesium",
+  "name": "Magnesium",
+  "symbol": "Mg",
+  "category": "Secondary Nutrient",
+  "mobility": "MOBILE in plant (deficiency on OLD leaves first)",
+  "formsTakenUp": "Mg2+",
+  "overview": {
+    "whyImportant": "Magnesium is the CENTRAL ATOM of the chlorophyll molecule — no Mg, no green, no photosynthesis. It also activates many enzymes and helps move phosphorus. Deficiency shows as classic interveinal yellowing of older leaves with green veins."
+  },
+  "plantFunctions": {
+    "roleInsidePlant": "Central atom of chlorophyll; enzyme activator; P carrier.",
+    "photosynthesis": "Directly essential — chlorophyll core.",
+    "rootDevelopment": "Supports energy transfer for root growth.",
+    "vegetativeGrowth": "Maintains green leaf area and photosynthesis.",
+    "flowering": "Indirect via photosynthate supply.",
+    "fruitDevelopment": "Supports sugar formation/loading into fruit/grain.",
+    "proteinSynthesis": "Needed for ribosome function and protein synthesis.",
+    "enzymeActivation": "Activates ATPases and many phosphate-transfer enzymes.",
+    "chlorophyllFormation": "Core structural role.",
+    "yieldContribution": "Sustains photosynthesis and sugar loading; deficiency cuts yield and quality."
+  },
+  "whyDeficiencyHappens": [
+    {
+      "condition": "High soil pH",
+      "why": "Usually adequate, but high Ca can antagonise Mg."
+    },
+    {
+      "condition": "Low soil pH (acidic)",
+      "why": "Acid sandy soils are genuinely low in Mg; leaching."
+    },
+    {
+      "condition": "Sandy soils",
+      "why": "Low Mg reserves; leaches easily."
+    },
+    {
+      "condition": "Heavy rainfall",
+      "why": "Leaches Mg from light soils."
+    },
+    {
+      "condition": "Waterlogging",
+      "why": "Impaired root uptake."
+    },
+    {
+      "condition": "Excess irrigation",
+      "why": "Leaches Mg on sandy soils."
+    },
+    {
+      "condition": "Low organic matter",
+      "why": "Less Mg retention."
+    },
+    {
+      "condition": "Nutrient imbalance / excess K, Ca, NH4",
+      "why": "These cations strongly antagonise Mg uptake — heavy MOP is a classic trigger."
+    },
+    {
+      "condition": "Excess potassium",
+      "why": "High K blocks Mg uptake — the most common induced Mg deficiency."
+    },
+    {
+      "condition": "Poor root growth",
+      "why": "Reduced foraging for Mg."
+    },
+    {
+      "condition": "Cold soil",
+      "why": "Slows uptake."
+    },
+    {
+      "condition": "Dry soil",
+      "why": "Diffusion-limited uptake."
+    },
+    {
+      "condition": "Salinity",
+      "why": "Na competition."
+    },
+    {
+      "condition": "Poor fertiliser management",
+      "why": "Heavy K without Mg; ignoring Mg on sandy/acid soils."
+    }
+  ],
+  "symptoms": {
+    "note": "Mg is MOBILE — deficiency on OLD leaves first. Signature: interveinal yellowing with GREEN VEINS (Christmas-tree pattern).",
+    "early": "Older leaves show interveinal yellowing while veins stay green.",
+    "middle": "Pronounced interveinal chlorosis, sometimes reddish/purple tints, on older leaves.",
+    "severe": "Interveinal areas turn brown/necrotic, older leaves die; reduced photosynthesis and yield.",
+    "oldLeaves": "First affected: yellow between veins, green veins remain (net-like/Christmas-tree look).",
+    "youngLeaves": "Stay green until severe.",
+    "stem": "Weak under prolonged deficiency.",
+    "root": "Reduced growth.",
+    "flower": "Indirect reduction.",
+    "fruit": "Lower sugar/quality, smaller size.",
+    "seed": "Reduced filling.",
+    "wholePlant": "Lower leaves netted-yellow moving up, reduced vigour and yield."
+  },
+  "cropWiseSymptoms": [
+    {
+      "crop": "Paddy",
+      "symptoms": "Interveinal yellowing/orange of older leaves on sandy/acid soils."
+    },
+    {
+      "crop": "Soybean",
+      "symptoms": "Interveinal chlorosis of older leaves, green veins, on light soils."
+    },
+    {
+      "crop": "Groundnut",
+      "symptoms": "Older-leaf interveinal yellowing on sandy soils."
+    },
+    {
+      "crop": "Chilli",
+      "symptoms": "Older-leaf interveinal yellowing, especially after heavy K fertigation."
+    },
+    {
+      "crop": "Capsicum",
+      "symptoms": "Classic interveinal chlorosis of older leaves in high-K fertigation (induced Mg deficiency)."
+    },
+    {
+      "crop": "Cauliflower",
+      "symptoms": "Older-leaf interveinal yellowing, reduced vigour."
+    },
+    {
+      "crop": "Cabbage",
+      "symptoms": "Interveinal yellowing of outer older leaves."
+    },
+    {
+      "crop": "Cucumber",
+      "symptoms": "Strong interveinal chlorosis of older leaves (green veins), common in heavy-fruiting fertigated vines."
+    },
+    {
+      "crop": "Brinjal",
+      "symptoms": "Older-leaf interveinal yellowing, green veins."
+    },
+    {
+      "crop": "Okra",
+      "symptoms": "Older-leaf interveinal chlorosis."
+    },
+    {
+      "crop": "Maize",
+      "symptoms": "Interveinal striping/yellowing of older leaves, reddish-purple tints in severe cases."
+    },
+    {
+      "crop": "Bajra",
+      "symptoms": "Interveinal chlorosis of older leaves on sandy soils."
+    },
+    {
+      "crop": "Moong",
+      "symptoms": "Older-leaf interveinal yellowing."
+    },
+    {
+      "crop": "Arhar",
+      "symptoms": "Older-leaf interveinal chlorosis on light soils."
+    },
+    {
+      "crop": "Sugarcane",
+      "symptoms": "Interveinal yellowing/rusty older leaves on sandy/acid soils, reduced vigour."
+    }
+  ],
+  "howToFix": [
+    {
+      "fertilizer": "Magnesium Sulphate (Epsom salt, MgSO4)",
+      "nutrientContent": "~9.6% Mg + 12% S",
+      "soilApplicationDose": "20-40 kg/acre soil",
+      "foliarSprayDose": "5-10 g/L (1-2%) — standard quick fix",
+      "fertigationDose": "2-4 kg/acre per split",
+      "waterQuantity": "Foliar 200 L/acre",
+      "bestCropStage": "On symptoms; vegetative-fruiting",
+      "methodOfApplication": "Foliar for fast correction; soil/fertigation for sustained supply",
+      "numberOfApplications": "2-3 sprays",
+      "sprayInterval": "10-15 days",
+      "expectedRecoveryTime": "Foliar greening in 7-10 days",
+      "precautions": "Fully water-soluble, safe; bonus sulphur."
+    },
+    {
+      "fertilizer": "Dolomite (Ca-Mg carbonate)",
+      "nutrientContent": "Mg + Ca (liming material)",
+      "soilApplicationDose": "200-600 kg/acre on acid soils",
+      "foliarSprayDose": "NA",
+      "fertigationDose": "NA",
+      "waterQuantity": "Incorporate",
+      "bestCropStage": "Pre-sowing on acid/sandy soils",
+      "methodOfApplication": "Broadcast + incorporate; corrects acidity + supplies Mg & Ca",
+      "numberOfApplications": "Once per few years",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "Weeks",
+      "precautions": "Best long-term fix for acid sandy soils low in Mg."
+    },
+    {
+      "fertilizer": "Magnesium Nitrate (water-soluble)",
+      "nutrientContent": "Mg + nitrate-N",
+      "soilApplicationDose": "Fertigation product",
+      "foliarSprayDose": "5 g/L",
+      "fertigationDose": "2-4 kg/acre per split",
+      "waterQuantity": "Foliar 200 L/acre",
+      "bestCropStage": "Fertigated veg/polyhouse",
+      "methodOfApplication": "Fertigation/foliar",
+      "numberOfApplications": "Multiple",
+      "sprayInterval": "7-10 days",
+      "expectedRecoveryTime": "5-10 days",
+      "precautions": "Good where clean solubility needed."
+    }
+  ],
+  "methodOfApplication": {
+    "broadcast": "MgSO4 or dolomite broadcast + incorporate for soil correction.",
+    "bandPlacement": "MgSO4 in root zone.",
+    "spotApplication": "Near high-value plants.",
+    "foliarSpray": "1-2% MgSO4 for fast greening of interveinal chlorosis.",
+    "dripFertigation": "MgSO4/Mg-nitrate spoon-fed in veg/polyhouse.",
+    "rootDrench": "Dilute MgSO4 at root zone.",
+    "seedTreatment": "Not applicable."
+  },
+  "toxicity": {
+    "whatHappens": "Mg toxicity is rare; excess Mg antagonises Ca and K uptake and can worsen soil structure (as in serpentine soils).",
+    "plantToxicitySymptoms": "Induced Ca/K deficiency symptoms.",
+    "yieldLoss": "Via cation imbalance.",
+    "qualityReduction": "Minor.",
+    "correctionMethods": "Balance with Ca/K; avoid excess dolomite."
+  },
+  "prevention": [
+    "Use dolomite on acid sandy soils to supply Mg long-term.",
+    "Don't over-apply K/MOP without Mg — the main induced-deficiency cause.",
+    "Include MgSO4 in fertigation schedules for heavy-fruiting veg.",
+    "Maintain K:Mg balance via soil test.",
+    "Build organic matter for Mg retention.",
+    "On sandy soils apply Mg regularly.",
+    "Foliar MgSO4 preventively in high-K crops (cucumber/capsicum).",
+    "Correct acidity to improve Mg availability.",
+    "Split Mg on leaching-prone soils.",
+    "Monitor older leaves for early interveinal signs."
+  ],
+  "commonFarmerMistakes": [
+    "Heavy MOP/K fertigation with no Mg — induces Mg deficiency.",
+    "Confusing Mg interveinal chlorosis (old leaves) with Fe (young leaves).",
+    "Ignoring Mg on acid sandy soils.",
+    "Not using dolomite when both Ca and Mg are low.",
+    "Over-liming with pure calcitic lime, worsening Mg imbalance.",
+    "Foliar MgSO4 too strong (>2%) causing scorch.",
+    "Treating Mg chlorosis as a disease.",
+    "Skipping soil test for K:Mg ratio.",
+    "Applying Mg to dry soil.",
+    "Not correcting the K excess that caused it.",
+    "Over-applying Mg and blocking Ca/K.",
+    "Ignoring Mg in high-yield fruit crops that remove a lot.",
+    "Assuming NPK blends cover Mg (most don't).",
+    "Not splitting Mg on sandy soils.",
+    "Waiting until severe necrosis to act."
+  ],
+  "expertTips": [
+    "Diagnose Mg by OLD-leaf interveinal yellowing with GREEN VEINS (vs Fe on young leaves).",
+    "Use dolomite for a long-term Mg + Ca + pH fix on acid sandy soils.",
+    "After heavy K fertigation, add MgSO4 to prevent induced deficiency.",
+    "Foliar 1-2% MgSO4 gives fast greening in 7-10 days.",
+    "Keep the K:Mg ratio balanced (soil test).",
+    "Include Mg routinely in cucumber/capsicum/tomato fertigation.",
+    "Epsom salt (MgSO4) is cheap, soluble, and doubles as sulphur.",
+    "On sandy soils, apply Mg every season.",
+    "Don't over-lime with calcitic lime where Mg is low — use dolomite.",
+    "Ensure moisture at Mg application.",
+    "Split Mg on leaching-prone soils.",
+    "Watch older leaves at heavy-fruiting stage for early Mg signs.",
+    "Balance Mg with Ca to avoid mutual antagonism.",
+    "Use Mg-nitrate for clean fertigation solubility.",
+    "Correct soil acidity to free up native Mg.",
+    "Combine soil Mg (sustained) with foliar Mg (fast) for stubborn cases.",
+    "High-yield sugar/fruit crops need planned Mg.",
+    "Avoid tank-mixing MgSO4 with high-Ca products in hard water (haze).",
+    "Add Mg to the nutrient plan, don't treat it as an afterthought.",
+    "Log K vs Mg inputs to keep the ratio right."
+  ],
+  "faq": [
+    {
+      "q": "Purani patti nason ke beech pili, nasein hari — kya?",
+      "a": "Magnesium ki kami. 1-2% MgSO4 (Epsom salt) chhidkein; acid sandy mitti me dolomite dein."
+    },
+    {
+      "q": "Mg aur Fe deficiency me farak?",
+      "a": "Mg = purani (neeche) patti; Fe = nayi (upar) patti. Dono interveinal, par patti ki umar se pehchaan."
+    },
+    {
+      "q": "Zyada MOP se Mg kami hoti hai?",
+      "a": "Haan — zyada K, Mg uptake block karta hai. MgSO4 add karein aur K balance rakhein."
+    },
+    {
+      "q": "MgSO4 kitna spray karein?",
+      "a": "1-2% (10-20 g/L); isse zyada nahi warna patti jal sakti hai."
+    },
+    {
+      "q": "Dolomite kab?",
+      "a": "Acid sandy mitti me jahan Ca aur Mg dono kam hon — pH bhi sudhrega."
+    },
+    {
+      "q": "Cucumber/capsicum me Mg kami kyun common?",
+      "a": "Bhaari fruiting + high-K fertigation se induced Mg deficiency. Fertigation me MgSO4 shaamil karein."
+    },
+    {
+      "q": "Mg ka asar kitne din me?",
+      "a": "Foliar 7-10 din me hariyali."
+    },
+    {
+      "q": "Epsom salt kya hai?",
+      "a": "Magnesium sulphate — sasta, ghulnsheel, Mg + sulphur dono deta hai."
+    },
+    {
+      "q": "Sandy mitti me Mg?",
+      "a": "Har season thodi maatra, ya dolomite — kyunki Mg leach ho jata hai."
+    },
+    {
+      "q": "NPK blend me Mg hota hai?",
+      "a": "Zyadatar me nahi — alag se Mg dena padta hai."
+    },
+    {
+      "q": "Mg chlorosis rog hai kya?",
+      "a": "Nahi — nutrient disorder; symmetric, purani patti par. Fungicide bekaar."
+    },
+    {
+      "q": "Mg zyada dene se?",
+      "a": "Ca/K uptake block ho sakta hai — balance rakhein."
+    },
+    {
+      "q": "Soil ya foliar Mg?",
+      "a": "Foliar fast, soil sustained — zid problem me dono."
+    },
+    {
+      "q": "Maize me reddish-purple + interveinal?",
+      "a": "Severe Mg deficiency ho sakti hai; MgSO4 dein, soil test karein."
+    },
+    {
+      "q": "Mg-nitrate kab?",
+      "a": "Clean fertigation ke liye polyhouse/veg me."
+    },
+    {
+      "q": "K:Mg ratio kyun?",
+      "a": "Zyada K, Mg rok deta hai — soil test se balance rakhein."
+    },
+    {
+      "q": "Acidic soil me Mg?",
+      "a": "Dolomite se — acidity theek + Mg supply."
+    },
+    {
+      "q": "Kya Mg se meethas badhti hai?",
+      "a": "Indirect — photosynthesis/sugar loading sudharta hai to quality behtar."
+    },
+    {
+      "q": "Mg kab check karein?",
+      "a": "Heavy fruiting stage par purani patti dekhein."
+    },
+    {
+      "q": "MgSO4 hard water me?",
+      "a": "High-Ca products ke saath mix na karein (haze/jam)."
+    }
+  ],
+  "references": [
+    "ICAR; IARI; SAU Package of Practices",
+    "KVK; TNAU Agritech Portal",
+    "FCO specs; Soil Health Card, GoI"
+  ]
+}

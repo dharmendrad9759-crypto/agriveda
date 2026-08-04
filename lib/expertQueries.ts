@@ -36,6 +36,8 @@ export type ExpertQueryRow = {
   expert_reply: string | null;
   expert_name: string | null;
   answered_at: string | null;
+  assigned_to: string | null;
+  assigned_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -155,10 +157,15 @@ function mapRow(raw: Record<string, unknown>): ExpertQueryRow {
     expert_reply: (raw.expert_reply as string) ?? null,
     expert_name: (raw.expert_name as string) ?? null,
     answered_at: (raw.answered_at as string) ?? null,
+    assigned_to: (raw.assigned_to as string) ?? null,
+    assigned_at: (raw.assigned_at as string) ?? null,
     created_at: String(raw.created_at ?? nowIso()),
     updated_at: String(raw.updated_at ?? nowIso()),
   };
 }
+
+const QUERY_SELECT =
+  "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, assigned_to, assigned_at, created_at, updated_at";
 
 export async function createExpertQuery(
   input: CreateExpertQueryInput,
@@ -211,7 +218,7 @@ export async function createExpertQuery(
           .from("expert_queries")
           .insert(data)
           .select(
-            "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+            QUERY_SELECT
           )
           .single();
       } catch (err) {
@@ -277,6 +284,8 @@ export async function createExpertQuery(
     expert_reply: null,
     expert_name: null,
     answered_at: null,
+    assigned_to: null,
+    assigned_at: null,
     created_at: nowIso(),
     updated_at: nowIso(),
   };
@@ -294,7 +303,7 @@ export async function listExpertQueriesForDevice(
     const { data, error } = await client
       .from("expert_queries")
       .select(
-        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+        QUERY_SELECT
       )
       .eq("device_id", deviceId)
       .order("created_at", { ascending: false })
@@ -313,17 +322,23 @@ export async function listExpertQueriesAdmin(opts: {
   status?: ExpertQueryStatus | "all";
   limit?: number;
   client?: SupabaseClient | null;
+  /** When set, filter to queries this expert may see */
+  viewer?: {
+    userId: string;
+    viewAll: boolean;
+    cropScopes?: string[];
+  };
 }): Promise<ExpertQueryRow[]> {
   const client = opts.client ?? createSupabaseServiceClient();
   const limit = Math.min(200, Math.max(1, opts.limit ?? 80));
   const status = opts.status ?? "all";
 
+  let rows: ExpertQueryRow[] = [];
+
   if (client) {
     let q = client
       .from("expert_queries")
-      .select(
-        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
-      )
+      .select(QUERY_SELECT)
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -333,14 +348,67 @@ export async function listExpertQueriesAdmin(opts: {
 
     const { data, error } = await q;
     if (!error && data) {
-      return (data as Record<string, unknown>[]).map(mapRow);
+      rows = (data as Record<string, unknown>[]).map(mapRow);
     }
   }
 
-  if (!allowMemoryFallback()) return [];
-  let rows = [...memoryStore().rows];
-  if (status !== "all") rows = rows.filter((r) => r.status === status);
-  return rows.slice(0, limit);
+  if (!rows.length && allowMemoryFallback()) {
+    let mem = [...memoryStore().rows];
+    if (status !== "all") mem = mem.filter((r) => r.status === status);
+    rows = mem.slice(0, limit);
+  }
+
+  const viewer = opts.viewer;
+  if (viewer && !viewer.viewAll) {
+    rows = rows.filter((r) => {
+      if (r.assigned_to === viewer.userId) return true;
+      // Experts can see unassigned pending to claim
+      if (!r.assigned_to && (r.status === "pending" || r.status === "in_review")) return true;
+      return false;
+    });
+    if (viewer.cropScopes && viewer.cropScopes.length > 0) {
+      const set = new Set(viewer.cropScopes);
+      rows = rows.filter((r) => !r.crop_slug || set.has(r.crop_slug));
+    }
+  }
+
+  return rows;
+}
+
+export async function assignExpertQuery(
+  id: string,
+  assignedTo: string | null,
+  client = createSupabaseServiceClient()
+): Promise<ExpertQueryRow | null> {
+  const patch = {
+    assigned_to: assignedTo,
+    assigned_at: assignedTo ? nowIso() : null,
+    updated_at: nowIso(),
+    ...(assignedTo && { status: "in_review" as const }),
+  };
+
+  if (client && !id.startsWith("mem-")) {
+    const { data, error } = await client
+      .from("expert_queries")
+      .update(patch)
+      .eq("id", id)
+      .select(QUERY_SELECT)
+      .single();
+    if (!error && data) return mapRow(data as Record<string, unknown>);
+  }
+
+  if (!allowMemoryFallback()) return null;
+  const store = memoryStore();
+  const idx = store.rows.findIndex((r) => r.id === id);
+  if (idx < 0) return null;
+  store.rows[idx] = {
+    ...store.rows[idx],
+    assigned_to: assignedTo,
+    assigned_at: assignedTo ? nowIso() : null,
+    updated_at: nowIso(),
+    status: assignedTo ? "in_review" : store.rows[idx].status,
+  };
+  return store.rows[idx];
 }
 
 export async function getExpertQueryById(
@@ -351,7 +419,7 @@ export async function getExpertQueryById(
     const { data, error } = await client
       .from("expert_queries")
       .select(
-        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+        QUERY_SELECT
       )
       .eq("id", id)
       .maybeSingle();
@@ -385,7 +453,7 @@ export async function replyToExpertQuery(
       .update(patch)
       .eq("id", id)
       .select(
-        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+        QUERY_SELECT
       )
       .single();
     if (!error && data) return mapRow(data as Record<string, unknown>);
@@ -411,7 +479,7 @@ export async function setExpertQueryStatus(
       .update(patch)
       .eq("id", id)
       .select(
-        "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at"
+        QUERY_SELECT
       )
       .single();
     if (!error && data) return mapRow(data as Record<string, unknown>);

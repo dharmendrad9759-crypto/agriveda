@@ -1,0 +1,344 @@
+{
+  "slug": "copper",
+  "name": "Copper",
+  "symbol": "Cu",
+  "category": "Micronutrient",
+  "mobility": "IMMOBILE (deficiency on YOUNGEST leaves & growing points)",
+  "formsTakenUp": "Cu2+ (and chelated Cu)",
+  "overview": {
+    "whyImportant": "Copper is a cofactor of photosynthetic and respiratory enzymes and is critical for lignin (stem strength), pollen viability and grain set. Deficiency is uncommon but occurs on sandy, peaty/organic and heavily-limed soils, causing wilting young shoots, twisted tips and poor grain set."
+  },
+  "plantFunctions": {
+    "roleInsidePlant": "Cofactor of oxidase enzymes, plastocyanin (photosynthesis), lignin synthesis.",
+    "photosynthesis": "Part of plastocyanin in electron transport.",
+    "rootDevelopment": "Supports enzyme systems.",
+    "vegetativeGrowth": "Lignification for firm stems; deficiency causes limp/twisted young growth.",
+    "flowering": "Essential for pollen viability and fertilisation.",
+    "fruitDevelopment": "Supports grain/seed set.",
+    "proteinSynthesis": "Involved in protein/N metabolism.",
+    "enzymeActivation": "Activates oxidases (ascorbate oxidase, polyphenol oxidase).",
+    "chlorophyllFormation": "Indirect.",
+    "yieldContribution": "Grain/seed set and stem strength; deficiency causes 'ear-tip sterility' in cereals."
+  },
+  "whyDeficiencyHappens": [
+    {
+      "condition": "High soil pH / over-liming",
+      "why": "Cu availability drops as pH rises."
+    },
+    {
+      "condition": "Low soil pH",
+      "why": "Usually adequate; leaching in very acid sandy soils."
+    },
+    {
+      "condition": "Sandy soils",
+      "why": "Low Cu reserves."
+    },
+    {
+      "condition": "Peaty / high-organic soils",
+      "why": "Organic matter strongly binds Cu, making it unavailable — classic peat-soil Cu deficiency."
+    },
+    {
+      "condition": "Heavy rainfall",
+      "why": "Leaching on light soils."
+    },
+    {
+      "condition": "Waterlogging",
+      "why": "Altered redox/uptake."
+    },
+    {
+      "condition": "Excess irrigation",
+      "why": "Leaching."
+    },
+    {
+      "condition": "Low organic matter (mineral soils)",
+      "why": "Low Cu cycling (but HIGH organic matter also locks Cu)."
+    },
+    {
+      "condition": "Nutrient imbalance / excess N, P, Zn, Fe",
+      "why": "High N dilutes Cu; excess Zn/Fe/P antagonise Cu uptake."
+    },
+    {
+      "condition": "Excess phosphorus/zinc",
+      "why": "Antagonise Cu absorption."
+    },
+    {
+      "condition": "Poor root growth",
+      "why": "Immobile Cu needs active roots."
+    },
+    {
+      "condition": "Cold soil",
+      "why": "Slows uptake."
+    },
+    {
+      "condition": "Dry soil",
+      "why": "Limits availability."
+    },
+    {
+      "condition": "Salinity",
+      "why": "Impaired uptake."
+    },
+    {
+      "condition": "Poor fertiliser management",
+      "why": "Ignoring Cu on sandy/peaty soils; over-liming."
+    }
+  ],
+  "symptoms": {
+    "note": "Cu IMMOBILE — youngest leaves/tips affected. Signature: wilting/twisting of young shoots, pale tips, poor grain set.",
+    "early": "Youngest leaves pale, tips begin to wilt/curl.",
+    "middle": "Twisted, limp young leaves with withered tips ('pig-tail'), pale colour.",
+    "severe": "Dieback of growing points, white/withered tips, poor flowering, blank ear tips in cereals.",
+    "oldLeaves": "Stay normal.",
+    "youngLeaves": "First affected: pale, twisted, curled, tip die-back.",
+    "stem": "Weak, limp (poor lignification), bent.",
+    "root": "Reduced growth.",
+    "flower": "Poor pollen viability, poor fertilisation.",
+    "fruit": "Poor grain/seed set; blank ear tips.",
+    "seed": "Low set and quality.",
+    "wholePlant": "Healthy old leaves but wilting twisted young growth and poor grain set — top-down pattern."
+  },
+  "cropWiseSymptoms": [
+    {
+      "crop": "Paddy",
+      "symptoms": "Chlorotic rolled young leaves with withered tips, poor grain set on peaty/sandy soils."
+    },
+    {
+      "crop": "Soybean",
+      "symptoms": "Pale twisted young leaves, poor pod set (rare, sandy/organic soils)."
+    },
+    {
+      "crop": "Groundnut",
+      "symptoms": "Young-leaf chlorosis, poor pod set on light soils."
+    },
+    {
+      "crop": "Chilli",
+      "symptoms": "Wilting pale young leaves, poor fruit set."
+    },
+    {
+      "crop": "Capsicum",
+      "symptoms": "Twisted pale young growth, poor set (rare)."
+    },
+    {
+      "crop": "Cauliflower",
+      "symptoms": "Young-leaf chlorosis, distorted growth."
+    },
+    {
+      "crop": "Cabbage",
+      "symptoms": "Pale twisted young leaves, cupping."
+    },
+    {
+      "crop": "Cucumber",
+      "symptoms": "Wilting pale young tips, poor fruit set."
+    },
+    {
+      "crop": "Brinjal",
+      "symptoms": "Twisted young leaves, poor set."
+    },
+    {
+      "crop": "Okra",
+      "symptoms": "Pale distorted young growth."
+    },
+    {
+      "crop": "Maize",
+      "symptoms": "Young leaves pale, tips wither and curl (pig-tail), poor tip grain set."
+    },
+    {
+      "crop": "Bajra",
+      "symptoms": "Pale twisted young leaves on sandy soils, poor grain set."
+    },
+    {
+      "crop": "Moong",
+      "symptoms": "Pale young leaves, poor pod set (rare)."
+    },
+    {
+      "crop": "Arhar",
+      "symptoms": "Young-leaf chlorosis, poor set on light soils."
+    },
+    {
+      "crop": "Sugarcane",
+      "symptoms": "Chlorotic drooping young leaves with tip die-back on sandy/organic soils."
+    }
+  ],
+  "howToFix": [
+    {
+      "fertilizer": "Copper Sulphate (CuSO4.5H2O)",
+      "nutrientContent": "24-25% Cu",
+      "soilApplicationDose": "2-4 kg/acre basal (once every few years; residual)",
+      "foliarSprayDose": "0.2-0.3% (2-3 g/L) + lime (Bordeaux-style) to avoid scorch",
+      "fertigationDose": "0.5-1 kg/acre",
+      "waterQuantity": "Foliar 200 L/acre",
+      "bestCropStage": "On symptoms; vegetative",
+      "methodOfApplication": "Soil basal (residual) or dilute foliar; often coincides with Cu-fungicide sprays",
+      "numberOfApplications": "1-2",
+      "sprayInterval": "10-15 days",
+      "expectedRecoveryTime": "7-14 days",
+      "precautions": "Cu is easily TOXIC — use low doses, add lime to foliar; do not over-apply (builds up in soil)."
+    },
+    {
+      "fertilizer": "Chelated Copper (Cu-EDTA)",
+      "nutrientContent": "~12% Cu",
+      "soilApplicationDose": "0.5-1 kg/acre",
+      "foliarSprayDose": "0.5-1 g/L",
+      "fertigationDose": "per label",
+      "waterQuantity": "200 L/acre",
+      "bestCropStage": "On symptoms; fertigated crops",
+      "methodOfApplication": "Fertigation/foliar, low dose",
+      "numberOfApplications": "1",
+      "sprayInterval": "as needed",
+      "expectedRecoveryTime": "7-12 days",
+      "precautions": "Low dose; Cu accumulates — avoid repeated heavy use."
+    }
+  ],
+  "methodOfApplication": {
+    "broadcast": "Low-dose CuSO4 basal + incorporate (residual for years).",
+    "bandPlacement": "Banded CuSO4 near roots.",
+    "spotApplication": "Near high-value plants.",
+    "foliarSpray": "Dilute 0.2-0.3% CuSO4 + lime; Cu-fungicide sprays (Bordeaux/copper oxychloride) also supply some Cu.",
+    "dripFertigation": "Cu-EDTA low dose.",
+    "rootDrench": "Rare.",
+    "seedTreatment": "Cu seed treatment used in some cereals on deficient soils."
+  },
+  "toxicity": {
+    "whatHappens": "Cu toxicity is a REAL risk — Cu accumulates from repeated CuSO4/copper-fungicide use.",
+    "plantToxicitySymptoms": "Induced iron deficiency (young-leaf chlorosis), stunted brown roots, reduced growth.",
+    "yieldLoss": "Via root damage and induced Fe deficiency.",
+    "qualityReduction": "Reduced vigour.",
+    "correctionMethods": "Stop Cu inputs; apply Fe; lime acid soils to reduce Cu availability; add organic matter to bind Cu."
+  },
+  "prevention": [
+    "Apply Cu only where soil-tested deficient (sandy/peaty soils).",
+    "Use low doses — Cu is residual and toxic in excess.",
+    "Account for Cu supplied by copper fungicides.",
+    "Avoid over-liming (locks Cu) and excess P/Zn (antagonism).",
+    "Manage organic soils carefully (they bind Cu).",
+    "Foliar Cu for quick correction at low concentration.",
+    "Maintain balanced micronutrients.",
+    "Keep soil moisture adequate.",
+    "Soil-test DTPA-Cu periodically.",
+    "Avoid unnecessary routine Cu application."
+  ],
+  "commonFarmerMistakes": [
+    "Applying Cu without a soil test (toxicity risk).",
+    "Repeated heavy CuSO4 + copper-fungicide use causing Cu build-up.",
+    "Foliar CuSO4 without lime, scorching leaves.",
+    "Confusing Cu (twisted wilting tips) with other micro deficiencies.",
+    "Over-liming and locking Cu.",
+    "Excess P/Zn antagonising Cu.",
+    "Ignoring Cu on peaty/sandy soils.",
+    "Over-applying Cu and inducing Fe deficiency.",
+    "Not counting fungicide-supplied Cu.",
+    "Applying Cu to dry soil.",
+    "Using high foliar concentrations.",
+    "Assuming Cu deficiency is common (it's not — verify).",
+    "Treating Cu symptoms as disease.",
+    "Repeated Cu on the same field yearly.",
+    "Ignoring organic-matter binding on peat soils."
+  ],
+  "expertTips": [
+    "Confirm Cu deficiency by soil test before applying — it's uncommon and toxic in excess.",
+    "Diagnose Cu by wilting, twisted young tips ('pig-tail') and poor grain set.",
+    "Use LOW doses; Cu is highly residual.",
+    "Count Cu supplied by Bordeaux/copper-oxychloride fungicide sprays.",
+    "Add lime to foliar CuSO4 to prevent scorch (Bordeaux principle).",
+    "On peaty/organic soils, expect Cu binding — foliar works better.",
+    "Avoid over-liming and excess P/Zn (Cu antagonists).",
+    "Watch for induced Fe deficiency from Cu excess.",
+    "Cu-EDTA for clean low-dose fertigation.",
+    "One basal Cu dose lasts several years.",
+    "Balance micronutrients — don't stack Cu with heavy Zn/Fe.",
+    "Keep soil moist for uptake.",
+    "New growth responds; old leaves stay normal.",
+    "Cu seed treatment on chronically deficient cereal soils.",
+    "Never routinely add Cu 'just in case'.",
+    "Add organic matter to buffer Cu toxicity on contaminated soils.",
+    "Spray in cool hours to reduce scorch.",
+    "Don't tank-mix Cu with strongly alkaline foliar (except proper Bordeaux).",
+    "Log Cu inputs to avoid cumulative toxicity.",
+    "Prioritise diagnosis — mis-applied Cu does more harm than good."
+  ],
+  "faq": [
+    {
+      "q": "Nayi patti murjhaayi, tip mudi (pig-tail) — kya?",
+      "a": "Copper ki kami ho sakti hai (sandy/peaty mitti). Soil test se confirm karke low-dose CuSO4 + lime chhidkein."
+    },
+    {
+      "q": "Cu bina test ke de dun?",
+      "a": "Nahi — Cu jaldi toxic hota hai. Pehle soil test karein."
+    },
+    {
+      "q": "CuSO4 foliar me lime kyun?",
+      "a": "Leaf scorch se bachne ke liye (Bordeaux tarah)."
+    },
+    {
+      "q": "Copper fungicide se Cu milta hai?",
+      "a": "Haan — Bordeaux/copper oxychloride kuch Cu dete hain; ise ginti me lein."
+    },
+    {
+      "q": "Cu kitne saal chalega?",
+      "a": "Ek basal dose kai saal (highly residual)."
+    },
+    {
+      "q": "Cu toxicity ke lakshan?",
+      "a": "Iron deficiency induce (nayi patti pili), jad bhure/chhote."
+    },
+    {
+      "q": "Peaty mitti me Cu?",
+      "a": "Organic matter Cu ko bind karta hai — foliar behtar."
+    },
+    {
+      "q": "Cu deficiency common hai?",
+      "a": "Nahi — uncommon; sirf sandy/peaty/over-limed soils me."
+    },
+    {
+      "q": "Cu ka asar kitne din?",
+      "a": "Foliar 7-14 din."
+    },
+    {
+      "q": "Cu-EDTA kab?",
+      "a": "Clean low-dose fertigation ke liye."
+    },
+    {
+      "q": "Purani ya nayi patti?",
+      "a": "Cu kami nayi patti/growing tip par."
+    },
+    {
+      "q": "Over-liming se Cu?",
+      "a": "pH badhne se Cu lock ho jata hai."
+    },
+    {
+      "q": "P/Zn zyada se Cu?",
+      "a": "Antagonism se Cu uptake girta hai."
+    },
+    {
+      "q": "Cu seed treatment?",
+      "a": "Chronically deficient cereal soils me useful."
+    },
+    {
+      "q": "Har saal Cu dena?",
+      "a": "Nahi — cumulative toxicity ka khatra."
+    },
+    {
+      "q": "Cu symptom rog hai?",
+      "a": "Nahi — nutrient disorder; verify karke hi treat karein."
+    },
+    {
+      "q": "Cu dry soil me?",
+      "a": "Nami chahiye uptake ke liye."
+    },
+    {
+      "q": "Cool hours spray?",
+      "a": "Haan — scorch kam hota hai."
+    },
+    {
+      "q": "Cu + alkaline mix?",
+      "a": "Sahi Bordeaux ke alawa avoid karein."
+    },
+    {
+      "q": "Cereals me tip sterility?",
+      "a": "Cu kami se blank ear tips — low-dose Cu se sudhaar."
+    }
+  ],
+  "references": [
+    "ICAR (AICRP Micronutrients); IARI; SAU Package of Practices",
+    "KVK; TNAU Agritech Portal; FCO specs; Soil Health Card, GoI"
+  ]
+}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminAuth";
 import { listExpertQueriesAdmin, type ExpertQueryStatus } from "@/lib/expertQueries";
+import { listPanelUsers } from "@/lib/panelUsers";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 export async function GET(request: NextRequest) {
@@ -22,7 +23,19 @@ export async function GET(request: NextRequest) {
       ? (statusParam as ExpertQueryStatus)
       : "all";
 
-  const rows = await listExpertQueriesAdmin({ status, limit: 100 });
+  const perms = auth.session.permissions;
+  const rows = await listExpertQueriesAdmin({
+    status,
+    limit: 100,
+    viewer: {
+      userId: auth.session.userId,
+      viewAll: perms.viewAllQueries || perms.replyAll,
+      cropScopes: undefined,
+    },
+  });
+
+  const experts = await listPanelUsers();
+  const nameById = new Map(experts.map((e) => [e.id, e.displayName]));
 
   return NextResponse.json({
     queries: rows.map((r) => ({
@@ -40,13 +53,21 @@ export async function GET(request: NextRequest) {
       expertReply: r.expert_reply,
       expertName: r.expert_name,
       answeredAt: r.answered_at,
+      assignedTo: r.assigned_to,
+      assignedName: r.assigned_to ? nameById.get(r.assigned_to) ?? null : null,
       createdAt: r.created_at,
       updatedAt: r.updated_at,
     })),
     counts: {
-      pending: rows.filter((r) => r.status === "pending").length,
+      pending: rows.filter((r) => r.status === "pending" || r.status === "in_review").length,
       answered: rows.filter((r) => r.status === "answered").length,
       total: rows.length,
+    },
+    me: {
+      id: auth.session.userId,
+      displayName: auth.session.displayName,
+      role: auth.session.role,
+      permissions: auth.session.permissions,
     },
   });
 }

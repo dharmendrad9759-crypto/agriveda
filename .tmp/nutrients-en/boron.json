@@ -1,0 +1,354 @@
+{
+  "slug": "boron",
+  "name": "Boron",
+  "symbol": "B",
+  "category": "Micronutrient",
+  "mobility": "IMMOBILE in most crops (deficiency on YOUNG leaves, growing points, flowers, fruit)",
+  "formsTakenUp": "Borate (H3BO3 / BO3^3-)",
+  "overview": {
+    "whyImportant": "Boron is vital for cell-wall formation, pollen viability, flowering, fruit/seed set and sugar transport. It has the NARROWEST margin between deficiency and toxicity of any nutrient. Deficiency causes hollow stem/browning in cauliflower, fruit cracking, flower drop and poor seed set."
+  },
+  "plantFunctions": {
+    "roleInsidePlant": "Cell-wall/membrane integrity, sugar transport, pollen-tube growth.",
+    "photosynthesis": "Supports sugar translocation from leaves.",
+    "rootDevelopment": "Needed for root-tip growth.",
+    "vegetativeGrowth": "Cell division at growing points; deficiency kills tips.",
+    "flowering": "CRITICAL — pollen viability, pollination, fertilisation; deficiency causes flower drop and blank set.",
+    "fruitDevelopment": "Fruit/seed set, prevents cracking/corking/hollow stem.",
+    "proteinSynthesis": "Indirect.",
+    "enzymeActivation": "Regulatory roles.",
+    "chlorophyllFormation": "Indirect.",
+    "yieldContribution": "Large in crucifers, fruit/seed crops — governs set and quality."
+  },
+  "whyDeficiencyHappens": [
+    {
+      "condition": "High soil pH / over-liming",
+      "why": "B availability drops sharply above pH 7 — over-liming is a common trigger."
+    },
+    {
+      "condition": "Low soil pH (very acid sandy)",
+      "why": "B leaches readily from acid sandy soils."
+    },
+    {
+      "condition": "Sandy soils",
+      "why": "Low B reserves; leaches easily (B is mobile in soil)."
+    },
+    {
+      "condition": "Heavy rainfall",
+      "why": "B leaches quickly — among the most leachable nutrients."
+    },
+    {
+      "condition": "Waterlogging",
+      "why": "Impaired uptake."
+    },
+    {
+      "condition": "Excess irrigation",
+      "why": "Leaches B below root zone."
+    },
+    {
+      "condition": "Low organic matter",
+      "why": "Organic matter is a key B reservoir — low OM = low B."
+    },
+    {
+      "condition": "Drought / dry topsoil",
+      "why": "B uptake needs moisture and transpiration; dry topsoil (where roots and B are) stops uptake — a very common cause."
+    },
+    {
+      "condition": "Nutrient imbalance / high Ca, K, N",
+      "why": "High Ca (over-liming) and heavy K/N reduce B uptake."
+    },
+    {
+      "condition": "Excess calcium/potassium",
+      "why": "Antagonise B absorption."
+    },
+    {
+      "condition": "Poor root growth",
+      "why": "Immobile B needs continuous root uptake."
+    },
+    {
+      "condition": "Cold soil",
+      "why": "Slows uptake."
+    },
+    {
+      "condition": "Salinity",
+      "why": "Impaired uptake (though some saline waters carry toxic B)."
+    },
+    {
+      "condition": "Poor fertiliser management",
+      "why": "Not applying borax in crucifers/oilseeds; over-liming; ignoring B on sandy/leached soils."
+    }
+  ],
+  "symptoms": {
+    "note": "B IMMOBILE — deficiency on YOUNG leaves, growing points, FLOWERS and FRUIT. Signature: death of growing point, hollow/corky stems, poor set, cracking.",
+    "early": "Young leaves thick, brittle, distorted; growing point weakening.",
+    "middle": "Death of growing point, corky/cracked stems and petioles, flower drop, poor fruit set.",
+    "severe": "Hollow stem/browning (cauliflower), fruit cracking/corking, blank seed set, terminal dieback.",
+    "oldLeaves": "Stay normal.",
+    "youngLeaves": "Thick, brittle, distorted, chlorotic tips; growing point dies.",
+    "stem": "Hollow, cracked, corky (classic cauliflower/celery browning).",
+    "root": "Root-tip death, stubby roots.",
+    "flower": "Heavy flower drop, poor pollination, sterility.",
+    "fruit": "Cracking, corking, internal browning, poor set, deformed fruit.",
+    "seed": "Blank/poor seed set — major in seed crops.",
+    "wholePlant": "Healthy old leaves but dead growing tips, hollow stems, dropped flowers and cracked/hollow produce — top-down + reproductive damage."
+  },
+  "cropWiseSymptoms": [
+    {
+      "crop": "Paddy",
+      "symptoms": "White rolled young leaves, poor panicle/grain set on B-poor soils (uncommon)."
+    },
+    {
+      "crop": "Soybean",
+      "symptoms": "Growing-point death, flower drop, poor pod set."
+    },
+    {
+      "crop": "Groundnut",
+      "symptoms": "'Hollow heart'/internal darkening of kernel, poor pod fill."
+    },
+    {
+      "crop": "Chilli",
+      "symptoms": "Flower drop, poor fruit set, distorted young leaves, corky fruit."
+    },
+    {
+      "crop": "Capsicum",
+      "symptoms": "Flower/fruit drop, corky/cracked fruit, growing-tip damage."
+    },
+    {
+      "crop": "Cauliflower",
+      "symptoms": "BROWNING of curd + HOLLOW/cracked stem + bitter curd — THE classic boron-deficiency crop."
+    },
+    {
+      "crop": "Cabbage",
+      "symptoms": "Hollow/cracked stem, internal browning, poor heads."
+    },
+    {
+      "crop": "Cucumber",
+      "symptoms": "Flower drop, mis-shapen/corky fruit, brittle young leaves."
+    },
+    {
+      "crop": "Brinjal",
+      "symptoms": "Flower drop, fruit cracking/corking, distorted young leaves."
+    },
+    {
+      "crop": "Okra",
+      "symptoms": "Flower drop, deformed pods, poor set."
+    },
+    {
+      "crop": "Maize",
+      "symptoms": "Barren/poorly-filled tips, white-striped young leaves, poor kernel set."
+    },
+    {
+      "crop": "Bajra",
+      "symptoms": "Poor grain set, distorted young leaves on sandy soils."
+    },
+    {
+      "crop": "Moong",
+      "symptoms": "Flower drop, poor pod set."
+    },
+    {
+      "crop": "Arhar",
+      "symptoms": "Flower/pod drop, poor set."
+    },
+    {
+      "crop": "Sugarcane",
+      "symptoms": "Young-leaf distortion, corky midrib, tip dieback on sandy/leached soils."
+    }
+  ],
+  "howToFix": [
+    {
+      "fertilizer": "Borax (Sodium tetraborate)",
+      "nutrientContent": "~10.5% B",
+      "soilApplicationDose": "4-5 kg/acre basal (crucifers/oilseeds); mix well for even spread",
+      "foliarSprayDose": "0.1-0.2% (1-2 g/L)",
+      "fertigationDose": "0.5-1 kg/acre",
+      "waterQuantity": "Foliar 200 L/acre",
+      "bestCropStage": "Basal + at pre-flowering/curd initiation; foliar at flowering",
+      "methodOfApplication": "Soil basal (even spread critical) or foliar at flowering/curding",
+      "numberOfApplications": "Soil 1; foliar 1-2",
+      "sprayInterval": "10-15 days",
+      "expectedRecoveryTime": "7-14 days",
+      "precautions": "NARROW safety margin — do NOT exceed dose (toxicity easy); mix thoroughly to avoid hot spots; dissolve borax in warm water."
+    },
+    {
+      "fertilizer": "Solubor / Boric acid (soluble B)",
+      "nutrientContent": "Boric acid ~17% B; Solubor ~20% B",
+      "soilApplicationDose": "2-3 kg/acre (higher B content — lower rate)",
+      "foliarSprayDose": "0.1-0.2% (1-2 g/L) — dissolves easily",
+      "fertigationDose": "per label",
+      "waterQuantity": "200 L/acre",
+      "bestCropStage": "Flowering/fruit set; foliar preferred",
+      "methodOfApplication": "Foliar/fertigation — highly soluble, good for flower-set correction",
+      "numberOfApplications": "1-2",
+      "sprayInterval": "10-15 days",
+      "expectedRecoveryTime": "7-12 days",
+      "precautions": "Same narrow margin — stick to dose; ideal for foliar/fertigation."
+    },
+    {
+      "fertilizer": "Boronated NPK / borated SSP (blended)",
+      "nutrientContent": "low B blended in fertiliser",
+      "soilApplicationDose": "as per blend",
+      "foliarSprayDose": "NA",
+      "fertigationDose": "NA",
+      "waterQuantity": "Moist soil",
+      "bestCropStage": "Basal",
+      "methodOfApplication": "Convenient even B distribution with base fertiliser",
+      "numberOfApplications": "1 basal",
+      "sprayInterval": "NA",
+      "expectedRecoveryTime": "season",
+      "precautions": "Ensures even low-dose B; avoids hot spots."
+    }
+  ],
+  "methodOfApplication": {
+    "broadcast": "Borax basal + incorporate — MUST mix thoroughly (with sand/FYM) to avoid toxic hot spots.",
+    "bandPlacement": "Low-rate banding; risk of concentration — be careful.",
+    "spotApplication": "Not advised (toxicity risk).",
+    "foliarSpray": "0.1-0.2% borax/boric acid at flowering/curding — the safest, most targeted method.",
+    "dripFertigation": "Solubor/boric acid at low dose via drip.",
+    "rootDrench": "Rare.",
+    "seedTreatment": "Minor; foliar/soil preferred."
+  },
+  "toxicity": {
+    "whatHappens": "B has the NARROWEST deficiency-toxicity range — slight over-dose is toxic.",
+    "plantToxicitySymptoms": "Yellowing then BROWN SCORCHING of OLDER-leaf margins and tips (B is mobile-to-margins in transpiration), leaf-edge burn, defoliation.",
+    "yieldLoss": "Significant from scorching and defoliation.",
+    "qualityReduction": "Leaf burn reduces photosynthesis and yield.",
+    "correctionMethods": "Stop all B; leach with irrigation on light soils; add organic matter; avoid high-B irrigation water; never re-apply without soil test."
+  },
+  "prevention": [
+    "Apply borax 4-5 kg/acre basal in crucifers/oilseeds (cauliflower, mustard) on B-poor soils.",
+    "NEVER exceed the dose — mix thoroughly to avoid hot spots.",
+    "Keep TOPSOIL MOIST (mulch/irrigation) — dry topsoil is a top B-deficiency trigger.",
+    "Avoid over-liming (locks B).",
+    "Build organic matter (B reservoir).",
+    "Foliar B at flowering for set-critical crops.",
+    "Don't over-apply K/Ca which antagonise B.",
+    "On sandy/leached soils, split or foliar B (it leaches fast).",
+    "Test soil/water B before applying (toxicity risk).",
+    "Use boronated blends for even low-dose distribution."
+  ],
+  "commonFarmerMistakes": [
+    "Exceeding the borax dose — easy toxicity (narrow margin).",
+    "Uneven borax spread creating toxic hot spots that kill plants in patches.",
+    "Confusing B deficiency (young/growing point/fruit) with B toxicity (old-leaf margin scorch).",
+    "Treating cauliflower browning/hollow-stem as disease instead of B.",
+    "Over-liming and locking up B.",
+    "Ignoring dry-topsoil as a B-uptake blocker.",
+    "Not applying B in crucifers/oilseeds.",
+    "Heavy K/Ca antagonising B.",
+    "Re-applying B without a soil test.",
+    "Using high-B irrigation water (adds to toxicity).",
+    "Spot-applying borax (concentration burns).",
+    "Not dissolving borax properly (uneven).",
+    "Applying B to dry soil (no uptake).",
+    "Assuming more B improves set (over-dose backfires).",
+    "Ignoring flowering-stage B in fruit/seed crops."
+  ],
+  "expertTips": [
+    "Respect boron's NARROW margin — measure doses precisely, never eyeball.",
+    "Mix borax with sand/FYM for even spread; hot spots kill plants.",
+    "For cauliflower browning/hollow stem: 0.1-0.2% borax foliar at curd initiation + basal borax.",
+    "Keep topsoil moist — B uptake fails in dry topsoil even when soil B is adequate.",
+    "Foliar B at flowering is the safest, most targeted correction.",
+    "Diagnose: B DEFICIENCY on young/growing point/fruit; B TOXICITY on OLD-leaf margins.",
+    "Avoid over-liming — it locks B.",
+    "Don't stack heavy K/Ca with low B (antagonism).",
+    "On sandy soils, B leaches fast — split or foliar.",
+    "Use boronated NPK/SSP blends for safe even low-dose B.",
+    "Dissolve borax in warm water for foliar.",
+    "Test soil/water B before soil application (toxicity is worse than deficiency).",
+    "Groundnut hollow-heart and fruit cracking are hidden B signs.",
+    "Build organic matter as a B buffer.",
+    "New growth/flowers respond — judge success there.",
+    "Solubor/boric acid dissolve better than borax for foliar.",
+    "Time B to pre-flowering/curding for set-critical crops.",
+    "On high-B irrigation water, avoid extra B and leach if scorch appears.",
+    "Never re-apply B 'to be safe' — confirm need.",
+    "Log B applications per plot to avoid cumulative toxicity."
+  ],
+  "faq": [
+    {
+      "q": "Cauliflower ki curd brown + tana hollow kyun?",
+      "a": "Boron ki kami. Basal borax 4-5 kg/acre + curd initiation par 0.1-0.2% borax foliar; nami sthir rakhein."
+    },
+    {
+      "q": "Borax kitna dein?",
+      "a": "Basal 4-5 kg/acre (crucifer/oilseed); foliar 0.1-0.2%. Dose se zyada bilkul nahi — toxic ho jata hai."
+    },
+    {
+      "q": "B deficiency aur toxicity me farak?",
+      "a": "Deficiency: nayi patti/growing point/phal kharab; Toxicity: PURANI patti ke kinare jalna (brown scorch)."
+    },
+    {
+      "q": "Borax patchy kyun jal deta hai?",
+      "a": "Uneven spread se hot spots. Sand/FYM ke saath achhi tarah mila kar dein."
+    },
+    {
+      "q": "Dry topsoil se B kami?",
+      "a": "Haan — B uptake ke liye topsoil nami zaroori; sukhi topsoil me B nahi milta."
+    },
+    {
+      "q": "Over-liming se B?",
+      "a": "pH badhne se B lock ho jata hai."
+    },
+    {
+      "q": "Flower drop me B?",
+      "a": "Flowering par 0.1-0.2% borax/boric acid foliar set sudharta hai."
+    },
+    {
+      "q": "B ka asar kitne din?",
+      "a": "Foliar 7-14 din."
+    },
+    {
+      "q": "Borax ya boric acid/Solubor?",
+      "a": "Foliar ke liye boric acid/Solubor behtar ghulnsheel; basal me borax."
+    },
+    {
+      "q": "Groundnut hollow heart?",
+      "a": "B ki kami — kernel andar dark/hollow. B dein."
+    },
+    {
+      "q": "B test zaroori?",
+      "a": "Haan — toxicity deficiency se bhi buri; soil/water test karein."
+    },
+    {
+      "q": "Sandy mitti me B?",
+      "a": "Jaldi leach hota hai — split ya foliar dein."
+    },
+    {
+      "q": "Curd browning rog hai?",
+      "a": "Nahi — B deficiency; fungicide bekaar."
+    },
+    {
+      "q": "Boronated NPK kaisa?",
+      "a": "Even low-dose B ke liye surakshit — hot spots nahi."
+    },
+    {
+      "q": "Zyada K/Ca se B?",
+      "a": "Antagonism se B uptake girta hai."
+    },
+    {
+      "q": "Borax kaise ghole?",
+      "a": "Garm paani me ghol kar foliar banayein."
+    },
+    {
+      "q": "B toxicity theek kaise?",
+      "a": "B band karein, light soil me irrigation se leach karein, organic matter dein."
+    },
+    {
+      "q": "Fruit cracking B se?",
+      "a": "Haan, B + steady nami se cracking/corking kam hoti hai."
+    },
+    {
+      "q": "Spot me borax?",
+      "a": "Nahi — concentration se jal jata hai."
+    },
+    {
+      "q": "Bar-bar B 'safety' me?",
+      "a": "Nahi — cumulative toxicity; zaroorat confirm karke hi dein."
+    }
+  ],
+  "references": [
+    "ICAR (AICRP Micronutrients); IARI; SAU Package of Practices",
+    "KVK; TNAU Agritech Portal; FCO specs; Soil Health Card, GoI"
+  ]
+}
