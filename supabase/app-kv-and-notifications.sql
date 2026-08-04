@@ -27,5 +27,9 @@ create index if not exists farmer_notifications_device_idx
 create index if not exists farmer_notifications_phone_idx
   on public.farmer_notifications (farmer_phone, created_at desc);
 
--- Prefer private photo storage (run in Supabase dashboard / storage policies)
--- update storage.buckets set public = false where id = 'expert-query-photos';
+-- Service role only — never expose OTP hashes / notifications via anon key
+alter table public.app_kv enable row level security;
+alter table public.farmer_notifications enable row level security;
+
+-- Prefer private photo storage (also in rls-lockdown.sql)
+update storage.buckets set public = false where id = 'expert-query-photos';

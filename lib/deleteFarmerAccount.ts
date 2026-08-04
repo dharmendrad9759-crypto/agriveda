@@ -46,7 +46,17 @@ export async function deleteFarmerAccountServer(opts: {
   await kvDelete(`otp:${phone}`);
 
   const client = createSupabaseServiceClient();
+  // Production with Supabase URL but no service role = cannot wipe server rows honestly
   if (!client) {
+    if (
+      process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+      (process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production")
+    ) {
+      return {
+        ok: false,
+        error: "Server wipe unavailable — support@agriveda.in पर लिखें",
+      };
+    }
     return { ok: true, farmerId: null };
   }
 

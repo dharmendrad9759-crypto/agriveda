@@ -1,6 +1,7 @@
 import { APP_VERSION } from "@/lib/appMeta";
 import { clearAnalyticsBuffer, getAnalyticsBuffer } from "@/lib/analytics";
 
+/** Local keys farmers can export (no session cookies / OTP). */
 const EXPORT_KEYS = [
   "agriveda-farmer-profile",
   "agriveda-farm-data",
@@ -9,15 +10,23 @@ const EXPORT_KEYS = [
   "agriveda-user-queries",
   "agriveda-spray-logs",
   "agriveda-spray-fields",
+  "agriveda-spray-window-alerts",
+  "agriveda-spray-window-last-status",
   "agriveda-weather-location",
   "agriveda-app-settings",
   "agriveda-price-alerts",
   "agriveda-outbreak-alerts",
+  "agriveda-outbreak-cache",
+  "agriveda-outbreak-pending",
+  "agriveda-outbreak-seen-clusters",
+  "agriveda-translate-lang",
+  "agriveda-app-locale",
+  "agriveda-theme",
 ];
 
 /**
  * Download a JSON file of data stored on this device.
- * Does not include session cookies or OTP secrets.
+ * Does not include session cookies, OTP secrets, or device id.
  */
 export function downloadLocalDataExport(): { ok: true } | { ok: false; error: string } {
   if (typeof window === "undefined") {
@@ -40,7 +49,8 @@ export function downloadLocalDataExport(): { ok: true } | { ok: false; error: st
       app: "Agriveda",
       version: APP_VERSION,
       exportedAt: new Date().toISOString(),
-      note: "This file is only what was on your phone/browser. Server query photos (if any) are deleted when you delete your account.",
+      note:
+        "This file is only what was on your phone/browser. Device id and session cookies are not included. Server query photos are removed when you delete your account.",
       localStorage: local,
       analyticsBufferLocalOnly: getAnalyticsBuffer(),
     };

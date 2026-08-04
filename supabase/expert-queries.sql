@@ -42,11 +42,7 @@ alter table public.expert_queries enable row level security;
 
 -- No anon policies — server service role only
 
--- Optional photo bucket (Dashboard → Storage → New bucket: expert-query-photos, private)
--- Service role uploads from API; signed URLs not required if using public bucket.
--- Recommended: private bucket + service role returns public URL after upload with
--- temporary signed URL, or make bucket public-read for farmer photo display.
-
+-- Private photo bucket: farmers see images via temporary signed URLs from API
 insert into storage.buckets (id, name, public)
-values ('expert-query-photos', 'expert-query-photos', true)
-on conflict (id) do nothing;
+values ('expert-query-photos', 'expert-query-photos', false)
+on conflict (id) do update set public = excluded.public;

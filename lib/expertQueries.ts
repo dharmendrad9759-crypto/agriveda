@@ -72,8 +72,17 @@ function memoryStore(): MemoryStore {
   return globalThis.__agrivedaExpertQueryStore;
 }
 
+/** In-memory expert inbox is DEV ONLY — never share across tenants in production. */
+function allowMemoryFallback(): boolean {
+  return (
+    process.env.NODE_ENV !== "production" &&
+    process.env.VERCEL_ENV !== "production" &&
+    process.env.AGRIVEDA_FORCE_PROD_AUTH !== "true"
+  );
+}
+
 export function expertQueriesBackendReady(): boolean {
-  return hasSupabaseServiceRole() || process.env.NODE_ENV !== "production";
+  return hasSupabaseServiceRole() || allowMemoryFallback();
 }
 
 function nowIso(): string {
@@ -118,9 +127,8 @@ async function uploadPhoto(
       .createSignedUrl(path, 60 * 60 * 24 * 7); // 7 days
     if (!signErr && signed?.signedUrl) return signed.signedUrl;
 
-    // Legacy public URL fallback if signed fails (bucket still public)
-    const { data } = client.storage.from("expert-query-photos").getPublicUrl(path);
-    return data.publicUrl || `storage://expert-query-photos/${path}`;
+    // Keep opaque storage path — never expose public bucket URLs in production
+    return `storage://expert-query-photos/${path}`;
   } catch (err) {
     console.error("[expertQueries] photo upload failed", err);
     return null;
@@ -258,8 +266,8 @@ export async function createExpertQuery(
     }
   }
 
-  if (process.env.NODE_ENV === "production" && !client) {
-    return { row: null, error: "Supabase client unavailable" };
+  if (!allowMemoryFallback()) {
+    return { row: null, error: "Database unavailable — later try again" };
   }
 
   const row: ExpertQueryRow = {
@@ -297,6 +305,7 @@ export async function listExpertQueriesForDevice(
     }
   }
 
+  if (!allowMemoryFallback()) return [];
   return memoryStore().rows.filter((r) => r.device_id === deviceId).slice(0, 50);
 }
 
@@ -328,6 +337,7 @@ export async function listExpertQueriesAdmin(opts: {
     }
   }
 
+  if (!allowMemoryFallback()) return [];
   let rows = [...memoryStore().rows];
   if (status !== "all") rows = rows.filter((r) => r.status === status);
   return rows.slice(0, limit);
@@ -347,6 +357,7 @@ export async function getExpertQueryById(
       .maybeSingle();
     if (!error && data) return mapRow(data as Record<string, unknown>);
   }
+  if (!allowMemoryFallback()) return null;
   return memoryStore().rows.find((r) => r.id === id) ?? null;
 }
 
@@ -380,6 +391,7 @@ export async function replyToExpertQuery(
     if (!error && data) return mapRow(data as Record<string, unknown>);
   }
 
+  if (!allowMemoryFallback()) return null;
   const store = memoryStore();
   const idx = store.rows.findIndex((r) => r.id === id);
   if (idx < 0) return null;
@@ -404,6 +416,7 @@ export async function setExpertQueryStatus(
       .single();
     if (!error && data) return mapRow(data as Record<string, unknown>);
   }
+  if (!allowMemoryFallback()) return null;
   const store = memoryStore();
   const idx = store.rows.findIndex((r) => r.id === id);
   if (idx < 0) return null;
