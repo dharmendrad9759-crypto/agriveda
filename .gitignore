@@ -59,3 +59,6 @@ yarn-error.log*
 # Android release signing — never commit
 android/keystore.properties
 android/*.keystore
+
+.tmp/
+
