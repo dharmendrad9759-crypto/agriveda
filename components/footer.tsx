@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/appMeta";
 
 export default function Footer() {
   return (
@@ -9,9 +10,18 @@ export default function Footer() {
           <span className="agriveda-gradient-text font-bold">{BRAND}</span>
           <span>© 2026 सर्वाधिकार सुरक्षित।</span>
         </div>
-        <p className="text-[10px] theme-text-muted">
-          किसान की स्मार्ट सलाह
-        </p>
+        <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-semibold">
+          <Link href="/privacy" className="hover:text-[var(--av-accent)] hover:underline">
+            गोपनीयता
+          </Link>
+          <Link href="/terms" className="hover:text-[var(--av-accent)] hover:underline">
+            नियम
+          </Link>
+          <a href={SUPPORT_MAILTO} className="hover:text-[var(--av-accent)] hover:underline">
+            {SUPPORT_EMAIL}
+          </a>
+        </nav>
+        <p className="text-[10px] theme-text-muted">किसान की स्मार्ट सलाह</p>
       </div>
     </footer>
   );

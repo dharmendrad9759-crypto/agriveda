@@ -1,56 +1,60 @@
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
+import AppLink from "@/components/ui/AppLink";
 import { BRAND } from "@/lib/brand";
-import { APP_VERSION } from "@/lib/appMeta";
+import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/appMeta";
 
 export const metadata = {
   title: `Privacy Policy | ${BRAND}`,
-  description: "Agriveda privacy policy — how we handle farmer data, photos, and location.",
+  description: "Agriveda privacy — farmer-first, minimal data, no selling.",
 };
 
 const SECTIONS = [
   {
-    title: "जानकारी जो हम लेते हैं",
+    title: "हमारा वादा (साफ बात)",
     body: [
-      "फोन नंबर — OTP login और account के लिए (अगर आप login करते हैं)।",
-      "नाम, गाँव, राज्य, ज़िला — आपकी सलाह को स्थानीय बनाने के लिए।",
-      "GPS / लोकेशन — मौसम, मंडी और outbreak radar के लिए (सिर्फ आपकी अनुमति पर)।",
-      "फसल की फोटो — AI Doctor रोग पहचान के लिए (आप upload करते हैं)।",
-      "ऐप उपयोग — क्रैश लॉग और बेसिक analytics (बेहतर सेवा के लिए)।",
+      "आपका डेटा बेचा नहीं जाता — न Google Ads को, न दलालों को।",
+      "तीसरे पक्ष के crash / ads SDK (Firebase Crashlytics, Sentry, Meta Pixel आदी) अभी ऐप में नहीं हैं।",
+      "Product analytics डिफ़ॉल्ट बंद — Settings में आप चाहें तभी चालू करें; phone/name/photo कभी analytics में नहीं जाते।",
+      "कानूनी माँग (court / lawful order) पर सिर्फ जितना जरूरी और जितना हमारे पास हो — बिना ज़रूरत के share नहीं।",
+    ],
+  },
+  {
+    title: "जानकारी जो लग सकती है",
+    body: [
+      "फोन नंबर — OTP login के लिए (hashed OTP; demo OTP production में नहीं)।",
+      "नाम / गाँव / राज्य — ज़्यादातर आपके फोन की localStorage पर; सर्वर पर limited farmer record जब login हो।",
+      "Device id — anonymous, queries जोड़ने के लिए।",
+      "लोकेशन — सिर्फ आप अनुमति दें तो मौसम/मंडी/outbreak के लिए।",
+      "फसल फोटो — AI Doctor: request पूरा होते ही Agriveda DB में scan photo store नहीं होती; Gemini API को सुरक्षित server के ज़रिए भेजते हैं (Google की अपनी API नीति लागू)।",
+      "विशेषज्ञ प्रश्न की फोटो — अगर आप Ask Query भेजें तो private storage में तब तक रह सकती है जब तक आप खाता न हटाएँ।",
     ],
   },
   {
     title: "डेटा का उपयोग",
     body: [
-      "फसल सलाह, मौसम, मंडी भाव और कीट-रोग जानकारी दिखाने के लिए।",
-      "AI Doctor फोटो का विश्लेषण Google Gemini API के ज़रिए होता है — फोटो सुरक्षित तरीके से server पर भेजी जाती है।",
-      "आपका डेटा बेचा नहीं जाता।",
+      "सिर्फ ऐप चलाने और सलाह दिखाने के लिए।",
+      "मंडी / मौसम कभी उदाहरण हो सकता है अगर लाइव API न हो — स्क्रीन पर बताया जाता है।",
+      "कोई छुपा tracking profile / scoring आपके खिलाफ नहीं बनाते।",
     ],
   },
   {
-    title: "तृतीय-पक्ष सेवाएँ",
+    title: "तृतीय-पक्ष (जब enabled हो)",
     body: [
-      "Google Gemini — AI Doctor और Kisan Saathi chat।",
-      "OpenWeather — मौसम डेटा।",
-      "data.gov.in — लाइव मंडी भाव (जब configured हो)।",
-      "Supabase / Firebase — cloud sync और OTP (जब enabled हो)।",
+      "Google Gemini — AI सुझाव (photo/symptoms)।",
+      "Supabase — farmers, expert queries, OTP durability।",
+      "OpenWeather / Open-Meteo, data.gov.in — मौसम / मंडी।",
+      "Twilio / Msg91 — OTP या विशेषज्ञ WhatsApp/SMS जवाब।",
     ],
   },
   {
-    title: "आपके अधिकार",
+    title: "आपके अधिकार (Play + किसान)",
     body: [
-      "Profile से अपनी जानकारी बदल या हटा सकते हैं।",
-      "Location permission कभी भी phone settings से बंद कर सकते हैं।",
-      "Account / डेटा हटाने के लिए ऐप में Ask Query या support से संपर्क करें।",
-    ],
-  },
-  {
-    id: "terms",
-    title: "नियम और शर्तें",
-    body: [
-      `${BRAND} कृषि सलाह केवल सूचनात्मक उद्देश्य से है — रासायनिक dose हमेशा label और स्थानीय कृषि अधिकारी से verify करें।`,
-      "गलत फसल सलाह से होने वाले नुकसान की ज़िम्मेदारी किसान की अपनी जाँच पर है।",
-      "ऐप का उपयोग करके आप इन शर्तों से सहमत मानें जाएँगे।",
+      "Settings → मेरा डेटा डाउनलोड — फोन पर जो है वो JSON में।",
+      "Settings → खाता हटाएँ — server (farmer, queries, photos, notifications) + phone wipe।",
+      "लॉग आउट — सिर्फ session; crop data फोन पर रहता है।",
+      "Location phone settings से कभी भी बंद।",
+      "सहायता: " + SUPPORT_EMAIL,
     ],
   },
 ];
@@ -60,30 +64,32 @@ export default function PrivacyPage() {
     <AppShell
       className="!bg-transparent"
       title="गोपनीयता नीति"
-      subtitle="गोपनीयता नीति — आपका डेटा सुरक्षित रखने का वादा"
+      subtitle="किसान पहले — कम डेटा, साफ नियंत्रण"
       breadcrumbs={[{ label: "होम", href: "/" }, { label: "गोपनीयता" }]}
     >
       <DarkCard>
         <p className="text-sm text-[var(--av-text-secondary)]">
-          {BRAND} v{APP_VERSION} · Last updated: July 2026
+          {BRAND} v{APP_VERSION} · Last updated: August 2026
         </p>
         <p className="mt-3 text-sm leading-relaxed text-[var(--av-text-secondary)]">
-          यह नीति बताती है कि Agriveda ऐप आपकी जानकारी कैसे एकत्र, उपयोग और सुरक्षित करता है।
+          यह नीति बताती है डेटा कैसे संभाला जाता है। नियम:{" "}
+          <AppLink href="/terms" className="font-semibold text-[var(--av-accent)] hover:underline">
+            /terms
+          </AppLink>
+          .
         </p>
       </DarkCard>
 
       <div className="mt-4 space-y-4">
         {SECTIONS.map((s) => (
-          <div key={s.title} id={s.id}>
-            <DarkCard>
-              <h2 className="text-sm font-bold text-[var(--av-text-primary)]">{s.title}</h2>
-              <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-[var(--av-text-secondary)]">
-                {s.body.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            </DarkCard>
-          </div>
+          <DarkCard key={s.title}>
+            <h2 className="text-sm font-bold text-[var(--av-text-primary)]">{s.title}</h2>
+            <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-[var(--av-text-secondary)]">
+              {s.body.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </DarkCard>
         ))}
       </div>
 
@@ -91,8 +97,8 @@ export default function PrivacyPage() {
         <h2 className="text-sm font-bold text-[var(--av-text-primary)]">संपर्क</h2>
         <p className="mt-2 text-sm text-[var(--av-text-secondary)]">
           Privacy या डेटा हटाने के लिए:{" "}
-          <a href="mailto:support@agriveda.in" className="font-semibold text-[var(--av-accent)] hover:underline">
-            support@agriveda.in
+          <a href={SUPPORT_MAILTO} className="font-semibold text-[var(--av-accent)] hover:underline">
+            {SUPPORT_EMAIL}
           </a>
         </p>
       </DarkCard>

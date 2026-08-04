@@ -11,12 +11,15 @@ import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { shareAgriveda } from "@/lib/appEssentials";
-import { APP_VERSION } from "@/lib/appMeta";
+import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/appMeta";
 import { BRAND } from "@/lib/brand";
+import { deleteAccountAndReload, logoutAndReload } from "@/lib/appReset";
+import { downloadLocalDataExport } from "@/lib/exportFarmerData";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
-import { Check, ChevronRight, LogOut, Share2, User } from "lucide-react";
+import { Check, ChevronRight, Download, LogOut, Share2, Trash2, User } from "lucide-react";
+import { useState } from "react";
 
 function ShareAgrivedaButton() {
   const { showToast } = useToast();
@@ -73,11 +76,45 @@ export default function SettingsPage() {
   const { settings, update } = useAppSettings();
   const { settings: priceSettings, setMasterEnabled } = usePriceAlerts();
   const { locale, setLocale, t } = useLocale();
+  const { showToast } = useToast();
+  const [busy, setBusy] = useState<"logout" | "delete" | null>(null);
 
   const langOptions: { code: AppLocale; label: string; hint: string }[] = [
     { code: "en", label: t("english"), hint: t("langEnglishHint") },
     { code: "hi", label: t("hindi"), hint: t("langHindiHint") },
   ];
+
+  const handleLogout = async () => {
+    if (!window.confirm("लॉग आउट करें? फसल और local डेटा फ़ोन पर रहेगा। सर्वर session बंद हो जाएगा।"))
+      return;
+    setBusy("logout");
+    try {
+      await logoutAndReload();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handleExport = () => {
+    const result = downloadLocalDataExport();
+    if (result.ok) showToast("डेटा फ़ाइल डाउनलोड हो गई ✓", "success");
+    else showToast(result.error || "Export fail", "error");
+  };
+
+  const handleDeleteAccount = async () => {
+    const ok = window.confirm(
+      "खाता स्थायी रूप से हटाएँ?\n\n• Server: farmer, queries, photos, notifications\n• Phone: profile, AI history, farm data\n\nयह वापस नहीं आएगा।"
+    );
+    if (!ok) return;
+    const again = window.confirm("पक्का? खाता मिटाने के बाद नए OTP से दोबारा शुरू होगा।");
+    if (!again) return;
+    setBusy("delete");
+    const result = await deleteAccountAndReload();
+    if (!result.ok) {
+      setBusy(null);
+      showToast(result.error || "हटाने में समस्या", "error");
+    }
+  };
 
   return (
     <AppShell
@@ -195,18 +232,75 @@ export default function SettingsPage() {
         </DarkCard>
 
         <DarkCard delay={5}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खाता</h3>
-          <AppLink href="/profile" className="mt-2 flex items-center gap-2 text-sm text-red-400">
-            <LogOut className="h-4 w-4" /> लॉग आउट
-          </AppLink>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">निजता व सुरक्षा</h3>
+          <p className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
+            डिफ़ॉल्ट: कोई product analytics नहीं। Google Ads / Crashlytics नहीं। आपका डेटा बेचा नहीं जाता।
+          </p>
+          <div className="mt-2">
+            <SettingsRow
+              label="Product analytics (optional)"
+              toggle={{
+                on: settings.productAnalytics,
+                onChange: (v) => update({ productAnalytics: v }),
+              }}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleExport}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 py-2.5 text-sm font-bold text-emerald-700 dark:text-emerald-300"
+          >
+            <Download className="h-4 w-4" />
+            मेरा डेटा डाउनलोड (JSON)
+          </button>
+          <div className="mt-2 space-y-1 text-[10px] text-[var(--av-text-muted)]">
+            <AppLink href="/privacy" className="font-semibold text-[var(--av-accent)] hover:underline">
+              गोपनीयता नीति
+            </AppLink>
+            {" · "}
+            <AppLink href="/terms" className="font-semibold text-[var(--av-accent)] hover:underline">
+              नियम
+            </AppLink>
+          </div>
         </DarkCard>
 
         <DarkCard delay={6}>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खाता</h3>
+          <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
+            लॉग आउट = सिर्फ session। खाता हटाएँ = server + phone डेटा मिटाएँ (Play Store अधिकार)।
+          </p>
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void handleLogout()}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 text-sm font-bold text-[var(--av-text-primary)] disabled:opacity-60"
+          >
+            <LogOut className="h-4 w-4" />
+            {busy === "logout" ? "…" : "लॉग आउट"}
+          </button>
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void handleDeleteAccount()}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 py-2.5 text-sm font-bold text-red-600 disabled:opacity-60 dark:text-red-400"
+          >
+            <Trash2 className="h-4 w-4" />
+            {busy === "delete" ? "हटा रहे हैं…" : "खाता हटाएँ"}
+          </button>
+          <p className="mt-2 text-center text-[10px] text-[var(--av-text-muted)]">
+            मदद:{" "}
+            <a href={SUPPORT_MAILTO} className="font-semibold text-[var(--av-accent)]">
+              {SUPPORT_EMAIL}
+            </a>
+          </p>
+        </DarkCard>
+
+        <DarkCard delay={7}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">About {BRAND}</h3>
           <p className="mt-2 text-xs text-[var(--av-text-muted)]">v{APP_VERSION}</p>
           <p className="mt-1 text-xs text-[var(--av-text-secondary)]">Smart farming companion for Indian farmers.</p>
           <div className="mt-3 space-y-1">
-            <SettingsRow label="Terms & Conditions" href="/privacy#terms" />
+            <SettingsRow label="Terms & Conditions" href="/terms" />
             <SettingsRow label="Privacy Policy" href="/privacy" />
             <SettingsRow label="समस्या बताएँ / Bug Report" href="/report-bug" />
             <SettingsRow label="सहायता / Support" href="/ask-query" />

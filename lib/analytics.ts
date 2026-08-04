@@ -1,12 +1,17 @@
 /**
- * Lightweight product analytics — local buffer + optional beacon.
- * No third-party SDK required; safe for Capacitor WebView.
+ * Lightweight product analytics — OFF by default.
+ * No third-party ads SDK / crash SDK. Optional beacon only if farmer enables it.
  */
+
+import {
+  isProductAnalyticsEnabled,
+  scrubAnalyticsProps,
+} from "@/lib/privacySanitize";
 
 export type AnalyticsProps = Record<string, string | number | boolean | null | undefined>;
 
 const KEY = "agriveda-analytics-events";
-const MAX = 200;
+const MAX = 80;
 
 function readBuffer(): Array<{ name: string; props?: AnalyticsProps; t: string }> {
   if (typeof window === "undefined") return [];
@@ -28,20 +33,21 @@ function writeBuffer(events: Array<{ name: string; props?: AnalyticsProps; t: st
   }
 }
 
-/** Track a farmer action (page_view, tool_open, ai_scan, bug_report, …) */
+/** Track a farmer action — no-op unless Settings → product analytics ON. */
 export function track(name: string, props?: AnalyticsProps) {
   if (typeof window === "undefined") return;
-  const event = { name, props, t: new Date().toISOString() };
-  const next = [...readBuffer(), event];
-  writeBuffer(next);
+  if (!isProductAnalyticsEnabled()) return;
+  if (!name || typeof name !== "string" || name.length > 64) return;
 
-  // Dev visibility
+  const safeProps = scrubAnalyticsProps(props as Record<string, unknown>);
+  const event = { name: name.slice(0, 64), props: safeProps, t: new Date().toISOString() };
+  writeBuffer([...readBuffer(), event]);
+
   if (process.env.NODE_ENV !== "production") {
     // eslint-disable-next-line no-console
-    console.debug("[analytics]", name, props ?? {});
+    console.debug("[analytics]", event.name, safeProps ?? {});
   }
 
-  // Optional ingest endpoint (no-op if missing / offline)
   try {
     const body = JSON.stringify(event);
     if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {

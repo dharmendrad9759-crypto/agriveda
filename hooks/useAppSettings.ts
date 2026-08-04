@@ -10,6 +10,8 @@ export interface AppSettings {
   autoSync: boolean;
   twoFactorAuth: boolean;
   quietHoursEnabled: boolean;
+  /** Off by default — no product telemetry until farmer opts in */
+  productAnalytics: boolean;
 }
 
 const KEY = "agriveda-app-settings";
@@ -21,6 +23,7 @@ const DEFAULT: AppSettings = {
   autoSync: true,
   twoFactorAuth: false,
   quietHoursEnabled: false,
+  productAnalytics: false,
 };
 
 export function useAppSettings() {

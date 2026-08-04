@@ -108,9 +108,11 @@ export function applySessionCookie(res: NextResponse, token: string): void {
 }
 
 export function clearSessionCookie(res: NextResponse): void {
+  const secure =
+    process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
   res.cookies.set(SESSION_COOKIE, "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure,
     sameSite: "lax",
     path: "/",
     maxAge: 0,

@@ -315,6 +315,26 @@ export default function AIDoctorPage() {
           historyCount={history.length}
         />
 
+        <div
+          role="note"
+          className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-[12px] leading-snug text-amber-950 dark:text-amber-100"
+        >
+          <p className="font-bold">महत्वपूर्ण अस्वीकरण</p>
+          <p className="mt-1 text-[11px] font-medium opacity-90">
+            AI Doctor सुझाव केवल सूचना के लिए हैं — कृषि अधिकारी / लेबल का विकल्प नहीं। दवा की मात्रा,
+            PHI और छिड़काव हमेशा उत्पाद लेबल और स्थानीय कृषि विभाग से मिलाएँ। Scan वाली फोटो Agriveda
+            डेटाबेस में नहीं रखी जाती (Gemini को एक बार सुरक्षित भेजकर जवाब आता है)। विशेषज्ञ Query भेजें
+            तभी फोटो ticket के साथ जुड़ सकती है।{" "}
+            <button
+              type="button"
+              className="font-bold underline underline-offset-2"
+              onClick={() => router.push("/terms")}
+            >
+              नियम पढ़ें
+            </button>
+          </p>
+        </div>
+
         <div className="grid gap-3.5 sm:gap-5 lg:grid-cols-3">
           <div id="ai-doctor-scan" className="min-w-0 space-y-3.5 sm:space-y-5 lg:col-span-2">
             {/* Step progress: Photo → Crop → Symptoms */}

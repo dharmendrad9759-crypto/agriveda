@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Bug, Send } from "lucide-react";
+import { Bug, Mail, Send } from "lucide-react";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { AV } from "@/lib/design/tokens";
 import { track } from "@/lib/analytics";
 import { useToast } from "@/components/ui/Toast";
-import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { isCapacitorNative } from "@/lib/capacitorNav";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/appMeta";
 
 const TOPICS = [
   { id: "bug", label: "ऐप में गड़बड़ / Bug" },
@@ -21,58 +21,42 @@ const TOPICS = [
 export default function ReportBugPage() {
   const { t } = useLocale();
   const { showToast } = useToast();
-  const { profile } = useFarmerProfile();
   const [topic, setTopic] = useState<(typeof TOPICS)[number]["id"]>("bug");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
 
-  const submit = async () => {
+  const submit = () => {
     const text = message.trim();
     if (text.length < 8) {
       showToast("थोड़ा विस्तार से लिखें (कम से कम 8 अक्षर)", "error");
       return;
     }
     setSending(true);
+
+    // Privacy: never put message body / location in analytics
     track("bug_report", {
       topic,
       length: text.length,
-      district: profile.district || "",
-      state: profile.state || "",
       native: isCapacitorNative(),
-      path: typeof window !== "undefined" ? window.location.pathname : "",
     });
-    try {
-      await fetch("/api/analytics", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "bug_report_detail",
-          props: {
-            topic,
-            message: text.slice(0, 800),
-            district: profile.district || "",
-            state: profile.state || "",
-            native: isCapacitorNative(),
-          },
-          t: new Date().toISOString(),
-        }),
-      });
-    } catch {
-      /* local track already saved */
-    }
+
+    const topicLabel = TOPICS.find((x) => x.id === topic)?.label ?? topic;
+    const subject = encodeURIComponent(`[Agriveda ${APP_VERSION}] ${topicLabel}`);
+    const body = encodeURIComponent(
+      `${text}\n\n---\nApp ${APP_VERSION} · ${isCapacitorNative() ? "Android" : "Web"}`
+    );
+    window.location.href = `${SUPPORT_MAILTO}?subject=${subject}&body=${body}`;
+
     setSending(false);
     setMessage("");
-    showToast(
-      "रिपोर्ट नोट हो गई। अभी ईमेल सिस्टम नहीं — जरूरी समस्या के लिए WhatsApp/Phone helpline इस्तेमाल करें",
-      "success"
-    );
+    showToast(`ईमेल ऐप खुलेगा → ${SUPPORT_EMAIL}`, "success");
   };
 
   return (
     <AppShell
       className="!bg-transparent"
       title="समस्या बताएँ"
-      subtitle="Bug या सुझाव — हम सुधारेंगे"
+      subtitle="सीधे support ईमेल — डेटा बिना तीसरे SDK के"
       breadcrumbs={[
         { label: t("navHome"), href: "/" },
         { label: t("shellReportBug") },
@@ -85,23 +69,25 @@ export default function ReportBugPage() {
           </span>
           <div>
             <h2 className={AV.sectionTitle}>क्या समस्या है?</h2>
-            <p className={AV.micro}>बिना नाम के भी भेज सकते हैं</p>
+            <p className={AV.micro}>
+              रिपोर्ट आपके ईमेल ऐप से {SUPPORT_EMAIL} पर जाएगी
+            </p>
           </div>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {TOPICS.map((t) => (
+          {TOPICS.map((item) => (
             <button
-              key={t.id}
+              key={item.id}
               type="button"
-              onClick={() => setTopic(t.id)}
+              onClick={() => setTopic(item.id)}
               className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
-                topic === t.id
+                topic === item.id
                   ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
                   : "border-[var(--av-border)] text-[var(--av-text-secondary)]"
               }`}
             >
-              {t.label}
+              {item.label}
             </button>
           ))}
         </div>
@@ -117,12 +103,20 @@ export default function ReportBugPage() {
         <button
           type="button"
           disabled={sending}
-          onClick={() => void submit()}
+          onClick={submit}
           className={`mt-3 flex w-full items-center justify-center gap-2 ${AV.btnPrimary}`}
         >
           <Send className="h-4 w-4" />
-          {sending ? "भेज रहे हैं…" : "रिपोर्ट भेजें"}
+          {sending ? "…" : "ईमेल से भेजें"}
         </button>
+
+        <a
+          href={SUPPORT_MAILTO}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--av-border)] py-2.5 text-sm font-bold text-[var(--av-text-secondary)]"
+        >
+          <Mail className="h-4 w-4" />
+          {SUPPORT_EMAIL}
+        </a>
       </DarkCard>
     </AppShell>
   );
