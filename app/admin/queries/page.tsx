@@ -219,7 +219,7 @@ export default function AdminQueriesPage() {
   if (!ready || !me) {
     return (
       <div className="flex min-h-[100dvh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-emerald-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
       </div>
     );
   }
@@ -227,17 +227,17 @@ export default function AdminQueriesPage() {
   return (
     <AdminShell me={me} onLogout={() => void logout()} pendingCount={pendingCount} title="Queries">
       <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-[280px_1fr]">
-        <aside className="admin-cine__glass space-y-3 rounded-2xl border border-white/10 p-3">
+        <aside className="admin-cine__glass space-y-3 rounded-2xl border border-emerald-900/10 p-3">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/35" />
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-emerald-900/35" />
             <input
               value={inboxSearch}
               onChange={(e) => setInboxSearch(e.target.value)}
               placeholder="Search inbox…"
-              className="w-full rounded-xl border border-white/10 bg-black/30 py-2 pl-8 pr-2 text-[11px] text-white outline-none"
+              className="w-full rounded-xl border border-emerald-900/12 bg-white py-2 pl-8 pr-2 text-[11px] text-emerald-950 outline-none"
             />
           </div>
-          <div className="grid grid-cols-3 gap-1 rounded-xl bg-black/35 p-1">
+          <div className="grid grid-cols-3 gap-1 rounded-xl bg-emerald-50/80 p-1">
             {(
               [
                 { id: "pending" as const, label: "Pending", n: pendingCount },
@@ -251,7 +251,7 @@ export default function AdminQueriesPage() {
                 onClick={() => setFilter(tab.id)}
                 className={cn(
                   "rounded-lg px-1 py-2 text-[10px] font-bold",
-                  filter === tab.id ? "bg-emerald-500 text-[#052e16]" : "text-white/50"
+                  filter === tab.id ? "bg-emerald-500 text-[#052e16]" : "text-emerald-900/50"
                 )}
               >
                 {tab.label}
@@ -262,14 +262,14 @@ export default function AdminQueriesPage() {
           <button
             type="button"
             onClick={() => me && void load(me)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 py-2 text-[11px] font-bold text-white/60"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-900/10 py-2 text-[11px] font-bold text-emerald-900/60"
           >
             <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
             Refresh
           </button>
           <div className="max-h-[60vh] space-y-1.5 overflow-y-auto">
             {filtered.length === 0 ? (
-              <p className="py-8 text-center text-xs text-white/35">कोई सवाल नहीं</p>
+              <p className="py-8 text-center text-xs text-emerald-900/35">कोई सवाल नहीं</p>
             ) : (
               filtered.map((q) => (
                 <button
@@ -280,29 +280,29 @@ export default function AdminQueriesPage() {
                     "w-full rounded-xl border px-2.5 py-2.5 text-left",
                     selected?.id === q.id
                       ? "border-emerald-500/40 bg-emerald-500/10"
-                      : "border-white/6 bg-black/20"
+                      : "border-emerald-900/10 bg-white"
                   )}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15 text-[11px] font-bold text-emerald-300">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15 text-[11px] font-bold text-emerald-700">
                       {initials(q.farmerName)}
                     </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-1">
-                        <p className="truncate text-[12px] font-bold text-white">
+                        <p className="truncate text-[12px] font-bold text-emerald-950">
                           {q.farmerName || "किसान"}
                         </p>
                         {q.status === "answered" ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                         ) : (
-                          <Clock3 className="h-3.5 w-3.5 text-amber-300" />
+                          <Clock3 className="h-3.5 w-3.5 text-amber-600" />
                         )}
                       </div>
-                      <p className="truncate text-[10px] text-emerald-300/70">{q.cropName}</p>
+                      <p className="truncate text-[10px] text-emerald-700/70">{q.cropName}</p>
                       {q.assignedName ? (
-                        <p className="truncate text-[10px] text-sky-300/70">→ {q.assignedName}</p>
+                        <p className="truncate text-[10px] text-sky-700/70">→ {q.assignedName}</p>
                       ) : (
-                        <p className="text-[10px] text-white/30">Unassigned</p>
+                        <p className="text-[10px] text-emerald-900/30">Unassigned</p>
                       )}
                     </div>
                   </div>
@@ -314,26 +314,26 @@ export default function AdminQueriesPage() {
 
         <div>
           {error ? (
-            <p className="mb-3 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs text-red-200">
+            <p className="mb-3 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs text-red-600">
               {error}
             </p>
           ) : null}
 
           {!selected ? (
-            <div className="admin-cine__glass flex min-h-[50vh] flex-col items-center justify-center rounded-2xl border border-white/10">
-              <MessageSquareText className="h-8 w-8 text-emerald-400/70" />
-              <p className="mt-3 text-sm text-white/45">Inbox से सवाल चुनें</p>
+            <div className="admin-cine__glass flex min-h-[50vh] flex-col items-center justify-center rounded-2xl border border-emerald-900/10">
+              <MessageSquareText className="h-8 w-8 text-emerald-600/70" />
+              <p className="mt-3 text-sm text-emerald-900/45">Inbox से सवाल चुनें</p>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h1 className="font-display text-xl font-bold text-white">Farmer message</h1>
+                <h1 className="font-display text-xl font-bold text-emerald-950">Farmer message</h1>
                 <div className="flex flex-wrap gap-2">
                   {selected.status === "pending" ? (
                     <button
                       type="button"
                       onClick={() => void markInReview()}
-                      className="rounded-xl border border-amber-400/35 bg-amber-400/10 px-3 py-2 text-[11px] font-bold text-amber-100"
+                      className="rounded-xl border border-amber-400/35 bg-amber-400/10 px-3 py-2 text-[11px] font-bold text-amber-900"
                     >
                       Mark in review
                     </button>
@@ -343,27 +343,27 @@ export default function AdminQueriesPage() {
                       type="button"
                       disabled={saving}
                       onClick={() => void claim()}
-                      className="rounded-xl border border-sky-400/35 bg-sky-400/10 px-3 py-2 text-[11px] font-bold text-sky-100"
+                      className="rounded-xl border border-sky-400/35 bg-sky-400/10 px-3 py-2 text-[11px] font-bold text-sky-800"
                     >
                       Claim for me
                     </button>
                   ) : null}
-                  <span className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-300">
+                  <span className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-700">
                     {selected.status}
                   </span>
                 </div>
               </div>
 
               {(me.permissions.assignQueries || me.permissions.manageExperts) && (
-                <div className="admin-cine__glass flex flex-wrap items-end gap-2 rounded-2xl border border-white/10 p-3">
+                <div className="admin-cine__glass flex flex-wrap items-end gap-2 rounded-2xl border border-emerald-900/10 p-3">
                   <div className="min-w-[180px] flex-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wide text-white/40">
+                    <label className="text-[10px] font-bold uppercase tracking-wide text-emerald-900/40">
                       Assign expert
                     </label>
                     <select
                       value={assignTo}
                       onChange={(e) => setAssignTo(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm text-white"
+                      className="mt-1 w-full rounded-xl border border-emerald-900/12 bg-white px-3 py-2 text-sm text-emerald-950"
                     >
                       <option value="">— Unassigned —</option>
                       {experts.map((e) => (
@@ -377,7 +377,7 @@ export default function AdminQueriesPage() {
                     type="button"
                     disabled={saving}
                     onClick={() => void assign()}
-                    className="rounded-xl bg-emerald-500/20 px-4 py-2 text-xs font-bold text-emerald-200"
+                    className="rounded-xl bg-emerald-500/20 px-4 py-2 text-xs font-bold text-emerald-700"
                   >
                     Save assign
                   </button>
@@ -385,14 +385,14 @@ export default function AdminQueriesPage() {
               )}
 
               <div className="grid gap-4 lg:grid-cols-2">
-                <article className="admin-cine__glass rounded-2xl border border-white/10 p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-400/90">
+                <article className="admin-cine__glass rounded-2xl border border-emerald-900/10 p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-600/90">
                     Farmer · {formatWhen(selected.createdAt)}
                   </p>
-                  <p className="mt-2 text-sm font-bold text-white">
+                  <p className="mt-2 text-sm font-bold text-emerald-950">
                     {selected.farmerName || "किसान"} · {selected.cropName}
                   </p>
-                  <p className="text-[11px] text-white/40">
+                  <p className="text-[11px] text-emerald-900/40">
                     {[
                       selected.farmerPhone ? `+91 ${selected.farmerPhone}` : null,
                       selected.location,
@@ -400,10 +400,10 @@ export default function AdminQueriesPage() {
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
-                  <p className="mt-3 whitespace-pre-wrap text-sm text-white/75">{selected.queryText}</p>
+                  <p className="mt-3 whitespace-pre-wrap text-sm text-emerald-900/75">{selected.queryText}</p>
                 </article>
 
-                <article className="admin-cine__glass rounded-2xl border border-white/10 p-4">
+                <article className="admin-cine__glass rounded-2xl border border-emerald-900/10 p-4">
                   {selected.photoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -412,7 +412,7 @@ export default function AdminQueriesPage() {
                       className="max-h-64 w-full rounded-xl object-cover"
                     />
                   ) : (
-                    <div className="flex min-h-[160px] flex-col items-center justify-center text-white/30">
+                    <div className="flex min-h-[160px] flex-col items-center justify-center text-emerald-900/30">
                       <ImageIcon className="h-7 w-7" />
                       <p className="mt-2 text-sm">No photo</p>
                     </div>
@@ -422,30 +422,30 @@ export default function AdminQueriesPage() {
 
               {selected.aiDiagnosis ? (
                 <div className="admin-cine__glass rounded-2xl border border-emerald-500/25 p-4">
-                  <p className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-300">
+                  <p className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700">
                     <Stethoscope className="h-3.5 w-3.5" /> AI Doctor
                   </p>
-                  <p className="mt-1 text-base font-bold text-white">
+                  <p className="mt-1 text-base font-bold text-emerald-950">
                     {selected.aiDiagnosis.diseaseName || "—"}
                   </p>
                 </div>
               ) : null}
 
-              <section className="admin-cine__glass rounded-2xl border border-white/10 p-4">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-400/90">
+              <section className="admin-cine__glass rounded-2xl border border-emerald-900/10 p-4">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-600/90">
                   Expert reply → किसान (app + WhatsApp/SMS)
                 </p>
                 <input
                   value={expertName}
                   onChange={(e) => setExpertName(e.target.value)}
-                  className="mt-3 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 text-sm text-white outline-none"
+                  className="mt-3 w-full rounded-xl border border-emerald-900/12 bg-white px-3 py-2.5 text-sm text-emerald-950 outline-none"
                   placeholder="Expert display name"
                 />
                 <textarea
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
                   rows={8}
-                  className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-black/40 px-3 py-3 text-sm text-white outline-none"
+                  className="mt-2 w-full resize-y rounded-xl border border-emerald-900/12 bg-white px-3 py-3 text-sm text-emerald-950 outline-none"
                   placeholder="किसान को साफ़ हिंदी में जवाब…"
                 />
                 <div className="mt-3 flex justify-end">

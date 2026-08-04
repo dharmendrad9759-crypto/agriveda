@@ -114,7 +114,7 @@ export default function AdminExpertsPage() {
   if (!ready || !me) {
     return (
       <div className="flex min-h-[100dvh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-emerald-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
       </div>
     );
   }
@@ -122,7 +122,7 @@ export default function AdminExpertsPage() {
   if (!me.permissions.manageExperts) {
     return (
       <AdminShell me={me} onLogout={() => void logout()} title="Experts">
-        <p className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+        <p className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-900">
           Experts manage करने की permission नहीं — Main Owner से माँगें।
         </p>
       </AdminShell>
@@ -133,23 +133,23 @@ export default function AdminExpertsPage() {
     <AdminShell me={me} onLogout={() => void logout()} title="Experts">
       <div className="mx-auto max-w-4xl space-y-5">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white">Experts & permissions</h1>
-          <p className="mt-1 text-sm text-white/50">
+          <h1 className="font-display text-2xl font-bold text-emerald-950">Experts & permissions</h1>
+          <p className="mt-1 text-sm text-emerald-900/50">
             High authority (आप) → Expert बनाएँ → permission दें → वे किसान को जवाब भेजें।
           </p>
         </div>
 
         {error ? (
-          <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs text-red-200">
+          <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs text-red-600">
             {error}
           </p>
         ) : null}
 
         <form
           onSubmit={onCreate}
-          className="admin-cine__glass space-y-3 rounded-2xl border border-white/10 p-4 sm:p-5"
+          className="admin-cine__glass space-y-3 rounded-2xl border border-emerald-900/10 p-4 sm:p-5"
         >
-          <p className="flex items-center gap-2 text-sm font-bold text-emerald-300">
+          <p className="flex items-center gap-2 text-sm font-bold text-emerald-700">
             <Plus className="h-4 w-4" /> नया Expert / Manager
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -158,14 +158,14 @@ export default function AdminExpertsPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="username (login)"
-              className="rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400/40"
+              className="rounded-xl border border-emerald-900/12 bg-white px-3 py-2.5 text-sm text-emerald-950 outline-none focus:border-emerald-400/40"
             />
             <input
               required
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Display name"
-              className="rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400/40"
+              className="rounded-xl border border-emerald-900/12 bg-white px-3 py-2.5 text-sm text-emerald-950 outline-none focus:border-emerald-400/40"
             />
             <input
               required
@@ -173,19 +173,19 @@ export default function AdminExpertsPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password (min 8)"
-              className="rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400/40"
+              className="rounded-xl border border-emerald-900/12 bg-white px-3 py-2.5 text-sm text-emerald-950 outline-none focus:border-emerald-400/40"
             />
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as "expert" | "manager")}
-              className="rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 text-sm text-white outline-none"
+              className="rounded-xl border border-emerald-900/12 bg-white px-3 py-2.5 text-sm text-emerald-950 outline-none"
             >
               <option value="expert">Expert — जवाब भेजें</option>
               <option value="manager">Manager — assign + सब देखें</option>
             </select>
           </div>
           {role === "expert" ? (
-            <div className="flex flex-wrap gap-4 text-xs text-white/70">
+            <div className="flex flex-wrap gap-4 text-xs text-emerald-900/70">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -215,29 +215,29 @@ export default function AdminExpertsPage() {
 
         <div className="space-y-2">
           {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-emerald-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
           ) : experts.length === 0 ? (
-            <p className="text-sm text-white/40">अभी कोई expert नहीं।</p>
+            <p className="text-sm text-emerald-900/40">अभी कोई expert नहीं।</p>
           ) : (
             experts.map((ex) => (
               <div
                 key={ex.id}
                 className={cn(
                   "admin-cine__glass rounded-2xl border p-4",
-                  ex.active ? "border-white/10" : "border-white/5 opacity-60"
+                  ex.active ? "border-emerald-900/10" : "border-emerald-900/5 opacity-60"
                 )}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="flex items-center gap-2 text-sm font-bold text-white">
-                      <UserCheck className="h-4 w-4 text-emerald-400" />
+                    <p className="flex items-center gap-2 text-sm font-bold text-emerald-950">
+                      <UserCheck className="h-4 w-4 text-emerald-600" />
                       {ex.displayName}
-                      <span className="rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white/50">
+                      <span className="rounded-md bg-emerald-50/80 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-900/50">
                         {ex.role}
                       </span>
                     </p>
-                    <p className="mt-1 text-xs text-white/40">@{ex.username}</p>
-                    <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-semibold text-emerald-200/70">
+                    <p className="mt-1 text-xs text-emerald-900/40">@{ex.username}</p>
+                    <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-semibold text-emerald-700/70">
                       {ex.canAssign ? (
                         <span className="rounded-full bg-emerald-500/15 px-2 py-0.5">Assign</span>
                       ) : null}
@@ -257,14 +257,14 @@ export default function AdminExpertsPage() {
                         <button
                           type="button"
                           onClick={() => void patchPerm(ex.id, { canAssign: !ex.canAssign })}
-                          className="rounded-lg border border-white/10 px-2 py-1 text-[10px] font-bold text-white/70"
+                          className="rounded-lg border border-emerald-900/10 px-2 py-1 text-[10px] font-bold text-emerald-900/70"
                         >
                           {ex.canAssign ? "Revoke assign" : "Grant assign"}
                         </button>
                         <button
                           type="button"
                           onClick={() => void patchPerm(ex.id, { canViewAll: !ex.canViewAll })}
-                          className="rounded-lg border border-white/10 px-2 py-1 text-[10px] font-bold text-white/70"
+                          className="rounded-lg border border-emerald-900/10 px-2 py-1 text-[10px] font-bold text-emerald-900/70"
                         >
                           {ex.canViewAll ? "Revoke view-all" : "Grant view-all"}
                         </button>
@@ -276,8 +276,8 @@ export default function AdminExpertsPage() {
                       className={cn(
                         "rounded-lg px-2 py-1 text-[10px] font-bold",
                         ex.active
-                          ? "border border-red-400/30 text-red-300"
-                          : "border border-emerald-400/30 text-emerald-300"
+                          ? "border border-red-400/30 text-red-700"
+                          : "border border-emerald-400/30 text-emerald-700"
                       )}
                     >
                       {ex.active ? "Deactivate" : "Activate"}
