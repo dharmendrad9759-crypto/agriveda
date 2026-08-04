@@ -409,14 +409,24 @@ export default function AdminQueriesPage() {
                     <img
                       src={selected.photoUrl}
                       alt="Crop"
-                      className="max-h-64 w-full rounded-xl object-cover"
+                      className="max-h-64 w-full rounded-xl object-cover ring-1 ring-emerald-900/10"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                        const sib = e.currentTarget.nextElementSibling as HTMLElement | null;
+                        if (sib) sib.classList.remove("hidden");
+                      }}
                     />
-                  ) : (
-                    <div className="flex min-h-[160px] flex-col items-center justify-center text-emerald-900/30">
-                      <ImageIcon className="h-7 w-7" />
-                      <p className="mt-2 text-sm">No photo</p>
-                    </div>
-                  )}
+                  ) : null}
+                  <div
+                    className={`flex min-h-[160px] flex-col items-center justify-center text-emerald-900/35 ${
+                      selected.photoUrl ? "hidden" : ""
+                    }`}
+                  >
+                    <ImageIcon className="h-7 w-7" />
+                    <p className="mt-2 text-sm">
+                      {selected.photoUrl ? "फोटो लोड नहीं हुई" : "No photo"}
+                    </p>
+                  </div>
                 </article>
               </div>
 

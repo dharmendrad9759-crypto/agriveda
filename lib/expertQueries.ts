@@ -100,6 +100,73 @@ export function sanitizePhotoDataUrl(raw: string | null | undefined): string | n
   return raw;
 }
 
+const PHOTO_BUCKET = "expert-query-photos";
+
+/** Extract storage object path from stored photo ref (signed/public/storage://). */
+export function expertPhotoStoragePath(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith("data:image/")) return null;
+  if (url.startsWith(`storage://${PHOTO_BUCKET}/`)) {
+    return url.slice(`storage://${PHOTO_BUCKET}/`.length);
+  }
+  try {
+    const u = new URL(url);
+    const markers = [
+      `/object/sign/${PHOTO_BUCKET}/`,
+      `/object/public/${PHOTO_BUCKET}/`,
+      `/object/authenticated/${PHOTO_BUCKET}/`,
+      `/${PHOTO_BUCKET}/`,
+    ];
+    for (const marker of markers) {
+      const idx = u.pathname.indexOf(marker);
+      if (idx >= 0) {
+        return decodeURIComponent(u.pathname.slice(idx + marker.length));
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+/** Fresh signed URL for private bucket (admin + farmer UI). */
+export async function resolveExpertPhotoUrl(
+  stored: string | null | undefined,
+  client = createSupabaseServiceClient()
+): Promise<string | null> {
+  if (!stored) return null;
+  if (stored.startsWith("data:image/")) return stored;
+
+  const path = expertPhotoStoragePath(stored);
+  if (!path || !client) {
+    // Legacy public URL still might work if bucket was public
+    if (stored.startsWith("http://") || stored.startsWith("https://")) return stored;
+    return null;
+  }
+
+  try {
+    const { data, error } = await client.storage
+      .from(PHOTO_BUCKET)
+      .createSignedUrl(path, 60 * 60 * 12); // 12h
+    if (!error && data?.signedUrl) return data.signedUrl;
+  } catch (err) {
+    console.error("[expertQueries] sign photo", err);
+  }
+
+  if (stored.startsWith("http://") || stored.startsWith("https://")) return stored;
+  return null;
+}
+
+async function withResolvedPhotos(rows: ExpertQueryRow[]): Promise<ExpertQueryRow[]> {
+  if (!rows.length) return rows;
+  return Promise.all(
+    rows.map(async (r) => ({
+      ...r,
+      photo_url: await resolveExpertPhotoUrl(r.photo_url),
+    }))
+  );
+}
+
 async function uploadPhoto(
   client: SupabaseClient,
   deviceId: string,
@@ -115,7 +182,7 @@ async function uploadPhoto(
     if (bytes.length > 2.5 * 1024 * 1024) return null;
 
     const path = `${deviceId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40) || "device"}/${Date.now()}-${randomBytes(4).toString("hex")}.${ext}`;
-    const { error } = await client.storage.from("expert-query-photos").upload(path, bytes, {
+    const { error } = await client.storage.from(PHOTO_BUCKET).upload(path, bytes, {
       contentType: mime,
       upsert: false,
     });
@@ -123,14 +190,8 @@ async function uploadPhoto(
       console.error("[expertQueries] photo upload", error.message);
       return null;
     }
-    // Prefer signed URL (works when bucket is private). Path stored; URL may be refreshed later.
-    const { data: signed, error: signErr } = await client.storage
-      .from("expert-query-photos")
-      .createSignedUrl(path, 60 * 60 * 24 * 7); // 7 days
-    if (!signErr && signed?.signedUrl) return signed.signedUrl;
-
-    // Keep opaque storage path — never expose public bucket URLs in production
-    return `storage://expert-query-photos/${path}`;
+    // Store durable path — signed URL is created on read (bucket is private)
+    return `storage://${PHOTO_BUCKET}/${path}`;
   } catch (err) {
     console.error("[expertQueries] photo upload failed", err);
     return null;
@@ -166,6 +227,29 @@ function mapRow(raw: Record<string, unknown>): ExpertQueryRow {
 
 const QUERY_SELECT =
   "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, assigned_to, assigned_at, created_at, updated_at";
+
+/** Fallback if panel-users.sql (assigned_to) not yet applied */
+const QUERY_SELECT_BASIC =
+  "id, farmer_id, device_id, farmer_name, farmer_phone, farmer_village, farmer_district, farmer_state, crop_slug, crop_name, query_text, photo_url, ai_diagnosis, source, status, expert_reply, expert_name, answered_at, created_at, updated_at";
+
+async function selectExpertRows(
+  client: SupabaseClient,
+  build: (select: string) => PromiseLike<{ data: unknown; error: { message: string } | null }>
+): Promise<Record<string, unknown>[] | null> {
+  const full = await build(QUERY_SELECT);
+  if (!full.error && full.data) {
+    return (Array.isArray(full.data) ? full.data : [full.data]) as Record<string, unknown>[];
+  }
+  const msg = full.error?.message?.toLowerCase() ?? "";
+  if (msg.includes("assigned_to") || msg.includes("assigned_at") || msg.includes("column")) {
+    const basic = await build(QUERY_SELECT_BASIC);
+    if (!basic.error && basic.data) {
+      return (Array.isArray(basic.data) ? basic.data : [basic.data]) as Record<string, unknown>[];
+    }
+  }
+  if (full.error) console.error("[expertQueries] select", full.error.message);
+  return null;
+}
 
 export async function createExpertQuery(
   input: CreateExpertQueryInput,
@@ -214,13 +298,14 @@ export async function createExpertQuery(
   if (client) {
     const attemptInsert = async (data: typeof payload) => {
       try {
-        return await client
-          .from("expert_queries")
-          .insert(data)
-          .select(
-            QUERY_SELECT
-          )
-          .single();
+        const full = await client.from("expert_queries").insert(data).select(QUERY_SELECT).single();
+        if (
+          full.error &&
+          /assigned_/i.test(full.error.message || "")
+        ) {
+          return client.from("expert_queries").insert(data).select(QUERY_SELECT_BASIC).single();
+        }
+        return full;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         return {
@@ -269,7 +354,10 @@ export async function createExpertQuery(
         return { row: null, error: `DB insert failed: ${friendly}` };
       }
     } else if (data) {
-      return { row: mapRow(data as Record<string, unknown>) };
+      const row = mapRow(data as Record<string, unknown>);
+      return {
+        row: { ...row, photo_url: await resolveExpertPhotoUrl(row.photo_url) },
+      };
     }
   }
 
@@ -300,22 +388,21 @@ export async function listExpertQueriesForDevice(
   if (!deviceId) return [];
 
   if (client) {
-    const { data, error } = await client
-      .from("expert_queries")
-      .select(
-        QUERY_SELECT
-      )
-      .eq("device_id", deviceId)
-      .order("created_at", { ascending: false })
-      .limit(50);
-
-    if (!error && data) {
-      return (data as Record<string, unknown>[]).map(mapRow);
-    }
+    const data = await selectExpertRows(client, (select) =>
+      client
+        .from("expert_queries")
+        .select(select)
+        .eq("device_id", deviceId)
+        .order("created_at", { ascending: false })
+        .limit(50)
+    );
+    if (data) return withResolvedPhotos(data.map(mapRow));
   }
 
   if (!allowMemoryFallback()) return [];
-  return memoryStore().rows.filter((r) => r.device_id === deviceId).slice(0, 50);
+  return withResolvedPhotos(
+    memoryStore().rows.filter((r) => r.device_id === deviceId).slice(0, 50)
+  );
 }
 
 export async function listExpertQueriesAdmin(opts: {
@@ -336,20 +423,16 @@ export async function listExpertQueriesAdmin(opts: {
   let rows: ExpertQueryRow[] = [];
 
   if (client) {
-    let q = client
-      .from("expert_queries")
-      .select(QUERY_SELECT)
-      .order("created_at", { ascending: false })
-      .limit(limit);
-
-    if (status !== "all") {
-      q = q.eq("status", status);
-    }
-
-    const { data, error } = await q;
-    if (!error && data) {
-      rows = (data as Record<string, unknown>[]).map(mapRow);
-    }
+    const data = await selectExpertRows(client, (select) => {
+      let q = client
+        .from("expert_queries")
+        .select(select)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+      if (status !== "all") q = q.eq("status", status);
+      return q;
+    });
+    if (data) rows = data.map(mapRow);
   }
 
   if (!rows.length && allowMemoryFallback()) {
@@ -362,7 +445,6 @@ export async function listExpertQueriesAdmin(opts: {
   if (viewer && !viewer.viewAll) {
     rows = rows.filter((r) => {
       if (r.assigned_to === viewer.userId) return true;
-      // Experts can see unassigned pending to claim
       if (!r.assigned_to && (r.status === "pending" || r.status === "in_review")) return true;
       return false;
     });
@@ -372,7 +454,7 @@ export async function listExpertQueriesAdmin(opts: {
     }
   }
 
-  return rows;
+  return withResolvedPhotos(rows);
 }
 
 export async function assignExpertQuery(
@@ -388,13 +470,33 @@ export async function assignExpertQuery(
   };
 
   if (client && !id.startsWith("mem-")) {
-    const { data, error } = await client
+    let data: Record<string, unknown> | null = null;
+    let error: { message: string } | null = null;
+    const full = await client
       .from("expert_queries")
       .update(patch)
       .eq("id", id)
       .select(QUERY_SELECT)
       .single();
-    if (!error && data) return mapRow(data as Record<string, unknown>);
+    data = (full.data as Record<string, unknown> | null) ?? null;
+    error = full.error;
+    if (error && /assigned_/i.test(error.message)) {
+      const retry = await client
+        .from("expert_queries")
+        .update({
+          updated_at: nowIso(),
+          ...(assignedTo && { status: "in_review" as const }),
+        })
+        .eq("id", id)
+        .select(QUERY_SELECT_BASIC)
+        .single();
+      data = (retry.data as Record<string, unknown> | null) ?? null;
+      error = retry.error;
+    }
+    if (!error && data) {
+      const row = mapRow(data);
+      return { ...row, photo_url: await resolveExpertPhotoUrl(row.photo_url) };
+    }
   }
 
   if (!allowMemoryFallback()) return null;
@@ -416,17 +518,19 @@ export async function getExpertQueryById(
   client = createSupabaseServiceClient()
 ): Promise<ExpertQueryRow | null> {
   if (client) {
-    const { data, error } = await client
-      .from("expert_queries")
-      .select(
-        QUERY_SELECT
-      )
-      .eq("id", id)
-      .maybeSingle();
-    if (!error && data) return mapRow(data as Record<string, unknown>);
+    const data = await selectExpertRows(client, async (select) => {
+      const res = await client.from("expert_queries").select(select).eq("id", id).maybeSingle();
+      return { data: res.data ? [res.data] : null, error: res.error };
+    });
+    if (data?.[0]) {
+      const row = mapRow(data[0]);
+      return { ...row, photo_url: await resolveExpertPhotoUrl(row.photo_url) };
+    }
   }
   if (!allowMemoryFallback()) return null;
-  return memoryStore().rows.find((r) => r.id === id) ?? null;
+  const mem = memoryStore().rows.find((r) => r.id === id) ?? null;
+  if (!mem) return null;
+  return { ...mem, photo_url: await resolveExpertPhotoUrl(mem.photo_url) };
 }
 
 export async function replyToExpertQuery(
@@ -448,15 +552,30 @@ export async function replyToExpertQuery(
   };
 
   if (client && !id.startsWith("mem-")) {
-    const { data, error } = await client
+    let data: Record<string, unknown> | null = null;
+    let error: { message: string } | null = null;
+    const full = await client
       .from("expert_queries")
       .update(patch)
       .eq("id", id)
-      .select(
-        QUERY_SELECT
-      )
+      .select(QUERY_SELECT)
       .single();
-    if (!error && data) return mapRow(data as Record<string, unknown>);
+    data = (full.data as Record<string, unknown> | null) ?? null;
+    error = full.error;
+    if (error && /assigned_/i.test(error.message || "")) {
+      const retry = await client
+        .from("expert_queries")
+        .update(patch)
+        .eq("id", id)
+        .select(QUERY_SELECT_BASIC)
+        .single();
+      data = (retry.data as Record<string, unknown> | null) ?? null;
+      error = retry.error;
+    }
+    if (!error && data) {
+      const row = mapRow(data);
+      return { ...row, photo_url: await resolveExpertPhotoUrl(row.photo_url) };
+    }
   }
 
   if (!allowMemoryFallback()) return null;
@@ -474,15 +593,30 @@ export async function setExpertQueryStatus(
 ): Promise<ExpertQueryRow | null> {
   const patch = { status, updated_at: nowIso() };
   if (client && !id.startsWith("mem-")) {
-    const { data, error } = await client
+    let data: Record<string, unknown> | null = null;
+    let error: { message: string } | null = null;
+    const full = await client
       .from("expert_queries")
       .update(patch)
       .eq("id", id)
-      .select(
-        QUERY_SELECT
-      )
+      .select(QUERY_SELECT)
       .single();
-    if (!error && data) return mapRow(data as Record<string, unknown>);
+    data = (full.data as Record<string, unknown> | null) ?? null;
+    error = full.error;
+    if (error && /assigned_/i.test(error.message || "")) {
+      const retry = await client
+        .from("expert_queries")
+        .update(patch)
+        .eq("id", id)
+        .select(QUERY_SELECT_BASIC)
+        .single();
+      data = (retry.data as Record<string, unknown> | null) ?? null;
+      error = retry.error;
+    }
+    if (!error && data) {
+      const row = mapRow(data);
+      return { ...row, photo_url: await resolveExpertPhotoUrl(row.photo_url) };
+    }
   }
   if (!allowMemoryFallback()) return null;
   const store = memoryStore();
