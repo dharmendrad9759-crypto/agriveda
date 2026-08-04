@@ -20,6 +20,8 @@ import {
 import { motion, useReducedMotion } from "framer-motion";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
+import { useAIHistory } from "@/hooks/useAIHistory";
+import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { APP_NAME, APP_VERSION } from "@/lib/appMeta";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropEmoji, getCropHindiName } from "@/lib/crops/crop-display";
@@ -44,6 +46,8 @@ function fadeUp(i: number, reduced: boolean | null) {
 export default function ProfilePage() {
   const { profile } = useFarmerProfile();
   const { crops } = useMyCrops();
+  const { history } = useAIHistory();
+  const { queries } = useQueryHistory();
   const { locale } = useLocale();
   const reduced = useReducedMotion();
   const isHi = locale === "hi";
