@@ -4,9 +4,7 @@ import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import {
-  AlertTriangle,
   Bug,
-  CheckCircle2,
   ChevronRight,
   Languages,
   MapPin,
@@ -14,25 +12,18 @@ import {
   Palette,
   Pencil,
   Phone,
-  RotateCcw,
   Settings2,
   ShieldCheck,
   Sprout,
   Stethoscope,
-  Trash2,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
-import { useAIHistory } from "@/hooks/useAIHistory";
-import { useQueryHistory } from "@/hooks/useQueryHistory";
-import { useToast } from "@/components/ui/Toast";
 import { APP_NAME, APP_VERSION } from "@/lib/appMeta";
-import { resetAppAndReload } from "@/lib/appReset";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropEmoji, getCropHindiName } from "@/lib/crops/crop-display";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
-import { cn } from "@/lib/cn";
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -53,9 +44,6 @@ function fadeUp(i: number, reduced: boolean | null) {
 export default function ProfilePage() {
   const { profile } = useFarmerProfile();
   const { crops } = useMyCrops();
-  const { history, clearHistory } = useAIHistory();
-  const { queries, clearQueries } = useQueryHistory();
-  const { showToast } = useToast();
   const { locale } = useLocale();
   const reduced = useReducedMotion();
   const isHi = locale === "hi";
@@ -63,7 +51,6 @@ export default function ProfilePage() {
   const placeLine = [profile.village, profile.district, profile.state]
     .filter(Boolean)
     .join(" · ");
-  const locationReady = Boolean(profile.district && profile.state);
   const displayName = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
   const phoneDisplay = profile.phone
     ? `+91 ${profile.phone}`
@@ -71,28 +58,6 @@ export default function ProfilePage() {
       ? "मोबाइल नहीं जोड़ा"
       : "No mobile added";
   const farmAcres = profile.totalFarmAreaAcres;
-  const hasHistory = history.length > 0 || queries.length > 0;
-
-  const handleClearHistory = () => {
-    if (!window.confirm(isHi ? "AI scan history और queries हटा दें?" : "Clear AI / query history?"))
-      return;
-    clearHistory();
-    clearQueries();
-    showToast(isHi ? "इतिहास साफ़ हो गया ✓" : "History cleared ✓");
-  };
-
-  const handleResetApp = () => {
-    if (
-      !window.confirm(
-        isHi
-          ? "सारा डेटा मिट जाएगा (फसल, profile, spray log) और दोबारा registration होगा। जारी रखें?"
-          : "All data will be wiped and you will register again. Continue?"
-      )
-    ) {
-      return;
-    }
-    resetAppAndReload();
-  };
 
   return (
     <AppShell
@@ -179,33 +144,11 @@ export default function ProfilePage() {
                     <span>{phoneDisplay}</span>
                   </p>
 
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold",
-                        locationReady
-                          ? "border-emerald-500/30 bg-emerald-500/12 text-emerald-800 dark:text-emerald-200"
-                          : "border-amber-500/30 bg-amber-500/12 text-amber-900 dark:text-amber-100"
-                      )}
-                    >
-                      {locationReady ? (
-                        <>
-                          <CheckCircle2 className="h-3 w-3" />
-                          {isHi ? "लोकेशन तैयार" : "Location ready"}
-                        </>
-                      ) : (
-                        <>
-                          <AlertTriangle className="h-3 w-3" />
-                          {isHi ? "जगह जोड़ें" : "Add location"}
-                        </>
-                      )}
-                    </span>
-                    {farmAcres != null && farmAcres > 0 ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2.5 py-0.5 text-[10px] font-semibold text-[var(--av-text-secondary)]">
-                        {isHi ? `${farmAcres} एकड़ खेत` : `${farmAcres} acre farm`}
-                      </span>
-                    ) : null}
-                  </div>
+                  {farmAcres != null && farmAcres > 0 ? (
+                    <p className="mt-2 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+                      {isHi ? `${farmAcres} एकड़ खेत` : `${farmAcres} acre farm`}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -381,38 +324,6 @@ export default function ProfilePage() {
                 </span>
                 <ChevronRight className="h-4 w-4 text-[var(--av-text-muted)]" />
               </AppLink>
-            </div>
-          </motion.section>
-
-          {/* Data / danger — quieter */}
-          <motion.section
-            {...fadeUp(4, reduced)}
-            className="overflow-hidden rounded-[20px] border border-[var(--av-border)] bg-[var(--av-surface)]/90"
-          >
-            <div className="border-b border-[var(--av-border-subtle)] px-4 py-3">
-              <h3 className="text-[13px] font-bold text-[var(--av-text-secondary)]">
-                {isHi ? "डेटा व खाता" : "Data & account"}
-              </h3>
-            </div>
-            <div className="space-y-2 p-3">
-              {hasHistory ? (
-                <button
-                  type="button"
-                  onClick={handleClearHistory}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2.5 text-xs font-bold text-red-600 transition active:scale-[0.99] dark:text-red-400"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  {isHi ? "AI / Query इतिहास साफ़ करें" : "Clear AI / query history"}
-                </button>
-              ) : null}
-              <button
-                type="button"
-                onClick={handleResetApp}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-transparent px-3 py-2.5 text-xs font-bold text-red-600/90 transition active:scale-[0.99] dark:text-red-400"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                {isHi ? "App reset / दोबारा पंजीकरण" : "Reset app / re-register"}
-              </button>
             </div>
           </motion.section>
 

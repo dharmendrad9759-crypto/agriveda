@@ -427,7 +427,7 @@ export default function AgriVedaHome() {
                       {lastScan.result.diseaseName}
                     </p>
                     <p className="mt-0.5 text-[9px] font-semibold text-amber-200 sm:text-[10px]">
-                      {lastScan.result.confidence}% · {lastScan.result.riskLevel}
+                      {lastScan.result.severity} · {lastScan.result.riskLevel}
                     </p>
                   </div>
                 </AppLink>

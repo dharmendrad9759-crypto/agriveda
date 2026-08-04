@@ -49,6 +49,17 @@ const RESPONSE_SCHEMA = {
         required: ["name", "dose", "fracIrac"],
       },
     },
+    spraySticker: {
+      type: "string",
+      description:
+        "Hindi: which spray sticker/spreader to mix, dose (ml/L), and when. Empty if not needed.",
+    },
+    recoveryTonics: {
+      type: "array",
+      items: { type: "string" },
+      description:
+        "Hindi: 1-3 plant recovery tonics after disease (seaweed, micronutrient, humic, etc.) with dose",
+    },
     prevention: { type: "array", items: { type: "string" } },
     cropContext: { type: "string" },
     visualObservations: {
@@ -70,6 +81,8 @@ const RESPONSE_SCHEMA = {
     "environmentalFactors",
     "treatments",
     "activeIngredients",
+    "spraySticker",
+    "recoveryTonics",
     "prevention",
     "cropContext",
     "visualObservations",
@@ -114,10 +127,13 @@ RULES:
 3. ${problemLine}
 4. confidence: 0-100 based on image clarity and diagnostic certainty. Use below 55 if unsure.
 5. severity: Low, Medium, or High only.
-6. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage) in SIMPLE HINDI. Technical chemical names can stay in English.
-7. activeIngredients: only realistic, legal products used in Indian agriculture with practical doses (ml/L or g/L or kg/acre).
-8. visualObservations: 1-2 short Hindi sentences only — what the farmer can see (रंग, धब्बे, पत्तियाँ). No English jargon, no scientific terms, no long paragraphs.
-9. Do NOT copy generic text unrelated to the visible symptoms.
+6. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage, spraySticker, recoveryTonics) in SIMPLE HINDI. Technical chemical names can stay in English.
+7. treatments: cultural + field steps (remove leaves, spacing, irrigation). Also mention spray timing in Hindi.
+8. activeIngredients: MUST list realistic Indian दवाई / fungicide-insecticide with practical doses (ml/L or g/L or kg/acre). Always give at least 1 medicine when disease is present.
+9. spraySticker: ALWAYS give a spray sticker/spreader (e.g. sticker 0.5–1 ml/L) unless disease is absent.
+10. recoveryTonics: 1-3 recovery tonics after infection (seaweed extract, micronutrient mix, humic/fulvic, plant tonic) with dose — help crop recover.
+11. visualObservations: 1-2 short Hindi sentences only — what the farmer can see (रंग, धब्बे, पत्तियाँ). No English jargon, no scientific terms, no long paragraphs.
+12. Do NOT copy generic text unrelated to the visible symptoms. If 2 photos are provided, use BOTH (front + back of leaf / different angles).
 
 Return ONLY valid JSON matching the schema.`;
 }
@@ -146,6 +162,17 @@ const SYMPTOM_RESPONSE_SCHEMA = {
         required: ["name", "dose", "fracIrac"],
       },
     },
+    spraySticker: {
+      type: "string",
+      description:
+        "Hindi: which spray sticker/spreader to mix, dose (ml/L), and when. Empty if not needed.",
+    },
+    recoveryTonics: {
+      type: "array",
+      items: { type: "string" },
+      description:
+        "Hindi: 1-3 plant recovery tonics after disease (seaweed, micronutrient, humic, etc.) with dose",
+    },
     prevention: { type: "array", items: { type: "string" } },
     cropContext: { type: "string" },
     visualObservations: {
@@ -164,6 +191,8 @@ const SYMPTOM_RESPONSE_SCHEMA = {
     "environmentalFactors",
     "treatments",
     "activeIngredients",
+    "spraySticker",
+    "recoveryTonics",
     "prevention",
     "cropContext",
     "visualObservations",
@@ -193,10 +222,12 @@ RULES:
 1. Base the diagnosis on the described symptoms for Indian farming conditions — not a generic template.
 2. confidence: 0-100; typically 40-70 without a photo. Use below 50 if symptoms are vague.
 3. severity: Low, Medium, or High only.
-4. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage) in SIMPLE HINDI. Technical chemical names can stay in English.
-5. activeIngredients: only realistic, legal products used in Indian agriculture with practical doses (ml/L or g/L or kg/acre).
-6. visualObservations: 1-2 sentences in Hindi summarizing the symptoms the farmer described.
-7. If symptoms are too vague to diagnose, set diseaseName to "अधिक जानकारी चाहिए" and ask for clearer symptoms or a photo in treatments.
+4. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage, spraySticker, recoveryTonics) in SIMPLE HINDI. Technical chemical names can stay in English.
+5. activeIngredients: realistic Indian दवाई with doses. Give medicines when disease likely.
+6. spraySticker: spray sticker/spreader advice with dose when recommending spray.
+7. recoveryTonics: 1-3 recovery tonics with dose.
+8. visualObservations: 1-2 sentences in Hindi summarizing the symptoms the farmer described.
+9. If symptoms are too vague to diagnose, set diseaseName to "अधिक जानकारी चाहिए" and ask for clearer symptoms or a photo in treatments.
 
 Return ONLY valid JSON matching the schema.`;
 }
@@ -214,6 +245,8 @@ interface GeminiRawResponse {
   environmentalFactors: string[];
   treatments: string[];
   activeIngredients: { name: string; dose: string; fracIrac: string }[];
+  spraySticker?: string;
+  recoveryTonics?: string[];
   prevention: string[];
   cropContext: string;
   visualObservations?: string;
@@ -277,6 +310,10 @@ function toDiagnosisResult(raw: GeminiRawResponse, cropSlug: string): DiagnosisR
           fracIrac: a.fracIrac || "—",
         }))
       : [],
+    spraySticker: raw.spraySticker?.trim() || undefined,
+    recoveryTonics: Array.isArray(raw.recoveryTonics)
+      ? raw.recoveryTonics.map((t) => String(t).trim()).filter(Boolean)
+      : [],
     prevention: Array.isArray(raw.prevention) ? raw.prevention.filter(Boolean) : [],
     cropContext: raw.cropContext?.trim() || cropLabel(cropSlug),
     visualObservations: raw.visualObservations?.trim(),
@@ -289,13 +326,13 @@ async function callGeminiGenerate(
   apiKey: string,
   prompt: string,
   responseSchema: object,
-  image?: { base64: string; mimeType: string }
+  images?: { base64: string; mimeType: string }[]
 ): Promise<GeminiRawResponse> {
   // Native Gemini endpoint — supports both legacy AIzaSy and new AQ. auth keys
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
   const parts: Array<Record<string, unknown>> = [{ text: prompt }];
-  if (image) {
+  for (const image of images ?? []) {
     parts.push({ inline_data: { mime_type: image.mimeType, data: image.base64 } });
   }
 
@@ -373,15 +410,15 @@ export async function analyzePlantPhotoWithGemini(
   imageBase64: string,
   mimeType: string,
   cropSlug: string,
-  symptoms?: string
+  symptoms?: string,
+  secondImage?: { base64: string; mimeType: string }
 ): Promise<DiagnosisResult> {
   const prompt = buildPhotoPrompt(cropSlug, symptoms);
+  const images = [{ base64: imageBase64, mimeType }];
+  if (secondImage?.base64) images.push(secondImage);
 
   return runGeminiWithFallbacks(async (model, apiKey) => {
-    const raw = await callGeminiGenerate(model, apiKey, prompt, RESPONSE_SCHEMA, {
-      base64: imageBase64,
-      mimeType,
-    });
+    const raw = await callGeminiGenerate(model, apiKey, prompt, RESPONSE_SCHEMA, images);
 
     if (!raw.isValidPlantPhoto) {
       throw new Error(

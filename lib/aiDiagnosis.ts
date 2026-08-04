@@ -1,6 +1,7 @@
 export interface DiagnosisResult {
   diseaseName: string;
   pathogen: string;
+  /** Kept for API/history compat — not shown in farmer UI */
   confidence: number;
   severity: "Low" | "Medium" | "High";
   stage: string;
@@ -9,6 +10,10 @@ export interface DiagnosisResult {
   environmentalFactors: string[];
   treatments: string[];
   activeIngredients: { name: string; dose: string; fracIrac: string }[];
+  /** स्प्रे स्टिकर / spreader — better leaf coverage */
+  spraySticker?: string;
+  /** रोग के बाद रिकवरी टॉनिक */
+  recoveryTonics?: string[];
   prevention: string[];
   cropContext?: string;
   /** What Gemini actually saw in the photo */
@@ -98,11 +103,14 @@ export type AnalyzeDiagnosisInput = {
   cropSlug?: string;
   symptoms?: string;
   imageFile?: File | null;
+  /** Optional 2nd leaf/crop photo (max 2 total with imageFile) */
+  imageFile2?: File | null;
 };
 
 async function postDiagnosis(payload: Record<string, unknown>): Promise<DiagnosisResult> {
   const res = await fetch("/api/ai-doctor/analyze", {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
@@ -122,13 +130,19 @@ export async function analyzeDiagnosis(input: AnalyzeDiagnosisInput): Promise<Di
   const symptoms = input.symptoms?.trim() || "";
 
   if (input.imageFile) {
-    const { base64, mimeType } = await fileToBase64Payload(input.imageFile);
-    return postDiagnosis({
-      imageBase64: base64,
-      mimeType,
+    const primary = await fileToBase64Payload(input.imageFile);
+    const payload: Record<string, unknown> = {
+      imageBase64: primary.base64,
+      mimeType: primary.mimeType,
       cropSlug,
       symptoms: symptoms || undefined,
-    });
+    };
+    if (input.imageFile2) {
+      const second = await fileToBase64Payload(input.imageFile2);
+      payload.imageBase64Second = second.base64;
+      payload.mimeTypeSecond = second.mimeType;
+    }
+    return postDiagnosis(payload);
   }
 
   if (!symptoms) {

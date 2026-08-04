@@ -50,6 +50,12 @@ export async function POST(request: NextRequest) {
     const imageBase64 = typeof body.imageBase64 === "string" ? body.imageBase64.trim() : "";
     const mimeType =
       typeof body.mimeType === "string" ? body.mimeType.toLowerCase() : "image/jpeg";
+    const imageBase64Second =
+      typeof body.imageBase64Second === "string" ? body.imageBase64Second.trim() : "";
+    const mimeTypeSecond =
+      typeof body.mimeTypeSecond === "string"
+        ? body.mimeTypeSecond.toLowerCase()
+        : "image/jpeg";
     const cropSlug = typeof body.cropSlug === "string" ? body.cropSlug.trim() : "tomato";
     const symptoms =
       typeof body.symptoms === "string" ? body.symptoms.trim().slice(0, MAX_SYMPTOMS) : "";
@@ -81,11 +87,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    let second: { base64: string; mimeType: string } | undefined;
+    if (imageBase64Second) {
+      if (!ALLOWED_MIME.has(mimeTypeSecond)) {
+        return NextResponse.json(
+          { error: "Dusri photo sirf JPEG/PNG/WebP ho" },
+          { status: 400 }
+        );
+      }
+      const secondBytes = Math.ceil((imageBase64Second.length * 3) / 4);
+      if (secondBytes > MAX_BYTES) {
+        return NextResponse.json(
+          { error: "Dusri photo bahut badi hai" },
+          { status: 400 }
+        );
+      }
+      second = { base64: imageBase64Second, mimeType: mimeTypeSecond };
+    }
+
     const result = await analyzePlantPhotoWithGemini(
       imageBase64,
       mimeType,
       cropSlug,
-      symptoms || undefined
+      symptoms || undefined,
+      second
     );
     return NextResponse.json({ result });
   } catch (err) {

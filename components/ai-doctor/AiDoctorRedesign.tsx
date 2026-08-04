@@ -5,7 +5,6 @@ import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
 import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
-import { GaugeChart } from "@/components/shell/charts";
 import { AV } from "@/lib/design/tokens";
 import { AI_DOCTOR_CROPS, OTHER_CROP } from "@/data/ai-doctor-crops";
 import {
@@ -15,7 +14,6 @@ import {
 import { getCropImageUrl } from "@/lib/crops/crop-display";
 import { crops } from "@/data/crops";
 import {
-  AlertTriangle,
   ArrowRight,
   Bot,
   Camera,
@@ -25,27 +23,13 @@ import {
   History,
   ImagePlus,
   Leaf,
-  ShieldCheck,
   Sparkles,
   Stethoscope,
-  Zap,
 } from "lucide-react";
 import type { AIHistoryEntry } from "@/hooks/useAIHistory";
 
 /** @deprecated Prefer getSymptomChipsForCrop — kept for older imports */
 export const SYMPTOM_CHIPS = DEFAULT_SYMPTOM_CHIPS;
-
-const RISK_WHY = [
-  "High humidity + warm nights favour fungal spores",
-  "Recent rain increases leaf wetness hours",
-  "Dense canopy reduces air flow in the field",
-];
-
-const RISK_ADVICE = [
-  "Scout lower leaves early morning for grey/olive spots",
-  "Keep drainage clear — avoid standing water",
-  "Prepare Tricyclazole spray if symptoms appear",
-];
 
 function SectionLabel({ title, step, hint }: { title: string; step?: number; hint?: string }) {
   return (
@@ -316,29 +300,42 @@ export function AiDoctorSymptoms({
 /** Photo upload */
 export function AiDoctorPhotoUpload({
   previewUrl,
+  previewUrl2,
   previewFailed,
   fileName,
   onCamera,
   onGallery,
   onClear,
+  onAddSecond,
+  onClearSecond,
   cameraInput,
   galleryInput,
+  secondInput,
 }: {
   previewUrl: string | null;
+  previewUrl2?: string | null;
   previewFailed: boolean;
   fileName: string;
   onCamera: () => void;
   onGallery: () => void;
   onClear?: () => void;
+  onAddSecond?: () => void;
+  onClearSecond?: () => void;
   cameraInput: ReactNode;
   galleryInput: ReactNode;
+  secondInput?: ReactNode;
 }) {
   const hasPreview = Boolean(previewUrl);
+  const hasSecond = Boolean(previewUrl2);
 
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
       <div className="mb-2.5 flex items-center justify-between gap-2">
-        <SectionLabel title="फोटो चुनें" step={1} hint="पहले पत्ती / फसल की फोटो लें" />
+        <SectionLabel
+          title="फोटो चुनें"
+          step={1}
+          hint="1 ज़रूरी · दूसरी वैकल्पिक (दोनों कोण मददगार)"
+        />
         {hasPreview && onClear && (
           <button
             type="button"
@@ -349,17 +346,42 @@ export function AiDoctorPhotoUpload({
           </button>
         )}
       </div>
+      <p className="mb-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-semibold leading-snug text-emerald-800 dark:text-emerald-200">
+        आप अधिकतम 2 फोटो जोड़ सकते हैं — पहली मुख्य, दूसरी पत्ती का दूसरा पहलू / कोण (optional)।
+      </p>
       {cameraInput}
       {galleryInput}
+      {secondInput}
 
       <div className="overflow-hidden rounded-2xl border border-dashed border-emerald-500/40 bg-gradient-to-b from-emerald-50/80 to-white dark:from-emerald-950/30 dark:to-[var(--av-surface-inset)]">
         {previewUrl && !previewFailed ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={previewUrl}
-            alt="Selected crop photo"
-            className="mx-auto max-h-52 w-full object-cover sm:max-h-64"
-          />
+          <div className={hasSecond ? "grid grid-cols-2 gap-px bg-emerald-500/15" : ""}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewUrl}
+              alt="Photo 1"
+              className={`mx-auto w-full object-cover ${hasSecond ? "max-h-44" : "max-h-52 sm:max-h-64"}`}
+            />
+            {hasSecond ? (
+              <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewUrl2!}
+                  alt="Photo 2"
+                  className="mx-auto max-h-44 w-full object-cover"
+                />
+                {onClearSecond ? (
+                  <button
+                    type="button"
+                    onClick={onClearSecond}
+                    className="absolute right-1.5 top-1.5 rounded-lg bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white"
+                  >
+                    2 हटाएँ
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
         ) : previewUrl && previewFailed ? (
           <div className="px-4 py-8 text-center sm:py-10">
             <ImagePlus className="mx-auto h-10 w-10 text-emerald-600 sm:h-12 sm:w-12" />
@@ -387,7 +409,7 @@ export function AiDoctorPhotoUpload({
             className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition active:scale-[0.98]"
           >
             <Camera className="h-5 w-5" />
-            {hasPreview ? "नई फोटो" : "Camera"}
+            {hasPreview ? "पहली बदलें" : "Camera"}
           </button>
           <button
             type="button"
@@ -395,9 +417,22 @@ export function AiDoctorPhotoUpload({
             className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border-2 border-emerald-500/35 bg-white px-3 text-sm font-bold text-emerald-800 transition active:scale-[0.98] dark:bg-[var(--av-surface)] dark:text-emerald-200"
           >
             <ImagePlus className="h-5 w-5" />
-            {hasPreview ? "Change" : "Gallery"}
+            {hasPreview ? "Gallery" : "Gallery"}
           </button>
         </div>
+
+        {hasPreview && !hasSecond && onAddSecond ? (
+          <div className="border-t border-emerald-500/15 p-2.5">
+            <button
+              type="button"
+              onClick={onAddSecond}
+              className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-dashed border-emerald-500/40 bg-white/80 px-3 text-sm font-bold text-emerald-800 dark:bg-transparent dark:text-emerald-200"
+            >
+              <ImagePlus className="h-4 w-4" />
+              दूसरी फोटो जोड़ें (optional)
+            </button>
+          </div>
+        ) : null}
       </div>
     </DarkCard>
   );
@@ -531,7 +566,7 @@ export function AiDoctorRecentDiagnoses({
                           {date}
                         </span>
                         <span>·</span>
-                        <span>{h.result.confidence}% conf.</span>
+                        <span>{h.result.severity}</span>
                       </div>
                     </div>
                   </button>
@@ -546,61 +581,7 @@ export function AiDoctorRecentDiagnoses({
 }
 
 export function AiDoctorRiskForecast() {
-  return (
-    <DarkCard className="!p-3.5 sm:!p-5">
-      <SectionLabel title="Disease risk forecast" />
-      <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:gap-4">
-        <div className="shrink-0">
-          <GaugeChart value={78} label="High Risk" />
-        </div>
-        <div className="min-w-0 flex-1 space-y-3">
-          <div>
-            <p className="text-sm font-bold text-[var(--av-text-primary)]">Paddy — Leaf Blast</p>
-            <p className={`mt-1 ${AV.body}`}>
-              Agle 7 din humid conditions mein risk high hai.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3">
-            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-amber-800 dark:text-amber-200">
-              <AlertTriangle className="h-3.5 w-3.5" />
-              Why risk is high
-            </p>
-            <ul className="mt-2 space-y-1.5">
-              {RISK_WHY.map((w) => (
-                <li key={w} className="flex gap-2 text-xs text-[var(--av-text-secondary)]">
-                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
-                  {w}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
-            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              Advice
-            </p>
-            <ul className="mt-2 space-y-1.5">
-              {RISK_ADVICE.map((a) => (
-                <li key={a} className="flex gap-2 text-xs text-[var(--av-text-secondary)]">
-                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                  {a}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex items-start gap-3 rounded-xl border border-emerald-500/30 bg-gradient-to-r from-emerald-600 to-teal-600 p-3 text-white shadow-md shadow-emerald-500/20">
-            <Zap className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-sm font-semibold leading-snug">
-              Kal subah field scout karein — suspicious leaf AI Doctor se check karein.
-            </p>
-          </div>
-        </div>
-      </div>
-    </DarkCard>
-  );
+  return null;
 }
 
 export function AiDoctorAskExpert() {
@@ -612,15 +593,11 @@ export function AiDoctorTipsHelpline() {
 }
 
 export function AiDoctorSidebarPanels() {
-  return (
-    <div className="space-y-4">
-      <AiDoctorRiskForecast />
-    </div>
-  );
+  return null;
 }
 
 export function AiDoctorDesktopSidebar() {
-  return <AiDoctorSidebarPanels />;
+  return null;
 }
 
 export function AiDoctorDesktopHero({

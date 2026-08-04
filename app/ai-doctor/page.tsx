@@ -7,7 +7,6 @@ import {
     AiDoctorHero,
     AiDoctorPhotoUpload,
     AiDoctorRecentDiagnoses,
-    AiDoctorRiskForecast,
     AiDoctorSymptoms,
 } from "@/components/ai-doctor/AiDoctorRedesign";
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
@@ -61,16 +60,19 @@ export default function AIDoctorPage() {
   const { t } = useLocale();
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const secondInputRef = useRef<HTMLInputElement>(null);
   const { addEntry, history, clearHistory } = useAIHistory();
   const { showToast } = useToast();
   const [referringExpert, setReferringExpert] = useState(false);
 
   const [selectedCrop, setSelectedCrop] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile2, setSelectedFile2] = useState<File | null>(null);
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl2, setPreviewUrl2] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
   const [fileName, setFileName] = useState("");
   const [showWhy, setShowWhy] = useState(true);
@@ -183,7 +185,31 @@ export default function AIDoctorPage() {
     setPreviewFailed(false);
     setResult(null);
     setSymptomsOnlyMode(false);
-    showToast("फोटो चुनी — अब फसल चुनें", "success");
+    showToast("फोटो 1 चुनी — चाहें तो दूसरी भी जोड़ें", "success");
+  };
+
+  const handleSecondFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file?.type.startsWith("image/")) {
+      showToast("सिर्फ़ image file चुनें", "error");
+      return;
+    }
+    if (!selectedFile && !previewUrl) {
+      showToast("पहले मुख्य फोटो चुनें", "error");
+      return;
+    }
+    setSelectedFile2(file);
+    if (previewUrl2?.startsWith("blob:")) URL.revokeObjectURL(previewUrl2);
+    setPreviewUrl2(URL.createObjectURL(file));
+    setResult(null);
+    showToast("दूसरी फोटो जुड़ गई ✓", "success");
+  };
+
+  const clearSecondPhoto = () => {
+    if (previewUrl2?.startsWith("blob:")) URL.revokeObjectURL(previewUrl2);
+    setPreviewUrl2(null);
+    setSelectedFile2(null);
+    if (secondInputRef.current) secondInputRef.current.value = "";
   };
 
   const clearPhoto = () => {
@@ -192,6 +218,7 @@ export default function AIDoctorPage() {
     setPreviewFailed(false);
     setSelectedFile(null);
     setFileName("");
+    clearSecondPhoto();
     if (cameraInputRef.current) cameraInputRef.current.value = "";
     if (galleryInputRef.current) galleryInputRef.current.value = "";
     if (!symptomsOnlyMode) {
@@ -215,6 +242,7 @@ export default function AIDoctorPage() {
     try {
       const diagnosis = await analyzeDiagnosis({
         imageFile: selectedFile,
+        imageFile2: selectedFile2,
         cropSlug: selectedCrop || OTHER_CROP.slug,
         symptoms: symptomNotes,
       });
@@ -227,7 +255,7 @@ export default function AIDoctorPage() {
       showToast("विश्लेषण पूर्ण ✓");
       track("ai_scan", {
         crop: selectedCrop || OTHER_CROP.slug,
-        mode: selectedFile ? "photo" : "symptoms",
+        mode: selectedFile ? (selectedFile2 ? "photo2" : "photo") : "symptoms",
       });
     } catch (err) {
       showToast(err instanceof Error ? err.message : "विश्लेषण विफल", "error");
@@ -335,11 +363,14 @@ export default function AIDoctorPage() {
             {/* 1 — Photo first */}
             <AiDoctorPhotoUpload
               previewUrl={previewUrl}
+              previewUrl2={previewUrl2}
               previewFailed={previewFailed}
               fileName={fileName}
               onCamera={() => cameraInputRef.current?.click()}
               onGallery={() => galleryInputRef.current?.click()}
               onClear={clearPhoto}
+              onAddSecond={() => secondInputRef.current?.click()}
+              onClearSecond={clearSecondPhoto}
               cameraInput={
                 <input
                   ref={cameraInputRef}
@@ -356,6 +387,15 @@ export default function AIDoctorPage() {
                   type="file"
                   accept="image/*"
                   onChange={handleFileSelect}
+                  className="sr-only"
+                />
+              }
+              secondInput={
+                <input
+                  ref={secondInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleSecondFileSelect}
                   className="sr-only"
                 />
               }
@@ -462,11 +502,7 @@ export default function AIDoctorPage() {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
-                      <p className="text-[10px] text-[var(--av-text-muted)]">Confidence</p>
-                      <p className="font-black text-[var(--av-text-primary)]">{result.confidence}%</p>
-                    </div>
+                  <div className="grid grid-cols-2 gap-2 text-center">
                     <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
                       <p className="text-[10px] text-[var(--av-text-muted)]">Severity</p>
                       <p className="font-black text-red-500">{result.severity}</p>
@@ -504,24 +540,73 @@ export default function AIDoctorPage() {
                   <div className="rounded-xl border border-[var(--av-border)] p-3.5 sm:p-4">
                     <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
                       <Leaf className="h-4 w-4" />
-                      Treatment
+                      इलाज / Treatment
                     </p>
-                    <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
-                      {result.treatments.map((t, i) => (
-                        <li key={i}>• {formatFarmerDose(t)}</li>
-                      ))}
-                    </ul>
-                    <div className="mt-3 space-y-2">
-                      {result.activeIngredients.map((ai, i) => (
-                        <div key={i} className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs">
-                          <span className="font-bold text-emerald-700 dark:text-emerald-300">{ai.name}</span>
-                          <span className="text-[var(--av-text-muted)]">
-                            {" "}
-                            — {formatFarmerDose(ai.dose)}
-                          </span>
-                        </div>
-                      ))}
+                    {result.treatments.length > 0 ? (
+                      <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
+                        {result.treatments.map((t, i) => (
+                          <li key={i}>• {formatFarmerDose(t)}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+
+                    <div className="mt-3">
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
+                        दवा (Medicines)
+                      </p>
+                      <div className="mt-2 space-y-2">
+                        {result.activeIngredients.length > 0 ? (
+                          result.activeIngredients.map((ai, i) => (
+                            <div key={i} className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs">
+                              <span className="font-bold text-emerald-700 dark:text-emerald-300">
+                                {ai.name}
+                              </span>
+                              <span className="text-[var(--av-text-muted)]">
+                                {" "}
+                                — {formatFarmerDose(ai.dose)}
+                              </span>
+                              {ai.fracIrac && ai.fracIrac !== "—" ? (
+                                <span className="mt-0.5 block text-[10px] text-[var(--av-text-muted)]">
+                                  {ai.fracIrac}
+                                </span>
+                              ) : null}
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-xs text-[var(--av-text-muted)]">
+                            दवा का सुझाव नहीं मिला — विशेषज्ञ से पूछें।
+                          </p>
+                        )}
+                      </div>
                     </div>
+
+                    {result.spraySticker ? (
+                      <div className="mt-3 rounded-lg border border-sky-500/20 bg-sky-500/10 px-3 py-2">
+                        <p className="text-[11px] font-bold text-sky-800 dark:text-sky-200">
+                          स्प्रे स्टिकर
+                        </p>
+                        <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
+                          {formatFarmerDose(result.spraySticker)}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    {result.recoveryTonics && result.recoveryTonics.length > 0 ? (
+                      <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2">
+                        <p className="text-[11px] font-bold text-amber-900 dark:text-amber-200">
+                          रोग रिकवरी टॉनिक
+                        </p>
+                        <ul className="mt-1 space-y-1 text-xs text-[var(--av-text-secondary)]">
+                          {result.recoveryTonics.map((tonic, i) => (
+                            <li key={i}>• {formatFarmerDose(tonic)}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+
+                    <p className="mt-3 text-[10px] leading-snug text-[var(--av-text-muted)]">
+                      लेबल, PHI और स्थानीय कृषि अधिकारी की सलाह मानें — यह AI सुझाव है, अंतिम नुस्खा नहीं।
+                    </p>
                   </div>
 
                   <button
@@ -582,10 +667,6 @@ export default function AIDoctorPage() {
               expanded={historyExpanded}
               onClear={history.length ? clearHistory : undefined}
             />
-
-            <div className="space-y-3.5 sm:space-y-5 lg:hidden">
-              <AiDoctorRiskForecast />
-            </div>
           </div>
 
           <div className="hidden lg:block">
