@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   const auth = requireSession(request);
   if ("error" in auth) return auth.error;
 
-  const limited = rateLimit(`spray-post:${auth.session.deviceId}`, 30, 60_000);
+  const limited = await rateLimit(`spray-post:${auth.session.deviceId}`, 30, 60_000);
   if (!limited.ok) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }

@@ -21,6 +21,8 @@ export interface SaathiContext {
   replyLanguage?: ReplyLanguage | "hinglish";
 }
 
+export type SaathiChatResult = { reply: string; offline: boolean };
+
 function languageRules(lang: ReplyLanguage | "hinglish" = "hi"): string {
   const normalized: ReplyLanguage = lang === "en" ? "en" : "hi";
   if (normalized === "en") {
@@ -32,13 +34,17 @@ Keep main product/tool words in English inside brackets, e.g. स्प्रे
 STYLE: Complete answer — never truncate. Simple bullets. Always include dose, timing, product names. For spray schedules list every stage fully.`;
 }
 
+/**
+ * Live Gemini only. When key missing / all models fail → `{ offline: true }` (caller returns 503).
+ * Never invent a fake AI answer that looks live.
+ */
 export async function chatWithKisanSaathi(
   messages: SaathiMessage[],
   context: SaathiContext
-): Promise<string> {
+): Promise<SaathiChatResult> {
   const apiKey = getGeminiApiKey();
   if (!apiKey) {
-    return fallbackReply(messages, context);
+    return { reply: "", offline: true };
   }
 
   const knowledge = context.cropSlug
@@ -63,7 +69,14 @@ ${knowledge ? `Knowledge base excerpts:\n${knowledge}` : ""}`;
 
   const contents = [
     { role: "user", parts: [{ text: system }] },
-    { role: "model", parts: [{ text: "समझ गया। मैं Kisan Saathi हूँ — आपकी फसल और जगह के हिसाब से सटीक सलाह दूँगा।" }] },
+    {
+      role: "model",
+      parts: [
+        {
+          text: "समझ गया। मैं Kisan Saathi हूँ — आपकी फसल और जगह के हिसाब से सटीक सलाह दूँगा।",
+        },
+      ],
+    },
     ...messages.map((m) => ({
       role: m.role === "user" ? "user" : "model",
       parts: [{ text: m.content }],
@@ -89,27 +102,11 @@ ${knowledge ? `Knowledge base excerpts:\n${knowledge}` : ""}`;
       if (!res.ok) continue;
       const data = await res.json();
       const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) return text.trim();
+      if (text) return { reply: text.trim(), offline: false };
     } catch {
       continue;
     }
   }
 
-  return fallbackReply(messages, context);
-}
-
-function fallbackReply(messages: SaathiMessage[], context: SaathiContext): string {
-  const last = messages[messages.length - 1]?.content ?? "";
-  return `🌾 Kisan Saathi (offline mode)
-
-आपकी बात: "${last.slice(0, 80)}..."
-
-${context.cropName ? `फसल: ${context.cropName}` : "फसल चुनें"} | ${context.district ?? "स्थान जोड़ें"}
-
-तुरंत मदद:
-• फोटो से पहचान → AI Doctor (/ai-doctor)
-• लक्षण से खोज → Pest Solver (/pest-solver)
-• स्प्रे समय → Weather (/weather)
-
-Gemini API key जोड़ने पर पूरा AI chat चालू होगा।`;
+  return { reply: "", offline: true };
 }

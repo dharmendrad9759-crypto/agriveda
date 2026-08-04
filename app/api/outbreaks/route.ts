@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
   }
 
   const ip = clientIp(request);
-  const limited = rateLimit(`outbreak-get:${ip}`, 60, 60_000);
+  const limited = await rateLimit(`outbreak-get:${ip}`, 60, 60_000);
   if (!limited.ok) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   const auth = requireSession(request);
   if ("error" in auth) return auth.error;
 
-  const limited = rateLimit(`outbreak-post:${auth.session.deviceId}`, 10, 60 * 60_000);
+  const limited = await rateLimit(`outbreak-post:${auth.session.deviceId}`, 10, 60 * 60_000);
   if (!limited.ok) {
     return NextResponse.json(
       { error: "Outbreak report limit — 1 घंटे में ज़्यादा रिपोर्ट न भेजें" },

@@ -261,11 +261,11 @@ export default function AskQueryPage() {
           expertName: isHi ? "एक्सपर्ट (प्रतीक्षा)" : "Expert (pending)",
           date: today,
           preview: isHi
-            ? "एक्सपर्ट जवाब की प्रतीक्षा — “मेरे सवाल” में दिखेगा।"
-            : "Waiting for expert — check My queries.",
+            ? "एक्सपर्ट जवाब की प्रतीक्षा — ऐप + WhatsApp/SMS।"
+            : "Waiting for expert — app + WhatsApp/SMS.",
           fullAnswer: isHi
-            ? "आपका सवाल एक्सपर्ट को भेज दिया गया है। जवाब आने पर “मेरे सवाल” में दिखेगा। AI यहाँ जवाब नहीं देता।"
-            : "Your question was sent to an expert. The reply will appear in My queries. AI does not answer here.",
+            ? "आपका सवाल एक्सपर्ट को भेज दिया गया है। जवाब “मेरे सवाल” में दिखेगा और नंबर पर WhatsApp/SMS भी जाएगा (कॉन्फ़िगर हो तो)। AI यहाँ जवाब नहीं देता।"
+            : "Sent to expert. Reply appears in My queries and WhatsApp/SMS when messaging is configured. AI does not answer here.",
         },
       });
       clearAiDoctorExpertReferral();

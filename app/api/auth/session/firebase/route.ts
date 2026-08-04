@@ -12,7 +12,7 @@ import { clientIp, rateLimit } from "@/lib/rateLimit";
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const limited = rateLimit(`firebase-session:${ip}`, 10, 60_000);
+    const limited = await rateLimit(`firebase-session:${ip}`, 10, 60_000);
     if (!limited.ok) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }

@@ -7,7 +7,6 @@ import { cropCatalog, categoryOrder } from "@/data/crop-catalog";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import { clientKisanSaathiFallback } from "@/lib/kisanSaathiClient";
 
 interface ChatMsg {
   role: "user" | "assistant";
@@ -78,6 +77,7 @@ export default function KisanSaathiChat() {
 
         const res = await fetch(apiUrl, {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: nextMessages,
@@ -93,12 +93,18 @@ export default function KisanSaathiChat() {
 
         setMessages((prev) => [...prev, { role: "assistant", content: data.reply! }]);
       } catch (err) {
-        const fallback = clientKisanSaathiFallback(trimmed, context);
-        setMessages((prev) => [...prev, { role: "assistant", content: fallback }]);
-        showToast(
-          err instanceof Error ? `Offline guide: ${err.message.slice(0, 40)}` : "Offline guide mode",
-          "info"
-        );
+        const msg =
+          err instanceof Error
+            ? err.message
+            : "किसान साथी अभी उपलब्ध नहीं";
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: `⚠️ ${msg}\n\nनोट: यह नकली AI जवाब नहीं है। लॉगिन/ GEMINI सेट होने पर फिर कोशिश करें।\n• AI Doctor → /ai-doctor\n• मौसम → /weather`,
+          },
+        ]);
+        showToast(msg.slice(0, 60), "info");
       } finally {
         setLoading(false);
       }

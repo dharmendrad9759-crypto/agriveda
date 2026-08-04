@@ -8,7 +8,7 @@ import { clientIp, rateLimit } from "@/lib/rateLimit";
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const limited = rateLimit(`otp-verify:${ip}`, 10, 60_000);
+    const limited = await rateLimit(`otp-verify:${ip}`, 10, 60_000);
     if (!limited.ok) {
       return NextResponse.json(
         { error: `बहुत प्रयास — ${limited.retryAfterSec} सेकंड बाद` },
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "deviceId missing" }, { status: 400 });
     }
 
-    if (!verifyOtp(phone, otp)) {
+    if (!(await verifyOtp(phone, otp))) {
       return NextResponse.json(
         { error: "OTP गलत है या समय समाप्त हो गया" },
         { status: 401 }

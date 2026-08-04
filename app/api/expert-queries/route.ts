@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServiceClient, hasSupabaseServiceRole } from "@/lib/supabase";
 import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
-import { readSessionFromRequest } from "@/lib/session";
+import { requireSession } from "@/lib/session";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 import {
   createExpertQuery,
@@ -30,23 +30,17 @@ function publicQuery(row: ExpertQueryRow | null) {
   };
 }
 
+/** Farmer inbox — session required (no client-supplied deviceId IDOR). */
 export async function GET(request: NextRequest) {
   if (!expertQueriesBackendReady()) {
     return NextResponse.json({ error: "Expert inbox not configured" }, { status: 503 });
   }
 
-  const session = readSessionFromRequest(request);
-  const deviceId =
-    session?.deviceId ||
-    request.headers.get("x-device-id")?.trim() ||
-    request.nextUrl.searchParams.get("deviceId")?.trim() ||
-    "";
+  const auth = requireSession(request);
+  if ("error" in auth) return auth.error;
+  const deviceId = auth.session.deviceId;
 
-  if (!deviceId || deviceId.length < 8) {
-    return NextResponse.json({ error: "deviceId required" }, { status: 400 });
-  }
-
-  const limited = rateLimit(`expert-q-get:${deviceId}`, 60, 60_000);
+  const limited = await rateLimit(`expert-q-get:${deviceId}`, 60, 60_000);
   if (!limited.ok) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
@@ -55,6 +49,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ queries: rows.map(publicQuery) });
 }
 
+/** Create expert ticket — session required; phone/device from session only. */
 export async function POST(request: NextRequest) {
   if (!expertQueriesBackendReady()) {
     return NextResponse.json(
@@ -66,7 +61,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const session = readSessionFromRequest(request);
+  const auth = requireSession(request);
+  if ("error" in auth) return auth.error;
+
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
@@ -74,13 +71,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const deviceId = String(session?.deviceId || body.deviceId || "").trim().slice(0, 80);
-  if (!deviceId || deviceId.length < 8) {
-    return NextResponse.json({ error: "deviceId required" }, { status: 400 });
-  }
-
+  const deviceId = auth.session.deviceId;
   const ip = clientIp(request);
-  const limited = rateLimit(`expert-q-post:${deviceId}:${ip}`, 12, 60 * 60_000);
+  const limited = await rateLimit(`expert-q-post:${deviceId}:${ip}`, 12, 60 * 60_000);
   if (!limited.ok) {
     return NextResponse.json(
       { error: `बहुत सारे सवाल — ${limited.retryAfterSec} सेकंड बाद कोशिश करें` },
@@ -101,7 +94,7 @@ export async function POST(request: NextRequest) {
   let farmerId: string | null = null;
   if (hasSupabaseServiceRole() && client) {
     farmerId = await ensureFarmerRecord(deviceId, client, {
-      phone: session?.phone || String(body.farmerPhone ?? "").replace(/\D/g, "") || undefined,
+      phone: auth.session.phone,
       name: String(body.farmerName ?? "").trim() || undefined,
     });
   }
@@ -119,10 +112,7 @@ export async function POST(request: NextRequest) {
       farmerId,
       deviceId,
       farmerName: String(body.farmerName ?? "").trim() || undefined,
-      farmerPhone:
-        session?.phone ||
-        String(body.farmerPhone ?? "").replace(/\D/g, "") ||
-        undefined,
+      farmerPhone: auth.session.phone,
       farmerVillage: String(body.farmerVillage ?? "").trim() || undefined,
       farmerDistrict: String(body.farmerDistrict ?? "").trim() || undefined,
       farmerState: String(body.farmerState ?? "").trim() || undefined,

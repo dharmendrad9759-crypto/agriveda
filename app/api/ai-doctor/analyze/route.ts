@@ -5,7 +5,7 @@ import {
   getGeminiApiKey,
 } from "@/lib/geminiPlantDoctor";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
-import { readSessionFromRequest } from "@/lib/session";
+import { requireSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -32,10 +32,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const auth = requireSession(request);
+  if ("error" in auth) return auth.error;
+
   const ip = clientIp(request);
-  const session = readSessionFromRequest(request);
-  const bucket = session?.deviceId ? `ai:${session.deviceId}` : `ai-ip:${ip}`;
-  const limited = rateLimit(bucket, 20, 60 * 60_000);
+  const bucket = `ai:${auth.session.deviceId}:${ip}`;
+  const limited = await rateLimit(bucket, 20, 60 * 60_000);
   if (!limited.ok) {
     return NextResponse.json(
       { error: `AI limit — ${limited.retryAfterSec} सेकंड बाद फिर कोशिश करें` },

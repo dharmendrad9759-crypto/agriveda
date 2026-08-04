@@ -5,7 +5,6 @@ import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import { getDeviceId } from "@/lib/deviceId";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import {
@@ -56,17 +55,21 @@ export default function MyQueriesPage() {
     setLoading(true);
     setError("");
     try {
-      const deviceId = getDeviceId();
-      const res = await fetch(
-        `/api/expert-queries?deviceId=${encodeURIComponent(deviceId)}`,
-        {
-          credentials: "include",
-          headers: { "x-device-id": deviceId },
-        }
-      );
+      const res = await fetch(`/api/expert-queries`, {
+        credentials: "include",
+      });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || (isHi ? "लोड नहीं हुआ" : "Failed to load"));
+        setError(
+          data.error ||
+            (isHi
+              ? res.status === 401
+                ? "पहले मोबाइल लॉगिन करें — फिर अपने सवाल दिखेंगे"
+                : "लोड नहीं हुआ"
+              : res.status === 401
+                ? "Please log in first"
+                : "Failed to load")
+        );
         return;
       }
       setQueries((data.queries ?? []) as FarmerQuery[]);
@@ -79,6 +82,10 @@ export default function MyQueriesPage() {
 
   useEffect(() => {
     load();
+    const t = window.setInterval(() => {
+      void load();
+    }, 45_000);
+    return () => window.clearInterval(t);
   }, [load]);
 
   return (

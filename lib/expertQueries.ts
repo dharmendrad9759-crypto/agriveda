@@ -112,8 +112,15 @@ async function uploadPhoto(
       console.error("[expertQueries] photo upload", error.message);
       return null;
     }
+    // Prefer signed URL (works when bucket is private). Path stored; URL may be refreshed later.
+    const { data: signed, error: signErr } = await client.storage
+      .from("expert-query-photos")
+      .createSignedUrl(path, 60 * 60 * 24 * 7); // 7 days
+    if (!signErr && signed?.signedUrl) return signed.signedUrl;
+
+    // Legacy public URL fallback if signed fails (bucket still public)
     const { data } = client.storage.from("expert-query-photos").getPublicUrl(path);
-    return data.publicUrl || null;
+    return data.publicUrl || `storage://expert-query-photos/${path}`;
   } catch (err) {
     console.error("[expertQueries] photo upload failed", err);
     return null;

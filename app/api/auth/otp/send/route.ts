@@ -11,7 +11,7 @@ import { clientIp, rateLimit } from "@/lib/rateLimit";
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const limited = rateLimit(`otp-send:${ip}`, 5, 60_000);
+    const limited = await rateLimit(`otp-send:${ip}`, 5, 60_000);
     if (!limited.ok) {
       return NextResponse.json(
         { error: `बहुत जल्दी OTP माँगे — ${limited.retryAfterSec} सेकंड बाद कोशिश करें` },
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const phoneLimited = rateLimit(`otp-send-phone:${phone}`, 3, 60 * 60_000);
+    const phoneLimited = await rateLimit(`otp-send-phone:${phone}`, 3, 60 * 60_000);
     if (!phoneLimited.ok) {
       return NextResponse.json(
         { error: "इस नंबर पर बहुत OTP भेज चुके — 1 घंटे बाद कोशिश करें" },
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     const otp = generateOtp();
-    saveOtp(phone, otp);
+    await saveOtp(phone, otp);
 
     const smsConfigured = isSmsConfigured();
     if (!smsConfigured && isProductionRuntime()) {

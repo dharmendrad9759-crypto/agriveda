@@ -89,7 +89,9 @@ function mockResponse(city?: string | null, lat?: string | null, lon?: string | 
   });
   return NextResponse.json({
     ...mock,
-    demoNotice: "Demo मौसम — Open-Meteo / network उपलब्ध नहीं था।",
+    isDemo: true,
+    source: "mock",
+    demoNotice: "यह नमूना मौसम है — लाइव डेटा नहीं। स्प्रे/खेत का फैसला सिर्फ इसी पर न लें।",
   });
 }
 

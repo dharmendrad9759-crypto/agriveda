@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   if ("error" in auth) return auth.error;
 
   const ip = clientIp(request);
-  const limited = rateLimit(`admin-eq-list:${ip}`, 120, 60_000);
+  const limited = await rateLimit(`admin-eq-list:${ip}`, 120, 60_000);
   if (!limited.ok) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }

@@ -24,7 +24,7 @@ export async function PATCH(request: NextRequest, ctx: Ctx) {
   if ("error" in auth) return auth.error;
 
   const ip = clientIp(request);
-  const limited = rateLimit(`admin-eq-patch:${ip}`, 60, 60_000);
+  const limited = await rateLimit(`admin-eq-patch:${ip}`, 60, 60_000);
   if (!limited.ok) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
@@ -44,7 +44,16 @@ export async function PATCH(request: NextRequest, ctx: Ctx) {
       body.expertName?.trim() || "Agriveda Expert"
     );
     if (!row) return NextResponse.json({ error: "Reply failed" }, { status: 404 });
-    return NextResponse.json({ ok: true, query: row });
+
+    // Farmer app + WhatsApp/SMS (best effort — never block admin reply)
+    try {
+      const { notifyFarmerOfExpertReply } = await import("@/lib/notifyExpertReply");
+      const delivery = await notifyFarmerOfExpertReply(row);
+      return NextResponse.json({ ok: true, query: row, delivery });
+    } catch (err) {
+      console.error("[admin reply notify]", err);
+      return NextResponse.json({ ok: true, query: row, delivery: null });
+    }
   }
 
   if (

@@ -1,11 +1,30 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { chatWithKisanSaathi, type SaathiContext, type SaathiMessage } from "@/lib/geminiKisanSaathi";
+import { getGeminiApiKey } from "@/lib/geminiPlantDoctor";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { requireSession } from "@/lib/session";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    if (!getGeminiApiKey()) {
+      return NextResponse.json(
+        {
+          error: "किसान साथी अभी उपलब्ध नहीं — GEMINI_API_KEY सेट करें",
+          mode: "offline",
+        },
+        { status: 503 }
+      );
+    }
+
+    const auth = requireSession(req);
+    if ("error" in auth) return auth.error;
+
     const ip = clientIp(req);
-    const limited = rateLimit(`saathi:${ip}`, 40, 60 * 60_000);
+    const limited = await rateLimit(
+      `saathi:${auth.session.deviceId}:${ip}`,
+      40,
+      60 * 60_000
+    );
     if (!limited.ok) {
       return NextResponse.json(
         { error: `बहुत सारे सवाल — ${limited.retryAfterSec} सेकंड बाद` },
@@ -25,8 +44,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Chat too long — नया chat शुरू करें" }, { status: 400 });
     }
 
-    const reply = await chatWithKisanSaathi(messages, context);
-    return NextResponse.json({ reply, provider: "kisan-saathi" });
+    const result = await chatWithKisanSaathi(messages, context);
+    if (result.offline || !result.reply.trim()) {
+      return NextResponse.json(
+        {
+          error: "किसान साथी अभी जवाब नहीं दे पाया — थोड़ी देर बाद कोशिश करें",
+          mode: "offline",
+        },
+        { status: 503 }
+      );
+    }
+    return NextResponse.json({
+      reply: result.reply,
+      provider: "kisan-saathi",
+      mode: "live",
+    });
   } catch (err) {
     console.error("[kisan-saathi]", err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "Chat failed — later try करें" }, { status: 500 });

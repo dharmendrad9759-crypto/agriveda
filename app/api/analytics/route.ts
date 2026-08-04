@@ -7,7 +7,7 @@ import { clientIp, rateLimit } from "@/lib/rateLimit";
  */
 export async function POST(request: NextRequest) {
   const ip = clientIp(request);
-  const limited = rateLimit(`analytics:${ip}`, 120, 60_000);
+  const limited = await rateLimit(`analytics:${ip}`, 120, 60_000);
   if (!limited.ok) {
     return NextResponse.json({ ok: false }, { status: 429 });
   }

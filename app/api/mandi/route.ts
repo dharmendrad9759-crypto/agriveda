@@ -113,10 +113,8 @@ export async function GET(request: NextRequest) {
       lastUpdated: now,
       rows: enrichMockWithChange(MANDI_PRICES),
       error: !apiKeyConfigured
-        ? "मंडी भाव अपडेट हो रहे हैं"
-        : district
-          ? `${district} के मंडी भाव`
-          : "मंडी भाव",
+        ? "लाइव मंडी API key नहीं — ये नमूना भाव हैं, बेचने का फैसला इन पर न लें"
+        : "लाइव मंडी डेटा नहीं मिला — नमूना भाव दिख रहे हैं",
     };
     return NextResponse.json(body);
   } catch {
@@ -126,7 +124,7 @@ export async function GET(request: NextRequest) {
       district,
       lastUpdated: now,
       rows: enrichMockWithChange(MANDI_PRICES),
-      error: "मंडी भाव लोड हो रहे हैं",
+      error: "लाइव मंडी लोड नहीं हुई — नमूना भाव (फैसला इन पर न लें)",
     };
     return NextResponse.json(body);
   }

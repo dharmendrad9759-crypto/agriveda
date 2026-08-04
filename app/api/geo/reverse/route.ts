@@ -26,7 +26,7 @@ function matchDistrict(state: string, raw?: string | null): string {
 /** Reverse-geocode GPS → Indian state/district for crop recommendations. */
 export async function GET(req: Request) {
   const ip = clientIp(req);
-  const rl = rateLimit(`geo-reverse:${ip}`, 30, 60_000);
+  const rl = await rateLimit(`geo-reverse:${ip}`, 30, 60_000);
   if (!rl.ok) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
