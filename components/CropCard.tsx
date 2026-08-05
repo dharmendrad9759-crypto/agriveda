@@ -36,10 +36,11 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-bold text-[var(--av-text-primary)]">
-              {crop.name}
-              {hindi ? ` (${hindi})` : ""}
+              {hindi || crop.name}
             </p>
-            <p className="text-xs text-[var(--av-text-muted)]">{formatCategoryLabel(crop.category)}</p>
+            <p className="text-xs text-[var(--av-text-muted)]">
+              {hindi ? crop.name : formatCategoryLabel(crop.category)}
+            </p>
           </div>
           <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${seasonBadgeClass(season)}`}>
             {season}
@@ -78,11 +79,12 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
             </span>
           </div>
           <div className="flex flex-1 flex-col p-3">
-            <h3 className="text-sm font-bold leading-snug text-[var(--av-text-primary)] group-hover:text-[var(--av-accent)]">
-              {crop.name}
-              {hindi ? ` (${hindi})` : ""}
+            <h3 className="text-[14px] font-bold leading-snug text-[var(--av-text-primary)] group-hover:text-[var(--av-accent)]">
+              {hindi || crop.name}
             </h3>
-            <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">{formatCategoryLabel(crop.category)}</p>
+            <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
+              {hindi ? crop.name : formatCategoryLabel(crop.category)}
+            </p>
           </div>
         </article>
       </Link>

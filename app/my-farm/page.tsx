@@ -11,6 +11,8 @@ import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cropCatalog } from "@/data/crop-catalog";
 import { Tractor, Map, Sprout, Heart, Plus, Bell } from "lucide-react";
+import { resolveCropImage } from "@/lib/crops/cropImages";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 
 const RECORD_COLORS: Record<string, string> = {
   Fertilizer: "bg-emerald-500/20 text-emerald-400",
@@ -245,24 +247,32 @@ export default function MyFarmPage() {
           </div>
           <p className="mt-2 text-[10px] font-bold text-[var(--av-text-muted)]">फसल चुनें</p>
           <div className="mt-1 grid grid-cols-4 gap-2 sm:grid-cols-6">
-            {cropCatalog.slice(0, 12).map((crop) => (
-              <button
-                key={crop.slug}
-                type="button"
-                onClick={() => {
-                  setFieldCropSlug(crop.slug);
-                  if (!fieldCrop.trim()) setFieldCrop(crop.name);
-                }}
-                className={`rounded-lg border px-1 py-1.5 text-center text-[9px] font-bold ${
-                  fieldCropSlug === crop.slug
-                    ? "border-emerald-500 bg-emerald-500/15"
-                    : "border-[var(--av-border)]"
-                }`}
-              >
-                <span className="block text-base">{crop.emoji}</span>
-                {crop.name}
-              </button>
-            ))}
+            {cropCatalog.slice(0, 12).map((crop) => {
+              const hi = getCropHindiName(crop.slug);
+              return (
+                <button
+                  key={crop.slug}
+                  type="button"
+                  onClick={() => {
+                    setFieldCropSlug(crop.slug);
+                    if (!fieldCrop.trim()) setFieldCrop(crop.name);
+                  }}
+                  className={`overflow-hidden rounded-xl border text-center text-[9px] font-bold ${
+                    fieldCropSlug === crop.slug
+                      ? "border-emerald-500 ring-2 ring-emerald-500/30"
+                      : "border-[var(--av-border)]"
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={resolveCropImage({ slug: crop.slug, name: crop.name })}
+                    alt=""
+                    className="h-12 w-full object-cover"
+                  />
+                  <span className="block truncate px-0.5 py-1">{hi || crop.name}</span>
+                </button>
+              );
+            })}
           </div>
           <button type="button" onClick={handleAddField} className="av-btn av-btn-sm av-btn-primary mt-3">
             खेत सेव करें
@@ -271,17 +281,40 @@ export default function MyFarmPage() {
       )}
 
       <div className="mt-3 flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-        {data.fields.map((f, i) => (
-          <DarkCard key={f.id} hover delay={i} className="w-56 shrink-0">
-            <div className="flex h-24 items-center justify-center rounded-lg bg-[var(--av-surface-inset)] text-4xl">{f.emoji}</div>
-            <p className="mt-2 text-xs font-bold text-[var(--av-text-primary)]">{f.name}</p>
-            <p className="text-[10px] text-[var(--av-text-muted)]">{f.area.replace(/\s*Acre$/i, " एकड़")} · {ownershipLabel(f.ownership)}</p>
-            <p className="text-[10px] text-[var(--av-text-secondary)]">{f.crop}</p>
-            <span className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[9px] font-bold ${f.status === "Active" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}>
-              {fieldStatusLabel(f.status)}
-            </span>
-          </DarkCard>
-        ))}
+        {data.fields.map((f, i) => {
+          const img = resolveCropImage({
+            slug: f.cropSlug || "",
+            name: f.crop,
+          });
+          const hi = getCropHindiName(f.cropSlug || "") || f.crop;
+          return (
+            <DarkCard key={f.id} hover delay={i} className="w-56 shrink-0 !overflow-hidden !p-0">
+              <div className="relative h-28 w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={img} alt="" className="h-full w-full object-cover" />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+                <span
+                  className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                    f.status === "Active"
+                      ? "bg-emerald-500/90 text-white"
+                      : "bg-amber-500/90 text-white"
+                  }`}
+                >
+                  {fieldStatusLabel(f.status)}
+                </span>
+              </div>
+              <div className="p-3">
+                <p className="text-xs font-bold text-[var(--av-text-primary)]">{f.name}</p>
+                <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-200">
+                  {hi}
+                </p>
+                <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                  {f.area.replace(/\s*Acre$/i, " एकड़")} · {ownershipLabel(f.ownership)}
+                </p>
+              </div>
+            </DarkCard>
+          );
+        })}
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">

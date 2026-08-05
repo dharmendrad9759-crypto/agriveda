@@ -22,7 +22,7 @@ import {
   CloudLightning,
   Eye,
 } from "lucide-react";
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 
 interface Props {
   weather: WeatherViewModel;
@@ -357,32 +357,108 @@ export default function WeatherRedesign({
         </div>
       </section>
 
-      {/* खेती सलाह */}
+      {/* खेती सलाह — photo job cards */}
       <section>
-        <h3 className="mb-2 px-1 text-sm font-bold text-[var(--av-text-primary)]">{t("weatherFarmAdvice")}</h3>
-        <div className="grid gap-2">
-          <AdviceRow
-            tone="good"
-            icon={<CheckCircle2 className="h-4 w-4" />}
-            title={t("weatherSprayLabel")}
-            detail={spraySafe ? t("weatherSpraySafe") : t("weatherSprayCaution")}
-          />
-          <AdviceRow
-            tone={irrigationHold ? "warn" : "good"}
-            icon={<AlertTriangle className="h-4 w-4" />}
-            title={t("weatherIrrigationLabel")}
-            detail={
-              irrigationHold
-                ? t("weatherIrrigationHold")
-                : t("weatherIrrigationOk")
-            }
-          />
-          <AdviceRow
-            tone={diseaseHigh ? "bad" : "good"}
-            icon={<ShieldAlert className="h-4 w-4" />}
-            title={t("weatherDiseaseLabel")}
-            detail={diseaseHigh ? t("weatherDiseaseHigh") : t("weatherDiseaseNormal")}
-          />
+        <h3 className="mb-2 px-1 text-sm font-bold text-[var(--av-text-primary)]">
+          {t("weatherFarmAdvice")}
+        </h3>
+        <div className="grid gap-2.5">
+          <AppLink
+            href="/weather/spray-advisory"
+            className="relative flex min-h-[84px] overflow-hidden rounded-2xl active:scale-[0.99]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/jobs/job-spray.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <span
+              className={`absolute inset-0 ${
+                spraySafe
+                  ? "bg-gradient-to-r from-emerald-950/85 to-emerald-900/45"
+                  : "bg-gradient-to-r from-amber-950/85 to-amber-900/45"
+              }`}
+            />
+            <div className="relative z-10 flex flex-1 items-center gap-3 p-3.5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white">
+                {spraySafe ? (
+                  <CheckCircle2 className="h-5 w-5" />
+                ) : (
+                  <AlertTriangle className="h-5 w-5" />
+                )}
+              </span>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
+                  {t("weatherSprayLabel")}
+                </p>
+                <p className="text-[14px] font-bold leading-snug text-white">
+                  {spraySafe ? t("weatherSpraySafe") : t("weatherSprayCaution")}
+                </p>
+              </div>
+            </div>
+          </AppLink>
+
+          <div className="relative flex min-h-[84px] overflow-hidden rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/home/home-job-weather.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <span
+              className={`absolute inset-0 ${
+                irrigationHold
+                  ? "bg-gradient-to-r from-amber-950/85 to-sky-900/40"
+                  : "bg-gradient-to-r from-sky-950/85 to-sky-900/40"
+              }`}
+            />
+            <div className="relative z-10 flex flex-1 items-center gap-3 p-3.5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white">
+                <Droplets className="h-5 w-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
+                  {t("weatherIrrigationLabel")}
+                </p>
+                <p className="text-[14px] font-bold leading-snug text-white">
+                  {irrigationHold ? t("weatherIrrigationHold") : t("weatherIrrigationOk")}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <AppLink
+            href="/pest-diseases"
+            className="relative flex min-h-[84px] overflow-hidden rounded-2xl active:scale-[0.99]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/jobs/job-pest.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <span
+              className={`absolute inset-0 ${
+                diseaseHigh
+                  ? "bg-gradient-to-r from-rose-950/85 to-rose-900/45"
+                  : "bg-gradient-to-r from-emerald-950/85 to-teal-900/40"
+              }`}
+            />
+            <div className="relative z-10 flex flex-1 items-center gap-3 p-3.5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white">
+                <ShieldAlert className="h-5 w-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
+                  {t("weatherDiseaseLabel")}
+                </p>
+                <p className="text-[14px] font-bold leading-snug text-white">
+                  {diseaseHigh ? t("weatherDiseaseHigh") : t("weatherDiseaseNormal")}
+                </p>
+              </div>
+            </div>
+          </AppLink>
         </div>
       </section>
 
@@ -445,44 +521,6 @@ export default function WeatherRedesign({
           })}
         </p>
       )}
-    </div>
-  );
-}
-
-function AdviceRow({
-  tone,
-  icon,
-  title,
-  detail,
-}: {
-  tone: "good" | "warn" | "bad";
-  icon: ReactNode;
-  title: string;
-  detail: string;
-}) {
-  const styles =
-    tone === "good"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-200"
-      : tone === "warn"
-        ? "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200"
-        : "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/25 dark:bg-rose-500/10 dark:text-rose-200";
-
-  const iconBox =
-    tone === "good"
-      ? "bg-emerald-500 text-white"
-      : tone === "warn"
-        ? "bg-amber-400 text-white"
-        : "bg-rose-500 text-white";
-
-  return (
-    <div className={`flex items-center gap-3 rounded-2xl border px-3 py-3 ${styles}`}>
-      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBox}`}>
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="text-[11px] font-bold uppercase tracking-wide opacity-70">{title}</p>
-        <p className="text-sm font-bold leading-snug">{detail}</p>
-      </div>
     </div>
   );
 }

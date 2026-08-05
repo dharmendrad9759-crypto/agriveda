@@ -11,6 +11,9 @@ import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEng
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { getBighaInfo } from "@/lib/bighaConversion";
 import { EASE_OUT, staggerContainer, staggerItem } from "@/lib/motion/variants";
+import { resolveCropImage } from "@/lib/crops/cropImages";
+import { getCropHindiName } from "@/lib/crops/crop-display";
+import { cn } from "@/lib/cn";
 
 const UNIT_LABELS: Record<AreaUnit, string> = {
   acre: "एकड़ (Acre)",
@@ -78,11 +81,44 @@ export default function FertilizerCalculatorPage() {
       </div>
 
       <DarkCard className="space-y-4 p-4">
-        <label className="block text-xs font-bold theme-text-muted">फसल</label>
+        <label className="block text-xs font-bold theme-text-muted">फसल टैप करो</label>
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {crops.map((c) => {
+            const active = c.slug === slug;
+            const hi = getCropHindiName(c.slug);
+            return (
+              <button
+                key={c.slug}
+                type="button"
+                onClick={() => setSlug(c.slug)}
+                className={cn(
+                  "flex w-[72px] shrink-0 flex-col items-center gap-1 rounded-2xl border p-1.5 transition",
+                  active
+                    ? "border-emerald-500/50 bg-emerald-500/12"
+                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
+                )}
+              >
+                <span className="relative h-14 w-14 overflow-hidden rounded-xl">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={resolveCropImage({ slug: c.slug, name: c.name })}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </span>
+                <span className="line-clamp-1 text-[10px] font-bold">
+                  {hi || c.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         <select
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
-          className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm font-semibold"
+          className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm font-semibold sr-only"
+          aria-label="फसल"
         >
           {crops.map((c) => (
             <option key={c.slug} value={c.slug}>
@@ -196,21 +232,34 @@ export default function FertilizerCalculatorPage() {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.15 }}
-                  className="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 p-3 text-sm shadow-sm"
+                  className="space-y-2"
                 >
-                  <p className="font-extrabold text-emerald-800">कुल बोरियाँ ({plan.acres} एकड़)</p>
-                  <ul className="mt-2 space-y-1 text-xs">
+                  <p className="text-xs font-extrabold text-emerald-800 dark:text-emerald-200">
+                    कुल बोरियाँ ({plan.acres} एकड़)
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2">
                     {plan.bags.map((b, i) => (
-                      <motion.li
+                      <motion.div
                         key={b.name}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 + i * 0.05 }}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 + i * 0.04 }}
+                        className="relative overflow-hidden rounded-2xl border border-emerald-500/25"
                       >
-                        → {b.name}: <strong>{b.amount}</strong>
-                      </motion.li>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src="/images/jobs/job-fertilizer.jpg"
+                          alt=""
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                        <span className="absolute inset-0 bg-emerald-950/75" />
+                        <div className="relative z-10 p-3.5">
+                          <p className="text-[13px] font-bold text-white">{b.name}</p>
+                          <p className="mt-1 text-lg font-black text-emerald-200">{b.amount}</p>
+                        </div>
+                      </motion.div>
                     ))}
-                  </ul>
+                  </div>
                 </motion.div>
               )}
 
