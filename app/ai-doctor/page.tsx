@@ -319,10 +319,9 @@ export default function AIDoctorPage() {
           role="note"
           className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-[12px] leading-snug text-amber-950 dark:text-amber-100"
         >
-          <p className="font-bold">ध्यान दें</p>
+          <p className="font-bold">दवा लगाते समय</p>
           <p className="mt-1 text-[11px] font-medium opacity-90">
-            यह सुझाव जानकारी के लिए है — दवा हमेशा लेबल / कृषि अधिकारी से मिलाएँ। फोटो स्कैन में Agriveda
-            पर सेव नहीं होती।{" "}
+            दवा का लेबल और कृषि अधिकारी की सलाह मानें। स्कैन फोटो Agriveda पर सेव नहीं होती।{" "}
             <button
               type="button"
               className="font-bold underline underline-offset-2"
@@ -623,7 +622,7 @@ export default function AIDoctorPage() {
                     ) : null}
 
                     <p className="mt-3 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                      लेबल, PHI और स्थानीय कृषि अधिकारी की सलाह मानें — यह AI सुझाव है, अंतिम नुस्खा नहीं।
+                      दवा लगाते समय लेबल और स्थानीय कृषि अधिकारी की सलाह मानें।
                     </p>
                   </div>
 
@@ -671,7 +670,7 @@ export default function AIDoctorPage() {
                     }}
                     className="block w-full min-h-[48px] rounded-xl bg-emerald-700 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-emerald-700/20 disabled:opacity-60"
                   >
-                    {referringExpert ? "खोल रहे हैं…" : "विशेषज्ञ से पुष्टि करें →"}
+                    {referringExpert ? "खोल रहे हैं…" : "विशेषज्ञ से और सलाह लें →"}
                   </button>
 
                   <ShareOutbreakPrompt result={result} cropSlug={selectedCrop} photoUrl={previewUrl} />

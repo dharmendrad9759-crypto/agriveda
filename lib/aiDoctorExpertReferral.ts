@@ -21,8 +21,8 @@ export interface AiDoctorExpertReferral {
 export function buildExpertQueryText(referral: AiDoctorExpertReferral): string {
   const r = referral.result;
   return [
-    `${referral.cropName} पर AI डॉक्टर ने "${r.diseaseName}" बताया (${r.confidence}% विश्वास)।`,
-    `क्या यह सही है? खेत में आगे क्या करें — खुराक और समय बताएँ।`,
+    `${referral.cropName} पर AI डॉक्टर ने "${r.diseaseName}" बताया।`,
+    `खेत में आगे क्या करें — खुराक और समय बताएँ।`,
   ].join("\n");
 }
 

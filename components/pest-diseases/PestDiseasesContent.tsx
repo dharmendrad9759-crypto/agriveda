@@ -1,292 +1,292 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import AppLink from "@/components/ui/AppLink";
-import AppShell from "@/components/shell/AppShell";
-import DarkCard from "@/components/shell/DarkCard";
-import ThreatCard from "@/components/pest-diseases/ThreatCard";
-import PestDiseaseFilters from "@/components/pest-diseases/PestDiseaseFilters";
-import { pestDiseaseCropList } from "@/data/pest-disease";
-import { getEnrichedCropThreats, filterThreats, getAllWeedsAcrossCrops } from "@/lib/pest-disease-catalog";
-import type { ThreatCategory } from "@/types/pest-disease-ui";
-import { useLocale } from "@/components/i18n/LocaleProvider";
-import { resolveCropImage } from "@/lib/crops/cropImages";
-import { getCropHindiName } from "@/lib/crops/crop-display";
-import { AV } from "@/lib/design/tokens";
-import { cn } from "@/lib/cn";
-
-function categoryFromParam(type: string | null): ThreatCategory | "all" {
-  if (type === "weed") return "weed";
-  if (type === "pest" || type === "insect") return "insect";
-  if (type === "disease" || type === "fungal") return "fungal";
-  return "all";
-}
-
-const LOOK_CHIPS: {
-  id: "all" | "insect" | "fungal" | "weed";
-  label: string;
-  image: string;
-  href?: string;
-}[] = [
-  { id: "all", label: "सब देखो", image: "/images/jobs/job-pest.jpg" },
-  { id: "insect", label: "कीट", image: "/images/threats/threat-insect.jpg" },
-  { id: "fungal", label: "रोग", image: "/images/threats/threat-disease.jpg" },
-  { id: "weed", label: "खरपतवार", image: "/images/threats/threat-weed.jpg", href: "/pest-diseases?type=weed" },
-];
-
-export default function PestDiseasesContent() {
-  const searchParams = useSearchParams();
-  const typeParam = searchParams.get("type");
-  const isWeedHub = typeParam === "weed";
-  const initialCrop = searchParams.get("crop") ?? pestDiseaseCropList[0]?.slug ?? "paddy";
-
-  const [selectedSlug, setSelectedSlug] = useState(isWeedHub ? "all" : initialCrop);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<ThreatCategory | "all">(categoryFromParam(typeParam));
-  const { t } = useLocale();
-
-  useEffect(() => {
-    setCategory(categoryFromParam(typeParam));
-  }, [typeParam]);
-
-  useEffect(() => {
-    if (searchParams.get("crop")) {
-      setSelectedSlug(searchParams.get("crop")!);
-    }
-  }, [searchParams]);
-
-  const allThreats = useMemo(() => {
-    if (isWeedHub && selectedSlug === "all") {
-      return getAllWeedsAcrossCrops();
-    }
-    const threats = getEnrichedCropThreats(selectedSlug);
-    return isWeedHub ? threats.filter((t) => t.type === "weed") : threats;
-  }, [selectedSlug, isWeedHub]);
-  const filtered = useMemo(
-    () => filterThreats(allThreats, search, category),
-    [allThreats, search, category]
-  );
-
-  const cropInfo = selectedSlug === "all" ? null : pestDiseaseCropList.find((c) => c.slug === selectedSlug);
-  const pageTitle = isWeedHub ? t("weeds") : t("pestDiseasesTitle");
-  const pageSubtitle = isWeedHub
-    ? "घास देखो — नाम टैप करो"
-    : "पत्ती / कीट देखो — टैप करो";
-
-  return (
-    <AppShell
-      title={pageTitle}
-      subtitle={pageSubtitle}
-      breadcrumbs={[
-        { label: t("navHome"), href: "/" },
-        { label: isWeedHub ? t("weeds") : t("pestsDiseases") },
-      ]}
-    >
-      <div className="relative mb-3 overflow-hidden rounded-[22px] border border-emerald-500/15 shadow-[var(--av-shadow-sm)]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={
-            isWeedHub
-              ? "/images/threats/threat-weed.jpg"
-              : "/images/threats/threat-insect.jpg"
-          }
-          alt=""
-          className="h-36 w-full object-cover sm:h-40"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/10" />
-        <div className="absolute inset-x-0 bottom-0 p-4">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-200/90">
-            {isWeedHub ? "खरपतवार" : "कीट-रोग"}
-          </p>
-          <p className="mt-0.5 text-[17px] font-bold text-white">
-            {isWeedHub ? "घास देखो — नाम टैप करो" : "पत्ती / कीट देखो — टैप करो"}
-          </p>
-        </div>
-      </div>
-
-      {!isWeedHub && (
-        <div className="mb-3 grid grid-cols-4 gap-2">
-          {LOOK_CHIPS.map((chip) => {
-            const active =
-              chip.id === "all"
-                ? category === "all"
-                : chip.id === "fungal"
-                  ? category === "fungal" || category === "bacterial" || category === "viral"
-                  : category === chip.id;
-            const body = (
-              <span
-                className={cn(
-                  "relative flex h-[72px] overflow-hidden rounded-2xl border text-left transition active:scale-[0.98]",
-                  active ? "border-emerald-500 ring-2 ring-emerald-500/30" : "border-[var(--av-border)]"
-                )}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={chip.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
-                <span className="relative z-10 mt-auto p-2 text-[11px] font-extrabold text-white">
-                  {chip.label}
-                </span>
-              </span>
-            );
-            if (chip.href) {
-              return (
-                <AppLink key={chip.id} href={chip.href}>
-                  {body}
-                </AppLink>
-              );
-            }
-            return (
-              <button
-                key={chip.id}
-                type="button"
-                onClick={() => setCategory(chip.id === "all" ? "all" : chip.id)}
-              >
-                {body}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {!isWeedHub && (
-        <AppLink
-          href="/pest-solver"
-          className="av-card av-card-hover relative mb-3 flex min-h-[72px] items-center justify-between overflow-hidden p-0"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/threats/threat-yellow.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <span className="absolute inset-0 bg-emerald-950/70" />
-          <div className="relative z-10 px-4 py-3.5">
-            <p className="text-sm font-semibold text-white">पक्का नहीं क्या है?</p>
-            <p className="mt-0.5 text-[11px] font-medium text-white/85">
-              लक्षण देखो → समाधान टैप करो
-            </p>
-          </div>
-        </AppLink>
-      )}
-
-      <DarkCard className={isWeedHub ? "mt-0" : "mt-1"} delay={0}>
-        <h3 className={AV.sectionTitle}>फसल टैप करो</h3>
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {isWeedHub && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedSlug("all");
-                setSearch("");
-              }}
-              className={cn(
-                "flex w-[68px] shrink-0 flex-col items-center gap-1 overflow-hidden rounded-xl border p-1 transition",
-                selectedSlug === "all"
-                  ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
-                  : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
-              )}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/threats/threat-weed.jpg"
-                alt=""
-                className="h-12 w-full rounded-lg object-cover"
-              />
-              <span className="text-[10px] font-semibold text-[var(--av-accent)]">सब</span>
-            </button>
-          )}
-          {pestDiseaseCropList.map((crop) => {
-            const hi = getCropHindiName(crop.slug);
-            return (
-              <button
-                key={crop.slug}
-                type="button"
-                onClick={() => {
-                  setSelectedSlug(crop.slug);
-                  setSearch("");
-                }}
-                className={cn(
-                  "flex w-[68px] shrink-0 flex-col items-center gap-1 overflow-hidden rounded-xl border p-1 transition",
-                  selectedSlug === crop.slug
-                    ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
-                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)] hover:border-[var(--av-accent)]/30"
-                )}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={resolveCropImage({ slug: crop.slug, name: crop.name })}
-                  alt=""
-                  className="h-12 w-full rounded-lg object-cover"
-                />
-                <span
-                  className={cn(
-                    "line-clamp-1 px-0.5 text-[10px] font-semibold",
-                    selectedSlug === crop.slug ? "text-[var(--av-accent)]" : "text-[var(--av-text-muted)]"
-                  )}
-                >
-                  {hi || crop.name}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </DarkCard>
-
-      <div className="mt-4">
-        <PestDiseaseFilters
-          search={search}
-          onSearchChange={setSearch}
-          category={category}
-          onCategoryChange={setCategory}
-          resultCount={filtered.length}
-          placeholder={
-            isWeedHub
-              ? "खरपतवार का नाम…"
-              : "नाम से खोजो…"
-          }
-        />
-      </div>
-
-      {filtered.length > 0 ? (
-        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((threat) => (
-            <ThreatCard key={`${threat.type}-${threat.id}`} threat={threat} />
-          ))}
-        </div>
-      ) : (
-        <DarkCard className="mt-4 text-center" delay={1}>
-          <p className="text-sm font-semibold text-[var(--av-text-primary)]">कोई परिणाम नहीं</p>
-          <p className={`mt-1 ${AV.micro}`}>
-            {allThreats.length === 0
-              ? `${cropInfo?.name ?? "इस फसल"} के लिए जानकारी उपलब्ध नहीं — दूसरी फसल आज़माओ।`
-              : "खोज या फ़िल्टर बदलो।"}
-          </p>
-        </DarkCard>
-      )}
-
-      <AppLink
-        href="/ai-doctor"
-        className="relative mt-4 flex min-h-[64px] overflow-hidden rounded-2xl border border-emerald-500/25 active:scale-[0.99]"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/home/home-cta-scan.jpg"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <span className="absolute inset-0 bg-emerald-950/70" />
-        <span className="relative z-10 flex w-full items-center justify-between px-4 py-3.5">
-          <span>
-            <span className="block text-sm font-bold text-white">फोटो से पहचानो</span>
-            <span className="text-[11px] font-medium text-white/85">AI Doctor खोलो</span>
-          </span>
-          <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-emerald-800">
-            फोटो लो
-          </span>
-        </span>
-      </AppLink>
-    </AppShell>
-  );
-}
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import AppLink from "@/components/ui/AppLink";
+import AppShell from "@/components/shell/AppShell";
+import DarkCard from "@/components/shell/DarkCard";
+import ThreatCard from "@/components/pest-diseases/ThreatCard";
+import PestDiseaseFilters from "@/components/pest-diseases/PestDiseaseFilters";
+import { pestDiseaseCropList } from "@/data/pest-disease";
+import { getEnrichedCropThreats, filterThreats, getAllWeedsAcrossCrops } from "@/lib/pest-disease-catalog";
+import type { ThreatCategory } from "@/types/pest-disease-ui";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { resolveCropImage } from "@/lib/crops/cropImages";
+import { getCropHindiName } from "@/lib/crops/crop-display";
+import { AV } from "@/lib/design/tokens";
+import { cn } from "@/lib/cn";
+
+function categoryFromParam(type: string | null): ThreatCategory | "all" {
+  if (type === "weed") return "weed";
+  if (type === "pest" || type === "insect") return "insect";
+  if (type === "disease" || type === "fungal") return "fungal";
+  return "all";
+}
+
+const LOOK_CHIPS: {
+  id: "all" | "insect" | "fungal" | "weed";
+  label: string;
+  image: string;
+  href?: string;
+}[] = [
+  { id: "all", label: "सब देखो", image: "/images/jobs/job-pest.jpg" },
+  { id: "insect", label: "कीट", image: "/images/threats/threat-insect.jpg" },
+  { id: "fungal", label: "रोग", image: "/images/threats/threat-disease.jpg" },
+  { id: "weed", label: "खरपतवार", image: "/images/threats/threat-weed.jpg", href: "/pest-diseases?type=weed" },
+];
+
+export default function PestDiseasesContent() {
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type");
+  const isWeedHub = typeParam === "weed";
+  const initialCrop = searchParams.get("crop") ?? pestDiseaseCropList[0]?.slug ?? "paddy";
+
+  const [selectedSlug, setSelectedSlug] = useState(isWeedHub ? "all" : initialCrop);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<ThreatCategory | "all">(categoryFromParam(typeParam));
+  const { t } = useLocale();
+
+  useEffect(() => {
+    setCategory(categoryFromParam(typeParam));
+  }, [typeParam]);
+
+  useEffect(() => {
+    if (searchParams.get("crop")) {
+      setSelectedSlug(searchParams.get("crop")!);
+    }
+  }, [searchParams]);
+
+  const allThreats = useMemo(() => {
+    if (isWeedHub && selectedSlug === "all") {
+      return getAllWeedsAcrossCrops();
+    }
+    const threats = getEnrichedCropThreats(selectedSlug);
+    return isWeedHub ? threats.filter((t) => t.type === "weed") : threats;
+  }, [selectedSlug, isWeedHub]);
+  const filtered = useMemo(
+    () => filterThreats(allThreats, search, category),
+    [allThreats, search, category]
+  );
+
+  const cropInfo = selectedSlug === "all" ? null : pestDiseaseCropList.find((c) => c.slug === selectedSlug);
+  const pageTitle = isWeedHub ? t("weeds") : t("pestDiseasesTitle");
+  const pageSubtitle = isWeedHub
+    ? "घास देखो — नाम टैप करो"
+    : "पत्ती / कीट देखो — टैप करो";
+
+  return (
+    <AppShell
+      title={pageTitle}
+      subtitle={pageSubtitle}
+      breadcrumbs={[
+        { label: t("navHome"), href: "/" },
+        { label: isWeedHub ? t("weeds") : t("pestsDiseases") },
+      ]}
+    >
+      <div className="relative mb-3 overflow-hidden rounded-[22px] border border-emerald-500/15 shadow-[var(--av-shadow-sm)]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={
+            isWeedHub
+              ? "/images/threats/threat-weed.jpg"
+              : "/images/threats/threat-insect.jpg"
+          }
+          alt=""
+          className="h-36 w-full object-cover sm:h-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/10" />
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-200/90">
+            {isWeedHub ? "खरपतवार" : "कीट-रोग"}
+          </p>
+          <p className="mt-0.5 text-[17px] font-bold text-white">
+            {isWeedHub ? "घास देखो — नाम टैप करो" : "पत्ती / कीट देखो — टैप करो"}
+          </p>
+        </div>
+      </div>
+
+      {!isWeedHub && (
+        <div className="mb-3 grid grid-cols-4 gap-2">
+          {LOOK_CHIPS.map((chip) => {
+            const active =
+              chip.id === "all"
+                ? category === "all"
+                : chip.id === "fungal"
+                  ? category === "fungal" || category === "bacterial" || category === "viral"
+                  : category === chip.id;
+            const body = (
+              <span
+                className={cn(
+                  "relative flex h-[72px] overflow-hidden rounded-2xl border text-left transition active:scale-[0.98]",
+                  active ? "border-emerald-500 ring-2 ring-emerald-500/30" : "border-[var(--av-border)]"
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={chip.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
+                <span className="relative z-10 mt-auto p-2 text-[11px] font-extrabold text-white">
+                  {chip.label}
+                </span>
+              </span>
+            );
+            if (chip.href) {
+              return (
+                <AppLink key={chip.id} href={chip.href}>
+                  {body}
+                </AppLink>
+              );
+            }
+            return (
+              <button
+                key={chip.id}
+                type="button"
+                onClick={() => setCategory(chip.id === "all" ? "all" : chip.id)}
+              >
+                {body}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {!isWeedHub && (
+        <AppLink
+          href="/pest-solver"
+          className="av-card av-card-hover relative mb-3 flex min-h-[72px] items-center justify-between overflow-hidden p-0"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/threats/threat-yellow.jpg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <span className="absolute inset-0 bg-emerald-950/70" />
+          <div className="relative z-10 px-4 py-3.5">
+            <p className="text-sm font-semibold text-white">लक्षण से पहचानो</p>
+            <p className="mt-0.5 text-[11px] font-medium text-white/85">
+              देखो → समाधान टैप करो
+            </p>
+          </div>
+        </AppLink>
+      )}
+
+      <DarkCard className={isWeedHub ? "mt-0" : "mt-1"} delay={0}>
+        <h3 className={AV.sectionTitle}>फसल टैप करो</h3>
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {isWeedHub && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedSlug("all");
+                setSearch("");
+              }}
+              className={cn(
+                "flex w-[68px] shrink-0 flex-col items-center gap-1 overflow-hidden rounded-xl border p-1 transition",
+                selectedSlug === "all"
+                  ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
+                  : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
+              )}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/threats/threat-weed.jpg"
+                alt=""
+                className="h-12 w-full rounded-lg object-cover"
+              />
+              <span className="text-[10px] font-semibold text-[var(--av-accent)]">सब</span>
+            </button>
+          )}
+          {pestDiseaseCropList.map((crop) => {
+            const hi = getCropHindiName(crop.slug);
+            return (
+              <button
+                key={crop.slug}
+                type="button"
+                onClick={() => {
+                  setSelectedSlug(crop.slug);
+                  setSearch("");
+                }}
+                className={cn(
+                  "flex w-[68px] shrink-0 flex-col items-center gap-1 overflow-hidden rounded-xl border p-1 transition",
+                  selectedSlug === crop.slug
+                    ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
+                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)] hover:border-[var(--av-accent)]/30"
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={resolveCropImage({ slug: crop.slug, name: crop.name })}
+                  alt=""
+                  className="h-12 w-full rounded-lg object-cover"
+                />
+                <span
+                  className={cn(
+                    "line-clamp-1 px-0.5 text-[10px] font-semibold",
+                    selectedSlug === crop.slug ? "text-[var(--av-accent)]" : "text-[var(--av-text-muted)]"
+                  )}
+                >
+                  {hi || crop.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </DarkCard>
+
+      <div className="mt-4">
+        <PestDiseaseFilters
+          search={search}
+          onSearchChange={setSearch}
+          category={category}
+          onCategoryChange={setCategory}
+          resultCount={filtered.length}
+          placeholder={
+            isWeedHub
+              ? "खरपतवार का नाम…"
+              : "नाम से खोजो…"
+          }
+        />
+      </div>
+
+      {filtered.length > 0 ? (
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+          {filtered.map((threat) => (
+            <ThreatCard key={`${threat.type}-${threat.id}`} threat={threat} />
+          ))}
+        </div>
+      ) : (
+        <DarkCard className="mt-4 text-center" delay={1}>
+          <p className="text-sm font-semibold text-[var(--av-text-primary)]">कोई परिणाम नहीं</p>
+          <p className={`mt-1 ${AV.micro}`}>
+            {allThreats.length === 0
+              ? `${cropInfo?.name ?? "इस फसल"} के लिए जानकारी उपलब्ध नहीं — दूसरी फसल आज़माओ।`
+              : "खोज या फ़िल्टर बदलो।"}
+          </p>
+        </DarkCard>
+      )}
+
+      <AppLink
+        href="/ai-doctor"
+        className="relative mt-4 flex min-h-[64px] overflow-hidden rounded-2xl border border-emerald-500/25 active:scale-[0.99]"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/home/home-cta-scan.jpg"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <span className="absolute inset-0 bg-emerald-950/70" />
+        <span className="relative z-10 flex w-full items-center justify-between px-4 py-3.5">
+          <span>
+            <span className="block text-sm font-bold text-white">फोटो से पहचानो</span>
+            <span className="text-[11px] font-medium text-white/85">AI Doctor खोलो</span>
+          </span>
+          <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-emerald-800">
+            फोटो लो
+          </span>
+        </span>
+      </AppLink>
+    </AppShell>
+  );
+}
 

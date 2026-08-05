@@ -233,9 +233,6 @@ export default function MyQueriesPage() {
                       <p className="flex items-center gap-1 font-bold text-emerald-800 dark:text-emerald-200">
                         <Stethoscope className="h-3.5 w-3.5" />
                         {q.aiDiagnosis.diseaseName}
-                        {q.aiDiagnosis.confidence != null
-                          ? ` · ${q.aiDiagnosis.confidence}%`
-                          : ""}
                       </p>
                     </div>
                   ) : null}

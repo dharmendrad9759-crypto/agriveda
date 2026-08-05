@@ -475,8 +475,7 @@ export default function AskQueryPage() {
                   {referralSummary.result.diseaseName}
                 </p>
                 <p className="mt-0.5 text-xs text-[var(--av-text-muted)]">
-                  {lockedCropLabel} · {isHi ? "विश्वास" : "Confidence"}{" "}
-                  {referralSummary.result.confidence}%
+                  {lockedCropLabel}
                 </p>
               </div>
             </div>
