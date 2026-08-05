@@ -43,7 +43,7 @@ const QUICK_JOBS: {
   hintEn: string;
   href: string;
   icon: LucideIcon;
-  tone: string;
+  imageSrc: string;
 }[] = [
   {
     id: "photo",
@@ -53,7 +53,7 @@ const QUICK_JOBS: {
     hintEn: "Finds the disease",
     href: "/ai-doctor",
     icon: Camera,
-    tone: "border-emerald-500/35 bg-emerald-50 dark:bg-emerald-950/35",
+    imageSrc: "/images/home/home-job-photo.jpg",
   },
   {
     id: "leaf",
@@ -63,7 +63,7 @@ const QUICK_JOBS: {
     hintEn: "Check nutrient lack",
     href: "/deficiencies",
     icon: Leaf,
-    tone: "border-amber-400/40 bg-amber-50 dark:bg-amber-950/30",
+    imageSrc: "/images/home/home-job-yellow-leaf.jpg",
   },
   {
     id: "mandi",
@@ -73,7 +73,7 @@ const QUICK_JOBS: {
     hintEn: "Mandi rates",
     href: "/mandi",
     icon: TrendingUp,
-    tone: "border-sky-400/40 bg-sky-50 dark:bg-sky-950/30",
+    imageSrc: "/images/home/home-job-mandi.jpg",
   },
   {
     id: "weather",
@@ -83,7 +83,7 @@ const QUICK_JOBS: {
     hintEn: "Check rain",
     href: "/weather",
     icon: CloudSun,
-    tone: "border-cyan-400/40 bg-cyan-50 dark:bg-cyan-950/25",
+    imageSrc: "/images/home/home-job-weather.jpg",
   },
 ];
 
@@ -389,7 +389,7 @@ export default function AgriVedaHome() {
           </div>
         </motion.section>
 
-        {/* Look & tap jobs — nutrients-style */}
+        {/* Look & tap jobs — photo backgrounds */}
         <motion.section {...fade(0.03)} className="grid grid-cols-2 gap-2.5">
           {QUICK_JOBS.map((job) => {
             const Icon = job.icon;
@@ -398,49 +398,87 @@ export default function AgriVedaHome() {
                 key={job.id}
                 href={job.href}
                 onClick={() => track("tool_open", { href: job.href, label: `home_${job.id}` })}
-                className={cn(
-                  "rounded-2xl border p-3.5 text-left transition active:scale-[0.98]",
-                  job.tone
-                )}
+                className="group relative min-h-[148px] overflow-hidden rounded-2xl border border-white/20 shadow-[var(--av-shadow-md)] transition active:scale-[0.98]"
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 text-emerald-800 shadow-sm dark:bg-black/20 dark:text-emerald-200">
-                  <Icon className="h-5 w-5" strokeWidth={2.25} />
-                </span>
-                <p className="mt-2.5 text-[14px] font-bold leading-snug text-[var(--av-text-primary)]">
-                  {isHi ? job.hi : job.en}
-                </p>
-                <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                  {isHi ? job.hintHi : job.hintEn}
-                </p>
+                <Image
+                  src={job.imageSrc}
+                  alt=""
+                  fill
+                  sizes="(max-width: 512px) 50vw, 240px"
+                  className="object-cover transition duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/15" />
+                <div className="relative flex h-full min-h-[148px] flex-col justify-end p-3.5">
+                  <span className="mb-auto flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white shadow-sm backdrop-blur-sm">
+                    <Icon className="h-5 w-5" strokeWidth={2.25} />
+                  </span>
+                  <p className="mt-3 text-[14px] font-bold leading-snug text-white drop-shadow-sm">
+                    {isHi ? job.hi : job.en}
+                  </p>
+                  <p className="mt-0.5 text-[11px] font-medium text-white/85">
+                    {isHi ? job.hintHi : job.hintEn}
+                  </p>
+                </div>
               </AppLink>
             );
           })}
         </motion.section>
 
-        {/* Huge primary CTA */}
+        {/* Huge primary CTA — photo banner */}
         <motion.section {...fade(0.05)}>
           <AppLink
             href="/ai-doctor"
             onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_scan_cta" })}
-            className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-4 text-[16px] font-bold text-white shadow-lg shadow-emerald-700/30 active:scale-[0.98]"
+            className="relative flex min-h-[88px] w-full overflow-hidden rounded-2xl shadow-lg shadow-emerald-900/25 active:scale-[0.99]"
           >
-            <Camera className="h-5 w-5" />
-            {isHi ? "फोटो लो — जाँच शुरू" : "Take photo — start check"}
-            <ArrowRight className="h-4 w-4" />
+            <Image
+              src="/images/home/home-cta-scan.jpg"
+              alt=""
+              fill
+              sizes="(max-width: 512px) 100vw, 512px"
+              className="object-cover object-center"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/90 via-emerald-900/75 to-emerald-800/40" />
+            <span className="relative z-10 flex w-full items-center justify-center gap-2 px-4 py-5 text-[16px] font-bold text-white">
+              <Camera className="h-5 w-5 shrink-0" />
+              {isHi ? "फोटो लो — जाँच शुरू" : "Take photo — start check"}
+              <ArrowRight className="h-4 w-4 shrink-0" />
+            </span>
           </AppLink>
           <div className="mt-2 grid grid-cols-2 gap-2">
             <AppLink
               href="/ask-query"
-              className="flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-emerald-600/30 bg-[var(--av-surface)] text-[13px] font-bold text-emerald-900 dark:text-emerald-100"
+              className="relative flex min-h-[52px] items-center justify-center overflow-hidden rounded-xl border border-emerald-600/25 active:scale-[0.98]"
             >
-              <MessageCircle className="h-4 w-4" />
-              {isHi ? "पूछो" : "Ask"}
+              <Image
+                src="/images/home/home-job-ask.jpg"
+                alt=""
+                fill
+                sizes="200px"
+                className="object-cover"
+              />
+              <span className="absolute inset-0 bg-emerald-950/65" />
+              <span className="relative z-10 flex items-center gap-1.5 text-[13px] font-bold text-white">
+                <MessageCircle className="h-4 w-4" />
+                {isHi ? "पूछो" : "Ask"}
+              </span>
             </AppLink>
             <AppLink
               href="/my-queries"
-              className="flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[13px] font-bold text-[var(--av-text-secondary)]"
+              className="relative flex min-h-[52px] items-center justify-center overflow-hidden rounded-xl border border-[var(--av-border)] active:scale-[0.98]"
             >
-              {isHi ? "मेरे जवाब" : "My answers"}
+              <Image
+                src="/images/home/home-job-photo.jpg"
+                alt=""
+                fill
+                sizes="200px"
+                className="object-cover object-[center_30%]"
+              />
+              <span className="absolute inset-0 bg-slate-950/70" />
+              <span className="relative z-10 text-[13px] font-bold text-white">
+                {isHi ? "मेरे जवाब" : "My answers"}
+              </span>
             </AppLink>
           </div>
           {lastScan ? (
