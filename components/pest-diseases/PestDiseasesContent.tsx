@@ -69,16 +69,44 @@ export default function PestDiseasesContent() {
         { label: isWeedHub ? t("weeds") : t("pestsDiseases") },
       ]}
     >
+      <div className="relative mb-4 overflow-hidden rounded-[22px] border border-emerald-500/15 shadow-[var(--av-shadow-sm)]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={isWeedHub ? "/images/jobs/job-weeds.jpg" : "/images/jobs/job-pest.jpg"}
+          alt=""
+          className="h-36 w-full object-cover sm:h-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/10" />
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-200/90">
+            {isWeedHub ? "खरपतवार" : "कीट-रोग"}
+          </p>
+          <p className="mt-0.5 text-[17px] font-bold text-white">
+            {isWeedHub
+              ? "घास देखो — नाम टैप करो"
+              : "पत्ती / कीट देखो — टैप करो"}
+          </p>
+        </div>
+      </div>
+
       {!isWeedHub && (
         <AppLink
           href="/pest-solver"
-          className="av-card av-card-hover flex items-center justify-between p-4"
+          className="av-card av-card-hover relative mb-3 flex min-h-[72px] items-center justify-between overflow-hidden p-0"
         >
-          <div>
-            <p className="text-sm font-semibold text-[var(--av-text-primary)]">पक्का नहीं क्या है?</p>
-            <p className={`mt-0.5 ${AV.micro}`}>लक्षण से पहचानें → कीट-रोग समाधान</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/home/home-job-yellow-leaf.jpg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <span className="absolute inset-0 bg-emerald-950/70" />
+          <div className="relative z-10 px-4 py-3.5">
+            <p className="text-sm font-semibold text-white">पक्का नहीं क्या है?</p>
+            <p className="mt-0.5 text-[11px] font-medium text-white/85">
+              लक्षण से पहचानें → कीट-रोग समाधान
+            </p>
           </div>
-          <span className="text-lg font-bold text-[var(--av-accent)]">→</span>
         </AppLink>
       )}
 

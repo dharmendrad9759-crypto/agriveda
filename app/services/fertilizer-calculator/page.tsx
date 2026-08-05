@@ -60,9 +60,23 @@ export default function FertilizerCalculatorPage() {
   return (
     <Agriveda2Shell
       title="खाद कैलकुलेटर"
-      subtitle="N, P, K, Ca, Mg, S, Zn, Fe, B — फसल के हिसाब से"
+      subtitle="फसल चुनो — बोरे में कितना लगेगा"
       backHref="/dashboard"
     >
+      <div className="relative mb-4 overflow-hidden rounded-[22px] border border-emerald-500/15">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/jobs/job-fertilizer.jpg"
+          alt=""
+          className="h-36 w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <p className="text-[17px] font-bold text-white">खाद का हिसाब</p>
+          <p className="text-[12px] text-white/85">यूरिया / DAP — रकबे के हिसाब से</p>
+        </div>
+      </div>
+
       <DarkCard className="space-y-4 p-4">
         <label className="block text-xs font-bold theme-text-muted">फसल</label>
         <select

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { Bell, ChevronRight } from "lucide-react";
-import DarkCard from "@/components/shell/DarkCard";
 import { useSprayFields } from "@/hooks/useSprayFields";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
@@ -45,18 +44,31 @@ export default function AlertsHub() {
 
   return (
     <div className="space-y-4">
-      <DarkCard className="flex items-center gap-3 p-4">
-        <Bell className="h-8 w-8 text-[var(--av-accent)]" />
-        <div>
-          <p className="font-bold text-[var(--av-text-primary)]">Predictive Alert System</p>
-          <p className="text-xs text-[var(--av-text-muted)]">
-            समस्या आने से 3–5 दिन पहले — weather + crop stage + pest calendar
-          </p>
+      <div className="relative overflow-hidden rounded-[22px] border border-amber-500/20 shadow-[var(--av-shadow-sm)]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/jobs/job-alerts.jpg"
+          alt=""
+          className="h-36 w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/15" />
+        <div className="absolute inset-x-0 bottom-0 flex items-end gap-3 p-4">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-white backdrop-blur-sm">
+            <Bell className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-[17px] font-bold text-white">आज का अलर्ट</p>
+            <p className="text-[12px] font-medium text-white/85">
+              मौसम + फसल अवस्था — पहले से सावधान
+            </p>
+          </div>
         </div>
-      </DarkCard>
+      </div>
 
       {allAlerts.length === 0 ? (
-        <p className="text-center text-sm text-[var(--av-text-muted)]">कोई active alert नहीं — सब ठीक ✓</p>
+        <p className="rounded-2xl border border-dashed border-emerald-500/30 bg-emerald-500/5 px-4 py-8 text-center text-sm font-semibold text-[var(--av-text-muted)]">
+          कोई अलर्ट नहीं — सब ठीक ✓
+        </p>
       ) : (
         allAlerts.map((a) => (
           <Link key={a.id + a.fieldName} href={a.actionHref ?? "/dashboard"}>
@@ -65,7 +77,7 @@ export default function AlertsHub() {
             >
               <p className="text-[10px] font-bold uppercase text-[var(--av-text-muted)]">
                 {a.fieldName}
-                {a.daysAhead ? ` · ${a.daysAhead} days ahead` : ""}
+                {a.daysAhead ? ` · ${a.daysAhead} दिन पहले` : ""}
               </p>
               <p className="mt-1 font-bold text-[var(--av-text-primary)]">{a.title}</p>
               <p className="mt-1 text-sm text-[var(--av-text-secondary)]">{a.body}</p>

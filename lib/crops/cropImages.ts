@@ -1,32 +1,41 @@
 /**
  * Canonical crop image map for Agriveda cards / heroes.
- * Prefer curated photorealistic photos (local + Unsplash), then placeholders.
+ * Prefer curated local marketing photos, then remotes, then placeholders.
  */
 
 export const CROP_IMAGE_FALLBACK = "/images/crops/_placeholder.svg";
 
-/** Local assets in /public/images/crops/{slug}.png */
+/** Local marketing photos in /public/images/crops/{slug}.jpg (generated field shots). */
 const LOCAL_CROP_PHOTOS: Record<string, string> = {
-  paddy: "/images/crops/paddy.png",
-  wheat: "/images/crops/wheat.png",
-  maize: "/images/crops/maize.png",
-  bajra: "/images/crops/bajra.png",
-  potato: "/images/crops/potato.png",
-  tomato: "/images/crops/tomato.png",
-  soybean: "/images/crops/soybean.png",
-  moongfali: "/images/crops/moongfali.png",
-  groundnut: "/images/crops/groundnut.png",
-  cauliflower: "/images/crops/cauliflower.png",
-  cucumber: "/images/crops/cucumber.png",
-  sugarcane: "/images/crops/sugarcane.png",
+  paddy: "/images/crops/paddy.jpg",
+  wheat: "/images/crops/wheat.jpg",
+  maize: "/images/crops/maize.jpg",
+  bajra: "/images/crops/bajra.jpg",
+  potato: "/images/crops/potato.jpg",
+  tomato: "/images/crops/tomato.jpg",
+  onion: "/images/crops/onion.jpg",
+  chilli: "/images/crops/chilli.jpg",
+  cauliflower: "/images/crops/cauliflower.jpg",
+  cucumber: "/images/crops/cucumber.jpg",
+  brinjal: "/images/crops/brinjal.jpg",
+  bhindi: "/images/crops/bhindi.jpg",
+  cotton: "/images/crops/cotton.jpg",
+  sugarcane: "/images/crops/sugarcane.jpg",
+  soybean: "/images/crops/soybean.jpg",
+  moongfali: "/images/crops/moongfali.jpg",
+  groundnut: "/images/crops/groundnut.jpg",
+  mustard: "/images/crops/mustard.jpg",
+  pulses: "/images/crops/pulses.jpg",
+  moong: "/images/crops/moong.jpg",
+  mango: "/images/crops/mango.jpg",
+  banana: "/images/crops/banana.jpg",
+  grapes: "/images/crops/grapes.jpg",
 };
 
 /**
- * High-res photorealistic hero/card photos (Unsplash).
- * Used when local is missing, or for crops that need a stronger field look.
+ * High-res photorealistic hero/card photos (Unsplash) — fallback only.
  */
 const CURATED_REMOTE_PHOTOS: Record<string, string> = {
-  // Keep locals as primary for existing assets; remotes fill gaps + weaker locals
   chilli:
     "https://images.unsplash.com/photo-1583663848850-46af132dc08e?w=1200&h=800&fit=crop&q=80",
   onion:
@@ -51,19 +60,6 @@ const CURATED_REMOTE_PHOTOS: Record<string, string> = {
     "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=1200&h=800&fit=crop&q=80",
   bhindi:
     "https://images.unsplash.com/photo-1423483641154-5411ec9c0ddf?w=1200&h=800&fit=crop&q=80",
-  // Stronger field heroes for key crops (override thin/local when present)
-  tomato:
-    "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=1200&h=800&fit=crop&q=80",
-  wheat:
-    "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=1200&h=800&fit=crop&q=80",
-  paddy:
-    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=800&fit=crop&q=80",
-  maize:
-    "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1200&h=800&fit=crop&q=80",
-  potato:
-    "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=1200&h=800&fit=crop&q=80",
-  soybean:
-    "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1200&h=800&fit=crop&q=80",
 };
 
 /** Name / alias → canonical slug */
@@ -92,6 +88,8 @@ const SLUG_ALIASES: Record<string, string> = {
   chili: "chilli",
   baingan: "brinjal",
   eggplant: "brinjal",
+  okra: "bhindi",
+  "lady-finger": "bhindi",
 };
 
 export function normalizeCropSlug(slugOrName: string): string {
@@ -106,7 +104,7 @@ export function hasLocalCropPhoto(slug: string): boolean {
 
 /**
  * Resolve display image for a crop.
- * Prefer curated photorealistic remote → local photo → valid remote/data image → placeholder.
+ * Prefer local marketing photo → curated remote → valid input image → placeholder.
  */
 export function resolveCropImage(input: {
   slug: string;
@@ -114,11 +112,12 @@ export function resolveCropImage(input: {
   image?: string | null;
 }): string {
   const slug = normalizeCropSlug(input.slug || input.name || "");
-  const curated = CURATED_REMOTE_PHOTOS[slug];
-  if (curated) return curated;
 
   const local = LOCAL_CROP_PHOTOS[slug];
   if (local) return local;
+
+  const curated = CURATED_REMOTE_PHOTOS[slug];
+  if (curated) return curated;
 
   const img = input.image?.trim();
   if (img) {

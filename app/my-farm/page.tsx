@@ -178,19 +178,26 @@ export default function MyFarmPage() {
       </div>
 
       {data.fields.length === 0 && (
-        <DarkCard className="mt-3 border-emerald-500/20 bg-emerald-500/5">
-          <p className="text-sm font-bold text-[var(--av-text-primary)]">अभी कोई खेत नहीं</p>
-          <p className="mt-1 text-xs text-[var(--av-text-muted)]">
-            पहला खेत जोड़कर अपनी खेती शुरू करें।
-          </p>
-          <button
-            type="button"
-            onClick={() => setShowAddField(true)}
-            className="av-btn av-btn-sm av-btn-primary mt-2 inline-flex gap-1"
-          >
-            <Plus className="h-3.5 w-3.5" /> पहला खेत जोड़ें
-          </button>
-        </DarkCard>
+        <div className="relative mt-3 overflow-hidden rounded-[22px] border border-emerald-500/20">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/jobs/job-my-farm.jpg"
+            alt=""
+            className="h-40 w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/55 to-emerald-800/20" />
+          <div className="absolute inset-x-0 bottom-0 p-4">
+            <p className="text-[16px] font-bold text-white">अभी कोई खेत नहीं</p>
+            <p className="mt-0.5 text-[12px] text-white/85">पहला खेत जोड़ो — खेती शुरू</p>
+            <button
+              type="button"
+              onClick={() => setShowAddField(true)}
+              className="av-btn av-btn-sm mt-2 inline-flex gap-1 bg-white text-emerald-900"
+            >
+              <Plus className="h-3.5 w-3.5" /> पहला खेत जोड़ें
+            </button>
+          </div>
+        </div>
       )}
 
       <div className="mt-4 flex items-center justify-between">
