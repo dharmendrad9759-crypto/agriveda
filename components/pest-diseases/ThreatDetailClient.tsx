@@ -44,17 +44,17 @@ function weedIdentifyTips(threat: EnrichedThreat, hi: boolean): string[] {
 
   return hi
     ? [
-        `नाम: ${name}${sci ? ` (${sci})` : ""}`,
+        `नाम याद रखो: ${name}${sci ? ` (${sci})` : ""}`,
         typeHint,
-        `कड़ा समय: ${threat.stage || "शुरुआती 30–45 दिन"} — इसी समय खेत साफ रखें`,
-        "जड़ों / गांठों को देखकर पहचानें — हाथ से उखाड़कर अपनी फसल से तुलना करें",
-        "संदेह हो तो साफ पत्तियों की फोटो AI Doctor को भेजें",
+        `कड़ा समय: ${threat.stage || "शुरुआती 30–45 दिन"} — यहीं सबसे नुकसान`,
+        "जड़/गांठ देखकर अपनी फसल से मिलाकर पहचानो",
+        "शक हो तो साफ पत्ती की फोटो AI Doctor को भेजो",
       ]
     : [
-        `Name: ${name}${sci ? ` (${sci})` : ""}`,
+        `Remember: ${name}${sci ? ` (${sci})` : ""}`,
         typeHint,
-        `Critical window: ${threat.stage || "first 30–45 days"} — keep field clean then`,
-        "Compare roots/tillers with your crop plants after pulling a sample",
+        `Critical window: ${threat.stage || "first 30–45 days"} — hit hardest then`,
+        "Compare roots/tillers with your crop after pulling one",
         "If unsure, send a clear leaf photo to AI Doctor",
       ];
 }
@@ -234,79 +234,137 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
       </header>
 
       {isWeed ? (
-        <div className="mt-3 space-y-3">
+        <div className="mt-3 space-y-3.5">
           {(() => {
             const stages = getWeedStageImages(threat.scientificName);
-            const hero =
+            const displayName = hi && threat.nameHi ? threat.nameHi : threat.name;
+            const heroSrc =
+              stages?.late ||
               stages?.early ||
               getWeedCardImage(threat.scientificName) ||
               "/images/threats/threat-weed.jpg";
             return (
               <>
-                <div className="relative min-h-[180px] overflow-hidden rounded-[22px] border border-lime-500/25 shadow-[var(--av-shadow-sm)]">
+                {/* Unique hero — mature/late look, medium size */}
+                <div className="relative min-h-[152px] overflow-hidden rounded-[22px] border border-lime-500/30 shadow-[var(--av-shadow-md)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={hero} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                  <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="relative z-10 flex min-h-[180px] flex-col justify-end p-4">
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-lime-200/90">
-                      {hi ? "खरपतवार" : "Weed"}
-                    </p>
-                    <p className="text-[18px] font-extrabold text-white">
-                      {hi && threat.nameHi ? threat.nameHi : threat.name}
-                    </p>
+                  <img
+                    src={heroSrc}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
+                  />
+                  <span className="absolute inset-0 bg-gradient-to-r from-lime-950/90 via-black/55 to-transparent" />
+                  <div className="relative z-10 flex min-h-[152px] flex-col justify-between p-4">
+                    <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-lime-400 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-lime-950">
+                      <Leaf className="h-3 w-3" />
+                      {hi ? "खेत का खरपतवार" : "Field weed"}
+                    </span>
+                    <div>
+                      <p className="text-[22px] font-black leading-tight text-white drop-shadow-sm">
+                        {displayName}
+                      </p>
+                      {threat.scientificName ? (
+                        <p className="mt-1 text-[11px] font-medium italic text-white/75">
+                          {threat.scientificName}
+                        </p>
+                      ) : null}
+                      <p className="mt-1.5 text-[12px] font-semibold text-lime-100/90">
+                        {threat.cropName}
+                        {cropHi ? ` · ${cropHi}` : ""}
+                        {threat.stage ? ` · ${threat.stage}` : ""}
+                      </p>
+                    </div>
                   </div>
                 </div>
+
                 {stages ? (
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {(
-                      [
-                        { key: "early", src: stages.early, hi: "शुरुआत", en: "Early" },
-                        { key: "late", src: stages.late, hi: "बाद में", en: "Later" },
-                      ] as const
-                    ).map((s) => (
-                      <div
-                        key={s.key}
-                        className="relative min-h-[140px] overflow-hidden rounded-2xl border border-lime-500/25 shadow-[var(--av-shadow-sm)]"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={s.src}
-                          alt=""
-                          className="absolute inset-0 h-full w-full object-cover"
-                        />
-                        <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-                        <div className="relative z-10 flex h-full min-h-[140px] flex-col justify-end p-2.5">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-lime-200/90">
-                            {hi ? "अवस्था" : "Stage"}
-                          </p>
-                          <p className="text-[14px] font-extrabold text-white">
-                            {hi ? s.hi : s.en}
-                          </p>
+                  <div>
+                    <p className="mb-2 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">
+                      {hi ? "दो अवस्था में पहचानो" : "Spot in 2 stages"}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {(
+                        [
+                          {
+                            key: "early",
+                            src: stages.early,
+                            titleHi: "छोटा पौधा",
+                            titleEn: "Young plant",
+                            hintHi: "शुरुआत — अभी निकालो",
+                            hintEn: "Early — pull now",
+                            ring: "border-emerald-400/40",
+                            badge: "bg-emerald-500 text-white",
+                            tint: "from-emerald-950/85 via-emerald-950/35 to-transparent",
+                            n: "1",
+                          },
+                          {
+                            key: "late",
+                            src: stages.late,
+                            titleHi: "बड़ा हो गया",
+                            titleEn: "Grown up",
+                            hintHi: "बाद — फूल से पहले",
+                            hintEn: "Later — before flower",
+                            ring: "border-amber-400/40",
+                            badge: "bg-amber-400 text-amber-950",
+                            tint: "from-amber-950/85 via-amber-950/40 to-transparent",
+                            n: "2",
+                          },
+                        ] as const
+                      ).map((s) => (
+                        <div
+                          key={s.key}
+                          className={`relative min-h-[158px] overflow-hidden rounded-2xl border ${s.ring} shadow-[var(--av-shadow-sm)]`}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={s.src}
+                            alt=""
+                            className="absolute inset-0 h-full w-full object-cover"
+                          />
+                          <span className={`absolute inset-0 bg-gradient-to-t ${s.tint}`} />
+                          <span
+                            className={`absolute left-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full text-[12px] font-black shadow ${s.badge}`}
+                          >
+                            {s.n}
+                          </span>
+                          <div className="relative z-10 flex h-full min-h-[158px] flex-col justify-end p-3">
+                            <p className="text-[15px] font-extrabold text-white">
+                              {hi ? s.titleHi : s.titleEn}
+                            </p>
+                            <p className="mt-0.5 text-[11px] font-medium text-white/85">
+                              {hi ? s.hintHi : s.hintEn}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 ) : null}
               </>
             );
           })()}
 
-          <DarkCard className="!p-3 border-emerald-500/25">
-            <h2 className={`flex items-center gap-2 ${AV.sectionTitle}`}>
-              <Eye className="h-4 w-4" />
+          <div>
+            <p className="mb-2 flex items-center gap-1.5 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">
+              <Eye className="h-4 w-4 text-emerald-600" />
               {hi ? "खेत में कैसे पहचानें" : "How to spot in the field"}
-            </h2>
-            <ul className="mt-2 space-y-2">
-              {weedIdentifyTips(threat, hi).map((tip) => (
+            </p>
+            <ul className="space-y-2">
+              {weedIdentifyTips(threat, hi).map((tip, i) => (
                 <li
                   key={tip}
-                  className="rounded-lg bg-[var(--av-surface-inset)] px-3 py-2 text-xs leading-relaxed text-[var(--av-text-secondary)]"
+                  className="flex gap-3 overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-[var(--av-surface)] to-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]"
                 >
-                  {tip}
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-sm font-black text-white shadow-sm">
+                    {i + 1}
+                  </span>
+                  <p className="pt-1 text-[13px] font-semibold leading-snug text-[var(--av-text-primary)]">
+                    {tip}
+                  </p>
                 </li>
               ))}
             </ul>
-          </DarkCard>
+          </div>
 
           <DarkCard className="!p-3 border-violet-500/20">
             <h2 className={`flex items-center gap-2 ${AV.sectionTitle}`}>
