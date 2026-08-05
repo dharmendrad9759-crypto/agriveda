@@ -385,7 +385,7 @@ export default function AskQueryPage() {
           <div className="grid gap-2 sm:grid-cols-2">
             <AppLink href="/my-queries" className={cn("inline-flex justify-center gap-2", AV.btnPrimary)}>
               <MessageCircle className="h-4 w-4" />
-              {isHi ? "मेरे सवाल देखें" : "View My queries"}
+              {isHi ? "जवाब देखो / WhatsApp" : "See answer / WhatsApp"}
             </AppLink>
             <AppLink
               href={fromAiDoctor ? "/ai-doctor" : "/ask-query"}
@@ -603,16 +603,18 @@ export default function AskQueryPage() {
           {submitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              {isHi ? "सलाह आ रही है…" : "Getting advice…"}
+              {isHi ? "भेज रहे हैं…" : "Sending…"}
             </>
           ) : fromAiDoctor ? (
             isHi ? (
-              "पुष्टि सलाह लें"
+              "एक्सपर्ट को भेजो"
             ) : (
-              "Get confirmation advice"
+              "Send to expert"
             )
+          ) : isHi ? (
+            "सवाल भेजो"
           ) : (
-            t("submitQuery")
+            "Send question"
           )}
         </button>
       </form>

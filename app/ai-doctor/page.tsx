@@ -319,12 +319,10 @@ export default function AIDoctorPage() {
           role="note"
           className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-[12px] leading-snug text-amber-950 dark:text-amber-100"
         >
-          <p className="font-bold">महत्वपूर्ण अस्वीकरण</p>
+          <p className="font-bold">ध्यान दें</p>
           <p className="mt-1 text-[11px] font-medium opacity-90">
-            AI Doctor सुझाव केवल सूचना के लिए हैं — कृषि अधिकारी / लेबल का विकल्प नहीं। दवा की मात्रा,
-            PHI और छिड़काव हमेशा उत्पाद लेबल और स्थानीय कृषि विभाग से मिलाएँ। Scan वाली फोटो Agriveda
-            डेटाबेस में नहीं रखी जाती (Gemini को एक बार सुरक्षित भेजकर जवाब आता है)। विशेषज्ञ Query भेजें
-            तभी फोटो ticket के साथ जुड़ सकती है।{" "}
+            यह सुझाव जानकारी के लिए है — दवा हमेशा लेबल / कृषि अधिकारी से मिलाएँ। फोटो स्कैन में Agriveda
+            पर सेव नहीं होती।{" "}
             <button
               type="button"
               className="font-bold underline underline-offset-2"

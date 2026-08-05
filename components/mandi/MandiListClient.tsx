@@ -17,7 +17,8 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 type Tab = "prices" | "alerts";
 
 export default function MandiListClient() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const isHi = locale === "hi";
   const { profile } = useFarmerProfile();
   const state = profile.state.trim() || "Madhya Pradesh";
   const district = profile.district.trim() || undefined;
@@ -48,9 +49,13 @@ export default function MandiListClient() {
 
   return (
     <AppShell
-      className="!bg-[#f7f8fb]"
-      title="बाज़ार देखें"
-      subtitle={`${locationLabel} · ${rows.length} भाव`}
+      className="!bg-transparent"
+      title={isHi ? "आज का भाव" : "Today's prices"}
+      subtitle={
+        isHi
+          ? `${locationLabel} · टैप करके देखो`
+          : `${locationLabel} · tap to open`
+      }
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("market") }]}
       actions={
         <button
@@ -60,7 +65,7 @@ export default function MandiListClient() {
           className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 shadow-sm active:scale-95 disabled:opacity-60"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
-          Refresh
+          {isHi ? "रिफ्रेश" : "Refresh"}
         </button>
       }
     >
@@ -74,8 +79,8 @@ export default function MandiListClient() {
         <div className="flex gap-1 rounded-2xl bg-slate-100 p-1">
           {(
             [
-              { id: "prices" as const, label: "आज के भाव" },
-              { id: "alerts" as const, label: `Alerts (${activeCount})` },
+              { id: "prices" as const, label: isHi ? "आज के भाव" : "Prices" },
+              { id: "alerts" as const, label: isHi ? `अलर्ट (${activeCount})` : `Alerts (${activeCount})` },
             ] as const
           ).map((t) => (
             <button

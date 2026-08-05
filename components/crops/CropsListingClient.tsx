@@ -24,7 +24,8 @@ interface Props {
 }
 
 export default function CropsListingClient({ crops }: Props) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const isHi = locale === "hi";
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CropListingCategory>("All");
   const [season, setSeason] = useState<(typeof SEASON_FILTERS)[number]>("All Seasons");
@@ -63,7 +64,7 @@ export default function CropsListingClient({ crops }: Props) {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search crops..."
+            placeholder={isHi ? "धान, गेहूँ, टमाटर…" : "Paddy, wheat, tomato…"}
             className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-9 pr-3 text-sm text-[var(--av-text-primary)] placeholder:text-[var(--av-text-muted)] outline-none focus:border-[var(--av-accent)]"
           />
         </div>
@@ -202,7 +203,7 @@ export default function CropsListingClient({ crops }: Props) {
 
       <div className="mt-4 flex items-center justify-between gap-3">
         <p className="text-xs font-medium text-[var(--av-text-muted)]">
-          {filtered.length} crops available
+          {isHi ? `${filtered.length} फसल` : `${filtered.length} crops`}
         </p>
         <div className="flex items-center gap-2">
           <AppLink

@@ -66,38 +66,24 @@ export function AiDoctorHero({
 
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-white/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-              <Sparkles className="h-3 w-3" />
-              AI
-            </span>
-            <span
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                aiConfigured
-                  ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-                  : aiConfigured === false
-                    ? "bg-amber-500/15 text-amber-800 dark:text-amber-200"
-                    : "bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
-              }`}
-            >
-              <CircleDot className={`h-2.5 w-2.5 ${aiConfigured ? "text-emerald-500" : ""}`} />
-              {aiConfigured === null ? "…" : aiConfigured ? "Active" : "Setup"}
-            </span>
-          </div>
-
-          <div className="mt-2.5 flex items-center gap-2.5">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/30">
-              <Stethoscope className="h-5 w-5" />
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/30">
+              <Camera className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <h1 className="text-xl font-black tracking-tight text-[var(--av-text-primary)] sm:text-2xl">
-                AI Doctor
+                पत्ती की फोटो लो
               </h1>
               <p className="mt-0.5 text-xs leading-snug text-[var(--av-text-secondary)] sm:text-sm">
-                पहले फोटो → फसल → फिर लक्षण
+                फोटो दिखाओ — बीमारी और इलाज दिखेगा
               </p>
             </div>
           </div>
+          {aiConfigured === false ? (
+            <span className="mt-2 inline-flex rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-200">
+              Setup
+            </span>
+          ) : null}
         </div>
 
         <button
@@ -111,7 +97,7 @@ export function AiDoctorHero({
               {historyCount > 9 ? "9+" : historyCount}
             </span>
           ) : (
-            <span className="hidden xs:inline sm:inline">History</span>
+            <span>पुराने</span>
           )}
         </button>
       </div>
@@ -230,7 +216,7 @@ export function AiDoctorCropSelect({
           <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 sm:h-14 sm:w-14">
             <Leaf className="h-5 w-5 sm:h-6 sm:w-6" />
           </span>
-          More
+          More → और
         </AppLink>
       </div>
     </DarkCard>
@@ -332,9 +318,9 @@ export function AiDoctorPhotoUpload({
     <DarkCard className="!p-3.5 sm:!p-5">
       <div className="mb-2.5 flex items-center justify-between gap-2">
         <SectionLabel
-          title="फोटो चुनें"
+          title="फोटो लो"
           step={1}
-          hint="1 ज़रूरी · दूसरी वैकल्पिक (दोनों कोण मददगार)"
+          hint="साफ पत्ती की फोटो — टैप करके चुने"
         />
         {hasPreview && onClear && (
           <button
@@ -347,7 +333,7 @@ export function AiDoctorPhotoUpload({
         )}
       </div>
       <p className="mb-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-semibold leading-snug text-emerald-800 dark:text-emerald-200">
-        आप अधिकतम 2 फोटो जोड़ सकते हैं — पहली मुख्य, दूसरी पत्ती का दूसरा पहलू / कोण (optional)।
+        कैमरा खोलो — पत्ती करीब से दिखाओ। दूसरी फोटो ज़रूरी नहीं।
       </p>
       {cameraInput}
       {galleryInput}
@@ -397,7 +383,7 @@ export function AiDoctorPhotoUpload({
             </span>
             <p className="mt-3 text-sm font-bold text-[var(--av-text-primary)]">फोटो अभी नहीं चुनी</p>
             <p className="mt-1 text-center text-[11px] text-[var(--av-text-muted)]">
-              Camera या Gallery से पत्ती की फोटो चुनें
+              कैमरा या गैलरी से पत्ती की फोटो लो
             </p>
           </div>
         )}
@@ -409,7 +395,7 @@ export function AiDoctorPhotoUpload({
             className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition active:scale-[0.98]"
           >
             <Camera className="h-5 w-5" />
-            {hasPreview ? "पहली बदलें" : "Camera"}
+            {hasPreview ? "फोटो बदलो" : "कैमरा खोलो"}
           </button>
           <button
             type="button"
@@ -417,7 +403,7 @@ export function AiDoctorPhotoUpload({
             className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border-2 border-emerald-500/35 bg-white px-3 text-sm font-bold text-emerald-800 transition active:scale-[0.98] dark:bg-[var(--av-surface)] dark:text-emerald-200"
           >
             <ImagePlus className="h-5 w-5" />
-            {hasPreview ? "Gallery" : "Gallery"}
+            {hasPreview ? "गैलरी" : "गैलरी"}
           </button>
         </div>
 
