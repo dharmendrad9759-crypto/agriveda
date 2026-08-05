@@ -371,7 +371,9 @@ export function emptyCropPestDisease(slug: string): CropPestDiseaseData {
 export function getCropPestDisease(slug: string): CropPestDiseaseData {
   const key = normalizeCropSlug(slug);
   const base = cropPestDiseaseData[key] ?? getIpmCatalogEntry(key);
-  if (!base) return emptyCropPestDisease(key);
+  if (!base) {
+    return mergeWeedAbioticCatalog(emptyCropPestDisease(key));
+  }
   return mergeWeedAbioticCatalog(
     mergeCropFieldGuideCatalog(mergeIpmCatalog({ ...base, slug: key }))
   );

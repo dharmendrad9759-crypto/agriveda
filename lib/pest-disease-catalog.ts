@@ -1,6 +1,8 @@
 import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/data/pest-disease";
 import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
+import { getWeedCardImage } from "@/lib/weeds/weedStageImages";
+
 import { getIpmThreatOverride } from "@/lib/crops/ipmDataBridge";
 import { getCropFieldGuideThreatOverride } from "@/lib/crops/cropFieldGuideBridge";
 import { getWeedNameHi } from "@/lib/crops/weedNamesHi";
@@ -188,7 +190,10 @@ function enrichWeed(crop: CropPestDiseaseData, weed: WeedItem): EnrichedThreat {
     name: weed.name,
     nameHi,
     scientificName: weed.scientificName,
-    image: resolveThreatImage(undefined, weed.image) ?? THREAT_IMAGES.weed,
+    image:
+      getWeedCardImage(weed.scientificName) ||
+      resolveThreatImage(undefined, weed.image) ||
+      THREAT_IMAGES.weed,
     stage: weed.criticalPeriod,
     description: `${weed.scientificName} (${weed.type} खरपतवार) ${crop.name} के साथ पोषक तत्व, पानी और रोशनी के लिए प्रतिस्पर्धा करता है। महत्वपूर्ण प्रतिस्पर्धा अवधि ${weed.criticalPeriod} है। उपज बचाने के लिए समय पर खरपतवार नियंत्रण जरूरी है।`,
     symptoms: [
