@@ -152,7 +152,7 @@ export default function MyFarmPage() {
       subtitle={
         data.fields.length
           ? `${stats.totalFields} खेत · ${totalAreaLabel(data.fields)} · स्वास्थ्य ${stats.healthScore}%`
-          : "अपना खेत, रकबा और फसल खुद जोड़ें"
+          : "पहला खेत जोड़ो — नाम, रकबा, फसल"
       }
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("myFarm") }]}
       actions={
@@ -161,44 +161,61 @@ export default function MyFarmPage() {
         </AppLink>
       }
     >
-      <div className="grid grid-cols-4 gap-2">
-        {[
-          { label: t("shellStatFields"), value: `${stats.totalFields}`, icon: Tractor },
-          { label: t("shellStatArea"), value: data.fields.length ? totalAreaLabel(data.fields).replace(" एकड़", "ac") : "—", icon: Map },
-          { label: t("shellStatCrops"), value: `${stats.cropsGrowing}`, icon: Sprout },
-          { label: t("shellStatHealth"), value: data.fields.length ? `${stats.healthScore}` : "—", icon: Heart },
-        ].map(({ label, value, icon: Icon }) => (
-          <div
-            key={label}
-            className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-2 text-center"
-          >
-            <Icon className="mx-auto h-3.5 w-3.5 text-[var(--av-accent)]" />
-            <p className="mt-1 text-sm font-black text-[var(--av-text-primary)]">{value}</p>
-            <p className="text-[8px] font-semibold uppercase tracking-wide text-[var(--av-text-muted)]">{label}</p>
-          </div>
-        ))}
-      </div>
-
-      {data.fields.length === 0 && (
-        <div className="relative mt-3 overflow-hidden rounded-[22px] border border-emerald-500/20">
+      {data.fields.length === 0 ? (
+        <button
+          type="button"
+          onClick={() => setShowAddField(true)}
+          className="relative mt-1 flex min-h-[260px] w-full overflow-hidden rounded-[22px] border border-emerald-500/25 text-left shadow-[var(--av-shadow-md)] active:scale-[0.99]"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/jobs/job-my-farm.jpg"
             alt=""
-            className="h-40 w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/55 to-emerald-800/20" />
-          <div className="absolute inset-x-0 bottom-0 p-4">
-            <p className="text-[16px] font-bold text-white">अभी कोई खेत नहीं</p>
-            <p className="mt-0.5 text-[12px] text-white/85">पहला खेत जोड़ो — खेती शुरू</p>
-            <button
-              type="button"
-              onClick={() => setShowAddField(true)}
-              className="av-btn av-btn-sm mt-2 inline-flex gap-1 bg-white text-emerald-900"
+          <span className="absolute inset-0 bg-gradient-to-t from-emerald-950/92 via-emerald-950/45 to-black/20" />
+          <span className="relative z-10 flex w-full flex-col justify-end p-5">
+            <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 text-white backdrop-blur-sm">
+              <Plus className="h-6 w-6" />
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-200/90">
+              मेरा खेत
+            </span>
+            <span className="mt-1 text-[26px] font-black leading-tight text-white">
+              पहला खेत जोड़ो
+            </span>
+            <span className="mt-2 text-[13px] font-medium text-white/85">
+              नाम · रकबा · फसल — एक टैप से शुरू
+            </span>
+            <span className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[13px] font-extrabold text-emerald-900">
+              <Plus className="h-4 w-4" />
+              अभी जोड़ो
+            </span>
+          </span>
+        </button>
+      ) : (
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { label: t("shellStatFields"), value: `${stats.totalFields}`, icon: Tractor },
+            {
+              label: t("shellStatArea"),
+              value: totalAreaLabel(data.fields).replace(" एकड़", "ac"),
+              icon: Map,
+            },
+            { label: t("shellStatCrops"), value: `${stats.cropsGrowing}`, icon: Sprout },
+            { label: t("shellStatHealth"), value: `${stats.healthScore}`, icon: Heart },
+          ].map(({ label, value, icon: Icon }) => (
+            <div
+              key={label}
+              className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-2 text-center"
             >
-              <Plus className="h-3.5 w-3.5" /> पहला खेत जोड़ें
-            </button>
-          </div>
+              <Icon className="mx-auto h-3.5 w-3.5 text-[var(--av-accent)]" />
+              <p className="mt-1 text-sm font-black text-[var(--av-text-primary)]">{value}</p>
+              <p className="text-[8px] font-semibold uppercase tracking-wide text-[var(--av-text-muted)]">
+                {label}
+              </p>
+            </div>
+          ))}
         </div>
       )}
 
@@ -209,7 +226,7 @@ export default function MyFarmPage() {
           onClick={() => setShowAddField((v) => !v)}
           className="av-btn av-btn-sm av-btn-primary inline-flex gap-1"
         >
-          <Plus className="h-3.5 w-3.5" /> खेत जोड़ें
+          <Plus className="h-3.5 w-3.5" /> खेत जोड़ो
         </button>
       </div>
 
