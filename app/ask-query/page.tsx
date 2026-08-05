@@ -299,7 +299,7 @@ export default function AskQueryPage() {
           <div className="relative overflow-hidden rounded-[22px] border border-emerald-500/20 shadow-[var(--av-shadow-md)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/home/home-job-ask.jpg"
+              src="/images/home/ask-expert-trust.jpg"
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -362,7 +362,7 @@ export default function AskQueryPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/home/home-job-ask.jpg"
+                  src="/images/home/ask-expert-trust.jpg"
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover"
                 />
@@ -398,30 +398,56 @@ export default function AskQueryPage() {
 
   return (
     <AppShell
-      title={t("askExpertTitle")}
+      title={isHi ? "पूछो" : "Ask"}
       subtitle={
         fromAiDoctor
           ? isHi
-            ? "AI निदान एक्सपर्ट को भेजें — जवाब एक्सपर्ट देगा"
-            : "Send AI diagnosis to expert — expert will reply"
-          : t("askExpertSubtitle")
+            ? "एक्सपर्ट को भेजो — जवाब वही देगा"
+            : "Send to expert — they will reply"
+          : isHi
+            ? "फोटो + सवाल — एक्सपर्ट जवाब देगा"
+            : "Photo + question — expert replies"
       }
       breadcrumbs={[
         { label: isHi ? "होम" : "Home", href: "/" },
-        { label: isHi ? "विशेषज्ञ" : "Ask Expert" },
+        { label: isHi ? "पूछो" : "Ask" },
       ]}
     >
       <form onSubmit={handleSubmit} className="mx-auto max-w-lg space-y-4">
+        {!fromAiDoctor ? (
+          <div className="relative overflow-hidden rounded-[22px] border border-emerald-500/20 shadow-[var(--av-shadow-sm)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/home/ask-expert-trust.jpg"
+              alt=""
+              className="h-44 w-full object-cover sm:h-48"
+            />
+            <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
+            <div className="absolute inset-x-0 bottom-0 p-4">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-200/90">
+                {isHi ? "विशेषज्ञ" : "Expert"}
+              </p>
+              <p className="mt-0.5 text-[18px] font-extrabold text-white">
+                {isHi ? "डर मत — पूछ लो" : "Don't hesitate — ask"}
+              </p>
+              <p className="mt-1 text-[12px] font-medium text-white/85">
+                {isHi
+                  ? "फोटो लगाओ, सवाल लिखो — जवाब ऐप + WhatsApp पर"
+                  : "Add photo, write question — reply in app + WhatsApp"}
+              </p>
+            </div>
+          </div>
+        ) : null}
+
         {ticketError ? (
           <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-3 text-sm font-semibold text-amber-950 dark:text-amber-100">
             <p className="text-[11px] font-bold uppercase tracking-wide text-amber-800/80">
-              {isHi ? "एक्सपर्ट तक नहीं पहुँचा" : "Could not reach expert"}
+              {isHi ? "अभी नहीं पहुँचा" : "Could not reach expert"}
             </p>
-            <p className="mt-1 text-xs leading-relaxed font-medium opacity-95">{ticketError}</p>
-            <p className="mt-2 text-[11px] font-medium text-amber-900/80 dark:text-amber-200/80">
+            <p className="mt-1 text-xs leading-relaxed font-medium opacity-95">
               {isHi
-                ? "चेक: Vercel → SUPABASE_SERVICE_ROLE_KEY (service_role) + Redeploy · Supabase में expert_queries टेबल"
-                : "Check: Vercel SUPABASE_SERVICE_ROLE_KEY (service_role) + Redeploy · expert_queries table"}
+                ? "नेटवर्क या लॉगिन चेक करो — फिर भेजो"
+                : "Check network or login — then try again"}
             </p>
           </div>
         ) : null}
@@ -610,24 +636,33 @@ export default function AskQueryPage() {
         <button
           type="submit"
           disabled={!query.trim() || submitting}
-          className={`flex w-full items-center justify-center gap-2 ${AV.btnPrimary} disabled:opacity-40`}
+          className="relative flex min-h-[54px] w-full items-center justify-center overflow-hidden rounded-2xl disabled:opacity-40"
         >
-          {submitting ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              {isHi ? "भेज रहे हैं…" : "Sending…"}
-            </>
-          ) : fromAiDoctor ? (
-            isHi ? (
-              "एक्सपर्ट को भेजो"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/home/ask-expert-trust.jpg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <span className="absolute inset-0 bg-emerald-950/75" />
+          <span className="relative z-10 flex items-center gap-2 text-[15px] font-bold text-white">
+            {submitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {isHi ? "भेज रहे हैं…" : "Sending…"}
+              </>
+            ) : fromAiDoctor ? (
+              isHi ? (
+                "एक्सपर्ट को भेजो"
+              ) : (
+                "Send to expert"
+              )
+            ) : isHi ? (
+              "सवाल भेजो"
             ) : (
-              "Send to expert"
-            )
-          ) : isHi ? (
-            "सवाल भेजो"
-          ) : (
-            "Send question"
-          )}
+              "Send question"
+            )}
+          </span>
         </button>
       </form>
     </AppShell>
