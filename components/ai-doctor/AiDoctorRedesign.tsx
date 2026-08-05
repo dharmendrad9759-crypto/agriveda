@@ -333,7 +333,7 @@ export function AiDoctorPhotoUpload({
         )}
       </div>
       <p className="mb-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-semibold leading-snug text-emerald-800 dark:text-emerald-200">
-        कैमरा खोलो — पत्ती करीब से दिखाओ। दूसरी फोटो ज़रूरी नहीं।
+        कैमरा खोलो — पत्ती करीब से दिखाओ।
       </p>
       {cameraInput}
       {galleryInput}
@@ -377,22 +377,33 @@ export function AiDoctorPhotoUpload({
             </p>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center px-3 py-6 sm:py-8">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+          <div className="relative flex min-h-[160px] flex-col items-center justify-center overflow-hidden px-3 py-8 sm:min-h-[180px]">
+            <Image
+              src="/images/home/home-job-photo.jpg"
+              alt=""
+              fill
+              sizes="(max-width: 512px) 100vw, 512px"
+              className="object-cover object-center"
+              priority
+            />
+            <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/45 to-black/25" />
+            <span className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-white shadow-lg backdrop-blur-sm">
               <Camera className="h-7 w-7" />
             </span>
-            <p className="mt-3 text-sm font-bold text-[var(--av-text-primary)]">फोटो अभी नहीं चुनी</p>
-            <p className="mt-1 text-center text-[11px] text-[var(--av-text-muted)]">
-              कैमरा या गैलरी से पत्ती की फोटो लो
+            <p className="relative z-10 mt-3 text-sm font-bold text-white drop-shadow">
+              पत्ती की फोटो लो
+            </p>
+            <p className="relative z-10 mt-1 max-w-[18ch] text-center text-[11px] font-medium text-white/90">
+              कैमरा या गैलरी टैप करो
             </p>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2 border-t border-emerald-500/15 bg-emerald-50/50 p-2.5 dark:bg-black/20 sm:gap-2.5 sm:p-3">
+        <div className="grid grid-cols-2 gap-2 border-t border-emerald-500/15 bg-emerald-50/80 p-2.5 dark:bg-black/25 sm:gap-2.5 sm:p-3">
           <button
             type="button"
             onClick={onCamera}
-            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition active:scale-[0.98]"
+            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition active:scale-[0.98]"
           >
             <Camera className="h-5 w-5" />
             {hasPreview ? "फोटो बदलो" : "कैमरा खोलो"}
@@ -400,10 +411,10 @@ export function AiDoctorPhotoUpload({
           <button
             type="button"
             onClick={onGallery}
-            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border-2 border-emerald-500/35 bg-white px-3 text-sm font-bold text-emerald-800 transition active:scale-[0.98] dark:bg-[var(--av-surface)] dark:text-emerald-200"
+            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border-2 border-emerald-500/35 bg-white px-3 text-sm font-bold text-emerald-800 transition active:scale-[0.98] dark:bg-[var(--av-surface)] dark:text-emerald-200"
           >
             <ImagePlus className="h-5 w-5" />
-            {hasPreview ? "गैलरी" : "गैलरी"}
+            गैलरी
           </button>
         </div>
 
@@ -415,7 +426,7 @@ export function AiDoctorPhotoUpload({
               className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-dashed border-emerald-500/40 bg-white/80 px-3 text-sm font-bold text-emerald-800 dark:bg-transparent dark:text-emerald-200"
             >
               <ImagePlus className="h-4 w-4" />
-              दूसरी फोटो जोड़ें (optional)
+              और एक फोटो (ज़रूरी नहीं)
             </button>
           </div>
         ) : null}
@@ -449,7 +460,7 @@ export function AiDoctorActions({
         {isScanning ? (
           <>
             <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            Analyzing…
+            जाँच हो रही है…
           </>
         ) : (
           <>

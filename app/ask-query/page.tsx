@@ -280,57 +280,55 @@ export default function AskQueryPage() {
     return (
       <AppShell
         className="!bg-transparent"
-        title={isHi ? "एक्सपर्ट को भेजा" : "Sent to expert"}
+        title={ticketId ? (isHi ? "भेज दिया ✓" : "Sent ✓") : isHi ? "भेजने में दिक्कत" : "Could not send"}
         subtitle={
-          fromAiDoctor
+          ticketId
             ? isHi
-              ? "AI डॉक्टर निदान — अब असली एक्सपर्ट जवाब देगा"
-              : "AI Doctor diagnosis — a human expert will reply"
+              ? "जवाब आने पर ऐप + WhatsApp पर मिलेगा"
+              : "Reply will show in app + WhatsApp"
             : isHi
-              ? "आपके सवाल का जवाब एक्सपर्ट देगा"
-              : "An expert will answer your question"
+              ? "फिर से कोशिश करो"
+              : "Please try again"
         }
         breadcrumbs={[
           { label: isHi ? "होम" : "Home", href: "/" },
-          { label: isHi ? "पूछें" : "Ask", href: "/ask-query" },
+          { label: isHi ? "पूछो" : "Ask", href: "/ask-query" },
         ]}
       >
-        <div className="mx-auto max-w-lg space-y-4 pb-6">
-          <DarkCard className="flex flex-col items-center py-6 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-500/40 bg-emerald-500/15">
-              {ticketId ? (
-                <Check className="h-7 w-7 text-emerald-600" />
-              ) : (
-                <Clock3 className="h-7 w-7 text-amber-600" />
-              )}
-            </div>
-            <h2 className="mt-3 font-display text-xl font-bold text-[var(--av-text-primary)]">
-              {ticketId
-                ? isHi
-                  ? "एक्सपर्ट के पास पहुँच गया"
-                  : "Reached the expert desk"
-                : isHi
-                  ? "भेजने में समस्या"
-                  : "Could not send"}
-            </h2>
-            <p className="mt-1.5 max-w-sm text-sm text-[var(--av-text-muted)]">
-              {ticketId
-                ? isHi
-                  ? "यहाँ AI जवाब नहीं आएगा। असली एक्सपर्ट जवाब “मेरे सवाल” में दिखेगा।"
-                  : "No AI reply here. The human expert’s answer will appear in My queries."
-                : ticketError ||
-                  (isHi
-                    ? "Vercel में SUPABASE_SERVICE_ROLE_KEY चेक करें"
-                    : "Check SUPABASE_SERVICE_ROLE_KEY on Vercel")}
-            </p>
-            {ticketId ? (
-              <p className="mt-2 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
-                Ticket · {ticketId.slice(0, 8)}…
+        <div className="mx-auto max-w-lg space-y-3 pb-6">
+          <div className="relative overflow-hidden rounded-[22px] border border-emerald-500/20 shadow-[var(--av-shadow-md)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/home/home-job-ask.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/70 to-emerald-800/40" />
+            <div className="relative px-5 py-8 text-center text-white">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+                {ticketId ? <Check className="h-7 w-7" /> : <Clock3 className="h-7 w-7" />}
+              </div>
+              <h2 className="mt-3 font-display text-xl font-bold">
+                {ticketId
+                  ? isHi
+                    ? "एक्सपर्ट के पास गया"
+                    : "Sent to expert"
+                  : isHi
+                    ? "नहीं पहुँचा"
+                    : "Not sent"}
+              </h2>
+              <p className="mt-1.5 text-sm text-white/85">
+                {ticketId
+                  ? isHi
+                    ? "जवाब “मेरे जवाब” में आएगा — WhatsApp पर भी भेज सकते हो"
+                    : "Answer appears in My answers — share on WhatsApp too"
+                  : ticketError?.slice(0, 100) ||
+                    (isHi ? "नेटवर्क / लॉगिन चेक करो" : "Check network / login")}
               </p>
-            ) : null}
-          </DarkCard>
+            </div>
+          </div>
 
-          {(photoPreview || fromAiDoctor || query) && (
+          {(photoPreview || query) && ticketId ? (
             <DarkCard className="!p-3">
               <div className="flex gap-3">
                 {photoPreview ? (
@@ -338,68 +336,61 @@ export default function AskQueryPage() {
                   <img
                     src={photoPreview}
                     alt=""
-                    className="h-20 w-20 shrink-0 rounded-xl object-cover border border-[var(--av-border)]"
+                    className="h-16 w-16 shrink-0 rounded-xl object-cover border border-[var(--av-border)]"
                   />
                 ) : null}
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700/80">
-                    {fromAiDoctor
-                      ? isHi
-                        ? "AI डॉक्टर संदर्भ (एक्सपर्ट को)"
-                        : "AI Doctor context (to expert)"
-                      : isHi
-                        ? "आपका सवाल"
-                        : "Your question"}
+                  <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
+                    {isHi ? "आपका सवाल" : "Your question"}
                   </p>
                   <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
                     {referralSummary?.result.diseaseName ?? lockedCropLabel}
                   </p>
-                  <p className="mt-0.5 line-clamp-3 text-xs text-[var(--av-text-muted)]">
-                    {referralSummary
-                      ? `${referralSummary.result.confidence}% · ${referralSummary.result.severity}`
-                      : query.slice(0, 160)}
+                  <p className="mt-0.5 line-clamp-2 text-xs text-[var(--av-text-muted)]">
+                    {query.slice(0, 120)}
                   </p>
                 </div>
               </div>
             </DarkCard>
-          )}
+          ) : null}
 
-          <DarkCard className="border border-amber-500/25 bg-amber-500/5">
-            <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/15 text-amber-800">
-                <Clock3 className="h-4 w-4" />
-              </span>
-              <div>
-                <p className="text-sm font-bold text-[var(--av-text-primary)]">
-                  {isHi ? "एक्सपर्ट जवाब की प्रतीक्षा" : "Waiting for expert reply"}
-                </p>
-                <p className="text-[11px] text-[var(--av-text-muted)]">
-                  {isHi
-                    ? "AI डॉक्टर सिर्फ स्कैन पर जवाब देता है — यहाँ नहीं"
-                    : "AI Doctor only answers on the scan screen — not here"}
-                </p>
-              </div>
+          {ticketId ? (
+            <div className="grid gap-2">
+              <AppLink
+                href="/my-queries"
+                className="relative flex min-h-[54px] items-center justify-center overflow-hidden rounded-2xl"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/home/home-job-ask.jpg"
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <span className="absolute inset-0 bg-emerald-950/70" />
+                <span className="relative z-10 flex items-center gap-2 text-[15px] font-bold text-white">
+                  <MessageCircle className="h-5 w-5" />
+                  {isHi ? "जवाब देखो / WhatsApp" : "See answer / WhatsApp"}
+                </span>
+              </AppLink>
+              <AppLink
+                href="/"
+                className={cn("inline-flex justify-center", AV.btnSecondarySm)}
+              >
+                {isHi ? "होम पर जाओ" : "Go home"}
+              </AppLink>
             </div>
-          </DarkCard>
-
-          <div className="grid gap-2 sm:grid-cols-2">
-            <AppLink href="/my-queries" className={cn("inline-flex justify-center gap-2", AV.btnPrimary)}>
-              <MessageCircle className="h-4 w-4" />
-              {isHi ? "जवाब देखो / WhatsApp" : "See answer / WhatsApp"}
-            </AppLink>
-            <AppLink
-              href={fromAiDoctor ? "/ai-doctor" : "/ask-query"}
-              className={cn("inline-flex justify-center", AV.btnSecondarySm)}
+          ) : (
+            <button
+              type="button"
+              className={cn("flex w-full justify-center", AV.btnPrimary)}
+              onClick={() => {
+                setSubmitted(false);
+                setTicketError(null);
+              }}
             >
-              {fromAiDoctor
-                ? isHi
-                  ? "AI डॉक्टर पर वापस"
-                  : "Back to AI Doctor"
-                : isHi
-                  ? "और पूछें"
-                  : "Ask another"}
-            </AppLink>
-          </div>
+              {isHi ? "फिर भेजो" : "Try again"}
+            </button>
+          )}
         </div>
       </AppShell>
     );
@@ -520,21 +511,45 @@ export default function AskQueryPage() {
           </div>
         </DarkCard>
 
-        <DarkCard delay={2}>
-          <h3 className={AV.sectionTitle}>
-            {fromAiDoctor
-              ? isHi
-                ? "स्कैन फोटो"
-                : "Scan photo"
-              : t("addPhotoOptional")}
-          </h3>
-          <p className={`mt-1 ${AV.micro}`}>
-            {fromAiDoctor
-              ? isHi
-                ? "AI डॉक्टर वाली फोटो पहले से जुड़ी है — चाहें तो बदल सकते हैं"
-                : "AI Doctor photo is attached — you can change it"
-              : t("photoPermission")}
-          </p>
+        <DarkCard delay={2} className="!overflow-hidden !p-0">
+          <div className="relative min-h-[100px] px-4 pb-3 pt-4">
+            {!photoPreview ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/home/home-job-photo.jpg"
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <span className="absolute inset-0 bg-emerald-950/55" />
+              </>
+            ) : null}
+            <div className={cn("relative z-10", !photoPreview && "text-white")}>
+              <h3 className={cn("text-[15px] font-bold", photoPreview ? AV.sectionTitle : "text-white")}>
+                {fromAiDoctor
+                  ? isHi
+                    ? "स्कैन फोटो"
+                    : "Scan photo"
+                  : isHi
+                    ? "फोटो जोड़ो (ठीक है)"
+                    : "Add photo (optional)"}
+              </h3>
+              <p
+                className={cn(
+                  "mt-1 text-[11px] font-medium",
+                  photoPreview ? "text-[var(--av-text-muted)]" : "text-white/85"
+                )}
+              >
+                {fromAiDoctor
+                  ? isHi
+                    ? "फोटो जुड़ी है — बदल भी सकते हो"
+                    : "Photo attached — you can change it"
+                  : isHi
+                    ? "पत्ती दिखे तो जल्दी समझ आएगा"
+                    : "A leaf photo helps the expert"}
+              </p>
+            </div>
+          </div>
 
           <input
             ref={galleryInputRef}
@@ -553,7 +568,7 @@ export default function AskQueryPage() {
           />
 
           {photoPreview && (
-            <div className="relative mb-3 mt-3 overflow-hidden rounded-xl border border-[var(--av-border)]">
+            <div className="relative mx-4 mb-3 overflow-hidden rounded-xl border border-[var(--av-border)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={photoPreview} alt="Upload" className="h-40 w-full object-cover" />
               <button
@@ -567,30 +582,27 @@ export default function AskQueryPage() {
               >
                 <X className="h-4 w-4" />
               </button>
-              {photoName && (
-                <p className="px-3 py-2 text-xs font-medium text-[var(--av-accent)]">{photoName}</p>
-              )}
             </div>
           )}
 
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={openGallery}
-              disabled={submitting}
-              className={`inline-flex justify-center gap-2 ${AV.btnSecondarySm}`}
-            >
-              <ImagePlus className="h-4 w-4" />
-              {photoPreview ? t("changePhoto") : t("fromGallery")}
-            </button>
+          <div className="grid grid-cols-2 gap-2 border-t border-[var(--av-border-subtle)] bg-[var(--av-surface)] p-3">
             <button
               type="button"
               onClick={() => cameraInputRef.current?.click()}
               disabled={submitting}
-              className={`inline-flex justify-center gap-2 ${AV.btnSecondarySm}`}
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-emerald-700 px-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-50"
             >
               <Camera className="h-4 w-4" />
-              {t("takePhoto")}
+              {isHi ? "कैमरा" : "Camera"}
+            </button>
+            <button
+              type="button"
+              onClick={openGallery}
+              disabled={submitting}
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-emerald-600/30 px-3 text-sm font-bold text-emerald-900 dark:text-emerald-100 active:scale-[0.98] disabled:opacity-50"
+            >
+              <ImagePlus className="h-4 w-4" />
+              {isHi ? "गैलरी" : "Gallery"}
             </button>
           </div>
         </DarkCard>

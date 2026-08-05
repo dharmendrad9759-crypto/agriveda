@@ -1,12 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { Home, Sprout, IndianRupee, User, Stethoscope } from "lucide-react";
+import { Camera, Home, Sprout, IndianRupee, User } from "lucide-react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { softTap } from "@/lib/appEssentials";
 import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
+import { cn } from "@/lib/cn";
 
 const SIDE_ITEMS: {
   labelKey: FarmerUiKey;
@@ -86,15 +88,17 @@ function NavItem({
         transition={{ duration: 0.15 }}
       >
         <Icon
-          className={`h-5 w-5 transition-colors ${
+          className={cn(
+            "h-5 w-5 transition-colors",
             isActive ? "text-emerald-500 dark:text-emerald-300" : "theme-text-muted"
-          }`}
+          )}
           strokeWidth={isActive ? 2.5 : 2}
         />
         <span
-          className={`truncate text-[9px] font-bold ${
+          className={cn(
+            "truncate text-[10px] font-bold",
             isActive ? "text-emerald-600 dark:text-emerald-300" : "theme-text-muted"
-          }`}
+          )}
         >
           {label}
         </span>
@@ -134,7 +138,7 @@ export default function BottomNav() {
           <AppLink
             href="/ai-doctor"
             onClick={() => softTap(16)}
-            className="relative -mt-6 flex min-w-[68px] flex-col items-center gap-1"
+            className="relative -mt-7 flex min-w-[72px] flex-col items-center gap-1"
             aria-label={t("toolAi")}
           >
             {!reduced && (
@@ -146,18 +150,31 @@ export default function BottomNav() {
               />
             )}
             <motion.span
-              className={`relative flex h-14 w-14 items-center justify-center rounded-full shadow-[0_8px_28px_rgba(5,150,105,0.55)] transition ${
-                aiActive
-                  ? "bg-gradient-to-br from-emerald-400 to-teal-600 text-white ring-4 ring-emerald-400/30"
-                  : "bg-gradient-to-br from-emerald-500 to-teal-700 text-white"
-              }`}
+              className={cn(
+                "relative h-14 w-14 overflow-hidden rounded-full shadow-[0_8px_28px_rgba(5,150,105,0.55)] ring-2 ring-white/90",
+                aiActive && "ring-4 ring-emerald-400/45"
+              )}
               whileTap={reduced ? undefined : { scale: 0.92 }}
               whileHover={reduced ? undefined : { scale: 1.04 }}
             >
-              <Stethoscope className="h-6 w-6" strokeWidth={2.25} />
+              <Image
+                src="/images/home/home-cta-scan.jpg"
+                alt=""
+                fill
+                sizes="56px"
+                className="object-cover object-center"
+                priority
+              />
+              <span className="absolute inset-0 bg-emerald-950/35" />
+              <span className="absolute inset-0 flex items-center justify-center">
+                <Camera className="h-6 w-6 text-white drop-shadow-md" strokeWidth={2.5} />
+              </span>
             </motion.span>
             <span
-              className={`max-w-[72px] truncate text-center text-[9px] font-bold ${aiActive ? "text-emerald-500" : "theme-text-muted"}`}
+              className={cn(
+                "max-w-[76px] truncate text-center text-[10px] font-bold",
+                aiActive ? "text-emerald-600 dark:text-emerald-300" : "theme-text-muted"
+              )}
             >
               {t("toolAi")}
             </span>
