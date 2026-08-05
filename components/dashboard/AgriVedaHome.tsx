@@ -87,88 +87,127 @@ const QUICK_JOBS: {
   },
 ];
 
-const PRIMARY_TOOLS: {
-  label: string;
-  labelHi: string;
+const MORE_JOBS: {
+  id: string;
+  hi: string;
+  en: string;
+  hintHi: string;
+  hintEn: string;
   href: string;
   imageSrc: string;
-  tone: string;
 }[] = [
   {
-    label: "My Farm",
-    labelHi: "मेरा खेत",
+    id: "farm",
+    hi: "मेरा खेत",
+    en: "My farm",
+    hintHi: "खेत जोड़ो / देखो",
+    hintEn: "Add or see fields",
     href: "/my-farm",
     imageSrc: "/images/jobs/job-my-farm.jpg",
-    tone: "from-emerald-500/20 to-teal-500/10",
   },
   {
-    label: "Pests",
-    labelHi: "कीट-रोग",
+    id: "pest",
+    hi: "कीट और रोग",
+    en: "Pests & disease",
+    hintHi: "पत्ती / कीट टैप करो",
+    hintEn: "Tap leaf or pest",
     href: "/pest-diseases",
-    imageSrc: "/images/jobs/job-pest.jpg",
-    tone: "from-rose-500/18 to-orange-500/10",
+    imageSrc: "/images/threats/threat-insect.jpg",
   },
   {
-    label: "Nutrients",
-    labelHi: "पत्ती कमी",
-    href: "/deficiencies",
-    imageSrc: "/images/home/home-job-yellow-leaf.jpg",
-    tone: "from-lime-500/20 to-emerald-500/12",
+    id: "disease",
+    hi: "बीमारी पहचानो",
+    en: "Spot the disease",
+    hintHi: "लक्षण से समाधान",
+    hintEn: "Solve by symptoms",
+    href: "/pest-solver",
+    imageSrc: "/images/threats/threat-disease.jpg",
   },
   {
-    label: "Fertilizer",
-    labelHi: "खाद",
+    id: "weeds",
+    hi: "खरपतवार",
+    en: "Weeds",
+    hintHi: "घास देखो",
+    hintEn: "See weeds",
+    href: "/pest-diseases?type=weed",
+    imageSrc: "/images/threats/threat-weed.jpg",
+  },
+  {
+    id: "fert",
+    hi: "खाद कितनी?",
+    en: "How much fertilizer?",
+    hintHi: "बोरी में हिसाब",
+    hintEn: "Bag doses",
     href: "/services/fertilizer-calculator",
     imageSrc: "/images/jobs/job-fertilizer.jpg",
-    tone: "from-amber-500/20 to-yellow-500/10",
   },
   {
-    label: "Spray",
-    labelHi: "स्प्रे",
+    id: "spray",
+    hi: "आज स्प्रे?",
+    en: "Spray today?",
+    hintHi: "करो या मत",
+    hintEn: "Do or skip",
     href: "/weather/spray-advisory",
     imageSrc: "/images/jobs/job-spray.jpg",
-    tone: "from-sky-500/18 to-cyan-500/10",
   },
   {
-    label: "Ask",
-    labelHi: "पूछो",
-    href: "/ask-query",
-    imageSrc: "/images/home/home-job-ask.jpg",
-    tone: "from-teal-500/18 to-emerald-500/10",
-  },
-];
-
-const MORE_TOOLS: {
-  label: string;
-  labelHi: string;
-  href: string;
-  imageSrc: string;
-}[] = [
-  {
-    label: "Calendar",
-    labelHi: "कैलेंडर",
+    id: "plan",
+    hi: "फसल योजना",
+    en: "Crop plan",
+    hintHi: "कब क्या करूँ",
+    hintEn: "What to do when",
     href: "/crop-calendar",
-    imageSrc: "/images/icons/tools/crop-planner.png",
+    imageSrc: "/images/jobs/job-crops-hero.jpg",
   },
   {
-    label: "Advisor",
-    labelHi: "सलाह",
+    id: "advisor",
+    hi: "खेत सलाह",
+    en: "Field advice",
+    hintHi: "आज की मदद",
+    hintEn: "Help for today",
     href: "/field-advisor",
-    imageSrc: "/images/icons/tools/advisor.png",
+    imageSrc: "/images/jobs/job-my-farm.jpg",
   },
   {
-    label: "Weeds",
-    labelHi: "खरपतवार",
-    href: "/pest-diseases?type=weed",
-    imageSrc: "/images/jobs/job-weeds.jpg",
+    id: "ask",
+    hi: "विशेषज्ञ से पूछो",
+    en: "Ask an expert",
+    hintHi: "फोटो + सवाल",
+    hintEn: "Photo + question",
+    href: "/ask-query",
+    imageSrc: "/images/home/ask-expert-trust.jpg",
   },
   {
-    label: "Alerts",
-    labelHi: "अलर्ट",
+    id: "alerts",
+    hi: "खेत अलर्ट",
+    en: "Farm alerts",
+    hintHi: "पहले से सावधान",
+    hintEn: "Stay ahead",
     href: "/alerts",
     imageSrc: "/images/jobs/job-alerts.jpg",
   },
+  {
+    id: "crops",
+    hi: "फसल गाइड",
+    en: "Crop guide",
+    hintHi: "फसल टैप करो",
+    hintEn: "Tap a crop",
+    href: "/crops",
+    imageSrc: "/images/jobs/job-crops-hero.jpg",
+  },
+  {
+    id: "nutrients",
+    hi: "पत्ती की कमी",
+    en: "Leaf deficiency",
+    hintHi: "पोषक देखो",
+    hintEn: "Check nutrients",
+    href: "/deficiencies",
+    imageSrc: "/images/home/home-job-yellow-leaf.jpg",
+  },
 ];
+
+const MORE_JOBS_FIRST = 6;
+
 
 function daysSince(dateStr: string): number | null {
   if (!dateStr) return null;
@@ -511,44 +550,40 @@ export default function AgriVedaHome() {
           ) : null}
         </motion.section>
 
-        {/* Tools — fewer first */}
-        <motion.section
-          {...fade(0.07)}
-          className="rounded-[20px] border border-emerald-500/15 bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]"
-        >
-          <div className="mb-2.5 flex items-center justify-between px-0.5">
+        {/* More tools — same photo-card look as quick jobs, smaller */}
+        <motion.section {...fade(0.07)}>
+          <div className="mb-2 flex items-center justify-between px-0.5">
             <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
-              {isHi ? "और टूल" : "More tools"}
+              {isHi ? "और काम" : "More jobs"}
             </h2>
             <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">
-              {isHi ? "एक टैप" : "One tap"}
+              {isHi ? "टैप करो" : "Tap"}
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            {PRIMARY_TOOLS.map((action) => (
+          <div className="grid grid-cols-2 gap-2.5">
+            {(showMoreTools ? MORE_JOBS : MORE_JOBS.slice(0, MORE_JOBS_FIRST)).map((job) => (
               <AppLink
-                key={action.href}
-                href={action.href}
-                onClick={() => track("tool_open", { href: action.href, label: action.label })}
-                className="flex flex-col items-center gap-1 rounded-2xl border border-emerald-500/10 bg-[var(--av-surface-inset)]/70 px-1 py-2 text-center active:scale-[0.97]"
+                key={job.id}
+                href={job.href}
+                onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
+                className="group relative min-h-[112px] overflow-hidden rounded-2xl border border-white/15 shadow-[var(--av-shadow-sm)] transition active:scale-[0.98]"
               >
-                <span
-                  className={cn(
-                    "relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br",
-                    action.tone
-                  )}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={action.imageSrc}
-                    alt=""
-                    className="h-full w-full scale-[1.2] object-cover"
-                    draggable={false}
-                  />
-                </span>
-                <span className="line-clamp-1 text-[10px] font-bold text-[var(--av-text-primary)]">
-                  {isHi ? action.labelHi : action.label}
-                </span>
+                <Image
+                  src={job.imageSrc}
+                  alt=""
+                  fill
+                  sizes="(max-width: 512px) 50vw, 220px"
+                  className="object-cover transition duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/48 to-black/15" />
+                <div className="relative flex h-full min-h-[112px] flex-col justify-end p-3">
+                  <p className="text-[13px] font-bold leading-snug text-white drop-shadow-sm">
+                    {isHi ? job.hi : job.en}
+                  </p>
+                  <p className="mt-0.5 text-[10px] font-medium text-white/85">
+                    {isHi ? job.hintHi : job.hintEn}
+                  </p>
+                </div>
               </AppLink>
             ))}
           </div>
@@ -556,44 +591,19 @@ export default function AgriVedaHome() {
           <button
             type="button"
             onClick={() => setShowMoreTools((v) => !v)}
-            className="mt-2.5 flex w-full items-center justify-center gap-1 rounded-xl border border-[var(--av-border)] py-2 text-[12px] font-bold text-[var(--av-text-secondary)]"
+            className="mt-2.5 flex w-full items-center justify-center gap-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 text-[12px] font-bold text-[var(--av-text-secondary)]"
           >
             {showMoreTools
               ? isHi
                 ? "कम दिखाओ"
                 : "Show less"
               : isHi
-                ? "और टूल"
-                : "More tools"}
+                ? "और काम देखो"
+                : "See more jobs"}
             <ArrowRight
               className={cn("h-3.5 w-3.5 transition", showMoreTools && "rotate-90")}
             />
           </button>
-
-          {showMoreTools ? (
-            <div className="mt-2 grid grid-cols-4 gap-2">
-              {MORE_TOOLS.map((action) => (
-                <AppLink
-                  key={action.href}
-                  href={action.href}
-                  onClick={() => track("tool_open", { href: action.href, label: action.label })}
-                  className="flex flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-center"
-                >
-                  <span className="relative h-11 w-11 overflow-hidden rounded-xl bg-[var(--av-surface-inset)]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={action.imageSrc}
-                      alt=""
-                      className="h-full w-full scale-[1.15] object-cover"
-                    />
-                  </span>
-                  <span className="line-clamp-1 text-[9px] font-bold text-[var(--av-text-primary)]">
-                    {isHi ? action.labelHi : action.label}
-                  </span>
-                </AppLink>
-              ))}
-            </div>
-          ) : null}
         </motion.section>
 
         {/* Weather — tip first */}
