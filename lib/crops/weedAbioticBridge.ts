@@ -120,35 +120,36 @@ export function mapAbioticStress(record: WeedAbioticRecord): AbioticStressItem[]
   }));
 }
 
-export function buildWeedCatalogWeeds(slug: string, program: CropWeedProgram): WeedItem[] {
-  return program.keyWeeds
-    .map((kw, i) => {
-      const name = kw.split("(")[0]?.trim() ?? kw;
-      const sci = kw.match(/\(([^)]+)\)/)?.[1] ?? kw;
-      if (!isValidWeedScientific(sci)) return null;
-      const type = kw.toLowerCase().includes("grass")
-        ? "Grassy"
-        : kw.toLowerCase().includes("sedge")
-          ? "Sedge"
-          : "Broadleaf";
-      return {
-        id: `w${i + 1}`,
-        name,
-        scientificName: sci,
-        type,
-        image: getWeedCardImage(sci) ?? undefined,
-        criticalPeriod: program.criticalPeriod,
-        preEmergence: program.chemical.find((c) => /PE/i.test(c.timing))
-          ? formatHerbicide(program.chemical.find((c) => /PE/i.test(c.timing))!)
-          : "Pre-emergence herbicide at label dose",
-        postEmergence: program.chemical.find((c) => /PoE|EPoE/i.test(c.timing))
-          ? formatHerbicide(program.chemical.find((c) => /PoE|EPoE/i.test(c.timing))!)
-          : "Early post-emergence selective herbicide",
-        culturalControl: program.cultural[0] ?? "Hand weeding in critical period",
-      } satisfies WeedItem;
-    })
-    .filter((w): w is WeedItem => Boolean(w))
-    .slice(0, 6);
+export function buildWeedCatalogWeeds(_slug: string, program: CropWeedProgram): WeedItem[] {
+  const out: WeedItem[] = [];
+  for (let i = 0; i < program.keyWeeds.length; i++) {
+    const kw = program.keyWeeds[i]!;
+    const name = kw.split("(")[0]?.trim() ?? kw;
+    const sci = kw.match(/\(([^)]+)\)/)?.[1] ?? kw;
+    if (!isValidWeedScientific(sci)) continue;
+    const type = kw.toLowerCase().includes("grass")
+      ? "Grassy"
+      : kw.toLowerCase().includes("sedge")
+        ? "Sedge"
+        : "Broadleaf";
+    out.push({
+      id: `w${out.length + 1}`,
+      name,
+      scientificName: sci,
+      type,
+      image: getWeedCardImage(sci) ?? undefined,
+      criticalPeriod: program.criticalPeriod,
+      preEmergence: program.chemical.find((c) => /PE/i.test(c.timing))
+        ? formatHerbicide(program.chemical.find((c) => /PE/i.test(c.timing))!)
+        : "Pre-emergence herbicide at label dose",
+      postEmergence: program.chemical.find((c) => /PoE|EPoE/i.test(c.timing))
+        ? formatHerbicide(program.chemical.find((c) => /PoE|EPoE/i.test(c.timing))!)
+        : "Early post-emergence selective herbicide",
+      culturalControl: program.cultural[0] ?? "Hand weeding in critical period",
+    });
+    if (out.length >= 6) break;
+  }
+  return out;
 }
 
 export function mergeWeedAbioticIntoProfile(profile: CropManagementProfile): CropManagementProfile {
