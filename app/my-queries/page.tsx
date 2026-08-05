@@ -15,6 +15,12 @@ import {
   RefreshCw,
   Stethoscope,
 } from "lucide-react";
+import {
+  buildConsultWhatsAppText,
+  openWhatsAppWithText,
+} from "@/lib/whatsappShare";
+import { useToast } from "@/components/ui/Toast";
+import { track } from "@/lib/analytics";
 
 type FarmerQuery = {
   id: string;
@@ -46,10 +52,35 @@ function formatWhen(iso: string, hi: boolean): string {
 export default function MyQueriesPage() {
   const { locale } = useLocale();
   const isHi = locale === "hi";
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [queries, setQueries] = useState<FarmerQuery[]>([]);
   const [error, setError] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+
+  const shareAnswerOnWhatsApp = (q: FarmerQuery) => {
+    if (!q.expertReply) return;
+    const text = buildConsultWhatsAppText({
+      cropName: q.cropName,
+      question: q.queryText,
+      answer: q.expertReply,
+      expertName: q.expertName,
+      isHi,
+    });
+    const ok = openWhatsAppWithText(text);
+    track("consult_whatsapp_share", { queryId: q.id, ok });
+    if (ok) {
+      showToast(
+        isHi ? "WhatsApp खुल गया — भेजें" : "WhatsApp opened — send it",
+        "success"
+      );
+    } else {
+      showToast(
+        isHi ? "WhatsApp नहीं खुला" : "Could not open WhatsApp",
+        "error"
+      );
+    }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -92,7 +123,11 @@ export default function MyQueriesPage() {
     <AppShell
       className="!bg-transparent"
       title={isHi ? "मेरे सवाल" : "My queries"}
-      subtitle={isHi ? "एडमिन / विशेषज्ञ के जवाब यहाँ" : "Admin / expert replies here"}
+      subtitle={
+        isHi
+          ? "जवाब आया तो WhatsApp पर भी भेज सकते हो"
+          : "Share expert answers on WhatsApp"
+      }
       breadcrumbs={[
         { label: isHi ? "होम" : "Home", href: "/" },
         { label: isHi ? "मेरे सवाल" : "My queries" },
@@ -213,18 +248,38 @@ export default function MyQueriesPage() {
                     </p>
                   </div>
                   {answered ? (
-                    <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-3 py-3">
-                      <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
-                        {q.expertName || (isHi ? "विशेषज्ञ" : "Expert")}
-                      </p>
-                      <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[var(--av-text-secondary)]">
-                        {q.expertReply}
-                      </p>
-                      {q.answeredAt ? (
-                        <p className="mt-2 text-[10px] text-[var(--av-text-muted)]">
-                          {formatWhen(q.answeredAt, isHi)}
+                    <div className="space-y-3">
+                      <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-3 py-3">
+                        <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
+                          {q.expertName || (isHi ? "विशेषज्ञ" : "Expert")}
                         </p>
-                      ) : null}
+                        <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[var(--av-text-secondary)]">
+                          {q.expertReply}
+                        </p>
+                        {q.answeredAt ? (
+                          <p className="mt-2 text-[10px] text-[var(--av-text-muted)]">
+                            {formatWhen(q.answeredAt, isHi)}
+                          </p>
+                        ) : null}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          shareAnswerOnWhatsApp(q);
+                        }}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-3 py-3 text-[13px] font-bold text-white shadow-sm active:scale-[0.98]"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        {isHi
+                          ? "WhatsApp पर जवाब भेजें"
+                          : "Send answer on WhatsApp"}
+                      </button>
+                      <p className="text-center text-[10px] text-[var(--av-text-muted)]">
+                        {isHi
+                          ? "भाई / पड़ोसी / दूकानदार को आगे भेज सकते हो"
+                          : "Forward to family, neighbour, or dealer"}
+                      </p>
                     </div>
                   ) : (
                     <p className="rounded-xl bg-[var(--av-surface-inset)] px-3 py-3 text-xs text-[var(--av-text-muted)]">
@@ -233,6 +288,17 @@ export default function MyQueriesPage() {
                         : "Admin/expert is reviewing. Refresh in a while."}
                     </p>
                   )}
+                </div>
+              ) : answered ? (
+                <div className="border-t border-[var(--av-border-subtle)] px-4 pb-3">
+                  <button
+                    type="button"
+                    onClick={() => shareAnswerOnWhatsApp(q)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366]/95 px-3 py-2.5 text-[12px] font-bold text-white active:scale-[0.98]"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    {isHi ? "WhatsApp पर भेजें" : "Send on WhatsApp"}
+                  </button>
                 </div>
               ) : null}
             </DarkCard>

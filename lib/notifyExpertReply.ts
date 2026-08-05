@@ -78,12 +78,15 @@ export async function notifyFarmerOfExpertReply(
   const result: NotifyResult = { whatsapp: false, sms: false, inApp: false };
   const phone = digitPhone(row.farmer_phone);
   const crop = row.crop_name || "फसल";
-  const replyPreview = (row.expert_reply || "").trim().slice(0, 280);
+  const questionPreview = (row.query_text || "").trim().slice(0, 180);
+  const replyPreview = (row.expert_reply || "").trim().slice(0, 900);
   const link = `${appOrigin()}/my-queries`;
   const text =
-    `Agriveda विशेषज्ञ जवाब (${crop}):\n` +
-    `${replyPreview}${replyPreview.length >= 280 ? "…" : ""}\n` +
-    `ऐप में पूरा जवाब: ${link}`;
+    `🌱 Agriveda विशेषज्ञ जवाब\n` +
+    `फसल: ${crop}\n` +
+    (questionPreview ? `\n❓ आपका सवाल:\n${questionPreview}${questionPreview.length >= 180 ? "…" : ""}\n` : "") +
+    `\n✅ जवाब:\n${replyPreview}${replyPreview.length >= 900 ? "…" : ""}\n` +
+    `\nऐप में पूरा देखें: ${link}`;
 
   if (phone) {
     const waFrom = process.env.TWILIO_WHATSAPP_FROM?.trim(); // e.g. whatsapp:+14155238886

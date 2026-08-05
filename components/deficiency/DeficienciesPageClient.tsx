@@ -2,644 +2,355 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import {
-  BookOpen,
-  ChevronDown,
+  Camera,
   ChevronRight,
-  FlaskConical,
-  Leaf,
-  Sparkles,
-  ShieldCheck,
-  AlertTriangle,
-  CheckCircle2,
-  Stethoscope,
-  Zap,
-  Target,
-  TrendingUp,
-  Droplets,
+  MessageCircle,
+  Search,
 } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import { tf } from "@/lib/i18n/farmer-ui";
 import { crops } from "@/data/crops";
 import { getCropManagementProfile } from "@/data/crop-management";
+import { allNutrientDeficiencies } from "@/lib/nutrients/nutrientDeficiencyBridge";
 import { getCropHindiName, getCropImageUrl } from "@/lib/crops/crop-display";
 import { cn } from "@/lib/cn";
-import type { NutrientDeficiency } from "@/types/crop-management";
+import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
-const NUTRIENT_FILTERS = [
-  { id: "all", label: "All", hindi: "सब" },
-  { id: "N", label: "N", hindi: "नाइट्रो" },
-  { id: "P", label: "P", hindi: "फास्फो" },
-  { id: "K", label: "K", hindi: "पोटैश" },
-  { id: "S", label: "S", hindi: "सल्फर" },
-  { id: "Zn", label: "Zn", hindi: "जिंक" },
-  { id: "Fe", label: "Fe", hindi: "आयरन" },
-  { id: "Mn", label: "Mn", hindi: "मैंगनीज" },
-  { id: "Cu", label: "Cu", hindi: "कॉपर" },
-  { id: "B", label: "B", hindi: "बोरॉन" },
-  { id: "Mo", label: "Mo", hindi: "मॉली" },
-] as const;
-
-const NUTRIENT_HI: Record<string, string> = {
-  N: "नाइट्रोजन",
-  P: "फास्फोरस",
-  K: "पोटैश",
-  S: "सल्फर",
-  Zn: "जिंक",
-  Fe: "आयरन",
-  Mn: "मैंगनीज",
-  Cu: "कॉपर",
-  B: "बोरॉन",
-  Mo: "मॉलिब्डेनम",
-};
-
-const SYM_TONE: Record<string, string> = {
-  N: "bg-emerald-500/15 text-emerald-700 ring-emerald-500/25 dark:text-emerald-300",
-  P: "bg-violet-500/15 text-violet-700 ring-violet-500/25 dark:text-violet-300",
-  K: "bg-amber-500/15 text-amber-800 ring-amber-500/25 dark:text-amber-300",
-  S: "bg-yellow-500/15 text-yellow-800 ring-yellow-500/25 dark:text-yellow-200",
-  Zn: "bg-sky-500/15 text-sky-700 ring-sky-500/25 dark:text-sky-300",
-  Fe: "bg-orange-500/15 text-orange-800 ring-orange-500/25 dark:text-orange-300",
-  Mn: "bg-teal-500/15 text-teal-700 ring-teal-500/25 dark:text-teal-300",
-  Cu: "bg-rose-500/15 text-rose-700 ring-rose-500/25 dark:text-rose-300",
-  B: "bg-lime-500/15 text-lime-800 ring-lime-500/25 dark:text-lime-300",
-  Mo: "bg-indigo-500/15 text-indigo-700 ring-indigo-500/25 dark:text-indigo-300",
-};
-
-const BALANCED_TABLE = [
-  { nutrient: "N (Nitrogen)", hindi: "नाइट्रोजन", basal: "20 kg", topDress: "40 kg (2 splits)", foliar: "Urea 2%" },
-  { nutrient: "P₂O₅ (Phosphorus)", hindi: "फास्फोरस", basal: "25 kg", topDress: "—", foliar: "DAP foliar" },
-  { nutrient: "K₂O (Potassium)", hindi: "पोटैश", basal: "20 kg", topDress: "20 kg", foliar: "MOP foliar" },
-  { nutrient: "S (Sulphur)", hindi: "सल्फर", basal: "10 kg", topDress: "—", foliar: "Gypsum spray" },
-  { nutrient: "Zn (Zinc)", hindi: "जिंक", basal: "5 kg", topDress: "—", foliar: "ZnSO₄ 0.5%" },
-  { nutrient: "Fe (Iron)", hindi: "आयरन", basal: "—", topDress: "—", foliar: "FeSO₄ + citric" },
-  { nutrient: "B (Boron)", hindi: "बोरॉन", basal: "—", topDress: "—", foliar: "Borax 0.2%" },
-];
-
-const FALLBACK_DEFICIENCIES: NutrientDeficiency[] = [
+/** Farmer look-and-tap problem cards → nutrient slug */
+const PROBLEMS: {
+  id: string;
+  hi: string;
+  en: string;
+  hintHi: string;
+  hintEn: string;
+  slug: string;
+  tone: string;
+}[] = [
   {
-    name: "Nitrogen",
-    role: "Essential for vegetative growth",
-    deficiencySymptoms: ["Older leaves turn light green to yellow", "Stunted plant growth", "Reduced tillering"],
-    excessSymptoms: [],
-    management: ["Apply Urea @ 40–60 kg/acre in split doses"],
-    recommendedFertilizers: ["Urea 2% foliar spray", "Split top-dress at tillering"],
+    id: "yellow_old",
+    hi: "पुरानी पत्ती पीली",
+    en: "Old leaves yellow",
+    hintHi: "नीचे से पीलापन",
+    hintEn: "Yellow from bottom",
+    slug: "nitrogen",
+    tone: "border-amber-400/40 bg-amber-50 dark:bg-amber-950/30",
   },
   {
-    name: "Phosphorus",
-    role: "Root and flower development",
-    deficiencySymptoms: ["Purple tint on older leaves", "Poor root development", "Delayed maturity"],
-    excessSymptoms: [],
-    management: ["Apply DAP @ 50 kg/acre at basal"],
-    recommendedFertilizers: ["DAP basal application", "SSP where available"],
+    id: "purple_small",
+    hi: "पौधा छोटा / बैंगनी",
+    en: "Small / purple plant",
+    hintHi: "जड़-वृद्धि कम",
+    hintEn: "Poor root growth",
+    slug: "phosphorus",
+    tone: "border-violet-400/40 bg-violet-50 dark:bg-violet-950/30",
   },
   {
-    name: "Potassium",
-    role: "Grain filling and stem strength",
-    deficiencySymptoms: ["Brown leaf margins", "Lodging", "Poor grain filling"],
-    excessSymptoms: [],
-    management: ["Apply MOP @ 20 kg/acre at panicle initiation"],
-    recommendedFertilizers: ["MOP split application", "Potassium nitrate foliar"],
+    id: "burn_edge",
+    hi: "किनारे जलते जैसे",
+    en: "Leaf edges burn",
+    hintHi: "सूखे भूरे किनारे",
+    hintEn: "Brown dry edges",
+    slug: "potassium",
+    tone: "border-orange-400/40 bg-orange-50 dark:bg-orange-950/30",
   },
   {
-    name: "Zinc",
-    role: "Enzyme activation and tillering",
-    deficiencySymptoms: ["Khaira disease — dusty brown spots", "Stunted tillers", "Bronze patches"],
-    excessSymptoms: [],
-    management: ["ZnSO₄ @ 5 kg/acre or 0.5% foliar"],
-    recommendedFertilizers: ["Zinc sulphate soil/foliar", "Apply at tillering"],
+    id: "new_pale",
+    hi: "नई पत्ती सफ़ेद-पीली",
+    en: "New leaves pale",
+    hintHi: "ऊपर की पत्ती फीकी",
+    hintEn: "Top leaves faded",
+    slug: "iron",
+    tone: "border-lime-400/40 bg-lime-50 dark:bg-lime-950/25",
+  },
+  {
+    id: "stunted_zn",
+    hi: "छोटे पत्ते / झाड़ी जैसे",
+    en: "Tiny / bushy leaves",
+    hintHi: "अक्सर जस्ता कमी",
+    hintEn: "Often zinc lack",
+    slug: "zinc",
+    tone: "border-sky-400/40 bg-sky-50 dark:bg-sky-950/30",
+  },
+  {
+    id: "fruit_drop",
+    hi: "फल / फूल झड़ना",
+    en: "Fruit / flower drop",
+    hintHi: "सेटिंग खराब",
+    hintEn: "Poor setting",
+    slug: "boron",
+    tone: "border-rose-400/40 bg-rose-50 dark:bg-rose-950/25",
   },
 ];
 
-function nutrientSymbol(name: string): string {
-  const n = name.toLowerCase();
-  if (n.includes("nitrogen") || n.startsWith("n ")) return "N";
-  if (n.includes("phosph")) return "P";
-  if (n.includes("potassium") || n.includes("potash")) return "K";
-  if (n.includes("sulphur") || n.includes("sulfur")) return "S";
-  if (n.includes("zinc")) return "Zn";
-  if (n.includes("iron")) return "Fe";
-  if (n.includes("manganese")) return "Mn";
-  if (n.includes("copper")) return "Cu";
-  if (n.includes("boron")) return "B";
-  if (n.includes("molybdenum")) return "Mo";
-  return name.slice(0, 2);
-}
+const SYM_TILE: Record<string, string> = {
+  N: "bg-emerald-600 text-white",
+  P: "bg-teal-600 text-white",
+  K: "bg-lime-700 text-white",
+  Ca: "bg-stone-600 text-white",
+  Mg: "bg-green-700 text-white",
+  S: "bg-amber-600 text-white",
+  Fe: "bg-orange-600 text-white",
+  Zn: "bg-sky-600 text-white",
+  Mn: "bg-cyan-700 text-white",
+  Cu: "bg-rose-700 text-white",
+  B: "bg-emerald-700 text-white",
+  Mo: "bg-indigo-600 text-white",
+};
 
-function nutrientTitle(name: string, hi: boolean): { primary: string; secondary: string } {
-  const sym = nutrientSymbol(name);
-  const hiName = NUTRIENT_HI[sym];
-  if (hi && hiName) return { primary: hiName, secondary: `${name} (${sym})` };
-  return { primary: name, secondary: hiName ? `${hiName} · ${sym}` : sym };
-}
-
-function slugForNutrient(name: string): string {
-  const map: Record<string, string> = {
-    N: "nitrogen",
-    P: "phosphorus",
-    K: "potassium",
-    S: "sulphur",
-    Zn: "zinc",
-    Fe: "iron",
-    Mn: "manganese",
-    Cu: "copper",
-    B: "boron",
-    Mo: "molybdenum",
-  };
-  const sym = nutrientSymbol(name);
-  return map[sym] ?? name.toLowerCase().replace(/\s+/g, "-");
-}
-
-function cropShortName(name: string) {
+function cropShort(name: string) {
   return name.split("(")[0]?.trim() || name;
 }
 
+function resolveDeficiencySlug(name: string) {
+  const hit = allNutrientDeficiencies.find(
+    (n) =>
+      n.name.toLowerCase() === name.toLowerCase() ||
+      n.symbol.toLowerCase() === name.slice(0, 2).toLowerCase() ||
+      name.toLowerCase().includes(n.name.toLowerCase()) ||
+      n.name.toLowerCase().includes(name.toLowerCase().split(" ")[0] ?? "")
+  );
+  return hit?.slug ?? name.toLowerCase().replace(/\s+/g, "-");
+}
+
 export default function DeficienciesPageClient() {
-  const { t, locale } = useLocale();
+  const { locale } = useLocale();
+  const isHi = locale === "hi";
+  const reduce = useReducedMotion();
   const [cropSlug, setCropSlug] = useState("paddy");
-  const [filter, setFilter] = useState<(typeof NUTRIENT_FILTERS)[number]["id"]>("all");
   const [showAll, setShowAll] = useState(false);
+  const [query, setQuery] = useState("");
 
   const crop = crops.find((c) => c.slug === cropSlug) ?? crops[0];
-  const hindi = getCropHindiName(crop.slug);
-  const displayName = cropShortName(crop.name);
+  const hindiCrop = getCropHindiName(crop.slug);
   const profile = getCropManagementProfile(crop.slug);
+  const cropName = isHi && hindiCrop ? hindiCrop : cropShort(crop.name);
 
-  const hooks = useMemo(
-    () =>
-      [
-        { icon: AlertTriangle, title: t("nutrientsHookSpot"), text: t("nutrientsHookSpotDesc") },
-        { icon: ShieldCheck, title: t("nutrientsHookFix"), text: t("nutrientsHookFixDesc") },
-        { icon: TrendingUp, title: t("nutrientsHookAcre"), text: t("nutrientsHookAcreDesc") },
-      ] as const,
-    [t]
+  const cropAlerts = useMemo(
+    () => (profile?.nutrientDeficiencies ?? []).slice(0, 4),
+    [profile]
   );
 
-  const tips = useMemo(
-    () =>
-      [
-        { title: t("nutrientsTipSoilTitle"), text: t("nutrientsTipSoil") },
-        { title: t("nutrientsTipSplitTitle"), text: t("nutrientsTipSplit") },
-        { title: t("nutrientsTipFoliarTitle"), text: t("nutrientsTipFoliar") },
-        { title: t("nutrientsTip4rTitle"), text: t("nutrientsTip4r") },
-        { title: t("nutrientsTipRainTitle"), text: t("nutrientsTipRain") },
-      ] as const,
-    [t]
-  );
+  const filteredAll = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return allNutrientDeficiencies;
+    return allNutrientDeficiencies.filter(
+      (n) =>
+        n.name.toLowerCase().includes(q) ||
+        n.symbol.toLowerCase().includes(q) ||
+        n.slug.includes(q)
+    );
+  }, [query]);
 
-  const deficiencies = useMemo(() => {
-    const fromProfile = profile?.nutrientDeficiencies ?? [];
-    return fromProfile.length > 0 ? fromProfile : FALLBACK_DEFICIENCIES;
-  }, [profile]);
-
-  const filtered = useMemo(() => {
-    if (filter === "all") return deficiencies;
-    return deficiencies.filter((d) => nutrientSymbol(d.name) === filter);
-  }, [deficiencies, filter]);
-
-  const visible = showAll ? filtered : filtered.slice(0, 8);
-  const topSymptom = deficiencies[0]?.deficiencySymptoms[0] ?? "—";
+  const fade = (i: number) =>
+    reduce
+      ? {}
+      : {
+          initial: { opacity: 0, y: 10 },
+          animate: { opacity: 1, y: 0 },
+          transition: {
+            duration: MOTION.slow,
+            ease: EASE_OUT,
+            delay: 0.03 * i,
+          },
+        };
 
   return (
-    <div className="space-y-5">
-      {/* Marketing hero */}
-      <section className="relative overflow-hidden rounded-[1.85rem] border border-amber-500/25 bg-gradient-to-br from-stone-950 via-amber-950 to-emerald-950 text-white shadow-[0_24px_60px_-24px_rgba(120,53,15,0.65)]">
-        <div className="pointer-events-none absolute -right-8 -top-10 h-44 w-44 rounded-full bg-amber-400/25 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-12 -left-6 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl" />
-        <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0 flex-1">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-amber-100">
-              <FlaskConical className="h-3 w-3 text-amber-300" />
-              {t("nutrientsHeroBadge")}
-            </span>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-[1.65rem] font-bold leading-tight tracking-tight sm:text-3xl">
-              {t("nutrientsHeroLine1a")}{" "}
-              <span className="text-amber-300">{t("nutrientsHeroLine1b")}</span>
-              <br />
-              {t("nutrientsHeroLine2a")} <span className="text-rose-300">{t("nutrientsHeroLine2b")}</span>
-            </h2>
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-amber-50/80">
-              {t("nutrientsHeroDesc")}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {hooks.map(({ icon: Icon, title, text }) => (
-                <div
-                  key={title}
-                  className="flex min-w-[9.5rem] flex-1 items-start gap-2 rounded-2xl border border-white/10 bg-black/25 px-3 py-2.5 backdrop-blur-md"
-                >
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-400/20 text-amber-200">
-                    <Icon className="h-3.5 w-3.5" />
-                  </span>
-                  <div>
-                    <p className="text-[11px] font-bold text-white">{title}</p>
-                    <p className="text-[10px] leading-snug text-white/60">{text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+    <div className="relative mx-auto max-w-lg space-y-5 pb-8 sm:max-w-2xl">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-8 -top-4 h-36 w-36 rounded-full bg-emerald-500/15 blur-3xl"
+      />
 
-          <div className="relative mx-auto h-36 w-36 shrink-0 overflow-hidden rounded-[1.75rem] border border-white/20 shadow-2xl sm:mx-0 sm:h-40 sm:w-40">
-            <Image
-              src={getCropImageUrl(crop)}
-              alt={displayName}
-              fill
-              className="object-cover"
-              sizes="160px"
-              priority
-            />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
-              <p className="text-xs font-bold text-white">{displayName}</p>
-              {hindi ? <p className="text-[10px] text-amber-200">{hindi}</p> : null}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* One job: what do you see? */}
+      <motion.header {...fade(0)} className="relative">
+        <h1 className="font-display text-[1.65rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
+          {isHi ? "पत्ती में क्या दिख रहा है?" : "What do you see on the leaf?"}
+        </h1>
+        <p className="mt-1.5 text-[13px] leading-snug text-[var(--av-text-muted)]">
+          {isHi
+            ? "जो मिलता-जुलता हो — उस पर टैप करें। पढ़ने की ज़रूरत नहीं।"
+            : "Tap what looks similar. No need to read long text."}
+        </p>
+      </motion.header>
 
-      {/* Steps */}
-      <div className="grid grid-cols-3 gap-2">
-        {[
-          { n: "01", label: t("nutrientsStepCrop"), done: true },
-          { n: "02", label: t("nutrientsStepFilter"), done: filter !== "all" || deficiencies.length > 0 },
-          { n: "03", label: t("nutrientsStepFix"), done: false },
-        ].map((s) => (
-          <div
-            key={s.n}
+      <motion.section {...fade(1)} className="relative grid grid-cols-2 gap-2.5">
+        {PROBLEMS.map((p) => (
+          <AppLink
+            key={p.id}
+            href={`/deficiencies/${p.slug}`}
             className={cn(
-              "rounded-2xl border px-3 py-2.5",
-              s.done
-                ? "border-amber-500/35 bg-amber-500/10"
-                : "border-[var(--av-border)] bg-[var(--av-surface)]"
+              "rounded-2xl border p-3.5 text-left transition active:scale-[0.98]",
+              p.tone
             )}
           >
-            <p className="text-[10px] font-black text-amber-700 dark:text-amber-300">{s.n}</p>
-            <p className="text-xs font-bold text-[var(--av-text-primary)]">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Crop picker */}
-      <section className="rounded-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-        <div className="mb-3 flex items-end justify-between gap-2">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-600 dark:text-amber-300">
-              {t("nutrientsStep1")}
+            <p className="text-[14px] font-bold leading-snug text-[var(--av-text-primary)]">
+              {isHi ? p.hi : p.en}
             </p>
-            <h3 className="text-base font-bold text-[var(--av-text-primary)]">{t("nutrientsWhichCrop")}</h3>
-          </div>
-          <AppLink
-            href="/library"
-            className="inline-flex items-center gap-1 rounded-full border border-[var(--av-border)] px-3 py-1.5 text-[10px] font-bold text-[var(--av-accent)]"
-          >
-            <BookOpen className="h-3.5 w-3.5" />
-            {t("nutrientsGuide")}
+            <p className="mt-1 text-[11px] font-medium text-[var(--av-text-muted)]">
+              {isHi ? p.hintHi : p.hintEn}
+            </p>
+            <span className="mt-2.5 inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
+              {isHi ? "देखो" : "See"}
+              <ChevronRight className="h-3.5 w-3.5" />
+            </span>
           </AppLink>
-        </div>
+        ))}
+      </motion.section>
 
-        <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-2 scrollbar-hide">
-          {crops.map((c) => {
+      {/* Big practical CTAs */}
+      <motion.section {...fade(2)} className="relative grid grid-cols-2 gap-2.5">
+        <AppLink
+          href="/ai-doctor"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-3 py-3.5 text-[13px] font-bold text-white shadow-md shadow-emerald-700/25 active:scale-[0.98]"
+        >
+          <Camera className="h-4 w-4" />
+          {isHi ? "फोटो लो" : "Take photo"}
+        </AppLink>
+        <AppLink
+          href="/ask-query"
+          className="flex items-center justify-center gap-2 rounded-2xl border border-emerald-600/35 bg-[var(--av-surface)] px-3 py-3.5 text-[13px] font-bold text-emerald-900 dark:text-emerald-100 active:scale-[0.98]"
+        >
+          <MessageCircle className="h-4 w-4" />
+          {isHi ? "पूछो" : "Ask"}
+        </AppLink>
+      </motion.section>
+
+      {/* Crop strip — short Hindi labels */}
+      <motion.section {...fade(3)} className="relative space-y-2">
+        <p className="text-[13px] font-bold text-[var(--av-text-primary)]">
+          {isHi ? `आपकी फसल — ${cropName}` : `Your crop — ${cropName}`}
+        </p>
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {crops.slice(0, 14).map((c) => {
             const active = c.slug === cropSlug;
-            const h = getCropHindiName(c.slug);
-            const short = cropShortName(c.name);
+            const hi = getCropHindiName(c.slug);
+            const label = isHi && hi ? hi : cropShort(c.name);
             return (
               <button
                 key={c.slug}
                 type="button"
-                onClick={() => {
-                  setCropSlug(c.slug);
-                  setShowAll(false);
-                }}
+                onClick={() => setCropSlug(c.slug)}
                 className={cn(
-                  "group relative w-[5.6rem] shrink-0 overflow-hidden rounded-2xl border text-left transition active:scale-[0.98]",
+                  "flex shrink-0 flex-col items-center gap-1.5 rounded-2xl border px-2.5 py-2 transition",
                   active
-                    ? "border-amber-500 ring-2 ring-amber-500/35 shadow-[0_12px_28px_-12px_rgba(245,158,11,0.55)]"
-                    : "border-[var(--av-border)] opacity-90 hover:opacity-100"
+                    ? "border-emerald-500/45 bg-emerald-500/12"
+                    : "border-[var(--av-border)] bg-[var(--av-surface)]"
                 )}
               >
-                <div className="relative h-16 w-full">
+                <span className="relative h-10 w-10 overflow-hidden rounded-full">
                   <Image
                     src={getCropImageUrl(c)}
-                    alt={short}
+                    alt=""
                     fill
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                    sizes="90px"
+                    className="object-cover"
+                    sizes="40px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                  {active ? (
-                    <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                    </span>
-                  ) : null}
-                </div>
-                <div className="bg-[var(--av-surface-inset)] px-2 py-2">
-                  <p className="truncate text-[11px] font-bold text-[var(--av-text-primary)]">{short}</p>
-                  {h ? <p className="truncate text-[9px] text-[var(--av-text-muted)]">{h}</p> : null}
-                </div>
+                </span>
+                <span className="max-w-[56px] truncate text-[10px] font-bold text-[var(--av-text-primary)]">
+                  {label}
+                </span>
               </button>
             );
           })}
         </div>
-        <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-          {tf(locale, "nutrientsWatchSign", { sign: topSymptom })}
-        </p>
-      </section>
 
-      {/* Nutrient filters */}
-      <section className="rounded-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-600 dark:text-amber-300">
-          {t("nutrientsStep2")}
-        </p>
-        <h3 className="mt-0.5 text-base font-bold text-[var(--av-text-primary)]">{t("nutrientsWhichNutrient")}</h3>
-        <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-hide">
-          {NUTRIENT_FILTERS.map((f) => {
-            const active = filter === f.id;
-            const primaryLabel = f.id === "all" ? t("nutrientsAll") : f.label;
-            const secondaryLabel = f.hindi;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => {
-                  setFilter(f.id);
-                  setShowAll(false);
-                }}
-                className={cn(
-                  "min-w-[3.4rem] shrink-0 rounded-2xl border px-2.5 py-2.5 text-center transition",
-                  active
-                    ? "border-amber-500 bg-amber-500 text-white shadow-[0_10px_24px_-10px_rgba(245,158,11,0.7)]"
-                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
-                )}
-              >
-                <p className="text-sm font-black leading-none">{primaryLabel}</p>
-                <p className={cn("mt-1 text-[9px] font-semibold", active ? "text-amber-50/90" : "")}>
-                  {secondaryLabel}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Sticky CTA strip */}
-      <section className="sticky bottom-24 z-20 overflow-hidden rounded-[1.75rem] border border-amber-500/30 bg-gradient-to-br from-amber-600 via-amber-500 to-orange-500 p-4 text-white shadow-[0_18px_40px_-16px_rgba(245,158,11,0.65)] lg:static">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-50/90">
-              <Zap className="h-3 w-3 text-white" />
-              {tf(locale, "nutrientsStickyHint", { n: filtered.length, crop: displayName })}
-            </p>
-            <p className="mt-1 text-sm font-bold leading-snug">{t("nutrientsStickyDesc")}</p>
-          </div>
-          <AppLink
-            href="/ai-doctor"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-amber-900 shadow-lg"
-          >
-            <Target className="h-4 w-4" />
-            {t("nutrientsPhotoDiagnose")}
-          </AppLink>
-        </div>
-      </section>
-
-      {/* Deficiency list — farmer-first cards */}
-      <section>
-        <div className="mb-3 flex items-end justify-between gap-2">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--av-accent)]">
-              {t("nutrientsStep3")}
-            </p>
-            <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
-              {displayName}
-              {hindi ? ` (${hindi})` : ""} — {t("nutrientsDeficiencies")}
-            </h3>
-            <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
-              {locale === "hi"
-                ? "लक्षण देखें → सुधार पढ़ें → विवरण खोलें"
-                : "Spot symptom → read fix → open detail"}
-            </p>
-          </div>
-          <span className="rounded-full border border-[var(--av-border)] px-2.5 py-1 text-[10px] font-bold text-[var(--av-text-muted)]">
-            {tf(locale, "nutrientsFound", { n: filtered.length })}
-          </span>
-        </div>
-
-        {visible.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface)] p-8 text-center">
-            <Leaf className="mx-auto h-8 w-8 text-[var(--av-text-muted)]" />
-            <p className="mt-2 text-sm font-bold text-[var(--av-text-primary)]">{t("nutrientsNoFilter")}</p>
-            <p className="mt-1 text-xs text-[var(--av-text-muted)]">{t("nutrientsNoFilterHint")}</p>
-            <button
-              type="button"
-              onClick={() => setFilter("all")}
-              className="mt-3 rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white"
-            >
-              {t("nutrientsShowAll")}
-            </button>
-          </div>
-        ) : (
-          <ul className="space-y-2.5">
-            {visible.map((d) => {
-              const sym = nutrientSymbol(d.name);
-              const title = nutrientTitle(d.name, locale === "hi");
-              const symptom = d.deficiencySymptoms[0] ?? d.role;
-              const fix = d.management[0] ?? d.recommendedFertilizers[0] ?? "—";
-              const foliar =
-                d.recommendedFertilizers.find((r) => /foliar|spray|%/i.test(r)) ?? null;
-              const tone = SYM_TONE[sym] ?? "bg-emerald-500/15 text-emerald-700 ring-emerald-500/25";
-
+        {cropAlerts.length > 0 ? (
+          <ul className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]">
+            {cropAlerts.map((d) => {
+              const slug = resolveDeficiencySlug(d.name);
+              const meta = allNutrientDeficiencies.find((n) => n.slug === slug);
+              const sym = meta?.symbol ?? d.name.slice(0, 1);
               return (
-                <li key={d.name}>
+                <li key={d.name} className="border-b border-[var(--av-border-subtle)] last:border-0">
                   <AppLink
-                    href={`/deficiencies/${slugForNutrient(d.name)}`}
-                    className="av-card av-card-hover flex gap-3 p-3.5"
+                    href={`/deficiencies/${slug}`}
+                    className="flex items-center gap-3 px-3.5 py-3 active:bg-emerald-500/8"
                   >
                     <span
                       className={cn(
-                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-black ring-1",
-                        tone
+                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black",
+                        SYM_TILE[sym] ?? "bg-emerald-700 text-white"
                       )}
                     >
                       {sym}
                     </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="text-[15px] font-extrabold leading-snug text-[var(--av-text-primary)]">
-                            {title.primary}
-                            <span className="ml-1.5 text-[11px] font-bold text-rose-600 dark:text-rose-400">
-                              · {t("nutrientsKami")}
-                            </span>
-                          </p>
-                          <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">{title.secondary}</p>
-                        </div>
-                        <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
-                      </div>
-
-                      <p className="mt-2 text-[12px] leading-snug text-[var(--av-text-secondary)]">
-                        <span className="font-bold text-[var(--av-text-primary)]">
-                          {locale === "hi" ? "लक्षण: " : "Sign: "}
-                        </span>
-                        {symptom}
-                      </p>
-
-                      <div className="mt-2.5 space-y-1.5">
-                        <div className="flex gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-2">
-                          <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                          <p className="text-[11px] leading-snug text-[var(--av-text-secondary)]">
-                            <span className="font-bold text-emerald-700 dark:text-emerald-300">
-                              {t("nutrientsFix")}:
-                            </span>{" "}
-                            {fix}
-                          </p>
-                        </div>
-                        {foliar ? (
-                          <div className="flex gap-2 rounded-xl border border-sky-500/20 bg-sky-500/5 px-2.5 py-2">
-                            <Droplets className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-600" />
-                            <p className="text-[11px] leading-snug text-[var(--av-text-secondary)]">
-                              <span className="font-bold text-sky-700 dark:text-sky-300">
-                                {t("nutrientsFoliar")}:
-                              </span>{" "}
-                              {foliar}
-                            </p>
-                          </div>
-                        ) : null}
-                      </div>
-
-                      <p className="mt-2 text-[11px] font-bold text-[var(--av-accent)]">
-                        {t("nutrientsViewDetails")} →
-                      </p>
-                    </div>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[13px] font-bold text-[var(--av-text-primary)]">
+                        {isHi && meta ? meta.name : d.name}
+                      </span>
+                      <span className="mt-0.5 line-clamp-1 block text-[11px] text-[var(--av-text-muted)]">
+                        {d.deficiencySymptoms[0]}
+                      </span>
+                    </span>
+                    <ChevronRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
                   </AppLink>
                 </li>
               );
             })}
           </ul>
-        )}
+        ) : null}
+      </motion.section>
 
-        {filtered.length > 8 && (
-          <button
-            type="button"
-            onClick={() => setShowAll(!showAll)}
-            className="mt-4 flex w-full items-center justify-center gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] py-3 text-xs font-bold text-emerald-700 dark:text-emerald-300"
-          >
-            {showAll ? t("nutrientsViewLess") : tf(locale, "nutrientsViewAllN", { n: filtered.length })}
-            <ChevronDown className={cn("h-4 w-4 transition", showAll && "rotate-180")} />
-          </button>
-        )}
-      </section>
+      {/* Secondary: all nutrients — hidden until asked */}
+      <motion.section {...fade(4)} className="relative">
+        <button
+          type="button"
+          onClick={() => setShowAll((v) => !v)}
+          className="flex w-full items-center justify-between rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 py-3.5 text-left"
+        >
+          <span>
+            <span className="block text-[13px] font-bold text-[var(--av-text-primary)]">
+              {isHi ? "सभी पोषक तत्व" : "All nutrients"}
+            </span>
+            <span className="text-[11px] text-[var(--av-text-muted)]">
+              {isHi ? "नाम से खोजें (N, Zn…)" : "Search by name (N, Zn…)"}
+            </span>
+          </span>
+          <ChevronRight
+            className={cn(
+              "h-4 w-4 text-[var(--av-text-muted)] transition",
+              showAll && "rotate-90"
+            )}
+          />
+        </button>
 
-      {/* Balanced dose + tips */}
-      <div className="grid gap-4 xl:grid-cols-12">
-        <section className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] xl:col-span-7">
-          <div className="border-b border-emerald-500/15 bg-gradient-to-r from-emerald-500/10 via-transparent to-transparent px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-300">
-              {t("nutrientsCheatSheet")}
-            </p>
-            <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
-              {t("nutrientsBalanced")} — {displayName}
-            </h3>
-            <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
-              {locale === "hi" ? "प्रति एकड़ गाइड खुराक" : "Per-acre guide doses"}
-            </p>
-          </div>
-          <ul className="divide-y divide-[var(--av-border-subtle)]">
-            {BALANCED_TABLE.map((row) => {
-              const sym = nutrientSymbol(row.nutrient);
-              const tone = SYM_TONE[sym] ?? SYM_TONE.N;
-              return (
-                <li key={row.nutrient} className="flex gap-3 px-4 py-3">
+        {showAll ? (
+          <div className="mt-3 space-y-3">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={isHi ? "N, Zn, नाइट्रोजन…" : "N, Zn, nitrogen…"}
+                className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-9 pr-3 text-sm font-medium outline-none focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/25"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {filteredAll.map((n) => (
+                <AppLink
+                  key={n.slug}
+                  href={`/deficiencies/${n.slug}`}
+                  className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-3 active:scale-[0.98]"
+                >
                   <span
                     className={cn(
-                      "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[11px] font-black ring-1",
-                      tone
+                      "flex h-10 w-10 items-center justify-center rounded-xl text-sm font-black",
+                      SYM_TILE[n.symbol] ?? "bg-emerald-700 text-white"
                     )}
                   >
-                    {sym}
+                    {n.symbol}
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-extrabold text-[var(--av-text-primary)]">
-                      {locale === "hi" ? row.hindi : row.nutrient.split(" (")[0]}
-                    </p>
-                    <p className="text-[10px] text-[var(--av-text-muted)]">
-                      {locale === "hi" ? row.nutrient : row.hindi}
-                    </p>
-                    <div className="mt-2 grid grid-cols-3 gap-1.5">
-                      <div className="rounded-lg bg-[var(--av-surface-inset)] px-2 py-1.5">
-                        <p className="text-[9px] font-bold uppercase text-[var(--av-text-muted)]">
-                          {t("nutrientsBasal")}
-                        </p>
-                        <p className="text-[11px] font-bold text-[var(--av-text-primary)]">{row.basal}</p>
-                      </div>
-                      <div className="rounded-lg bg-[var(--av-surface-inset)] px-2 py-1.5">
-                        <p className="text-[9px] font-bold uppercase text-[var(--av-text-muted)]">
-                          {t("nutrientsTopDress")}
-                        </p>
-                        <p className="text-[11px] font-bold text-[var(--av-text-primary)]">{row.topDress}</p>
-                      </div>
-                      <div className="rounded-lg bg-sky-500/5 px-2 py-1.5 ring-1 ring-sky-500/15">
-                        <p className="text-[9px] font-bold uppercase text-sky-700 dark:text-sky-300">
-                          {t("nutrientsFoliar")}
-                        </p>
-                        <p className="text-[11px] font-bold text-[var(--av-text-primary)]">{row.foliar}</p>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-          <p className="border-t border-[var(--av-border-subtle)] px-4 py-3 text-[10px] text-[var(--av-text-muted)]">
-            {t("nutrientsNote")}
-          </p>
-        </section>
-
-        <div className="space-y-4 xl:col-span-5">
-          <section className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-            <div className="mb-3 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-emerald-600" />
-              <h3 className="text-sm font-extrabold text-[var(--av-text-primary)]">
-                {t("nutrientsFarmerRules")}
-              </h3>
-            </div>
-            <ul className="space-y-2">
-              {tips.map((tip) => (
-                <li
-                  key={tip.title}
-                  className="rounded-xl border border-emerald-500/15 bg-emerald-500/5 px-3 py-2.5"
-                >
-                  <p className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
-                    {tip.title}
-                  </p>
-                  <p className="mt-0.5 text-[11px] leading-snug text-[var(--av-text-secondary)]">
-                    {tip.text}
-                  </p>
-                </li>
+                  <span className="line-clamp-2 text-center text-[10px] font-bold leading-tight text-[var(--av-text-primary)]">
+                    {n.name}
+                  </span>
+                </AppLink>
               ))}
-            </ul>
-          </section>
-
-          <section className="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950 via-emerald-900 to-stone-900 p-5 text-white">
-            <div className="pointer-events-none absolute -right-6 top-0 h-28 w-28 rounded-full bg-emerald-400/20 blur-3xl" />
-            <div className="relative">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-emerald-300">
-                <Stethoscope className="h-5 w-5" />
-              </span>
-              <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
-                {t("nutrientsNextUnlock")}
-              </p>
-              <p className="mt-1 text-base font-bold">{t("nutrientsAiTitle")}</p>
-              <p className="mt-0.5 text-xs text-white/65">{t("nutrientsAiDesc")}</p>
-              <AppLink
-                href="/ai-doctor"
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-4 py-3 text-sm font-black text-emerald-950"
-              >
-                {t("nutrientsAiCta")}
-                <ChevronRight className="h-4 w-4" />
-              </AppLink>
             </div>
-          </section>
-        </div>
-      </div>
+          </div>
+        ) : null}
+      </motion.section>
     </div>
   );
 }
