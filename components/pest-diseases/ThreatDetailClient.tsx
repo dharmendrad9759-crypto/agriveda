@@ -23,6 +23,7 @@ import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
 import { parseRemediationBuckets } from "@/lib/pest/farmerSpray";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { getWeedStageImages } from "@/lib/weeds/weedStageImages";
 
 type PestTab = "spray" | "control";
 
@@ -234,6 +235,38 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
 
       {isWeed ? (
         <div className="mt-3 space-y-3">
+          {(() => {
+            const stages = getWeedStageImages(threat.scientificName);
+            if (!stages) return null;
+            return (
+              <div className="grid grid-cols-2 gap-2.5">
+                {(
+                  [
+                    { key: "early", src: stages.early, hi: "शुरुआत", en: "Early" },
+                    { key: "late", src: stages.late, hi: "बाद में", en: "Later" },
+                  ] as const
+                ).map((s) => (
+                  <div
+                    key={s.key}
+                    className="relative min-h-[140px] overflow-hidden rounded-2xl border border-lime-500/25 shadow-[var(--av-shadow-sm)]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={s.src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                    <div className="relative z-10 flex h-full min-h-[140px] flex-col justify-end p-2.5">
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-lime-200/90">
+                        {hi ? "अवस्था" : "Stage"}
+                      </p>
+                      <p className="text-[14px] font-extrabold text-white">
+                        {hi ? s.hi : s.en}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
           <DarkCard className="!p-3 border-emerald-500/25">
             <h2 className={`flex items-center gap-2 ${AV.sectionTitle}`}>
               <Eye className="h-4 w-4" />

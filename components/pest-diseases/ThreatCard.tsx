@@ -7,6 +7,7 @@ import { threatDetailPath } from "@/lib/pest-disease-catalog";
 import ThreatImage from "@/components/ui/ThreatImage";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { ChevronRight } from "lucide-react";
+import { getWeedCardImage } from "@/lib/weeds/weedStageImages";
 
 interface ThreatCardProps {
   threat: EnrichedThreat;
@@ -26,6 +27,10 @@ export default function ThreatCard({ threat }: ThreatCardProps) {
       : threat.scientificName || "";
 
   if (isWeed) {
+    const weedImg =
+      getWeedCardImage(threat.scientificName) ||
+      threat.image ||
+      "/images/threats/threat-weed.jpg";
     return (
       <AppLink
         href={href}
@@ -33,7 +38,7 @@ export default function ThreatCard({ threat }: ThreatCardProps) {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={threat.image || "/images/threats/threat-weed.jpg"}
+          src={weedImg}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
