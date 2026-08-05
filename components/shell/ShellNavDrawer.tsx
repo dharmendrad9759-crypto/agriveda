@@ -4,7 +4,7 @@ import AppLink from "@/components/ui/AppLink";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Leaf, Menu, MessageCircle, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { SHELL_NAV, isNavActive } from "@/lib/shell/nav";
+import { SHELL_NAV_MORE, SHELL_NAV_PRIMARY, isNavActive } from "@/lib/shell/nav";
 import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
@@ -65,7 +65,7 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
 
             <nav className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide" aria-label={t("bottomNavLabel")}>
               <ul className="space-y-0.5">
-                {SHELL_NAV.map((item) => {
+                {SHELL_NAV_PRIMARY.map((item) => {
                   const active = isNavActive(item, pathname);
                   const Icon = item.icon;
                   return (
@@ -83,6 +83,32 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
                           <span className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-full bg-[var(--av-accent)]" />
                         )}
                         <Icon className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{t(item.labelKey)}</span>
+                      </AppLink>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <p className="mb-1 mt-4 px-3 text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                {t("shellNavMore")}
+              </p>
+              <ul className="space-y-0.5">
+                {SHELL_NAV_MORE.map((item) => {
+                  const active = isNavActive(item, pathname);
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.href + item.labelKey}>
+                      <AppLink
+                        href={item.href}
+                        onClick={onClose}
+                        className={`relative flex min-h-[40px] items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold transition-colors duration-150 ${
+                          active
+                            ? "bg-[var(--av-accent-soft)] text-[var(--av-accent)]"
+                            : "text-[var(--av-text-muted)] hover:bg-[var(--av-surface-muted)] hover:text-[var(--av-text-primary)]"
+                        }`}
+                      >
+                        <Icon className="h-3.5 w-3.5 shrink-0 opacity-80" />
                         <span className="truncate">{t(item.labelKey)}</span>
                       </AppLink>
                     </li>

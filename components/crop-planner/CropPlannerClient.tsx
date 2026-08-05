@@ -44,10 +44,10 @@ import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import { shortenFarmerLine, shortenFarmerLines, stageTipsFromPoints } from "@/lib/crops/farmerShortCopy";
 
-const SEASONS: { id: PlannerSeasonId; labelKey: FarmerUiKey; months: string }[] = [
-  { id: "kharif", labelKey: "plannerKharif", months: "Jun–Oct" },
-  { id: "rabi", labelKey: "plannerRabi", months: "Nov–Mar" },
-  { id: "zaid", labelKey: "plannerZaid", months: "Apr–Jun" },
+const SEASONS: { id: PlannerSeasonId; labelKey: FarmerUiKey; months: string; monthsHi: string }[] = [
+  { id: "kharif", labelKey: "plannerKharif", months: "Jun–Oct", monthsHi: "जून–अक्तू" },
+  { id: "rabi", labelKey: "plannerRabi", months: "Nov–Mar", monthsHi: "नव–मार्च" },
+  { id: "zaid", labelKey: "plannerZaid", months: "Apr–Jun", monthsHi: "अप्रै–जून" },
 ];
 
 const AREA_PRESETS = ["0.5", "1", "2", "5"];
@@ -65,6 +65,18 @@ const PLAN_TAB_IDS = [
 type PlanTab = (typeof PLAN_TAB_IDS)[number];
 
 const STAGE_ICONS = ["🌱", "🚜", "🌿", "🌾", "🌸", "🌽", "✅", "📦"];
+
+function stageJobImage(stage: string, cropImage: string): string {
+  const s = stage.toLowerCase();
+  if (/पानी|सिंचाई|water|irrig|moist/.test(s)) return "/images/home/home-job-weather.jpg";
+  if (/खाद|fert|urea|npk|dap/.test(s)) return "/images/jobs/job-fertilizer.jpg";
+  if (/कीट|रोग|स्प्रे|pest|disease|spray|scoutd/.test(s) || /scout/.test(s))
+    return "/images/jobs/job-pest.jpg";
+  if (/खरपत|weed/.test(s)) return "/images/jobs/job-weeds.jpg";
+  if (/कटाई|harvest|कटा|yield/.test(s)) return cropImage;
+  if (/बुवाई|buwai|sow|रोप|transplant/.test(s)) return "/images/jobs/job-crops-hero.jpg";
+  return cropImage;
+}
 
 interface SavedPlan {
   cropSlug: string;
@@ -366,33 +378,49 @@ export default function CropPlannerClient() {
             </div>
           </div>
           <ul className="space-y-2.5 p-4">
-            {scheduleRows.map((row, idx) => (
-              <li
-                key={row.stage + row.days}
-                className="relative overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3.5 py-3"
-              >
-                <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-emerald-500 to-teal-400" />
-                <div className="flex items-baseline justify-between gap-2 pl-2">
-                  <p className="text-xs font-black text-emerald-700 dark:text-emerald-300">
-                    <span className="mr-1.5 text-[10px] text-[var(--av-text-muted)]">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    {row.stage}
-                  </p>
-                  <p className="shrink-0 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-[var(--av-text-muted)] dark:bg-white/5">
-                    {row.days}
-                  </p>
-                </div>
-                <ul className="mt-1.5 space-y-0.5 pl-2">
-                  {row.activities.map((a) => (
-                    <li key={a} className="flex gap-1.5 text-xs leading-snug text-[var(--av-text-secondary)]">
-                      <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
-                      <span>{a}</span>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
+            {scheduleRows.map((row, idx) => {
+              const img = stageJobImage(row.stage, getCropImageUrl(crop));
+              return (
+                <li
+                  key={row.stage + row.days}
+                  className="relative overflow-hidden rounded-2xl border border-[var(--av-border)] shadow-[var(--av-shadow-sm)]"
+                >
+                  <div className="relative flex min-h-[88px]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/25" />
+                    <div className="relative z-10 flex flex-1 flex-col justify-end p-3.5">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="text-[14px] font-extrabold text-white">
+                          <span className="mr-1.5 text-[10px] font-bold text-emerald-200">
+                            {String(idx + 1).padStart(2, "0")}
+                          </span>
+                          {row.stage}
+                        </p>
+                        <p className="shrink-0 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white/90 backdrop-blur-sm">
+                          {row.days}
+                        </p>
+                      </div>
+                      <ul className="mt-1.5 space-y-0.5">
+                        {row.activities.slice(0, 2).map((a) => (
+                          <li
+                            key={a}
+                            className="flex gap-1.5 text-[11px] leading-snug text-white/85"
+                          >
+                            <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-300" />
+                            <span>{a}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
           <div className="flex flex-wrap gap-2 border-t border-[var(--av-border)] px-4 py-3">
             <button
@@ -816,7 +844,9 @@ export default function CropPlannerClient() {
                 )}
               >
                 <p className="text-sm font-black text-[var(--av-text-primary)]">{t(s.labelKey)}</p>
-                <p className="mt-0.5 text-[10px] font-medium text-[var(--av-text-muted)]">{s.months}</p>
+                <p className="mt-0.5 text-[10px] font-medium text-[var(--av-text-muted)]">
+                  {hi ? s.monthsHi : s.months}
+                </p>
               </button>
             );
           })}

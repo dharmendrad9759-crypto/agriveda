@@ -29,11 +29,11 @@ export interface ShellNavItem {
   match?: (path: string) => boolean;
 }
 
-/** Single consolidated nav — no duplicate pests/diseases/mandi clutter */
-export const SHELL_NAV: ShellNavItem[] = [
+/** Daily farm jobs — short list for drawer/sidebar */
+export const SHELL_NAV_PRIMARY: ShellNavItem[] = [
   {
-    label: "Dashboard",
-    labelKey: "shellDashboard",
+    label: "Home",
+    labelKey: "navHome",
     href: "/",
     icon: LayoutDashboard,
     match: (p) => p === "/" || p === "/dashboard",
@@ -51,8 +51,8 @@ export const SHELL_NAV: ShellNavItem[] = [
       !p.includes("/nutrients") &&
       !p.includes("/fertilizer"),
   },
-  { label: "Crop Calendar", labelKey: "shellCropCalendar", href: "/crop-calendar", icon: Calendar },
-  { label: "Field Advisor", labelKey: "shellFieldAdvisor", href: "/field-advisor", icon: Brain },
+  { label: "Plan", labelKey: "shellCropCalendar", href: "/crop-calendar", icon: Calendar },
+  { label: "Advice", labelKey: "shellFieldAdvisor", href: "/field-advisor", icon: Brain },
   {
     label: "Weather",
     labelKey: "navWeather",
@@ -60,17 +60,18 @@ export const SHELL_NAV: ShellNavItem[] = [
     icon: CloudSun,
     match: (p) => p.startsWith("/weather"),
   },
-  { label: "AI Doctor", labelKey: "toolAi", href: "/ai-doctor", icon: Stethoscope },
+  { label: "Photo", labelKey: "toolAi", href: "/ai-doctor", icon: Stethoscope },
   {
-    label: "Pests & Diseases",
+    label: "Pests",
     labelKey: "pestsDiseases",
     href: "/pest-diseases",
     icon: Bug,
     match: (p) =>
-      p.includes("/pests") ||
-      p.includes("/diseases") ||
-      p.startsWith("/pest-diseases") ||
-      p === "/pest-solver",
+      (p.includes("/pests") ||
+        p.includes("/diseases") ||
+        p.startsWith("/pest-diseases") ||
+        p === "/pest-solver") &&
+      !p.includes("type=weed"),
   },
   {
     label: "Weeds",
@@ -94,8 +95,6 @@ export const SHELL_NAV: ShellNavItem[] = [
     match: (p) => p.startsWith("/mandi") || p.startsWith("/market-trends"),
   },
   { label: "Alerts", labelKey: "toolAlerts", href: "/alerts", icon: Bell },
-  { label: "Library", labelKey: "shellLibrary", href: "/library", icon: BookOpen },
-  { label: "Community", labelKey: "navCommunity", href: "/community", icon: Users },
   {
     label: "Settings",
     labelKey: "settingsTitle",
@@ -103,8 +102,17 @@ export const SHELL_NAV: ShellNavItem[] = [
     icon: Settings,
     match: (p) => p.startsWith("/settings") || p === "/profile",
   },
+];
+
+/** Extra / rare links — keep out of the farmer’s daily eye-path */
+export const SHELL_NAV_MORE: ShellNavItem[] = [
+  { label: "Library", labelKey: "shellLibrary", href: "/library", icon: BookOpen },
+  { label: "Community", labelKey: "navCommunity", href: "/community", icon: Users },
   { label: "Report Bug", labelKey: "shellReportBug", href: "/report-bug", icon: MessageSquareWarning },
 ];
+
+/** Flat list for any consumer that still expects one array */
+export const SHELL_NAV: ShellNavItem[] = [...SHELL_NAV_PRIMARY, ...SHELL_NAV_MORE];
 
 export function isNavActive(item: ShellNavItem, pathname: string): boolean {
   if (item.match) return item.match(pathname);

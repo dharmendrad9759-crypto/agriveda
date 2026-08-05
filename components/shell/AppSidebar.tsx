@@ -4,10 +4,50 @@ import AppLink from "@/components/ui/AppLink";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { MessageCircle, Leaf } from "lucide-react";
-import { SHELL_NAV, isNavActive } from "@/lib/shell/nav";
+import { SHELL_NAV_MORE, SHELL_NAV_PRIMARY, isNavActive, type ShellNavItem } from "@/lib/shell/nav";
 import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+
+function NavRow({
+  item,
+  active,
+  reduced,
+  dense,
+}: {
+  item: ShellNavItem;
+  active: boolean;
+  reduced: boolean | null;
+  dense?: boolean;
+}) {
+  const { t } = useLocale();
+  const Icon = item.icon;
+  return (
+    <AppLink
+      href={item.href}
+      className={`relative flex items-center gap-2.5 rounded-lg px-3 font-semibold transition-colors duration-150 ${
+        dense ? "min-h-[36px] py-1.5 text-[11px]" : "min-h-[40px] py-2 text-xs"
+      } ${
+        active
+          ? "text-[var(--av-accent)]"
+          : "text-[var(--av-text-muted)] hover:bg-[var(--av-surface-muted)] hover:text-[var(--av-text-primary)]"
+      }`}
+    >
+      {active && !reduced && (
+        <motion.span
+          layoutId="sidebar-active"
+          className="absolute inset-0 rounded-lg bg-[var(--av-accent-soft)] ring-1 ring-[var(--av-accent)]/25"
+          transition={{ type: "spring", stiffness: 400, damping: 32 }}
+        />
+      )}
+      {active && reduced && (
+        <span className="absolute inset-0 rounded-lg bg-[var(--av-accent-soft)] ring-1 ring-[var(--av-accent)]/25" />
+      )}
+      <Icon className="relative z-10 h-4 w-4 shrink-0" />
+      <span className="relative z-10 truncate">{t(item.labelKey)}</span>
+    </AppLink>
+  );
+}
 
 export default function AppSidebar() {
   const pathname = usePathname();
@@ -30,35 +70,22 @@ export default function AppSidebar() {
 
       <nav className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide" aria-label={t("bottomNavLabel")}>
         <ul className="space-y-0.5">
-          {SHELL_NAV.map((item) => {
-            const active = isNavActive(item, pathname);
-            const Icon = item.icon;
-            return (
-              <li key={item.href + item.labelKey}>
-                <AppLink
-                  href={item.href}
-                  className={`relative flex min-h-[40px] items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors duration-150 ${
-                    active
-                      ? "text-[var(--av-accent)]"
-                      : "text-[var(--av-text-muted)] hover:bg-[var(--av-surface-muted)] hover:text-[var(--av-text-primary)]"
-                  }`}
-                >
-                  {active && !reduced && (
-                    <motion.span
-                      layoutId="sidebar-active"
-                      className="absolute inset-0 rounded-lg bg-[var(--av-accent-soft)] ring-1 ring-[var(--av-accent)]/25"
-                      transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                    />
-                  )}
-                  {active && reduced && (
-                    <span className="absolute inset-0 rounded-lg bg-[var(--av-accent-soft)] ring-1 ring-[var(--av-accent)]/25" />
-                  )}
-                  <Icon className="relative z-10 h-4 w-4 shrink-0" />
-                  <span className="relative z-10 truncate">{t(item.labelKey)}</span>
-                </AppLink>
-              </li>
-            );
-          })}
+          {SHELL_NAV_PRIMARY.map((item) => (
+            <li key={item.href + item.labelKey}>
+              <NavRow item={item} active={isNavActive(item, pathname)} reduced={reduced} />
+            </li>
+          ))}
+        </ul>
+
+        <p className="mb-1 mt-4 px-3 text-[9px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+          {t("shellNavMore")}
+        </p>
+        <ul className="space-y-0.5">
+          {SHELL_NAV_MORE.map((item) => (
+            <li key={item.href + item.labelKey}>
+              <NavRow item={item} active={isNavActive(item, pathname)} reduced={reduced} dense />
+            </li>
+          ))}
         </ul>
       </nav>
 
