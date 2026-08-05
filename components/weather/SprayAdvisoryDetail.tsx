@@ -42,25 +42,34 @@ interface DayPartWindow {
 function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
   if (status === "GOOD") {
     return {
-      title: "आज स्प्रे सुरक्षित है",
-      subtitle: reasonHi || "सुबह 7 बजे से दोपहर 11 बजे तक",
-      card: "from-emerald-700 via-emerald-600 to-teal-700",
+      title: "आज स्प्रे करो",
+      subtitle: reasonHi || "सुबह 7–11 बजे अच्छा समय",
+      verb: "करो",
+      image: "/images/jobs/job-spray.jpg",
+      tint: "from-emerald-950/80 via-emerald-900/45 to-black/20",
       Icon: CheckCircle2,
+      iconTone: "bg-emerald-500 text-white",
     };
   }
   if (status === "CAUTION") {
     return {
-      title: "आज सावधानी से स्प्रे करें",
-      subtitle: reasonHi || "हवा / नमी सीमा पर है — बड़ी droplets इस्तेमाल करें",
-      card: "from-amber-600 via-amber-500 to-orange-600",
+      title: "आज सावधानी से",
+      subtitle: reasonHi || "हवा/नमी सीमा पर — बड़ी बूँद डालो",
+      verb: "ध्यान",
+      image: "/images/jobs/job-spray.jpg",
+      tint: "from-amber-950/85 via-amber-900/50 to-black/25",
       Icon: AlertTriangle,
+      iconTone: "bg-amber-400 text-amber-950",
     };
   }
   return {
-    title: "आज स्प्रे न करें",
-    subtitle: reasonHi || "बारिश या तेज़ हवा — स्प्रे टालें",
-    card: "from-rose-700 via-rose-600 to-red-700",
+    title: "आज स्प्रे मत करो",
+    subtitle: reasonHi || "बारिश या तेज़ हवा — कल देखो",
+    verb: "मत",
+    image: "/images/jobs/job-spray-avoid.jpg",
+    tint: "from-rose-950/85 via-rose-900/55 to-black/30",
     Icon: ShieldAlert,
+    iconTone: "bg-rose-500 text-white",
   };
 }
 
@@ -246,69 +255,133 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
       )}
 
       <main className={embedded ? "space-y-5" : "mx-auto max-w-lg space-y-5 px-4 py-5 pb-28"}>
-        {/* Hero status */}
-        <section
-          className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${hero.card} px-5 py-8 text-center text-white shadow-lg`}
-        >
-          {weatherLoading ? (
-            <div className="flex flex-col items-center gap-3 py-4">
-              <Loader2 className="h-8 w-8 animate-spin text-white/80" />
-              <p className="text-sm text-white/90">स्प्रे स्थिति जाँच हो रही है…</p>
-            </div>
-          ) : (
-            <>
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md">
-                <HeroIcon
-                  className={`h-8 w-8 ${
-                    sprayStatus === "GOOD"
-                      ? "text-emerald-600"
-                      : sprayStatus === "CAUTION"
-                        ? "text-amber-500"
-                        : "text-rose-600"
-                  }`}
-                />
+        {/* Hero status — photo first */}
+        <section className="relative min-h-[220px] overflow-hidden rounded-[22px] border border-[var(--av-border)] shadow-[var(--av-shadow-md)] sm:min-h-[250px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={hero.image}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <span className={`absolute inset-0 bg-gradient-to-t ${hero.tint}`} />
+          <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-5 sm:min-h-[250px]">
+            {weatherLoading ? (
+              <div className="flex flex-col items-start gap-3 py-2">
+                <Loader2 className="h-7 w-7 animate-spin text-white/85" />
+                <p className="text-sm font-semibold text-white/90">मौसम देख रहे हैं…</p>
               </div>
-              <h2 className="mt-4 text-2xl font-black tracking-tight">{hero.title}</h2>
-              <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-white/90">
-                {hero.subtitle}
-              </p>
-            </>
-          )}
+            ) : (
+              <>
+                <span
+                  className={`mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl shadow-md ${hero.iconTone}`}
+                >
+                  <HeroIcon className="h-6 w-6" />
+                </span>
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/75">
+                  आज · {hero.verb}
+                </p>
+                <h2 className="mt-1 text-[28px] font-black leading-tight tracking-tight text-white">
+                  {hero.title}
+                </h2>
+                <p className="mt-2 max-w-md text-[14px] font-medium leading-snug text-white/90">
+                  {hero.subtitle}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
+                    हवा {windKmh ?? "—"} km/h
+                  </span>
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
+                    नमी {humidity ?? "—"}%
+                  </span>
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
+                    बारिश {rainPct ?? "—"}%
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </section>
+
+        {/* Simple rules */}
+        <section className="grid grid-cols-2 gap-2.5">
+          {[
+            {
+              ok: true,
+              title: "करो जब",
+              lines: ["हवा धीमी", "बारिश नहीं", "सुबह ठंडी"],
+              image: "/images/jobs/job-spray.jpg",
+            },
+            {
+              ok: false,
+              title: "मत करो जब",
+              lines: ["तेज़ हवा", "बादल/बारिश", "बहुत गर्मी"],
+              image: "/images/jobs/job-spray-avoid.jpg",
+            },
+          ].map((rule) => (
+            <div
+              key={rule.title}
+              className="relative min-h-[140px] overflow-hidden rounded-2xl border border-[var(--av-border)]"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={rule.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              <span
+                className={`absolute inset-0 ${
+                  rule.ok
+                    ? "bg-gradient-to-t from-emerald-950/90 via-emerald-950/50 to-black/20"
+                    : "bg-gradient-to-t from-rose-950/90 via-rose-950/55 to-black/25"
+                }`}
+              />
+              <div className="relative z-10 flex h-full flex-col justify-end p-3">
+                <p className="text-[13px] font-extrabold text-white">{rule.title}</p>
+                <ul className="mt-1 space-y-0.5">
+                  {rule.lines.map((line) => (
+                    <li key={line} className="text-[11px] font-medium text-white/85">
+                      · {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
         </section>
 
         {/* Spray windows */}
         <section>
-          <h3 className="mb-2 text-sm font-bold text-gray-900">स्प्रे विंडो</h3>
+          <h3 className="mb-2 text-sm font-bold text-[var(--av-text-primary)]">कब करूँ?</h3>
           <ul className="space-y-2">
             {windows.map((w) => (
               <li
                 key={w.id}
-                className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-3.5 py-3 shadow-sm"
+                className="relative flex min-h-[72px] items-center overflow-hidden rounded-2xl border border-[var(--av-border)]"
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={
+                    w.tone === "bad"
+                      ? "/images/jobs/job-spray-avoid.jpg"
+                      : "/images/jobs/job-spray.jpg"
+                  }
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
                 <span
-                  className={`h-3 w-3 shrink-0 rounded-full ${
+                  className={`absolute inset-0 ${
                     w.tone === "good"
-                      ? "bg-emerald-500"
+                      ? "bg-emerald-950/75"
                       : w.tone === "ok"
-                        ? "bg-amber-400"
-                        : "bg-rose-500"
+                        ? "bg-amber-950/70"
+                        : "bg-rose-950/78"
                   }`}
                 />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-gray-900">{w.label}</p>
-                  <p className="text-xs text-gray-500">{w.detail}</p>
+                <div className="relative z-10 flex w-full items-center gap-3 px-3.5 py-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-white">{w.label}</p>
+                    <p className="text-xs text-white/80">{w.detail}</p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-extrabold text-white">
+                    {w.badge}
+                  </span>
                 </div>
-                <span
-                  className={`shrink-0 text-xs font-bold ${
-                    w.tone === "good"
-                      ? "text-emerald-600"
-                      : w.tone === "ok"
-                        ? "text-amber-600"
-                        : "text-rose-600"
-                  }`}
-                >
-                  {w.badge}
-                </span>
               </li>
             ))}
           </ul>
@@ -316,26 +389,28 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
 
         {/* Recommended dosage */}
         <section>
-          <h3 className="mb-2 text-sm font-bold text-gray-900">अनुशंसित खुराक</h3>
+          <h3 className="mb-2 text-sm font-bold text-[var(--av-text-primary)]">खुराक</h3>
           <ul className="space-y-2.5">
             {dosageCards.map((card) => (
               <li
                 key={card.id}
-                className="rounded-2xl border border-gray-100 bg-white p-3.5 shadow-sm"
+                className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-[var(--av-shadow-sm)]"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-gray-900">{card.name}</p>
-                    <p className="mt-0.5 text-[11px] text-gray-500">लक्ष्य: {card.target}</p>
+                    <p className="text-sm font-bold text-[var(--av-text-primary)]">{card.name}</p>
+                    <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
+                      किस पर: {card.target}
+                    </p>
                   </div>
-                  <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-100">
+                  <span className="shrink-0 rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-500/20 dark:text-emerald-300">
                     {card.badge}
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-700">
+                <div className="mt-3 flex flex-wrap gap-3 text-xs text-[var(--av-text-secondary)]">
                   {card.dose ? (
                     <span className="inline-flex items-center gap-1.5">
-                      <Pencil className="h-3.5 w-3.5 text-gray-400" />
+                      <Pencil className="h-3.5 w-3.5 text-[var(--av-text-muted)]" />
                       {card.dose}
                     </span>
                   ) : null}
@@ -352,26 +427,28 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
         </section>
 
         {/* Tank-mix (kept, Hindi labels) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+        <section className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
           <div className="mb-3 flex items-center gap-2">
             <FlaskConical className="h-5 w-5 text-emerald-600" />
-            <h2 className="text-sm font-bold text-gray-900">टैंक-मिक्स जाँच</h2>
+            <h2 className="text-sm font-bold text-[var(--av-text-primary)]">दो दवा मिलाऊँ?</h2>
           </div>
-          <p className="mb-3 text-xs text-gray-600">
-            दो दवाएँ मिलाकर छिड़कने से पहले अनुकूलता जाँचें।
+          <p className="mb-3 text-xs text-[var(--av-text-muted)]">
+            मिलाकर छिड़कने से पहले जाँच लो।
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-gray-700">दवा 1</span>
+              <span className="mb-1.5 block text-xs font-semibold text-[var(--av-text-secondary)]">
+                दवा 1
+              </span>
               <select
                 value={chem1}
                 onChange={(e) => {
                   setChem1(e.target.value);
                   setMixChecked(false);
                 }}
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none"
               >
-                <option value="">चुनें…</option>
+                <option value="">चुनो…</option>
                 {mixableProducts.map((p) => (
                   <option key={p.id} value={p.id}>
                     {formatProductOption(p)}
@@ -380,16 +457,18 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
               </select>
             </label>
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-gray-700">दवा 2</span>
+              <span className="mb-1.5 block text-xs font-semibold text-[var(--av-text-secondary)]">
+                दवा 2
+              </span>
               <select
                 value={chem2}
                 onChange={(e) => {
                   setChem2(e.target.value);
                   setMixChecked(false);
                 }}
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm outline-none"
               >
-                <option value="">चुनें…</option>
+                <option value="">चुनो…</option>
                 {mixableProducts.map((p) => (
                   <option key={p.id} value={p.id}>
                     {formatProductOption(p)}
@@ -404,7 +483,7 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
             disabled={!chem1 || !chem2}
             className="mt-3 w-full rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
           >
-            अनुकूलता जाँचें
+            जाँच करो
           </button>
           {mixChecked && mixResult && (
             <div className={`mt-3 rounded-xl border p-3 ${mixResultStyles(mixResult)}`} role="alert">
@@ -414,9 +493,9 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
           )}
         </section>
 
-        <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-gray-400">
+        <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-[var(--av-text-muted)]">
           <CloudRain className="h-3.5 w-3.5" />
-          लेबल, PHI और कृषि अधिकारी की सलाह हमेशा मानें
+          लेबल और अधिकारी की सलाह हमेशा मानो
         </p>
       </main>
     </div>
