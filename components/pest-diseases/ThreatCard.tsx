@@ -33,7 +33,7 @@ export default function ThreatCard({ threat }: ThreatCardProps) {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/jobs/job-weeds.jpg"
+          src={threat.image || "/images/threats/threat-weed.jpg"}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />

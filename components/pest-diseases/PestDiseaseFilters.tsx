@@ -32,7 +32,7 @@ export default function PestDiseaseFilters({
         />
       </div>
       <p className={AV.micro}>
-        {resultCount} {resultCount === 1 ? "result" : "results"}
+        {resultCount} {resultCount === 1 ? "नतीजा" : "नतीजे"}
       </p>
     </div>
   );

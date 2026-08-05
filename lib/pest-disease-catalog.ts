@@ -255,13 +255,18 @@ export function filterThreats(
 ): EnrichedThreat[] {
   const q = query.trim().toLowerCase();
   return threats.filter((t) => {
-    if (category !== "all" && t.category !== category) return false;
+    if (category === "fungal") {
+      if (!["fungal", "bacterial", "viral", "other"].includes(t.category)) return false;
+    } else if (category !== "all" && t.category !== category) {
+      return false;
+    }
     if (!q) return true;
     return (
       t.name.toLowerCase().includes(q) ||
       t.scientificName.toLowerCase().includes(q) ||
       (t.pathogen?.toLowerCase().includes(q) ?? false) ||
-      t.cropName.toLowerCase().includes(q)
+      t.cropName.toLowerCase().includes(q) ||
+      (t.nameHi?.toLowerCase().includes(q) ?? false)
     );
   });
 }

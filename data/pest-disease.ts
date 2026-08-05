@@ -1,11 +1,11 @@
 import { cropCatalog } from "@/data/crop-catalog";
 
-const IMG = "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop&q=80";
-const IMG2 = "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&h=400&fit=crop&q=80";
-const IMG3 = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&q=80";
-const IMG_WEED = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop&q=80";
-const IMG_APHID = "https://images.unsplash.com/photo-1592840067980-057d97d26f4a?w=600&h=400&fit=crop&q=80";
-const IMG_RUST = "https://images.unsplash.com/photo-1622205313162-b1e0aafd392f?w=600&h=400&fit=crop&q=80";
+const IMG = "/images/threats/threat-yellow.jpg";
+const IMG2 = "/images/threats/threat-disease.jpg";
+const IMG3 = "/images/threats/threat-insect.jpg";
+const IMG_WEED = "/images/threats/threat-weed.jpg";
+const IMG_APHID = "/images/threats/threat-insect.jpg";
+const IMG_RUST = "/images/threats/threat-disease.jpg";
 
 export interface PestItem {
   id: string;
