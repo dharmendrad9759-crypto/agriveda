@@ -1,5 +1,9 @@
 import type { CropManagementProfile } from "@/types/crop-management";
 import FuturisticPanel, { SciBadge } from "@/components/ui/FuturisticPanel";
+import {
+  formatFarmerChemicalList,
+  formatFarmerDoseSummary,
+} from "@/lib/crops/farmerSprayDose";
 import { ShieldAlert, Bug } from "lucide-react";
 
 interface Props {
@@ -10,7 +14,7 @@ export default function CropManagementPestManagement({ profile }: Props) {
   return (
     <FuturisticPanel
       title="Pest Management"
-      subtitle="IRAC-classified insecticide strategies"
+      subtitle="खुराक ml/g प्रति लीटर पानी · दवा बदल-बदल कर छिड़कें"
       icon={Bug}
       glow
     >
@@ -23,7 +27,6 @@ export default function CropManagementPestManagement({ profile }: Props) {
             <div className="border-b border-white/5 bg-gradient-to-r from-red-500/5 to-transparent px-4 py-3">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-sm font-extrabold text-white">{pest.pestName}</h3>
-                <SciBadge variant="red">{pest.iracGroup}</SciBadge>
               </div>
               <p className="mt-0.5 text-xs italic text-slate-400">{pest.scientificName}</p>
             </div>
@@ -67,10 +70,10 @@ export default function CropManagementPestManagement({ profile }: Props) {
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-red-400/70">
-                    Chemical Control
+                    दवा (ml/g प्रति लीटर पानी)
                   </p>
                   <ul className="mt-1 space-y-1">
-                    {pest.chemicalControl.map((c) => (
+                    {formatFarmerChemicalList(pest.chemicalControl, true).map((c) => (
                       <li key={c} className="text-xs text-red-200/80">• {c}</li>
                     ))}
                   </ul>
@@ -82,10 +85,10 @@ export default function CropManagementPestManagement({ profile }: Props) {
                   Recommended Chemistry
                 </p>
                 <p className="mt-1 text-sm font-bold text-white">
-                  {pest.activeIngredient} · {pest.dose}
+                  {formatFarmerDoseSummary(pest.activeIngredient, pest.dose, true)}
                 </p>
                 <p className="mt-0.5 text-[10px] text-emerald-400/60">
-                  IRAC Group {pest.iracGroup} — Rotate modes of action to delay resistance
+                  हर छिड़काव पर अलग क्रिया-विधि की दवा लें — एक ही दवा बार-बार न लगाएँ
                 </p>
               </div>
             </div>
@@ -109,7 +112,7 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
   return (
     <FuturisticPanel
       title="Disease Management"
-      subtitle="Pathogen biology · FRAC fungicide rotation"
+      subtitle="खुराक ml/g प्रति लीटर पानी · फफूंदनाशक बदल-बदल कर"
       icon={ShieldAlert}
       glow
     >
@@ -122,7 +125,6 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
             <div className="border-b border-white/5 bg-gradient-to-r from-purple-500/5 to-transparent px-4 py-3">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-sm font-extrabold text-white">{disease.diseaseName}</h3>
-                <SciBadge variant="cyan">{disease.fracGroup}</SciBadge>
                 <SciBadge variant="amber">{disease.type}</SciBadge>
               </div>
               <p className="mt-0.5 text-xs italic text-purple-300/80">
@@ -162,15 +164,26 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
                 </ul>
               </div>
 
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-red-400/70">
+                  दवा (ml/g प्रति लीटर पानी)
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {formatFarmerChemicalList(disease.chemicalControl, true).map((c) => (
+                    <li key={c} className="text-xs text-red-200/80">• {c}</li>
+                  ))}
+                </ul>
+              </div>
+
               <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                   Fungicide Protocol
                 </p>
                 <p className="mt-1 text-sm font-bold text-white">
-                  {disease.activeIngredient} · {disease.dose}
+                  {formatFarmerDoseSummary(disease.activeIngredient, disease.dose, true)}
                 </p>
                 <p className="mt-0.5 text-[10px] text-slate-400">
-                  FRAC {disease.fracGroup} · PHI: {disease.waitingPeriod}
+                  कटाई-पूर्व अंतराल (PHI): {disease.waitingPeriod}
                 </p>
               </div>
             </div>

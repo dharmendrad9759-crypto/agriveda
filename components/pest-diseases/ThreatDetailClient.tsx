@@ -22,6 +22,11 @@ import StageWiseSprayCard from "@/components/pest-diseases/StageWiseSprayCard";
 import EtlGuideCard from "@/components/shell/EtlGuideCard";
 import { AV } from "@/lib/design/tokens";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import {
+  formatFarmerChemicalLine,
+  formatFarmerDoseSummary,
+  stripMoaCodes,
+} from "@/lib/crops/farmerSprayDose";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
 import { parseRemediationBuckets } from "@/lib/pest/farmerSpray";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -59,25 +64,31 @@ function weedIdentifyTips(threat: EnrichedThreat, hi: boolean): string[] {
       ];
 }
 
-function weedChemCards(lines: string[]): {
+function weedChemCards(lines: string[], hi: boolean): {
   technical: string;
   dose: string;
   stage: string;
   timing: string;
 }[] {
   return lines.slice(0, 4).map((line) => {
-    const doseMatch = line.match(/@\s*([^—(]+)/i);
+    const formatted = formatFarmerChemicalLine(line, hi);
+    const doseMatch =
+      formatted.match(
+        /(\d+(?:\.\d+)?(?:\s*[–\-]\s*\d+(?:\.\d+)?)?\s*(?:ml|g)(?:\/लीटर\s*पानी|\/L\s*water))/i
+      ) || formatted.match(/@\s*([^—(·]+)/i);
     const stageMatch = line.match(/\(([^)]+)\)/);
-    const technical = line
-      .split("@")[0]
-      ?.replace(/^Chemical:\s*/i, "")
-      .replace(/—.*$/, "")
-      .trim() || line.slice(0, 40);
+    const technical = stripMoaCodes(
+      formatted
+        .split(/·|@/)[0]
+        ?.replace(/^Chemical:\s*/i, "")
+        .replace(/—.*$/, "")
+        .trim() || formatted.slice(0, 40)
+    );
     return {
       technical: technical.slice(0, 48),
-      dose: doseMatch?.[1]?.trim() || "लेबल अनुसार",
-      stage: "2–4 पत्ती अवस्था",
-      timing: stageMatch?.[1]?.trim() || "15–25 दिन / EPoE",
+      dose: doseMatch?.[1]?.trim() || doseMatch?.[0]?.trim() || (hi ? "लेबल अनुसार" : "Follow label"),
+      stage: hi ? "2–4 पत्ती अवस्था" : "2–4 leaf stage",
+      timing: stripMoaCodes(stageMatch?.[1]?.trim() || (hi ? "15–25 दिन / EPoE" : "15–25 DAS / EPoE")),
     };
   });
 }
@@ -188,7 +199,19 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
   const [pestTab, setPestTab] = useState<PestTab>("spray");
   const [lightbox, setLightbox] = useState<string | null>(null);
 
-  const chemCards = useMemo(() => weedChemCards(weedChems), [weedChems]);
+  const chemCards = useMemo(() => weedChemCards(weedChems, hi), [weedChems, hi]);
+
+  const farmerChemLines = useMemo(() => {
+    if (isWeed) return [];
+    return parseRemediationBuckets(threat.remediation)
+      .chemical.slice(0, 6)
+      .map((c) => formatFarmerChemicalLine(c, hi));
+  }, [isWeed, threat.remediation, hi]);
+
+  const farmerAiDose = useMemo(() => {
+    if (!threat.activeIngredient) return null;
+    return formatFarmerDoseSummary(threat.activeIngredient, "", hi);
+  }, [threat.activeIngredient, hi]);
 
   const cropTab =
     threat.type === "weed"
@@ -512,17 +535,17 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                   </div>
                 ) : (
                   <div className="mt-3 space-y-2">
-                    {threat.activeIngredient && (
+                    {farmerAiDose && (
                       <div className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-3 py-2.5">
                         <p className="text-[10px] font-bold uppercase text-violet-600">
-                          {hi ? "टेक्निकल + डोज़" : "Technical + dose"}
+                          {hi ? "टेक्निकल + खुराक (प्रति लीटर)" : "Technical + dose (per L)"}
                         </p>
                         <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
-                          {threat.activeIngredient}
+                          {farmerAiDose}
                         </p>
                       </div>
                     )}
-                    {parseRemediationBuckets(threat.remediation).chemical.slice(0, 4).map((c, i) => (
+                    {farmerChemLines.map((c, i) => (
                       <p key={i} className="rounded-lg bg-[var(--av-surface-inset)] px-3 py-2 text-xs">
                         {c}
                       </p>

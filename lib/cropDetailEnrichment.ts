@@ -240,7 +240,7 @@ export function enrichCropDetail(crop: Crop): EnrichedCropDetail {
     profile?.diseaseManagement.map((d) => ({
       name: d.diseaseName,
       detail: `${d.pathogen} (${d.type})`,
-      timing: `FRAC ${d.fracGroup} · ${d.activeIngredient} — PHI ${d.waitingPeriod}`,
+      timing: `${d.activeIngredient} · ${d.dose} — PHI ${d.waitingPeriod}`,
     })) ??
     crop.cropProtection.majorDiseases.map((d) => ({
       name: d,

@@ -8,6 +8,7 @@ import {
   WATER_PER_ACRE_EN,
   WATER_PER_ACRE_HI,
 } from "@/lib/pest/farmerSpray";
+import { formatFarmerChemicalLine, stripMoaCodes } from "@/lib/crops/farmerSprayDose";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const STAGE_STYLE: Record<string, string> = {
@@ -31,7 +32,7 @@ export default function StageWiseSprayCard({
   if (!farmerStages.length) return null;
 
   const water = hi ? WATER_PER_ACRE_HI : WATER_PER_ACRE_EN;
-  const tip = shortRotationTip(rotationNotes, hi);
+  const tip = shortRotationTip(stripMoaCodes(rotationNotes || "") || undefined, hi);
 
   return (
     <div className="space-y-3">
@@ -44,7 +45,15 @@ export default function StageWiseSprayCard({
           : isAdvanced
             ? "If spreading fast"
             : "Start here (early)";
-        const chem = primaryChemistry(s.chemistry);
+        const chem = stripMoaCodes(primaryChemistry(s.chemistry));
+        const doseLine = formatFarmerChemicalLine(
+          `${chem} ${s.dose}`.replace(/\s+/g, " ").trim(),
+          hi
+        );
+        const doseOnly =
+          doseLine.match(
+            /(\d+(?:\.\d+)?(?:\s*[–\-]\s*\d+(?:\.\d+)?)?\s*(?:ml|g)(?:\/लीटर\s*पानी|\/L\s*water))/i
+          )?.[0] || formatFarmerChemicalLine(s.dose, hi);
         return (
           <div
             key={`${s.stage}-${i}`}
@@ -61,13 +70,13 @@ export default function StageWiseSprayCard({
               </p>
               <p>
                 <span className="font-bold text-[var(--av-text-muted)]">
-                  {hi ? "डोज़ (एक एकड़): " : "Dose (1 acre): "}
+                  {hi ? "खुराक (प्रति लीटर पानी): " : "Dose (per L water): "}
                 </span>
-                <span className="font-semibold text-[var(--av-text-primary)]">{s.dose}</span>
+                <span className="font-semibold text-[var(--av-text-primary)]">{doseOnly}</span>
               </p>
               <p>
                 <span className="font-bold text-[var(--av-text-muted)]">
-                  {hi ? "पानी: " : "Water: "}
+                  {hi ? "टंकी पानी: " : "Tank water: "}
                 </span>
                 <span className="font-semibold text-[var(--av-text-primary)]">{water}</span>
               </p>
@@ -84,8 +93,8 @@ export default function StageWiseSprayCard({
 
       <p className="text-[10px] text-[var(--av-text-muted)]">
         {hi
-          ? "दूकान पर बोतल का लेबल ज़रूर पढ़ें। सही मात्रा से ज़्यादा न डालें।"
-          : "Always follow the bottle label. Do not overdose."}
+          ? "दूकान पर बोतल का लेबल ज़रूर पढ़ें। सही मात्रा से ज़्यादा न डालें। (~200 लीटर पानी/एकड़ मानकर)"
+          : "Always follow the bottle label. Do not overdose. (assumes ~200 L water/acre)"}
       </p>
     </div>
   );

@@ -33,7 +33,7 @@ export default function EtlGuideCard({ etl, pestName, monitoring, compact }: Etl
           <ul className={`mt-2 space-y-1 ${AV.micro}`}>
             <li>• ETL से पहले स्प्रे (Spray) न करें — प्राकृतिक शत्रु बचे रहते हैं</li>
             <li>• पहाड़ी / मीटर पंक्ति / जाल में गिनती — खेत रिकॉर्ड रखें</li>
-            <li>• दोहराए स्प्रे पर IRAC समूह बदलें</li>
+            <li>• दोहराए स्प्रे पर अलग क्रिया-विधि की दवा लें</li>
           </ul>
         </div>
       </div>

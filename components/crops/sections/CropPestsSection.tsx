@@ -7,6 +7,10 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
+import {
+  formatFarmerChemicalList,
+  formatFarmerDoseSummary,
+} from "@/lib/crops/farmerSprayDose";
 import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
@@ -39,14 +43,13 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
       name: p.pestName,
       scientific: p.scientificName,
       etl: p.etl,
-      attackStage: p.iracGroup,
       risk: "high" as const,
-      chemical: p.chemicalControl,
+      chemical: formatFarmerChemicalList(p.chemicalControl, hi),
       biological: p.biologicalControl,
       symptoms: p.symptoms,
-      ai: `${p.activeIngredient} · ${p.dose}`,
+      ai: formatFarmerDoseSummary(p.activeIngredient, p.dose, hi),
     }));
-  }, [crop.slug, dossierMode, profile]);
+  }, [crop.slug, dossierMode, profile, hi]);
 
   const pests = dossierMode
     ? dossierPests
@@ -127,7 +130,6 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                     <p className="mt-0.5 text-[11px] italic text-[var(--av-text-muted)]">{pest.scientific}</p>
                     <p className="mt-1 text-[10px] font-semibold text-[var(--av-accent)]">
                       ETL: {pest.etl}
-                      {pest.attackStage ? ` · ${pest.attackStage}` : ""}
                     </p>
                     {open ? (
                       <div className="mt-2 space-y-1 text-[11px] text-[var(--av-text-secondary)]">
@@ -136,8 +138,11 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                           {pest.symptoms?.join("; ")}
                         </p>
                         <p>
-                          <span className="font-bold">{hi ? "उदाहरण AI: " : "Example AI: "}</span>
+                          <span className="font-bold">{hi ? "मुख्य खुराक: " : "Main dose: "}</span>
                           {pest.ai}
+                        </p>
+                        <p className="font-bold text-[var(--av-text-primary)]">
+                          {hi ? "दवा (ml/g प्रति लीटर पानी):" : "Spray (ml/g per L water):"}
                         </p>
                         <ul className="list-disc pl-4">
                           {pest.chemical?.map((c) => (

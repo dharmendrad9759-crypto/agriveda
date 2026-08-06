@@ -7,6 +7,10 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
+import {
+  formatFarmerChemicalList,
+  formatFarmerDoseSummary,
+} from "@/lib/crops/farmerSprayDose";
 import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
@@ -45,13 +49,12 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
         ? ("high" as const)
         : ("medium" as const),
       type: d.type,
-      fracNote: d.fracGroup,
-      chemical: d.chemicalControl,
+      chemical: formatFarmerChemicalList(d.chemicalControl, hi),
       integrated: d.integratedManagement,
-      ai: `${d.activeIngredient} · ${d.dose}`,
+      ai: formatFarmerDoseSummary(d.activeIngredient, d.dose, hi),
       conditions: d.favourableConditions.join("; "),
     }));
-  }, [crop.slug, dossierMode, profile]);
+  }, [crop.slug, dossierMode, profile, hi]);
 
   const diseases = dossierMode
     ? dossierDiseases
@@ -74,7 +77,6 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
               biological: [],
               chemical: [],
             },
-            fracNote: d.fracGroup,
           }));
 
   const filtered = diseases.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()));
@@ -123,10 +125,8 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
                       <RiskBadge level={d.risk} />
                     </div>
                     <p className="mt-0.5 text-[11px] italic text-[var(--av-text-muted)]">{d.scientific}</p>
-                    {d.fracNote ? (
-                      <p className="mt-1 text-[10px] font-semibold text-[var(--av-accent)]">
-                        FRAC: {d.fracNote}
-                      </p>
+                    {d.type ? (
+                      <p className="mt-1 text-[10px] font-semibold text-[var(--av-accent)]">{d.type}</p>
                     ) : null}
                     {open ? (
                       <div className="mt-2 space-y-1 text-[11px] text-[var(--av-text-secondary)]">
@@ -135,8 +135,11 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
                           {d.conditions}
                         </p>
                         <p>
-                          <span className="font-bold">{hi ? "उदाहरण: " : "Example: "}</span>
+                          <span className="font-bold">{hi ? "मुख्य खुराक: " : "Main dose: "}</span>
                           {d.ai}
+                        </p>
+                        <p className="font-bold text-[var(--av-text-primary)]">
+                          {hi ? "दवा (ml/g प्रति लीटर पानी):" : "Spray (ml/g per L water):"}
                         </p>
                         <ul className="list-disc pl-4">
                           {d.chemical?.map((c) => (
