@@ -2,6 +2,7 @@ import type { CropPestDiseaseData, DiseaseItem, PestItem, WeedItem } from "@/dat
 import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
 import { getWeedCardImage } from "@/lib/weeds/weedStageImages";
+import { getDiseaseSpeciesImage, getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
 
 import { getIpmThreatOverride } from "@/lib/crops/ipmDataBridge";
 import { getCropFieldGuideThreatOverride } from "@/lib/crops/cropFieldGuideBridge";
@@ -13,9 +14,21 @@ const GENERIC_STOCK = /placeholder|picsum|loremflickr/i;
 
 function resolveThreatImage(
   overrideImage: string | undefined,
-  itemImage: string | undefined
+  itemImage: string | undefined,
+  speciesImage?: string
 ): string | undefined {
-  return overrideImage ?? itemImage;
+  const preferred = overrideImage ?? speciesImage ?? itemImage;
+  if (!preferred) return undefined;
+  // Ignore broken IPM crop-root stubs like /images/paddy.png
+  if (/^\/images\/[a-z0-9-]+\.png$/i.test(preferred)) return speciesImage ?? itemImage;
+  // Prefer real species art over shared threat generics
+  if (
+    speciesImage &&
+    /\/images\/threats\/threat-(insect|disease|yellow|weed)\.jpg$/i.test(preferred)
+  ) {
+    return speciesImage;
+  }
+  return preferred;
 }
 
 function inferDiseaseCategory(pathogen: string, name: string): ThreatCategory {
@@ -112,7 +125,12 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
     category,
     name: pest.name,
     scientificName: pest.scientificName,
-    image: resolveThreatImage(merged?.image, pest.image) ?? THREAT_IMAGES.insect,
+    image:
+      resolveThreatImage(
+        merged?.image,
+        pest.image,
+        getPestSpeciesImage(pest.scientificName)
+      ) ?? THREAT_IMAGES.insect,
     stage: pest.stage,
     description:
       merged?.description ??
@@ -155,7 +173,12 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
     name: disease.name,
     scientificName: disease.pathogen,
     pathogen: disease.pathogen,
-    image: resolveThreatImage(merged?.image, disease.image) ?? THREAT_IMAGES.fungalLeaf,
+    image:
+      resolveThreatImage(
+        merged?.image,
+        disease.image,
+        getDiseaseSpeciesImage(disease.pathogen)
+      ) ?? THREAT_IMAGES.fungalLeaf,
     stage: disease.stage,
     description:
       merged?.description ??

@@ -71,7 +71,7 @@ export default function PestDiseasesContent() {
   const cropInfo = selectedSlug === "all" ? null : pestDiseaseCropList.find((c) => c.slug === selectedSlug);
   const pageTitle = isWeedHub ? t("weeds") : t("pestDiseasesTitle");
   const pageSubtitle = isWeedHub
-    ? "घास देखो — नाम टैप करो"
+    ? "घास देखो — फोटो टैप करो"
     : "पत्ती / कीट देखो — टैप करो";
 
   return (
@@ -88,19 +88,19 @@ export default function PestDiseasesContent() {
         <img
           src={
             isWeedHub
-              ? "/images/threats/threat-weed.jpg"
+              ? "/images/weeds/weed-hub-hero.jpg"
               : "/images/threats/threat-insect.jpg"
           }
           alt=""
-          className="h-36 w-full object-cover sm:h-40"
+          className="h-40 w-full object-cover sm:h-44"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/15" />
         <div className="absolute inset-x-0 bottom-0 p-4">
           <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-200/90">
             {isWeedHub ? "खरपतवार" : "कीट-रोग"}
           </p>
-          <p className="mt-0.5 text-[17px] font-bold text-white">
-            {isWeedHub ? "घास देखो — नाम टैप करो" : "पत्ती / कीट देखो — टैप करो"}
+          <p className="mt-0.5 text-[18px] font-extrabold text-white">
+            {isWeedHub ? "घास देखो — टैप करो" : "पत्ती / कीट देखो — टैप करो"}
           </p>
         </div>
       </div>
@@ -242,8 +242,8 @@ export default function PestDiseasesContent() {
           resultCount={filtered.length}
           placeholder={
             isWeedHub
-              ? "खरपतवार का नाम…"
-              : "नाम से खोजो…"
+              ? "खोजो…"
+              : "खोजो…"
           }
         />
       </div>
@@ -289,4 +289,4 @@ export default function PestDiseasesContent() {
     </AppShell>
   );
 }
-
+

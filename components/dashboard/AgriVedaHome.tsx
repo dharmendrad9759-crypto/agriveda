@@ -145,8 +145,8 @@ const MORE_JOBS: {
     id: "spray",
     hi: "आज स्प्रे?",
     en: "Spray today?",
-    hintHi: "करो या मत",
-    hintEn: "Do or skip",
+    hintHi: "करें या नहीं",
+    hintEn: "Yes or no",
     href: "/weather/spray-advisory",
     imageSrc: "/images/jobs/job-spray.jpg",
   },
@@ -157,7 +157,7 @@ const MORE_JOBS: {
     hintHi: "कब क्या करूँ",
     hintEn: "What to do when",
     href: "/crop-calendar",
-    imageSrc: "/images/jobs/job-crops-hero.jpg",
+    imageSrc: "/images/home/home-job-plan.jpg",
   },
   {
     id: "advisor",
@@ -166,7 +166,7 @@ const MORE_JOBS: {
     hintHi: "आज की मदद",
     hintEn: "Help for today",
     href: "/field-advisor",
-    imageSrc: "/images/jobs/job-my-farm.jpg",
+    imageSrc: "/images/home/home-job-advisor.jpg",
   },
   {
     id: "ask",
@@ -193,7 +193,7 @@ const MORE_JOBS: {
     hintHi: "फसल टैप करो",
     hintEn: "Tap a crop",
     href: "/crops",
-    imageSrc: "/images/jobs/job-crops-hero.jpg",
+    imageSrc: "/images/home/home-job-guide.jpg",
   },
   {
     id: "nutrients",

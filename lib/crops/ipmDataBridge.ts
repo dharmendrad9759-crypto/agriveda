@@ -5,6 +5,8 @@ import type { StageSprayRecommendation } from "@/types/crop-protection";
 import type { ThreatDetailOverride } from "@/data/pest-disease-details";
 import type { ThreatCategory } from "@/types/pest-disease-ui";
 import { normalizeCropSlug } from "@/lib/crops/cropImages";
+import { getDiseaseSpeciesImage, getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
+import { THREAT_IMAGES } from "@/data/pest-disease-details";
 
 export interface IpmChemical {
   technical: string;
@@ -70,18 +72,36 @@ const CROP_META: Record<string, { name: string; emoji: string }> = {
 };
 
 export function cropLabelToSlug(label: string): string {
-  const n = label.toLowerCase();
-  if (n.includes("paddy") || n.includes("dhaan")) return "paddy";
-  if (n.includes("maize") || n.includes("makka")) return "maize";
-  if (n.includes("bajra") || n.includes("millet")) return "bajra";
-  if (n.includes("soybean")) return "soybean";
-  if (n.includes("groundnut") || n.includes("mungfali")) return "moongfali";
-  if (n.includes("moong") && !n.includes("mungfali")) return "moong";
+  const raw = label.trim();
+  // Devanagari labels from agriveda-ipm-batch.json
+  if (/धान/.test(raw)) return "paddy";
+  if (/मक्का/.test(raw)) return "maize";
+  if (/बाजरा/.test(raw)) return "bajra";
+  if (/सोयाबीन/.test(raw)) return "soybean";
+  if (/मूंगफली|मूँगफली/.test(raw)) return "moongfali";
+  if (/मूंग|मूँग/.test(raw) && !/फली/.test(raw)) return "moong";
+  if (/अरहर|तूर/.test(raw)) return "pulses";
+  if (/गन्ना/.test(raw)) return "sugarcane";
+  if (/बैंगन/.test(raw)) return "brinjal";
+  if (/मिर्च/.test(raw) && !/शिमला/.test(raw)) return "chilli";
+  if (/शिमला/.test(raw)) return "capsicum";
+  if (/फूल\s*गोभी|फूलगोभी/.test(raw)) return "cauliflower";
+  if (/पत्ता\s*गोभी|पत्तागोभी|बंधगोभी/.test(raw)) return "cabbage";
+  if (/खीरा|ककड़ी|ककडी/.test(raw)) return "cucumber";
+  if (/भिंडी|भिण्डी/.test(raw)) return "bhindi";
+
+  const n = raw.toLowerCase();
+  if (n.includes("paddy") || n.includes("dhaan") || n.includes("rice")) return "paddy";
+  if (n.includes("maize") || n.includes("makka") || n.includes("corn")) return "maize";
+  if (n.includes("bajra") || n.includes("millet") || n.includes("pearl")) return "bajra";
+  if (n.includes("soybean") || n.includes("soya")) return "soybean";
+  if (n.includes("groundnut") || n.includes("mungfali") || n.includes("peanut")) return "moongfali";
+  if (n.includes("moong") && !n.includes("mungfali") && !n.includes("groundnut")) return "moong";
   if (n.includes("arhar") || n.includes("pigeon") || n.includes("tur")) return "pulses";
   if (n.includes("sugarcane") || n.includes("ganna")) return "sugarcane";
-  if (n.includes("brinjal") || n.includes("baingan")) return "brinjal";
-  if (n.includes("chilli") || n.includes("mirch")) return "chilli";
-  if (n.includes("capsicum") || n.includes("shimla")) return "capsicum";
+  if (n.includes("brinjal") || n.includes("baingan") || n.includes("eggplant")) return "brinjal";
+  if (n.includes("chilli") || n.includes("chili") || n.includes("mirch")) return "chilli";
+  if (n.includes("capsicum") || n.includes("shimla") || n.includes("bell pepper")) return "capsicum";
   if (n.includes("cauliflower") || n.includes("phool")) return "cauliflower";
   if (n.includes("cabbage") || n.includes("gobhi")) return "cabbage";
   if (n.includes("cucumber") || n.includes("khira")) return "cucumber";
@@ -91,7 +111,9 @@ export function cropLabelToSlug(label: string): string {
 
 const slugIndex = new Map<string, IpmCropRecord>();
 for (const record of batch.crops) {
-  slugIndex.set(cropLabelToSlug(record.crop), record);
+  const slug = cropLabelToSlug(record.crop);
+  if (!slug) continue;
+  slugIndex.set(slug, record);
 }
 
 export function getIpmCrop(slug: string): IpmCropRecord | null {
@@ -260,7 +282,7 @@ export function buildIpmCatalogEntry(slug: string, record: IpmCropRecord): CropP
       id,
       name: p.name,
       scientificName: p.scientificName,
-      image: `/images/${slug}.png`,
+      image: getPestSpeciesImage(p.scientificName) ?? THREAT_IMAGES.insect,
       stage: "Field season",
       iracGroup: firstChem?.iracGroup ?? p.iracRotationNote?.slice(0, 12) ?? "—",
       control: formatChemicals(p.management.chemical)[0] ?? "IPM ladder — see detail",
@@ -274,7 +296,7 @@ export function buildIpmCatalogEntry(slug: string, record: IpmCropRecord): CropP
       id,
       name: d.name,
       pathogen: d.pathogen,
-      image: `/images/${slug}.png`,
+      image: getDiseaseSpeciesImage(d.pathogen) ?? THREAT_IMAGES.fungalLeaf,
       stage: "Field season",
       fracGroup: firstChem?.fracGroup ?? "—",
       control: formatChemicals(d.management.chemical)[0] ?? "IDM ladder — see detail",
@@ -351,13 +373,53 @@ export function getIpmThreatOverride(key: string): ThreatDetailOverride | undefi
   return overrideCache.get(key);
 }
 
+function normKey(s: string): string {
+  return s.toLowerCase().replace(/\s+/g, " ").replace(/[()]/g, " ").trim();
+}
+
+/** Prefer IPM (richer ladder) when same species; keep unique base rows so lists don't shrink. */
+function unionPests(base: PestItem[], ipm: PestItem[]): PestItem[] {
+  if (!ipm.length) return base;
+  if (!base.length) return ipm;
+  const bySci = new Map<string, PestItem>();
+  for (const p of base) bySci.set(normKey(p.scientificName || p.name), p);
+  for (const p of ipm) bySci.set(normKey(p.scientificName || p.name), p);
+  // Stable-ish order: base order first, then IPM-only extras
+  const out: PestItem[] = [];
+  const seen = new Set<string>();
+  for (const p of [...base, ...ipm]) {
+    const k = normKey(p.scientificName || p.name);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(bySci.get(k)!);
+  }
+  return out.map((p, i) => ({ ...p, id: `p${i + 1}` }));
+}
+
+function unionDiseases(base: DiseaseItem[], ipm: DiseaseItem[]): DiseaseItem[] {
+  if (!ipm.length) return base;
+  if (!base.length) return ipm;
+  const byPath = new Map<string, DiseaseItem>();
+  for (const d of base) byPath.set(normKey(d.pathogen || d.name), d);
+  for (const d of ipm) byPath.set(normKey(d.pathogen || d.name), d);
+  const out: DiseaseItem[] = [];
+  const seen = new Set<string>();
+  for (const d of [...base, ...ipm]) {
+    const k = normKey(d.pathogen || d.name);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(byPath.get(k)!);
+  }
+  return out.map((d, i) => ({ ...d, id: `d${i + 1}` }));
+}
+
 export function mergeIpmCatalog(base: CropPestDiseaseData): CropPestDiseaseData {
   const ipm = getIpmCatalogEntry(base.slug);
   if (!ipm) return base;
   return {
     ...base,
-    pests: ipm.pests.length ? ipm.pests : base.pests,
-    diseases: ipm.diseases.length ? ipm.diseases : base.diseases,
+    pests: unionPests(base.pests, ipm.pests),
+    diseases: unionDiseases(base.diseases, ipm.diseases),
   };
 }
 

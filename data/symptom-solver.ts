@@ -1,5 +1,4 @@
-import { THREAT_IMAGES } from "@/data/pest-disease-details";
-import { threatDetailPath } from "@/lib/pest-disease-catalog";
+import { getThreatDetail, threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { LucideIcon } from "lucide-react";
 import {
   CircleDot,
@@ -41,21 +40,21 @@ export interface SymptomCategory {
 
 /** Background photo per symptom category — helps farmers recognise the problem */
 export const SYMPTOM_CATEGORY_COVERS: Record<string, string> = {
-  "yellowing-leaves": THREAT_IMAGES.paddy,
-  "stem-holes": THREAT_IMAGES.stemBorer,
-  "white-spots": THREAT_IMAGES.fungalLeaf,
-  "wilting-plants": THREAT_IMAGES.wilting,
-  "holes-in-leaves": THREAT_IMAGES.insectLeaf,
-  "brown-spots": THREAT_IMAGES.rust,
-  "stunted-growth": THREAT_IMAGES.viralPlant,
-  "cottony-growth": THREAT_IMAGES.fungalLeaf,
-  "wilting-drooping": THREAT_IMAGES.wilting,
-  "fruit-flower-damage": THREAT_IMAGES.fruitDamage,
-  "insect-chewing": THREAT_IMAGES.insect,
-  "leaf-curling": THREAT_IMAGES.aphid,
-  "mosaic-virus": THREAT_IMAGES.viralPlant,
-  "sticky-leaves": THREAT_IMAGES.aphid,
-  "purple-blotches": THREAT_IMAGES.bacterialLeaf,
+  "yellowing-leaves": "/images/home/home-job-yellow-leaf.jpg",
+  "stem-holes": "/images/pests/pest-scirpophaga-incertulas.jpg",
+  "white-spots": "/images/diseases/disease-leveillula-taurica.jpg",
+  "wilting-plants": "/images/diseases/disease-ralstonia-solanacearum.jpg",
+  "holes-in-leaves": "/images/pests/pest-spodoptera-frugiperda.jpg",
+  "brown-spots": "/images/diseases/disease-puccinia-triticina.jpg",
+  "stunted-growth": "/images/diseases/disease-begomovirus-leaf-curl.jpg",
+  "cottony-growth": "/images/diseases/disease-sclerotinia-sclerotiorum.jpg",
+  "wilting-drooping": "/images/diseases/disease-damping-off.jpg",
+  "fruit-flower-damage": "/images/pests/pest-helicoverpa-armigera.jpg",
+  "insect-chewing": "/images/pests/pest-spodoptera-mauritia.jpg",
+  "leaf-curling": "/images/pests/pest-aphis-gossypii.jpg",
+  "mosaic-virus": "/images/diseases/disease-mungbean-yellow-mosaic-virus.jpg",
+  "sticky-leaves": "/images/pests/pest-bemisia-tabaci.jpg",
+  "purple-blotches": "/images/diseases/disease-alternaria-porri.jpg",
 };
 
 export const SEVERITY_STYLES: Record<
@@ -81,7 +80,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "n-deficiency",
         name: "नाइट्रोजन की कमी",
         severity: "medium",
-        image: THREAT_IMAGES.paddy,
+        image: "/images/home/home-job-yellow-leaf.jpg",
         diagnosis:
           "नाइट्रोजन पौधे में mobile है — पहले पुरानी पत्तियाँ पीली होती हैं, शिराएँ थोड़ी देर तक हरी रह सकती हैं। भारी बारिश, leaching या cereals/vegetables में top-dressing छूटने पर आम।",
         immediateActions: [
@@ -100,7 +99,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "ysb-dead-heart",
         name: "पीला तना छेदक (Yellow Stem Borer)",
         severity: "high",
-        image: THREAT_IMAGES.insect,
+        image: "/images/pests/pest-scirpophaga-incertulas.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "इल्लियाँ तने में छेद करती हैं — vegetative अवस्था में 'dead heart' होता है, बीच की कली पीली होकर आसानी से निकल जाती है। Transplanted और direct-seeded rice में उपज सीमित करने वाला प्रमुख कीट।",
@@ -121,7 +120,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "tungro",
         name: "धान टंग्रो वायरस (Rice Tungro Virus)",
         severity: "high",
-        image: THREAT_IMAGES.viralPlant,
+        image: "/images/diseases/disease-rice-tungro-virus.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "Green leafhopper (Nephotettix spp.) से फैलता है। पौधे बौने होते हैं, पत्तियों पर शिराओं के बीच पीला-नारंगी रंग। अक्सर खेत के किनारे से patches में फैलता है।",
@@ -135,13 +134,13 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
           "Virus-free seedlings उपयोग करें और शुरू में संक्रमित पौधे हटाएँ।",
           "प्राकृतिक शत्रु बचाएँ; निवारक broad-spectrum sprays से बचें।",
         ],
-        threatLink: { cropSlug: "paddy", threatType: "pest", threatId: "p5" },
+        threatLink: { cropSlug: "paddy", threatType: "disease", threatId: "d7" },
       },
       {
         id: "blast-yellow",
         name: "धान ब्लास्ट — शुरुआती पत्ती दाग (Rice Blast)",
         severity: "medium",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/diseases/disease-magnaporthe-oryzae.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "Magnaporthe oryzae से होता है। पत्तियों पर हीरे के आकार के दाग, बीच में grey, किनारे brown; गंभीर संक्रमण में पत्ती पीली और panicles पर neck blast।",
@@ -172,7 +171,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "stem-borer-paddy",
         name: "पीला तना छेदक (Yellow Stem Borer)",
         severity: "high",
-        image: THREAT_IMAGES.insect,
+        image: "/images/pests/pest-scirpophaga-incertulas.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "तने पर गोल या अनियमित bore holes, प्रवेश स्थान पर frass। इल्लियाँ तने के अंदर feed करती हैं, पोषक प्रवाह रोकती हैं — dead hearts या white ears होते हैं।",
@@ -192,7 +191,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "pink-borer",
         name: "गुलाबी तना छेदक (मक्का/बाजरा)",
         severity: "high",
-        image: THREAT_IMAGES.maize,
+        image: "/images/pests/pest-sesamia-inferens.jpg",
         cropSlugs: ["maize", "bajra"],
         diagnosis:
           "इल्लियाँ तने में छेद करती हैं — young plants में dead hearts, mature stalks में tunneling। कटे तने के अंदर गुलाबी larva दिखता है।",
@@ -206,13 +205,13 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
           "Non-host crops के साथ crop rotation।",
           "वयस्क monitoring के लिए light traps।",
         ],
-        threatLink: { cropSlug: "maize", threatType: "pest", threatId: "p1" },
+        threatLink: { cropSlug: "wheat", threatType: "pest", threatId: "p3" },
       },
       {
         id: "fruit-borer-stem",
         name: "फल छेदक (कपास/टमाटर)",
         severity: "medium",
-        image: THREAT_IMAGES.tomato,
+        image: "/images/pests/pest-helicoverpa-armigera.jpg",
         cropSlugs: ["cotton", "tomato", "chilli"],
         diagnosis:
           "Helicoverpa armigera larvae squares, bolls या fruits में छेद करते हैं, कभी stems/branches पर feeding sites के पास entry holes छोड़ते हैं।",
@@ -243,7 +242,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "powdery-mildew",
         name: "चूर्णिल फफूंद (Powdery Mildew)",
         severity: "medium",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/diseases/disease-leveillula-taurica.jpg",
         diagnosis:
           "पत्तियों की ऊपरी सतह पर सफेद powdery fungal growth। Dry days और ठंडी रातें + high humidity में बढ़ता है। Cucurbits, grapes और chilli में आम।",
         immediateActions: [
@@ -261,7 +260,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "sheath-blight-white",
         name: "पर्ण आवरण सड़न — सफेद फफूंद जाल (Sheath Blight)",
         severity: "high",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/diseases/disease-rhizoctonia-solani.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "Rhizoctonia solani leaf sheaths पर oval greenish-grey lesions और white mycelial growth पैदा करता है। Humid, dense canopies में ऊपर की ओर फैलता है।",
@@ -281,7 +280,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "leaf-folder-patches",
         name: "पत्ती मोड़क (Leaf Folder)",
         severity: "low",
-        image: THREAT_IMAGES.insectLeaf,
+        image: "/images/pests/pest-cnaphalocrocis-medinalis.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "Larvae पत्तियाँ longitudinal fold करके हरी tissue scrape करते हैं, white scraped patches छोड़ते हैं। Tillering से PI stage तक photosynthesis कम होती है।",
@@ -310,7 +309,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "water-stress",
         name: "पानी / सूखा तनाव",
         severity: "low",
-        image: THREAT_IMAGES.paddy,
+        image: "/images/home/home-job-weather.jpg",
         diagnosis:
           "गर्मी के चरम में dry soil के साथ wilting moisture stress दर्शाता है। जड़ों को पानी मिले तो पत्तियाँ रात में ठीक हो सकती हैं। सिंचाई के बाद recovery हो तो pathogenic wilt से अलग।",
         immediateActions: [
@@ -328,7 +327,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "bacterial-wilt",
         name: "जीवाणु मुरझान (Bacterial Wilt)",
         severity: "high",
-        image: THREAT_IMAGES.bacterialLeaf,
+        image: "/images/diseases/disease-ralstonia-solanacearum.jpg",
         cropSlugs: ["tomato", "brinjal", "chilli", "potato"],
         diagnosis:
           "Ralstonia solanacearum vascular tissue ब्लॉक करता है। गर्म दिनों में अचानक wilting, तना काटकर पानी में रखने पर brown discolouration (bacterial ooze)।",
@@ -347,7 +346,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "root-rot",
         name: "जड़ सड़न / अंकुर मरण",
         severity: "high",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/diseases/disease-damping-off.jpg",
         diagnosis:
           "Rhizoctonia, Pythium या Fusarium waterlogged/compact soils में जड़ों पर attack करते हैं। मिट्टी गीली होते हुए भी wilting; जड़ें brown और छोटी।",
         immediateActions: [
@@ -376,7 +375,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "armyworm",
         name: "धान सेना इल्ली (Rice Armyworm)",
         severity: "high",
-        image: THREAT_IMAGES.insect,
+        image: "/images/pests/pest-spodoptera-mauritia.jpg",
         cropSlugs: ["paddy", "maize"],
         diagnosis:
           "Nocturnal larvae पत्ती के किनारे खाते हैं, बारिश के बाद रातों-रात patches defoliate कर सकते हैं। मिट्टी पर frass pellets दिखते हैं।",
@@ -396,7 +395,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "flea-beetle",
         name: "फुदका भृंग / छोटे गोल छेद",
         severity: "medium",
-        image: THREAT_IMAGES.insectLeaf,
+        image: "/images/pests/pest-altica-spp.jpg",
         cropSlugs: ["mustard", "brinjal", "potato"],
         diagnosis:
           "Adult feeding से पत्तियों पर छोटे गोल shot-holes। Disturb करने पर jumping beetles दिखते हैं। Seedling stage सबसे कमजोर।",
@@ -414,7 +413,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "early-blight-holes",
         name: "शुरुआती झुलसा (मृत छेद)",
         severity: "medium",
-        image: THREAT_IMAGES.tomato,
+        image: "/images/diseases/disease-alternaria-solani.jpg",
         cropSlugs: ["tomato", "potato"],
         diagnosis:
           "Alternaria solani brown concentric ring spots पैदा करता है, जो गिरकर tomato/potato foliage पर shot-hole जैसा दिख सकता है।",
@@ -443,7 +442,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "brown-spot-rice",
         name: "भूरा धब्बा (धान)",
         severity: "medium",
-        image: THREAT_IMAGES.rust,
+        image: "/images/diseases/disease-bipolaris-oryzae.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "Bipolaris oryzae पत्तियों और glumes पर yellow halo वाले oval brown spots पैदा करता है। Nutrient-deficient, drought-stressed rice में बढ़ता है।",
@@ -461,7 +460,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "rust",
         name: "पत्ती रतुआ (Leaf Rust)",
         severity: "medium",
-        image: THREAT_IMAGES.rust,
+        image: "/images/diseases/disease-puccinia-triticina.jpg",
         cropSlugs: ["wheat", "maize"],
         diagnosis:
           "पत्तियों पर orange-brown pustules powdery spores छोड़ते हैं। ठंडी, moist conditions और dew में rust तेजी से फैलता है।",
@@ -474,12 +473,13 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
           "Rust-prone क्षेत्रों में late sowing से बचें।",
           "FRAC Group 3 fungicides को अन्य MoA के साथ बदलें।",
         ],
+        threatLink: { cropSlug: "wheat", threatType: "disease", threatId: "d6" },
       },
       {
         id: "bph-hopperburn",
         name: "भूरा फुदका (हॉपरबर्न)",
         severity: "high",
-        image: THREAT_IMAGES.insect,
+        image: "/images/pests/pest-nilaparvata-lugens.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "Nilaparvata lugens tillers के base पर sap चूसता है। Population explode होने पर गोल brown patches ('hopperburn'), अक्सर बार-बार IRAC 4A sprays के बाद।",
@@ -510,7 +510,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "zinc-deficiency",
         name: "जिंक की कमी (खैरा)",
         severity: "low",
-        image: THREAT_IMAGES.paddy,
+        image: "/images/home/home-job-yellow-leaf.jpg",
         cropSlugs: ["paddy", "maize"],
         diagnosis:
           "Flooded rice में zinc unavailable हो जाता है — बौने पौधे, upper leaves पर dusty brown spots, poor root development ('Khaira' in paddy)।",
@@ -528,7 +528,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "nematode",
         name: "जड़-गाँठ सूत्रकृमि (Root-Knot Nematode)",
         severity: "medium",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/diseases/disease-damping-off.jpg",
         diagnosis:
           "Meloidogyne spp. जड़ों पर galls, stunting और moisture stress में wilting। Vegetables और sandy soils में आम।",
         immediateActions: [
@@ -545,7 +545,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "weed-competition",
         name: "खरपतवार प्रतिस्पर्धा",
         severity: "medium",
-        image: THREAT_IMAGES.weed,
+        image: "/images/weeds/weed-hub-hero.jpg",
         diagnosis:
           "Critical period (पहले 30–45 दिन) में weeds light, nutrients और moisture के लिए compete करते हैं। Crop stunted, tillering uneven।",
         immediateActions: [
@@ -573,7 +573,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "sheath-blight-cottony",
         name: "पर्ण आवरण सड़न (Sheath Blight)",
         severity: "high",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/diseases/disease-rhizoctonia-solani.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "Water line के पास leaf sheaths पर white से grey cottony mycelium। Lesions मिलकर severe cases में lodging।",
@@ -591,7 +591,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "sooty-mold",
         name: "कालिख फफूंद (Sooty Mould)",
         severity: "low",
-        image: THREAT_IMAGES.insectLeaf,
+        image: "/images/pests/pest-bemisia-tabaci.jpg",
         diagnosis:
           "Aphids, whiteflies या leafhoppers के honeydew पर पत्तियों पर black fungal growth। अंतर्निहित sucking pest infestation का संकेत।",
         immediateActions: [
@@ -607,7 +607,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "false-smut",
         name: "झूठा कंड (False Smut)",
         severity: "medium",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/diseases/disease-ustilaginoidea-virens.jpg",
         cropSlugs: ["paddy"],
         diagnosis:
           "Orange-yellow से greenish spore balls individual grains की जगह panicles पर। Flowering के दौरान humid weather में बढ़ता है।",
@@ -636,7 +636,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "root-rot",
         name: "जड़ सड़न / अंकुर मरण",
         severity: "high",
-        image: THREAT_IMAGES.rootRot,
+        image: "/images/diseases/disease-damping-off.jpg",
         diagnosis:
           "Over-watering, poor drainage या fungal pathogens (Pythium, Rhizoctonia) से जड़ें brown होती हैं और wet soil में भी wilting।",
         immediateActions: [
@@ -653,7 +653,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "wilt-bacterial",
         name: "जीवाणु मुरझान (Bacterial Wilt)",
         severity: "high",
-        image: THREAT_IMAGES.wilting,
+        image: "/images/diseases/disease-ralstonia-solanacearum.jpg",
         cropSlugs: ["tomato", "bhindi", "chilli"],
         diagnosis:
           "पूरा पौधा अचानक murjhata है, पहले पत्ती पीली नहीं होती। तना काटें — पानी में white bacterial ooze दिख सकता है।",
@@ -682,7 +682,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "fruit-borer",
         name: "फल छेदक (Fruit Borer)",
         severity: "high",
-        image: THREAT_IMAGES.fruitDamage,
+        image: "/images/pests/pest-helicoverpa-armigera.jpg",
         cropSlugs: ["tomato", "bhindi", "chilli"],
         diagnosis:
           "Fruits में holes + frass, premature fruit drop या internal feeding — tomato, okra, chilli में आम।",
@@ -700,7 +700,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "blossom-end-rot",
         name: "फूल सिरे की सड़न (Blossom End Rot)",
         severity: "medium",
-        image: THREAT_IMAGES.tomato,
+        image: "/images/diseases/disease-alternaria-solani.jpg",
         cropSlugs: ["tomato"],
         diagnosis:
           "Tomato के blossom end पर dark sunken patch — calcium imbalance, irregular watering; fungal disease नहीं।",
@@ -729,7 +729,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "aphid-infestation",
         name: "एफिड का प्रकोप",
         severity: "medium",
-        image: THREAT_IMAGES.aphid,
+        image: "/images/pests/pest-myzus-persicae.jpg",
         diagnosis:
           "पत्तियों के नीचे छोटे soft insects के clusters, sticky honeydew, curled leaves, vegetables/cereals पर sooty mould।",
         immediateActions: [
@@ -746,7 +746,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "stem-borer-maize",
         name: "तना छेदक (मक्का/कपास)",
         severity: "high",
-        image: THREAT_IMAGES.stemBorer,
+        image: "/images/pests/pest-chilo-partellus.jpg",
         cropSlugs: ["maize", "cotton"],
         diagnosis:
           "Maize centre में dead heart, stem में bore holes, frass visible — larvae stem के अंदर feed करते हैं।",
@@ -759,6 +759,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
           "Peak pest population से बचने early sowing।",
           "Adult moths monitoring के लिए light trap (1/acre)।",
         ],
+        threatLink: { cropSlug: "maize", threatType: "pest", threatId: "p2" },
       },
     ],
   },
@@ -775,7 +776,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "whitefly-curl",
         name: "सफेद मक्खी (पत्ती मोड़)",
         severity: "high",
-        image: THREAT_IMAGES.aphid,
+        image: "/images/pests/pest-bemisia-tabaci.jpg",
         cropSlugs: ["tomato", "chilli", "brinjal", "cotton"],
         diagnosis:
           "पत्तियों के नीचे छोटे white flies upward curling, yellowing, sticky honeydew पैदा करते हैं। Tomato में TYLCV risk।",
@@ -793,7 +794,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "aphid-curl",
         name: "एफिड से पत्ती मुड़ना",
         severity: "medium",
-        image: THREAT_IMAGES.aphid,
+        image: "/images/pests/pest-aphis-gossypii.jpg",
         diagnosis:
           "Young leaves के नीचे colonies curling, stunting, honeydew पैदा करती हैं। Wheat heading, vegetables, cotton में आम।",
         immediateActions: [
@@ -817,7 +818,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "tmv",
         name: "तम्बाकू मोज़ेक वायरस (Tobacco Mosaic Virus)",
         severity: "high",
-        image: THREAT_IMAGES.viralPlant,
+        image: "/images/diseases/disease-begomovirus-leaf-curl.jpg",
         cropSlugs: ["tomato", "chilli", "brinjal"],
         diagnosis:
           "पत्तियों पर light-dark green mosaic, leaf distortion, stunted plants। Contact और tools से फैलता है।",
@@ -831,7 +832,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "leaf-curl-virus",
         name: "मिर्च पत्ती मोड़ वायरस (Chilli Leaf Curl Virus)",
         severity: "high",
-        image: THREAT_IMAGES.viralPlant,
+        image: "/images/diseases/disease-begomovirus-leaf-curl.jpg",
         cropSlugs: ["chilli", "tomato"],
         diagnosis:
           "गंभीर upward leaf curl, puckering, stunted bushy plants। Whitefly से फैलता है।",
@@ -856,7 +857,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "honeydew-whitefly",
         name: "शहद जैसा स्राव (सफेद मक्खी/एफिड)",
         severity: "medium",
-        image: THREAT_IMAGES.aphid,
+        image: "/images/pests/pest-bemisia-tabaci.jpg",
         diagnosis:
           "Sap-sucking insects से पत्तियों पर चमकदार sticky coating। Black sooty mould और photosynthesis कम होती है।",
         immediateActions: [
@@ -869,7 +870,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "sooty-mold-sticky",
         name: "कालिख फफूंद (Sooty Mould)",
         severity: "low",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/pests/pest-aphis-gossypii.jpg",
         diagnosis:
           "Upper leaf surface पर black powdery fungal growth — honeydew पर grows, primary disease नहीं।",
         immediateActions: [
@@ -893,7 +894,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "phosphorus-def",
         name: "फास्फोरस की कमी",
         severity: "medium",
-        image: THREAT_IMAGES.paddy,
+        image: "/images/home/home-job-yellow-leaf.jpg",
         diagnosis:
           "Older leaves और stems पर purplish-red colour, खासकर cold weather या acidic soils में।",
         immediateActions: [
@@ -906,7 +907,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "purple-blotch-onion",
         name: "बैंगनी धब्बा (प्याज)",
         severity: "medium",
-        image: THREAT_IMAGES.fungalLeaf,
+        image: "/images/diseases/disease-alternaria-porri.jpg",
         cropSlugs: ["onion"],
         diagnosis:
           "Onion leaves पर purple sunken lesions yellow halo के साथ — humid weather में फैलता है।",
@@ -921,24 +922,38 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
 ];
 
 export function getCategoryCoverImage(categoryId: string): string {
-  return SYMPTOM_CATEGORY_COVERS[categoryId] ?? THREAT_IMAGES.insectLeaf;
+  return SYMPTOM_CATEGORY_COVERS[categoryId] ?? "/images/pests/pest-spodoptera-frugiperda.jpg";
 }
 
 export function getSymptomCategory(id: string): SymptomCategory | undefined {
   return SYMPTOM_CATEGORIES.find((c) => c.id === id);
 }
 
+export function resolveSolverIssueImage(issue: SolverIssue): string {
+  if (issue.threatLink) {
+    const threat = getThreatDetail(
+      issue.threatLink.cropSlug,
+      issue.threatLink.threatType,
+      issue.threatLink.threatId
+    );
+    if (threat?.image) return threat.image;
+  }
+  return issue.image;
+}
+
 export function getIssuesForCrop(categoryId: string, cropSlug: string): SolverIssue[] {
   const category = getSymptomCategory(categoryId);
   if (!category) return [];
-  return category.issues.filter(
-    (issue) => !issue.cropSlugs || issue.cropSlugs.includes(cropSlug)
-  );
+  return category.issues
+    .filter((issue) => !issue.cropSlugs || issue.cropSlugs.includes(cropSlug))
+    .map((issue) => ({ ...issue, image: resolveSolverIssueImage(issue) }));
 }
 
 export function getIssueById(categoryId: string, issueId: string): SolverIssue | undefined {
   const category = getSymptomCategory(categoryId);
-  return category?.issues.find((i) => i.id === issueId);
+  const issue = category?.issues.find((i) => i.id === issueId);
+  if (!issue) return undefined;
+  return { ...issue, image: resolveSolverIssueImage(issue) };
 }
 
 export function issueDetailHref(issue: SolverIssue): string | null {

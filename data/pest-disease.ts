@@ -66,6 +66,9 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d3", name: "जीवाणु पत्ती झुलसा (Bacterial Leaf Blight)", pathogen: "Xanthomonas oryzae pv. oryzae", image: IMG2, stage: "अधिकतम कल्ले", fracGroup: "FRAC 25 + M1", control: "Streptocycline @ 0.15 g/L + Copper oxychloride 50 WP @ 3 g/L" },
       { id: "d4", name: "भूरा धब्बा (Brown Spot)", pathogen: "Bipolaris oryzae", image: IMG, stage: "कल्ले–दाना भरना", fracGroup: "FRAC M3 / 3", control: "Mancozeb 75 WP @ 2 g/L या Propiconazole 25 EC @ 1 ml/L" },
       { id: "d5", name: "झूठा कंड (False Smut)", pathogen: "Ustilaginoidea virens", image: IMG2, stage: "फूल आना", fracGroup: "FRAC 3", control: "Propiconazole 25 EC @ 1 ml/L बूट लीफ अवस्था पर" },
+      { id: "d6", name: "पर्ण आवरण सड़न / शीथ रॉट (Sheath Rot)", pathogen: "Sarocladium oryzae", image: IMG2, stage: "बाली निकलना", fracGroup: "FRAC 3", control: "Carbendazim 50 WP @ 1 g/L या Hexaconazole 5 EC @ 1 ml/L — बूट अवस्था पर" },
+      { id: "d7", name: "टंग्रो वायरस (Rice Tungro)", pathogen: "Rice tungro virus (leafhopper vector)", image: IMG2, stage: "वनस्पति", fracGroup: "— (vector)", control: "संक्रमित पौधे उखाड़ें; हरा पत्ती फुदका नियंत्रण — Imidacloprid / Thiamethoxam" },
+      { id: "d8", name: "बकाने / फुट रॉट (Bakanae)", pathogen: "Fusarium fujikuroi", image: IMG2, stage: "अंकुर–कल्ले", fracGroup: "—", control: "Carbendazim बीज उपचार 2 g/kg; लंबी पीली पौध उखाड़ें" },
     ],
     weeds: [
       { id: "w1", name: "सांवा घास (Barnyard Grass)", scientificName: "Echinochloa crus-galli", type: "Grassy", criticalPeriod: "0–45 DAS", preEmergence: "Pretilachlor 50 EC @ 0.6–0.75 kg a.i./ha (HRAC 15) at 3 DAS", postEmergence: "Bispyribac-sodium 10 SC @ 25 g a.i./ha (HRAC 2) at 15–20 DAS", culturalControl: "बासी बीज क्यारी, रोपाई से पहले खेत पोखर", image: IMG_WEED },
@@ -84,6 +87,10 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "पीला रतुआ (Yellow Rust)", pathogen: "Puccinia striiformis", image: IMG2, stage: "कल्ले–बाली", fracGroup: "FRAC 3", control: "Propiconazole / Tebuconazole पहले लक्षण पर" },
       { id: "d2", name: "करनाल कंड (Karnal Bunt)", pathogen: "Tilletia indica", image: IMG, stage: "दाना भरना", fracGroup: "—", control: "Carboxin बीज उपचार, देर से बुवाई से बचें" },
       { id: "d3", name: "ढीला कंड (Loose Smut)", pathogen: "Ustilago tritici", image: IMG2, stage: "बाली", fracGroup: "—", control: "Carboxin / Tebuconazole बीज उपचार" },
+      { id: "d4", name: "पत्ती धब्बा / स्पॉट ब्लॉच (Spot Blotch)", pathogen: "Bipolaris sorokiniana", image: IMG2, stage: "कल्ले–बाली", fracGroup: "FRAC M3 / 3", control: "Propiconazole 25 EC @ 1 ml/L या Mancozeb 75 WP @ 2 g/L" },
+      { id: "d5", name: "चूर्णिल फफूंद (Powdery Mildew)", pathogen: "Blumeria graminis", image: IMG, stage: "कल्ले–बाली", fracGroup: "FRAC 3", control: "Propiconazole / Tebuconazole पहले लक्षण पर" },
+      { id: "d6", name: "भूरा रतुआ (Brown / Leaf Rust)", pathogen: "Puccinia triticina", image: IMG2, stage: "कल्ले–बाली", fracGroup: "FRAC 3", control: "Propiconazole 25 EC @ 1 ml/L या Tebuconazole — पहले pustule पर" },
+      { id: "d7", name: "सिर झुलसा / स्कैब (Head Blight)", pathogen: "Fusarium graminearum", image: IMG, stage: "फूल–दाना भरना", fracGroup: "FRAC 3", control: "Tebuconazole फूल आने पर; संक्रमित बालियाँ हटाएँ" },
     ],
     weeds: [
       { id: "w1", name: "गुल्ली-डंडा (Phalaris minor)", scientificName: "Phalaris minor", type: "Grassy", criticalPeriod: "20–60 DAS", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "Clodinafop @ 60 g/ha", culturalControl: "गहरी जुताई, साफ बीज" },
@@ -102,6 +109,8 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "टर्सिकम पत्ती झुलसा (Turcicum Leaf Blight)", pathogen: "Exserohilum turcicum", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC 3", control: "Mancozeb + Metalaxyl छिड़काव" },
       { id: "d2", name: "मेडिस पत्ती झुलसा (Maydis Leaf Blight)", pathogen: "Bipolaris maydis", image: IMG, stage: "अन्वल", fracGroup: "FRAC M5", control: "Carbendazim / Mancozeb" },
       { id: "d3", name: "पट्टेदार पत्ती-आवरण सड़न (Banded Leaf Sheath Blight)", pathogen: "Rhizoctonia solani", image: IMG2, stage: "तेज़ वृद्धि", fracGroup: "FRAC 32", control: "Validamycin मिट्टी डrench" },
+      { id: "d4", name: "सामान्य रतुआ (Common Rust)", pathogen: "Puccinia sorghi", image: IMG2, stage: "वनस्पति–फूल", fracGroup: "FRAC 3", control: "Propiconazole / Tebuconazole — पहले पुस्ट्यूल पर" },
+      { id: "d5", name: "तना सड़न / चारकोल रॉट (Charcoal Rot)", pathogen: "Macrophomina phaseolina", image: IMG, stage: "दाना भरना", fracGroup: "—", control: "बीज उपचार Trichoderma; सिंचाई तनाव से बचें" },
     ],
     weeds: [
       { id: "w1", name: "सांवा घास (Barnyard Grass)", scientificName: "Echinochloa colona", type: "Grassy", criticalPeriod: "0–35 DAS", preEmergence: "Atrazine @ 1.0 kg/ha", postEmergence: "Tembotrione @ 120 g/ha", culturalControl: "घुटने-ऊँचाई पर मेड़-निराई" },
@@ -120,6 +129,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "बलूत फफूंद (Downy Mildew)", pathogen: "Sclerospora graminicola", image: IMG2, stage: "अंकुर", fracGroup: "FRAC 4", control: "Metalaxyl बीज उपचार, प्रतिरोधी किस्में" },
       { id: "d2", name: "अर्गोट (Ergot)", pathogen: "Claviceps fusiformis", image: IMG, stage: "फूल आना", fracGroup: "—", control: "संक्रमित बालियाँ हटाएँ, फूल आने से पहले छिड़काव" },
       { id: "d3", name: "रतुआ (Rust)", pathogen: "Puccinia penniseti", image: IMG2, stage: "दाना भरना", fracGroup: "FRAC 3", control: "Mancozeb / Propiconazole" },
+      { id: "d4", name: "कंड (Grain Smut)", pathogen: "Tolyposporium penicillariae", image: IMG, stage: "बाली", fracGroup: "—", control: "Thiram / Captan बीज उपचार; संक्रमित बालियाँ काटें" },
     ],
     weeds: [
       { id: "w1", name: "जंगली ज्वार (Wild Sorghum)", scientificName: "Sorghum halepense", type: "Grassy", criticalPeriod: "10–35 DAS", preEmergence: "Atrazine @ 0.5 kg/ha", postEmergence: "2,4-D Na salt", culturalControl: "पंक्ति बुवाई — मेड़-निराई के लिए" },
@@ -138,6 +148,9 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "देर से झुलसा (Late Blight)", pathogen: "Phytophthora infestans", image: IMG2, stage: "कंद भरना", fracGroup: "FRAC 40", control: "Metalaxyl-M + Mancozeb रोकथाम छिड़काव" },
       { id: "d2", name: "शुरुआती झुलसा (Early Blight)", pathogen: "Alternaria solani", image: IMG, stage: "वनस्पति", fracGroup: "FRAC M5", control: "Mancozeb / Chlorothalonil" },
       { id: "d3", name: "काला कवच (Black Scurf)", pathogen: "Rhizoctonia solani", image: IMG2, stage: "कंद बनना", fracGroup: "FRAC 32", control: "Carbendazim बीज-कंद उपचार" },
+      { id: "d4", name: "जीवाणु मुरझान (Bacterial Wilt)", pathogen: "Ralstonia solanacearum", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "प्रतिरोधी किस्में; पानी भरा खेत न रखें; दूषित कंद न लगाएँ" },
+      { id: "d5", name: "पत्ती मोज़ेक वायरस (Potato Mosaic)", pathogen: "Potato virus Y (aphid vector)", image: IMG, stage: "वनस्पति", fracGroup: "— (vector)", control: "बीज कंद प्रमाणित लें; एफिड नियंत्रण — Imidacloprid" },
+      { id: "d6", name: "आम स्कैब (Common Scab)", pathogen: "Streptomyces scabies", image: IMG2, stage: "कंद बनना", fracGroup: "—", control: "मिट्टी pH 5.2–5.5 रखें; संक्रमित कंद न लगाएँ; सिंचाई समान" },
     ],
     weeds: [
       { id: "w1", name: "बथुआ (Bathua)", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–45 DAS", preEmergence: "Metribuzin @ 0.35 kg/ha", postEmergence: "Rimsulfuron @ 25 g/ha", culturalControl: "मेड़ चढ़ाने से छोटे खरपतवार दब जाते हैं" },
@@ -156,6 +169,9 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "शुरुआती झुलसा (Early Blight)", pathogen: "Alternaria solani", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC M5", control: "Mancozeb + Copper oxychloride" },
       { id: "d2", name: "देर से झुलसा (Late Blight)", pathogen: "Phytophthora infestans", image: IMG, stage: "फल लगना", fracGroup: "FRAC 40", control: "Metalaxyl-M छिड़काव — बारिश से पहले" },
       { id: "d3", name: "जीवाणु मुरझान (Bacterial Wilt)", pathogen: "Ralstonia solanacearum", image: IMG2, stage: "किसी भी अवस्था", fracGroup: "—", control: "प्रतिरोधी संकर, मिट्टी सौरीकरण" },
+      { id: "d4", name: "पत्ती मोड़ वायरस (Tomato Leaf Curl)", pathogen: "Begomovirus (whitefly vector)", image: IMG2, stage: "वनस्पति", fracGroup: "— (vector)", control: "संक्रमित पौधे उखाड़ें; सफेद मक्खी — Pyriproxyfen / Diafenthiuron" },
+      { id: "d5", name: "फ्यूजेरियम मुरझान (Fusarium Wilt)", pathogen: "Fusarium oxysporum f.sp. lycopersici", image: IMG, stage: "वनस्पति–फल", fracGroup: "—", control: "प्रतिरोधी संकर; Carbendazim डrench; फसल चक्र" },
+      { id: "d6", name: "सेप्टोरिया पत्ती धब्बा (Septoria Leaf Spot)", pathogen: "Septoria lycopersici", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC M5", control: "Mancozeb / Chlorothalonil — निचली पत्तियाँ हटाएँ" },
     ],
     weeds: [
       { id: "w1", name: "गाजर घास (Parthenium)", scientificName: "Parthenium hysterophorus", type: "Broadleaf", criticalPeriod: "0–30 DAT", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "हाथ से निराई + मल्च", culturalControl: "काली प्लास्टिक मल्च" },
@@ -174,6 +190,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "बैंगनी धब्बा (Purple Blotch)", pathogen: "Alternaria porri", image: IMG2, stage: "कंद विकास", fracGroup: "FRAC M5", control: "Mancozeb + Metalaxyl छिड़काव" },
       { id: "d2", name: "स्टेम्फिलियम झुलसा (Stemphylium Blight)", pathogen: "Stemphylium vesicarium", image: IMG, stage: "पकना", fracGroup: "FRAC 3", control: "Propiconazole / Iprodione" },
       { id: "d3", name: "आधार सड़न (Basal Rot)", pathogen: "Fusarium oxysporum", image: IMG2, stage: "भंडारण", fracGroup: "—", control: "Carbendazim कंद डुबोना, फसल चक्र" },
+      { id: "d4", name: "बलूत फफूंद (Downy Mildew)", pathogen: "Peronospora destructor", image: IMG2, stage: "कंद विकास", fracGroup: "FRAC 4 + M3", control: "Metalaxyl-M + Mancozeb — ओस/बारिश से पहले" },
     ],
     weeds: [
       { id: "w1", name: "बथुआ (Chenopodium)", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–45 DAS", preEmergence: "Oxyfluorfen @ 0.15 kg/ha", postEmergence: "Hand weeding (no selective herbicide)", culturalControl: "मल्च, उथली जुताई" },
@@ -196,6 +213,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d3", name: "पत्ती मोड़ वायरस (Leaf Curl Virus)", pathogen: "Begomovirus (whitefly vector)", image: IMG2, stage: "वनस्पति", fracGroup: "— (vector)", control: "संक्रमित पौधे उखाड़ें; सफेद मक्खी के लिए Pyriproxyfen / Diafenthiuron" },
       { id: "d4", name: "चूर्णिल फफूंद (Powdery Mildew)", pathogen: "Leveillula taurica", image: IMG, stage: "वनस्पति–फल", fracGroup: "FRAC M2 / 3", control: "Wettable sulphur 80 WP @ 2–3 g/L या Hexaconazole 5 EC @ 1 ml/L" },
       { id: "d5", name: "अंकुर मरण / मुरझान (Damping-off)", pathogen: "Pythium / Fusarium / Rhizoctonia", image: IMG2, stage: "नर्सरी–शुरुआती खेत", fracGroup: "FRAC 1 / 4+M3", control: "Carbendazim बीज उपचार 2 g/kg; Metalaxyl+Mancozeb डrench 2 g/L" },
+      { id: "d6", name: "जीवाणु मुरझान (Bacterial Wilt)", pathogen: "Ralstonia solanacearum", image: IMG2, stage: "किसी भी अवस्था", fracGroup: "—", control: "ऊँची क्यारी; प्रतिरोधी किस्में; दूषित पानी से बचें" },
     ],
     weeds: [
       { id: "w1", name: "गाजर घास (Parthenium)", scientificName: "Parthenium hysterophorus", type: "Broadleaf", criticalPeriod: "0–40 DAT", preEmergence: "Pendimethalin 30 EC @ 1.0 kg a.i./ha (HRAC 3) within 3 DAT", postEmergence: "हाथ से निराई + प्लास्टिक मल्च", culturalControl: "प्लास्टिक मल्च वाली ऊँची क्यारी" },
@@ -214,6 +232,9 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "जीवाणु झुलसा (Bacterial Blight)", pathogen: "Xanthomonas citri pv. malvacearum", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "अम्ल-डिलिंटेड बीज, Streptocycline छिड़काव" },
       { id: "d2", name: "अल्टरनेरिया पत्ती धब्बा (Alternaria Leaf Spot)", pathogen: "Alternaria macrospora", image: IMG, stage: "रुई गाँठ", fracGroup: "FRAC M5", control: "Mancozeb / Carbendazim" },
       { id: "d3", name: "जड़ सड़न (Root Rot)", pathogen: "Rhizoctonia bataticola", image: IMG2, stage: "अंकुर", fracGroup: "FRAC 32", control: "Trichoderma बीज उपचार, जल निकास" },
+      { id: "d4", name: "धूसर फफूंद / ग्रे मिल्ड्यू (Grey Mildew)", pathogen: "Ramularia areola", image: IMG2, stage: "रुई गाँठ", fracGroup: "FRAC M5 / 3", control: "Carbendazim 50 WP @ 1 g/L या Propiconazole 25 EC @ 1 ml/L" },
+      { id: "d5", name: "मुरझान (Fusarium Wilt)", pathogen: "Fusarium oxysporum f.sp. vasinfectum", image: IMG, stage: "वनस्पति", fracGroup: "—", control: "प्रतिरोधी Bt/किस्में; Trichoderma बीज उपचार; फसल चक्र" },
+      { id: "d6", name: "पत्ती मोड़ वायरस (Cotton Leaf Curl)", pathogen: "Cotton leaf curl virus (whitefly vector)", image: IMG2, stage: "वनस्पति–कली", fracGroup: "— (vector)", control: "संक्रमित पौधे उखाड़ें; सफेद मक्खी — Pyriproxyfen / Diafenthiuron; प्रतिरोधी किस्में" },
     ],
     weeds: [
       { id: "w1", name: "इटसा घास (Trianthema)", scientificName: "Trianthema portulacastrum", type: "Broadleaf", criticalPeriod: "0–45 DAS", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "मेड़-निराई + हाथ से निराई", culturalControl: "गर्मी में गहरी जुताई" },
@@ -232,6 +253,8 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "लाल सड़न (Red Rot)", pathogen: "Colletotrichum falcatum", image: IMG2, stage: "पकना", fracGroup: "—", control: "प्रतिरोधी किस्में, गर्म पानी से बीज उपचार" },
       { id: "d2", name: "कंड रोग (Smut)", pathogen: "Sporisorium scitamineum", image: IMG, stage: "कल्ले", fracGroup: "—", control: "झाड़ियाँ हटाएँ, Carbendazim से बीज उपचार" },
       { id: "d3", name: "घास जैसी कली (Grassy Shoot)", pathogen: "Phytoplasma (leafhopper vector)", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "संक्रमित गुच्छे उखाड़ें, वाहक नियंत्रण" },
+      { id: "d4", name: "मुरझान (Wilt)", pathogen: "Fusarium sacchari", image: IMG, stage: "तेज़ वृद्धि", fracGroup: "—", control: "स्वस्थ सेट लगाएँ; Carbendazim डrench; जल निकास" },
+      { id: "d5", name: "रतुआ (Rust)", pathogen: "Puccinia melanocephala", image: IMG2, stage: "कल्ले–पकना", fracGroup: "FRAC 3", control: "Propiconazole / Tebuconazole — पहले पुस्ट्यूल पर" },
     ],
     weeds: [
       { id: "w1", name: "मोठा (Cyperus)", scientificName: "Cyperus rotundus", type: "Sedge", criticalPeriod: "0–90 DAP", preEmergence: "Atrazine @ 2.0 kg/ha", postEmergence: "2,4-D Na salt @ 1.0 kg/ha", culturalControl: "परali मल्च, मेड़ चढ़ाना" },
@@ -250,6 +273,9 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "रतुआ (Rust)", pathogen: "Phakopsora pachyrhizi", image: IMG2, stage: "फली भरना", fracGroup: "FRAC 3", control: "Propiconazole / Tebuconazole" },
       { id: "d2", name: "पीला मोज़ेक (Yellow Mosaic)", pathogen: "Mungbean Yellow Mosaic Virus", image: IMG, stage: "वनस्पति", fracGroup: "—", control: "प्रतिरोधी किस्में, सफेद मक्खी नियंत्रण" },
       { id: "d3", name: "जड़ सड़न (Rhizoctonia Root Rot)", pathogen: "Rhizoctonia solani", image: IMG2, stage: "अंकुर", fracGroup: "FRAC 32", control: "Trichoderma बीज उपचार, अच्छी जल निकास वाली मिट्टी" },
+      { id: "d4", name: "एन्थ्रेक्नोज (Anthracnose)", pathogen: "Colletotrichum truncatum", image: IMG2, stage: "फली भरना", fracGroup: "FRAC M3 / 1", control: "Carbendazim + Mancozeb; साफ बीज" },
+      { id: "d5", name: "चारकोल रॉट (Charcoal Rot)", pathogen: "Macrophomina phaseolina", image: IMG, stage: "फली भरना", fracGroup: "—", control: "सिंचाई तनाव न दें; Trichoderma बीज उपचार" },
+      { id: "d6", name: "मेंढक-आँख पत्ती धब्बा (Frog-eye Leaf Spot)", pathogen: "Cercospora sojina", image: IMG2, stage: "वनस्पति–फली", fracGroup: "FRAC M5 / 3", control: "Mancozeb / Carbendazim; साफ बीज" },
     ],
     weeds: [
       { id: "w1", name: "गुल्ली-डंडा (Phalaris minor)", scientificName: "Phalaris minor", type: "Grassy", criticalPeriod: "20–45 DAS", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "Quizalofop @ 50 g/ha", culturalControl: "संकीर्ण पंक्ति दूरी" },
@@ -268,6 +294,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "सफेद रतुआ (White Rust)", pathogen: "Albugo candida", image: IMG2, stage: "फूल आना", fracGroup: "FRAC M5", control: "Mancozeb / Metalaxyl छिड़काव" },
       { id: "d2", name: "अल्टरनेरिया झुलसा (Alternaria Blight)", pathogen: "Alternaria brassicae", image: IMG, stage: "फली बनना", fracGroup: "FRAC M5", control: "Mancozeb + Carbendazim" },
       { id: "d3", name: "स्क्लेरोटिनिया तना सड़न (Sclerotinia Stem Rot)", pathogen: "Sclerotinia sclerotiorum", image: IMG2, stage: "फूल आना", fracGroup: "FRAC 2", control: "Carbendazim — 50% फूल आने पर" },
+      { id: "d4", name: "बलूत फफूंद (Downy Mildew)", pathogen: "Hyaloperonospora brassicae", image: IMG2, stage: "वनस्पति–फूल", fracGroup: "FRAC 4 + M3", control: "Metalaxyl-M + Mancozeb — ओस वाले मौसम में" },
     ],
     weeds: [
       { id: "w1", name: "बथुआ (Chenopodium)", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–40 DAS", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "Ethoxysulfuron @ 15 g/ha", culturalControl: "पंक्ति बुवाई — मेड़-निराई के लिए" },
@@ -286,6 +313,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "मुरझान (Wilt)", pathogen: "Fusarium oxysporum", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "Trichoderma बीज उपचार, प्रतिरोधी किस्में" },
       { id: "d2", name: "चूर्णिल फफूंद (Powdery Mildew)", pathogen: "Erysiphe pisi", image: IMG, stage: "फूल आना", fracGroup: "FRAC 3", control: "Wettable sulphur / Hexaconazole" },
       { id: "d3", name: "सर्कोस्पोरा पत्ती धब्बा (Cercospora Leaf Spot)", pathogen: "Cercospora canescens", image: IMG2, stage: "फली भरना", fracGroup: "FRAC M5", control: "Mancozeb छिड़काव" },
+      { id: "d4", name: "पीला मोज़ेक (Yellow Mosaic)", pathogen: "Mungbean Yellow Mosaic Virus", image: IMG, stage: "वनस्पति", fracGroup: "— (vector)", control: "प्रतिरोधी किस्में; सफेद मक्खी नियंत्रण — Thiamethoxam" },
     ],
     weeds: [
       { id: "w1", name: "गुल्ली-डंडा (Phalaris minor)", scientificName: "Phalaris minor", type: "Grassy", criticalPeriod: "20–45 DAS", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "Quizalofop @ 50 g/ha", culturalControl: "पंक्ति बुवाई, जल्दी उगने वाली किस्में" },
@@ -304,6 +332,8 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "एन्थ्रेक्नोज (Anthracnose)", pathogen: "Colletotrichum gloeosporioides", image: IMG2, stage: "फूल–फल", fracGroup: "FRAC M5", control: "Copper oxychloride — बारिश से पहले" },
       { id: "d2", name: "चूर्णिल फफूंद (Powdery Mildew)", pathogen: "Oidium mangiferae", image: IMG, stage: "फूल आना", fracGroup: "FRAC 3", control: "Wettable sulphur / Hexaconazole" },
       { id: "d3", name: "सूखना-पीछे हटना (Die-back)", pathogen: "Lasiodiplodia theobromae", image: IMG2, stage: "किसी भी अवस्था", fracGroup: "—", control: "संक्रमण से 15 cm नीचे काटें, Bordeaux paste" },
+      { id: "d4", name: "जीवाणु कैंकर (Bacterial Canker)", pathogen: "Xanthomonas citri pv. mangiferaeindicae", image: IMG2, stage: "नई पत्तियाँ–फल", fracGroup: "—", control: "Copper oxychloride — बरसात से पहले; संक्रमित टहनियाँ काटें" },
+      { id: "d5", name: "मालफॉर्मेशन (Malformation)", pathogen: "Fusarium mangiferae", image: IMG, stage: "फूल आना", fracGroup: "—", control: "संक्रमित बाली काटें जलाएँ; Paclobutrazol / NAA सलाहानुसार" },
     ],
     weeds: [
       { id: "w1", name: "गाजर घास (Parthenium)", scientificName: "Parthenium hysterophorus", type: "Broadleaf", criticalPeriod: "Monsoon flush", preEmergence: "बेसिन में Glyphosate (सुस्त अवस्था)", postEmergence: "काट-छाँट + मल्च", culturalControl: "अंतःफसल, बेसिन में मल्च" },
@@ -322,6 +352,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "सिगाटोका पत्ती धब्बा (Sigatoka Leaf Spot)", pathogen: "Mycosphaerella musicola", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC 3", control: "Propiconazole / Oil emulsion छिड़काव" },
       { id: "d2", name: "पनामा मुरझान (Panama Wilt)", pathogen: "Fusarium oxysporum f.sp. cubense", image: IMG, stage: "किसी भी अवस्था", fracGroup: "—", control: "प्रतिरोधी किस्में (Grand Naine), Carbendazim डrench" },
       { id: "d3", name: "गुच्छेदार शीर्ष (Bunchy Top)", pathogen: "Banana Bunchy Top Virus", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "संक्रमित पौधे उखाड़ें, एफिड नियंत्रण" },
+      { id: "d4", name: "जीवाणु मुलायम सड़न (Soft Rot)", pathogen: "Erwinia chrysanthemi", image: IMG, stage: "गुच्छा–तना", fracGroup: "—", control: "साफ चाकू; जल निकासी; कॉपर स्प्रे घाव पर" },
     ],
     weeds: [
       { id: "w1", name: "मोठा (Cyperus)", scientificName: "Cyperus rotundus", type: "Sedge", criticalPeriod: "0–90 DAP", preEmergence: "लगाने से पहले Glyphosate", postEmergence: "Glyphosate ढककर पंक्तियों के बीच", culturalControl: "गड्ढों में पॉलिथीन मल्च" },
@@ -340,6 +371,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d1", name: "बलूत फफूंद (Downy Mildew)", pathogen: "Plasmopara viticola", image: IMG2, stage: "पूर्व-मानसून", fracGroup: "FRAC 40", control: "Metalaxyl + Mancozeb — बारिश से पहले" },
       { id: "d2", name: "चूर्णिल फफूंद (Powdery Mildew)", pathogen: "Erysiphe necator", image: IMG, stage: "दाना बनना", fracGroup: "FRAC 3", control: "Sulphur dust / Hexaconazole" },
       { id: "d3", name: "एन्थ्रेक्नोज (Anthracnose)", pathogen: "Elsinoe ampelina", image: IMG2, stage: "नई पत्तियाँ", fracGroup: "FRAC M5", control: "Copper oxychloride — छँटाई के बाद" },
+      { id: "d4", name: "ग्रे मोल्ड / बोट्राइटिस (Grey Mold)", pathogen: "Botrytis cinerea", image: IMG, stage: "दाना पकना", fracGroup: "FRAC 17 / 2", control: "Iprodione / Switch; गुच्छों में हवा; ज्यादा सिंचाई न करें" },
     ],
     weeds: [
       { id: "w1", name: "दूब घास (Cynodon)", scientificName: "Cynodon dactylon", type: "Grassy", criticalPeriod: "Inter-row year-round", preEmergence: "Glyphosate in vine-free zone", postEmergence: "पंक्तियों के बीच काटना", culturalControl: "वीड मैट / जीवित मल्च" },

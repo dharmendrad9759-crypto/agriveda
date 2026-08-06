@@ -303,39 +303,45 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
         </section>
 
         {/* Simple rules */}
-        <section className="grid grid-cols-2 gap-2.5">
+        <section className="grid grid-cols-2 gap-3">
           {[
             {
               ok: true,
-              title: "करो जब",
-              lines: ["हवा धीमी", "बारिश नहीं", "सुबह ठंडी"],
-              image: "/images/jobs/job-spray.jpg",
+              title: "कब करें",
+              lines: ["हवा धीमी हो", "बारिश न हो", "सुबह ठंडी हो"],
+              image: "/images/jobs/spray-morning.jpg",
             },
             {
               ok: false,
-              title: "मत करो जब",
-              lines: ["तेज़ हवा", "बादल/बारिश", "बहुत गर्मी"],
+              title: "कब न करें",
+              lines: ["तेज़ हवा हो", "बादल/बारिश हो", "बहुत गर्मी हो"],
               image: "/images/jobs/job-spray-avoid.jpg",
             },
           ].map((rule) => (
             <div
               key={rule.title}
-              className="relative min-h-[140px] overflow-hidden rounded-2xl border border-[var(--av-border)]"
+              className="relative min-h-[168px] overflow-hidden rounded-2xl border-2 border-white/20 shadow-[var(--av-shadow-md)]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={rule.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
               <span
                 className={`absolute inset-0 ${
                   rule.ok
-                    ? "bg-gradient-to-t from-emerald-950/90 via-emerald-950/50 to-black/20"
-                    : "bg-gradient-to-t from-rose-950/90 via-rose-950/55 to-black/25"
+                    ? "bg-gradient-to-t from-emerald-950/92 via-emerald-950/55 to-black/25"
+                    : "bg-gradient-to-t from-rose-950/92 via-rose-950/55 to-black/30"
                 }`}
               />
-              <div className="relative z-10 flex h-full flex-col justify-end p-3">
-                <p className="text-[13px] font-extrabold text-white">{rule.title}</p>
-                <ul className="mt-1 space-y-0.5">
+              <div className="relative z-10 flex h-full flex-col justify-end p-3.5">
+                <p
+                  className={`inline-flex w-fit rounded-lg px-2 py-0.5 text-[14px] font-black tracking-tight ${
+                    rule.ok ? "bg-emerald-400 text-emerald-950" : "bg-rose-400 text-rose-950"
+                  }`}
+                >
+                  {rule.title}
+                </p>
+                <ul className="mt-2 space-y-1">
                   {rule.lines.map((line) => (
-                    <li key={line} className="text-[11px] font-medium text-white/85">
+                    <li key={line} className="text-[12px] font-semibold text-white drop-shadow-sm">
                       · {line}
                     </li>
                   ))}
@@ -357,9 +363,11 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={
-                    w.tone === "bad"
-                      ? "/images/jobs/job-spray-avoid.jpg"
-                      : "/images/jobs/job-spray.jpg"
+                    w.id === "morning"
+                      ? "/images/jobs/spray-morning.jpg"
+                      : w.id === "afternoon"
+                        ? "/images/jobs/spray-afternoon.jpg"
+                        : "/images/jobs/spray-evening.jpg"
                   }
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover"
@@ -367,16 +375,16 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
                 <span
                   className={`absolute inset-0 ${
                     w.tone === "good"
-                      ? "bg-emerald-950/75"
+                      ? "bg-emerald-950/72"
                       : w.tone === "ok"
-                        ? "bg-amber-950/70"
-                        : "bg-rose-950/78"
+                        ? "bg-amber-950/68"
+                        : "bg-rose-950/75"
                   }`}
                 />
-                <div className="relative z-10 flex w-full items-center gap-3 px-3.5 py-3">
+                <div className="relative z-10 flex w-full items-center gap-3 px-3.5 py-3.5">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-white">{w.label}</p>
-                    <p className="text-xs text-white/80">{w.detail}</p>
+                    <p className="text-[15px] font-extrabold text-white">{w.label}</p>
+                    <p className="text-[12px] font-medium text-white/90">{w.detail}</p>
                   </div>
                   <span className="shrink-0 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-extrabold text-white">
                     {w.badge}

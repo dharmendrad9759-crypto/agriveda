@@ -259,7 +259,7 @@ function IssueListCard({ issue, onSelect }: { issue: SolverIssue; onSelect: () =
         <img
           src={issue.image}
           alt=""
-          className="h-16 w-16 shrink-0 rounded-xl object-cover ring-1 ring-gray-200"
+          className="h-20 w-20 shrink-0 rounded-xl object-cover ring-2 ring-emerald-200 shadow-sm"
         />
         <div className="min-w-0 flex-1">
           <p className="font-extrabold text-gray-950">{issue.name}</p>
@@ -289,9 +289,13 @@ function IssueDetailView({
     <article className="space-y-5">
       <div className="overflow-hidden rounded-2xl border-2 border-gray-200 shadow-md">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={issue.image} alt={issue.name} className="h-48 w-full object-cover" />
-        <div className="p-4">
-          <p className="text-xs font-bold uppercase tracking-wider text-gray-600">{categoryLabel}</p>
+        <img
+          src={issue.image}
+          alt={issue.name}
+          className="h-72 w-full object-cover object-center brightness-[1.06] contrast-[1.1] saturate-[1.08]"
+        />
+        <div className="border-t-2 border-emerald-200 bg-white p-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-emerald-800">{categoryLabel}</p>
           <h2 className="mt-1 text-2xl font-extrabold text-gray-950">{issue.name}</h2>
           <span
             className={`mt-2 inline-block rounded-md px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide ring-1 ${severity.className}`}

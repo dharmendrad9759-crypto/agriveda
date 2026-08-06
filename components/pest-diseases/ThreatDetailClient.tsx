@@ -14,6 +14,8 @@ import {
   Sprout,
   Eye,
   FlaskConical,
+  X,
+  ZoomIn,
 } from "lucide-react";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
 import StageWiseSprayCard from "@/components/pest-diseases/StageWiseSprayCard";
@@ -32,31 +34,52 @@ function weedIdentifyTips(threat: EnrichedThreat, hi: boolean): string[] {
   const sci = threat.scientificName;
   const typeHint = /sedge|cyperus/i.test(`${name} ${sci}`)
     ? hi
-      ? "तनों के कोने तीखे (तिरछे काट) — घास जैसी पर किनारे तेज"
-      : "Triangular stem edges — grass-like but sharp corners"
+      ? "तनों के कोने तीखे — घास जैसी लेकिन किनारे तेज"
+      : "Triangular stems — grass-like but sharp edges"
     : /broad|leaf|monochoria|amaranth|कुंदरू|पत्ती/i.test(`${name} ${sci}`)
       ? hi
-        ? "चौड़ी पत्तियाँ, घास नहीं — खेत की फसल से अलग दिखती हैं"
-        : "Broad leaves, not grass — stands out from the crop"
+        ? "चौड़ी पत्तियाँ — फसल से अलग दिखती हैं"
+        : "Broad leaves — stands out from the crop"
       : hi
-        ? "पतली पत्ती / घास जैसी — फसल के साथ मिलकर बढ़ती है"
-        : "Narrow grassy leaves — grows mixed with the crop";
+        ? "पतली पत्ती / घास जैसी — फसल में मिल जाती है"
+        : "Narrow grassy leaves — mixes with the crop";
 
   return hi
     ? [
-        `नाम याद रखो: ${name}${sci ? ` (${sci})` : ""}`,
         typeHint,
-        `कड़ा समय: ${threat.stage || "शुरुआती 30–45 दिन"} — यहीं सबसे नुकसान`,
-        "जड़/गांठ देखकर अपनी फसल से मिलाकर पहचानो",
-        "शक हो तो साफ पत्ती की फोटो AI Doctor को भेजो",
+        `कड़ा समय: ${threat.stage || "2–4 पत्ती / शुरू के 30–45 दिन"}`,
+        "जड़ या गांठ निकालकर अपनी फसल से मिलाओ",
+        "शक हो तो साफ फोटो AI Doctor को भेजो",
       ]
     : [
-        `Remember: ${name}${sci ? ` (${sci})` : ""}`,
         typeHint,
-        `Critical window: ${threat.stage || "first 30–45 days"} — hit hardest then`,
-        "Compare roots/tillers with your crop after pulling one",
-        "If unsure, send a clear leaf photo to AI Doctor",
+        `Critical: ${threat.stage || "2–4 leaf / first 30–45 days"}`,
+        "Pull root/tiller and compare with your crop",
+        "If unsure, send a clear photo to AI Doctor",
       ];
+}
+
+function weedChemCards(lines: string[]): {
+  technical: string;
+  dose: string;
+  stage: string;
+  timing: string;
+}[] {
+  return lines.slice(0, 4).map((line) => {
+    const doseMatch = line.match(/@\s*([^—(]+)/i);
+    const stageMatch = line.match(/\(([^)]+)\)/);
+    const technical = line
+      .split("@")[0]
+      ?.replace(/^Chemical:\s*/i, "")
+      .replace(/—.*$/, "")
+      .trim() || line.slice(0, 40);
+    return {
+      technical: technical.slice(0, 48),
+      dose: doseMatch?.[1]?.trim() || "लेबल अनुसार",
+      stage: "2–4 पत्ती अवस्था",
+      timing: stageMatch?.[1]?.trim() || "15–25 दिन / EPoE",
+    };
+  });
 }
 
 function chemicalLinesForWeed(threat: EnrichedThreat): string[] {
@@ -163,6 +186,9 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
     parseRemediationBuckets(threat.remediation).chemical.length > 0;
 
   const [pestTab, setPestTab] = useState<PestTab>("spray");
+  const [lightbox, setLightbox] = useState<string | null>(null);
+
+  const chemCards = useMemo(() => weedChemCards(weedChems), [weedChems]);
 
   const cropTab =
     threat.type === "weed"
@@ -280,7 +306,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                 {stages ? (
                   <div>
                     <p className="mb-2 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">
-                      {hi ? "दो अवस्था में पहचानो" : "Spot in 2 stages"}
+                      {hi ? "दो अवस्था — टैप करो, बड़ा देखो" : "2 stages — tap to enlarge"}
                     </p>
                     <div className="grid grid-cols-2 gap-2.5">
                       {(
@@ -290,8 +316,6 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                             src: stages.early,
                             titleHi: "छोटा पौधा",
                             titleEn: "Young plant",
-                            hintHi: "शुरुआत — अभी निकालो",
-                            hintEn: "Early — pull now",
                             ring: "border-emerald-400/40",
                             badge: "bg-emerald-500 text-white",
                             tint: "from-emerald-950/85 via-emerald-950/35 to-transparent",
@@ -300,10 +324,8 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                           {
                             key: "late",
                             src: stages.late,
-                            titleHi: "बड़ा हो गया",
-                            titleEn: "Grown up",
-                            hintHi: "बाद — फूल से पहले",
-                            hintEn: "Later — before flower",
+                            titleHi: "बड़ा पौधा",
+                            titleEn: "Grown plant",
                             ring: "border-amber-400/40",
                             badge: "bg-amber-400 text-amber-950",
                             tint: "from-amber-950/85 via-amber-950/40 to-transparent",
@@ -311,9 +333,11 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                           },
                         ] as const
                       ).map((s) => (
-                        <div
+                        <button
                           key={s.key}
-                          className={`relative min-h-[158px] overflow-hidden rounded-2xl border ${s.ring} shadow-[var(--av-shadow-sm)]`}
+                          type="button"
+                          onClick={() => setLightbox(s.src)}
+                          className={`relative min-h-[158px] overflow-hidden rounded-2xl border text-left ${s.ring} shadow-[var(--av-shadow-sm)] active:scale-[0.99]`}
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
@@ -327,15 +351,15 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                           >
                             {s.n}
                           </span>
+                          <span className="absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm">
+                            <ZoomIn className="h-4 w-4" />
+                          </span>
                           <div className="relative z-10 flex h-full min-h-[158px] flex-col justify-end p-3">
                             <p className="text-[15px] font-extrabold text-white">
                               {hi ? s.titleHi : s.titleEn}
                             </p>
-                            <p className="mt-0.5 text-[11px] font-medium text-white/85">
-                              {hi ? s.hintHi : s.hintEn}
-                            </p>
                           </div>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -366,38 +390,93 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
             </ul>
           </div>
 
-          <DarkCard className="!p-3 border-violet-500/20">
-            <h2 className={`flex items-center gap-2 ${AV.sectionTitle}`}>
-              <FlaskConical className="h-4 w-4" />
-              {hi ? "रासायनिक दवा (टेक्निकल)" : "Chemical — technical molecules"}
-            </h2>
-            <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-              {hi
-                ? `${threat.cropName} के लिए प्रभावी अणु / कॉम्बिनेशन। दुकान पर टेक्निकल नाम बोलें। लेबल पढ़ें।`
-                : `Effective molecules / combos for ${threat.cropName}. Ask shop by technical name. Follow label.`}
+          <div>
+            <p className="mb-2 flex items-center gap-1.5 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">
+              <FlaskConical className="h-4 w-4 text-violet-600" />
+              {hi ? "रासायनिक दवा" : "Chemical spray"}
             </p>
-            {weedChems.length > 0 ? (
-              <ul className="mt-3 space-y-2">
-                {weedChems.map((line, i) => (
-                  <li key={`${line}-${i}`} className="flex gap-2 text-xs text-[var(--av-text-secondary)]">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--av-accent)] text-[10px] font-bold text-white">
-                      {i + 1}
-                    </span>
-                    <span className="leading-relaxed">{line}</span>
+            {chemCards.length > 0 ? (
+              <ul className="space-y-2.5">
+                {chemCards.map((card, i) => (
+                  <li
+                    key={`${card.technical}-${i}`}
+                    className="flex gap-3 overflow-hidden rounded-2xl border border-violet-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]"
+                  >
+                    <div className="relative w-[72px] shrink-0 bg-violet-500/10">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/images/chem/herbicide-bottle.jpg"
+                        alt=""
+                        className="h-full min-h-[110px] w-full object-cover object-center"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1 py-3 pr-3">
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-violet-700 dark:text-violet-300">
+                        {hi ? "टेक्निकल" : "Technical"}
+                      </p>
+                      <p className="mt-0.5 text-[14px] font-extrabold leading-snug text-[var(--av-text-primary)]">
+                        {card.technical}
+                      </p>
+                      <p className="mt-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-200">
+                        {hi ? "खुराक" : "Dose"}: {card.dose}
+                      </p>
+                      <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+                        {hi ? "अवस्था" : "Stage"}: {card.stage}
+                      </p>
+                      <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+                        {hi ? "कब" : "When"}: {card.timing}
+                      </p>
+                    </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 text-xs text-[var(--av-text-muted)]">
+              <p className="rounded-2xl border border-dashed border-[var(--av-border)] px-3 py-4 text-center text-xs text-[var(--av-text-muted)]">
                 {hi
                   ? "इस फसल के लिए स्थानीय KVK / लेबल सलाह देखें।"
-                  : "Follow local KVK / CIBRC label advice for this crop."}
+                  : "Follow local KVK / label advice for this crop."}
               </p>
             )}
-          </DarkCard>
+          </div>
         </div>
       ) : (
         <>
+          {/* Species hero — tap to enlarge */}
+          <button
+            type="button"
+            onClick={() => setLightbox(threat.image)}
+            className="relative mt-3 block min-h-[168px] w-full overflow-hidden rounded-[22px] border border-emerald-500/25 text-left shadow-[var(--av-shadow-md)] active:scale-[0.99]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={threat.image}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-center brightness-[1.05] contrast-[1.06]"
+            />
+            <span
+              className={`absolute inset-0 bg-gradient-to-t ${
+                threat.type === "pest"
+                  ? "from-rose-950/90 via-black/45 to-transparent"
+                  : "from-amber-950/90 via-black/45 to-transparent"
+              }`}
+            />
+            <span className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white">
+              <ZoomIn className="h-4 w-4" />
+            </span>
+            <div className="relative z-10 flex min-h-[168px] flex-col justify-end p-4">
+              <span className="inline-flex w-fit rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-white backdrop-blur-sm">
+                {threat.type === "pest" ? (hi ? "कीट" : "Pest") : hi ? "रोग" : "Disease"}
+              </span>
+              <p className="mt-1.5 text-[20px] font-black leading-tight text-white drop-shadow-sm">
+                {threat.name}
+              </p>
+              <p className="mt-1 text-[12px] font-semibold text-white/85">
+                {hi ? "टैप करो — बड़ा देखो" : "Tap to enlarge"}
+                {threat.stage ? ` · ${threat.stage}` : ""}
+              </p>
+            </div>
+          </button>
+
           {pestTabs.length > 1 && (
             <div className="mt-3 flex gap-1 overflow-x-auto border-b border-[var(--av-border)] scrollbar-hide">
               {pestTabs.map((t) => (
@@ -486,6 +565,31 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
         <Sparkles className="h-4 w-4" />
         {hi ? "AI Doctor से फोटो चेक करें" : "Check photo with AI Doctor"}
       </AppLink>
+
+      {lightbox ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-black/90 p-4"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            type="button"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white"
+            aria-label={hi ? "बंद करें" : "Close"}
+            onClick={() => setLightbox(null)}
+          >
+            <X className="h-5 w-5" />
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={lightbox}
+            alt=""
+            className="max-h-[85vh] max-w-full rounded-2xl object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      ) : null}
     </AppShell>
   );
 }

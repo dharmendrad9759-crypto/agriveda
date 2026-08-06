@@ -362,10 +362,10 @@ export default function WeatherRedesign({
         <h3 className="mb-2 px-1 text-sm font-bold text-[var(--av-text-primary)]">
           {t("weatherFarmAdvice")}
         </h3>
-        <div className="grid gap-2.5">
+        <div className="grid gap-3">
           <AppLink
             href="/weather/spray-advisory"
-            className="relative flex min-h-[84px] overflow-hidden rounded-2xl active:scale-[0.99]"
+            className="relative flex min-h-[108px] overflow-hidden rounded-2xl border border-white/10 shadow-[var(--av-shadow-md)] active:scale-[0.99]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -376,30 +376,33 @@ export default function WeatherRedesign({
             <span
               className={`absolute inset-0 ${
                 spraySafe
-                  ? "bg-gradient-to-r from-emerald-950/85 to-emerald-900/45"
-                  : "bg-gradient-to-r from-amber-950/85 to-amber-900/45"
+                  ? "bg-gradient-to-r from-emerald-950/88 to-emerald-900/50"
+                  : "bg-gradient-to-r from-amber-950/88 to-amber-900/50"
               }`}
             />
-            <div className="relative z-10 flex flex-1 items-center gap-3 p-3.5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white">
+            <div className="relative z-10 flex flex-1 items-center gap-3 p-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-white">
                 {spraySafe ? (
-                  <CheckCircle2 className="h-5 w-5" />
+                  <CheckCircle2 className="h-6 w-6" />
                 ) : (
-                  <AlertTriangle className="h-5 w-5" />
+                  <AlertTriangle className="h-6 w-6" />
                 )}
               </span>
               <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
+                <p className="text-[12px] font-bold uppercase tracking-wide text-white/80">
                   {t("weatherSprayLabel")}
                 </p>
-                <p className="text-[14px] font-bold leading-snug text-white">
+                <p className="text-[16px] font-extrabold leading-snug text-white">
                   {spraySafe ? t("weatherSpraySafe") : t("weatherSprayCaution")}
+                </p>
+                <p className="mt-0.5 text-[12px] font-semibold text-white/85">
+                  करें या नहीं
                 </p>
               </div>
             </div>
           </AppLink>
 
-          <div className="relative flex min-h-[84px] overflow-hidden rounded-2xl">
+          <div className="relative flex min-h-[108px] overflow-hidden rounded-2xl border border-white/10 shadow-[var(--av-shadow-md)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/home/home-job-weather.jpg"
@@ -409,19 +412,19 @@ export default function WeatherRedesign({
             <span
               className={`absolute inset-0 ${
                 irrigationHold
-                  ? "bg-gradient-to-r from-amber-950/85 to-sky-900/40"
-                  : "bg-gradient-to-r from-sky-950/85 to-sky-900/40"
+                  ? "bg-gradient-to-r from-amber-950/88 to-sky-900/45"
+                  : "bg-gradient-to-r from-sky-950/88 to-sky-900/45"
               }`}
             />
-            <div className="relative z-10 flex flex-1 items-center gap-3 p-3.5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white">
-                <Droplets className="h-5 w-5" />
+            <div className="relative z-10 flex flex-1 items-center gap-3 p-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-white">
+                <Droplets className="h-6 w-6" />
               </span>
               <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
+                <p className="text-[12px] font-bold uppercase tracking-wide text-white/80">
                   {t("weatherIrrigationLabel")}
                 </p>
-                <p className="text-[14px] font-bold leading-snug text-white">
+                <p className="text-[16px] font-extrabold leading-snug text-white">
                   {irrigationHold ? t("weatherIrrigationHold") : t("weatherIrrigationOk")}
                 </p>
               </div>
@@ -430,7 +433,7 @@ export default function WeatherRedesign({
 
           <AppLink
             href="/pest-diseases"
-            className="relative flex min-h-[84px] overflow-hidden rounded-2xl active:scale-[0.99]"
+            className="relative flex min-h-[108px] overflow-hidden rounded-2xl border border-white/10 shadow-[var(--av-shadow-md)] active:scale-[0.99]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -441,19 +444,19 @@ export default function WeatherRedesign({
             <span
               className={`absolute inset-0 ${
                 diseaseHigh
-                  ? "bg-gradient-to-r from-rose-950/85 to-rose-900/45"
-                  : "bg-gradient-to-r from-emerald-950/85 to-teal-900/40"
+                  ? "bg-gradient-to-r from-rose-950/88 to-rose-900/50"
+                  : "bg-gradient-to-r from-emerald-950/88 to-teal-900/45"
               }`}
             />
-            <div className="relative z-10 flex flex-1 items-center gap-3 p-3.5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white">
-                <ShieldAlert className="h-5 w-5" />
+            <div className="relative z-10 flex flex-1 items-center gap-3 p-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-white">
+                <ShieldAlert className="h-6 w-6" />
               </span>
               <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
+                <p className="text-[12px] font-bold uppercase tracking-wide text-white/80">
                   {t("weatherDiseaseLabel")}
                 </p>
-                <p className="text-[14px] font-bold leading-snug text-white">
+                <p className="text-[16px] font-extrabold leading-snug text-white">
                   {diseaseHigh ? t("weatherDiseaseHigh") : t("weatherDiseaseNormal")}
                 </p>
               </div>
