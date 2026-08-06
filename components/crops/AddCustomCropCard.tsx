@@ -82,14 +82,14 @@ export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
             setQ("");
             setOpen(true);
           }}
-          className="flex h-full min-h-[200px] w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[var(--av-accent)]/40 bg-[var(--av-accent-soft)]/30 p-6 text-center transition hover:border-[var(--av-accent)] hover:bg-[var(--av-accent-soft)]/50 active:scale-[0.99]"
+          className="flex aspect-[4/5] h-full w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[var(--av-accent)]/45 bg-gradient-to-b from-[var(--av-accent-soft)] to-[var(--av-surface)] p-5 text-center shadow-[var(--av-shadow-sm)] transition hover:border-[var(--av-accent)] active:scale-[0.98] sm:aspect-[3/4]"
         >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--av-accent)] text-white shadow-md">
-            <Search className="h-6 w-6" />
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--av-accent)] text-white shadow-lg shadow-emerald-700/25">
+            <Search className="h-7 w-7" />
           </span>
-          <p className="text-sm font-bold text-[var(--av-accent)]">फसल खोजें</p>
-          <p className="text-[11px] text-[var(--av-text-muted)]">
-            लिस्ट + सर्च से आसानी से खोलें
+          <p className="font-display text-base font-bold text-[var(--av-accent)]">फसल खोजें</p>
+          <p className="text-[11px] leading-snug text-[var(--av-text-muted)]">
+            नाम लिखो या लिस्ट से चुनो
           </p>
           <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">
             {crops.length} crops in guide

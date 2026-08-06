@@ -119,8 +119,6 @@ export default function WeatherPage() {
   return (
     <AppShell
       title={t("weatherTitle")}
-      subtitle={t("weatherSubtitle")}
-      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("weatherTitle") }]}
       className="overflow-x-hidden"
       actions={
         <div className="flex items-center gap-2">

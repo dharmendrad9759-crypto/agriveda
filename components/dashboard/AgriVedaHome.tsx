@@ -8,7 +8,6 @@ import {
   Camera,
   CloudRain,
   CloudSun,
-  Droplets,
   Leaf,
   MapPin,
   MessageCircle,
@@ -16,7 +15,6 @@ import {
   Sparkles,
   Sprout,
   TrendingUp,
-  Wind,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -32,6 +30,11 @@ import type { FarmField } from "@/lib/farm/types";
 import { track } from "@/lib/analytics";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
+import WeatherSkyFX, {
+  detectWeatherFxMode,
+  weatherSkyInk,
+  weatherSkyPhoto,
+} from "@/components/weather/WeatherSkyFX";
 
 const HOME_DAY_ANCHOR_MS = Date.parse("2026-07-16T12:00:00Z");
 
@@ -240,6 +243,16 @@ function cropLabel(slug: string | undefined, englishName: string): string {
   return hi ? `${hi} (${en})` : en;
 }
 
+function conditionHi(condition: string, isHi: boolean): string {
+  if (!isHi || condition === "…" || condition === "—") return condition;
+  if (/rain|drizzle|shower|बारिश/i.test(condition)) return "बारिश";
+  if (/cloud|बादल|overcast/i.test(condition)) return "बादल";
+  if (/clear|sunny|साफ/i.test(condition)) return "साफ आसमान";
+  if (/storm|thunder|तूफान/i.test(condition)) return "तूफान";
+  if (/fog|mist|धुंध|कोहरा/i.test(condition)) return "धुंध";
+  return condition;
+}
+
 function buildAdvice(opts: {
   isHi: boolean;
   rainChance: number;
@@ -329,11 +342,15 @@ export default function AgriVedaHome() {
   const weatherIsSample = Boolean(weather?.isDemo || weatherError);
   const weatherLive = Boolean(weather && !weather.isDemo && !weatherError);
   const temp = weatherLoading ? "…" : weather?.temp ?? "—";
-  const humidity = weatherLoading ? "…" : weather?.humidity ?? "—";
-  const wind = weatherLoading ? "…" : weather?.windSpeed ?? "—";
   const rainChance = weatherLive ? (weather?.hourlyForecast[0]?.rainChancePercent ?? 0) : null;
   const condition = weatherLoading ? "…" : weather?.condition ?? "—";
   const humidityPct = weatherLive ? Number.parseInt(weather!.humidity, 10) || 0 : 0;
+  const homeWxMode = detectWeatherFxMode(
+    weather?.condition ?? "",
+    rainChance ?? (weatherIsSample ? 55 : null)
+  );
+  const homeSky = weatherSkyInk(homeWxMode);
+  const homeSkyPhoto = weatherSkyPhoto(homeWxMode);
 
   const sourceFields = farm.fields.slice(0, 2);
   const hasFields = sourceFields.length > 0;
@@ -606,99 +623,82 @@ export default function AgriVedaHome() {
           </button>
         </motion.section>
 
-        {/* Weather — tip first */}
+        {/* Weather — Google/Pixel mini widget */}
         <motion.section {...fade(0.1)}>
           <AppLink
             href="/weather"
-            className="block overflow-hidden rounded-[20px] border border-sky-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]"
+            className="group relative isolate block min-h-[17.5rem] overflow-hidden rounded-[32px] px-5 pb-5 pt-4 text-white active:scale-[0.99]"
           >
-            <div className="bg-gradient-to-br from-sky-500/15 via-cyan-500/8 to-emerald-500/10 px-4 py-3.5">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-sky-800/80 dark:text-sky-200/80">
-                    {isHi ? "आज का मौसम" : "Weather today"}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={homeSkyPhoto}
+              alt=""
+              className={cn(
+                "absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105",
+                !reduced && "animate-wx-sky-ken"
+              )}
+            />
+            <span className={cn("absolute inset-0", homeSky.veil)} />
+            <WeatherSkyFX mode={homeWxMode} density="home" />
+
+            <div className={cn("relative z-10 flex min-h-[16rem] flex-col", homeSky.ink)}>
+              <div className="flex items-center justify-between gap-2">
+                <p className={cn("flex min-w-0 items-center gap-1.5 text-[14px] font-medium", homeSky.mute)}>
+                  <MapPin className="h-4 w-4 shrink-0 opacity-80" />
+                  <span className="truncate">{hasLocation ? place : placeShort}</span>
+                </p>
+                <ArrowRight className="h-4 w-4 shrink-0 text-white/80 transition group-hover:translate-x-0.5" />
+              </div>
+
+              <div className="mt-auto flex flex-col pt-8">
+                <p className={cn("text-center text-[16px] font-medium", homeSky.mute)}>
+                  {conditionHi(condition, isHi)}
+                </p>
+
+                <div className="mt-1 flex items-end justify-center gap-1">
+                  <p className="font-[family-name:var(--font-display)] text-[5.5rem] font-semibold leading-[0.9] tracking-tight">
+                    {weatherLoading
+                      ? "…"
+                      : temp.replace(/\s/g, "").replace("°C", "").replace("°", "")}
                   </p>
-                  <p className="mt-0.5 flex items-center gap-1 text-[12px] text-[var(--av-text-secondary)]">
-                    <MapPin className="h-3 w-3 text-sky-600" />
-                    <span className="truncate">{hasLocation ? place : placeShort}</span>
-                  </p>
+                  {homeWxMode !== "clear" &&
+                    (homeWxMode === "rain" || homeWxMode === "storm" ? (
+                      <CloudRain className="mb-3 h-11 w-11 opacity-90" />
+                    ) : (
+                      <CloudSun className="mb-3 h-11 w-11 opacity-90" />
+                    ))}
                 </div>
-                <CloudSun className="h-9 w-9 shrink-0 text-amber-500/90" />
-              </div>
 
-              <div className="mt-2 flex items-end gap-2">
-                <p className="text-[2.5rem] font-black leading-none tabular-nums text-[var(--av-text-primary)]">
-                  {weatherLoading ? "…" : temp.replace(/\s/g, "")}
-                </p>
-                <p className="mb-1 text-[14px] font-bold capitalize text-[var(--av-text-primary)]">
-                  {condition}
-                </p>
-              </div>
-
-              {weatherIsSample && !weatherLoading ? (
-                <span className="mt-2 inline-flex rounded-full border border-amber-400/40 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800">
-                  {isHi ? "नमूना — लाइव नहीं" : "Sample — not live"}
-                </span>
-              ) : null}
-
-              {weatherLive && rainChance != null ? (
-                <p
+                <div
                   className={cn(
-                    "mt-2 rounded-xl border px-3 py-2 text-[13px] font-bold",
-                    rainChance >= 55
-                      ? "border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-100"
-                      : "border-emerald-500/25 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
+                    "mt-4 rounded-[24px] border px-4 py-3.5 text-[15px] font-semibold leading-snug backdrop-blur-[2px]",
+                    homeSky.card
                   )}
                 >
-                  {rainChance >= 55
+                  {!weatherLive || rainChance == null
                     ? isHi
-                      ? `बारिश ${rainChance}% — आज स्प्रे मत करो`
-                      : `${rainChance}% rain — skip spray`
-                    : humidityPct >= 80
+                      ? "पूरा मौसम खोलो — खेत सलाह मिलेगी"
+                      : "Open weather for farm tip"
+                    : rainChance >= 55
                       ? isHi
-                        ? "नमी ज्यादा — पत्ती देखो"
-                        : "High humidity — watch leaves"
-                      : isHi
-                        ? "खेत काम ठीक है"
-                        : "Good for field work"}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="grid grid-cols-3 gap-px bg-[var(--av-border-subtle)]">
-              {[
-                {
-                  icon: Droplets,
-                  label: isHi ? "नमी" : "Humidity",
-                  value: weatherLoading ? "…" : humidity,
-                },
-                {
-                  icon: Wind,
-                  label: isHi ? "हवा" : "Wind",
-                  value: weatherLoading ? "…" : wind,
-                },
-                {
-                  icon: CloudRain,
-                  label: isHi ? "बारिश" : "Rain",
-                  value: weatherLoading ? "…" : rainChance != null ? `${rainChance}%` : "—",
-                },
-              ].map(({ icon: Icon, label, value }) => (
-                <div
-                  key={label}
-                  className="flex flex-col items-center bg-[var(--av-surface)] px-2 py-2.5 text-center"
-                >
-                  <Icon className="h-4 w-4 text-sky-600" />
-                  <p className="mt-0.5 text-[15px] font-extrabold tabular-nums text-[var(--av-text-primary)]">
-                    {value}
-                  </p>
-                  <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">{label}</p>
+                        ? `बारिश ${rainChance}% — आज स्प्रे मत करो`
+                        : `${rainChance}% rain — skip spray today`
+                      : humidityPct >= 80
+                        ? isHi
+                          ? "नमी ज्यादा — पत्ती पर नज़र रखो"
+                          : "High humidity — watch leaves"
+                        : isHi
+                          ? "स्प्रे और खेत काम ठीक दिख रहे हैं"
+                          : "Spray and field work look fine"}
                 </div>
-              ))}
+
+                {weatherIsSample && !weatherLoading ? (
+                  <p className="mt-3 text-center text-[11px] font-semibold text-amber-100">
+                    {isHi ? "नमूना — लाइव नहीं" : "Sample — not live"}
+                  </p>
+                ) : null}
+              </div>
             </div>
-            <p className="flex items-center justify-between px-4 py-2.5 text-[12px] font-bold text-[var(--av-accent)]">
-              <span>{isHi ? "पूरा मौसम खोलो" : "Open full weather"}</span>
-              <ArrowRight className="h-4 w-4" />
-            </p>
           </AppLink>
         </motion.section>
 

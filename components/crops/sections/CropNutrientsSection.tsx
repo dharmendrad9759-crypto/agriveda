@@ -3,8 +3,12 @@
 import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
+import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
+import { getCropManagementProfile } from "@/data/crop-management";
 import { getFertilizerForCrop, haToAcre } from "@/data/knowledge/fertilizer-recommendations";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
@@ -64,15 +68,27 @@ function symbolForNutrient(name: string): string {
 }
 
 export default function CropNutrientsSection({ crop }: { crop: Crop }) {
+  const { locale } = useLocale();
+  const hi = locale === "hi";
   const detail = useMemo(() => enrichCropDetail(crop), [crop]);
   const fert = useMemo(() => getFertilizerForCrop(crop.slug), [crop.slug]);
+  const profile = useMemo(
+    () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
+    [crop.slug]
+  );
   const nutrients = detail.nutrients;
 
   const micros = useMemo(() => {
+    const fromDossier = profile?.micronutrients ?? [];
     const fromCrop = crop.fertilizerSchedule.micronutrients ?? [];
     const fromFert = fert?.micronutrients ?? [];
-    return [...fromCrop, ...fromFert].filter(Boolean);
-  }, [crop, fert]);
+    const seen = new Set<string>();
+    return [...fromDossier, ...fromCrop, ...fromFert].filter((m) => {
+      if (!m || seen.has(m)) return false;
+      seen.add(m);
+      return true;
+    });
+  }, [crop, fert, profile]);
 
   const npkLabel = fert
     ? `N:P:K ${Math.round(haToAcre(fert.n, 1))} : ${Math.round(haToAcre(fert.p2o5, 1))} : ${Math.round(haToAcre(fert.k2o, 1))} kg/acre`
@@ -93,6 +109,19 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
+      <DossierSourceBanner profile={profile} hi={hi} />
+      {profile?.dossierPgrNotes?.length ? (
+        <DarkCard>
+          <h3 className="font-display text-[15px] font-bold text-[var(--av-text-primary)]">
+            {hi ? "PGR / वृद्धि नियामक नोट" : "PGR notes"}
+          </h3>
+          <ul className="mt-2 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
+            {profile.dossierPgrNotes.map((n) => (
+              <li key={n}>• {n}</li>
+            ))}
+          </ul>
+        </DarkCard>
+      ) : null}
       <DarkCard delay={1}>
         <h3 className="font-display text-[15px] font-bold text-[var(--av-text-primary)]">
           Essential nutrients — {crop.name}

@@ -711,6 +711,322 @@ select:-webkit-autofill {
 }
 .animate-float { animation: float 4s ease-in-out infinite; }
 
+@keyframes wx-sky-ken {
+  0%, 100% { transform: scale(1.05) translate3d(0, 0, 0); }
+  50% { transform: scale(1.12) translate3d(-1.5%, -1%, 0); }
+}
+.animate-wx-sky-ken {
+  animation: wx-sky-ken 22s ease-in-out infinite;
+}
+
+@keyframes wx-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.55; }
+  50% { transform: translate3d(10px, -6px, 0) scale(1.05); opacity: 0.9; }
+}
+.animate-wx-drift {
+  animation: wx-drift 7s ease-in-out infinite;
+}
+.animate-wx-drift-slow {
+  animation: wx-drift 11s ease-in-out infinite reverse;
+}
+
+@keyframes wx-sun-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.animate-wx-sun {
+  animation: wx-sun-pulse 3.6s ease-in-out infinite;
+}
+
+@keyframes wx-shimmer-bar {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.wx-tip-shimmer {
+  background-size: 200% 100%;
+  animation: wx-shimmer-bar 4.5s linear infinite;
+}
+
+@keyframes wx-rain-fall {
+  0% {
+    transform: translate3d(0, -20%, 0);
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-28px, 130%, 0);
+    opacity: 0.05;
+  }
+}
+.wx-rain-drop {
+  position: absolute;
+  top: -12%;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(240, 249, 255, 1)
+  );
+  box-shadow: 0 0 5px rgba(186, 230, 253, 0.55);
+  animation-name: wx-rain-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+.wx-rain-drop--storm {
+  width: 2.8px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(186, 230, 253, 1)
+  );
+  box-shadow: 0 0 8px rgba(125, 211, 252, 0.65);
+}
+
+@keyframes wx-rain-sheet {
+  0% { opacity: 0.12; transform: translateX(0); }
+  50% { opacity: 0.28; transform: translateX(-6px); }
+  100% { opacity: 0.12; transform: translateX(0); }
+}
+.wx-rain-sheet {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -18deg,
+    transparent 0,
+    transparent 10px,
+    rgba(226, 242, 255, 0.07) 10px,
+    rgba(226, 242, 255, 0.07) 12px
+  );
+  animation: wx-rain-sheet 1.8s ease-in-out infinite;
+}
+
+@keyframes wx-rain-splash {
+  0%, 100% { opacity: 0.25; transform: scaleY(1); }
+  50% { opacity: 0.55; transform: scaleY(1.15); }
+}
+.wx-rain-splash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28%;
+  background: linear-gradient(
+    to top,
+    rgba(186, 230, 253, 0.35),
+    rgba(186, 230, 253, 0.08),
+    transparent
+  );
+  transform-origin: bottom center;
+  animation: wx-rain-splash 1.4s ease-in-out infinite;
+}
+
+@keyframes wx-lightning-flash {
+  0%,
+  86%,
+  100% {
+    opacity: 0;
+  }
+  88% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.12;
+  }
+  92% {
+    opacity: 0.55;
+  }
+  95% {
+    opacity: 0;
+  }
+}
+.wx-lightning {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 65% 18%,
+    rgba(255, 255, 255, 0.7),
+    transparent 52%
+  );
+  animation: wx-lightning-flash 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.wx-lightning--alt {
+  background: radial-gradient(
+    ellipse at 28% 30%,
+    rgba(191, 219, 254, 0.55),
+    transparent 48%
+  );
+  animation-delay: 2.4s;
+  animation-duration: 6.2s;
+}
+
+/* Drifting cloud blobs */
+@keyframes wx-cloud-a {
+  0% { transform: translate3d(-8%, 0, 0); }
+  100% { transform: translate3d(18%, 4%, 0); }
+}
+@keyframes wx-cloud-b {
+  0% { transform: translate3d(12%, 0, 0); }
+  100% { transform: translate3d(-16%, 6%, 0); }
+}
+@keyframes wx-cloud-c {
+  0% { transform: translate3d(-4%, 8%, 0) scale(1); }
+  100% { transform: translate3d(22%, 0, 0) scale(1.08); }
+}
+.wx-cloud {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.12) 70%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  will-change: transform;
+}
+.wx-cloud--a {
+  top: 6%;
+  left: -10%;
+  width: 58%;
+  height: 22%;
+  animation: wx-cloud-a 16s linear infinite alternate;
+}
+.wx-cloud--b {
+  top: 14%;
+  right: -12%;
+  width: 48%;
+  height: 18%;
+  opacity: 0.75;
+  animation: wx-cloud-b 22s linear infinite alternate;
+}
+.wx-cloud--c {
+  top: 28%;
+  left: 10%;
+  width: 42%;
+  height: 14%;
+  opacity: 0.55;
+  animation: wx-cloud-c 19s linear infinite alternate;
+}
+.wx-cloud--d {
+  top: 8%;
+  left: 35%;
+  width: 36%;
+  height: 12%;
+  opacity: 0.45;
+  animation: wx-cloud-a 26s linear infinite alternate-reverse;
+}
+
+/* Living sun */
+@keyframes wx-sun-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes wx-sun-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+.wx-sun-core {
+  position: absolute;
+  top: 8%;
+  right: 10%;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #fff7ed, #fbbf24 45%, #f59e0b 75%);
+  box-shadow:
+    0 0 28px rgba(251, 191, 36, 0.75),
+    0 0 60px rgba(251, 191, 36, 0.35);
+  animation: wx-sun-breathe 3.2s ease-in-out infinite;
+}
+.wx-sun-halo {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(253, 224, 71, 0.45), transparent 68%);
+  animation: wx-sun-breathe 4.5s ease-in-out infinite reverse;
+}
+.wx-sun-rays {
+  position: absolute;
+  top: -2%;
+  right: -2%;
+  width: 11rem;
+  height: 11rem;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(253, 224, 71, 0.22) 12deg,
+    transparent 24deg,
+    transparent 45deg,
+    rgba(253, 224, 71, 0.18) 55deg,
+    transparent 68deg,
+    transparent 90deg,
+    rgba(253, 224, 71, 0.2) 100deg,
+    transparent 112deg,
+    transparent 135deg,
+    rgba(253, 224, 71, 0.16) 145deg,
+    transparent 158deg,
+    transparent 180deg,
+    rgba(253, 224, 71, 0.2) 190deg,
+    transparent 202deg,
+    transparent 225deg,
+    rgba(253, 224, 71, 0.18) 235deg,
+    transparent 248deg,
+    transparent 270deg,
+    rgba(253, 224, 71, 0.2) 280deg,
+    transparent 292deg,
+    transparent 315deg,
+    rgba(253, 224, 71, 0.16) 325deg,
+    transparent 338deg,
+    transparent 360deg
+  );
+  mask-image: radial-gradient(circle, transparent 18%, black 28%, transparent 62%);
+  animation: wx-sun-spin 28s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes wx-sparkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+.wx-sparkle {
+  position: absolute;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  animation: wx-sparkle 2.8s ease-in-out infinite;
+}
+
+@keyframes wx-fog-drift {
+  0% { transform: translateX(-6%); opacity: 0.35; }
+  50% { opacity: 0.65; }
+  100% { transform: translateX(8%); opacity: 0.4; }
+}
+.wx-fog-layer {
+  position: absolute;
+  left: -15%;
+  right: -15%;
+  height: 42%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  filter: blur(18px);
+  animation: wx-fog-drift 10s ease-in-out infinite alternate;
+}
+.wx-fog-layer--1 { top: 18%; }
+.wx-fog-layer--2 { top: 38%; animation-duration: 14s; animation-delay: -3s; }
+.wx-fog-layer--3 { top: 58%; height: 35%; animation-duration: 18s; animation-delay: -6s; }
+
 @keyframes av-glow-line {
   0%, 100% { opacity: 0.35; }
   50% { opacity: 0.85; }
@@ -721,6 +1037,21 @@ select:-webkit-autofill {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-float,
+  .animate-wx-sky-ken,
+  .animate-wx-drift,
+  .animate-wx-drift-slow,
+  .animate-wx-sun,
+  .wx-tip-shimmer,
+  .wx-rain-drop,
+  .wx-rain-sheet,
+  .wx-rain-splash,
+  .wx-lightning,
+  .wx-cloud,
+  .wx-sun-core,
+  .wx-sun-halo,
+  .wx-sun-rays,
+  .wx-sparkle,
+  .wx-fog-layer,
   .agriveda-shimmer,
   .animate-pulse-glow,
   .av-glow-line {

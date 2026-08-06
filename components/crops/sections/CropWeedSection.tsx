@@ -1,5 +1,6 @@
 "use client";
 
+import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
 import { getCropPestDisease } from "@/data/pest-disease";
@@ -7,15 +8,23 @@ import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { weedDisplayName } from "@/lib/crops/weedNamesHi";
 import { threatDetailPath } from "@/lib/pest-disease-catalog";
+import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import { ChevronRight, FlaskConical, Leaf } from "lucide-react";
+import { useMemo, useState } from "react";
 
 export default function CropWeedSection({ crop }: { crop: Crop }) {
   const { locale, t } = useLocale();
   const hi = locale === "hi";
-  const profile = getCropManagementProfile(crop.slug);
+  const profile = useMemo(
+    () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
+    [crop.slug]
+  );
   const program = profile?.weedProgram ?? getWeedProgramForCrop(crop.slug);
+  const dossierWeeds = profile?.weedManagement ?? [];
   const catalog = getCropPestDisease(crop.slug);
+  const [openId, setOpenId] = useState<string | null>(null);
+
   const weedNames =
     catalog.weeds.length > 0
       ? catalog.weeds.map((w) => ({ id: w.id, name: w.name, scientificName: w.scientificName }))
@@ -26,12 +35,14 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
         }));
 
   const chemicals = program?.chemical ?? [];
+  const hasDossierWeeds = Boolean(profile?.dossierSource && dossierWeeds.length);
 
-  if (!weedNames.length && !chemicals.length) {
+  if (!weedNames.length && !chemicals.length && !hasDossierWeeds) {
     const guide = crop.cropProtection.weedManagement;
     if (guide.length > 0) {
       return (
         <div className="space-y-3">
+          <DossierSourceBanner profile={profile} hi={hi} />
           <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
             {t("cropWeedsTitle")} — {crop.name}
           </h3>
@@ -64,45 +75,100 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
+      <DossierSourceBanner profile={profile} hi={hi} />
       <div>
         <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
           {t("cropWeedsTitle")} — {crop.name}
         </h3>
         <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
           {hi
-            ? `${weedNames.length} मुख्य खरपतवार · टैप कर विवरण`
-            : `${weedNames.length} key weeds · tap for detail`}
+            ? `${Math.max(weedNames.length, dossierWeeds.length)} मुख्य खरपतवार · टैप कर विवरण`
+            : `${Math.max(weedNames.length, dossierWeeds.length)} key weeds · tap for detail`}
         </p>
       </div>
 
-      <ul className="space-y-2">
-        {weedNames.map((w) => {
-          const href = catalog.weeds.some((x) => x.id === w.id)
-            ? threatDetailPath(crop.slug, "weed", w.id)
-            : `/pest-diseases?type=weed&crop=${crop.slug}`;
-          const label = weedDisplayName(w.name, w.scientificName, locale);
-          return (
-            <li key={w.id}>
-              <AppLink href={href} className="av-card av-card-hover flex items-center gap-3 px-3 py-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10">
-                  <Leaf className="h-5 w-5 text-emerald-600" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-base font-extrabold leading-snug text-[var(--av-text-primary)]">
-                    {label.primary}
-                  </p>
-                  {label.secondary ? (
-                    <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)] line-clamp-1">
-                      {label.secondary}
-                    </p>
+      {hasDossierWeeds ? (
+        <ul className="space-y-2">
+          {dossierWeeds.map((w, i) => {
+            const id = `dossier-weed-${i}`;
+            const open = openId === id;
+            return (
+              <li key={id}>
+                <button
+                  type="button"
+                  onClick={() => setOpenId(open ? null : id)}
+                  className="av-card av-card-hover flex w-full flex-col items-stretch gap-2 px-3 py-3 text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10">
+                      <Leaf className="h-5 w-5 text-emerald-600" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-base font-extrabold leading-snug text-[var(--av-text-primary)]">
+                        {w.weedName}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)] line-clamp-1">
+                        {w.scientificName} · {w.criticalPeriod}
+                      </p>
+                    </div>
+                    <ChevronRight
+                      className={`h-4 w-4 shrink-0 text-[var(--av-text-muted)] transition ${open ? "rotate-90" : ""}`}
+                    />
+                  </div>
+                  {open ? (
+                    <div className="space-y-1 border-t border-[var(--av-border)] pt-2 text-xs text-[var(--av-text-secondary)]">
+                      <p>
+                        <span className="font-bold text-[var(--av-text-primary)]">
+                          {hi ? "पूर्व-उद्भव: " : "Pre-em: "}
+                        </span>
+                        {w.preEmergenceHerbicide}
+                      </p>
+                      <p>
+                        <span className="font-bold text-[var(--av-text-primary)]">
+                          {hi ? "उत्तर-उद्भव: " : "Post-em: "}
+                        </span>
+                        {w.postEmergenceHerbicide}
+                      </p>
+                      <p>
+                        {w.hracGroup} · {w.dose}
+                      </p>
+                    </div>
                   ) : null}
-                </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
-              </AppLink>
-            </li>
-          );
-        })}
-      </ul>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <ul className="space-y-2">
+          {weedNames.map((w) => {
+            const href = catalog.weeds.some((x) => x.id === w.id)
+              ? threatDetailPath(crop.slug, "weed", w.id)
+              : `/pest-diseases?type=weed&crop=${crop.slug}`;
+            const label = weedDisplayName(w.name, w.scientificName, locale);
+            return (
+              <li key={w.id}>
+                <AppLink href={href} className="av-card av-card-hover flex items-center gap-3 px-3 py-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10">
+                    <Leaf className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-base font-extrabold leading-snug text-[var(--av-text-primary)]">
+                      {label.primary}
+                    </p>
+                    {label.secondary ? (
+                      <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)] line-clamp-1">
+                        {label.secondary}
+                      </p>
+                    ) : null}
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
+                </AppLink>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
       {chemicals.length > 0 && (
         <div>

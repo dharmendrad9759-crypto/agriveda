@@ -1,12 +1,14 @@
 "use client";
 
-import { ChevronRight, AlertTriangle } from "lucide-react";
+import { ChevronRight, AlertTriangle, BookOpen } from "lucide-react";
+import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
 import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
 import MotionCard from "@/components/motion/MotionCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { getCropManagementProfile } from "@/data/crop-management";
 import { isHindiLocale } from "@/lib/i18n/farmer-ui";
 import { riskLabelHi, stageLabelHi } from "@/lib/i18n/farmer-display";
 import { AV } from "@/lib/design/tokens";
@@ -22,9 +24,11 @@ import {
 } from "@/lib/crops/cropAgroMeta";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import type { CropTabId } from "@/lib/crops/crop-tabs";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
+import { useMemo } from "react";
 
 function MiniStat({ label, value, index }: { label: string; value: string; index: number }) {
   return (
@@ -35,10 +39,7 @@ function MiniStat({ label, value, index }: { label: string; value: string; index
   );
 }
 
-function watchLevelLabel(
-  level: "high" | "medium" | "low",
-  hi: boolean
-): string {
+function watchLevelLabel(level: "high" | "medium" | "low", hi: boolean): string {
   if (!hi) {
     return level === "high" ? "Priority" : level === "medium" ? "Monitor" : "Low";
   }
@@ -59,8 +60,24 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
   const { t, locale } = useLocale();
   const hi = isHindiLocale(locale);
   const { profile } = useFarmerProfile();
-  const topDiseases = detail.diseases.slice(0, 3);
-  const topPests = detail.pests.slice(0, 3);
+  const dossier = useMemo(
+    () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
+    [crop.slug]
+  );
+  const hasDossier = Boolean(dossier?.dossierSource);
+  const dossierPests = dossier?.pestManagement ?? [];
+  const dossierDiseases = dossier?.diseaseManagement ?? [];
+  const dossierStages = dossier?.growthStages?.length ? dossier.growthStages : detail.growthStages;
+  const topDiseases = (
+    hasDossier && dossierDiseases.length
+      ? dossierDiseases.map((d) => ({ name: d.diseaseName }))
+      : detail.diseases
+  ).slice(0, 3);
+  const topPests = (
+    hasDossier && dossierPests.length
+      ? dossierPests.map((p) => ({ name: p.pestName }))
+      : detail.pests
+  ).slice(0, 3);
   const varieties = getVarietiesForCrop(crop.slug, profile.state || undefined).slice(0, 3);
   const pestRisk = getCropPestRisk(crop, detail);
   const diseaseRisk = getCropDiseaseRisk(crop, detail);
@@ -74,6 +91,86 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
 
   return (
     <div className="space-y-4">
+      <DossierSourceBanner profile={dossier} hi={hi} />
+
+      {hasDossier ? (
+        <DarkCard delay={0}>
+          <div className="flex items-start gap-2">
+            <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-[var(--av-accent)]" />
+            <div className="min-w-0 flex-1">
+              <SectionHeader title={hi ? "रिसर्च सारांश" : "Research summary"} />
+              <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">{dossier?.dossierSource}</p>
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {(
+                  [
+                    {
+                      label: hi ? "कीट" : "Pests",
+                      value: String(dossierPests.length || topPests.length),
+                      tab: "pests" as const,
+                    },
+                    {
+                      label: hi ? "रोग" : "Diseases",
+                      value: String(dossierDiseases.length || topDiseases.length),
+                      tab: "diseases" as const,
+                    },
+                    {
+                      label: hi ? "सिंचाई बिंदु" : "Irrigation tips",
+                      value: String(dossier?.irrigationSchedule?.length ?? 0),
+                      tab: "irrigation" as const,
+                    },
+                    {
+                      label: hi ? "खाद बिंदु" : "Fertilizer tips",
+                      value: String(dossier?.fertilizerSchedule?.length ?? 0),
+                      tab: "fertilizer" as const,
+                    },
+                  ] as const
+                ).map((item) => (
+                  <button
+                    key={item.tab}
+                    type="button"
+                    onClick={() => onTabChange(item.tab)}
+                    className="av-card-inset text-left transition active:scale-[0.98]"
+                  >
+                    <p className={AV.label}>{item.label}</p>
+                    <p className="mt-1 text-lg font-extrabold text-[var(--av-accent)]">{item.value}</p>
+                  </button>
+                ))}
+              </div>
+              <ul className="mt-3 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
+                {(dossier?.irrigationSchedule ?? []).slice(0, 2).map((line) => (
+                  <li key={line}>• {line}</li>
+                ))}
+                {(dossier?.fertilizerSchedule ?? []).slice(0, 1).map((line) => (
+                  <li key={line}>• {line}</li>
+                ))}
+                {(dossier?.dossierPgrNotes ?? []).slice(0, 1).map((line) => (
+                  <li key={line}>• {line}</li>
+                ))}
+              </ul>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => onTabChange("pests")}
+                  className="text-[10px] font-bold text-[var(--av-accent)]"
+                >
+                  {hi ? "कीट गाइड →" : "Pest guide →"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onTabChange("fertilizer")}
+                  className="text-[10px] font-bold text-[var(--av-accent)]"
+                >
+                  {hi ? "खाद गाइड →" : "Fertilizer →"}
+                </button>
+                <AppLink href="/schemes" className="text-[10px] font-bold text-[var(--av-accent)]">
+                  {hi ? "योजना / KCC →" : "Schemes / KCC →"}
+                </AppLink>
+              </div>
+            </div>
+          </div>
+        </DarkCard>
+      ) : null}
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <MiniStat label={t("cropDuration")} value={crop.durationDays} index={0} />
         <MiniStat label={t("cropYield")} value={crop.estimatedYield} index={1} />
@@ -104,21 +201,33 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
         <DarkCard className="lg:col-span-4" delay={1}>
           <SectionHeader title={t("cropPestDiseaseRisk")} />
           <div className="mt-3 space-y-3">
-            <button type="button" onClick={() => onTabChange("pests")} className="av-card-inset flex w-full items-center justify-between text-left">
+            <button
+              type="button"
+              onClick={() => onTabChange("pests")}
+              className="av-card-inset flex w-full items-center justify-between text-left"
+            >
               <div>
                 <p className={AV.label}>
                   {t("cropPestWatch")} · {watchLevelLabel(pestRisk.level, hi)}
                 </p>
-                <p className="text-sm font-semibold text-[var(--av-text-primary)]">{pestRisk.top}</p>
+                <p className="text-sm font-semibold text-[var(--av-text-primary)]">
+                  {topPests[0]?.name ?? pestRisk.top}
+                </p>
               </div>
               <RiskBadge level={pestRisk.level} label={hi ? riskLabelHi(pestRisk.level) : undefined} />
             </button>
-            <button type="button" onClick={() => onTabChange("diseases")} className="av-card-inset flex w-full items-center justify-between text-left">
+            <button
+              type="button"
+              onClick={() => onTabChange("diseases")}
+              className="av-card-inset flex w-full items-center justify-between text-left"
+            >
               <div>
                 <p className={AV.label}>
                   {t("cropDiseaseWatch")} · {watchLevelLabel(diseaseRisk.level, hi)}
                 </p>
-                <p className="text-sm font-semibold text-[var(--av-text-primary)]">{diseaseRisk.top}</p>
+                <p className="text-sm font-semibold text-[var(--av-text-primary)]">
+                  {topDiseases[0]?.name ?? diseaseRisk.top}
+                </p>
               </div>
               <RiskBadge level={diseaseRisk.level} label={hi ? riskLabelHi(diseaseRisk.level) : undefined} />
             </button>
@@ -128,16 +237,30 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
         <DarkCard className="lg:col-span-4" delay={2}>
           <SectionHeader title={t("irrigation")} />
           <div className="mt-3 space-y-2 text-sm">
-            <p className="flex justify-between gap-2">
-              <span className={AV.micro}>{t("cropTotalWater")}</span>
-              <span className="text-right font-semibold text-[var(--av-text-primary)]">{irrigation.totalWater}</span>
-            </p>
-            <p className="flex justify-between gap-2">
-              <span className={AV.micro}>{t("cropSchedule")}</span>
-              <span className="text-right font-semibold text-[var(--av-text-primary)]">{irrigation.frequency}</span>
-            </p>
-            <p className={`text-[10px] text-[var(--av-text-muted)]`}>{irrigation.criticalNote}</p>
-            <button type="button" onClick={() => onTabChange("irrigation")} className={`mt-2 w-full text-left text-xs text-[var(--av-accent)]`}>
+            {dossier?.irrigationSchedule?.[0] ? (
+              <p className="text-xs text-[var(--av-text-secondary)]">{dossier.irrigationSchedule[0]}</p>
+            ) : (
+              <>
+                <p className="flex justify-between gap-2">
+                  <span className={AV.micro}>{t("cropTotalWater")}</span>
+                  <span className="text-right font-semibold text-[var(--av-text-primary)]">
+                    {irrigation.totalWater}
+                  </span>
+                </p>
+                <p className="flex justify-between gap-2">
+                  <span className={AV.micro}>{t("cropSchedule")}</span>
+                  <span className="text-right font-semibold text-[var(--av-text-primary)]">
+                    {irrigation.frequency}
+                  </span>
+                </p>
+                <p className="text-[10px] text-[var(--av-text-muted)]">{irrigation.criticalNote}</p>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => onTabChange("irrigation")}
+              className="mt-2 w-full text-left text-xs text-[var(--av-accent)]"
+            >
               {t("cropFullIrrigation")} →
             </button>
           </div>
@@ -153,11 +276,7 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
                 <span className="text-[var(--av-text-secondary)]">{d.name}</span>
                 <RiskBadge
                   level={
-                    i === 0
-                      ? diseaseRisk.level
-                      : diseaseRisk.level === "high"
-                        ? "medium"
-                        : "low"
+                    i === 0 ? diseaseRisk.level : diseaseRisk.level === "high" ? "medium" : "low"
                   }
                   label={
                     hi
@@ -174,7 +293,11 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
               </li>
             ))}
           </ul>
-          <button type="button" onClick={() => onTabChange("diseases")} className="mt-3 text-[10px] font-bold text-[var(--av-accent)]">
+          <button
+            type="button"
+            onClick={() => onTabChange("diseases")}
+            className="mt-3 text-[10px] font-bold text-[var(--av-accent)]"
+          >
             {t("cropViewAllDiseases")} →
           </button>
         </DarkCard>
@@ -198,7 +321,11 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
               </li>
             ))}
           </ul>
-          <button type="button" onClick={() => onTabChange("pests")} className="mt-3 text-[10px] font-bold text-[var(--av-accent)]">
+          <button
+            type="button"
+            onClick={() => onTabChange("pests")}
+            className="mt-3 text-[10px] font-bold text-[var(--av-accent)]"
+          >
             {t("cropViewAllPests")} →
           </button>
         </DarkCard>
@@ -257,10 +384,15 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
           </button>
         </div>
         <div className="mt-3 flex flex-wrap gap-3 overflow-x-auto scrollbar-hide">
-          {detail.growthStages.map((stage, i) => (
-            <div key={stage.title} className="av-card-inset min-w-[100px] shrink-0 text-center">
+          {dossierStages.map((stage, i) => (
+            <div
+              key={`${stage.title}-${stage.period}`}
+              className="av-card-inset min-w-[100px] shrink-0 text-center"
+            >
               <p className="text-[10px] font-bold text-[var(--av-accent)]">{stage.period}</p>
-              <p className="mt-1 text-[10px] font-semibold text-[var(--av-text-primary)]">{stageName(stage.title)}</p>
+              <p className="mt-1 text-[10px] font-semibold text-[var(--av-text-primary)]">
+                {stageName(stage.title)}
+              </p>
               {i === 2 && (
                 <span className="mt-1 inline-block rounded bg-[var(--av-accent-soft)] px-1.5 py-0.5 text-[8px] font-bold text-[var(--av-accent)]">
                   {t("currentStage")}
@@ -274,6 +406,9 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
       <div className="flex flex-wrap gap-2">
         <AppLink href={`/pest-diseases?crop=${crop.slug}`} className={`${AV.btnSecondarySm}`}>
           {t("cropSprayGuide")} <ChevronRight className="h-3 w-3" />
+        </AppLink>
+        <AppLink href="/schemes" className={AV.btnSecondarySm}>
+          {hi ? "योजना / KCC" : "Schemes"} <ChevronRight className="h-3 w-3" />
         </AppLink>
         <AppLink href="/ai-doctor" className={AV.btnPrimarySm}>
           {t("toolAi")}

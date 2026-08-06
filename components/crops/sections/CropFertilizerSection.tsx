@@ -1,13 +1,15 @@
 "use client";
 
+import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
 import DarkCard from "@/components/shell/DarkCard";
 import { DonutChart } from "@/components/shell/charts";
 import AppLink from "@/components/ui/AppLink";
 import { useToast } from "@/components/ui/Toast";
+import { getCropManagementProfile } from "@/data/crop-management";
 import {
-    calculateFertilizerProducts,
-    getFertilizerForCrop,
-    haToAcre,
+  calculateFertilizerProducts,
+  getFertilizerForCrop,
+  haToAcre,
 } from "@/data/knowledge/fertilizer-recommendations";
 import { buildFertilizerPlan } from "@/lib/agriveda2/fertilizerEngine";
 import { cn } from "@/lib/cn";
@@ -15,6 +17,7 @@ import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import { AV } from "@/lib/design/tokens";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import { Calculator, Download, Droplets, FileText, FlaskConical, Leaf } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -103,6 +106,13 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const variety = getVarietiesForCrop(crop.slug)[0]?.name ?? "Certified seed";
   const plan = useMemo(() => buildFertilizerPlan(crop.slug, acres), [crop.slug, acres]);
   const icar = useMemo(() => getFertilizerForCrop(crop.slug), [crop.slug]);
+  const profile = useMemo(
+    () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
+    [crop.slug]
+  );
+  const dossierFertLines = profile?.fertilizerSchedule ?? [];
+  const dossierMicros = profile?.micronutrients ?? [];
+  const dossierPgr = profile?.dossierPgrNotes ?? [];
 
   const scheduleRows = useMemo(() => {
     if (plan?.schedule?.length) {
@@ -110,6 +120,13 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
         stage: i + 1,
         time: s.time,
         apply: s.apply,
+      }));
+    }
+    if (dossierFertLines.length) {
+      return dossierFertLines.map((apply, i) => ({
+        stage: i + 1,
+        time: hi ? `चरण ${i + 1}` : `Step ${i + 1}`,
+        apply,
       }));
     }
     const basal = crop.fertilizerSchedule.basalDose.map((d, i) => ({
@@ -125,7 +142,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       }))
     );
     return [...basal, ...stageWise];
-  }, [plan, crop.fertilizerSchedule]);
+  }, [plan, crop.fertilizerSchedule, dossierFertLines, hi]);
 
   const displaySchedule = useMemo(
     () => (fertMode === "drip" ? toDripSchedule(scheduleRows, hi) : scheduleRows),
@@ -141,6 +158,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       [];
 
     const rows: { name: string; detail: string }[] = [];
+    for (const m of dossierMicros) rows.push({ name: hi ? "रिसर्च सूक्ष्म" : "Research micro", detail: m });
     for (const m of micros) rows.push({ name: "Micronutrient", detail: m });
     for (const s of sprays) rows.push({ name: "Foliar spray", detail: s });
     for (const m of fromIcar) rows.push({ name: "Guide micronutrient", detail: m });
@@ -159,7 +177,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       seen.add(r.detail);
       return true;
     });
-  }, [crop, icar, plan]);
+  }, [crop, icar, plan, dossierMicros, hi]);
 
   const organicRows = useMemo(() => {
     const rows: string[] = [];
@@ -225,14 +243,30 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
 
   const notes = useMemo(() => {
     const list: string[] = [];
+    for (const n of dossierPgr) list.push(hi ? `PGR: ${n}` : `PGR: ${n}`);
+    if (dossierFertLines.length && plan?.schedule?.length) {
+      list.push(
+        ...(hi
+          ? dossierFertLines.map((l) => `रिसर्च गाइड: ${l}`)
+          : dossierFertLines.map((l) => `Research guide: ${l}`))
+      );
+    }
     if (icar?.splits?.length) list.push(...icar.splits.map((s) => `Split: ${s}`));
     if (icar?.notes?.length) list.push(...icar.notes);
     if (plan?.guideNotes?.length) list.push(...plan.guideNotes);
     if (plan?.unitNote) list.push(plan.unitNote);
-    list.push("Doses follow standard crop research. Always adjust to your local soil test.");
-    list.push("Never apply all nitrogen at once — split as per schedule.");
+    list.push(
+      hi
+        ? "खुराक मिट्टी जाँच के अनुसार बदलें। लेबल पढ़ें।"
+        : "Doses follow standard crop research. Always adjust to your local soil test."
+    );
+    list.push(
+      hi
+        ? "सारा नाइट्रोजन एक साथ न डालें — समयसारिणी के अनुसार बाँटें।"
+        : "Never apply all nitrogen at once — split as per schedule."
+    );
     return list;
-  }, [icar, plan]);
+  }, [icar, plan, dossierPgr, dossierFertLines, hi]);
 
   const downloadSchedule = () => {
     const lines = [
@@ -273,10 +307,24 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
+      <DossierSourceBanner profile={profile} hi={hi} />
+      {dossierFertLines.length > 0 && !plan?.schedule?.length ? (
+        <DarkCard>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
+            {hi ? "रिसर्च खाद गाइड" : "Research fertilizer guide"}
+          </h3>
+          <ul className="mt-2 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
+            {dossierFertLines.map((line) => (
+              <li key={line}>• {line}</li>
+            ))}
+          </ul>
+        </DarkCard>
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">
           Source: {npkAcre.source}
           {plan?.source === "verified" ? " · verified bags" : ""}
+          {profile?.dossierSource ? (hi ? " · रिसर्च डोसियर" : " · research dossier") : ""}
         </p>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={downloadSchedule} className={AV.btnSecondarySm}>
