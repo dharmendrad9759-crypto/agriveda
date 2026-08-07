@@ -4,9 +4,12 @@ import { useMemo, useState } from "react";
 import {
   CreditCard,
   ExternalLink,
+  FileText,
   Landmark,
-  Tractor,
+  Lightbulb,
   Shield,
+  Tractor,
+  Users,
 } from "lucide-react";
 import AppShell from "@/components/shell/AppShell";
 import AppLink from "@/components/ui/AppLink";
@@ -15,6 +18,7 @@ import {
   SCHEMES_LEGAL_NOTE_HI,
   farmerSchemes,
   kccQuickStepsHi,
+  schemeQuickJumps,
   type FarmerScheme,
 } from "@/data/schemes/farmerSchemes";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -32,10 +36,162 @@ const FILTERS: Array<FarmerScheme["category"] | "all"> = [
   "market",
 ];
 
+function SchemeCard({
+  scheme: s,
+  hi,
+  expanded,
+  onToggle,
+}: {
+  scheme: FarmerScheme;
+  hi: boolean;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <li
+      id={`scheme-${s.id}`}
+      className="scroll-mt-24 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--av-accent)]">
+            {CATEGORY_LABEL_HI[s.category]}
+          </p>
+          <h3 className="mt-0.5 text-[15px] font-bold text-[var(--av-text-primary)]">
+            {hi ? s.nameHi : s.nameEn}
+          </h3>
+          {s.tagsHi?.length ? (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {s.tagsHi.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-md bg-[var(--av-surface-inset)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--av-text-muted)]"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+        <span className="shrink-0 rounded-md bg-[var(--av-surface-inset)] px-2 py-0.5 text-[10px] font-bold text-[var(--av-text-muted)]">
+          {s.evidence}
+        </span>
+      </div>
+
+      <p className="mt-2 text-[12px] text-[var(--av-text-secondary)]">{s.purposeHi}</p>
+      <p className="mt-1.5 text-[12px] font-medium text-[var(--av-text-primary)]">{s.benefitHi}</p>
+
+      <button
+        type="button"
+        onClick={onToggle}
+        className="mt-3 text-[12px] font-bold text-[var(--av-accent)]"
+        aria-expanded={expanded}
+      >
+        {expanded
+          ? hi
+            ? "कम दिखाएँ ▲"
+            : "Show less ▲"
+          : hi
+            ? "कैसे आवेदन / कागज़ / टिप्स ▼"
+            : "How to apply / docs / tips ▼"}
+      </button>
+
+      {expanded ? (
+        <div className="mt-3 space-y-3 border-t border-[var(--av-border)] pt-3">
+          <p className="flex items-start gap-1.5 text-[12px] text-[var(--av-text-secondary)]">
+            <Users className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--av-accent)]" />
+            <span>
+              <span className="font-bold text-[var(--av-text-primary)]">
+                {hi ? "किसके लिए: " : "Who: "}
+              </span>
+              {s.whoHi}
+            </span>
+          </p>
+
+          <p className="flex items-start gap-1.5 text-[12px] text-[var(--av-text-secondary)]">
+            <Landmark className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--av-accent)]" />
+            <span>
+              <span className="font-bold text-[var(--av-text-primary)]">
+                {hi ? "कहाँ / कैसे: " : "Where: "}
+              </span>
+              {s.applyHi}
+            </span>
+          </p>
+
+          <div className="flex items-start gap-1.5 text-[12px] text-[var(--av-text-secondary)]">
+            <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--av-accent)]" />
+            <div>
+              <p className="font-bold text-[var(--av-text-primary)]">
+                {hi ? "आमतौर पर कागज़" : "Usual documents"}
+              </p>
+              <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                {s.docsHi.map((d) => (
+                  <li key={d}>{d}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-1.5 text-[12px] text-[var(--av-text-secondary)]">
+            <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--av-accent)]" />
+            <div>
+              <p className="font-bold text-[var(--av-text-primary)]">
+                {hi ? "किसान टिप्स" : "Tips"}
+              </p>
+              <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                {s.tipsHi.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <p className="flex items-start gap-1.5 text-[11px] text-amber-800 dark:text-amber-200">
+            <Shield className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            {s.verifyNoteHi}
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            {s.portal ? (
+              <a
+                href={s.portal}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-lg bg-[var(--av-accent)] px-3 py-1.5 text-[12px] font-bold text-white"
+              >
+                {s.portalLabelHi || (hi ? "आधिकारिक साइट" : "Official site")}
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            ) : null}
+            {s.secondaryLinks?.map((link) => (
+              <a
+                key={link.url}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-lg border border-[var(--av-border)] px-3 py-1.5 text-[12px] font-bold text-[var(--av-accent)]"
+              >
+                {link.labelHi}
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <p className="mt-2 flex items-start gap-1.5 text-[11px] text-amber-800 dark:text-amber-200">
+          <Shield className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          {s.verifyNoteHi}
+        </p>
+      )}
+    </li>
+  );
+}
+
 export default function SchemesClient() {
   const { locale } = useLocale();
   const hi = locale === "hi";
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("all");
+  const [openId, setOpenId] = useState<string | null>("kcc");
 
   const list = useMemo(
     () => (filter === "all" ? farmerSchemes : farmerSchemes.filter((s) => s.category === filter)),
@@ -58,7 +214,22 @@ export default function SchemesClient() {
           {SCHEMES_LEGAL_NOTE_HI}
         </div>
 
-        {/* KCC highlight */}
+        <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {schemeQuickJumps.map((j) => (
+            <a
+              key={j.id}
+              href={`#${j.hrefHash}`}
+              onClick={() => {
+                setFilter("all");
+                setOpenId(j.id);
+              }}
+              className="shrink-0 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 text-[11px] font-bold text-[var(--av-text-primary)]"
+            >
+              {j.labelHi}
+            </a>
+          ))}
+        </div>
+
         {kcc ? (
           <section className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]">
             <div className="bg-gradient-to-br from-emerald-800 to-emerald-950 px-4 py-4 text-white">
@@ -77,19 +248,37 @@ export default function SchemesClient() {
                 </li>
               ))}
             </ol>
+            <div className="border-t border-[var(--av-border)] px-4 py-3">
+              <p className="text-[11px] font-bold text-[var(--av-text-muted)]">
+                {hi ? "लेकर जाएँ" : "Carry"}
+              </p>
+              <p className="mt-1 text-[12px] text-[var(--av-text-secondary)]">
+                {kcc.docsHi.join(" · ")}
+              </p>
+              <button
+                type="button"
+                className="mt-2 text-[12px] font-bold text-[var(--av-accent)]"
+                onClick={() => {
+                  setFilter("all");
+                  setOpenId("kcc");
+                  document.getElementById("scheme-kcc")?.scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                {hi ? "पूरी KCC डिटेल ↓" : "Full KCC detail ↓"}
+              </button>
+            </div>
           </section>
         ) : null}
 
-        {/* Mechanization callout */}
         <section className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4">
           <p className="flex items-center gap-2 text-sm font-bold text-[var(--av-text-primary)]">
             <Tractor className="h-4 w-4 text-[var(--av-accent)]" />
-            {hi ? "ट्रैक्टर / रोटावेटर सब्सिडी" : "Tractor / rotavator subsidy"}
+            {hi ? "ट्रैक्टर / रोटावेटर / किराया" : "Tractor / rotavator / hire"}
           </p>
           <p className="mt-1.5 text-[12px] leading-relaxed text-[var(--av-text-secondary)]">
             {hi
-              ? "इम्प्लीमेंट्स (रोटावेटर, सीड ड्रिल, थ्रेशर) अक्सर ट्रैक्टर से पहले सब्सिडी में आसान। UP यंत्र पोर्टल पर टोकन बुक करें। छोटे किसान CHC/यंत्र बैंक से किराया लें।"
-              : "Implements are often easier than tractor lottery. Book on UP yantra portal; small farmers can hire via CHC."}
+              ? "इम्प्लीमेंट्स (रोटावेटर, सीड ड्रिल, थ्रेशर) अक्सर ट्रैक्टर लॉटरी से पहले आसान। छोटे किसान CHC/यंत्र बैंक से किराया लें। पराली सीजन में हैप्पी/सुपर सीडर पूछें।"
+              : "Implements are often easier than tractor lottery. Small farmers can hire via CHC; ask for Happy/Super Seeder in residue season."}
           </p>
         </section>
 
@@ -112,45 +301,13 @@ export default function SchemesClient() {
 
         <ul className="space-y-3">
           {list.map((s) => (
-            <li
+            <SchemeCard
               key={s.id}
-              className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--av-accent)]">
-                    {CATEGORY_LABEL_HI[s.category]}
-                  </p>
-                  <h3 className="mt-0.5 text-[15px] font-bold text-[var(--av-text-primary)]">
-                    {hi ? s.nameHi : s.nameEn}
-                  </h3>
-                </div>
-                <span className="shrink-0 rounded-md bg-[var(--av-surface-inset)] px-2 py-0.5 text-[10px] font-bold text-[var(--av-text-muted)]">
-                  {s.evidence}
-                </span>
-              </div>
-              <p className="mt-2 text-[12px] text-[var(--av-text-secondary)]">{s.purposeHi}</p>
-              <p className="mt-1.5 text-[12px] font-medium text-[var(--av-text-primary)]">{s.benefitHi}</p>
-              <p className="mt-2 flex items-start gap-1.5 text-[11px] text-[var(--av-text-muted)]">
-                <Landmark className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                {s.applyHi}
-              </p>
-              <p className="mt-1 flex items-start gap-1.5 text-[11px] text-amber-800 dark:text-amber-200">
-                <Shield className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                {s.verifyNoteHi}
-              </p>
-              {s.portal ? (
-                <a
-                  href={s.portal}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-1 text-[12px] font-bold text-[var(--av-accent)]"
-                >
-                  {hi ? "आधिकारिक साइट" : "Official site"}
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              ) : null}
-            </li>
+              scheme={s}
+              hi={hi}
+              expanded={openId === s.id}
+              onToggle={() => setOpenId((prev) => (prev === s.id ? null : s.id))}
+            />
           ))}
         </ul>
 

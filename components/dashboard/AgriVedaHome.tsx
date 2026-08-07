@@ -8,6 +8,7 @@ import {
   Camera,
   CloudRain,
   CloudSun,
+  CreditCard,
   Leaf,
   MapPin,
   MessageCircle,
@@ -87,6 +88,16 @@ const QUICK_JOBS: {
     href: "/weather",
     icon: CloudSun,
     imageSrc: "/images/home/home-job-weather.jpg",
+  },
+  {
+    id: "schemes",
+    hi: "योजना / KCC",
+    en: "Schemes / KCC",
+    hintHi: "लोन · सब्सिडी",
+    hintEn: "Loan · subsidy",
+    href: "/schemes",
+    icon: CreditCard,
+    imageSrc: "/images/home/home-job-plan.jpg",
   },
 ];
 
@@ -537,6 +548,24 @@ export default function AgriVedaHome() {
               </span>
             </AppLink>
           </div>
+          <AppLink
+            href="/schemes"
+            onClick={() => track("tool_open", { href: "/schemes", label: "home_kcc_banner" })}
+            className="mt-2 flex min-h-[52px] w-full items-center justify-between gap-2 rounded-xl border border-emerald-700/30 bg-gradient-to-r from-emerald-900 to-emerald-800 px-4 py-3 text-white shadow-md shadow-emerald-900/20 active:scale-[0.99]"
+          >
+            <span className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5 shrink-0 text-emerald-200" />
+              <span>
+                <span className="block text-[14px] font-bold leading-tight">
+                  {isHi ? "योजना · KCC · यंत्र" : "Schemes · KCC · Machinery"}
+                </span>
+                <span className="block text-[11px] font-medium text-emerald-100/90">
+                  {isHi ? "लोन, सब्सिडी, बीमा — रास्ता यहाँ" : "Loan, subsidy, insurance — start here"}
+                </span>
+              </span>
+            </span>
+            <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200" />
+          </AppLink>
           {lastScan ? (
             <AppLink
               href="/ai-doctor"
