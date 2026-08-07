@@ -3,17 +3,27 @@
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
 import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
+import ThreatImage from "@/components/ui/ThreatImage";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
 import { buildSprayProductCards } from "@/lib/crops/sprayProductCards";
+import { getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
 import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { CropSprayProduct } from "@/types/crop-management";
 import type { Crop } from "@/types/crop";
-import { Bug, ChevronRight, Search } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+
+function pestThumb(scientific?: string, catalogImage?: string) {
+  return (
+    getPestSpeciesImage(scientific) ||
+    catalogImage ||
+    "/images/threats/threat-insect.jpg"
+  );
+}
 
 export default function CropPestsSection({ crop }: { crop: Crop }) {
   const { t, locale } = useLocale();
@@ -36,18 +46,26 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
 
   const richPests = useMemo(() => {
     if (!useRichPests || !profile?.pestManagement) return [];
-    return profile.pestManagement.map((p, i) => ({
-      id: `${crop.slug}-pest-${i}`,
-      name: p.pestName,
-      scientific: p.scientificName,
-      etl: p.etl,
-      risk: "high" as const,
-      biological: p.biologicalControl,
-      symptoms: p.symptoms,
-      identification: p.identification,
-      products: buildSprayProductCards(p.sprayProducts, p.chemicalControl, hi) as CropSprayProduct[],
-    }));
-  }, [crop.slug, useRichPests, profile, hi]);
+    return profile.pestManagement.map((p, i) => {
+      const match = catalogPests.find(
+        (c) =>
+          c.scientificName?.toLowerCase() === p.scientificName?.toLowerCase() ||
+          c.name.toLowerCase().includes(p.pestName.toLowerCase().slice(0, 10))
+      );
+      return {
+        id: `${crop.slug}-pest-${i}`,
+        name: p.pestName,
+        scientific: p.scientificName,
+        etl: p.etl,
+        risk: "high" as const,
+        biological: p.biologicalControl,
+        symptoms: p.symptoms,
+        identification: p.identification,
+        image: pestThumb(p.scientificName, match?.image),
+        products: buildSprayProductCards(p.sprayProducts, p.chemicalControl, hi) as CropSprayProduct[],
+      };
+    });
+  }, [crop.slug, useRichPests, profile, hi, catalogPests]);
 
   const pests = useRichPests
     ? richPests
@@ -116,8 +134,13 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                   onClick={() => setOpenId(open ? null : pest.id)}
                   className="av-card av-card-hover flex w-full items-start gap-3 px-3 py-3 text-left"
                 >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500/10">
-                    <Bug className="h-5 w-5 text-orange-600" />
+                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
+                    <ThreatImage
+                      src={"image" in pest ? pest.image : undefined}
+                      alt={pest.name}
+                      category="insect"
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -129,7 +152,17 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                       ETL: {pest.etl}
                     </p>
                     {open ? (
-                      <div className="mt-2 space-y-1 text-[11px] text-[var(--av-text-secondary)]">
+                      <div className="mt-2 space-y-2 text-[11px] text-[var(--av-text-secondary)]">
+                        {"image" in pest && pest.image ? (
+                          <div className="overflow-hidden rounded-xl border border-[var(--av-border)]">
+                            <ThreatImage
+                              src={pest.image}
+                              alt={pest.name}
+                              category="insect"
+                              className="h-36 w-full object-cover sm:h-40"
+                            />
+                          </div>
+                        ) : null}
                         <p>
                           <span className="font-bold">{hi ? "पहचान: " : "ID: "}</span>
                           {pest.identification}
@@ -160,8 +193,19 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                 href={`/pest-diseases/${crop.slug}/pest/${pest.id}`}
                 className="av-card av-card-hover flex items-center gap-3 px-3 py-3"
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500/10">
-                  <Bug className="h-5 w-5 text-orange-600" />
+                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
+                  <ThreatImage
+                    src={
+                      "image" in pest
+                        ? String(pest.image)
+                        : pestThumb(
+                            "scientific" in pest ? String(pest.scientific) : undefined
+                          )
+                    }
+                    alt={pest.name}
+                    category="insect"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">

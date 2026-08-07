@@ -139,7 +139,13 @@ export default function CropDetailClient({ crop, initialTab = "overview" }: Prop
             {activeTab === "overview" && (
               <CropOverviewSection crop={crop} detail={detail} onTabChange={onTabChange} />
             )}
-            {activeTab === "growth" && <AnimatedGrowthTimeline stages={detail.growthStages} />}
+            {activeTab === "growth" && (
+              <AnimatedGrowthTimeline
+                stages={detail.growthStages}
+                cropSlug={crop.slug}
+                cropName={crop.name}
+              />
+            )}
             {activeTab === "fertilizer" && <CropFertilizerSection crop={crop} />}
             {activeTab === "pests" && <CropPestsSection crop={crop} />}
             {activeTab === "diseases" && <CropDiseasesSection crop={crop} />}

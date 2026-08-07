@@ -22,6 +22,8 @@ import {
   getCropTasksDue,
 } from "@/lib/crops/cropAgroMeta";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
+import GrowthStageImage, { growthKindFromStage } from "@/components/crops/GrowthStageImage";
+import { getGrowthStageImage } from "@/lib/crops/growthStageImages";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
@@ -301,22 +303,38 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
           </button>
         </div>
         <div className="mt-3 flex flex-wrap gap-3 overflow-x-auto scrollbar-hide">
-          {growthStages.map((stage, i) => (
-            <div
-              key={`${stage.title}-${stage.period}`}
-              className="av-card-inset min-w-[100px] shrink-0 text-center"
-            >
-              <p className="text-[10px] font-bold text-[var(--av-accent)]">{stage.period}</p>
-              <p className="mt-1 text-[10px] font-semibold text-[var(--av-text-primary)]">
-                {stageName(stage.title)}
-              </p>
-              {i === 2 && (
-                <span className="mt-1 inline-block rounded bg-[var(--av-accent-soft)] px-1.5 py-0.5 text-[8px] font-bold text-[var(--av-accent)]">
-                  {t("currentStage")}
+          {growthStages.map((stage, i) => {
+            const kind = growthKindFromStage(stage.title, stage.period);
+            const img = getGrowthStageImage({
+              cropSlug: crop.slug,
+              cropName: crop.name,
+              title: stage.title,
+              period: stage.period,
+              index: i,
+            });
+            return (
+              <button
+                key={`${stage.title}-${stage.period}`}
+                type="button"
+                onClick={() => onTabChange("growth")}
+                className="relative min-h-[92px] min-w-[110px] shrink-0 overflow-hidden rounded-xl border border-[var(--av-border)] text-left"
+              >
+                <GrowthStageImage src={img} kind={kind} className="absolute inset-0" />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+                <span className="relative z-10 flex h-full min-h-[92px] flex-col justify-end p-2">
+                  <p className="text-[10px] font-bold text-emerald-200">{stage.period}</p>
+                  <p className="mt-0.5 text-[10px] font-extrabold leading-tight text-white">
+                    {stageName(stage.title)}
+                  </p>
+                  {i === 2 && (
+                    <span className="mt-1 inline-block w-fit rounded bg-emerald-500/90 px-1.5 py-0.5 text-[8px] font-bold text-white">
+                      {t("currentStage")}
+                    </span>
+                  )}
                 </span>
-              )}
-            </div>
-          ))}
+              </button>
+            );
+          })}
         </div>
       </DarkCard>
 
