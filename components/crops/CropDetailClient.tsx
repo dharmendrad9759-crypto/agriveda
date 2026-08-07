@@ -17,6 +17,7 @@ import CropWeedSection from "@/components/crops/sections/CropWeedSection";
 import CropCalendarSection from "@/components/crops/sections/CropCalendarSection";
 import CropHarvestSection from "@/components/crops/sections/CropHarvestSection";
 import CropVarietiesSection from "@/components/crops/sections/CropVarietiesSection";
+import CropGrowthHonestySection from "@/components/crops/sections/CropGrowthHonestySection";
 import CropFaqSection from "@/components/crops/sections/CropFaqSection";
 import CropExpertSection from "@/components/crops/sections/CropExpertSection";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
@@ -140,11 +141,14 @@ export default function CropDetailClient({ crop, initialTab = "overview" }: Prop
               <CropOverviewSection crop={crop} detail={detail} onTabChange={onTabChange} />
             )}
             {activeTab === "growth" && (
-              <AnimatedGrowthTimeline
-                stages={detail.growthStages}
-                cropSlug={crop.slug}
-                cropName={crop.name}
-              />
+              <div className="space-y-4">
+                <AnimatedGrowthTimeline
+                  stages={detail.growthStages}
+                  cropSlug={crop.slug}
+                  cropName={crop.name}
+                />
+                {crop.slug === "paddy" ? <CropGrowthHonestySection /> : null}
+              </div>
             )}
             {activeTab === "fertilizer" && <CropFertilizerSection crop={crop} />}
             {activeTab === "pests" && <CropPestsSection crop={crop} />}

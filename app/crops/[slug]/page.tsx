@@ -1,6 +1,7 @@
 import cropsData, { type Crop as CropData } from "@/data/crops";
 import CropDetailClient from "@/components/crops/CropDetailClient";
 import { isCropTabId, type CropTabId } from "@/lib/crops/crop-tabs";
+import { resolveCropOrStub } from "@/lib/crops/stubCrop";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -22,7 +23,7 @@ function CropDetailInner({
 export default async function CropDetailPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const { tab } = await searchParams;
-  const crop = cropsData.find((item): item is CropData => item.slug === slug);
+  const crop = resolveCropOrStub(slug, cropsData);
 
   if (!crop) notFound();
 

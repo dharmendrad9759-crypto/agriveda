@@ -15,7 +15,7 @@ import type { CropCategory } from "@/data/crop-catalog";
 
 function mapCatalogCategory(cat: CropCategory): Crop["category"] {
   if (cat === "Cash Crops") return "Cash-Crops";
-  if (cat === "Oilseeds" || cat === "Fruits") return "Vegetables";
+  if (cat === "Oilseeds" || cat === "Fruits" || cat === "Spices") return "Vegetables";
   if (cat === "Cereals" || cat === "Vegetables" || cat === "Pulses") return cat;
   return "Cereals";
 }

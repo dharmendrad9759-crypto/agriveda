@@ -25,6 +25,11 @@ const HINDI_NAMES: Record<string, string> = {
   mustard: "सरसों",
   moong: "मूंग",
   pulses: "अरहर",
+  chana: "चना",
+  masoor: "मसूर",
+  urad: "उड़द",
+  ginger: "अदरक",
+  garlic: "लहसुन",
   mango: "आम",
   banana: "केला",
   grapes: "अंगूर",
@@ -34,7 +39,11 @@ const HINDI_NAMES: Record<string, string> = {
 export type SeasonTag = "Kharif" | "Rabi" | "Summer" | "All Season";
 
 export function getCropHindiName(slug: string, fallback?: string): string | undefined {
-  return HINDI_NAMES[slug] ?? fallback;
+  return (
+    HINDI_NAMES[slug] ??
+    cropCatalog.find((c) => c.slug === slug)?.nameHi ??
+    fallback
+  );
 }
 
 export function getCropEmoji(slug: string): string {
@@ -150,8 +159,9 @@ export type CropListingCategory = (typeof CROP_LISTING_CATEGORIES)[number];
 
 const OILSEED_SLUGS = new Set(["soybean", "moongfali", "mustard"]);
 const FRUIT_SLUGS = new Set(["mango", "banana", "grapes"]);
-const SPICE_SLUGS = new Set(["chilli", "mustard"]);
+const SPICE_SLUGS = new Set(["chilli", "mustard", "ginger", "garlic"]);
 const FODDER_SLUGS = new Set(["bajra", "maize"]);
+const PULSE_SLUGS = new Set(["pulses", "moong", "chana", "masoor", "urad", "soybean"]);
 
 export function matchesListingCategory(crop: Crop, category: CropListingCategory): boolean {
   if (category === "All") return true;
@@ -159,6 +169,7 @@ export function matchesListingCategory(crop: Crop, category: CropListingCategory
   if (category === "Fruits") return FRUIT_SLUGS.has(crop.slug);
   if (category === "Spices") return SPICE_SLUGS.has(crop.slug);
   if (category === "Fodder") return FODDER_SLUGS.has(crop.slug);
+  if (category === "Pulses") return PULSE_SLUGS.has(crop.slug) || crop.category === "Pulses";
   if (category === "Cash Crops") return crop.category === "Cash-Crops";
   if (category === "Millets") return crop.category === "Millets";
   return crop.category === category;

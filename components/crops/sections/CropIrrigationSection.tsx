@@ -1,6 +1,7 @@
 "use client";
 
 import ExpandablePanel, { TimingBadge } from "@/components/crops/ExpandablePanel";
+import AwdIrrigationCard from "@/components/crops/AwdIrrigationCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
@@ -33,9 +34,12 @@ export default function CropIrrigationSection({
   const growthStages = profile?.growthStages?.length
     ? profile.growthStages
     : detail.growthStages ?? [];
+  const showAwd = crop.slug === "paddy";
 
   return (
     <div className="space-y-2">
+      {showAwd ? <AwdIrrigationCard hi={hi} /> : null}
+
       <p className="av-card-inset text-xs text-[var(--av-text-secondary)]">
         {timingHint} — {hi ? "अवस्था के साथ दिन (DAS/DAT)" : "stage with days (DAS/DAT)"}
       </p>

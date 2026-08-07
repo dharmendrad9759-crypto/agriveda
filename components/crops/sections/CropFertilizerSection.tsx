@@ -10,12 +10,13 @@ import {
   getFertilizerForCrop,
   haToAcre,
 } from "@/data/knowledge/fertilizer-recommendations";
-import { buildFertilizerPlan } from "@/lib/agriveda2/fertilizerEngine";
+import { buildFertilizerPlan, type SoilTestLevels } from "@/lib/agriveda2/fertilizerEngine";
 import { cn } from "@/lib/cn";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import { AV } from "@/lib/design/tokens";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import { Calculator, Download, Droplets, FileText, FlaskConical, Leaf } from "lucide-react";
@@ -100,10 +101,14 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const [activeSubTab, setActiveSubTab] = useState<SubTabId>("schedule");
   const [fertMode, setFertMode] = useState<FertMode>("normal");
   const [acres, setAcres] = useState(1);
+  const [soilTest, setSoilTest] = useState<SoilTestLevels>({});
 
   const hindi = getCropHindiName(crop.slug);
   const variety = getVarietiesForCrop(crop.slug)[0]?.name ?? "Certified seed";
-  const plan = useMemo(() => buildFertilizerPlan(crop.slug, acres), [crop.slug, acres]);
+  const plan = useMemo(
+    () => buildFertilizerPlan(crop.slug, acres, soilTest),
+    [crop.slug, acres, soilTest]
+  );
   const icar = useMemo(() => getFertilizerForCrop(crop.slug), [crop.slug]);
   const profile = useMemo(
     () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
@@ -203,11 +208,14 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   }, [crop.slug, icar, plan]);
 
   const npkAcre = useMemo(() => {
+    const factorN = plan?.soilFactors.n ?? 1;
+    const factorP = plan?.soilFactors.p ?? 1;
+    const factorK = plan?.soilFactors.k ?? 1;
     if (icar) {
       return {
-        n: haToAcre(icar.n, 1),
-        p: haToAcre(icar.p2o5, 1),
-        k: haToAcre(icar.k2o, 1),
+        n: Math.round(haToAcre(icar.n, 1) * factorN * 10) / 10,
+        p: Math.round(haToAcre(icar.p2o5, 1) * factorP * 10) / 10,
+        k: Math.round(haToAcre(icar.k2o, 1) * factorK * 10) / 10,
         source: guideSourceLabel(icar.source),
       };
     }
@@ -225,10 +233,11 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const bags = useMemo(() => {
     if (plan?.bags?.length) return plan.bags;
     if (npkAcre.n || npkAcre.p || npkAcre.k) {
+      // npkAcre is already soil-adjusted (kg/acre); convert back to kg/ha for product calc
       const calc = calculateFertilizerProducts({
-        n: icar?.n ?? npkAcre.n * 2.47,
-        p2o5: icar?.p2o5 ?? npkAcre.p * 2.47,
-        k2o: icar?.k2o ?? npkAcre.k * 2.47,
+        n: npkAcre.n * 2.47,
+        p2o5: npkAcre.p * 2.47,
+        k2o: npkAcre.k * 2.47,
         acres,
       });
       return [
@@ -238,7 +247,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       ];
     }
     return [];
-  }, [plan, npkAcre, icar, acres]);
+  }, [plan, npkAcre, acres]);
 
   const notes = useMemo(() => {
     const list: string[] = [];
@@ -250,6 +259,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     if (icar?.notes?.length) list.push(...icar.notes);
     if (plan?.guideNotes?.length) list.push(...plan.guideNotes);
     if (plan?.unitNote) list.push(plan.unitNote);
+    if (plan?.soilAdjusted) list.push(plan.soilAdjustNote);
     list.push(
       hi
         ? "खुराक मिट्टी जाँच के अनुसार बदलें। लेबल पढ़ें।"
@@ -495,6 +505,12 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                 className="w-20 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-1.5 text-sm font-bold"
               />
             </label>
+            <SoilTestInputs className="mt-3" value={soilTest} onChange={setSoilTest} />
+            {plan?.soilAdjusted ? (
+              <p className="mt-2 text-[10px] font-semibold text-amber-800 dark:text-amber-200">
+                {plan.soilAdjustNote}
+              </p>
+            ) : null}
             <div className="mt-4 flex justify-center">
               <DonutChart
                 segments={donutSegments}

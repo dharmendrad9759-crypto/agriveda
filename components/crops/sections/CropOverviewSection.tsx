@@ -23,6 +23,7 @@ import {
 } from "@/lib/crops/cropAgroMeta";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import GrowthStageImage, { growthKindFromStage } from "@/components/crops/GrowthStageImage";
+import CropGrowthHonestySection from "@/components/crops/sections/CropGrowthHonestySection";
 import { getGrowthStageImage } from "@/lib/crops/growthStageImages";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
@@ -294,6 +295,23 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
         <SectionHeader title={t("expertAdvice")} action={expertTip.action} />
         <p className={`mt-2 ${AV.body}`}>{expertTip.tip}</p>
       </DarkCard>
+
+      {crop.slug === "paddy" ? (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => onTabChange("growth")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onTabChange("growth");
+            }
+          }}
+          className="cursor-pointer"
+        >
+          <CropGrowthHonestySection compact />
+        </div>
+      ) : null}
 
       <DarkCard delay={4}>
         <div className="flex items-center justify-between">
