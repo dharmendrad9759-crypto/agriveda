@@ -804,14 +804,6 @@ const FAMILY_RULES: Record<string, RuleCell> = {
     "अनुशंसित",
     "Medium"
   ),
-  "pgr||fert_n": cell(
-    "caution",
-    "GA3 + यूरिया — वृद्धि प्रतिक्रिया अनिश्चित; अलग समय बेहतर।",
-    "मध्यम।",
-    "अलग स्प्रे प्राथमिकता।",
-    "हाँ",
-    "Low"
-  ),
   "boron||fert_npk": cell(
     "caution",
     "बोरॉन ओवरलैप phytotoxicity; कुल नमक देखें।",
