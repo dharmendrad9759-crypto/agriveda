@@ -3,7 +3,6 @@
 import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
-import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getFertilizerForCrop, haToAcre } from "@/data/knowledge/fertilizer-recommendations";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
@@ -109,11 +108,10 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
-      <DossierSourceBanner profile={profile} hi={hi} />
       {profile?.dossierPgrNotes?.length ? (
         <DarkCard>
           <h3 className="font-display text-[15px] font-bold text-[var(--av-text-primary)]">
-            {hi ? "PGR / वृद्धि नियामक नोट" : "PGR notes"}
+            {hi ? "वृद्धि नियामक सुझाव" : "Growth regulator tips"}
           </h3>
           <ul className="mt-2 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
             {profile.dossierPgrNotes.map((n) => (

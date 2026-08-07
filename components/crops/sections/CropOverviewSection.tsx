@@ -1,7 +1,6 @@
 "use client";
 
-import { ChevronRight, AlertTriangle, BookOpen } from "lucide-react";
-import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
+import { ChevronRight, AlertTriangle } from "lucide-react";
 import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
 import RiskBadge from "@/components/shell/RiskBadge";
@@ -64,19 +63,16 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
     () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
     [crop.slug]
   );
-  const hasDossier = Boolean(dossier?.dossierSource);
-  const dossierPests = dossier?.pestManagement ?? [];
-  const dossierDiseases = dossier?.diseaseManagement ?? [];
-  const dossierStages = dossier?.growthStages?.length ? dossier.growthStages : detail.growthStages;
+  const profilePests = dossier?.pestManagement ?? [];
+  const profileDiseases = dossier?.diseaseManagement ?? [];
+  const growthStages = dossier?.growthStages?.length ? dossier.growthStages : detail.growthStages;
   const topDiseases = (
-    hasDossier && dossierDiseases.length
-      ? dossierDiseases.map((d) => ({ name: d.diseaseName }))
+    profileDiseases.length
+      ? profileDiseases.map((d) => ({ name: d.diseaseName }))
       : detail.diseases
   ).slice(0, 3);
   const topPests = (
-    hasDossier && dossierPests.length
-      ? dossierPests.map((p) => ({ name: p.pestName }))
-      : detail.pests
+    profilePests.length ? profilePests.map((p) => ({ name: p.pestName })) : detail.pests
   ).slice(0, 3);
   const varieties = getVarietiesForCrop(crop.slug, profile.state || undefined).slice(0, 3);
   const pestRisk = getCropPestRisk(crop, detail);
@@ -85,92 +81,13 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
   const tasksDue = getCropTasksDue(crop);
   const irrigation = getCropIrrigationSummary(crop);
   const expertTip = getCropExpertTip(crop);
+  const irrigationHint = dossier?.irrigationSchedule?.[0];
 
   const stageName = (name: string) => (hi ? stageLabelHi(name) : name);
   const riskName = (level: string) => (hi ? riskLabelHi(level) : level);
 
   return (
     <div className="space-y-4">
-      <DossierSourceBanner profile={dossier} hi={hi} />
-
-      {hasDossier ? (
-        <DarkCard delay={0}>
-          <div className="flex items-start gap-2">
-            <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-[var(--av-accent)]" />
-            <div className="min-w-0 flex-1">
-              <SectionHeader title={hi ? "रिसर्च सारांश" : "Research summary"} />
-              <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">{dossier?.dossierSource}</p>
-              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {(
-                  [
-                    {
-                      label: hi ? "कीट" : "Pests",
-                      value: String(dossierPests.length || topPests.length),
-                      tab: "pests" as const,
-                    },
-                    {
-                      label: hi ? "रोग" : "Diseases",
-                      value: String(dossierDiseases.length || topDiseases.length),
-                      tab: "diseases" as const,
-                    },
-                    {
-                      label: hi ? "सिंचाई बिंदु" : "Irrigation tips",
-                      value: String(dossier?.irrigationSchedule?.length ?? 0),
-                      tab: "irrigation" as const,
-                    },
-                    {
-                      label: hi ? "खाद बिंदु" : "Fertilizer tips",
-                      value: String(dossier?.fertilizerSchedule?.length ?? 0),
-                      tab: "fertilizer" as const,
-                    },
-                  ] as const
-                ).map((item) => (
-                  <button
-                    key={item.tab}
-                    type="button"
-                    onClick={() => onTabChange(item.tab)}
-                    className="av-card-inset text-left transition active:scale-[0.98]"
-                  >
-                    <p className={AV.label}>{item.label}</p>
-                    <p className="mt-1 text-lg font-extrabold text-[var(--av-accent)]">{item.value}</p>
-                  </button>
-                ))}
-              </div>
-              <ul className="mt-3 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
-                {(dossier?.irrigationSchedule ?? []).slice(0, 2).map((line) => (
-                  <li key={line}>• {line}</li>
-                ))}
-                {(dossier?.fertilizerSchedule ?? []).slice(0, 1).map((line) => (
-                  <li key={line}>• {line}</li>
-                ))}
-                {(dossier?.dossierPgrNotes ?? []).slice(0, 1).map((line) => (
-                  <li key={line}>• {line}</li>
-                ))}
-              </ul>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => onTabChange("pests")}
-                  className="text-[10px] font-bold text-[var(--av-accent)]"
-                >
-                  {hi ? "कीट गाइड →" : "Pest guide →"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onTabChange("fertilizer")}
-                  className="text-[10px] font-bold text-[var(--av-accent)]"
-                >
-                  {hi ? "खाद गाइड →" : "Fertilizer →"}
-                </button>
-                <AppLink href="/schemes" className="text-[10px] font-bold text-[var(--av-accent)]">
-                  {hi ? "योजना / KCC →" : "Schemes / KCC →"}
-                </AppLink>
-              </div>
-            </div>
-          </div>
-        </DarkCard>
-      ) : null}
-
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <MiniStat label={t("cropDuration")} value={crop.durationDays} index={0} />
         <MiniStat label={t("cropYield")} value={crop.estimatedYield} index={1} />
@@ -237,8 +154,8 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
         <DarkCard className="lg:col-span-4" delay={2}>
           <SectionHeader title={t("irrigation")} />
           <div className="mt-3 space-y-2 text-sm">
-            {dossier?.irrigationSchedule?.[0] ? (
-              <p className="text-xs text-[var(--av-text-secondary)]">{dossier.irrigationSchedule[0]}</p>
+            {irrigationHint ? (
+              <p className="text-xs text-[var(--av-text-secondary)]">{irrigationHint}</p>
             ) : (
               <>
                 <p className="flex justify-between gap-2">
@@ -384,7 +301,7 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
           </button>
         </div>
         <div className="mt-3 flex flex-wrap gap-3 overflow-x-auto scrollbar-hide">
-          {dossierStages.map((stage, i) => (
+          {growthStages.map((stage, i) => (
             <div
               key={`${stage.title}-${stage.period}`}
               className="av-card-inset min-w-[100px] shrink-0 text-center"

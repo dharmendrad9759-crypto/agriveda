@@ -4,6 +4,25 @@ export interface CropStage {
   keyPoints: string[];
 }
 
+export interface CropSprayProduct {
+  /** e.g. Thiamethoxam 12.6% + Lambda-Cyhalothrin 9.5% ZC */
+  technical: string;
+  /** Formulation strength if not already in technical, e.g. 18.5% SC */
+  formulation?: string;
+  /** Popular retail names farmers ask for */
+  brands?: string[];
+  /** Prefer acre wording farmers use, e.g. 80–100 मिलीलीटर प्रति एकड़ */
+  doseAcre: string;
+  /** Best crop/pest stage for this spray */
+  bestStage?: string;
+  /** When this option is preferred (early / severe / rotation) */
+  bestUseCondition?: string;
+  /** Short farmer points — why / caution / tank-mix */
+  points?: string[];
+  /** Confidence for label claims in-app */
+  sourceConfidence?: "high" | "medium" | "label-check";
+}
+
 export interface PestManagement {
   pestName: string;
   scientificName: string;
@@ -12,6 +31,8 @@ export interface PestManagement {
   etl: string;
   biologicalControl: string[];
   chemicalControl: string[];
+  /** Prefer structured spray cards when present (UI on all crops) */
+  sprayProducts?: CropSprayProduct[];
   iracGroup: string;
   activeIngredient: string;
   dose: string;
@@ -26,6 +47,7 @@ export interface DiseaseManagement {
   integratedManagement: string[];
   biologicalControl: string[];
   chemicalControl: string[];
+  sprayProducts?: CropSprayProduct[];
   fracGroup: string;
   activeIngredient: string;
   dose: string;

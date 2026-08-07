@@ -1,7 +1,6 @@
 "use client";
 
 import ExpandablePanel, { TimingBadge } from "@/components/crops/ExpandablePanel";
-import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
@@ -27,43 +26,26 @@ export default function CropIrrigationSection({
     () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
     [crop.slug]
   );
-  const dossierLines = profile?.irrigationSchedule ?? [];
+  const scheduleLines =
+    profile?.irrigationSchedule?.length
+      ? profile.irrigationSchedule
+      : crop.irrigationManagement.schedule ?? [];
   const growthStages = profile?.growthStages?.length
     ? profile.growthStages
     : detail.growthStages ?? [];
 
   return (
     <div className="space-y-2">
-      <DossierSourceBanner profile={profile} hi={hi} />
       <p className="av-card-inset text-xs text-[var(--av-text-secondary)]">
         {timingHint} — {hi ? "अवस्था के साथ दिन (DAS/DAT)" : "stage with days (DAS/DAT)"}
       </p>
-
-      {dossierLines.length > 0 ? (
-        <ExpandablePanel
-          title={hi ? "रिसर्च सिंचाई गाइड" : "Research irrigation guide"}
-          subtitle={hi ? `${dossierLines.length} बिंदु` : `${dossierLines.length} points`}
-          icon={Droplets}
-          accent="sky"
-          defaultOpen
-        >
-          <ul className="space-y-2 text-sm text-[var(--av-text-primary)]">
-            {dossierLines.map((line) => (
-              <li key={line} className="flex gap-2">
-                <span className="text-[var(--av-accent)]">•</span>
-                <span>{line}</span>
-              </li>
-            ))}
-          </ul>
-        </ExpandablePanel>
-      ) : null}
 
       <ExpandablePanel
         title={hi ? "पानी की ज़रूरत" : "Water requirement"}
         subtitle={crop.irrigationManagement.waterRequirement}
         icon={Droplets}
         accent="sky"
-        defaultOpen={!dossierLines.length}
+        defaultOpen
       >
         <p className="text-sm text-[var(--av-text-primary)]">
           {crop.irrigationManagement.waterRequirement}
@@ -72,9 +54,9 @@ export default function CropIrrigationSection({
           {hi ? "कड़ी अवस्थाएँ" : "Critical stages"}:{" "}
           {crop.irrigationManagement.criticalStages.join(" · ")}
         </p>
-        {crop.irrigationManagement.schedule?.length ? (
-          <ul className="mt-2 space-y-1 text-xs text-[var(--av-text-secondary)]">
-            {crop.irrigationManagement.schedule.map((s) => (
+        {scheduleLines.length ? (
+          <ul className="mt-2 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
+            {scheduleLines.map((s) => (
               <li key={s}>• {s}</li>
             ))}
           </ul>
@@ -89,7 +71,7 @@ export default function CropIrrigationSection({
           badge={ir.timingRef}
           icon={Droplets}
           accent="green"
-          defaultOpen={i === 0 && !dossierLines.length}
+          defaultOpen={false}
         >
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">

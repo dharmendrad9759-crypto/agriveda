@@ -1,6 +1,5 @@
 "use client";
 
-import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
 import DarkCard from "@/components/shell/DarkCard";
 import { DonutChart } from "@/components/shell/charts";
 import AppLink from "@/components/ui/AppLink";
@@ -158,7 +157,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       [];
 
     const rows: { name: string; detail: string }[] = [];
-    for (const m of dossierMicros) rows.push({ name: hi ? "रिसर्च सूक्ष्म" : "Research micro", detail: m });
+    for (const m of dossierMicros) rows.push({ name: hi ? "सूक्ष्म पोषक" : "Micronutrient", detail: m });
     for (const m of micros) rows.push({ name: "Micronutrient", detail: m });
     for (const s of sprays) rows.push({ name: "Foliar spray", detail: s });
     for (const m of fromIcar) rows.push({ name: "Guide micronutrient", detail: m });
@@ -243,13 +242,9 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
 
   const notes = useMemo(() => {
     const list: string[] = [];
-    for (const n of dossierPgr) list.push(hi ? `PGR: ${n}` : `PGR: ${n}`);
+    for (const n of dossierPgr) list.push(n);
     if (dossierFertLines.length && plan?.schedule?.length) {
-      list.push(
-        ...(hi
-          ? dossierFertLines.map((l) => `रिसर्च गाइड: ${l}`)
-          : dossierFertLines.map((l) => `Research guide: ${l}`))
-      );
+      list.push(...dossierFertLines);
     }
     if (icar?.splits?.length) list.push(...icar.splits.map((s) => `Split: ${s}`));
     if (icar?.notes?.length) list.push(...icar.notes);
@@ -258,7 +253,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     list.push(
       hi
         ? "खुराक मिट्टी जाँच के अनुसार बदलें। लेबल पढ़ें।"
-        : "Doses follow standard crop research. Always adjust to your local soil test."
+        : "Always adjust doses to your local soil test and product label."
     );
     list.push(
       hi
@@ -307,24 +302,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
-      <DossierSourceBanner profile={profile} hi={hi} />
-      {dossierFertLines.length > 0 && !plan?.schedule?.length ? (
-        <DarkCard>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
-            {hi ? "रिसर्च खाद गाइड" : "Research fertilizer guide"}
-          </h3>
-          <ul className="mt-2 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
-            {dossierFertLines.map((line) => (
-              <li key={line}>• {line}</li>
-            ))}
-          </ul>
-        </DarkCard>
-      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">
           Source: {npkAcre.source}
           {plan?.source === "verified" ? " · verified bags" : ""}
-          {profile?.dossierSource ? (hi ? " · रिसर्च डोसियर" : " · research dossier") : ""}
         </p>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={downloadSchedule} className={AV.btnSecondarySm}>

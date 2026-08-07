@@ -2,17 +2,15 @@
 
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
-import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
+import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
-import {
-  formatFarmerChemicalList,
-  formatFarmerDoseSummary,
-} from "@/lib/crops/farmerSprayDose";
+import { buildSprayProductCards } from "@/lib/crops/sprayProductCards";
 import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
+import type { CropSprayProduct } from "@/types/crop-management";
 import type { Crop } from "@/types/crop";
 import { ChevronRight, Search, ShieldAlert } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -27,7 +25,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
     () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
     [crop.slug]
   );
-  const dossierMode = Boolean(profile?.dossierSource && profile.diseaseManagement?.length);
+  const useRichDiseases = Boolean(profile?.diseaseManagement?.length);
 
   const ipmDiseases = useMemo(() => getIpmDiseaseListForCrop(crop.slug), [crop.slug]);
   const fieldGuideDiseases = useMemo(
@@ -39,25 +37,25 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
     [crop.slug]
   );
 
-  const dossierDiseases = useMemo(() => {
-    if (!dossierMode || !profile?.diseaseManagement) return [];
+  const richDiseases = useMemo(() => {
+    if (!useRichDiseases || !profile?.diseaseManagement) return [];
     return profile.diseaseManagement.map((d, i) => ({
-      id: `dossier-${crop.slug}-dis-${i}`,
+      id: `${crop.slug}-dis-${i}`,
       name: d.diseaseName,
       scientific: d.pathogen,
-      risk: /virus|वायरस|bacterial wilt/i.test(d.diseaseName + d.type)
+      risk: /virus|वायरस|bacterial wilt|टंग्रो/i.test(d.diseaseName + d.type)
         ? ("high" as const)
         : ("medium" as const),
       type: d.type,
-      chemical: formatFarmerChemicalList(d.chemicalControl, hi),
       integrated: d.integratedManagement,
-      ai: formatFarmerDoseSummary(d.activeIngredient, d.dose, hi),
       conditions: d.favourableConditions.join("; "),
+      symptoms: d.symptoms,
+      products: buildSprayProductCards(d.sprayProducts, d.chemicalControl, hi) as CropSprayProduct[],
     }));
-  }, [crop.slug, dossierMode, profile, hi]);
+  }, [crop.slug, useRichDiseases, profile, hi]);
 
-  const diseases = dossierMode
-    ? dossierDiseases
+  const diseases = useRichDiseases
+    ? richDiseases
     : fieldGuideDiseases.length
       ? fieldGuideDiseases
       : ipmDiseases.length
@@ -83,15 +81,14 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-3">
-      <DossierSourceBanner profile={profile} hi={hi} />
       <div>
         <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
           {t("cropDiseasesTitle")} — {crop.name}
         </h3>
         <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
           {hi
-            ? `${diseases.length} रोग · टैप कर विवरण खोलें`
-            : `${diseases.length} diseases · tap for detail`}
+            ? `${diseases.length} रोग · टैप कर दवा कार्ड खोलें`
+            : `${diseases.length} diseases · tap for medicine cards`}
         </p>
       </div>
 
@@ -107,7 +104,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
 
       <ul className="space-y-2">
         {filtered.map((d) => {
-          if (dossierMode && "chemical" in d) {
+          if (useRichDiseases && "products" in d) {
             const open = openId === d.id;
             return (
               <li key={d.id}>
@@ -131,23 +128,22 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
                     {open ? (
                       <div className="mt-2 space-y-1 text-[11px] text-[var(--av-text-secondary)]">
                         <p>
+                          <span className="font-bold">{hi ? "लक्षण: " : "Symptoms: "}</span>
+                          {d.symptoms?.join("; ")}
+                        </p>
+                        <p>
                           <span className="font-bold">{hi ? "अनुकूल मौसम: " : "Favours: "}</span>
                           {d.conditions}
                         </p>
-                        <p>
-                          <span className="font-bold">{hi ? "मुख्य खुराक: " : "Main dose: "}</span>
-                          {d.ai}
-                        </p>
-                        <p className="font-bold text-[var(--av-text-primary)]">
-                          {hi ? "दवा (ml/g प्रति लीटर पानी):" : "Spray (ml/g per L water):"}
-                        </p>
-                        <ul className="list-disc pl-4">
-                          {d.chemical?.map((c) => (
-                            <li key={c}>{c}</li>
-                          ))}
-                        </ul>
+                        <CropSprayMedicineList products={d.products} hi={hi} />
                       </div>
-                    ) : null}
+                    ) : (
+                      <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+                        {hi
+                          ? `${d.products.length} दवा विकल्प · खोलें`
+                          : `${d.products.length} spray options · open`}
+                      </p>
+                    )}
                   </div>
                   <ChevronRight className={`h-4 w-4 shrink-0 transition ${open ? "rotate-90" : ""}`} />
                 </button>

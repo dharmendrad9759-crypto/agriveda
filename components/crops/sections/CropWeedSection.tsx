@@ -1,16 +1,17 @@
 "use client";
 
-import { DossierSourceBanner } from "@/components/crops/DossierSourceBanner";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
 import { getCropPestDisease } from "@/data/pest-disease";
 import AppLink from "@/components/ui/AppLink";
+import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { weedDisplayName } from "@/lib/crops/weedNamesHi";
 import { threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
+import type { CropSprayProduct } from "@/types/crop-management";
 import type { Crop } from "@/types/crop";
-import { ChevronRight, FlaskConical, Leaf } from "lucide-react";
+import { ChevronRight, Leaf } from "lucide-react";
 import { useMemo, useState } from "react";
 
 export default function CropWeedSection({ crop }: { crop: Crop }) {
@@ -21,7 +22,7 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
     [crop.slug]
   );
   const program = profile?.weedProgram ?? getWeedProgramForCrop(crop.slug);
-  const dossierWeeds = profile?.weedManagement ?? [];
+  const profileWeeds = profile?.weedManagement ?? [];
   const catalog = getCropPestDisease(crop.slug);
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -35,14 +36,23 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
         }));
 
   const chemicals = program?.chemical ?? [];
-  const hasDossierWeeds = Boolean(profile?.dossierSource && dossierWeeds.length);
+  const useProfileWeeds = profileWeeds.length > 0;
+  const herbicideCards = useMemo((): CropSprayProduct[] => {
+    return chemicals.map((c) => ({
+      technical: c.technical,
+      doseAcre: c.dose,
+      bestStage: c.timing,
+      bestUseCondition: c.targets,
+      points: c.note ? [c.note] : undefined,
+      sourceConfidence: /लेबल|label/i.test(c.dose + (c.note ?? "")) ? "label-check" : "high",
+    }));
+  }, [chemicals]);
 
-  if (!weedNames.length && !chemicals.length && !hasDossierWeeds) {
+  if (!weedNames.length && !chemicals.length && !useProfileWeeds) {
     const guide = crop.cropProtection.weedManagement;
     if (guide.length > 0) {
       return (
         <div className="space-y-3">
-          <DossierSourceBanner profile={profile} hi={hi} />
           <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
             {t("cropWeedsTitle")} — {crop.name}
           </h3>
@@ -75,22 +85,21 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
-      <DossierSourceBanner profile={profile} hi={hi} />
       <div>
         <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
           {t("cropWeedsTitle")} — {crop.name}
         </h3>
         <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
           {hi
-            ? `${Math.max(weedNames.length, dossierWeeds.length)} मुख्य खरपतवार · टैप कर विवरण`
-            : `${Math.max(weedNames.length, dossierWeeds.length)} key weeds · tap for detail`}
+            ? `${Math.max(weedNames.length, profileWeeds.length)} मुख्य खरपतवार · टैप कर विवरण`
+            : `${Math.max(weedNames.length, profileWeeds.length)} key weeds · tap for detail`}
         </p>
       </div>
 
-      {hasDossierWeeds ? (
+      {useProfileWeeds ? (
         <ul className="space-y-2">
-          {dossierWeeds.map((w, i) => {
-            const id = `dossier-weed-${i}`;
+          {profileWeeds.map((w, i) => {
+            const id = `${crop.slug}-weed-${i}`;
             const open = openId === id;
             return (
               <li key={id}>
@@ -129,9 +138,7 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
                         </span>
                         {w.postEmergenceHerbicide}
                       </p>
-                      <p>
-                        {w.hracGroup} · {w.dose}
-                      </p>
+                      <p>{w.dose}</p>
                     </div>
                   ) : null}
                 </button>
@@ -170,31 +177,14 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
         </ul>
       )}
 
-      {chemicals.length > 0 && (
+      {herbicideCards.length > 0 && (
         <div>
-          <h4 className="mb-2 flex items-center gap-2 text-sm font-bold text-[var(--av-text-primary)]">
-            <FlaskConical className="h-4 w-4 text-violet-500" />
-            {hi ? "प्रभावी टेक्निकल" : "Effective technicals"}
-          </h4>
           {program?.criticalPeriod ? (
             <p className="mb-2 text-[10px] text-[var(--av-text-muted)]">
               {hi ? "कड़ा समय" : "Critical"}: {program.criticalPeriod}
             </p>
           ) : null}
-          <ul className="space-y-2">
-            {chemicals.map((c) => (
-              <li
-                key={`${c.technical}-${c.timing}`}
-                className="rounded-xl border border-violet-500/15 bg-violet-500/5 px-3 py-2.5 text-xs"
-              >
-                <p className="font-bold text-[var(--av-text-primary)]">{c.technical}</p>
-                <p className="mt-0.5 text-[var(--av-text-secondary)]">
-                  {c.dose} · {c.timing}
-                  {c.targets ? ` · ${c.targets}` : ""}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <CropSprayMedicineList products={herbicideCards} hi={hi} />
         </div>
       )}
     </div>
