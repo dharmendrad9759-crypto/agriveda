@@ -224,25 +224,6 @@ export function toFarmerNutrientView(nutrient: NutrientDeficiencyData): FarmerNu
   };
 }
 
-export function toFarmerCropNutrientCard(
-  name: string,
-  deficiencySymptoms: string[],
-  management: string[],
-  recommendedFertilizers: string[]
-) {
-  const slug = NAME_TO_SLUG[name] ?? name.toLowerCase();
-  const m = NUTRIENT_HI[slug];
-
-  return {
-    nameHi: m?.nameHi ?? name,
-    lakshan:
-      m?.lakshan?.slice(0, 2) ??
-      deficiencySymptoms.slice(0, 2).map((s) => simplifySymptomLine(s)),
-    upay: management.slice(0, 2).map((s) => shorten(s, 65)),
-    khad: recommendedFertilizers.slice(0, 3),
-  };
-}
-
 const NAME_TO_SLUG: Record<string, string> = {
   Nitrogen: "nitrogen",
   Phosphorus: "phosphorus",
@@ -261,7 +242,89 @@ const NAME_TO_SLUG: Record<string, string> = {
   Chlorine: "chlorine",
   Cobalt: "cobalt",
   Nickel: "nickel",
+  // Hindi + common variants → slug (so links never break)
+  नाइट्रोजन: "nitrogen",
+  फॉस्फोरस: "phosphorus",
+  फास्फोरस: "phosphorus",
+  पोटैश: "potassium",
+  पोटाश: "potassium",
+  पोटेशियम: "potassium",
+  कैल्शियम: "calcium",
+  मैग्नीशियम: "magnesium",
+  सल्फर: "sulphur",
+  गंधक: "sulphur",
+  आयरन: "iron",
+  लोहा: "iron",
+  जिंक: "zinc",
+  जस्ता: "zinc",
+  बोरॉन: "boron",
+  बोरोन: "boron",
+  तांबा: "copper",
+  कॉपर: "copper",
+  मैंगनीज: "manganese",
+  मॉलिब्डेनम: "molybdenum",
+  मॉलिब्डिनम: "molybdenum",
+  सिलिकॉन: "silicon",
+  क्लोरीन: "chlorine",
+  कोबाल्ट: "cobalt",
+  निकल: "nickel",
 };
+
+/** Resolve English / Hindi / symbol / slug → canonical nutrient slug */
+export function resolveNutrientSlug(nameOrSlug: string): string | undefined {
+  const raw = nameOrSlug.trim();
+  if (!raw) return undefined;
+  if (NUTRIENT_HI[raw]) return raw;
+  if (NAME_TO_SLUG[raw]) return NAME_TO_SLUG[raw];
+  const lower = raw.toLowerCase();
+  if (NUTRIENT_HI[lower]) return lower;
+  const byEn = Object.entries(NAME_TO_SLUG).find(([k]) => k.toLowerCase() === lower);
+  if (byEn) return byEn[1];
+  // Symbol short codes
+  const bySymbol: Record<string, string> = {
+    n: "nitrogen",
+    p: "phosphorus",
+    k: "potassium",
+    ca: "calcium",
+    mg: "magnesium",
+    s: "sulphur",
+    fe: "iron",
+    zn: "zinc",
+    mn: "manganese",
+    cu: "copper",
+    b: "boron",
+    mo: "molybdenum",
+  };
+  if (bySymbol[lower]) return bySymbol[lower];
+  return undefined;
+}
+
+/** Always Hindi display name for farmer UI */
+export function nutrientNameHi(nameOrSlug: string): string {
+  const slug = resolveNutrientSlug(nameOrSlug);
+  if (slug && NUTRIENT_HI[slug]?.nameHi) return NUTRIENT_HI[slug].nameHi;
+  return nameOrSlug;
+}
+
+export function toFarmerCropNutrientCard(
+  name: string,
+  deficiencySymptoms: string[],
+  management: string[],
+  recommendedFertilizers: string[]
+) {
+  const slug = resolveNutrientSlug(name) ?? name.toLowerCase();
+  const m = NUTRIENT_HI[slug];
+
+  return {
+    nameHi: m?.nameHi ?? nutrientNameHi(name),
+    slug,
+    lakshan:
+      m?.lakshan?.slice(0, 2) ??
+      deficiencySymptoms.slice(0, 2).map((s) => simplifySymptomLine(s)),
+    upay: management.slice(0, 2).map((s) => shorten(s, 65)),
+    khad: recommendedFertilizers.slice(0, 3),
+  };
+}
 
 /** Short Hindi lines for crop profile merge — avoid dumping long English */
 export function simplifySymptomLine(text: string): string {

@@ -33,6 +33,9 @@ import {
   healthFromSeverity,
   type CropOption,
 } from "@/lib/nutrients/nutrientCropContext";
+import DeficiencySymptomImage from "@/components/nutrients/DeficiencySymptomImage";
+import SymptomMatchedImage from "@/components/nutrients/SymptomMatchedImage";
+import { cropLabelToImageSlug } from "@/lib/nutrients/deficiencyImages";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import { EASE_OUT, MOTION, staggerContainer, staggerItem } from "@/lib/motion/variants";
@@ -99,10 +102,12 @@ function AvCard({
 function CropStrip({
   crops,
   active,
+  nutrientSlug,
   onChange,
 }: {
   crops: CropOption[];
   active: string;
+  nutrientSlug: string;
   onChange: (key: string) => void;
 }) {
   return (
@@ -113,19 +118,27 @@ function CropStrip({
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {crops.map((crop) => {
           const selected = crop.key === active;
+          const imgSlug = cropLabelToImageSlug(crop.key);
           return (
             <button
               key={crop.key}
               type="button"
               onClick={() => onChange(crop.key)}
               className={cn(
-                "shrink-0 rounded-xl border px-3 py-2 text-[12px] font-bold transition",
+                "flex shrink-0 flex-col items-center gap-1.5 rounded-xl border px-2 py-2 text-[11px] font-bold transition",
                 selected
                   ? "border-emerald-500/45 bg-emerald-500/12 text-emerald-950 dark:text-emerald-50"
                   : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:border-emerald-500/25"
               )}
             >
-              {crop.labelHi}
+              <span className="relative h-10 w-10 overflow-hidden rounded-lg bg-emerald-500/10">
+                <DeficiencySymptomImage
+                  cropSlug={imgSlug}
+                  nutrient={nutrientSlug}
+                  alt={crop.labelHi}
+                />
+              </span>
+              <span className="max-w-[64px] truncate">{crop.labelHi}</span>
             </button>
           );
         })}
@@ -204,6 +217,7 @@ export default function NutrientDetailExperience({
 
   const health = healthFromSeverity(nutrient.severity);
   const catHi = categoryLabelHi(nutrient.category);
+  const cropImageSlug = cropLabelToImageSlug(cropKey);
   const fixes = nutrient.howToFix ?? [];
   const expertTips = (nutrient.expertTips ?? []).slice(0, 5).map((t) => t.slice(0, 100));
   const faq = farmer.faq.length
@@ -305,52 +319,62 @@ export default function NutrientDetailExperience({
           </div>
 
           {/* Crop first */}
-          <CropStrip crops={crops} active={cropKey} onChange={setCropKey} />
+          <CropStrip
+            crops={crops}
+            active={cropKey}
+            nutrientSlug={nutrient.slug}
+            onChange={setCropKey}
+          />
 
-          {/* Crop impact panel — always visible above tabs */}
-          <div className="overflow-hidden rounded-[20px] border border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.09] to-[var(--av-surface)] p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-800/70 dark:text-emerald-200/70">
-                  {scope.labelHi} पर असर
-                </p>
-                <p className="mt-1.5 text-sm font-semibold leading-snug text-[var(--av-text-primary)]">
-                  {scope.cropSymptom}
-                </p>
-              </div>
+          {/* Crop impact panel — photo + symptoms */}
+          <div className="overflow-hidden rounded-[20px] border border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.09] to-[var(--av-surface)]">
+            <div className="relative aspect-[16/9] w-full bg-emerald-500/5">
+              <DeficiencySymptomImage
+                cropSlug={cropImageSlug}
+                nutrient={nutrient.slug}
+                alt={`${scope.labelHi} — ${farmer.nameHi}`}
+              />
               <span
                 className={cn(
-                  "shrink-0 rounded-lg px-2 py-1 text-[10px] font-bold",
+                  "absolute left-3 top-3 rounded-lg px-2 py-1 text-[10px] font-bold shadow-sm backdrop-blur-sm",
                   health.tone === "amber"
-                    ? "bg-amber-500/15 text-amber-900 dark:text-amber-100"
-                    : "bg-emerald-500/15 text-emerald-900 dark:text-emerald-100"
+                    ? "bg-amber-500/90 text-amber-950"
+                    : "bg-emerald-600/90 text-white"
                 )}
               >
                 {health.label}
               </span>
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-3 border-t border-emerald-500/15 pt-3">
-              <div>
-                <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">अवस्था</p>
-                <p className="mt-0.5 text-[13px] font-bold text-[var(--av-text-primary)]">
-                  {scope.cropStage}
-                </p>
+            <div className="p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-800/70 dark:text-emerald-200/70">
+                {scope.labelHi} पर असर
+              </p>
+              <p className="mt-1.5 text-sm font-semibold leading-snug text-[var(--av-text-primary)]">
+                {scope.cropSymptom}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-3 border-t border-emerald-500/15 pt-3">
+                <div>
+                  <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">अवस्था</p>
+                  <p className="mt-0.5 text-[13px] font-bold text-[var(--av-text-primary)]">
+                    {scope.cropStage}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">त्वरित उपाय</p>
+                  <p className="mt-0.5 line-clamp-2 text-[13px] font-bold text-emerald-800 dark:text-emerald-200">
+                    {scope.cropFix || farmer.kyaKaren[0]?.title || "नीचे देखें"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">त्वरित उपाय</p>
-                <p className="mt-0.5 line-clamp-2 text-[13px] font-bold text-emerald-800 dark:text-emerald-200">
-                  {scope.cropFix || farmer.kyaKaren[0]?.title || "नीचे देखें"}
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setTab("fix")}
+                className="mt-3 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-800 dark:text-emerald-200"
+              >
+                पूरी खुराक देखें
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setTab("fix")}
-              className="mt-3 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-800 dark:text-emerald-200"
-            >
-              पूरी खुराक देखें
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
           </div>
         </motion.section>
 
@@ -429,9 +453,26 @@ export default function NutrientDetailExperience({
                   लक्षण डेटा जल्द जुड़ेगा।
                 </p>
               ) : (
-                scope.symptoms.map((s) => (
+                scope.symptoms.map((s, slot) => (
                   <motion.div key={s.id} variants={staggerItem}>
-                    <SymptomCard symptom={s} />
+                    <AvCard className="!overflow-hidden !p-0">
+                      <div className="relative aspect-[16/9] w-full bg-emerald-500/5">
+                        <SymptomMatchedImage
+                          cropSlug={cropImageSlug}
+                          cropLabel={cropKey}
+                          nutrient={nutrient.slug}
+                          slot={slot}
+                          symptomText={s.description}
+                          alt={s.title}
+                        />
+                        <span className="absolute bottom-2 left-2 rounded-lg bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+                          लक्षण {slot + 1}
+                        </span>
+                      </div>
+                      <div className="p-3.5">
+                        <SymptomCard symptom={s} bare />
+                      </div>
+                    </AvCard>
                   </motion.div>
                 ))
               )}
@@ -566,8 +607,10 @@ export default function NutrientDetailExperience({
 
 function SymptomCard({
   symptom,
+  bare = false,
 }: {
   symptom: { title: string; description: string; part: string; severity: string };
+  bare?: boolean;
 }) {
   const [open, setOpen] = useState(true);
   const colors =
@@ -577,8 +620,8 @@ function SymptomCard({
         ? "border-amber-500/25"
         : "border-emerald-500/20";
 
-  return (
-    <AvCard className={colors}>
+  const body = (
+    <>
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -609,8 +652,11 @@ function SymptomCard({
           </motion.p>
         )}
       </AnimatePresence>
-    </AvCard>
+    </>
   );
+
+  if (bare) return <div>{body}</div>;
+  return <AvCard className={colors}>{body}</AvCard>;
 }
 
 function CauseCard({

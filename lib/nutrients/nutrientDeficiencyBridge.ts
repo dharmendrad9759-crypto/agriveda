@@ -73,9 +73,20 @@ const NUTRIENT_ICONS: Record<string, string> = {
 const HIGH_SEVERITY = new Set(["nitrogen", "phosphorus", "potassium", "iron", "zinc", "boron"]);
 
 function parseMobility(raw: string): NutrientMobility {
-  const m = raw.toLowerCase();
-  if (m.includes("immobile") && !m.includes("mobile in plant")) return "Immobile";
-  if (m.includes("mobile in plant") || m.startsWith("mobile")) return "Mobile";
+  const hasMobile =
+    /mobile in plant/i.test(raw) ||
+    /^\s*mobile\b/i.test(raw) ||
+    /अत्यधिक गतिशीलता/.test(raw) ||
+    /पौध में मोबाइल/.test(raw) ||
+    /पौध में अत्यधिक गतिशील/.test(raw);
+  const hasImmobile =
+    /\bimmobile\b/i.test(raw) ||
+    /अचल/.test(raw) ||
+    /गैर-?गतिशील/.test(raw);
+
+  // Prefer plant mobility when both appear (e.g. P: mobile in plant, immobile in soil)
+  if (hasMobile) return "Mobile";
+  if (hasImmobile) return "Immobile";
   return "Partially mobile";
 }
 

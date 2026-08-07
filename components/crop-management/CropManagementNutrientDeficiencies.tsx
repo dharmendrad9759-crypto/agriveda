@@ -2,41 +2,24 @@ import Link from "next/link";
 import type { CropManagementProfile } from "@/types/crop-management";
 import FuturisticPanel from "@/components/ui/FuturisticPanel";
 import { Microscope, ExternalLink } from "lucide-react";
-import { toFarmerCropNutrientCard } from "@/lib/nutrients/farmerNutrientView";
+import {
+  resolveNutrientSlug,
+  toFarmerCropNutrientCard,
+} from "@/lib/nutrients/farmerNutrientView";
 
 interface Props {
   profile: CropManagementProfile;
 }
 
-const SLUG_BY_NAME: Record<string, string> = {
-  Nitrogen: "nitrogen",
-  Phosphorus: "phosphorus",
-  Potassium: "potassium",
-  Calcium: "calcium",
-  Magnesium: "magnesium",
-  Sulphur: "sulphur",
-  Sulfur: "sulphur",
-  Iron: "iron",
-  Zinc: "zinc",
-  Boron: "boron",
-  Copper: "copper",
-  Manganese: "manganese",
-  Molybdenum: "molybdenum",
-  Silicon: "silicon",
-  Chlorine: "chlorine",
-  Cobalt: "cobalt",
-  Nickel: "nickel",
-};
-
 const DEFICIENCY_COLORS: Record<string, string> = {
-  Nitrogen: "border-l-yellow-400",
-  Phosphorus: "border-l-purple-400",
-  Potassium: "border-l-orange-400",
-  Magnesium: "border-l-green-400",
-  Zinc: "border-l-blue-400",
-  Boron: "border-l-pink-400",
-  Calcium: "border-l-slate-300",
-  Iron: "border-l-red-400",
+  nitrogen: "border-l-yellow-400",
+  phosphorus: "border-l-purple-400",
+  potassium: "border-l-orange-400",
+  magnesium: "border-l-green-400",
+  zinc: "border-l-blue-400",
+  boron: "border-l-pink-400",
+  calcium: "border-l-slate-300",
+  iron: "border-l-red-400",
 };
 
 export default function CropManagementNutrientDeficiencies({ profile }: Props) {
@@ -59,13 +42,13 @@ export default function CropManagementNutrientDeficiencies({ profile }: Props) {
       <div className="space-y-3">
         {items.map((item, idx) => {
           const engName = profile.nutrientDeficiencies[idx]?.name ?? "";
-          const slug = SLUG_BY_NAME[engName];
+          const slug = item.slug || resolveNutrientSlug(engName);
           const color =
-            DEFICIENCY_COLORS[engName] ?? "border-l-emerald-400";
+            (slug && DEFICIENCY_COLORS[slug]) ?? "border-l-emerald-400";
 
           return (
             <details
-              key={engName}
+              key={engName || item.nameHi}
               className={`group overflow-hidden rounded-2xl border border-white/8 border-l-4 bg-black/25 ${color}`}
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
@@ -115,7 +98,7 @@ export default function CropManagementNutrientDeficiencies({ profile }: Props) {
                   </div>
                 )}
 
-                {slug && (
+                {slug ? (
                   <Link
                     href={`/deficiencies/${slug}`}
                     className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 hover:text-emerald-300"
@@ -123,7 +106,7 @@ export default function CropManagementNutrientDeficiencies({ profile }: Props) {
                     पूरा गाइड देखें
                     <ExternalLink className="h-3 w-3" />
                   </Link>
-                )}
+                ) : null}
               </div>
             </details>
           );

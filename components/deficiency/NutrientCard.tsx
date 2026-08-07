@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Leaf } from "lucide-react";
+import DeficiencySymptomImage from "@/components/nutrients/DeficiencySymptomImage";
 import type { NutrientDeficiencyData } from "@/types/deficiency";
 
 const severityClasses: Record<string, string> = {
@@ -13,17 +14,26 @@ export default function NutrientCard({ nutrient }: { nutrient: NutrientDeficienc
   return (
     <Link
       href={`/deficiencies/${nutrient.slug}`}
-      className="group relative block overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/70 p-6 shadow-[0_10px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-slate-900/90"
+      className="group relative block overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/70 shadow-[0_10px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-slate-900/90"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.16),_transparent_30%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-      <div className="relative z-10 space-y-4">
+      <div className="relative h-36 w-full overflow-hidden">
+        <DeficiencySymptomImage
+          nutrient={nutrient.slug}
+          alt={nutrient.name}
+          className="absolute inset-0 transition duration-300 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+        <span
+          className={`absolute right-3 top-3 rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] ${severityClasses[nutrient.severity]}`}
+        >
+          {nutrient.severity}
+        </span>
+      </div>
+      <div className="relative z-10 space-y-4 p-6">
         <div className="flex items-start justify-between">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-500/10 text-2xl text-emerald-300 shadow-inner">
             {nutrient.icon}
           </div>
-          <span className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] ${severityClasses[nutrient.severity]}`}>
-            {nutrient.severity}
-          </span>
         </div>
 
         <div>

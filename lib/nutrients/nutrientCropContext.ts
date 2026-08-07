@@ -18,6 +18,11 @@ export const CROP_EMOJI: Record<string, string> = {
   Moong: "🫘",
   Arhar: "🫘",
   Sugarcane: "🎋",
+  Wheat: "🌾",
+  Tomato: "🍅",
+  Potato: "🥔",
+  Cotton: "☁️",
+  Onion: "🧅",
 };
 
 export const CROP_LABEL_HI: Record<string, string> = {
@@ -36,9 +41,24 @@ export const CROP_LABEL_HI: Record<string, string> = {
   Moong: "मूंग",
   Arhar: "अरहर",
   Sugarcane: "गन्ना",
+  Wheat: "गेहूँ",
+  Tomato: "टमाटर",
+  Potato: "आलू",
+  Cotton: "कपास",
+  Onion: "प्याज",
 };
 
-const PRIORITY_CROPS = ["Paddy", "Soybean", "Maize", "Chilli", "Groundnut"];
+const PRIORITY_CROPS = [
+  "Paddy",
+  "Wheat",
+  "Soybean",
+  "Maize",
+  "Chilli",
+  "Tomato",
+  "Potato",
+  "Cotton",
+  "Groundnut",
+];
 
 export interface CropOption {
   key: string;
@@ -85,11 +105,18 @@ function shorten(text: string, max = 100): string {
 }
 
 export function getCropOptions(nutrient: NutrientDeficiencyData): CropOption[] {
-  const keys = nutrient.cropSpecificData.map((c) => c.cropName);
-  const ordered = [
-    ...PRIORITY_CROPS.filter((k) => keys.includes(k)),
-    ...keys.filter((k) => !PRIORITY_CROPS.includes(k)),
+  const fromData = nutrient.cropSpecificData.map((c) => c.cropName);
+  const keys = [
+    ...PRIORITY_CROPS,
+    ...fromData.filter((k) => !PRIORITY_CROPS.includes(k)),
   ];
+  // unique preserve order
+  const seen = new Set<string>();
+  const ordered = keys.filter((k) => {
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
   return ordered.map((key) => ({
     key,
     labelHi: CROP_LABEL_HI[key] ?? key,
@@ -130,14 +157,14 @@ export function buildCropScope(
   const symptoms: SymptomCardData[] = [
     {
       id: "crop-primary",
-      title: `${labelHi} में मुख्य लक्षण`,
+      title: cropSymptom ? shorten(cropSymptom, 42) : `${labelHi} में मुख्य लक्षण`,
       description: cropSymptom,
       part: mobilityPart,
       severity: "high",
     },
     ...farmer.lakshan.map((s, i) => ({
       id: `general-${i}`,
-      title: `सामान्य लक्षण ${i + 1}`,
+      title: shorten(s, 42),
       description: s,
       part: mobilityPart,
       severity: (i === 0 ? "high" : "medium") as "high" | "medium",
@@ -153,6 +180,9 @@ export function buildCropScope(
       severity: "low",
     });
   }
+
+  // Farmer detail: show top 3 so each can have a distinct matched photo
+  const focusSymptoms = symptoms.slice(0, 3);
 
   const causes: CauseCardData[] = (nutrient.whyItHappens ?? [])
     .slice(0, 5)
@@ -179,7 +209,7 @@ export function buildCropScope(
     cropPrevention: crop?.prevention ? shorten(crop.prevention, 80) : farmer.bachav[0] ?? "",
     cropCause: crop?.cause ? shorten(crop.cause, 90) : "",
     cropStage: crop?.stage ?? "खेत में निरीक्षण",
-    symptoms: symptoms.slice(0, 5),
+    symptoms: focusSymptoms,
     causes: causes.slice(0, 5),
     preventionDos: farmer.bachav,
     preventionDonts: (nutrient.commonFarmerMistakes ?? []).slice(0, 4).map((m) => shorten(m, 75)),
@@ -189,10 +219,16 @@ export function buildCropScope(
 export function categoryLabelHi(category?: string): string {
   if (!category) return "पोषक तत्व";
   const c = category.toLowerCase();
-  if (c.includes("primary") || c.includes("macronutrient")) return "मुख्य खाद";
-  if (c.includes("secondary")) return "द्वितीयक खाद";
-  if (c.includes("micronutrient")) return "सूक्ष्म खाद";
-  if (c.includes("beneficial")) return "लाभकारी";
+  if (
+    c.includes("primary") ||
+    c.includes("macronutrient") ||
+    category.includes("प्राथमिक") ||
+    category.includes("बड़ा")
+  )
+    return "मुख्य खाद";
+  if (c.includes("secondary") || category.includes("द्वितीयक")) return "द्वितीयक खाद";
+  if (c.includes("micronutrient") || category.includes("सूक्ष्म")) return "सूक्ष्म खाद";
+  if (c.includes("beneficial") || category.includes("लाभकारी")) return "लाभकारी";
   return "पोषक तत्व";
 }
 

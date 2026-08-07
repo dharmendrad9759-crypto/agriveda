@@ -3,31 +3,20 @@
 import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
+import DeficiencySymptomImage from "@/components/nutrients/DeficiencySymptomImage";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getFertilizerForCrop, haToAcre } from "@/data/knowledge/fertilizer-recommendations";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
-import { useLocale } from "@/components/i18n/LocaleProvider";
+import {
+  nutrientNameHi,
+  resolveNutrientSlug,
+} from "@/lib/nutrients/farmerNutrientView";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
 import { cn } from "@/lib/cn";
-
-const SYMBOL_HREF: Record<string, string> = {
-  Nitrogen: "nitrogen",
-  Phosphorus: "phosphorus",
-  Potassium: "potassium",
-  Calcium: "calcium",
-  Magnesium: "magnesium",
-  Sulfur: "sulphur",
-  Sulphur: "sulphur",
-  Iron: "iron",
-  Zinc: "zinc",
-  Manganese: "manganese",
-  Copper: "copper",
-  Boron: "boron",
-  Molybdenum: "molybdenum",
-};
 
 const SYM_TILE: Record<string, string> = {
   N: "bg-emerald-600 text-white",
@@ -44,31 +33,37 @@ const SYM_TILE: Record<string, string> = {
   Mo: "bg-indigo-600 text-white",
 };
 
+const SLUG_SYMBOL: Record<string, string> = {
+  nitrogen: "N",
+  phosphorus: "P",
+  potassium: "K",
+  calcium: "Ca",
+  magnesium: "Mg",
+  sulphur: "S",
+  iron: "Fe",
+  zinc: "Zn",
+  manganese: "Mn",
+  copper: "Cu",
+  boron: "B",
+  molybdenum: "Mo",
+};
+
 function riskForNutrient(name: string, solution: string): "high" | "medium" | "low" {
-  if (/zinc|nitrogen|iron|khaira|blossom/i.test(name + solution)) return "high";
-  if (/potassium|phosphorus|boron|sulph/i.test(name)) return "medium";
+  const slug = resolveNutrientSlug(name) ?? "";
+  if (/(zinc|nitrogen|iron|khaira|blossom|नाइट्रोजन|जिंक|लोहा)/i.test(name + solution + slug))
+    return "high";
+  if (/(potassium|phosphorus|boron|sulph|पोटैश|फॉस्फ|बोरॉन|सल्फर)/i.test(name + slug))
+    return "medium";
   return "low";
 }
 
-function symbolForNutrient(name: string): string {
-  if (name === "Zinc") return "Zn";
-  if (name === "Iron") return "Fe";
-  if (name === "Magnesium") return "Mg";
-  if (name === "Calcium") return "Ca";
-  if (name === "Sulfur" || name === "Sulphur") return "S";
-  if (name === "Manganese") return "Mn";
-  if (name === "Boron") return "B";
-  if (name === "Copper") return "Cu";
-  if (name === "Molybdenum") return "Mo";
-  if (name === "Nitrogen") return "N";
-  if (name === "Phosphorus") return "P";
-  if (name === "Potassium") return "K";
-  return name.slice(0, 2);
+function symbolFor(nameOrSlug: string): string {
+  const slug = resolveNutrientSlug(nameOrSlug);
+  if (slug && SLUG_SYMBOL[slug]) return SLUG_SYMBOL[slug];
+  return nameOrSlug.slice(0, 2);
 }
 
 export default function CropNutrientsSection({ crop }: { crop: Crop }) {
-  const { locale } = useLocale();
-  const hi = locale === "hi";
   const detail = useMemo(() => enrichCropDetail(crop), [crop]);
   const fert = useMemo(() => getFertilizerForCrop(crop.slug), [crop.slug]);
   const profile = useMemo(
@@ -76,6 +71,7 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
     [crop.slug]
   );
   const nutrients = detail.nutrients;
+  const cropLabel = getCropHindiName(crop.slug) || crop.name;
 
   const micros = useMemo(() => {
     const fromDossier = profile?.micronutrients ?? [];
@@ -90,28 +86,31 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
   }, [crop, fert, profile]);
 
   const npkLabel = fert
-    ? `N:P:K ${Math.round(haToAcre(fert.n, 1))} : ${Math.round(haToAcre(fert.p2o5, 1))} : ${Math.round(haToAcre(fert.k2o, 1))} kg/acre`
-    : crop.fertilizerSchedule.basalDose[0] ?? "Soil-test NPK recommended";
+    ? `N:P:K ${Math.round(haToAcre(fert.n, 1))} : ${Math.round(haToAcre(fert.p2o5, 1))} : ${Math.round(haToAcre(fert.k2o, 1))} किग्रा/एकड़`
+    : crop.fertilizerSchedule.basalDose[0] ?? "मिट्टी जाँच के बाद NPK";
 
-  const nutrientLinks = [
-    { symbol: "N", href: "nitrogen" },
-    { symbol: "P", href: "phosphorus" },
-    { symbol: "K", href: "potassium" },
-    ...nutrients
+  const nutrientLinks = useMemo(() => {
+    const base = [
+      { symbol: "N", href: "nitrogen" },
+      { symbol: "P", href: "phosphorus" },
+      { symbol: "K", href: "potassium" },
+    ];
+    const extra = nutrients
       .map((n) => {
-        const href = SYMBOL_HREF[n.nutrient];
+        const href = resolveNutrientSlug(n.nutrient);
         if (!href || ["nitrogen", "phosphorus", "potassium"].includes(href)) return null;
-        return { symbol: symbolForNutrient(n.nutrient), href };
+        return { symbol: symbolFor(href), href };
       })
-      .filter(Boolean) as { symbol: string; href: string }[],
-  ];
+      .filter(Boolean) as { symbol: string; href: string }[];
+    return [...base, ...extra];
+  }, [nutrients]);
 
   return (
     <div className="space-y-4">
       {profile?.dossierPgrNotes?.length ? (
         <DarkCard>
           <h3 className="font-display text-[15px] font-bold text-[var(--av-text-primary)]">
-            {hi ? "वृद्धि नियामक सुझाव" : "Growth regulator tips"}
+            वृद्धि नियामक सुझाव
           </h3>
           <ul className="mt-2 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
             {profile.dossierPgrNotes.map((n) => (
@@ -120,12 +119,13 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
           </ul>
         </DarkCard>
       ) : null}
+
       <DarkCard delay={1}>
         <h3 className="font-display text-[15px] font-bold text-[var(--av-text-primary)]">
-          Essential nutrients — {crop.name}
+          ज़रूरी पोषक तत्व — {cropLabel}
         </h3>
         <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-          Tap a symbol for pehchaan tips. Corrections follow this crop&apos;s fertilizer guide.
+          प्रतीक पर टैप करें — पहचान और उपाय खुलेंगे। सुधार इस फसल की खाद योजना से जुड़े हैं।
         </p>
         <div className="mt-3.5 flex flex-wrap gap-2.5">
           {nutrientLinks.map((n) => (
@@ -136,6 +136,7 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
                 "flex h-11 w-11 items-center justify-center rounded-xl text-[13px] font-black shadow-sm transition hover:scale-105",
                 SYM_TILE[n.symbol] ?? "bg-emerald-700 text-white"
               )}
+              title={nutrientNameHi(n.href)}
             >
               {n.symbol}
             </AppLink>
@@ -146,30 +147,40 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {nutrients.slice(0, 4).map((n, i) => {
           const risk = riskForNutrient(n.nutrient, n.solution);
-          const href = SYMBOL_HREF[n.nutrient];
-          const symbol = symbolForNutrient(n.nutrient);
+          const href = resolveNutrientSlug(n.nutrient);
+          const symbol = symbolFor(n.nutrient);
+          const labelHi = nutrientNameHi(n.nutrient);
           const body = (
             <>
-              <div className="flex items-start justify-between gap-2">
+              <div className="relative mb-2 h-28 w-full overflow-hidden rounded-xl border border-[var(--av-border)]">
+                <DeficiencySymptomImage
+                  cropSlug={crop.slug}
+                  nutrient={href ?? n.nutrient}
+                  alt={`${cropLabel} — ${labelHi} कमी`}
+                  className="absolute inset-0"
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
                 <span
                   className={cn(
-                    "inline-flex h-9 w-9 items-center justify-center rounded-xl text-xs font-black shadow-sm",
+                    "absolute left-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-black shadow-sm",
                     SYM_TILE[symbol] ?? "bg-emerald-700 text-white"
                   )}
                 >
                   {symbol}
                 </span>
-                <RiskBadge level={risk} />
+                <span className="absolute right-2 top-2">
+                  <RiskBadge level={risk} />
+                </span>
               </div>
-              <p className="mt-3 font-display text-[14px] font-bold text-[var(--av-text-primary)]">
-                {n.nutrient}
+              <p className="font-display text-[14px] font-bold text-[var(--av-text-primary)]">
+                {labelHi}
               </p>
               <p className="mt-1.5 line-clamp-3 text-[11px] leading-snug text-[var(--av-text-muted)]">
                 {n.symptoms}
               </p>
               {href ? (
                 <span className="mt-3 inline-flex items-center gap-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
-                  Open guide
+                  पूरी गाइड देखें
                   <ChevronRight className="h-3.5 w-3.5" />
                 </span>
               ) : null}
@@ -194,35 +205,46 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
 
       <DarkCard className="overflow-x-auto" delay={3}>
         <h3 className="mb-3 font-display text-[15px] font-bold text-[var(--av-text-primary)]">
-          Deficiency guide — {crop.name}
+          कमी गाइड — {cropLabel}
         </h3>
         <table className="av-table min-w-[560px]">
           <thead>
             <tr>
-              <th>Nutrient</th>
-              <th>Symptoms</th>
-              <th>Likely cause</th>
-              <th>Risk</th>
-              <th>Correction</th>
+              <th>फोटो</th>
+              <th>पोषक</th>
+              <th>लक्षण</th>
+              <th>संभावित कारण</th>
+              <th>जोखिम</th>
+              <th>उपाय</th>
             </tr>
           </thead>
           <tbody>
             {nutrients.map((row) => {
               const risk = riskForNutrient(row.nutrient, row.solution);
-              const href = SYMBOL_HREF[row.nutrient];
+              const href = resolveNutrientSlug(row.nutrient);
+              const labelHi = nutrientNameHi(row.nutrient);
               return (
                 <tr key={row.nutrient}>
+                  <td className="w-16">
+                    <div className="h-12 w-14 overflow-hidden rounded-lg border border-[var(--av-border)]">
+                      <DeficiencySymptomImage
+                        cropSlug={crop.slug}
+                        nutrient={href ?? row.nutrient}
+                        alt={labelHi}
+                      />
+                    </div>
+                  </td>
                   <td className="font-bold text-[var(--av-accent)]">
                     {href ? (
                       <AppLink
                         href={`/deficiencies/${href}`}
                         className="inline-flex items-center gap-1 hover:underline"
                       >
-                        {row.nutrient}
+                        {labelHi}
                         <ChevronRight className="h-3 w-3 opacity-60" />
                       </AppLink>
                     ) : (
-                      row.nutrient
+                      labelHi
                     )}
                   </td>
                   <td>{row.symptoms}</td>
@@ -241,7 +263,7 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
       {micros.length > 0 && (
         <DarkCard>
           <h3 className="font-display text-[15px] font-bold text-[var(--av-text-primary)]">
-            Micronutrients for this crop
+            इस फसल के सूक्ष्म पोषक
           </h3>
           <ul className="mt-3 space-y-2">
             {micros.map((m) => (
@@ -255,17 +277,17 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
 
       <DarkCard hover delay={1}>
         <h3 className="font-display text-[15px] font-bold text-[var(--av-text-primary)]">
-          Balanced nutrition target
+          संतुलित पोषण लक्ष्य
         </h3>
         <p className="mt-2 font-display text-lg font-bold text-[var(--av-accent)]">{npkLabel}</p>
         <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-          Always adjust after soil test. Open Fertiliser tab for stage-wise splits.
+          मिट्टी जाँच के बाद ही मात्रा बदलें। अवस्था अनुसार विभाजन खाद टैब में देखें।
         </p>
         <AppLink
           href={`/crops/${crop.slug}?tab=fertilizer`}
           className="mt-3 inline-flex items-center gap-0.5 text-xs font-bold text-[var(--av-accent)]"
         >
-          Open fertilizer plan
+          खाद योजना खोलें
           <ChevronRight className="h-3.5 w-3.5" />
         </AppLink>
       </DarkCard>

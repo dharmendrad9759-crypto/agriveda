@@ -30,6 +30,11 @@ const LOCAL_CROP_PHOTOS: Record<string, string> = {
   mango: "/images/crops/mango.jpg",
   banana: "/images/crops/banana.jpg",
   grapes: "/images/crops/grapes.jpg",
+  chana: "/images/crops/pulses.jpg",
+  masoor: "/images/crops/pulses.jpg",
+  urad: "/images/crops/moong.jpg",
+  ginger: "/images/crops/onion.jpg",
+  garlic: "/images/crops/onion.jpg",
 };
 
 /**

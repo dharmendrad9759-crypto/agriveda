@@ -11,9 +11,11 @@ import {
 } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import DeficiencySymptomImage from "@/components/nutrients/DeficiencySymptomImage";
 import { crops } from "@/data/crops";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { allNutrientDeficiencies } from "@/lib/nutrients/nutrientDeficiencyBridge";
+import { nutrientNameHi, resolveNutrientSlug } from "@/lib/nutrients/farmerNutrientView";
 import { getCropHindiName, getCropImageUrl } from "@/lib/crops/crop-display";
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
@@ -104,14 +106,17 @@ function cropShort(name: string) {
 }
 
 function resolveDeficiencySlug(name: string) {
-  const hit = allNutrientDeficiencies.find(
-    (n) =>
-      n.name.toLowerCase() === name.toLowerCase() ||
-      n.symbol.toLowerCase() === name.slice(0, 2).toLowerCase() ||
-      name.toLowerCase().includes(n.name.toLowerCase()) ||
-      n.name.toLowerCase().includes(name.toLowerCase().split(" ")[0] ?? "")
+  return (
+    resolveNutrientSlug(name) ??
+    allNutrientDeficiencies.find(
+      (n) =>
+        n.name.toLowerCase() === name.toLowerCase() ||
+        n.symbol.toLowerCase() === name.slice(0, 2).toLowerCase() ||
+        name.toLowerCase().includes(n.name.toLowerCase()) ||
+        n.name.toLowerCase().includes(name.toLowerCase().split(" ")[0] ?? "")
+    )?.slug ??
+    name.toLowerCase().replace(/\s+/g, "-")
   );
-  return hit?.slug ?? name.toLowerCase().replace(/\s+/g, "-");
 }
 
 export default function DeficienciesPageClient() {
@@ -181,20 +186,29 @@ export default function DeficienciesPageClient() {
             key={p.id}
             href={`/deficiencies/${p.slug}`}
             className={cn(
-              "rounded-2xl border p-3.5 text-left transition active:scale-[0.98]",
+              "overflow-hidden rounded-2xl border text-left transition active:scale-[0.98]",
               p.tone
             )}
           >
-            <p className="text-[14px] font-bold leading-snug text-[var(--av-text-primary)]">
-              {isHi ? p.hi : p.en}
-            </p>
-            <p className="mt-1 text-[11px] font-medium text-[var(--av-text-muted)]">
-              {isHi ? p.hintHi : p.hintEn}
-            </p>
-            <span className="mt-2.5 inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
-              {isHi ? "देखो" : "See"}
-              <ChevronRight className="h-3.5 w-3.5" />
-            </span>
+            <div className="relative aspect-[4/3] w-full bg-emerald-500/5">
+              <DeficiencySymptomImage
+                cropSlug={cropSlug}
+                nutrient={p.slug}
+                alt={isHi ? p.hi : p.en}
+              />
+            </div>
+            <div className="p-3">
+              <p className="text-[14px] font-bold leading-snug text-[var(--av-text-primary)]">
+                {isHi ? p.hi : p.en}
+              </p>
+              <p className="mt-1 text-[11px] font-medium text-[var(--av-text-muted)]">
+                {isHi ? p.hintHi : p.hintEn}
+              </p>
+              <span className="mt-2 inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
+                {isHi ? "देखो" : "See"}
+                <ChevronRight className="h-3.5 w-3.5" />
+              </span>
+            </div>
           </AppLink>
         ))}
       </motion.section>
@@ -268,17 +282,24 @@ export default function DeficienciesPageClient() {
                     href={`/deficiencies/${slug}`}
                     className="flex items-center gap-3 px-3.5 py-3 active:bg-emerald-500/8"
                   >
-                    <span
-                      className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black",
-                        SYM_TILE[sym] ?? "bg-emerald-700 text-white"
-                      )}
-                    >
-                      {sym}
+                    <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-emerald-500/10">
+                      <DeficiencySymptomImage
+                        cropSlug={cropSlug}
+                        nutrient={slug}
+                        alt={meta?.name ?? d.name}
+                      />
+                      <span
+                        className={cn(
+                          "absolute bottom-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded px-0.5 text-[9px] font-black shadow-sm",
+                          SYM_TILE[sym] ?? "bg-emerald-700 text-white"
+                        )}
+                      >
+                        {sym}
+                      </span>
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-[13px] font-bold text-[var(--av-text-primary)]">
-                        {isHi && meta ? meta.name : d.name}
+                        {nutrientNameHi(meta?.slug ?? d.name)}
                       </span>
                       <span className="mt-0.5 line-clamp-1 block text-[11px] text-[var(--av-text-muted)]">
                         {d.deficiencySymptoms[0]}
@@ -332,18 +353,25 @@ export default function DeficienciesPageClient() {
                 <AppLink
                   key={n.slug}
                   href={`/deficiencies/${n.slug}`}
-                  className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-3 active:scale-[0.98]"
+                  className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] active:scale-[0.98]"
                 >
-                  <span
-                    className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-xl text-sm font-black",
-                      SYM_TILE[n.symbol] ?? "bg-emerald-700 text-white"
-                    )}
-                  >
-                    {n.symbol}
-                  </span>
-                  <span className="line-clamp-2 text-center text-[10px] font-bold leading-tight text-[var(--av-text-primary)]">
-                    {n.name}
+                  <div className="relative aspect-square w-full bg-emerald-500/5">
+                    <DeficiencySymptomImage
+                      cropSlug={cropSlug}
+                      nutrient={n.slug}
+                      alt={n.name}
+                    />
+                    <span
+                      className={cn(
+                        "absolute left-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-lg px-1 text-[11px] font-black shadow-sm",
+                        SYM_TILE[n.symbol] ?? "bg-emerald-700 text-white"
+                      )}
+                    >
+                      {n.symbol}
+                    </span>
+                  </div>
+                  <span className="line-clamp-2 px-1.5 py-2 text-center text-[10px] font-bold leading-tight text-[var(--av-text-primary)]">
+                    {nutrientNameHi(n.slug)}
                   </span>
                 </AppLink>
               ))}

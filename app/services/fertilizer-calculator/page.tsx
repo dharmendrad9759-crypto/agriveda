@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
 import DarkCard from "@/components/shell/DarkCard";
 import { cropCatalog } from "@/data/crop-catalog";
-import { buildFertilizerPlan, listFertilizerCrops } from "@/lib/agriveda2/fertilizerEngine";
+import {
+  buildFertilizerPlan,
+  listFertilizerCrops,
+  type SoilTestLevels,
+} from "@/lib/agriveda2/fertilizerEngine";
 import { FERTILIZER_SOURCES } from "@/data/agriveda2/fertilizer-data";
 import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -14,6 +18,7 @@ import { EASE_OUT, staggerContainer, staggerItem } from "@/lib/motion/variants";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { cn } from "@/lib/cn";
+import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
 
 const UNIT_LABELS: Record<AreaUnit, string> = {
   acre: "एकड़ (Acre)",
@@ -41,6 +46,7 @@ export default function FertilizerCalculatorPage() {
   const [slug, setSlug] = useState(crops[0]?.slug ?? "wheat");
   const [area, setArea] = useState("1");
   const [unit, setUnit] = useState<AreaUnit>("acre");
+  const [soilTest, setSoilTest] = useState<SoilTestLevels>({});
 
   const bighaInfo = useMemo(
     () => (unit === "bigha" ? getBighaInfo(profile.state, profile.district) : null),
@@ -55,8 +61,8 @@ export default function FertilizerCalculatorPage() {
 
   const plan = useMemo(() => {
     if (!acres) return null;
-    return buildFertilizerPlan(slug, acres);
-  }, [slug, acres]);
+    return buildFertilizerPlan(slug, acres, soilTest);
+  }, [slug, acres, soilTest]);
 
   const selected = cropCatalog.find((c) => c.slug === slug);
 
@@ -173,9 +179,11 @@ export default function FertilizerCalculatorPage() {
           </p>
         )}
 
+        <SoilTestInputs value={soilTest} onChange={setSoilTest} />
+
         {plan ? (
           <motion.div
-            key={`${slug}-${acres}`}
+            key={`${slug}-${acres}-${plan.soilFactors.n}-${plan.soilFactors.p}-${plan.soilFactors.k}`}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: EASE_OUT }}
@@ -185,6 +193,22 @@ export default function FertilizerCalculatorPage() {
                 {plan.unitNote}
                 {plan.source === "guide" && " · फसल गाइड अनुमान — मिट्टी जाँच से समायोजित करें"}
               </p>
+
+              {plan.soilAdjusted && (
+                <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] font-semibold text-amber-950 dark:text-amber-100">
+                  {plan.soilAdjustNote}
+                  <span className="mt-0.5 block font-medium text-amber-900/80 dark:text-amber-200/80">
+                    गुणांक N×{plan.soilFactors.n} · P×{plan.soilFactors.p} · K×{plan.soilFactors.k}
+                  </span>
+                </p>
+              )}
+
+              {!plan.soilAdjusted &&
+                plan.guideNotes.some((n) => n.includes("मिट्टी जाँच")) && (
+                  <p className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-[10px] font-semibold text-amber-900 dark:text-amber-200">
+                    {plan.guideNotes.find((n) => n.includes("मिट्टी जाँच"))}
+                  </p>
+                )}
 
               <div>
                 <p className="text-xs font-extrabold theme-text-primary">
