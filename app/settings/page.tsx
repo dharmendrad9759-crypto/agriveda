@@ -18,8 +18,18 @@ import { downloadLocalDataExport } from "@/lib/exportFarmerData";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
-import { Check, ChevronRight, Download, LogOut, Share2, Trash2, User } from "lucide-react";
+import { Check, ChevronRight, Download, LogOut, MapPin, Navigation, Settings, Share2, Trash2, User } from "lucide-react";
 import { useState } from "react";
+import {
+  clearLocationPermissionCache,
+  locationFlowErrorMessage,
+  resolveFarmerLocationFromGps,
+} from "@/lib/farmerLocation";
+import {
+  canOpenNativeLocationSettings,
+  openAppLocationPermissionSettings,
+  openDeviceLocationSettings,
+} from "@/lib/openLocationSettings";
 
 function ShareAgrivedaButton() {
   const { showToast } = useToast();
@@ -70,7 +80,7 @@ function SettingsRow({ label, value, href, toggle }: { label: string; value?: st
 }
 
 export default function SettingsPage() {
-  const { profile } = useFarmerProfile();
+  const { profile, saveProfile } = useFarmerProfile();
   const { data: farm, stats: farmStats } = useFarmData();
   const { theme, setTheme } = useTheme();
   const { settings, update } = useAppSettings();
@@ -78,11 +88,47 @@ export default function SettingsPage() {
   const { locale, setLocale, t } = useLocale();
   const { showToast } = useToast();
   const [busy, setBusy] = useState<"logout" | "delete" | null>(null);
+  const [locBusy, setLocBusy] = useState(false);
 
   const langOptions: { code: AppLocale; label: string; hint: string }[] = [
     { code: "en", label: t("english"), hint: t("langEnglishHint") },
     { code: "hi", label: t("hindi"), hint: t("langHindiHint") },
   ];
+
+  const handleDetectLocation = async () => {
+    setLocBusy(true);
+    try {
+      clearLocationPermissionCache();
+      const loc = await resolveFarmerLocationFromGps();
+      const patch: { state?: string; district?: string } = {};
+      if (loc.state) patch.state = loc.state;
+      if (loc.district) patch.district = loc.district;
+      if (Object.keys(patch).length) saveProfile(patch);
+      showToast(
+        loc.district || loc.state
+          ? `स्थान सेट · ${[loc.district, loc.state].filter(Boolean).join(", ")}`
+          : "GPS स्थान सेव हो गया ✓",
+        "success"
+      );
+    } catch (err) {
+      locationFlowErrorMessage(err);
+      showToast(
+        err instanceof Error ? err.message : "लोकेशन नहीं मिली — Settings से Allow करें",
+        "error"
+      );
+    } finally {
+      setLocBusy(false);
+    }
+  };
+
+  const handleOpenLocationSettings = async () => {
+    if (canOpenNativeLocationSettings()) {
+      await openAppLocationPermissionSettings();
+    } else {
+      await openDeviceLocationSettings();
+    }
+    showToast("फ़ोन Settings में Location → Allow करें", "success");
+  };
 
   const handleLogout = async () => {
     if (!window.confirm("लॉग आउट करें? फसल और local डेटा फ़ोन पर रहेगा। सर्वर session बंद हो जाएगा।"))
@@ -213,12 +259,39 @@ export default function SettingsPage() {
         </DarkCard>
 
         <DarkCard delay={4}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Location & Farm</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">स्थान और खेत</h3>
           <div className="mt-2">
-            <SettingsRow label="My Location" value={[profile.district, profile.state].filter(Boolean).join(", ") || "स्थान जोड़ें"} href="/profile" />
-            <SettingsRow label="Manage Farms" value={farm.fields.length ? `${farm.fields.length} खेत जोड़े` : "खेत जोड़ें"} href="/my-farm" />
             <SettingsRow
-              label="Default Farm"
+              label="मेरा स्थान"
+              value={[profile.district, profile.state].filter(Boolean).join(", ") || "स्थान जोड़ें"}
+              href="/profile/edit"
+            />
+            <div className="space-y-2 border-b border-[var(--av-border)] py-2">
+              <button
+                type="button"
+                disabled={locBusy}
+                onClick={() => void handleDetectLocation()}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2.5 text-sm font-bold text-white disabled:opacity-60"
+              >
+                <Navigation className="h-4 w-4" />
+                {locBusy ? "स्थान लगा रहे हैं…" : "GPS से स्थान लगाएँ"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleOpenLocationSettings()}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs font-bold text-[var(--av-text-primary)]"
+              >
+                <Settings className="h-3.5 w-3.5" />
+                लोकेशन Settings खोलें
+              </button>
+              <p className="flex items-start gap-1.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
+                <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
+                मौसम और सलाह के लिए GPS अनुमति दें। ज़िला न दिखे तो ऊपर «मेरा स्थान» से चुनें।
+              </p>
+            </div>
+            <SettingsRow label="खेत प्रबंधित करें" value={farm.fields.length ? `${farm.fields.length} खेत जोड़े` : "खेत जोड़ें"} href="/my-farm" />
+            <SettingsRow
+              label="डिफ़ॉल्ट खेत"
               value={
                 farm.fields[0]
                   ? `${farm.fields[0].name} (${farm.fields[0].area})`

@@ -32,7 +32,7 @@ const SUB_TABS: {
   icon: typeof FlaskConical;
   ring: string;
 }[] = [
-  { id: "schedule", label: "Schedule", labelHi: "समयसारिणी", icon: FlaskConical, ring: "ring-amber-500/40" },
+  { id: "schedule", label: "Schedule", labelHi: "खाद समयसारिणी", icon: FlaskConical, ring: "ring-amber-500/40" },
   { id: "foliar", label: "Foliar", labelHi: "पर्णीय", icon: Droplets, ring: "ring-cyan-500/40" },
   { id: "organic", label: "Organic", labelHi: "जैविक", icon: Leaf, ring: "ring-emerald-500/40" },
   { id: "calculator", label: "Calculator", labelHi: "कैलकुलेटर", icon: Calculator, ring: "ring-violet-500/40" },
@@ -452,6 +452,42 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                 : "Schedule data loading… soil-test based dose recommended."}
             </p>
           )}
+
+          {bags.length ? (
+            <div className="mt-4 border-t border-[var(--av-border)] pt-3">
+              <h4 className="text-xs font-extrabold text-[var(--av-text-primary)]">
+                {hi ? "खाद संयोजन (अनुमान)" : "Fertilizer combination (estimate)"}
+              </h4>
+              <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                {hi
+                  ? `${acres} एकड़ · यूरिया + DAP + MOP मिलाकर — मिट्टी जाँच से मात्रा बदलें`
+                  : `${acres} acre · Urea + DAP + MOP mix — adjust after soil test`}
+              </p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                {bags.map((b) => (
+                  <div
+                    key={b.name}
+                    className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-3 py-2.5"
+                  >
+                    <p className="text-[10px] font-bold text-[var(--av-text-muted)]">{b.name}</p>
+                    <p className="mt-0.5 text-sm font-black text-[var(--av-accent)]">{b.amount}</p>
+                  </div>
+                ))}
+              </div>
+              <label className="mt-3 flex items-center gap-2 text-xs font-semibold text-[var(--av-text-secondary)]">
+                {hi ? "क्षेत्र (एकड़)" : "Area (acre)"}
+                <input
+                  type="number"
+                  min={0.5}
+                  max={50}
+                  step={0.5}
+                  value={acres}
+                  onChange={(e) => setAcres(Math.max(0.5, Number(e.target.value) || 1))}
+                  className="w-20 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-1.5 text-sm font-bold"
+                />
+              </label>
+            </div>
+          ) : null}
         </DarkCard>
       )}
 
@@ -494,7 +530,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               Nutrient need — {crop.name}
             </h3>
             <label className="mt-3 flex items-center gap-2 text-xs font-semibold text-[var(--av-text-secondary)]">
-              Area (acre)
+              Area (एकड़)
               <input
                 type="number"
                 min={0.5}

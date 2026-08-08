@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import Image from "next/image";
-import AppLink from "@/components/ui/AppLink";
 import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
 import { AV } from "@/lib/design/tokens";
@@ -18,12 +17,10 @@ import {
   Bot,
   Camera,
   CheckCircle2,
-  CircleDot,
   Clock,
   History,
   ImagePlus,
   Leaf,
-  Sparkles,
   Stethoscope,
 } from "lucide-react";
 import type { AIHistoryEntry } from "@/hooks/useAIHistory";
@@ -97,7 +94,7 @@ export function AiDoctorHero({
               {historyCount > 9 ? "9+" : historyCount}
             </span>
           ) : (
-            <span>पुराने</span>
+            <span>पिछली जांचें</span>
           )}
         </button>
       </div>
@@ -209,15 +206,6 @@ export function AiDoctorCropSelect({
           );
         })}
 
-        <AppLink
-          href="/crops"
-          className="flex w-[76px] shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-emerald-400/40 p-2 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 sm:w-[88px] sm:gap-2 sm:p-3 sm:text-[11px]"
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 sm:h-14 sm:w-14">
-            <Leaf className="h-5 w-5 sm:h-6 sm:w-6" />
-          </span>
-          More → और
-        </AppLink>
       </div>
     </DarkCard>
   );
@@ -426,7 +414,7 @@ export function AiDoctorPhotoUpload({
               className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-dashed border-emerald-500/40 bg-white/80 px-3 text-sm font-bold text-emerald-800 dark:bg-transparent dark:text-emerald-200"
             >
               <ImagePlus className="h-4 w-4" />
-              और एक फोटो (ज़रूरी नहीं)
+              वैकल्पिक: एक और फोटो जोड़ें
             </button>
           </div>
         ) : null}
@@ -465,7 +453,7 @@ export function AiDoctorActions({
         ) : (
           <>
             <Bot className="h-5 w-5" />
-            Run diagnosis
+            जांच शुरू करें
             <ArrowRight className="h-4 w-4" />
           </>
         )}
@@ -476,7 +464,7 @@ export function AiDoctorActions({
         disabled={!hasInput && !isScanning}
         className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-sm font-semibold text-[var(--av-text-secondary)] transition enabled:active:scale-[0.99] disabled:opacity-40"
       >
-        Reset
+        फिर से सेट करें
       </button>
     </section>
   );
@@ -500,14 +488,14 @@ export function AiDoctorRecentDiagnoses({
     <div id="ai-doctor-history" className="scroll-mt-24">
       <DarkCard className="!p-3.5 sm:!p-5">
         <div className="mb-2.5 flex items-start justify-between gap-2">
-          <SectionLabel title="Recent diagnoses" />
+          <SectionLabel title="पिछली जांचें" />
           {onClear && history.length > 0 && (
             <button
               type="button"
               onClick={onClear}
               className="mt-0.5 shrink-0 text-[11px] font-semibold text-[var(--av-text-muted)] hover:text-red-600"
             >
-              Clear
+              साफ़ करें
             </button>
           )}
         </div>
@@ -516,7 +504,7 @@ export function AiDoctorRecentDiagnoses({
           <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-7 text-center">
             <History className="mx-auto h-7 w-7 text-[var(--av-text-muted)]" />
             <p className="mt-2 text-sm font-semibold text-[var(--av-text-secondary)]">
-              Abhi koi diagnosis nahi
+              अभी कोई निदान नहीं हुआ है
             </p>
           </div>
         ) : (
@@ -555,7 +543,7 @@ export function AiDoctorRecentDiagnoses({
                         <RiskBadge level={severity} />
                       </div>
                       <p className="mt-0.5 truncate text-[11px] text-[var(--av-text-secondary)]">
-                        {h.result.cropContext || h.result.pathogen || "Diagnosis"}
+                        {h.result.cropContext || h.result.pathogen || "जांच"}
                       </p>
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-[var(--av-text-muted)]">
                         <span className="inline-flex items-center gap-1">

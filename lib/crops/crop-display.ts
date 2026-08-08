@@ -59,12 +59,32 @@ export function getCropImageUrl(crop: Pick<Crop, "slug" | "image" | "name">): st
   });
 }
 
-export function parseSeasonTag(season: string): SeasonTag {
+/** English + Hindi season tokens (catalog uses खरीफ / रबी / जायद). */
+function seasonFlags(season: string): {
+  kharif: boolean;
+  rabi: boolean;
+  zaid: boolean;
+  all: boolean;
+} {
   const s = season.toLowerCase();
-  if (s.includes("kharif") && s.includes("rabi")) return "Kharif";
-  if (s.includes("kharif")) return "Kharif";
-  if (s.includes("rabi")) return "Rabi";
-  if (s.includes("summer") || s.includes("spring") || s.includes("zaid")) return "Summer";
+  return {
+    kharif: /kharif|खरीफ|खर[ीि]फ/.test(s),
+    rabi: /rabi|रबी|रवि/.test(s),
+    zaid: /zaid|jayad|जायद|summer|spring|वसंत|गर्मी/.test(s),
+    all: /all\s*season|year[\s-]*round|throughout|साल\s*भर|वर्ष\s*भर|सभी\s*मौसम/.test(s),
+  };
+}
+
+export function parseSeasonTag(season: string): SeasonTag {
+  const f = seasonFlags(season);
+  if (f.all) return "All Season";
+  // Multi-season catalog string → pick primary for badge; listing uses getPlannerSeasonsForCrop
+  if (f.kharif && !f.rabi && !f.zaid) return "Kharif";
+  if (f.rabi && !f.kharif && !f.zaid) return "Rabi";
+  if (f.zaid && !f.kharif && !f.rabi) return "Summer";
+  if (f.kharif) return "Kharif";
+  if (f.rabi) return "Rabi";
+  if (f.zaid) return "Summer";
   return "All Season";
 }
 
@@ -94,21 +114,17 @@ export function getPlannerSeasonsForCrop(
   const override = PLANNER_SEASON_OVERRIDES[slug];
   if (override?.length) return override;
 
-  const s = suitableSeason.toLowerCase();
+  const f = seasonFlags(suitableSeason);
+  if (f.all) return ["kharif", "rabi", "zaid"];
+
   const out: PlannerSeasonId[] = [];
-  if (/kharif/.test(s)) out.push("kharif");
-  if (/rabi/.test(s)) out.push("rabi");
-  if (/zaid|summer|spring/.test(s)) out.push("zaid");
-  if (/all\s*season|year[\s-]*round|throughout/.test(s)) {
-    return ["kharif", "rabi", "zaid"];
-  }
+  if (f.kharif) out.push("kharif");
+  if (f.rabi) out.push("rabi");
+  if (f.zaid) out.push("zaid");
+
   if (!out.length) {
-    // Fallback from primary tag
-    const tag = parseSeasonTag(suitableSeason);
-    if (tag === "Kharif") return ["kharif"];
-    if (tag === "Rabi") return ["rabi"];
-    if (tag === "Summer") return ["zaid"];
-    return ["kharif", "rabi", "zaid"];
+    // Unknown string — do NOT unlock all three; prefer calendar default kharif
+    return ["kharif"];
   }
   return out;
 }
@@ -177,7 +193,9 @@ export function matchesListingCategory(crop: Crop, category: CropListingCategory
 
 export function matchesSeasonFilter(crop: Crop, season: "All Seasons" | SeasonTag): boolean {
   if (season === "All Seasons") return true;
-  const tag = parseSeasonTag(crop.suitableSeason);
-  if (season === "Summer") return tag === "Summer" || crop.suitableSeason.toLowerCase().includes("spring");
-  return tag === season;
+  const allowed = getPlannerSeasonsForCrop(crop.slug, crop.suitableSeason);
+  if (season === "Kharif") return allowed.includes("kharif");
+  if (season === "Rabi") return allowed.includes("rabi");
+  if (season === "Summer") return allowed.includes("zaid");
+  return true;
 }

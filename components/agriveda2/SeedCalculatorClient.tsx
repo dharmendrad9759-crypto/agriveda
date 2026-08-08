@@ -4,26 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { Calculator, Mic, Sprout, Info, Leaf } from "lucide-react";
 import DarkCard from "@/components/shell/DarkCard";
 import { cropCatalog } from "@/data/crop-catalog";
-import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
-import { getBighaInfo } from "@/lib/bighaConversion";
 import { resolveSeedRateEntry } from "@/lib/agriveda2/seedRateFallback";
 import {
   buildSeedCalculatorResult,
   getDefaultMethodId,
   parseVoiceArea,
-  type AreaUnit,
 } from "@/lib/agriveda2/seedCalculatorEngine";
-
-const UNIT_LABELS: Record<AreaUnit, string> = {
-  acre: "एकड़ (Acre)",
-  bigha: "बीघा (Bigha)",
-  hectare: "हेक्टेयर (Hectare)",
-};
 
 export default function SeedCalculatorClient() {
   const { crops } = useMyCrops();
-  const { profile } = useFarmerProfile();
   const catalogWithData = useMemo(
     () => cropCatalog.filter((c) => resolveSeedRateEntry(c.slug)),
     []
@@ -39,7 +29,6 @@ export default function SeedCalculatorClient() {
     getDefaultMethodId(defaultSlug)
   );
   const [area, setArea] = useState("2");
-  const [unit, setUnit] = useState<AreaUnit>("acre");
   const [voiceText, setVoiceText] = useState("");
 
   useEffect(() => {
@@ -52,22 +41,16 @@ export default function SeedCalculatorClient() {
   const result = useMemo(() => {
     const n = parseFloat(area);
     if (!n || n <= 0) return null;
-    return buildSeedCalculatorResult(cropSlug, n, unit, activeMethodId, {
-      state: profile.state,
-      district: profile.district,
-    });
-  }, [cropSlug, area, unit, activeMethodId, profile.state, profile.district]);
-
-  const bighaInfo = useMemo(
-    () => (unit === "bigha" ? getBighaInfo(profile.state, profile.district) : null),
-    [unit, profile.state, profile.district]
-  );
+    return buildSeedCalculatorResult(cropSlug, n, "acre", activeMethodId);
+  }, [cropSlug, area, activeMethodId]);
 
   const applyVoice = () => {
     const parsed = parseVoiceArea(voiceText);
     if (!parsed) return;
-    setArea(String(parsed.value));
-    setUnit(parsed.unit);
+    if (parsed.unit === "acre") setArea(String(parsed.value));
+    else if (parsed.unit === "hectare")
+      setArea(String(Math.round(parsed.value * 2.471 * 10) / 10));
+    else setArea(String(parsed.value));
     if (parsed.cropHint) setCropSlug(parsed.cropHint);
   };
 
@@ -78,14 +61,8 @@ export default function SeedCalculatorClient() {
       <DarkCard className="border-emerald-500/20 p-4">
         <p className="text-sm font-bold theme-text-primary">बीज कैलकुलेटर</p>
         <p className="mt-1 text-xs theme-text-muted">
-          फसल चुनें, तरीका और खेत का area — बीज kg अपने आप निकलेगा। बीघा आपके ज़िले के हिसाब से।
+          फसल चुनें, तरीका और खेत का क्षेत्र (एकड़) — बीज kg अपने आप निकलेगा।
         </p>
-
-        {!profile.district && unit === "bigha" && (
-          <p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200">
-            सही बीघा के लिए प्रोफ़ाइल में राज्य/ज़िला सेट करें।
-          </p>
-        )}
 
         <label className="mt-4 block text-xs font-bold theme-text-muted">फसल</label>
         <select
@@ -106,7 +83,7 @@ export default function SeedCalculatorClient() {
             <span className="font-bold theme-text-primary">
               {selectedCrop.emoji} {selectedCrop.name}
             </span>
-            <span className="theme-text-muted">— {entry.methods.length} buwai option</span>
+            <span className="theme-text-muted">— {entry.methods.length} बुवाई विकल्प</span>
           </div>
         )}
 
@@ -130,40 +107,17 @@ export default function SeedCalculatorClient() {
           </>
         )}
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs font-bold theme-text-muted">खेत का area</label>
-            <input
-              type="number"
-              min="0.1"
-              step="0.1"
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-              className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold theme-text-muted">Unit</label>
-            <select
-              value={unit}
-              onChange={(e) => setUnit(e.target.value as AreaUnit)}
-              className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
-            >
-              {(Object.keys(UNIT_LABELS) as AreaUnit[]).map((u) => (
-                <option key={u} value={u}>
-                  {UNIT_LABELS[u]}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="mt-4">
+          <label className="text-xs font-bold theme-text-muted">खेत का क्षेत्र (एकड़)</label>
+          <input
+            type="number"
+            min="0.1"
+            step="0.1"
+            value={area}
+            onChange={(e) => setArea(e.target.value)}
+            className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
+          />
         </div>
-
-        {bighaInfo && (
-          <p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200">
-            {profile.district ? `${profile.district}: ` : ""}
-            {bighaInfo.label} = {bighaInfo.acresPerBigha} एकड़ — {bighaInfo.note}
-          </p>
-        )}
 
         <input
           type="range"
@@ -180,7 +134,7 @@ export default function SeedCalculatorClient() {
             type="text"
             value={voiceText}
             onChange={(e) => setVoiceText(e.target.value)}
-            placeholder='बोलें: "डेढ़ बीघा में सरसों"'
+            placeholder="जैसे: 2 एकड़ गेहूँ"
             className="theme-input flex-1 rounded-xl border px-3 py-2 text-sm"
           />
           <button
@@ -210,7 +164,7 @@ export default function SeedCalculatorClient() {
               ✅ <strong>बीज दर:</strong> {result.perAcreMin}–{result.perAcreMax} {result.unit}
             </li>
             <li>
-              ✅ <strong>{result.areaDisplay} ke liye total:</strong>{" "}
+              ✅ <strong>{result.areaDisplay} के लिए कुल:</strong>{" "}
               <span className="text-lg font-black text-emerald-600">
                 {result.totalSeedMin}–{result.totalSeedMax}
               </span>{" "}
@@ -218,7 +172,7 @@ export default function SeedCalculatorClient() {
             </li>
             {result.spacing && (
               <li>
-                ✅ <strong>Spacing:</strong> {result.spacing}
+                ✅ <strong>दूरी:</strong> {result.spacing}
               </li>
             )}
           </ul>
@@ -226,7 +180,7 @@ export default function SeedCalculatorClient() {
           <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-3 text-xs">
             <p className="flex items-center gap-2 font-bold text-sky-800">
               <Info className="h-4 w-4" />
-              Unit samjhaav
+              इकाई
             </p>
             <p className="mt-1 theme-text-muted">{result.unitExplanation}</p>
             {result.proTip && (
@@ -237,14 +191,14 @@ export default function SeedCalculatorClient() {
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
             <p className="flex items-center gap-2 text-xs font-bold text-emerald-700">
               <Sprout className="h-4 w-4" />
-              Seed treatment
+              बीज उपचार
             </p>
             <p className="mt-1 text-xs theme-text-muted">{result.seedTreatment}</p>
           </div>
         </DarkCard>
       ) : (
         <DarkCard className="p-4 text-center text-sm theme-text-muted">
-          Area daalein — result yahan dikhega
+          एकड़ डालें — परिणाम यहाँ दिखेगा
         </DarkCard>
       )}
     </div>

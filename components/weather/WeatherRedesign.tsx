@@ -37,6 +37,7 @@ interface Props {
   onRefresh?: () => void;
   onShare?: () => void;
   onEnableLocation?: () => void;
+  onLocationClick?: () => void;
 }
 
 function shortLocation(location: string) {
@@ -75,6 +76,8 @@ export default function WeatherRedesign({
   lastUpdated,
   onRefresh,
   onShare,
+  onEnableLocation,
+  onLocationClick,
 }: Props) {
   const { t, locale } = useLocale();
   const hi = locale === "hi";
@@ -160,16 +163,26 @@ export default function WeatherRedesign({
 
         <div className={cn("relative z-10 flex min-h-[24rem] flex-col sm:min-h-[26rem]", stage.ink)}>
           <div className="flex items-center justify-between gap-2">
-            <p className={cn("flex min-w-0 items-center gap-1.5 text-[15px] font-medium", stage.mute)}>
+            <button
+              type="button"
+              onClick={() => onLocationClick?.()}
+              className={cn(
+                "flex min-w-0 max-w-[70%] items-center gap-1.5 rounded-full text-left text-[15px] font-medium active:opacity-80",
+                stage.mute
+              )}
+              aria-label="स्थान जाँचें"
+            >
               <MapPin className="h-4 w-4 shrink-0 opacity-80" />
-              <span className="truncate">{shortLocation(weather.location)}</span>
-            </p>
+              <span className="truncate underline decoration-white/40 underline-offset-2">
+                {shortLocation(weather.location)}
+              </span>
+            </button>
             <div className="flex shrink-0 gap-1.5">
               {onRefresh && (
                 <button
                   type="button"
                   onClick={onRefresh}
-                  aria-label="रिफ्रेश"
+                  aria-label="रिफ्रेश — स्थान जाँचें"
                   className={cn(
                     "flex h-10 w-10 items-center justify-center rounded-full border active:scale-95",
                     stage.chip

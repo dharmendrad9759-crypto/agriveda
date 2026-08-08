@@ -424,7 +424,7 @@ export default function AIDoctorPage() {
                 onClick={() => setSymptomsOnlyMode(true)}
                 className="w-full rounded-xl border border-dashed border-emerald-400/40 bg-emerald-500/5 px-3 py-2.5 text-center text-xs font-semibold text-emerald-800 dark:text-emerald-300"
               >
-                फोटो नहीं है? सिर्फ़ लक्षण से आगे बढ़ें →
+                फोटो नहीं है? लक्षणों के आधार पर आगे बढ़ें →
               </button>
             )}
 
@@ -475,14 +475,14 @@ export default function AIDoctorPage() {
                 <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
                   <Stethoscope className="h-4 w-4" />
                 </span>
-                <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">Diagnosis</h2>
+                <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">जांचें</h2>
               </div>
 
               {isScanning && (
                 <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/50 py-10 text-center dark:bg-emerald-950/20 sm:py-12">
                   <Loader2 className="mx-auto h-9 w-9 animate-spin text-emerald-500 sm:h-10 sm:w-10" />
                   <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                    Diagnosis taiyar ho raha hai…
+                    जांच परिणाम तैयार हो रहा है…
                   </p>
                 </div>
               )}
@@ -491,7 +491,7 @@ export default function AIDoctorPage() {
                 <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface-inset)] py-10 text-center sm:py-12">
                   <Stethoscope className="mx-auto h-9 w-9 text-[var(--av-text-muted)] sm:h-10 sm:w-10" />
                   <p className="mt-3 text-sm font-semibold text-[var(--av-text-muted)]">
-                    Result yahan dikhega
+                    परिणाम यहाँ दिखेगा
                   </p>
                 </div>
               )}

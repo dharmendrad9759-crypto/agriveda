@@ -53,8 +53,10 @@ export default function WeatherPage() {
       await loadWeather(() =>
         fetchWeatherByCoords(position.coords.latitude, position.coords.longitude)
       );
+      return true;
     } catch (err) {
       setError(geolocationErrorMessage(err));
+      return false;
     } finally {
       setLocLoading(false);
     }
@@ -72,6 +74,22 @@ export default function WeatherPage() {
   }, [manualCity, loadWeather]);
 
   const refreshWeather = useCallback(async () => {
+    // Location check on refresh: re-request GPS when available
+    try {
+      setLocLoading(true);
+      setError(null);
+      const position = await requestUserLocation();
+      setLocationMode("gps");
+      await loadWeather(() =>
+        fetchWeatherByCoords(position.coords.latitude, position.coords.longitude)
+      );
+      return;
+    } catch {
+      /* fall through to saved location */
+    } finally {
+      setLocLoading(false);
+    }
+
     const saved = getSavedWeatherLocation();
     if (saved?.type === "gps") {
       setLocationMode("gps");
@@ -116,26 +134,22 @@ export default function WeatherPage() {
     showToast(ok ? t("weatherShareOk") : t("weatherShareFail"), ok ? "success" : "error");
   };
 
+  const onPlaceNameClick = useCallback(async () => {
+    const ok = await useCurrentLocation();
+    if (!ok) setShowSearch(true);
+  }, [useCurrentLocation]);
+
   return (
     <AppShell
       title={t("weatherTitle")}
       className="overflow-x-hidden"
       actions={
-        <div className="flex items-center gap-2">
-          <AppLink
-            href="/weather/spray-advisory"
-            className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-300"
-          >
-            {t("weatherSprayShort")}
-          </AppLink>
-          <button
-            type="button"
-            onClick={() => setShowSearch((v) => !v)}
-            className="rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 text-[10px] font-bold text-[var(--av-text-secondary)]"
-          >
-            {t("weatherLocationBtn")}
-          </button>
-        </div>
+        <AppLink
+          href="/weather/spray-advisory"
+          className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-300"
+        >
+          {t("weatherSprayShort")}
+        </AppLink>
       }
     >
       {showSearch && (
@@ -183,10 +197,10 @@ export default function WeatherPage() {
           <p className="mt-1 text-sm text-[var(--av-text-muted)]">{t("weatherPickLocationHint")}</p>
           <button
             type="button"
-            onClick={() => setShowSearch(true)}
+            onClick={() => void useCurrentLocation()}
             className="mt-4 rounded-full bg-[var(--av-accent)] px-4 py-2 text-sm font-bold text-white"
           >
-            {t("weatherSetLocation")}
+            {t("weatherMyLocation")}
           </button>
         </div>
       )}
@@ -208,6 +222,13 @@ export default function WeatherPage() {
           >
             {t("weatherRetryGps")}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowSearch(true)}
+            className="mt-2 block w-full text-xs font-bold text-[var(--av-text-secondary)]"
+          >
+            शहर नाम से चुनें
+          </button>
         </div>
       )}
 
@@ -219,6 +240,7 @@ export default function WeatherPage() {
             onRefresh={refreshWeather}
             onShare={shareWeather}
             onEnableLocation={useCurrentLocation}
+            onLocationClick={() => void onPlaceNameClick()}
           />
         </div>
       )}

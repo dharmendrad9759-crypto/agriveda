@@ -242,9 +242,9 @@ export default function DeficienciesPageClient() {
             const hi = getCropHindiName(c.slug);
             const label = isHi && hi ? hi : cropShort(c.name);
             return (
-              <button
+          <button
                 key={c.slug}
-                type="button"
+            type="button"
                 onClick={() => setCropSlug(c.slug)}
                 className={cn(
                   "flex shrink-0 flex-col items-center gap-1.5 rounded-2xl border px-2.5 py-2 transition",
@@ -265,10 +265,10 @@ export default function DeficienciesPageClient() {
                 <span className="max-w-[56px] truncate text-[10px] font-bold text-[var(--av-text-primary)]">
                   {label}
                 </span>
-              </button>
+          </button>
             );
           })}
-        </div>
+      </div>
 
         {cropAlerts.length > 0 ? (
           <ul className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]">
@@ -276,7 +276,7 @@ export default function DeficienciesPageClient() {
               const slug = resolveDeficiencySlug(d.name);
               const meta = allNutrientDeficiencies.find((n) => n.slug === slug);
               const sym = meta?.symbol ?? d.name.slice(0, 1);
-              return (
+            return (
                 <li key={d.name} className="border-b border-[var(--av-border-subtle)] last:border-0">
                   <AppLink
                     href={`/deficiencies/${slug}`}
@@ -308,16 +308,16 @@ export default function DeficienciesPageClient() {
                     <ChevronRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
                   </AppLink>
                 </li>
-              );
-            })}
+            );
+          })}
           </ul>
         ) : null}
       </motion.section>
 
       {/* Secondary: all nutrients — hidden until asked */}
       <motion.section {...fade(4)} className="relative">
-        <button
-          type="button"
+          <button
+            type="button"
           onClick={() => setShowAll((v) => !v)}
           className="flex w-full items-center justify-between rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 py-3.5 text-left"
         >
@@ -335,7 +335,7 @@ export default function DeficienciesPageClient() {
               showAll && "rotate-90"
             )}
           />
-        </button>
+          </button>
 
         {showAll ? (
           <div className="mt-3 space-y-3">
@@ -369,14 +369,14 @@ export default function DeficienciesPageClient() {
                     >
                       {n.symbol}
                     </span>
-                  </div>
+      </div>
                   <span className="line-clamp-2 px-1.5 py-2 text-center text-[10px] font-bold leading-tight text-[var(--av-text-primary)]">
                     {nutrientNameHi(n.slug)}
                   </span>
                 </AppLink>
               ))}
-            </div>
-          </div>
+        </div>
+      </div>
         ) : null}
       </motion.section>
     </div>

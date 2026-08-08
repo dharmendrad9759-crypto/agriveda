@@ -12,19 +12,11 @@ import {
 } from "@/lib/agriveda2/fertilizerEngine";
 import { FERTILIZER_SOURCES } from "@/data/agriveda2/fertilizer-data";
 import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
-import { useFarmerProfile } from "@/hooks/useFarmerProfile";
-import { getBighaInfo } from "@/lib/bighaConversion";
 import { EASE_OUT, staggerContainer, staggerItem } from "@/lib/motion/variants";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { cn } from "@/lib/cn";
 import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
-
-const UNIT_LABELS: Record<AreaUnit, string> = {
-  acre: "एकड़ (Acre)",
-  bigha: "बीघा (Bigha)",
-  hectare: "हेक्टेयर (Hectare)",
-};
 
 const NUTRIENT_COLORS: Record<string, string> = {
   N: "from-lime-400 to-green-500",
@@ -39,25 +31,18 @@ const NUTRIENT_COLORS: Record<string, string> = {
 };
 
 export default function FertilizerCalculatorPage() {
-  const { profile } = useFarmerProfile();
   const slugs = useMemo(() => listFertilizerCrops(), []);
   const crops = cropCatalog.filter((c) => slugs.includes(c.slug));
 
   const [slug, setSlug] = useState(crops[0]?.slug ?? "wheat");
   const [area, setArea] = useState("1");
-  const [unit, setUnit] = useState<AreaUnit>("acre");
   const [soilTest, setSoilTest] = useState<SoilTestLevels>({});
-
-  const bighaInfo = useMemo(
-    () => (unit === "bigha" ? getBighaInfo(profile.state, profile.district) : null),
-    [unit, profile.state, profile.district]
-  );
 
   const acres = useMemo(() => {
     const n = parseFloat(area);
     if (!n || n <= 0) return 0;
-    return convertToAcres(n, unit, bighaInfo?.acresPerBigha);
-  }, [area, unit, bighaInfo?.acresPerBigha]);
+    return convertToAcres(n, "acre" satisfies AreaUnit);
+  }, [area]);
 
   const plan = useMemo(() => {
     if (!acres) return null;
@@ -144,40 +129,17 @@ export default function FertilizerCalculatorPage() {
           </motion.p>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs font-bold theme-text-muted">खेत का क्षेत्र</label>
-            <input
-              type="number"
-              min="0.1"
-              step="0.1"
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-              className="theme-input mt-1 w-full rounded-xl border px-3 py-2 text-sm"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold theme-text-muted">इकाई</label>
-            <select
-              value={unit}
-              onChange={(e) => setUnit(e.target.value as AreaUnit)}
-              className="theme-input mt-1 w-full rounded-xl border px-3 py-2 text-sm"
-            >
-              {(Object.keys(UNIT_LABELS) as AreaUnit[]).map((u) => (
-                <option key={u} value={u}>
-                  {UNIT_LABELS[u]}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div>
+          <label className="text-xs font-bold theme-text-muted">खेत का क्षेत्र (एकड़)</label>
+          <input
+            type="number"
+            min="0.1"
+            step="0.1"
+            value={area}
+            onChange={(e) => setArea(e.target.value)}
+            className="theme-input mt-1 w-full rounded-xl border px-3 py-2 text-sm"
+          />
         </div>
-
-        {bighaInfo && (
-          <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200">
-            {profile.district ? `${profile.district}: ` : ""}
-            {bighaInfo.label} = {bighaInfo.acresPerBigha} एकड़
-          </p>
-        )}
 
         <SoilTestInputs value={soilTest} onChange={setSoilTest} />
 
@@ -212,7 +174,7 @@ export default function FertilizerCalculatorPage() {
 
               <div>
                 <p className="text-xs font-extrabold theme-text-primary">
-                  🌱 पोषण — {plan.cropKey} ({area} {unit} ≈ {plan.acres} एकड़)
+                  🌱 पोषण — {plan.cropKey} ({plan.acres} एकड़)
                 </p>
                 <motion.div
                   variants={staggerContainer}
