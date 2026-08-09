@@ -4,6 +4,7 @@ import {
   fetchOpenMeteoBundle,
   geocodeOpenMeteo,
 } from "@/lib/openMeteo";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 function readOpenWeatherKey(): string | undefined {
   const raw = process.env.OPENWEATHER_API_KEY?.trim();
@@ -106,6 +107,15 @@ async function resolveWithOpenMeteo(
 }
 
 export async function GET(request: NextRequest) {
+  const ip = clientIp(request);
+  const limited = await rateLimit(`weather:${ip}`, 60, 60_000);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: `बहुत अनुरोध — ${limited.retryAfterSec} सेकंड बाद` },
+      { status: 429 }
+    );
+  }
+
   const apiKey = readOpenWeatherKey();
   const city = request.nextUrl.searchParams.get("city");
   const lat = request.nextUrl.searchParams.get("lat");

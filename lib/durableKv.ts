@@ -87,19 +87,68 @@ export async function kvDelete(key: string): Promise<void> {
   }
 }
 
-/** Atomic-ish counter for rate limits (read-modify-write; good enough with short windows). */
-export async function kvIncr(
-  key: string,
-  windowMs: number
-): Promise<{ count: number; resetAt: number }> {
+type IncrResult = { count: number; resetAt: number };
+
+async function memoryIncr(key: string, windowMs: number): Promise<IncrResult> {
   const now = Date.now();
-  const existing = await kvGet<{ count: number; resetAt: number }>(key);
+  purgeMemory(now);
+  const hit = memory.get(key);
+  const existing = hit?.value as IncrResult | undefined;
   if (!existing || now >= existing.resetAt) {
     const next = { count: 1, resetAt: now + windowMs };
-    await kvSet(key, next, windowMs);
+    memory.set(key, { value: next, expiresAt: next.resetAt });
     return next;
   }
   const next = { count: existing.count + 1, resetAt: existing.resetAt };
-  await kvSet(key, next, Math.max(1000, existing.resetAt - now));
+  memory.set(key, { value: next, expiresAt: existing.resetAt });
   return next;
+}
+
+/**
+ * Prefer atomic RPC `app_kv_incr` (run supabase/app-kv-and-notifications.sql).
+ * Falls back to read-modify-write, then memory.
+ */
+export async function kvIncr(
+  key: string,
+  windowMs: number
+): Promise<IncrResult> {
+  if (hasSupabaseServiceRole()) {
+    const client = createSupabaseServiceClient();
+    if (client) {
+      try {
+        const { data, error } = await client.rpc("app_kv_incr", {
+          p_key: key,
+          p_window_ms: Math.max(1000, Math.floor(windowMs)),
+        });
+        if (!error && data && typeof data === "object") {
+          const row = data as { count?: unknown; resetAt?: unknown };
+          const count = Number(row.count);
+          const resetAt = Number(row.resetAt);
+          if (Number.isFinite(count) && Number.isFinite(resetAt)) {
+            return { count, resetAt };
+          }
+        }
+      } catch {
+        /* fall through to RMW */
+      }
+
+      // Non-atomic RMW fallback if RPC not migrated yet
+      try {
+        const now = Date.now();
+        const existing = await kvGet<IncrResult>(key);
+        if (!existing || now >= existing.resetAt) {
+          const next = { count: 1, resetAt: now + windowMs };
+          await kvSet(key, next, windowMs);
+          return next;
+        }
+        const next = { count: existing.count + 1, resetAt: existing.resetAt };
+        await kvSet(key, next, Math.max(1000, existing.resetAt - now));
+        return next;
+      } catch {
+        /* memory */
+      }
+    }
+  }
+
+  return memoryIncr(key, windowMs);
 }

@@ -2,12 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { applySessionCookie, signSession } from "@/lib/session";
 import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import { createSupabaseServiceClient } from "@/lib/supabase";
-import { normalizePhone } from "@/lib/otpStore";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { isValidDeviceId } from "@/lib/deviceIdValidate";
+
+type FirebaseLookupUser = {
+  localId?: string;
+  email?: string;
+  displayName?: string;
+  phoneNumber?: string;
+  providerUserInfo?: { providerId?: string; email?: string }[];
+};
 
 /**
- * After Firebase Phone Auth succeeds on the client, exchange idToken
- * for an Agriveda httpOnly session (server verifies token with Google).
+ * After Firebase Google (or any) Auth succeeds on the client, exchange idToken
+ * for an Agriveda httpOnly session.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -21,8 +29,8 @@ export async function POST(request: NextRequest) {
     const idToken = String(body.idToken ?? "").trim();
     const deviceId = String(body.deviceId ?? "").trim();
 
-    if (!idToken || !deviceId) {
-      return NextResponse.json({ error: "idToken and deviceId required" }, { status: 400 });
+    if (!idToken || !isValidDeviceId(deviceId)) {
+      return NextResponse.json({ error: "idToken and valid deviceId required" }, { status: 400 });
     }
 
     const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
@@ -43,29 +51,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid Firebase token" }, { status: 401 });
     }
 
-    const data = (await lookup.json()) as {
-      users?: { localId?: string; phoneNumber?: string }[];
-    };
+    const data = (await lookup.json()) as { users?: FirebaseLookupUser[] };
     const user = data.users?.[0];
     if (!user?.localId) {
       return NextResponse.json({ error: "Invalid Firebase token" }, { status: 401 });
     }
 
-    const rawPhone = user.phoneNumber?.replace(/\D/g, "") ?? "";
-    const phone = normalizePhone(rawPhone) ?? rawPhone.slice(-10);
-    if (!phone || phone.length < 10) {
-      return NextResponse.json({ error: "Phone missing on Firebase account" }, { status: 400 });
+    const emailRaw =
+      user.email ||
+      user.providerUserInfo?.find((p) => p.email)?.email ||
+      "";
+    const email = emailRaw.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { error: "Google account में email ज़रूरी है" },
+        { status: 400 }
+      );
     }
+
+    const displayName = (user.displayName || "").trim().slice(0, 80);
+    const rawPhone = user.phoneNumber?.replace(/\D/g, "") ?? "";
+    const phone =
+      rawPhone.length >= 10 && rawPhone.length <= 15 ? rawPhone.slice(-10) : "";
 
     const client = createSupabaseServiceClient();
     if (client) {
-      await ensureFarmerRecord(deviceId, client, { phone });
+      await ensureFarmerRecord(deviceId, client, {
+        phone: phone || undefined,
+        name: displayName || undefined,
+      });
     }
 
     let token: string;
     try {
       token = signSession({
         phone,
+        email,
+        name: displayName || undefined,
         deviceId,
         firebaseUid: user.localId,
       });
@@ -83,12 +105,16 @@ export async function POST(request: NextRequest) {
       throw err;
     }
 
-    const res = NextResponse.json({ success: true, phone });
+    const res = NextResponse.json({
+      success: true,
+      email,
+      name: displayName || null,
+      phone: phone || null,
+    });
     applySessionCookie(res, token);
     return res;
   } catch (err) {
     console.error("[firebase-session]", err);
-    const msg = err instanceof Error ? err.message : "Session create failed";
-    return NextResponse.json({ error: msg || "Session create failed" }, { status: 500 });
+    return NextResponse.json({ error: "Session create failed" }, { status: 500 });
   }
 }

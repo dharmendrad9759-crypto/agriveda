@@ -45,13 +45,22 @@ async function sendMsg91Text(phone10: string, text: string): Promise<boolean> {
   const authKey = process.env.MSG91_AUTH_KEY?.trim();
   if (!authKey) return false;
   const sender = process.env.MSG91_SENDER_ID?.trim() || "AGRVDA";
-  const url =
-    `https://control.msg91.com/api/sendhttp.php?authkey=${encodeURIComponent(authKey)}` +
-    `&mobiles=91${phone10}&message=${encodeURIComponent(text)}&sender=${encodeURIComponent(sender)}&route=4&country=91`;
-  const res = await fetch(url, { method: "GET" });
-  const body = (await res.text()).trim().toLowerCase();
-  if (!res.ok || body.includes("error") || body.includes("invalid")) {
-    console.error("[notifyExpertReply] MSG91", body);
+  const body = new URLSearchParams({
+    authkey: authKey,
+    mobiles: `91${phone10}`,
+    message: text,
+    sender,
+    route: "4",
+    country: "91",
+  });
+  const res = await fetch("https://control.msg91.com/api/sendhttp.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: body.toString(),
+  });
+  const resBody = (await res.text()).trim().toLowerCase();
+  if (!res.ok || resBody.includes("error") || resBody.includes("invalid")) {
+    console.error("[notifyExpertReply] MSG91", resBody);
     return false;
   }
   return true;

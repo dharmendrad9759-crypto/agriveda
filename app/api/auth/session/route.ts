@@ -18,13 +18,16 @@ export async function GET(request: NextRequest) {
   const client = createSupabaseServiceClient();
   if (client) {
     farmerId = await ensureFarmerRecord(session.deviceId, client, {
-      phone: session.phone,
+      phone: session.phone || undefined,
+      name: session.name || undefined,
     });
   }
 
   return NextResponse.json({
     authenticated: true,
-    phone: session.phone,
+    phone: session.phone || null,
+    email: session.email || null,
+    name: session.name || null,
     deviceId: session.deviceId,
     farmerId,
   });

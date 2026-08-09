@@ -114,6 +114,17 @@ export default function KisanSaathiChat() {
 
   return (
     <div className="flex flex-col gap-3">
+      <div
+        role="note"
+        className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-[12px] leading-snug text-amber-950 dark:text-amber-100"
+      >
+        <p className="font-bold">दवा / खुराक की सलाह</p>
+        <p className="mt-1 text-[11px] font-medium opacity-90">
+          यह सामान्य मार्गदर्शन है — छिड़काव से पहले दवा के डिब्बे का लेबल और स्थानीय कृषि अधिकारी /
+          CIBRC सलाह मानें। गलत या ज़्यादा दवा से फसल/सेहत नुकसान हो सकता है।
+        </p>
+      </div>
+
       <label className="text-xs font-bold theme-text-muted">किस फसल पर सलाह चाहिए?</label>
       <select
         value={cropSlug}

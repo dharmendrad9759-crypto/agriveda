@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Check, Loader2, Phone, ShieldCheck, User } from "lucide-react";
+import { Check, Loader2, User } from "lucide-react";
 import FarmSetupStep from "@/components/onboarding/FarmSetupStep";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -14,15 +14,14 @@ import {
 } from "@/lib/india-locations";
 import { isFirebaseConfigured } from "@/lib/firebase/client";
 import {
-  RECAPTCHA_CONTAINER_ID,
-  sendFirebasePhoneOtp,
-  verifyFirebasePhoneOtp,
+  completeGoogleRedirectIfAny,
   firebaseAuthError,
-} from "@/lib/firebase/phoneAuth";
+  signInWithGoogle,
+} from "@/lib/firebase/googleAuth";
 import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
 import { getDeviceId } from "@/lib/deviceId";
 
-type Step = "phone" | "otp" | "name" | "location" | "farm";
+type Step = "auth" | "name" | "location" | "farm";
 
 const SETUP_STEPS: Step[] = ["name", "location", "farm"];
 
@@ -35,11 +34,9 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const needsFarmSetup = profile.onboardingComplete && !profile.farmSetupComplete;
   const needsFullOnboarding = !profile.onboardingComplete;
 
-  const [step, setStep] = useState<Step>(needsFarmSetup ? "farm" : "phone");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [demoOtp, setDemoOtp] = useState<string | null>(null);
+  const [step, setStep] = useState<Step>(needsFarmSetup ? "farm" : "auth");
   const [firebaseUid, setFirebaseUid] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [village, setVillage] = useState("");
   const [district, setDistrict] = useState("");
@@ -59,14 +56,40 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     }
   };
 
-  const continueWithoutOtp = () => {
+  const continueAsGuest = () => {
     completeFarmSetup({
       ...DEMO_FARMER_PROFILE,
-      phone: phone.replace(/\D/g, "").slice(-10) || DEMO_FARMER_PROFILE.phone,
       farmSetupComplete: true,
       totalFarmAreaAcres: 5,
     });
     showToast("Home खुल गया — AgriVeda demo");
+  };
+
+  const establishSession = async (user: {
+    uid: string;
+    getIdToken: () => Promise<string>;
+    displayName: string | null;
+    email: string | null;
+  }) => {
+    const deviceId = getDeviceId();
+    const idToken = await user.getIdToken();
+    const sessionRes = await fetch("/api/auth/session/firebase", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken, deviceId }),
+    });
+    const sessionBody = await sessionRes.json();
+    if (!sessionRes.ok) {
+      throw new Error(sessionBody.error || "Session create failed");
+    }
+
+    setFirebaseUid(user.uid);
+    setEmail(sessionBody.email || user.email || "");
+    const suggested = String(sessionBody.name || user.displayName || "").trim();
+    if (suggested) setName(suggested);
+    setStep("name");
+    showToast("Google लॉगिन सफल ✓");
   };
 
   useEffect(() => {
@@ -79,6 +102,30 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     if (needsFarmSetup) setStep("farm");
   }, [needsFarmSetup]);
 
+  // Complete redirect-based Google sign-in (Android WebView)
+  useEffect(() => {
+    if (!hydrated || !useFirebase || profile.onboardingComplete) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const user = await completeGoogleRedirectIfAny();
+        if (cancelled || !user) return;
+        setLoading(true);
+        await establishSession(user);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : firebaseAuthError(err));
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once after hydrate
+  }, [hydrated, useFirebase, profile.onboardingComplete]);
+
   const showGate =
     hydrated &&
     (needsFullOnboarding || needsFarmSetup) &&
@@ -88,85 +135,24 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     return <>{children}</>;
   }
 
-  const sendOtp = async () => {
+  const loginWithGoogle = async () => {
     setError(null);
     setLoading(true);
-    setDemoOtp(null);
-
     try {
-      if (useFirebase) {
-        await sendFirebasePhoneOtp(phone);
-        setStep("otp");
-        showToast("Firebase OTP भेज दिया गया");
+      if (!useFirebase) {
+        throw new Error(
+          "Firebase config missing — Vercel/.env में NEXT_PUBLIC_FIREBASE_* keys लगाएँ"
+        );
+      }
+      const user = await signInWithGoogle();
+      if (!user) {
+        // Redirect started — wait for reload
+        showToast("Google पेज खुल रहा है…");
         return;
       }
-
-      const res = await fetch("/api/auth/otp/send", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || "OTP नहीं भेजा जा सका");
-
-      if (body.demoOtp && process.env.NODE_ENV === "development") {
-        setDemoOtp(String(body.demoOtp));
-      }
-      setStep("otp");
-      showToast("OTP भेज दिया गया");
+      await establishSession(user);
     } catch (err) {
-      setError(
-        useFirebase
-          ? firebaseAuthError(err)
-          : err instanceof Error
-            ? err.message
-            : "OTP भेजने में समस्या"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verifyOtp = async () => {
-    setError(null);
-    setLoading(true);
-
-    try {
-      const deviceId = getDeviceId();
-
-      if (useFirebase) {
-        const user = await verifyFirebasePhoneOtp(otp);
-        const idToken = await user.getIdToken();
-        const sessionRes = await fetch("/api/auth/session/firebase", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken, deviceId }),
-        });
-        const sessionBody = await sessionRes.json();
-        if (!sessionRes.ok) {
-          throw new Error(sessionBody.error || "Session create failed");
-        }
-        setFirebaseUid(user.uid);
-        setStep("name");
-        showToast("मोबाइल verify हो गया ✓");
-        return;
-      }
-
-      const res = await fetch("/api/auth/otp/verify", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, otp, deviceId }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || "OTP verify नहीं हुआ");
-
-      setStep("name");
-      showToast("मोबाइल verify हो गया ✓");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "OTP गलत है");
+      setError(err instanceof Error ? err.message : firebaseAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -202,17 +188,19 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     const profileData = needsFarmSetup
       ? { totalFarmAreaAcres: totalAcres }
       : {
-          phone: phone.replace(/\D/g, "").slice(-10),
+          email: email || undefined,
           firebaseUid: firebaseUid ?? undefined,
           name: name.trim(),
           village: village.trim(),
           district: district.trim(),
           state: state.trim(),
+          phone: "",
+          phoneVerified: false,
           totalFarmAreaAcres: totalAcres,
         };
 
     completeFarmSetup(profileData);
-    showToast("स्वागत है, किसान भाई! 🌾");
+    showToast("स्वागत है, किसान भाई!");
   };
 
   const setupIndex = SETUP_STEPS.indexOf(step);
@@ -220,7 +208,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
   return (
     <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center">
-      {/* Atmosphere — glassmorphism backdrop (crop field feel) */}
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="absolute inset-0 scale-110"
@@ -287,102 +274,44 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
             </p>
             <h2 className="mt-1 text-xl font-black">किसान पंजीकरण</h2>
             <p className="mt-1 text-sm text-emerald-50/90">
-              {step === "phone"
-                ? "पहले मोबाइल नंबर verify करें"
-                : "SMS OTP डालकर verify करें"}
+              Google से लॉगिन करें — OTP / मोबाइल नंबर नहीं चाहिए
             </p>
           </div>
         )}
 
         <div className="space-y-4 px-6 pb-6 pt-2">
-          <div id={RECAPTCHA_CONTAINER_ID} className="min-h-px" />
-
-          {step === "phone" && (
+          {step === "auth" && (
             <>
               {!useFirebase && (
                 <p className="rounded-xl border border-amber-400/40 bg-amber-400/15 px-3 py-2 text-xs text-amber-900">
-                  Firebase config नहीं मिला — टेस्ट OTP mode चलेगा।
+                  Firebase keys नहीं मिलीं — Vercel में NEXT_PUBLIC_FIREBASE_* सेट करें।
                 </p>
               )}
-              <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-xs font-bold text-gray-600">
-                  <Phone className="h-4 w-4" />
-                  मोबाइल नंबर
-                </span>
-                <div className="flex gap-2">
-                  <span className="inline-flex items-center rounded-2xl border border-white/60 bg-white/80 px-3 text-sm font-bold text-gray-700 shadow-sm backdrop-blur">
-                    +91
-                  </span>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    maxLength={10}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    placeholder="98765 43210"
-                    className="w-full rounded-2xl border border-emerald-500/40 bg-white/85 px-4 py-3 text-lg font-bold tracking-widest text-gray-900 outline-none backdrop-blur focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                  />
-                </div>
-              </label>
               <button
                 type="button"
-                onClick={sendOtp}
-                disabled={loading || phone.length !== 10}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 disabled:opacity-50"
+                onClick={() => void loginWithGoogle()}
+                disabled={loading || !useFirebase}
+                className="flex w-full items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white py-3.5 text-sm font-black text-gray-800 shadow-md transition hover:bg-gray-50 disabled:opacity-50"
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                OTP भेजें
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
+                ) : (
+                  <GoogleGlyph />
+                )}
+                Google से लॉगिन करें
               </button>
-            </>
-          )}
-
-          {step === "otp" && (
-            <>
-              <p className="text-sm text-gray-600">+91 {phone} पर OTP भेजा गया</p>
-              {demoOtp && (
-                <p className="rounded-xl border border-amber-400/40 bg-amber-400/15 px-3 py-2 text-center text-sm font-bold text-amber-800">
-                  टेस्ट OTP: {demoOtp}
-                </p>
-              )}
-              <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-xs font-bold text-gray-600">
-                  <ShieldCheck className="h-4 w-4" />
-                  6 अंकों का OTP
-                </span>
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  placeholder="• • • • • •"
-                  className="w-full rounded-2xl border border-emerald-500/40 bg-white/85 px-4 py-3 text-center text-2xl font-black tracking-[0.5em] text-gray-900 outline-none backdrop-blur focus:border-emerald-500"
-                />
-              </label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setStep("phone")}
-                  className="rounded-2xl border border-gray-200 bg-white/70 px-4 py-3 text-sm font-bold text-gray-600"
-                >
-                  पीछे
-                </button>
-                <button
-                  type="button"
-                  onClick={verifyOtp}
-                  disabled={loading || otp.length !== 6}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-sm font-black text-white disabled:opacity-50"
-                >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  Verify करें
-                </button>
-              </div>
+              <p className="text-center text-[11px] text-gray-600">
+                सुरक्षित लॉगिन — Firebase में Google Sign-in Enable होना चाहिए
+              </p>
             </>
           )}
 
           {step === "name" && (
             <>
               <p className="text-base font-bold text-gray-900">आपका नाम क्या है?</p>
+              {email ? (
+                <p className="text-xs font-medium text-gray-500">{email}</p>
+              ) : null}
               <label className="block">
                 <span className="mb-1 flex items-center gap-2 text-xs font-bold text-gray-500">
                   <User className="h-4 w-4" />
@@ -482,17 +411,40 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
             </p>
           )}
 
-          {allowGuestContinue && (step === "phone" || step === "otp") && !needsFarmSetup && (
+          {allowGuestContinue && step === "auth" && !needsFarmSetup && (
             <button
               type="button"
-              onClick={continueWithoutOtp}
+              onClick={continueAsGuest}
               className="w-full rounded-2xl border border-dashed border-emerald-500/40 bg-white/40 py-3 text-sm font-bold text-emerald-800 backdrop-blur"
             >
-              OTP के बिना Home देखें
+              बिना लॉगिन Home देखें (demo)
             </button>
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+function GoogleGlyph() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden>
+      <path
+        fill="#FFC107"
+        d="M43.6 20.5H42V20H24v8h11.3C33.8 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.2 6.1 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.5-.4-3.5z"
+      />
+      <path
+        fill="#FF3D00"
+        d="M6.3 14.7l6.6 4.8C14.7 16.1 19 12 24 12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.2 6.1 29.4 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"
+      />
+      <path
+        fill="#4CAF50"
+        d="M24 44c5.2 0 10-2 13.6-5.2l-6.3-5.2C29.2 35.3 26.7 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5C9.5 39.6 16.2 44 24 44z"
+      />
+      <path
+        fill="#1976D2"
+        d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.1-3.5 5.6-6.6 7.1l.1.1 6.3 5.2C36.8 38.7 44 33 44 24c0-1.3-.1-2.5-.4-3.5z"
+      />
+    </svg>
   );
 }

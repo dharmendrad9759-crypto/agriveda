@@ -12,19 +12,49 @@ async function sendViaMsg91(phone: string, otp: string): Promise<boolean> {
   if (!authKey) return false;
 
   const sender = process.env.MSG91_SENDER_ID?.trim() || "AGRVDA";
+  const templateId = process.env.MSG91_OTP_TEMPLATE_ID?.trim();
   const mobile = indianMobile(phone);
-  const message = encodeURIComponent(
-    `Agriveda: aapka OTP ${otp} hai. 5 minute tak valid. Kisi ko na batayein.`
-  );
 
-  const url =
-    `https://control.msg91.com/api/sendhttp.php?authkey=${encodeURIComponent(authKey)}` +
-    `&mobiles=${mobile}&message=${message}&sender=${encodeURIComponent(sender)}&route=4&country=91`;
+  // Prefer Flow/template API (DLT) when template id is configured — auth not in query string
+  if (templateId) {
+    const res = await fetch("https://control.msg91.com/api/v5/flow/", {
+      method: "POST",
+      headers: {
+        authkey: authKey,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        template_id: templateId,
+        short_url: "0",
+        recipients: [{ mobiles: mobile, otp }],
+      }),
+    });
+    if (!res.ok) {
+      console.error("[MSG91 flow]", await res.text());
+      return false;
+    }
+    return true;
+  }
 
-  const res = await fetch(url, { method: "GET" });
-  const body = (await res.text()).trim().toLowerCase();
-  if (!res.ok || body.includes("error") || body.includes("invalid")) {
-    console.error("[MSG91]", body);
+  // Legacy sendhttp — POST body so authkey is not in URL/query logs
+  const message = `Agriveda: aapka OTP ${otp} hai. 5 minute tak valid. Kisi ko na batayein.`;
+  const body = new URLSearchParams({
+    authkey: authKey,
+    mobiles: mobile,
+    message,
+    sender,
+    route: "4",
+    country: "91",
+  });
+  const res = await fetch("https://control.msg91.com/api/sendhttp.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: body.toString(),
+  });
+  const text = (await res.text()).trim().toLowerCase();
+  if (!res.ok || text.includes("error") || text.includes("invalid")) {
+    console.error("[MSG91]", text);
     return false;
   }
   return true;

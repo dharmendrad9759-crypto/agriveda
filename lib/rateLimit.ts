@@ -2,7 +2,9 @@
  * Rate limiter — durable via Supabase app_kv when SERVICE_ROLE is set (multi-instance safe).
  * Falls back to in-memory for local dev without Supabase.
  */
-import { kvIncr } from "@/lib/durableKv";
+import { NextResponse } from "next/server";
+import { durableKvReady, kvIncr } from "@/lib/durableKv";
+import { isProductionRuntime } from "@/lib/otpStore";
 
 type Bucket = { count: number; resetAt: number };
 
@@ -50,6 +52,23 @@ export async function rateLimit(
   } catch {
     return memoryRateLimit(key, limit, windowMs);
   }
+}
+
+/**
+ * Auth / SMS / paid AI — fail closed in production if durable KV (SERVICE_ROLE) missing.
+ * Prevents per-isolate memory limits from being bypassed across Vercel instances.
+ */
+export function requireDurableRateLimit(): NextResponse | null {
+  if (isProductionRuntime() && !durableKvReady()) {
+    return NextResponse.json(
+      {
+        error:
+          "Security config incomplete — SUPABASE_SERVICE_ROLE_KEY / app_kv required for production auth",
+      },
+      { status: 503 }
+    );
+  }
+  return null;
 }
 
 /** Sync memory-only fallback for rare sync contexts — prefer `await rateLimit`. */

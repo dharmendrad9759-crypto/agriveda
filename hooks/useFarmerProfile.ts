@@ -10,6 +10,7 @@ export interface FarmerProfile {
   district: string;
   state: string;
   phone: string;
+  email?: string;
   phoneVerified: boolean;
   onboardingComplete: boolean;
   /** User completed farm/field setup after profile */

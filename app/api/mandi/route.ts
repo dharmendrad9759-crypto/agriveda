@@ -3,6 +3,7 @@ import { MANDI_PRICES } from "@/data/mock/mandi";
 import { DATA_GOV_RESOURCE_ID } from "@/lib/mandi/constants";
 import { enrichMockWithChange, mapDataGovRecords } from "@/lib/mandi/mapDataGov";
 import type { MandiApiResponse } from "@/lib/mandi/types";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -82,6 +83,15 @@ async function fetchLiveMandi(state: string, district?: string) {
 }
 
 export async function GET(request: NextRequest) {
+  const ip = clientIp(request);
+  const limited = await rateLimit(`mandi:${ip}`, 60, 60_000);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: `बहुत अनुरोध — ${limited.retryAfterSec} सेकंड बाद` },
+      { status: 429 }
+    );
+  }
+
   const state = request.nextUrl.searchParams.get("state")?.trim() || "Madhya Pradesh";
   const district = request.nextUrl.searchParams.get("district")?.trim() || undefined;
   const apiKeyConfigured = Boolean(readApiKey());

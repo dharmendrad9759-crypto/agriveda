@@ -4,7 +4,7 @@ import {
   analyzeSymptomsWithGemini,
   getGeminiApiKey,
 } from "@/lib/geminiPlantDoctor";
-import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { clientIp, rateLimit, requireDurableRateLimit } from "@/lib/rateLimit";
 import { requireSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +34,9 @@ export async function POST(request: NextRequest) {
 
   const auth = requireSession(request);
   if ("error" in auth) return auth.error;
+
+  const durable = requireDurableRateLimit();
+  if (durable) return durable;
 
   const ip = clientIp(request);
   const bucket = `ai:${auth.session.deviceId}:${ip}`;

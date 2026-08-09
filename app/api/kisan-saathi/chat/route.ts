@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chatWithKisanSaathi, type SaathiContext, type SaathiMessage } from "@/lib/geminiKisanSaathi";
 import { getGeminiApiKey } from "@/lib/geminiPlantDoctor";
-import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { clientIp, rateLimit, requireDurableRateLimit } from "@/lib/rateLimit";
 import { requireSession } from "@/lib/session";
 
 export async function POST(req: NextRequest) {
@@ -18,6 +18,9 @@ export async function POST(req: NextRequest) {
 
     const auth = requireSession(req);
     if ("error" in auth) return auth.error;
+
+    const durable = requireDurableRateLimit();
+    if (durable) return durable;
 
     const ip = clientIp(req);
     const limited = await rateLimit(
@@ -42,6 +45,22 @@ export async function POST(req: NextRequest) {
 
     if (messages.length > 30) {
       return NextResponse.json({ error: "Chat too long — नया chat शुरू करें" }, { status: 400 });
+    }
+
+    const MAX_MSG_CHARS = 4000;
+    for (const m of messages) {
+      if (typeof m.content === "string" && m.content.length > MAX_MSG_CHARS) {
+        return NextResponse.json(
+          { error: "Message too long — छोटा लिखें" },
+          { status: 400 }
+        );
+      }
+      if (typeof m.content === "string" && /data:image\//i.test(m.content)) {
+        return NextResponse.json(
+          { error: "Chat में फोटो न भेजें — AI Doctor इस्तेमाल करें" },
+          { status: 400 }
+        );
+      }
     }
 
     const result = await chatWithKisanSaathi(messages, context);

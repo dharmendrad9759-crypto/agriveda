@@ -5,7 +5,10 @@ export const SESSION_COOKIE = "agriveda_session";
 export const SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
 
 export type SessionPayload = {
+  /** Digits-only phone when present; empty string for Google-only accounts */
   phone: string;
+  email?: string;
+  name?: string;
   deviceId: string;
   firebaseUid?: string;
   exp: number;
@@ -39,12 +42,18 @@ function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(ba, bb);
 }
 
+function isEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
+}
+
 /** Create a signed session token (HMAC-SHA256). */
 export function signSession(
   partial: Omit<SessionPayload, "exp"> & { exp?: number }
 ): string {
   const payload: SessionPayload = {
-    phone: partial.phone,
+    phone: partial.phone ?? "",
+    email: partial.email,
+    name: partial.name,
     deviceId: partial.deviceId,
     firebaseUid: partial.firebaseUid,
     exp: partial.exp ?? Math.floor(Date.now() / 1000) + SESSION_MAX_AGE_SEC,
@@ -67,9 +76,29 @@ export function verifySessionToken(token: string | undefined | null): SessionPay
 
   try {
     const payload = JSON.parse(Buffer.from(data, "base64url").toString("utf8")) as SessionPayload;
-    if (!payload.phone || !payload.deviceId || typeof payload.exp !== "number") return null;
+    if (!payload.deviceId || typeof payload.exp !== "number") return null;
     if (payload.exp < Math.floor(Date.now() / 1000)) return null;
-    return payload;
+    if (!/^[a-zA-Z0-9_-]{8,80}$/.test(payload.deviceId)) return null;
+
+    const phone = typeof payload.phone === "string" ? payload.phone : "";
+    const phoneOk = phone === "" || /^\d{10,15}$/.test(phone);
+    if (!phoneOk) return null;
+
+    const googleOk = Boolean(
+      payload.firebaseUid &&
+        typeof payload.firebaseUid === "string" &&
+        payload.firebaseUid.length >= 8 &&
+        payload.email &&
+        isEmail(payload.email)
+    );
+    const legacyPhoneOk = Boolean(phone && /^\d{10,15}$/.test(phone));
+
+    if (!googleOk && !legacyPhoneOk) return null;
+
+    return {
+      ...payload,
+      phone,
+    };
   } catch {
     return null;
   }
@@ -87,7 +116,7 @@ export function requireSession(
   if (!session) {
     return {
       error: NextResponse.json(
-        { error: "Login required — पहले मोबाइल verify करें" },
+        { error: "Login required — पहले Google से लॉगिन करें" },
         { status: 401 }
       ),
     };
