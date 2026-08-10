@@ -145,11 +145,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
         );
       }
       const user = await signInWithGoogle();
-      if (!user) {
-        // Redirect started — wait for reload
-        showToast("Google पेज खुल रहा है…");
-        return;
-      }
       await establishSession(user);
     } catch (err) {
       setError(err instanceof Error ? err.message : firebaseAuthError(err));

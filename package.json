@@ -26,6 +26,7 @@
     "android:gradle": "powershell -ExecutionPolicy Bypass -File scripts/gradle-android.ps1"
   },
   "dependencies": {
+    "@capacitor-firebase/authentication": "^8.3.0",
     "@capacitor/android": "^8.4.1",
     "@capacitor/app": "^8.1.0",
     "@capacitor/cli": "^8.4.1",

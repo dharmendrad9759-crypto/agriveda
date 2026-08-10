@@ -1,18 +1,34 @@
+import { Capacitor } from "@capacitor/core";
+import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import {
   GoogleAuthProvider,
   getAuth,
   getRedirectResult,
+  indexedDBLocalPersistence,
+  initializeAuth,
+  signInWithCredential,
   signInWithPopup,
-  signInWithRedirect,
+  type Auth,
   type User,
 } from "firebase/auth";
 import { getFirebaseApp } from "@/lib/firebase/client";
 
-function isNativeShell(): boolean {
-  if (typeof window === "undefined") return false;
-  const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } })
-    .Capacitor;
-  return Boolean(cap?.isNativePlatform?.());
+let cachedAuth: Auth | null = null;
+
+/** On Capacitor, IndexedDB persistence keeps the JS user signed in across restarts. */
+function getFirebaseAuth(): Auth {
+  if (cachedAuth) return cachedAuth;
+  const app = getFirebaseApp();
+  if (Capacitor.isNativePlatform()) {
+    try {
+      cachedAuth = initializeAuth(app, { persistence: indexedDBLocalPersistence });
+    } catch {
+      cachedAuth = getAuth(app);
+    }
+  } else {
+    cachedAuth = getAuth(app);
+  }
+  return cachedAuth;
 }
 
 export function firebaseAuthError(err: unknown): string {
@@ -20,8 +36,19 @@ export function firebaseAuthError(err: unknown): string {
     typeof err === "object" && err !== null && "code" in err
       ? String((err as { code: string }).code)
       : "";
+  const message =
+    err instanceof Error
+      ? err.message
+      : typeof err === "object" && err !== null && "message" in err
+        ? String((err as { message: string }).message)
+        : "";
 
-  if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+  if (
+    code === "auth/popup-closed-by-user" ||
+    code === "auth/cancelled-popup-request" ||
+    /cancel|canceled|cancelled/i.test(code) ||
+    /cancel|canceled|cancelled/i.test(message)
+  ) {
     return "Google login रद्द कर दिया गया।";
   }
   if (code === "auth/popup-blocked") {
@@ -36,7 +63,10 @@ export function firebaseAuthError(err: unknown): string {
   if (code === "auth/network-request-failed") {
     return "Internet समस्या — कनेक्शन चेक करके फिर कोशिश करें।";
   }
-  if (err instanceof Error && err.message) return err.message;
+  if (/google-services|DEVELOPER_ERROR|10:|ApiException: 10/i.test(message)) {
+    return "Android Google Sign-In setup अधूरा है — google-services.json और SHA-1 Firebase में जोड़ें।";
+  }
+  if (message) return message;
   return "Google login में समस्या। Firebase Console settings चेक करें।";
 }
 
@@ -49,41 +79,44 @@ function googleProvider() {
 }
 
 /**
- * Start Google sign-in.
- * - Browser: popup
- * - Capacitor/Android WebView: redirect (popup often blocked)
- * Returns null when redirect was started (page will reload).
+ * Native: OS account picker (phone की Gmail) — Chrome नहीं खुलता।
+ * Web: popup.
  */
-export async function signInWithGoogle(): Promise<User | null> {
-  const auth = getAuth(getFirebaseApp());
-  const provider = googleProvider();
+export async function signInWithGoogle(): Promise<User> {
+  const auth = getFirebaseAuth();
 
-  if (isNativeShell()) {
-    await signInWithRedirect(auth, provider);
-    return null;
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const result = await FirebaseAuthentication.signInWithGoogle({
+        skipNativeAuth: true,
+      });
+      const idToken = result.credential?.idToken;
+      if (!idToken) {
+        throw new Error(
+          "Google idToken नहीं मिला — android/app/google-services.json और Firebase SHA-1 चेक करें।"
+        );
+      }
+      const credential = GoogleAuthProvider.credential(idToken);
+      const cred = await signInWithCredential(auth, credential);
+      return cred.user;
+    } catch (err) {
+      throw new Error(firebaseAuthError(err));
+    }
   }
 
   try {
-    const result = await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, googleProvider());
     return result.user;
   } catch (err) {
-    const code =
-      typeof err === "object" && err !== null && "code" in err
-        ? String((err as { code: string }).code)
-        : "";
-    // Fallback if popup blocked
-    if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment") {
-      await signInWithRedirect(auth, provider);
-      return null;
-    }
     throw new Error(firebaseAuthError(err));
   }
 }
 
-/** Call on app load — completes redirect-based Google sign-in if any. */
+/** Leftover web redirect completion only. Native no longer uses redirect/Chrome. */
 export async function completeGoogleRedirectIfAny(): Promise<User | null> {
+  if (Capacitor.isNativePlatform()) return null;
   try {
-    const auth = getAuth(getFirebaseApp());
+    const auth = getFirebaseAuth();
     const result = await getRedirectResult(auth);
     return result?.user ?? null;
   } catch (err) {

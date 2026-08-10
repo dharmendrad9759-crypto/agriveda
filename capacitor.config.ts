@@ -1,3 +1,4 @@
+/// <reference types="@capacitor-firebase/authentication" />
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
@@ -56,6 +57,11 @@ const config: CapacitorConfig = {
     StatusBar: {
       style: "DARK",
       backgroundColor: "#F8F9FA",
+    },
+    // Native Google account picker (no Chrome). skipNativeAuth → JS SDK session.
+    FirebaseAuthentication: {
+      providers: ["google.com"],
+      skipNativeAuth: true,
     },
   },
 };
