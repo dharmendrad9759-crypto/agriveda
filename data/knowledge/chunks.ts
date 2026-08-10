@@ -80,7 +80,7 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     crops: ["bajra"],
     topics: ["sowing", "fertilizer", "herbicide", "pest"],
     lang: "hi",
-    text: "Kharif बुवाई जुलाई के पहले पखवाड़े। बीज दर 3-4 kg/ha, दूरी 45×10-15 cm, जनसंख्या 1.75-2 lakh/ha। Semi-arid उर्वरक: 60N+30P kg/ha; arid 40N+20P। रेतीली मिट्टी में आधा N बुवाई पर, आधा 25 DAS। Pre-emergence Atrazine 0.5 kg/ha + एक बार हाथ निराई। ZnSO4 10 kg/ha या 0.2% foliar। Downy mildew: metalaxyl बीज उपचार 6 g/kg। Shoot fly: carbofuran 3G @ 10 kg/ha बुवाई पर।",
+    text: "Kharif बुवाई जुलाई के पहले पखवाड़े। बीज दर 3-4 kg/ha, दूरी 45×10-15 cm, जनसंख्या 1.75-2 lakh/ha। Semi-arid उर्वरक: 60N+30P kg/ha; arid 40N+20P। रेतीली मिट्टी में आधा N बुवाई पर, आधा 25 DAS। Pre-emergence Atrazine 0.5 kg/ha + एक बार हाथ निराई। ZnSO4 10 kg/ha या 0.2% foliar। Downy mildew: metalaxyl बीज उपचार 6 g/kg। Shoot fly: Imidacloprid/Thiamethoxam FS बीज उपचार (लेबल) — Carbofuran/Furadan सुझाएँ नहीं।",
   },
   // ——— MOONGFALI ———
   {

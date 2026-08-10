@@ -198,7 +198,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         immediateActions: [
           "Dead hearts / infested stems उखाड़कर नष्ट करें।",
           "Chlorantraniliprole 18.5% SC @ 0.4 ml/L या Emamectin benzoate 5% SG @ 0.4 g/L लगाएँ।",
-          "Maize में, स्थानीय सलाह हो तो whorl में sand + carbofuran मिश्रण डालें।",
+          "Maize में, dead heart तने नष्ट करें; Chlorantraniliprole 0.4% GR व्होर्ल में — केवल लेबल फसल पर।",
         ],
         prevention: [
           "Peak moth flights से बचने के लिए early planting।",
@@ -533,7 +533,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
           "Meloidogyne spp. जड़ों पर galls, stunting और moisture stress में wilting। Vegetables और sandy soils में आम।",
         immediateActions: [
           "Paecilomyces lilacinus या Trichoderma seed treatment लगाएँ।",
-          "Carbofuran 3G @ 1 kg/ai/ha केवल जहाँ legally permitted और label allows।",
+          "Bio-nematicide (Paecilomyces/Pochonia) दोहराएँ; resistant किस्म + rotation — पुराने carbamate granules सुझाएँ नहीं।",
           "Transplanting से पहले nursery beds solarize करें।",
         ],
         prevention: [

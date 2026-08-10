@@ -84,10 +84,13 @@ export const bajraProfile: CropManagementProfile = {
       symptoms: ["मृत हृदय", "कल्ले नहीं निकलना"],
       etl: "10% dead hearts",
       biologicalControl: ["जल्दी बुवाई", "बीज उपचार"],
-      chemicalControl: ["Carbofuran 3G @ 10 kg/ha बुवाई पर"],
-      iracGroup: "IRAC 1A",
-      activeIngredient: "Carbofuran",
-      dose: "Granules in furrow at sowing only",
+      chemicalControl: [
+        "Imidacloprid 600 FS या Thiamethoxam 30% FS बीज उपचार (लेबल ml/kg)",
+        "अंकुरण बाद Foliar: Thiamethoxam 25% WG @ 40 g/एकड़ (लेबल)",
+      ],
+      iracGroup: "IRAC 4A",
+      activeIngredient: "Imidacloprid / Thiamethoxam",
+      dose: "Seed treatment primary; foliar only if ETL and labelled",
     },
     {
       pestName: "तना छेदक",

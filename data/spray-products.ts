@@ -40,7 +40,7 @@ const ALL_FOUR = [...PADDY, ...COTTON, ...MAIZE, ...GROUNDNUT];
 
 export const sprayProducts: SprayProduct[] = [
   // ─── PADDY INSECTICIDES ───
-  p("p01", "Monocil 36 SL", "Monocrotophos", "insecticide", "IRAC", "1B", PADDY, { pests: ["p1", "p2"] }, "1.5 ml/L"),
+  p("p01", "Pexalon 106 SC", "Triflumezopyrim", "insecticide", "IRAC", "4E", PADDY, { pests: ["p1", "p2"] }, "0.5 ml/L"),
   p("p02", "Regent 0.3 GR", "Fipronil", "insecticide", "IRAC", "2B", PADDY, { pests: ["p1"] }, "8 kg/ha granules"),
   p("p03", "Confidor 200 SL", "Imidacloprid", "insecticide", "IRAC", "4A", PADDY, { pests: ["p1", "p4"] }, "0.3 ml/L"),
   p("p04", "Actara 25 WG", "Thiamethoxam", "insecticide", "IRAC", "4A", PADDY, { pests: ["p1"] }, "0.2 g/L"),
@@ -83,7 +83,7 @@ export const sprayProducts: SprayProduct[] = [
   p("c03", "Polo 500 SC", "Diafenthiuron", "insecticide", "IRAC", "12A", COTTON, { pests: ["p2"] }, "0.5 ml/L"),
   p("c04", "Intrepid 150 SC", "Methoxyfenozide", "insecticide", "IRAC", "18", COTTON, { pests: ["p1"] }, "1 ml/L"),
   p("c05", "Rynaxypyr 20 SC", "Chlorantraniliprole", "insecticide", "IRAC", "28", COTTON, { pests: ["p1"] }, "0.4 ml/L"),
-  p("c06", "Endosulfan 35 EC", "Endosulfan", "insecticide", "IRAC", "2A", COTTON, { pests: ["p3"] }, "1.5 ml/L"),
+  p("c06", "Proclaim 5 SG", "Emamectin benzoate", "insecticide", "IRAC", "6", COTTON, { pests: ["p3"] }, "0.4 g/L"),
   p("c07", "Quinalphos 25 EC", "Quinalphos", "insecticide", "IRAC", "1B", COTTON, { pests: ["p3"] }, "2 ml/L"),
   p("c08", "Triazophos 40 EC", "Triazophos", "insecticide", "IRAC", "1B", COTTON, { pests: ["p3"] }, "1.5 ml/L"),
   p("c09", "Pyriproxyfen 10 EC", "Pyriproxyfen", "insecticide", "IRAC", "7C", COTTON, { pests: ["p2"] }, "1 ml/L"),
@@ -108,8 +108,8 @@ export const sprayProducts: SprayProduct[] = [
   // ─── MAIZE INSECTICIDES ───
   p("m01", "Delegate 11.7 SC", "Spinetoram", "insecticide", "IRAC", "5", MAIZE, { pests: ["p1"] }, "0.9 ml/L"),
   p("m02", "Ampligo 150 ZC", "Chlorantraniliprole + Lambda-cyhalothrin", "insecticide", "IRAC", "28+3A", MAIZE, { pests: ["p1"] }, "0.5 ml/L"),
-  p("m03", "Lannate 40 SP", "Methomyl", "insecticide", "IRAC", "1A", MAIZE, { pests: ["p1", "p2"] }, "1 g/L"),
-  p("m04", "Furadan 3G", "Carbofuran", "insecticide", "IRAC", "1A", MAIZE, { pests: ["p3"] }, "8 kg/ha"),
+  p("m03", "Proclaim 5 SG", "Emamectin benzoate", "insecticide", "IRAC", "6", MAIZE, { pests: ["p1", "p2"] }, "0.4 g/L"),
+  p("m04", "Cruiser 30 FS", "Thiamethoxam", "insecticide", "IRAC", "4A", MAIZE, { pests: ["p3"] }, "बीज उपचार — लेबल ml/kg"),
   p("m05", "Sevin 50 WP", "Carbaryl", "insecticide", "IRAC", "1A", MAIZE, { pests: ["p2"] }, "2 g/L"),
   p("m06", "Tracer 480 SC", "Spinosad", "insecticide", "IRAC", "5", MAIZE, { pests: ["p1"] }, "0.3 ml/L"),
   p("m07", "Belt 480 SC", "Flubendiamide", "insecticide", "IRAC", "28", MAIZE, { pests: ["p1"] }, "0.25 ml/L"),

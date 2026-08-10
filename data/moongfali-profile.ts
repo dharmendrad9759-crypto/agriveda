@@ -98,10 +98,14 @@ export const moongfaliProfile: CropManagementProfile = {
       symptoms: ["अचानक मुरझाना", "पौधा आसानी से खींचकर निकलता है"],
       etl: "5% wilted plants",
       biologicalControl: ["गर्मी में गहरी जुताई"],
-      chemicalControl: ["Chlorpyrifos seed treatment", "Carbofuran 3G @ 33 kg/ha soil"],
-      iracGroup: "IRAC 1B",
-      activeIngredient: "Chlorpyrifos / Carbofuran",
-      dose: "At sowing",
+      chemicalControl: [
+        "Imidacloprid / Chlorpyrifos बीज उपचार (लेबल ml/kg)",
+        "Metarhizium @ ~2 kg/एकड़ FYM के साथ; प्रकाश जाल पहली बारिश पर",
+        "मिट्टी में Fipronil 0.3% GR — केवल जहाँ मूंगफली लेबल हो",
+      ],
+      iracGroup: "IRAC 4A / 2B",
+      activeIngredient: "Imidacloprid / Fipronil (labelled)",
+      dose: "Seed treatment + biological; granules only if crop-labelled",
     },
     {
       pestName: "पत्ती सुरंग कीट / Spodoptera",

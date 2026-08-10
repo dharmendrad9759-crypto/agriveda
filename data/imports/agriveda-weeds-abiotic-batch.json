@@ -391,11 +391,11 @@
               "note": "atrazine का विकल्प"
             },
             {
-              "technical": "2,4-D Na salt 80% WP",
-              "dose": "250 g/acre",
-              "timing": "PoE (20-25 DAS)",
-              "targets": "त्रिफल (Trianthema)",
-              "note": "BLW भागने के लिए बचाव"
+              "technical": "हाथ / डोरा निराई (20–30 DAS)",
+              "dose": "NA",
+              "timing": "PoE (20-30 DAS)",
+              "targets": "Trianthema + बची घास/BLW",
+              "note": "2,4-D बाजरा पर सुझाएँ नहीं (फाइटो/लेबल जोखिम); घास हेतु Quizalofop केवल अगर pearl millet लेबल हो"
             }
           ]
         }

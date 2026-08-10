@@ -103,7 +103,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
     pests: [
       { id: "p1", name: "फॉल आर्मीवर्म (Fall Armyworm)", scientificName: "Spodoptera frugiperda", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 28", control: "Emamectin benzoate / Chlorantraniliprole" },
       { id: "p2", name: "तना छेदक (Stem Borer)", scientificName: "Chilo partellus", image: IMG, stage: "घुटने-ऊँचाई", iracGroup: "IRAC 14", control: "Cartap hydrochloride, प्रकाश जाल" },
-      { id: "p3", name: "अंकुर मक्खी (Shoot Fly)", scientificName: "Atherigona soccata", image: IMG3, stage: "अंकुर", iracGroup: "IRAC 3A", control: "Carbofuran granules बुवाई पर" },
+      { id: "p3", name: "अंकुर मक्खी (Shoot Fly)", scientificName: "Atherigona soccata", image: IMG3, stage: "अंकुर", iracGroup: "IRAC 4A", control: "Imidacloprid/Thiamethoxam FS बीज उपचार — लेबल" },
     ],
     diseases: [
       { id: "d1", name: "टर्सिकम पत्ती झुलसा (Turcicum Leaf Blight)", pathogen: "Exserohilum turcicum", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC 3", control: "Mancozeb + Metalaxyl छिड़काव" },
@@ -121,7 +121,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
   bajra: {
     slug: "bajra", name: "Bajra", emoji: "🌿",
     pests: [
-      { id: "p1", name: "अंकुर मक्खी (Shoot Fly)", scientificName: "Atherigona approximata", image: IMG3, stage: "अंकुर", iracGroup: "IRAC 3A", control: "Carbofuran 3G @ 8 kg/ha बुवाई पर" },
+      { id: "p1", name: "अंकुर मक्खी (Shoot Fly)", scientificName: "Atherigona approximata", image: IMG3, stage: "अंकुर", iracGroup: "IRAC 4A", control: "Imidacloprid/Thiamethoxam FS बीज उपचार — लेबल" },
       { id: "p2", name: "तना छेदक (Stem Borer)", scientificName: "Coniesta ignefusalis", image: IMG, stage: "कल्ले", iracGroup: "IRAC 14", control: "Quinalphos छिड़काव — डेड-हार्ट अवस्था पर" },
       { id: "p3", name: "बाली इल्ली (Earhead Caterpillar)", scientificName: "Helicoverpa armigera", image: IMG3, stage: "फूल आना", iracGroup: "IRAC 28", control: "Indoxacarb / HaNPV छिड़काव" },
     ],
@@ -245,7 +245,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
   sugarcane: {
     slug: "sugarcane", name: "Sugarcane", emoji: "🎋",
     pests: [
-      { id: "p1", name: "ऊपरी छेदक (Top Borer)", scientificName: "Scirpophaga excerptalis", image: IMG3, stage: "तेज़ वृद्धि", iracGroup: "IRAC 14", control: "Carbofuran बीज उपचार, Trichogramma" },
+      { id: "p1", name: "ऊपरी छेदक (Top Borer)", scientificName: "Scirpophaga excerptalis", image: IMG3, stage: "तेज़ वृद्धि", iracGroup: "IRAC 28", control: "Chlorantraniliprole लेबल दर, Trichogramma" },
       { id: "p2", name: "पायरिला (Pyrilla)", scientificName: "Pyrilla perpusilla", image: IMG3, stage: "कल्ले", iracGroup: "IRAC 4A", control: "Dimethoate + Epiricania छोड़ें" },
       { id: "p3", name: "दीमक (Termites)", scientificName: "Odontotermes spp.", image: IMG, stage: "अंकुरण", iracGroup: "IRAC 13", control: "Chlorpyrifos बीज डुबोना" },
     ],
@@ -265,7 +265,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
   soybean: {
     slug: "soybean", name: "Soybean", emoji: "🫘",
     pests: [
-      { id: "p1", name: "कमर बंद भृंग (Girdle Beetle)", scientificName: "Oberea brevis", image: IMG3, stage: "फूल आना", iracGroup: "IRAC 28", control: "Carbofuran granules, कटे पौधे हटाएँ" },
+      { id: "p1", name: "कमर बंद भृंग (Girdle Beetle)", scientificName: "Oberea brevis", image: IMG3, stage: "फूल आना", iracGroup: "IRAC 28", control: "Chlorantraniliprole/Emamectin लेबल, कटे पौधे हटाएँ" },
       { id: "p2", name: "अर्ध-लूपर इल्ली (Semilooper)", scientificName: "Chrysodeixis acuta", image: IMG3, stage: "फली बनना", iracGroup: "IRAC 28", control: "Novaluron / Indoxacarb" },
       { id: "p3", name: "सफेद मक्खी (Whitefly)", scientificName: "Bemisia tabaci", image: IMG, stage: "वनस्पति", iracGroup: "IRAC 4A", control: "Thiamethoxam बीज उपचार" },
     ],
@@ -345,7 +345,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
     slug: "banana", name: "Banana", emoji: "🍌",
     pests: [
       { id: "p1", name: "केले का एफिड (Banana Aphid)", scientificName: "Pentalonia nigronervosa", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 4A", control: "Imidacloprid डrench (Bunchy Top वाहक)" },
-      { id: "p2", name: "कंद घुंवा (Rhizome Weevil)", scientificName: "Cosmopolites sordidus", image: IMG, stage: "Grand Naine", iracGroup: "IRAC 15", control: "Carbofuran कंद उपचार, फेरोमोन जाल" },
+      { id: "p2", name: "कंद घुंवा (Rhizome Weevil)", scientificName: "Cosmopolites sordidus", image: IMG, stage: "Grand Naine", iracGroup: "IRAC 15", control: "फेरोमोन जाल + स्वस्थ कंद; लेबल कीटनाशक केवल स्थानीय सलाह पर" },
       { id: "p3", name: "थ्रिप्स (Thrips)", scientificName: "Chaetanaphothrips signipennis", image: IMG3, stage: "गुच्छा बनना", iracGroup: "IRAC 4A", control: "Spinosad / गुच्छे ढकना" },
     ],
     diseases: [

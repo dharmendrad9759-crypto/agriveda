@@ -134,7 +134,7 @@ RULES:
 10. recoveryTonics: 1-3 recovery tonics after infection (seaweed extract, micronutrient mix, humic/fulvic, plant tonic) with dose — help crop recover.
 11. visualObservations: 1-2 short Hindi sentences only — what the farmer can see (रंग, धब्बे, पत्तियाँ). No English jargon, no scientific terms, no long paragraphs.
 12. Do NOT copy generic text unrelated to the visible symptoms. If 2 photos are provided, use BOTH (front + back of leaf / different angles).
-13. Never recommend banned actives (Endosulfan, Monocrotophos on vegetables, Methomyl on fruits/veg). This is informational guidance — not a substitute for a licensed agronomist.
+13. Never recommend banned/restricted actives (Endosulfan, Phorate, Dichlorvos, Monocrotophos especially on vegetables, Methomyl on fruits/veg, Carbofuran/Furadan 3G). Prefer labelled modern MoA. This is informational guidance — not a substitute for a licensed agronomist.
 
 Return ONLY valid JSON matching the schema.`;
 }

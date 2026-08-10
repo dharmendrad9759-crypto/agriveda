@@ -3213,14 +3213,14 @@
                 "dose": "2 L/acre soil drench with irrigation",
                 "iracGroup": "1B",
                 "stage": "advanced",
-                "note": "जड़ क्षेत्र grub"
+                "note": "जड़ क्षेत्र grub — लेबल PHI; वैकल्पिक जहाँ उपलब्ध"
               },
               {
-                "technical": "Phorate 10% CG",
-                "dose": "4-5 kg/acre at sowing",
-                "iracGroup": "1B",
+                "technical": "Fipronil 0.3% GR",
+                "dose": "8–10 kg/acre at sowing (केवल मूंगफली-लेबल हो तो)",
+                "iracGroup": "2B",
                 "stage": "early",
-                "note": "मिट्टी में"
+                "note": "Phorate प्रतिबंधित — इसके स्थान पर; crop label अनिवार्य"
               }
             ]
           }

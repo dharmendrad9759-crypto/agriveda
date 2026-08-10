@@ -117,10 +117,13 @@ export const maizeProfile: CropManagementProfile = {
       symptoms: ["7–21 DAS पर dead heart", "बौना पौधा", "खाली जगहों वाली खड़ी"],
       etl: "10% plants with dead heart",
       biologicalControl: ["मक्खी की चरम अवधि से बचने के लिए जल्दी बोवाई"],
-      chemicalControl: ["बोवाई पर नालियों में Carbofuran 3G @ 8–10 kg/ha"],
-      iracGroup: "IRAC 1A",
-      activeIngredient: "Carbofuran",
-      dose: "8 kg/ha granules in seed furrow",
+      chemicalControl: [
+        "Imidacloprid 600 FS / Thiamethoxam 30% FS बीज उपचार (लेबल)",
+        "जरूरत पर Chlorantraniliprole 0.4% GR व्होर्ल में — लेबल फसल जाँचें",
+      ],
+      iracGroup: "IRAC 4A / 28",
+      activeIngredient: "Imidacloprid / Thiamethoxam / Chlorantraniliprole",
+      dose: "Seed treatment at sowing; granular only if crop-labelled",
     },
   ],
   diseaseManagement: [

@@ -119,7 +119,7 @@ MANDATORY RULES — KABHI MAT TODNA:
    - PHI — every single time
 
 ❌ KABHI MAT DENA:
-   - Banned molecules: Endosulfan, Monocrotophos (vegetables mein), Methomyl (fruits/veg mein)
+   - Banned / do-not-recommend: Endosulfan, Phorate, Dichlorvos, Monocrotophos (esp. vegetables; avoid 36% SL), Methomyl (esp. fruits/veg), Carbofuran/Furadan 3G (prefer labelled modern seed FS / new MoA; do not suggest Furadan)
    - Ek hi IRAC group baar baar spray recommend karna
    - Bina PHI ke pesticide recommend karna
 
