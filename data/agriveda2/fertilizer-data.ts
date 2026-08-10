@@ -27,7 +27,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     P: { total: 25, basal: 25, note: "Poora P bunai ke samay dena hai" },
     K: { total: 12, basal: 12, note: "Poora K bunai ke samay" },
     S: { total: 8, source: "Gypsum 40 kg/acre — bunai ke samay", note: "Zyada zaroori agar SSP use na ho" },
-    Zn: { total: 5, source: "ZnSO4 21% — bunai ke samay", note: "Har 3 saal mein ek baar zaroori" },
+    Zn: { total: 10, source: "ZnSO4 21% — bunai ke samay (~10 kg/acre)", note: "Deficiency soils; ICAR ~25 kg/ha every 2–3 years" },
     Fe: {
       apply: "Only if deficiency seen",
       dose: "FeSO4 10 kg/acre basal OR 0.5% FeSO4 spray",
@@ -38,10 +38,10 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       Urea: "75 kg (remaining N ke liye)",
       MOP: "20 kg",
       Gypsum: "40 kg",
-      ZnSO4_21: "5 kg",
+      ZnSO4_21: "10 kg",
     },
     schedule: [
-      { time: "Bunai ke samay (Basal)", apply: "DAP 55kg + MOP 20kg + Gypsum 40kg + ZnSO4 5kg" },
+      { time: "Bunai ke samay (Basal)", apply: "DAP 55kg + MOP 20kg + Gypsum 40kg + ZnSO4 10kg" },
       { time: "21 DAS (CRI — pehli sinchai ke baad)", apply: "Urea 38 kg" },
       { time: "45 DAS (Tillering)", apply: "Urea 37 kg" },
     ],
@@ -51,13 +51,13 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     N: { total: 50, split: "Basal: 12 kg | Tillering (21 DAT): 20 kg | Panicle initiation (45 DAT): 18 kg" },
     P: { total: 20, basal: 20 },
     K: { total: 20, split: "Basal: 10 kg | Panicle initiation: 10 kg" },
-    Zn: { total: 5, source: "ZnSO4 21% kg/acre", note: "Khaali khet mein pichli fasal ke baad dena best hai" },
+    Zn: { total: 10, source: "ZnSO4 21% kg/acre", note: "Khaali khet mein pichli fasal ke baad dena best hai" },
     S: { total: 8, source: "Gypsum 40 kg/acre", note: "Zyada zaroori is UP/Bihar ki mitti mein" },
     Fe: {
       apply: "Agar paudhe peele paden (Fe deficiency)",
       dose: "FeSO4 0.5% + Citric acid 0.1% spray, 2-3 baar 10 din ke antral par",
     },
-    fertilizer_bags: { DAP: "44 kg", Urea: "80 kg (total, teen bhagon mein)", MOP: "33 kg", ZnSO4_21: "5 kg" },
+    fertilizer_bags: { DAP: "44 kg", Urea: "80 kg (total, teen bhagon mein)", MOP: "33 kg", ZnSO4_21: "10 kg" },
   },
 
   "Makka (Maize)": {
@@ -65,9 +65,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     P: { total: 25, basal: 25 },
     K: { total: 20, basal: 20 },
     S: { total: 10, source: "Gypsum 50 kg/acre — bunai ke samay" },
-    Zn: { total: 5, source: "ZnSO4 21% — bunai ke samay" },
+    Zn: { total: 10, source: "ZnSO4 21% — bunai ke samay" },
     Mg: { dose: "MgSO4 5 kg/acre — foliar spray 0.5% agar chlorosis dike" },
-    fertilizer_bags: { DAP: "55 kg", Urea: "95 kg (3 bhagon mein)", MOP: "33 kg", Gypsum: "50 kg", ZnSO4_21: "5 kg" },
+    fertilizer_bags: { DAP: "55 kg", Urea: "95 kg (3 bhagon mein)", MOP: "33 kg", Gypsum: "50 kg", ZnSO4_21: "10 kg" },
   },
 
   "Sarson (Mustard)": {
@@ -80,7 +80,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       note: "S deficiency se erucic acid badhta hai, oil quality girti hai",
     },
     B: { total: 0.5, source: "Borax 1 kg/acre — bunai ke samay", note: "Flowering stage mein foliar: Boron 0.1% spray" },
-    Zn: { dose: "ZnSO4 5 kg/acre agar deficiency history ho" },
+    Zn: { dose: "ZnSO4 10 kg/acre agar deficiency history ho" },
     fertilizer_bags: { DAP: "33 kg", Urea: "24 kg (dono kishtein mila ke)", MOP: "13 kg", Gypsum: "60 kg", Borax: "1 kg" },
   },
 
@@ -89,7 +89,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     P: { total: 20, basal: 20 },
     K: { total: 8, basal: 8 },
     S: { total: 8, source: "Gypsum 40 kg/acre" },
-    Zn: { dose: "ZnSO4 5 kg/acre basal agar deficiency ho" },
+    Zn: { dose: "ZnSO4 10 kg/acre basal agar deficiency ho" },
     Rhizobium: {
       essential: true,
       note: "Rhizobium culture 200g/10kg beej — 40-60% N ki bachat hoti hai, yield 15-20% badhti hai",
@@ -102,7 +102,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     P: { total: 30, basal: 30 },
     K: { total: 20, basal: 20 },
     S: { total: 10, source: "Gypsum 50 kg/acre — bahut zaroori protein quality ke liye" },
-    Zn: { total: 5, source: "ZnSO4 5 kg/acre basal" },
+    Zn: { total: 10, source: "ZnSO4 10 kg/acre basal" },
     Mo: { dose: "Ammonium molybdate 200g/acre — seed treatment mein milao", note: "Nodule formation improve karta hai" },
     Rhizobium_PSB: { essential: true },
   },
@@ -114,7 +114,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     Ca: { total: 20, source: "Gypsum 100 kg/acre ya Calcium nitrate 25 kg", note: "Common scab rokne ke liye important" },
     Mg: { total: 10, source: "MgSO4 50 kg/acre basal", note: "Chlorophyll ke liye zaroori" },
     S: { total: 12, source: "Gypsum se milta hai — alag se nahi dena" },
-    Zn: { total: 5, source: "ZnSO4 5 kg/acre basal" },
+    Zn: { total: 10, source: "ZnSO4 10 kg/acre basal" },
     Fe: { dose: "FeSO4 0.5% foliar spray agar interveinal chlorosis dike" },
     B: { total: 0.5, source: "Borax 1 kg/acre", note: "Tuber size uniform rakta hai" },
     fertilizer_bags: {
@@ -123,7 +123,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       MOP: "84 kg",
       Gypsum: "100 kg",
       MgSO4: "50 kg",
-      ZnSO4_21: "5 kg",
+      ZnSO4_21: "10 kg",
       Borax: "1 kg",
     },
   },
@@ -135,7 +135,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     Ca: { total: 25, source: "Calcium nitrate 25 kg foliar ya Gypsum 125 kg basal", note: "Blossom End Rot rokne ke liye CRITICAL" },
     Mg: { total: 8, source: "MgSO4 0.5% foliar spray 3 baar, ya 20 kg basal" },
     S: { total: 10, source: "Gypsum 50 kg/acre basal" },
-    Zn: { total: 5, source: "ZnSO4 5 kg/acre basal ya 0.5% foliar" },
+    Zn: { total: 10, source: "ZnSO4 10 kg/acre basal ya 0.5% foliar" },
     Fe: { dose: "Chelated Fe (EDTA) 0.2% foliar spray agar chlorosis ho" },
     B: { dose: "Borax 0.1-0.2% foliar spray flowering mein — fruit setting ke liye zaroori" },
     fertilizer_bags: {
@@ -145,7 +145,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       Gypsum: "50 kg",
       Calcium_nitrate: "25 kg (foliar mein use karo fruiting mein)",
       MgSO4: "20 kg",
-      ZnSO4_21: "5 kg",
+      ZnSO4_21: "10 kg",
     },
   },
 
@@ -155,7 +155,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     K: { total: 30, split: "Basal: 15 kg | Fruiting mein: 15 kg" },
     Ca: { dose: "Calcium nitrate 0.5% foliar — fruiting mein 2 baar" },
     Mg: { dose: "MgSO4 0.5% foliar spray — agar pattiyaan peeli paden" },
-    Zn: { dose: "ZnSO4 5 kg/acre basal" },
+    Zn: { dose: "ZnSO4 10 kg/acre basal" },
     B: { dose: "Borax 0.1% foliar — flowering mein" },
   },
 
@@ -166,7 +166,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     Ca: { dose: "Calcium nitrate 0.3-0.5% foliar spray blossom end rot rokne ke liye" },
     Mg: { dose: "MgSO4 0.5% foliar spray 2-3 baar" },
     S: { dose: "Gypsum 40 kg/acre basal" },
-    Zn: { dose: "ZnSO4 5 kg/acre basal" },
+    Zn: { dose: "ZnSO4 10 kg/acre basal" },
     B: { dose: "Borax 0.1% foliar — flowering mein" },
   },
 
@@ -186,7 +186,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     P: { total: 20, basal: 20 },
     K: { total: 15, basal: 15 },
     S: { dose: "Gypsum 30 kg/acre — basal" },
-    Zn: { dose: "ZnSO4 5 kg/acre basal" },
+    Zn: { dose: "ZnSO4 10 kg/acre basal" },
   },
 
   "Ganna (Sugarcane)": {
@@ -205,8 +205,8 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     N: { total: 40, split: "Basal: 20 kg | 30 DAS: 20 kg" },
     P: { total: 16, basal: 16 },
     K: { total: 8, basal: 8 },
-    Zn: { total: 5, source: "ZnSO4 5 kg/acre basal" },
-    fertilizer_bags: { DAP: "35 kg", Urea: "44 kg (2 split)", MOP: "13 kg", ZnSO4_21: "5 kg" },
+    Zn: { total: 10, source: "ZnSO4 10 kg/acre basal" },
+    fertilizer_bags: { DAP: "35 kg", Urea: "44 kg (2 split)", MOP: "13 kg", ZnSO4_21: "10 kg" },
   },
 
   "Moong (Green Gram)": {

@@ -53,7 +53,10 @@ export const FERTILIZER_RECOMMENDATIONS: FertilizerRecommendation[] = [
     n: 60,
     p2o5: 30,
     k2o: 0,
-    micronutrients: ["ZnSO₄ 10 kg/ha in deficient soils", "0.2% ZnSO₄ foliar if needed"],
+    micronutrients: [
+      "ZnSO₄ 25 kg/ha (≈10 kg/acre) in Zn-deficient soils — or PoP lower rate if soil test adequate",
+      "0.5% ZnSO₄ foliar if deficiency symptoms appear",
+    ],
     splits: ["शुष्क: 40N+20P", "अर्ध-शुष्क: 60N+30P", "रेतली मिट्टी: आधा N बुवाई, आधा 25 DAS"],
     notes: ["Seed rate 3-4 kg/ha", "बीज की दर में खाद न रखें"],
   },

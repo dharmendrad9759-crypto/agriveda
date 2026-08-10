@@ -16,7 +16,7 @@
     "Agriveda — All Plant Nutrient Deficiency Pages [JSON]-20260710141255.md",
     "Agriveda — Nutrient Deficiency Page_ Nitrogen (N) [JSON]-20260710150408.md"
   ],
-  "compiledAt": "2026-07-10T09:35:33.772Z",
+  "compiledAt": "2026-08-10T10:00:53.523Z",
   "nutrients": [
     {
       "slug": "boron",
@@ -178,30 +178,30 @@
         {
           "fertilizer": "Borax (Sodium tetraborate)",
           "nutrientContent": "~10.5% B",
-          "soilApplicationDose": "4-5 kg/acre basal (crucifers/oilseeds); mix well for even spread",
+          "soilApplicationDose": "मिट्टी परीक्षण के बाद ही — crucifers/oilseeds पर अक्सर Borax ~4–5 kg/एकड़ basal; समान रूप से मिलाएँ (विषाक्तता आसान)",
           "foliarSprayDose": "0.1-0.2% (1-2 g/L)",
-          "fertigationDose": "0.5-1 kg/acre",
+          "fertigationDose": "season total बहुत कम — लेबल/मिट्टी परीक्षण; हर drip cycle न दोहराएँ",
           "waterQuantity": "Foliar 200 L/acre",
           "bestCropStage": "Basal + फूल आने से पहले/गोभी शुरू होने पर; Foliar फूल आने पर",
           "methodOfApplication": "मिट्टी Basal (फैलाव भी गंभीर) या Foliar फूल आने/गोभी होने पर",
           "numberOfApplications": "Soil 1; foliar 1-2",
           "sprayInterval": "10-15 days",
           "expectedRecoveryTime": "7-14 days",
-          "precautions": "संकीर्ण सुरक्षा मार्जिन - खुराक से अधिक न हो (विषाक्तता आसान); गर्म स्थानों से बचने के लिए अच्छी तरह मिलाएं; Borax को गर्म पानी में घोलें।"
+          "precautions": "B की कमी और विष के बीच मार्जिन पतला। Soil test / SHC बिना भारी मिट्टी dose न दें। Borax गर्म पानी में घोलें।"
         },
         {
           "fertilizer": "Solubor / Boric acid (soluble B)",
           "nutrientContent": "Boric acid ~17% B; Solubor ~20% B",
-          "soilApplicationDose": "2-3 kg/acre (higher B content — lower rate)",
-          "foliarSprayDose": "0.1-0.2% (1-2 g/L) — dissolves easily",
-          "fertigationDose": "per label",
+          "soilApplicationDose": "मिट्टी में तभी जब Soil Health Card/प्रयोगशाला elemental B बताए — Solubor ~20% B (Borax से तेज़); अक्सर किसान के लिए सिर्फ foliar सुरक्षित",
+          "foliarSprayDose": "0.1–0.2% (1–2 g/L) — पसंदीदा तरीका",
+          "fertigationDose": "लेबल; सीजन कुल elemental B सीमा में रखें",
           "waterQuantity": "200 L/acre",
           "bestCropStage": "फूल/फल सेट; Foliar पसंदीदा",
           "methodOfApplication": "Foliar/Fertigation - अत्यधिक घुलनशील, फूल-सेट सुधार के लिए अच्छा है",
           "numberOfApplications": "1-2",
           "sprayInterval": "10-15 days",
           "expectedRecoveryTime": "7-12 days",
-          "precautions": "समान संकीर्ण मार्जिन - खुराक पर टिके रहें; Foliar/Fertigation के लिए आदर्श।"
+          "precautions": "अतिरिक्त B आसानी से विषैला — foliar प्राथमिक; मिट्टी dose soil-test gated।"
         },
         {
           "fertilizer": "Boronated NPK / borated SSP (blended)",
@@ -376,7 +376,7 @@
       "slug": "calcium",
       "name": "Calcium",
       "symbol": "Ca",
-      "category": "द्वितीयक पोषक तत्व तत्व तत्व तत्व तत्व तत्व तत्व",
+      "category": "द्वितीयक पोषक तत्व",
       "mobility": "IMMOBILE पौध में (युवा पत्तियों और विकास बिंदुओं पर कमी, पहले फल की युक्तियाँ)",
       "formsTakenUp": "Ca2+",
       "overview": {
@@ -532,7 +532,7 @@
         {
           "fertilizer": "Gypsum (Calcium Sulphate)",
           "nutrientContent": "~23% Ca + 18% S",
-          "soilApplicationDose": "100 kg/acre (groundnut at pegging); 200-400 kg/acre for sodic-soil reclamation",
+          "soilApplicationDose": "मूंगफली flowering/pegging: ~200 kg/एकड़ (≈500 kg/हे., ICAR/NFSM शैली); sodic सुधार: 200–400 kg/एकड़; अन्य फसलें राज्य PoP",
           "foliarSprayDose": "NA (soil)",
           "fertigationDose": "NA",
           "waterQuantity": "Incorporate in moist soil",
@@ -1167,32 +1167,18 @@
       ],
       "howToFix": [
         {
-          "fertilizer": "Cobalt Sulphate (CoSO4)",
-          "nutrientContent": "~21% Co",
-          "soilApplicationDose": "very low, 100-200 g/acre (only on proven-deficient soils; usually via seed/inoculant)",
-          "foliarSprayDose": "0.01-0.05% (very dilute) per research",
-          "fertigationDose": "trace",
-          "waterQuantity": "200 L/acre",
-          "bestCropStage": "फलियों के लिए Rhizobium से बीजोपचार करें",
-          "methodOfApplication": "Rhizobium से बीज उपचार (मुख्य व्यावहारिक उपयोग); केवल छोटी खुराकें",
-          "numberOfApplications": "1",
-          "sprayInterval": "NA",
-          "expectedRecoveryTime": "via improved nodulation",
-          "precautions": "TRACE मात्रा में आवश्यक; अतिरिक्त Co पौध और जानवरों के लिए विषैला होता है। आवश्यकता के प्रमाण के बिना आवेदन न करें।"
-        },
-        {
-          "fertilizer": "Rhizobium inoculant (delivers the benefit)",
+          "fertilizer": "Rhizobium inoculant (मुख्य उपाय — दलहन)",
           "nutrientContent": "N-fixing bacteria",
-          "soilApplicationDose": "seed treatment",
+          "soilApplicationDose": "बीज उपचार — पैकेट लेबल",
           "foliarSprayDose": "NA",
           "fertigationDose": "NA",
           "waterQuantity": "slurry",
-          "bestCropStage": "बुआई के समय (फलियाँ)",
-          "methodOfApplication": "बीज उपचार - स्वस्थ नोड्यूलेशन ही वास्तविक लक्ष्य है; सह बैक्टीरिया का समर्थन करता है",
+          "bestCropStage": "बुआई के समय (मूंग/अरहर/सोया आदि)",
+          "methodOfApplication": "बीज उपचार; स्वस्थ नोड्यूलेशन ही लक्ष्य। CoSO4 किसान स्प्रे न करें।",
           "numberOfApplications": "1",
           "sprayInterval": "NA",
-          "expectedRecoveryTime": "builds through season",
-          "precautions": "गुणवत्ता वाले इनोकुलेंट सुनिश्चित करें; कवकनाशी के साथ एक साथ न मिलाएं।"
+          "expectedRecoveryTime": "season via better nodulation",
+          "precautions": "कवकनाशी के साथ एक साथ न मिलाएँ; गुणवत्ता inoculant लें। Co अलग से तभी जब KVK/मिट्टी रिपोर्ट कहे।"
         }
       ],
       "methodOfApplication": {
@@ -1515,14 +1501,14 @@
           "nutrientContent": "24-25% Cu",
           "soilApplicationDose": "2-4 kg/acre basal (once every few years; residual)",
           "foliarSprayDose": "0.2-0.3% (2-3 g/L) + lime (Bordeaux-style) to avoid scorch",
-          "fertigationDose": "0.5-1 kg/acre",
+          "fertigationDose": "आमतौर पर न करें — मिट्टी 2–4 kg/एकड़ हर कुछ वर्षों में पर्याप्त; अगर drip तो लेबल season-total, हर split नहीं",
           "waterQuantity": "Foliar 200 L/acre",
           "bestCropStage": "लक्षणों पर; वनस्पतिक",
           "methodOfApplication": "मिट्टी Basal (अवशिष्ट) या पतला Foliar; अक्सर Cu-कवकनाशी Foliar spray के साथ मेल खाता है",
           "numberOfApplications": "1-2",
           "sprayInterval": "10-15 days",
           "expectedRecoveryTime": "7-14 days",
-          "precautions": "Cu आसानी से विषाक्त है - कम खुराक का उपयोग करें, Foliar में चूना मिलाएं; अधिक मात्रा में न लगाएं (मिट्टी में जम जाता है)।"
+          "precautions": "Cu आसानी से विषाक्त/जमा। Foliar में चूना मिलाएँ। हर सीजन भारी fertigation न करें। मिट्टी परीक्षण के बाद।"
         },
         {
           "fertilizer": "Chelated Copper (Cu-EDTA)",
@@ -2051,7 +2037,7 @@
       "slug": "magnesium",
       "name": "Magnesium",
       "symbol": "Mg",
-      "category": "द्वितीयक पोषक तत्व तत्व तत्व तत्व तत्व तत्व तत्व",
+      "category": "द्वितीयक पोषक तत्व",
       "mobility": "पौध में मोबाइल (पहले पुरानी पत्तियों पर कमी)",
       "formsTakenUp": "Mg2+",
       "overview": {
@@ -3222,32 +3208,18 @@
       ],
       "howToFix": [
         {
-          "fertilizer": "Nickel Sulphate (NiSO4) — research/special use only",
-          "nutrientContent": "~22% Ni",
-          "soilApplicationDose": "ultra-trace, only on proven deficiency (essentially never in Indian field crops)",
-          "foliarSprayDose": "0.001-0.01% (extremely dilute) per research",
-          "fertigationDose": "trace",
-          "waterQuantity": "200 L/acre",
-          "bestCropStage": "कमी की पुष्टि होने पर ही",
-          "methodOfApplication": "Foliar दुर्लभ पुष्ट मामलों में अल्ट्रा-डाइल्यूट",
-          "numberOfApplications": "1",
-          "sprayInterval": "NA",
-          "expectedRecoveryTime": "7-14 days if truly deficient",
-          "precautions": "नी कम मात्रा में भी विषाक्त है और एक भारी धातु है - पुष्टि की गई कमी के बिना लागू न करें; खाद्य-सुरक्षा चिंता."
-        },
-        {
-          "fertilizer": "Organic matter / normal soil supply",
+          "fertilizer": "सामान्य मिट्टी + कार्बनिक पदार्थ (किसान खेत में Ni खाद न डालें)",
           "nutrientContent": "trace Ni",
-          "soilApplicationDose": "NA",
-          "foliarSprayDose": "NA",
+          "soilApplicationDose": "NA — भारतीय आम फसलों में Ni खाद की सिफारिश नहीं",
+          "foliarSprayDose": "NA — छिड़काव न करें (भारी धातु / खाद्य सुरक्षा)",
           "fertigationDose": "NA",
           "waterQuantity": "NA",
-          "bestCropStage": "NA",
-          "methodOfApplication": "सामान्य मिट्टी + कार्बनिक पदार्थ खेत की फसलों के लिए पर्याप्त Ni की आपूर्ति करते हैं",
+          "bestCropStage": "केवल प्रयोगशाला पुष्टि + विशेषज्ञ सलाह पर",
+          "methodOfApplication": "कमी दुर्लभ; आमतौर पर कार्बनिक पदार्थ/मिट्टी पर्याप्त। प्रदूषण संदेह पर मिट्टी परीक्षण।",
           "numberOfApplications": "NA",
           "sprayInterval": "NA",
           "expectedRecoveryTime": "NA",
-          "precautions": "भारतीय कृषि क्षेत्र में जानबूझकर नी निषेचन की आवश्यकता नहीं है।"
+          "precautions": "Nickel Sulphate किसान स्प्रे/खाद के रूप में न दें। Heavy-metal contamination परीक्षण KVK/प्रयोगशाला से।"
         }
       ],
       "methodOfApplication": {
@@ -3563,8 +3535,8 @@
         {
           "fertilizer": "Urea",
           "nutrientContent": "46% N",
-          "soilApplicationDose": "Per crop schedule, e.g. cereals ~50-120 kg/acre total N split; as a corrective top-dress 25-45 kg urea/acre",
-          "foliarSprayDose": "2% solution = 20 g per litre (roughly 400 g in 20 L pump); ~3-4 kg urea in 150-200 L/acre",
+          "soilApplicationDose": "फसल PoP के अनुसार elemental N — अनाज आमतौर पर ~40–60 kg N/एकड़ (≈100–150 kg N/हे.) 2–3 भाग में। सुधारी top-dress: 25–45 kg यूरिया/एकड़ (मिट्टी नमी + फसल जाँच के बाद)",
+          "foliarSprayDose": "2% यूरिया = 20 g/L (~3–4 kg यूरिया in 150–200 L/एकड़) — केवल बचाव; प्राथमिक मिट्टी",
           "fertigationDose": "3-5 kg/acre per fertigation split, dissolved and injected",
           "waterQuantity": "Foliar: 150-200 L/acre (veg), 200 L/acre; dissolve fully before spray",
           "bestCropStage": "सक्रिय वानस्पतिक वृद्धि/कल्ले फूटना/फूल आने से पहले; top-dress सक्रिय विकास चरणों में",
@@ -3572,7 +3544,7 @@
           "numberOfApplications": "Soil: 2-3 splits over season; foliar rescue: 2-3 sprays",
           "sprayInterval": "Foliar every 7-10 days",
           "expectedRecoveryTime": "Foliar greening in 4-7 days; soil top-dress response in 7-15 days with moisture",
-          "precautions": "सूखी/गर्म मिट्टी की सतह पर कभी भी broadcast (भारी अमोनिया हानि) न डालें - सम्मिलित करें या पानी देना करें। 2% Foliar (पत्ती झुलसना) से अधिक न हो। Urea Foliar को अत्यधिक क्षारीय उत्पादों के साथ न मिलाएं।"
+          "precautions": "‘कुल N/एकड़’ को यूरिया किलो से न मिलाएँ (यूरिया 46% N)। सूखी/गर्म मिट्टी पर broadcast न करें। Foliar 2% से ऊपर न जाए। Crop PoP + मिट्टी परीक्षण अंतिम।"
         },
         {
           "fertilizer": "Neem-coated Urea (mandatory form in India)",
@@ -3661,7 +3633,7 @@
         {
           "fertilizer": "Organic: FYM / Compost / Vermicompost",
           "nutrientContent": "FYM ~0.5% N; Vermicompost ~1.5-2% N (slow-release)",
-          "soilApplicationDose": "FYM 4-10 t/acre; vermicompost 1-2 t/acre basal",
+          "soilApplicationDose": "FYM 2–4 t/एकड़ (≈5–10 t/हे. साधारण PoP; भारी खुराक मिट्टी क्षमता अनुसार); vermicompost 1-2 t/acre basal",
           "foliarSprayDose": "NA (jeevamrut/panchagavya used as soil/foliar biostimulant, not primary N)",
           "fertigationDose": "NA",
           "bestCropStage": "Basal, बुआई/रोपाई से 2-3 सप्ताह पहले",
@@ -3855,7 +3827,7 @@
       ],
       "name": "Nitrogen",
       "symbol": "N",
-      "category": "प्राथमिक बड़ा पोषकन्यूट्रिएंट",
+      "category": "प्राथमिक पोषक तत्व",
       "mobility": "पौध में अत्यधिक गतिशीलता (पुरानी पत्तियों में कमी सबसे पहले दिखाई देती है) और मिट्टी में अत्यधिक गतिशीलता (आसानी से रिसाव)",
       "formsTakenUp": "Nitrate (NO3-) and Ammonium (NH4+)"
     },
@@ -3863,7 +3835,7 @@
       "slug": "phosphorus",
       "name": "Phosphorus",
       "symbol": "P",
-      "category": "प्राथमिक बड़ा पोषकन्यूट्रिएंट",
+      "category": "प्राथमिक पोषक तत्व",
       "mobility": "पौध में मोबाइल (पहले पुरानी पत्तियों की कमी); मिट्टी में बहुत IMMOBILE (अम्लीय मिट्टी में Fe/Al द्वारा स्थिर, क्षारीय मिट्टी में Ca)",
       "formsTakenUp": "H2PO4- and HPO4^2-",
       "overview": {
@@ -4020,7 +3992,7 @@
           "fertilizer": "DAP (Di-ammonium Phosphate)",
           "nutrientContent": "18% N + 46% P2O5",
           "soilApplicationDose": "40-50 kg/acre BASAL, band-placed",
-          "foliarSprayDose": "2% (20 g/L) at flowering for N+P boost",
+          "foliarSprayDose": "प्राथमिक नहीं — burn/Zn विरोध जोखिम। जरूरी हो तो water-soluble MAP ~0.5% लेबल अनुसार; DAP 2% foliar सामान्य PoP नहीं",
           "fertigationDose": "Use water-soluble grades only",
           "waterQuantity": "Foliar 150-200 L/acre",
           "bestCropStage": "Basal बुआई/रोपाई के समय (पी जल्दी उपलब्ध होना चाहिए)",
@@ -4262,7 +4234,7 @@
       "slug": "potassium",
       "name": "Potassium",
       "symbol": "K",
-      "category": "प्राथमिक बड़ा पोषकन्यूट्रिएंट",
+      "category": "प्राथमिक पोषक तत्व",
       "mobility": "पौध में गतिशीलता (पहले पुरानी पत्तियों की कमी, क्लासिक सीमांत पत्ती झुलसा); मिट्टी में परिवर्तनशील",
       "formsTakenUp": "K+ ion",
       "overview": {
@@ -4478,7 +4450,7 @@
         {
           "fertilizer": "Organic: FYM / crop residue / wood ash",
           "nutrientContent": "FYM ~0.5% K2O; wood ash 5-8% K2O",
-          "soilApplicationDose": "FYM 4-10 t/acre; residue incorporation",
+          "soilApplicationDose": "FYM 2–4 t/एकड़ (≈5–10 t/हे. साधारण PoP; भारी खुराक मिट्टी क्षमता अनुसार); residue incorporation",
           "foliarSprayDose": "NA",
           "fertigationDose": "NA",
           "waterQuantity": "Incorporate",
@@ -4995,7 +4967,7 @@
       "slug": "sulphur",
       "name": "Sulphur",
       "symbol": "S",
-      "category": "द्वितीयक पोषक तत्व तत्व तत्व तत्व तत्व तत्व तत्व",
+      "category": "द्वितीयक पोषक तत्व",
       "mobility": "IMMOBILE / खराब मोबाइल (पहले युवा पत्तियों पर कमी - एन की तरह दिखती है लेकिन नई वृद्धि पर)",
       "formsTakenUp": "Sulphate SO4^2-",
       "overview": {

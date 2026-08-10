@@ -101,6 +101,9 @@ const SYM_TILE: Record<string, string> = {
   Mo: "bg-indigo-600 text-white",
 };
 
+/** Rare for field farmers — only after explicit search */
+const RARE_FARMER_NUTRIENTS = new Set(["nickel", "cobalt", "chlorine"]);
+
 function cropShort(name: string) {
   return name.split("(")[0]?.trim() || name;
 }
@@ -139,8 +142,17 @@ export default function DeficienciesPageClient() {
 
   const filteredAll = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return allNutrientDeficiencies;
-    return allNutrientDeficiencies.filter(
+    const base = allNutrientDeficiencies.filter((n) => {
+      if (!RARE_FARMER_NUTRIENTS.has(n.slug)) return true;
+      return (
+        Boolean(q) &&
+        (n.name.toLowerCase().includes(q) ||
+          n.symbol.toLowerCase().includes(q) ||
+          n.slug.includes(q))
+      );
+    });
+    if (!q) return base;
+    return base.filter(
       (n) =>
         n.name.toLowerCase().includes(q) ||
         n.symbol.toLowerCase().includes(q) ||
@@ -326,7 +338,9 @@ export default function DeficienciesPageClient() {
               {isHi ? "सभी पोषक तत्व" : "All nutrients"}
             </span>
             <span className="text-[11px] text-[var(--av-text-muted)]">
-              {isHi ? "नाम से खोजें (N, Zn…)" : "Search by name (N, Zn…)"}
+              {isHi
+                ? "नाम से खोजें (N, Zn…) — Ni/Co दुर्लभ"
+                : "Search by name (N, Zn…) — Ni/Co rare"}
             </span>
           </span>
           <ChevronRight

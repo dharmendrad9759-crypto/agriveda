@@ -427,6 +427,18 @@ export default function NutrientDetailExperience({
               <p className="text-[12px] font-semibold text-emerald-800 dark:text-emerald-200">
                 {scope.labelHi} · सही खुराक
               </p>
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] px-3.5 py-3">
+                <p className="text-[12px] font-bold text-amber-950 dark:text-amber-100">
+                  पहले मिट्टी / ऊतक परीक्षण
+                </p>
+                <p className="mt-1 text-[11px] leading-snug text-amber-900/90 dark:text-amber-100/85">
+                  नीचे की खुराक ICAR/SAU शैली का सामान्य मार्गदर्शन है। Soil Health Card या KVK जाँच के
+                  बाद ही सूक्ष्म पोषक (Zn, Fe, B, Cu, Mo) दोहराएँ — B/Cu में ज़्यादा होना आसान विष है।
+                  {["nickel", "cobalt", "boron", "copper", "molybdenum"].includes(nutrient.slug)
+                    ? " इस पोषक पर बिना रिपोर्ट के मिट्टी में भारी मात्रा न डालें।"
+                    : ""}
+                </p>
+              </div>
               {fixList.map((fix, i) => (
                 <FertilizerCard
                   key={fix.fertilizer + i}

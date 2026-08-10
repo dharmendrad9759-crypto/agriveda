@@ -112,9 +112,9 @@
             "chemical": [
               {
                 "input": "Ferrous sulphate पत्तेदार",
-                "dose": "5 g/L (1 kg/acre)",
+                "dose": "5–10 g/L (0.5–1%) + 1 g/L citric acid",
                 "stage": "7 दिन के अंतराल पर 2-3 छिड़काव करें",
-                "note": ""
+                "note": "क्षारीय मिट्टी में मिट्टी FeSO4 कम असर — foliar/EDDHA बेहतर; मिट्टी परीक्षण के बाद"
               }
             ]
           }
@@ -442,9 +442,9 @@
             "chemical": [
               {
                 "input": "Ferrous sulphate पत्तेदार",
-                "dose": "5 g/L (1 kg/acre)",
+                "dose": "5–10 g/L (0.5–1%) + 1 g/L citric acid",
                 "stage": "10 दिन के अंतराल पर 2 छिड़काव करें",
-                "note": ""
+                "note": "क्षारीय मिट्टी में मिट्टी FeSO4 कम असर — foliar/EDDHA बेहतर; मिट्टी परीक्षण के बाद"
               }
             ]
           }
@@ -1060,9 +1060,9 @@
             "chemical": [
               {
                 "input": "FeSO4 5 जी/एल + ZnSO4 5 जी/एल पत्ते",
-                "dose": "as stated",
+                "dose": "as stated — + citric acid 0.1% recommended",
                 "stage": "लक्षणों पर",
-                "note": ""
+                "note": "Foliar में citric acid मिलाएँ; मिट्टी परीक्षण के बाद"
               }
             ]
           }
@@ -1549,9 +1549,9 @@
             "chemical": [
               {
                 "input": "FeSO4 पत्तेदार",
-                "dose": "5 g/L",
+                "dose": "5 g/L — + citric acid 0.1% recommended",
                 "stage": "लक्षणों पर",
-                "note": ""
+                "note": "Foliar में citric acid मिलाएँ; मिट्टी परीक्षण के बाद"
               }
             ]
           }
@@ -2203,9 +2203,9 @@
             "chemical": [
               {
                 "input": "FeSO4 5 जी/एल + ZnSO4 5 जी/एल पत्ते",
-                "dose": "as stated",
+                "dose": "as stated — + citric acid 0.1% recommended",
                 "stage": "लक्षणों पर",
-                "note": ""
+                "note": "Foliar में citric acid मिलाएँ; मिट्टी परीक्षण के बाद"
               }
             ]
           }
@@ -2215,26 +2215,4 @@
           "symptoms": "पीलापन, मुरझाना, बौनापन, जड़ सड़न",
           "cause": "खराब जल निकासी, भारी बारिश",
           "management": {
-            "prevention": [
-              "मेड़ पर बुआई; जलनिकास"
-            ],
-            "monitoring": [
-              "बारिश के बाद निचले स्थान पर निगरानी"
-            ],
-            "cultural": [
-              "Drain within 24ह"
-            ],
-            "chemical": [
-              {
-                "input": "2% urea पर्ण-पश्चात जल निकासी",
-                "dose": "20 g/L",
-                "stage": "वसूली",
-                "note": ""
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
-}
+            "prevention": 
