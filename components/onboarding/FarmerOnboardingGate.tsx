@@ -20,6 +20,8 @@ import {
 } from "@/lib/firebase/googleAuth";
 import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
 import { getDeviceId } from "@/lib/deviceId";
+import { signalForceUpdate, withNativeAppHeaders } from "@/lib/nativeAppInfo";
+import { markIntroDone } from "@/lib/launchFlags";
 
 type Step = "auth" | "name" | "location" | "farm";
 
@@ -62,6 +64,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       farmSetupComplete: true,
       totalFarmAreaAcres: 5,
     });
+    markIntroDone();
     showToast("Home खुल गया — AgriVeda demo");
   };
 
@@ -73,13 +76,26 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   }) => {
     const deviceId = getDeviceId();
     const idToken = await user.getIdToken();
+    const headers = await withNativeAppHeaders({
+      "Content-Type": "application/json",
+    });
     const sessionRes = await fetch("/api/auth/session/firebase", {
       method: "POST",
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ idToken, deviceId }),
     });
-    const sessionBody = await sessionRes.json();
+    const sessionBody = await sessionRes.json().catch(() => ({}));
+    if (sessionRes.status === 426 || sessionBody.code === "FORCE_UPDATE") {
+      signalForceUpdate(sessionBody.minVersionCode);
+      throw new Error(sessionBody.error || "नया ऐप संस्करण ज़रूरी है");
+    }
+    if (sessionRes.status === 409 || sessionBody.code === "DEVICE_CONFLICT") {
+      throw new Error(
+        sessionBody.error ||
+          "यह Google ID दूसरी डिवाइस पर लॉगिन है। पहले उस फोन से Logout करें।"
+      );
+    }
     if (!sessionRes.ok) {
       throw new Error(sessionBody.error || "Session create failed");
     }
@@ -195,6 +211,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
         };
 
     completeFarmSetup(profileData);
+    markIntroDone();
     showToast("स्वागत है, किसान भाई!");
   };
 
@@ -202,7 +219,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const showWelcomeChrome = setupIndex >= 0 || needsFarmSetup;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center">
+    <div className="fixed inset-0 z-[200] flex items-stretch justify-center overflow-hidden sm:items-center sm:p-4">
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="absolute inset-0 scale-110"
@@ -224,30 +241,34 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
         role="dialog"
         aria-modal
         aria-label="Farmer onboarding"
-        className="relative z-10 max-h-[94vh] w-full max-w-md overflow-y-auto rounded-t-[1.75rem] border border-white/35 bg-white/55 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:rounded-[1.75rem]"
+        className="relative z-10 flex h-[100dvh] w-full max-w-md flex-col overflow-hidden border border-white/35 bg-white/55 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:h-auto sm:max-h-[min(90dvh,720px)] sm:rounded-[1.75rem]"
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
       >
         {showWelcomeChrome ? (
-          <div className="px-6 pb-2 pt-6 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/90 text-white shadow-lg shadow-emerald-500/30 ring-4 ring-white/40">
-              <Check className="h-6 w-6" strokeWidth={3} />
+          <div className="shrink-0 px-5 pb-1 pt-4 text-center sm:px-6 sm:pt-5">
+            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/90 text-white shadow-lg shadow-emerald-500/30 ring-4 ring-white/40 sm:h-12 sm:w-12">
+              <Check className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={3} />
             </div>
             <h2
-              className="mt-3 text-xl font-bold tracking-tight text-[#0b1f16]"
+              className="mt-2 text-lg font-bold tracking-tight text-[#0b1f16] sm:mt-3 sm:text-xl"
               style={{ fontFamily: "var(--font-display), Georgia, serif" }}
             >
               AgriVeda में आपका स्वागत है!
             </h2>
-            <p className="mt-1.5 text-sm leading-relaxed text-gray-700/90">
-              आपका खाता तैयार है — बस कुछ बातें बताइए ताकि आपका खेत सेट हो जाए।
+            <p className="mt-1 text-xs leading-snug text-gray-700/90 sm:mt-1.5 sm:text-sm sm:leading-relaxed">
+              बस कुछ बातें बताइए — खेत सेट हो जाएगा।
             </p>
-            <div className="mt-4 flex items-center justify-center gap-2">
+            <div className="mt-3 flex items-center justify-center gap-2">
               {SETUP_STEPS.map((s, i) => {
                 const active = needsFarmSetup ? i === 2 : i === setupIndex;
                 const done = needsFarmSetup ? i < 2 : i < setupIndex;
                 return (
                   <span
                     key={s}
-                    className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                    className={`h-2 w-2 rounded-full transition-all duration-300 sm:h-2.5 sm:w-2.5 ${
                       active
                         ? "scale-110 bg-amber-500"
                         : done
@@ -258,23 +279,27 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                 );
               })}
             </div>
-            <p className="mt-1.5 text-xs font-semibold text-gray-600">
+            <p className="mt-1 text-[11px] font-semibold text-gray-600">
               चरण {needsFarmSetup ? 3 : Math.max(1, setupIndex + 1)}/3
             </p>
           </div>
         ) : (
-          <div className="border-b border-white/25 bg-emerald-700/45 px-6 py-5 text-white backdrop-blur-md">
+          <div className="shrink-0 border-b border-white/25 bg-emerald-700/45 px-5 py-4 text-white backdrop-blur-md sm:px-6 sm:py-5">
             <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-50/90">
               AgriVeda
             </p>
-            <h2 className="mt-1 text-xl font-black">किसान पंजीकरण</h2>
-            <p className="mt-1 text-sm text-emerald-50/90">
-              Google से लॉगिन करें — OTP / मोबाइल नंबर नहीं चाहिए
+            <h2 className="mt-1 text-lg font-black sm:text-xl">किसान पंजीकरण</h2>
+            <p className="mt-1 text-xs text-emerald-50/90 sm:text-sm">
+              Google से लॉगिन — OTP नहीं चाहिए
             </p>
           </div>
         )}
 
-        <div className="space-y-4 px-6 pb-6 pt-2">
+        <div
+          className={`min-h-0 flex-1 space-y-3 px-5 pb-5 pt-2 sm:space-y-4 sm:px-6 sm:pb-6 ${
+            step === "farm" || step === "location" ? "overflow-y-auto overscroll-contain" : "overflow-hidden"
+          }`}
+        >
           {step === "auth" && (
             <>
               {!useFirebase && (

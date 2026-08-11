@@ -8,7 +8,11 @@ import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
 import { getDiseaseSpeciesImage } from "@/lib/pests/threatSpeciesImages";
-import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
+import {
+  catalogThreatDetailHref,
+  matchCatalogThreat,
+} from "@/lib/pests/matchCatalogThreat";
+import { getEnrichedCropThreats, threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import { ChevronRight, Search } from "lucide-react";
@@ -46,25 +50,23 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
   const richDiseases = useMemo(() => {
     if (!useRichDiseases || !profile?.diseaseManagement) return [];
     return profile.diseaseManagement.map((d, i) => {
-      const nameLc = d.diseaseName.toLowerCase();
-      const match = catalogDiseases.find(
-        (c) =>
-          (c.pathogen && c.pathogen.toLowerCase() === d.pathogen?.toLowerCase()) ||
-          c.name.toLowerCase().includes(nameLc.slice(0, 10)) ||
-          nameLc.includes(c.name.toLowerCase().slice(0, 10))
-      );
+      const match = matchCatalogThreat(catalogDiseases, {
+        name: d.diseaseName,
+        scientific: d.pathogen,
+      });
+      const detailHref =
+        catalogThreatDetailHref(crop.slug, "disease", match) ??
+        `/pest-diseases?crop=${encodeURIComponent(crop.slug)}&type=disease`;
       return {
         id: match?.id ?? `${crop.slug}-dis-${i}`,
-        detailHref: match
-          ? `/pest-diseases/${crop.slug}/disease/${match.id}`
-          : `/pest-diseases?crop=${crop.slug}&type=disease`,
+        detailHref,
         name: d.diseaseName,
         scientific: d.pathogen,
         risk: /virus|वायरस|bacterial wilt|टंग्रो/i.test(d.diseaseName + d.type)
           ? ("high" as const)
           : ("medium" as const),
         type: d.type,
-        image: diseaseThumb(d.pathogen, match?.image),
+        image: diseaseThumb(d.pathogen ?? match?.pathogen ?? undefined, match?.image),
       };
     });
   }, [crop.slug, useRichDiseases, profile, catalogDiseases]);
@@ -72,9 +74,15 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
   const diseases = useRichDiseases
     ? richDiseases
     : fieldGuideDiseases.length
-      ? fieldGuideDiseases
+      ? fieldGuideDiseases.map((d) => ({
+          ...d,
+          detailHref: threatDetailPath(crop.slug, "disease", d.id),
+        }))
       : ipmDiseases.length
-        ? ipmDiseases
+        ? ipmDiseases.map((d) => ({
+            ...d,
+            detailHref: threatDetailPath(crop.slug, "disease", d.id),
+          }))
         : catalogDiseases.map((d) => ({
             id: d.id,
             name: d.name,
@@ -82,6 +90,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
             risk: d.category === "viral" ? ("high" as const) : ("medium" as const),
             type: d.category,
             image: diseaseThumb(d.pathogen, d.image),
+            detailHref: threatDetailPath(crop.slug, "disease", d.id),
           }));
 
   const filtered = diseases.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()));
@@ -114,7 +123,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
           const href =
             "detailHref" in d && d.detailHref
               ? String(d.detailHref)
-              : `/pest-diseases/${crop.slug}/disease/${d.id}`;
+              : threatDetailPath(crop.slug, "disease", d.id);
           return (
             <li key={d.id}>
               <AppLink href={href} className="av-card av-card-hover flex items-center gap-3 px-3 py-3">
@@ -137,11 +146,13 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
                     <p className="text-sm font-extrabold text-[var(--av-text-primary)]">{d.name}</p>
                     <RiskBadge level={d.risk} />
                   </div>
-                  <p className="mt-0.5 text-[11px] italic text-[var(--av-text-muted)] line-clamp-1">
+                  <p className="mt-0.5 line-clamp-1 text-[11px] italic text-[var(--av-text-muted)]">
                     {"scientific" in d ? String(d.scientific) : ""}
                   </p>
                   {"type" in d && d.type ? (
-                    <p className="mt-1 text-[10px] font-semibold text-[var(--av-accent)]">{String(d.type)}</p>
+                    <p className="mt-1 text-[10px] font-semibold text-[var(--av-accent)]">
+                      {String(d.type)}
+                    </p>
                   ) : null}
                   <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
                     {hi ? "पूरा रोग पेज खोलें →" : "Open disease page →"}

@@ -131,7 +131,7 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
           {nutrientLinks.map((n) => (
             <AppLink
               key={n.href}
-              href={`/deficiencies/${n.href}`}
+              href={`/deficiencies/${n.href}?crop=${encodeURIComponent(crop.slug)}`}
               className={cn(
                 "flex h-11 w-11 items-center justify-center rounded-xl text-[13px] font-black shadow-sm transition hover:scale-105",
                 SYM_TILE[n.symbol] ?? "bg-emerald-700 text-white"
@@ -190,7 +190,7 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
           return href ? (
             <AppLink
               key={n.nutrient}
-              href={`/deficiencies/${href}`}
+              href={`/deficiencies/${href}?crop=${encodeURIComponent(crop.slug)}`}
               className="block rounded-[var(--av-radius)] border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-[var(--av-shadow-sm)] transition hover:-translate-y-0.5 hover:border-emerald-500/35 hover:shadow-[var(--av-shadow-md)]"
             >
               {body}
@@ -237,7 +237,7 @@ export default function CropNutrientsSection({ crop }: { crop: Crop }) {
                   <td className="font-bold text-[var(--av-accent)]">
                     {href ? (
                       <AppLink
-                        href={`/deficiencies/${href}`}
+                        href={`/deficiencies/${href}?crop=${encodeURIComponent(crop.slug)}`}
                         className="inline-flex items-center gap-1 hover:underline"
                       >
                         {labelHi}

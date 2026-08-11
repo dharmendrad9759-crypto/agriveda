@@ -56,6 +56,20 @@ function fuzzyMatchCrop(cropSlug: string, result: DiagnosisResult): DiagnosisThr
     }
   }
 
+  const diseaseByName = crop.diseases.find(
+    (d) =>
+      name.includes(d.name.toLowerCase().split(" ")[0]) ||
+      (d.pathogen && pathogen.includes(d.pathogen.toLowerCase().split(" ")[0]))
+  );
+  if (diseaseByName) {
+    return {
+      cropId: cropSlug,
+      threatType: "disease",
+      pestOrDiseaseId: diseaseByName.id,
+      threatName: diseaseByName.name,
+    };
+  }
+
   const pest = crop.pests.find(
     (p) =>
       name.includes(p.name.toLowerCase().split(" ")[0]) ||
@@ -63,16 +77,6 @@ function fuzzyMatchCrop(cropSlug: string, result: DiagnosisResult): DiagnosisThr
   );
   if (pest) {
     return { cropId: cropSlug, threatType: "pest", pestOrDiseaseId: pest.id, threatName: pest.name };
-  }
-
-  const disease = crop.diseases.find((d) => pathogen.includes(d.pathogen.toLowerCase().split(" ")[0]));
-  if (disease) {
-    return {
-      cropId: cropSlug,
-      threatType: "disease",
-      pestOrDiseaseId: disease.id,
-      threatName: disease.name,
-    };
   }
 
   return null;

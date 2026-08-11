@@ -114,12 +114,14 @@ export function AiDoctorHero({
 function CropPickerButton({
   active,
   onClick,
-  label,
+  labelHi,
+  labelEn,
   children,
 }: {
   active: boolean;
   onClick: () => void;
-  label: string;
+  labelHi: string;
+  labelEn?: string;
   children: ReactNode;
 }) {
   return (
@@ -127,7 +129,8 @@ function CropPickerButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border-2 p-2 transition active:scale-[0.97] sm:w-[88px] sm:gap-2 sm:p-3 ${
+      aria-label={labelEn ? `${labelHi} (${labelEn})` : labelHi}
+      className={`flex w-[76px] shrink-0 flex-col items-center gap-1 rounded-2xl border-2 p-2 transition active:scale-[0.97] sm:w-[88px] sm:gap-1.5 sm:p-3 ${
         active
           ? "border-emerald-500 bg-emerald-50 shadow-[0_0_0_3px_rgba(16,185,129,0.2)] dark:bg-emerald-950/40"
           : "border-[var(--av-border)] bg-[var(--av-surface)]"
@@ -135,12 +138,17 @@ function CropPickerButton({
     >
       {children}
       <span
-        className={`truncate text-[10px] font-bold sm:text-[11px] ${
+        className={`w-full truncate text-center text-[10px] font-bold leading-tight sm:text-[11px] ${
           active ? "text-emerald-800 dark:text-emerald-200" : "text-[var(--av-text-primary)]"
         }`}
       >
-        {label}
+        {labelHi}
       </span>
+      {labelEn ? (
+        <span className="w-full truncate text-center text-[9px] font-medium leading-tight text-[var(--av-text-muted)]">
+          {labelEn}
+        </span>
+      ) : null}
     </button>
   );
 }
@@ -163,7 +171,8 @@ export function AiDoctorCropSelect({
         <CropPickerButton
           active={otherActive}
           onClick={() => onSelectCrop(OTHER_CROP.slug)}
-          label={OTHER_CROP.name}
+          labelHi={OTHER_CROP.nameHi}
+          labelEn={OTHER_CROP.name}
         >
           <span
             className={`flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--av-surface-inset)] text-2xl sm:h-14 sm:w-14 sm:text-3xl ${
@@ -182,7 +191,8 @@ export function AiDoctorCropSelect({
               key={c.slug}
               active={active}
               onClick={() => onSelectCrop(c.slug)}
-              label={c.name}
+              labelHi={c.nameHi}
+              labelEn={c.name}
             >
               <div
                 className={`relative h-12 w-12 overflow-hidden rounded-xl sm:h-14 sm:w-14 ${
@@ -190,7 +200,13 @@ export function AiDoctorCropSelect({
                 }`}
               >
                 {full ? (
-                  <Image src={getCropImageUrl(full)} alt={c.name} fill className="object-cover" sizes="56px" />
+                  <Image
+                    src={getCropImageUrl(full)}
+                    alt={`${c.nameHi} (${c.name})`}
+                    fill
+                    className="object-cover"
+                    sizes="56px"
+                  />
                 ) : (
                   <span className="flex h-full w-full items-center justify-center bg-[var(--av-surface-inset)] text-2xl sm:text-3xl">
                     {c.emoji}
@@ -232,7 +248,7 @@ export function AiDoctorSymptoms({
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
       <SectionLabel
-        title="लक्षण (Symptoms)"
+        title="लक्षण"
         step={3}
         hint="वैकल्पिक — chips चुनें या लिखें"
       />
@@ -515,11 +531,16 @@ export function AiDoctorRecentDiagnoses({
                 : h.result.severity?.toLowerCase().includes("low")
                   ? "low"
                   : "medium";
-              const date = new Date(h.timestamp).toLocaleDateString("en-IN", {
+              const date = new Date(h.timestamp).toLocaleDateString("hi-IN", {
                 day: "numeric",
                 month: "short",
               });
-              const hasThumb = Boolean(h.thumbnailUrl);
+              const thumb = h.thumbnailUrl?.startsWith("data:image/")
+                ? h.thumbnailUrl
+                : h.thumbnailUrl?.startsWith("http") || h.thumbnailUrl?.startsWith("/")
+                  ? h.thumbnailUrl
+                  : "";
+              const hasThumb = Boolean(thumb);
               return (
                 <li key={h.id}>
                   <button
@@ -530,7 +551,14 @@ export function AiDoctorRecentDiagnoses({
                     <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--av-surface-inset)] sm:h-14 sm:w-14">
                       {hasThumb ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={h.thumbnailUrl} alt="" className="h-full w-full object-cover" />
+                        <img
+                          src={thumb}
+                          alt=""
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).style.display = "none";
+                          }}
+                        />
                       ) : (
                         <Leaf className="h-5 w-5 text-emerald-600" />
                       )}

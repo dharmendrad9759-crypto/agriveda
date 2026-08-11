@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
 
   const durable = requireDurableRateLimit();

@@ -100,7 +100,7 @@ export default function CropManagementNutrientDeficiencies({ profile }: Props) {
 
                 {slug ? (
                   <Link
-                    href={`/deficiencies/${slug}`}
+                    href={`/deficiencies/${slug}?crop=${encodeURIComponent(profile.slug)}`}
                     className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 hover:text-emerald-300"
                   >
                     पूरा गाइड देखें

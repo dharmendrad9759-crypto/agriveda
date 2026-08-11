@@ -4,6 +4,11 @@ import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import { createSupabaseServiceClient } from "@/lib/supabase";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 import { isValidDeviceId } from "@/lib/deviceIdValidate";
+import {
+  activeDeviceStoreReady,
+  claimActiveDevice,
+} from "@/lib/authActiveDevice";
+import { rejectIfNativeAppTooOld } from "@/lib/minNativeVersion";
 
 type FirebaseLookupUser = {
   localId?: string;
@@ -19,6 +24,9 @@ type FirebaseLookupUser = {
  */
 export async function POST(request: NextRequest) {
   try {
+    const forceUpdate = rejectIfNativeAppTooOld(request);
+    if (forceUpdate) return forceUpdate;
+
     const ip = clientIp(request);
     const limited = await rateLimit(`firebase-session:${ip}`, 10, 60_000);
     if (!limited.ok) {
@@ -66,6 +74,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Google account में email ज़रूरी है" },
         { status: 400 }
+      );
+    }
+
+    const isProd =
+      process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+    if (isProd && !activeDeviceStoreReady()) {
+      return NextResponse.json(
+        {
+          error:
+            "Device lock उपलब्ध नहीं — SUPABASE_SERVICE_ROLE_KEY / app_kv सेट करें",
+        },
+        { status: 503 }
+      );
+    }
+
+    const claim = await claimActiveDevice(user.localId, deviceId, email);
+    if (!claim.ok) {
+      return NextResponse.json(
+        {
+          error:
+            "यह Google ID दूसरी डिवाइस पर लॉगिन है। पहले उस फोन से Logout करें।",
+          code: "DEVICE_CONFLICT",
+        },
+        { status: 409 }
       );
     }
 

@@ -59,7 +59,7 @@ async function fetchOwnedNotifications(
 
 /** Farmer in-app notifications (expert replies, etc.). */
 export async function GET(request: NextRequest) {
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
 
   const { deviceId, phone } = sessionOwners(auth.session);
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
   void clientIp(request);
 

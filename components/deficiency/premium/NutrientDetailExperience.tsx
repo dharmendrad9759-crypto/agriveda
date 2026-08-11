@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   AnimatePresence,
@@ -25,12 +25,14 @@ import {
   Zap,
 } from "lucide-react";
 import type { NutrientDeficiencyData } from "@/types/deficiency";
-import { toFarmerNutrientView } from "@/lib/nutrients/farmerNutrientView";
+import { simplifyFarmerHi, toFarmerNutrientView } from "@/lib/nutrients/farmerNutrientView";
+import { formatFarmerDose } from "@/lib/units/farmerDose";
 import {
   buildCropScope,
   categoryLabelHi,
   getCropOptions,
   healthFromSeverity,
+  resolveNutrientCropKey,
   type CropOption,
 } from "@/lib/nutrients/nutrientCropContext";
 import DeficiencySymptomImage from "@/components/nutrients/DeficiencySymptomImage";
@@ -199,16 +201,29 @@ function SegmentTabs({
 
 export default function NutrientDetailExperience({
   nutrient,
+  initialCrop,
 }: {
   nutrient: NutrientDeficiencyData;
+  /** App crop slug (e.g. mango) or batch cropName (e.g. Paddy) from ?crop= */
+  initialCrop?: string;
 }) {
   const reduceMotion = useReducedMotion();
   const farmer = useMemo(() => toFarmerNutrientView(nutrient), [nutrient]);
-  const crops = useMemo(() => getCropOptions(nutrient), [nutrient]);
-  const [cropKey, setCropKey] = useState(crops[0]?.key ?? "Paddy");
+  const crops = useMemo(
+    () => getCropOptions(nutrient, initialCrop),
+    [nutrient, initialCrop]
+  );
+  const [cropKey, setCropKey] = useState(
+    () => resolveNutrientCropKey(initialCrop) ?? crops[0]?.key ?? "Paddy"
+  );
   const [tab, setTab] = useState<TabId>("impact");
   const [expandedFix, setExpandedFix] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  useEffect(() => {
+    const key = resolveNutrientCropKey(initialCrop);
+    if (key) setCropKey(key);
+  }, [initialCrop]);
 
   const scope = useMemo(
     () => buildCropScope(nutrient, farmer, cropKey),
@@ -219,10 +234,15 @@ export default function NutrientDetailExperience({
   const catHi = categoryLabelHi(nutrient.category);
   const cropImageSlug = cropLabelToImageSlug(cropKey);
   const fixes = nutrient.howToFix ?? [];
-  const expertTips = (nutrient.expertTips ?? []).slice(0, 5).map((t) => t.slice(0, 100));
+  const expertTips = (nutrient.expertTips ?? [])
+    .slice(0, 5)
+    .map((t) => simplifyFarmerHi(t, 120));
   const faq = farmer.faq.length
     ? farmer.faq
-    : (nutrient.faq ?? []).slice(0, 3).map((f) => ({ q: f.q, a: f.a.slice(0, 120) }));
+    : (nutrient.faq ?? []).slice(0, 3).map((f) => ({
+        q: simplifyFarmerHi(f.q, 80),
+        a: simplifyFarmerHi(f.a, 120),
+      }));
 
   const tabIndex = TABS.findIndex((t) => t.id === tab);
   const goTab = useCallback(
@@ -243,10 +263,10 @@ export default function NutrientDetailExperience({
 
   const mobilityLabel =
     nutrient.mobility === "Mobile"
-      ? "चलनशील"
+      ? "नीचे की पत्ती पर पहले"
       : nutrient.mobility === "Immobile"
-        ? "अचल"
-        : "आंशिक";
+        ? "ऊपर की नई पत्ती पर पहले"
+        : "पत्ती / तने पर";
 
   const fixList = (fixes.length
     ? fixes
@@ -401,14 +421,19 @@ export default function NutrientDetailExperience({
                   {farmer.pehchan}
                 </p>
               </AvCard>
-              {scope.symptoms.slice(0, 3).map((s) => (
-                <AvCard key={s.id} className="!py-3">
-                  <p className="text-sm font-bold text-[var(--av-text-primary)]">{s.title}</p>
-                  <p className="mt-1 text-[12px] leading-snug text-[var(--av-text-muted)]">
-                    {s.description}
-                  </p>
-                </AvCard>
-              ))}
+              {scope.symptoms.slice(0, 3).map((s) => {
+                const same = s.title === s.description || s.description.startsWith(s.title.slice(0, 20));
+                return (
+                  <AvCard key={s.id} className="!py-3">
+                    <p className="text-sm font-bold text-[var(--av-text-primary)]">{s.title}</p>
+                    {!same ? (
+                      <p className="mt-1 text-[12px] leading-snug text-[var(--av-text-muted)]">
+                        {s.description}
+                      </p>
+                    ) : null}
+                  </AvCard>
+                );
+              })}
               {scope.cropCause ? (
                 <AvCard className="border-amber-500/20 bg-amber-500/[0.04]">
                   <p className="text-[11px] font-semibold text-amber-900 dark:text-amber-100">
@@ -429,13 +454,14 @@ export default function NutrientDetailExperience({
               </p>
               <div className="rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] px-3.5 py-3">
                 <p className="text-[12px] font-bold text-amber-950 dark:text-amber-100">
-                  पहले मिट्टी / ऊतक परीक्षण
+                  पहले मिट्टी जाँच करवाएँ
                 </p>
                 <p className="mt-1 text-[11px] leading-snug text-amber-900/90 dark:text-amber-100/85">
-                  नीचे की खुराक ICAR/SAU शैली का सामान्य मार्गदर्शन है। Soil Health Card या KVK जाँच के
-                  बाद ही सूक्ष्म पोषक (Zn, Fe, B, Cu, Mo) दोहराएँ — B/Cu में ज़्यादा होना आसान विष है।
+                  नीचे की मात्रा सामान्य सलाह है। Soil Health Card या कृषि विभाग / केवीके की जाँच के
+                  बाद ही जिंक, लोहा, बोरॉन जैसी सूक्ष्म खाद दोबारा डालें। बोरॉन / कॉपर ज़्यादा हो तो
+                  नुकसान हो सकता है।
                   {["nickel", "cobalt", "boron", "copper", "molybdenum"].includes(nutrient.slug)
-                    ? " इस पोषक पर बिना रिपोर्ट के मिट्टी में भारी मात्रा न डालें।"
+                    ? " इस खाद को बिना रिपोर्ट के मिट्टी में भारी मात्रा में न डालें।"
                     : ""}
                 </p>
               </div>
@@ -557,13 +583,16 @@ export default function NutrientDetailExperience({
                   </div>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--av-text-secondary)]">
-                  {nutrient.toxicity?.whatHappens ??
-                    "ज़्यादा मात्रा से दूसरे पोषक तत्व की कमी हो सकती है।"}
+                  {simplifyFarmerHi(
+                    nutrient.toxicity?.whatHappens ??
+                      "ज़्यादा मात्रा से दूसरी खाद की कमी हो सकती है।",
+                    140
+                  )}
                 </p>
                 {nutrient.toxicity?.correctionMethods ? (
                   <p className="mt-3 rounded-xl bg-emerald-500/8 p-3 text-[12px] leading-relaxed text-emerald-950 dark:text-emerald-50">
                     <span className="font-semibold">सुधार — </span>
-                    {nutrient.toxicity.correctionMethods}
+                    {simplifyFarmerHi(nutrient.toxicity.correctionMethods, 140)}
                   </p>
                 ) : null}
               </AvCard>
@@ -660,7 +689,7 @@ function SymptomCard({
             exit={{ height: 0, opacity: 0 }}
             className="mt-2 overflow-hidden text-[13px] leading-relaxed text-[var(--av-text-secondary)]"
           >
-            {symptom.description}
+            {symptom.description !== symptom.title ? symptom.description : null}
           </motion.p>
         )}
       </AnimatePresence>
@@ -680,6 +709,11 @@ function CauseCard({
 }) {
   const icons = [Droplets, Leaf, Sprout, Zap, HelpCircle];
   const Icon = icons[index % icons.length];
+  // Avoid repeating the same sentence twice under title + notes
+  const showTech =
+    cause.technicalNote &&
+    cause.technicalNote !== cause.farmerNote &&
+    !cause.farmerNote.startsWith(cause.technicalNote.slice(0, 24));
   return (
     <AvCard>
       <div className="flex gap-3">
@@ -688,12 +722,14 @@ function CauseCard({
         </div>
         <div className="min-w-0">
           <p className="text-sm font-bold text-[var(--av-text-primary)]">{cause.title}</p>
-          <p className="mt-1 text-[13px] font-semibold text-emerald-900 dark:text-emerald-100">
+          <p className="mt-1 text-[13px] leading-snug text-[var(--av-text-secondary)]">
             {cause.farmerNote}
           </p>
-          <p className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
-            {cause.technicalNote}
-          </p>
+          {showTech ? (
+            <p className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
+              {cause.technicalNote}
+            </p>
+          ) : null}
         </div>
       </div>
     </AvCard>
@@ -722,32 +758,41 @@ function FertilizerCard({
   onToggle: () => void;
   cropNote: string;
 }) {
-  const dose =
+  const doseRaw =
     fix.foliarSprayDose && fix.foliarSprayDose !== "NA"
       ? fix.foliarSprayDose
       : fix.soilApplicationDose && fix.soilApplicationDose !== "NA"
         ? fix.soilApplicationDose
-        : "मिट्टी परीक्षण अनुसार";
+        : "मिट्टी जांच के अनुसार दें";
+  const dose = simplifyFarmerHi(formatFarmerDose(doseRaw), 120);
+  const name = simplifyFarmerHi(fix.fertilizer, 50);
+  const content = fix.nutrientContent
+    ? simplifyFarmerHi(fix.nutrientContent, 50)
+    : null;
+  const stage = fix.bestCropStage
+    ? simplifyFarmerHi(fix.bestCropStage, 70)
+    : null;
+  const note = cropNote ? simplifyFarmerHi(cropNote, 100) : "";
 
   return (
     <AvCard>
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-base font-bold text-[var(--av-text-primary)]">{fix.fertilizer}</p>
-          {fix.nutrientContent ? (
+          <p className="text-base font-bold text-[var(--av-text-primary)]">{name}</p>
+          {content ? (
             <p className="mt-0.5 text-[12px] font-semibold text-emerald-800 dark:text-emerald-200">
-              {fix.nutrientContent}
+              {content}
             </p>
           ) : null}
         </div>
       </div>
       <p className="mt-2.5 text-sm font-semibold text-[var(--av-text-primary)]">{dose}</p>
-      {fix.bestCropStage ? (
-        <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">समय: {fix.bestCropStage}</p>
+      {stage ? (
+        <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">समय: {stage}</p>
       ) : null}
-      {cropNote ? (
+      {note ? (
         <p className="mt-2 border-l-2 border-emerald-500/30 pl-2.5 text-[11px] leading-snug text-[var(--av-text-secondary)]">
-          इस फसल में: {cropNote}
+          इस फसल में: {note}
         </p>
       ) : null}
       <button
@@ -766,14 +811,22 @@ function FertilizerCard({
             exit={{ height: 0, opacity: 0 }}
             className="mt-3 space-y-1.5 overflow-hidden border-t border-[var(--av-border-subtle)] pt-3 text-[12px] text-[var(--av-text-secondary)]"
           >
-            {fix.methodOfApplication && <p>तरीका: {fix.methodOfApplication}</p>}
-            {fix.waterQuantity && fix.waterQuantity !== "NA" && <p>पानी: {fix.waterQuantity}</p>}
-            {fix.fertigationDose && fix.fertigationDose !== "NA" && (
-              <p>ड्रिप: {fix.fertigationDose}</p>
+            {fix.methodOfApplication && (
+              <p>तरीका: {simplifyFarmerHi(fix.methodOfApplication, 100)}</p>
             )}
-            {fix.expectedRecoveryTime && <p>असर: {fix.expectedRecoveryTime}</p>}
+            {fix.waterQuantity && fix.waterQuantity !== "NA" && (
+              <p>पानी: {simplifyFarmerHi(fix.waterQuantity, 80)}</p>
+            )}
+            {fix.fertigationDose && fix.fertigationDose !== "NA" && (
+              <p>ड्रिप: {simplifyFarmerHi(formatFarmerDose(fix.fertigationDose), 90)}</p>
+            )}
+            {fix.expectedRecoveryTime && (
+              <p>असर: {simplifyFarmerHi(fix.expectedRecoveryTime, 70)}</p>
+            )}
             {fix.precautions && (
-              <p className="text-amber-900 dark:text-amber-100">सावधानी: {fix.precautions}</p>
+              <p className="text-amber-900 dark:text-amber-100">
+                सावधानी: {simplifyFarmerHi(fix.precautions, 110)}
+              </p>
             )}
           </motion.div>
         )}

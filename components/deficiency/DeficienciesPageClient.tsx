@@ -12,13 +12,16 @@ import {
 import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import DeficiencySymptomImage from "@/components/nutrients/DeficiencySymptomImage";
-import { crops } from "@/data/crops";
+import cropsData from "@/data/crops";
 import { getCropManagementProfile } from "@/data/crop-management";
+import { listCropsWithCatalogStubs } from "@/lib/crops/stubCrop";
 import { allNutrientDeficiencies } from "@/lib/nutrients/nutrientDeficiencyBridge";
 import { nutrientNameHi, resolveNutrientSlug } from "@/lib/nutrients/farmerNutrientView";
 import { getCropHindiName, getCropImageUrl } from "@/lib/crops/crop-display";
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+
+const crops = listCropsWithCatalogStubs(cropsData);
 
 /** Farmer look-and-tap problem cards → nutrient slug */
 const PROBLEMS: {
@@ -29,6 +32,8 @@ const PROBLEMS: {
   hintEn: string;
   slug: string;
   tone: string;
+  /** Fixed photo for cards that crop×nutrient path misrepresents */
+  imageSrc?: string;
 }[] = [
   {
     id: "yellow_old",
@@ -74,6 +79,7 @@ const PROBLEMS: {
     hintEn: "Often zinc lack",
     slug: "zinc",
     tone: "border-sky-400/40 bg-sky-50 dark:bg-sky-950/30",
+    imageSrc: "/images/deficiencies/problem-zinc-bushy.jpg",
   },
   {
     id: "fruit_drop",
@@ -83,6 +89,7 @@ const PROBLEMS: {
     hintEn: "Poor setting",
     slug: "boron",
     tone: "border-rose-400/40 bg-rose-50 dark:bg-rose-950/25",
+    imageSrc: "/images/deficiencies/problem-fruit-drop.jpg",
   },
 ];
 
@@ -196,18 +203,28 @@ export default function DeficienciesPageClient() {
         {PROBLEMS.map((p) => (
           <AppLink
             key={p.id}
-            href={`/deficiencies/${p.slug}`}
+            href={`/deficiencies/${p.slug}?crop=${encodeURIComponent(cropSlug)}`}
             className={cn(
               "overflow-hidden rounded-2xl border text-left transition active:scale-[0.98]",
               p.tone
             )}
           >
             <div className="relative aspect-[4/3] w-full bg-emerald-500/5">
-              <DeficiencySymptomImage
-                cropSlug={cropSlug}
-                nutrient={p.slug}
-                alt={isHi ? p.hi : p.en}
-              />
+              {p.imageSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={p.imageSrc}
+                  alt={isHi ? p.hi : p.en}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <DeficiencySymptomImage
+                  cropSlug={cropSlug}
+                  nutrient={p.slug}
+                  alt={isHi ? p.hi : p.en}
+                />
+              )}
             </div>
             <div className="p-3">
               <p className="text-[14px] font-bold leading-snug text-[var(--av-text-primary)]">
@@ -249,7 +266,7 @@ export default function DeficienciesPageClient() {
           {isHi ? `आपकी फसल — ${cropName}` : `Your crop — ${cropName}`}
         </p>
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {crops.slice(0, 14).map((c) => {
+          {crops.map((c) => {
             const active = c.slug === cropSlug;
             const hi = getCropHindiName(c.slug);
             const label = isHi && hi ? hi : cropShort(c.name);
@@ -291,7 +308,7 @@ export default function DeficienciesPageClient() {
             return (
                 <li key={d.name} className="border-b border-[var(--av-border-subtle)] last:border-0">
                   <AppLink
-                    href={`/deficiencies/${slug}`}
+                    href={`/deficiencies/${slug}?crop=${encodeURIComponent(cropSlug)}`}
                     className="flex items-center gap-3 px-3.5 py-3 active:bg-emerald-500/8"
                   >
                     <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-emerald-500/10">
@@ -366,7 +383,7 @@ export default function DeficienciesPageClient() {
               {filteredAll.map((n) => (
                 <AppLink
                   key={n.slug}
-                  href={`/deficiencies/${n.slug}`}
+                  href={`/deficiencies/${n.slug}?crop=${encodeURIComponent(cropSlug)}`}
                   className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] active:scale-[0.98]"
                 >
                   <div className="relative aspect-square w-full bg-emerald-500/5">

@@ -38,6 +38,15 @@ const PEST_ALIASES: Record<string, string> = {
   "obereopsis brevis": "oberea-brevis",
   "altica spp.": "altica-spp",
   "altica spp": "altica-spp",
+  "leptocorisa oratorius": "leptocorisa-oratorius",
+  "leptocorisa acuta": "leptocorisa-oratorius",
+  "leptocorisa spp.": "leptocorisa-oratorius",
+  "leptocorisa spp": "leptocorisa-oratorius",
+  "leptocorisa species": "leptocorisa-oratorius",
+  leptocorisa: "leptocorisa-oratorius",
+  "sitobion avenae": "sitobion-avenae",
+  "rhopalosiphum maidis": "rhopalosiphum-maidis",
+  "aphis gossypii": "aphis-gossypii",
 };
 
 const DISEASE_ALIASES: Record<string, string> = {

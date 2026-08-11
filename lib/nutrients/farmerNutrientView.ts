@@ -30,10 +30,10 @@ const NUTRIENT_HI: Record<
       "मक्का में नीची पत्ती के सिरे से V-आकार में पीलापन",
     ],
     bachav: [
-      "यूरिया बँटकर दें, एक बार में सारा न डालें",
+      "यूरिया बाँटकर दें, एक बार में सारा न डालें",
       "गीली मिट्टी में ही खाद डालें",
       "गोबर-खाद मिलाएँ",
-      "फसल PoP + मिट्टी परीक्षण से N मात्रा तय करें",
+      "Soil Health Card / कृषि सलाह से नाइट्रोजन तय करें",
     ],
   },
   phosphorus: {
@@ -171,6 +171,14 @@ const CROP_HI: Record<string, string> = {
   Moong: "मूंग",
   Arhar: "अरहर",
   Sugarcane: "गन्ना",
+  Wheat: "गेहूँ",
+  Tomato: "टमाटर",
+  Potato: "आलू",
+  Cotton: "कपास",
+  Onion: "प्याज",
+  Mango: "आम",
+  Banana: "केला",
+  Grapes: "अंगूर",
 };
 
 function shorten(text: string, max = 90): string {
@@ -190,11 +198,11 @@ function topFixes(nutrient: NutrientDeficiencyData, limit = 3) {
     const f = fix as { fertilizer: string; soilApplicationDose?: string; foliarSprayDose?: string };
     const dose =
       f.foliarSprayDose && f.foliarSprayDose !== "NA"
-        ? `छिड़काव: ${shorten(f.foliarSprayDose, 60)}`
+        ? `छिड़काव: ${simplifyFarmerHi(f.foliarSprayDose, 70)}`
         : f.soilApplicationDose && f.soilApplicationDose !== "NA"
-          ? shorten(f.soilApplicationDose, 70)
-          : "मिट्टी परीक्षण के अनुसार";
-    return { title: f.fertilizer, detail: dose };
+          ? simplifyFarmerHi(f.soilApplicationDose, 75)
+          : "मिट्टी जांच के अनुसार दें";
+    return { title: simplifyFarmerHi(f.fertilizer, 45), detail: dose };
   });
 }
 
@@ -206,16 +214,16 @@ function pickFaq(nutrient: NutrientDeficiencyData, limit = 3) {
     return bHi - aHi;
   });
   return hindiFirst.slice(0, limit).map((f) => ({
-    q: f.q,
-    a: shorten(f.a, 120),
+    q: simplifyFarmerHi(f.q, 80),
+    a: simplifyFarmerHi(f.a, 120),
   }));
 }
 
 function pickCrops(nutrient: NutrientDeficiencyData, limit = 8) {
   return nutrient.cropSpecificData.slice(0, limit).map((c) => ({
     name: CROP_HI[c.cropName] ?? c.cropName,
-    lakshan: shorten(c.symptoms[0] ?? "", 85),
-    upay: shorten(c.correction, 70),
+    lakshan: simplifyFarmerHi(c.symptoms[0] ?? "", 85),
+    upay: simplifyFarmerHi(c.correction, 70),
   }));
 }
 
@@ -339,8 +347,77 @@ export function toFarmerCropNutrientCard(
   };
 }
 
+/** Short + clear farmer Hindi — strip jargon, keep dose numbers. */
+export function simplifyFarmerHi(text: string, max = 110): string {
+  if (!text) return "";
+  let t = text.replace(/\s+/g, " ").trim();
+
+  const pairs: [RegExp, string][] = [
+    [/\belemental\s*N\b/gi, "नाइट्रोजन"],
+    [/\belemental\s*P\b/gi, "फॉस्फोरस"],
+    [/\belemental\s*K\b/gi, "पोटैश"],
+    [/\bN-hunger\b/gi, "नाइट्रोजन की भूख"],
+    [/एन-भूख/g, "नाइट्रोजन की कमी"],
+    [/सच्ची\s*एन/g, "असली नाइट्रोजन"],
+    [/\bPoP\b/g, "खेत की सलाह-पत्रक"],
+    [/\bcrop\s*PoP\b/gi, "फसल की सलाह-पत्रक"],
+    [/\btop[- ]?dress(ing|ed)?\b/gi, "ऊपर से खाद"],
+    [/\bbasal\b/gi, "बुवाई वाली खाद"],
+    [/\bfoliar\b/gi, "पत्ती पर छिड़काव"],
+    [/\bfertigation\b/gi, "ड्रिप से खाद"],
+    [/\bsplit\s*N\b/gi, "नाइट्रोजन बाँटकर"],
+    [/स्प्लिट\s*एन/g, "नाइट्रोजन बाँटकर"],
+    [/\bLCC\b/g, "पत्ती रंग चार्ट"],
+    [/\bpH\b/g, "मिट्टी का अम्ल-क्षार"],
+    [/पीएच/g, "मिट्टी का अम्ल-क्षार"],
+    [/\bcalcareous\b/gi, "चूना वाली"],
+    [/कैल्केरियस/g, "चूना वाली"],
+    [/\balkaline\b/gi, "क्षारीय"],
+    [/\bacidic\b/gi, "अम्लीय"],
+    [/\bvolatilization\b/gi, "उड़ जाना"],
+    [/वाष्पीकरण/g, "उड़ जाना"],
+    [/\bammonia\b/gi, "अमोनिया गैस"],
+    [/\bmobile\b/gi, "पौधे में घूमने वाला"],
+    [/\bimmobile\b/gi, "पौधे में न घूमने वाला"],
+    [/\blegume(s)?\b/gi, "दलहनी फसल"],
+    [/फलियां/g, "दलहनी फसल"],
+    [/\bvegetative\b/gi, "पत्ती-तनों वाली"],
+    [/वानस्पतिक/g, "पत्ती-तनों वाली"],
+    [/\btillering\b/gi, "कल्ले फूटने"],
+    [/टिलरिंग/g, "कल्ले फूटने"],
+    [/\bactive[- ]growth\b/gi, "तेज़ बढ़वार"],
+    [/सक्रिय[- ]?विकास/g, "तेज़ बढ़वार"],
+    [/\bmandatory form in India\b/gi, "भारत में अनिवार्य रूप"],
+    [/\bneem[- ]coated\b/gi, "नीम कोटेड"],
+    [/\bUrea\b/g, "यूरिया"],
+    [/\bDAP\b/g, "डीएपी"],
+    [/\bSSP\b/g, "एसएसपी"],
+    [/\bMOP\b/g, "एमओपी"],
+    [/\bSOP\b/g, "एसओपी"],
+    [/\bhectare(s)?\b/gi, "हेक्टर"],
+    [/\bha\b/gi, "हेक्टर"],
+    [/≈/g, "लगभग"],
+    [/~/g, "लगभग "],
+    [/\bkg\s*N\b/gi, "किलो नाइट्रोजन"],
+    [/\bg\/L\b/gi, "ग्राम प्रति लीटर"],
+    [/\bin\s*150–200\s*L\b/gi, "150–200 लीटर पानी में"],
+    [/not used for foliar; soil only/gi, "पत्ती पर न डालें — सिर्फ मिट्टी में"],
+    [/Not used for foliar; soil only/gi, "पत्ती पर न डालें — सिर्फ मिट्टी में"],
+    [/कुल मिलाकर/g, "देखने में"],
+    [/क्योंकि यह एक दलहनी फसल है/g, "दलहनी होने से"],
+    [/क्योंकि यह एक फलियां है/g, "दलहनी होने से"],
+    [/\brecovery\b/gi, "सुधार"],
+    [/\bsoil application\b/gi, "मिट्टी में डालना"],
+    [/\bwater quantity\b/gi, "पानी की मात्रा"],
+    [/\bprecaution(s)?\b/gi, "सावधानी"],
+  ];
+
+  for (const [re, rep] of pairs) t = t.replace(re, rep);
+  t = t.replace(/\s{2,}/g, " ").replace(/\s+([,.;])/g, "$1").trim();
+  return shorten(t, max);
+}
+
 /** Short Hindi lines for crop profile merge — avoid dumping long English */
 export function simplifySymptomLine(text: string): string {
-  if (/[\u0900-\u097F]/.test(text)) return shorten(text, 80);
-  return shorten(text, 75);
+  return simplifyFarmerHi(text, 80);
 }

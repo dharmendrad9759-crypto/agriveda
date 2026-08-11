@@ -87,9 +87,13 @@ export default function PestDiseasesContent() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={
-            isWeedHub
+            isWeedHub || category === "weed"
               ? "/images/weeds/weed-hub-hero.jpg"
-              : "/images/threats/threat-insect.jpg"
+              : category === "insect"
+                ? "/images/threats/threat-insect.jpg"
+                : category === "fungal"
+                  ? "/images/threats/threat-disease.jpg"
+                  : "/images/jobs/job-pest.jpg"
           }
           alt=""
           className="h-40 w-full object-cover sm:h-44"

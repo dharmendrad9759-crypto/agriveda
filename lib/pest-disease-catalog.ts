@@ -12,23 +12,35 @@ import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-di
 
 const GENERIC_STOCK = /placeholder|picsum|loremflickr/i;
 
+/** Shared threat tabs / crop heroes — never beat a real species photo */
+function isWeakThreatImage(path: string | undefined): boolean {
+  if (!path) return true;
+  if (GENERIC_STOCK.test(path)) return true;
+  if (/^\/images\/[a-z0-9-]+\.png$/i.test(path)) return true;
+  if (/\/images\/threats\/threat-(insect|disease|yellow|weed)\.jpg$/i.test(path)) return true;
+  if (/\/images\/crops\//i.test(path)) return true;
+  if (/\/images\/jobs\//i.test(path)) return true;
+  return false;
+}
+
 function resolveThreatImage(
   overrideImage: string | undefined,
   itemImage: string | undefined,
   speciesImage?: string
 ): string | undefined {
-  const preferred = overrideImage ?? speciesImage ?? itemImage;
-  if (!preferred) return undefined;
-  // Ignore broken IPM crop-root stubs like /images/paddy.png
-  if (/^\/images\/[a-z0-9-]+\.png$/i.test(preferred)) return speciesImage ?? itemImage;
-  // Prefer real species art over shared threat generics
-  if (
-    speciesImage &&
-    /\/images\/threats\/threat-(insect|disease|yellow|weed)\.jpg$/i.test(preferred)
-  ) {
+  // Prefer species / disease pathogen art first
+  if (speciesImage && !GENERIC_STOCK.test(speciesImage) && !isWeakThreatImage(speciesImage)) {
     return speciesImage;
   }
-  return preferred;
+  if (overrideImage && !isWeakThreatImage(overrideImage)) return overrideImage;
+  if (itemImage && !isWeakThreatImage(itemImage)) return itemImage;
+  if (speciesImage && !GENERIC_STOCK.test(speciesImage)) return speciesImage;
+  // Never keep crop-hero / generic stock as the "best" photo
+  const candidates = [overrideImage, itemImage, speciesImage].filter(
+    (p): p is string =>
+      typeof p === "string" && !isWeakThreatImage(p) && !GENERIC_STOCK.test(p)
+  );
+  return candidates[0];
 }
 
 function inferDiseaseCategory(pathogen: string, name: string): ThreatCategory {

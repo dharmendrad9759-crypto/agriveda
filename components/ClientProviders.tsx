@@ -5,6 +5,8 @@ import CapacitorBootstrap from "@/components/capacitor/CapacitorBootstrap";
 import LaunchFlow from "@/components/launch/LaunchFlow";
 import CapacitorNavigationFix from "@/components/capacitor/CapacitorNavigationFix";
 import NativeAppEssentials from "@/components/capacitor/NativeAppEssentials";
+import ForceUpdateGate from "@/components/capacitor/ForceUpdateGate";
+import NativeFetchPatch from "@/components/capacitor/NativeFetchPatch";
 import Footer from "@/components/footer";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import BottomNav from "@/components/layout/BottomNav";
@@ -46,6 +48,8 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
           >
             <AnalyticsBootstrap />
             <CapacitorBootstrap />
+            <NativeFetchPatch />
+            <ForceUpdateGate />
             <NativeAppEssentials />
             <CapacitorNavigationFix />
             {isAdminRoute ? (

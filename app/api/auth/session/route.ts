@@ -4,6 +4,7 @@ import {
   readSessionFromRequest,
   requireSession,
 } from "@/lib/session";
+import { releaseActiveDevice } from "@/lib/authActiveDevice";
 import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import { createSupabaseServiceClient } from "@/lib/supabase";
 
@@ -33,13 +34,17 @@ export async function GET(request: NextRequest) {
   });
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  const session = readSessionFromRequest(request);
+  if (session?.firebaseUid) {
+    await releaseActiveDevice(session.firebaseUid, session.deviceId);
+  }
   const res = NextResponse.json({ ok: true });
   clearSessionCookie(res);
   return res;
 }
 
 /** Lightweight auth check helper used by other routes. */
-export function assertSession(request: NextRequest) {
+export async function assertSession(request: NextRequest) {
   return requireSession(request);
 }

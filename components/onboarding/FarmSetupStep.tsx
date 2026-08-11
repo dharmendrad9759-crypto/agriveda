@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Loader2, MapPin, Plus, Sprout, Trash2 } from "lucide-react";
-import { cropCatalog } from "@/data/crop-catalog";
+import { categoryOrder, cropCatalog, getCropsByCategory } from "@/data/crop-catalog";
 import {
   buildFarmFieldFromInput,
   initializeFarmData,
@@ -11,7 +11,15 @@ import {
 } from "@/lib/farm/farmInit";
 import { cn } from "@/lib/cn";
 
-const POPULAR_CROP_SLUGS = ["paddy", "wheat", "soybean", "maize", "cotton", "tomato", "potato", "chilli"];
+const CATEGORY_HI: Record<string, string> = {
+  Cereals: "अनाज",
+  Vegetables: "सब्ज़ी",
+  "Cash Crops": "नकदी फसल",
+  Fruits: "फल",
+  Pulses: "दाल",
+  Oilseeds: "तिलहन",
+  Spices: "मसाले",
+};
 
 interface DraftField {
   name: string;
@@ -37,64 +45,47 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
   const [fields, setFields] = useState<DraftField[]>([emptyDraft()]);
   const [error, setError] = useState<string | null>(null);
 
-  const popularCrops = useMemo(
-    () => POPULAR_CROP_SLUGS.map((slug) => cropCatalog.find((c) => c.slug === slug)).filter(Boolean),
-    []
-  );
-
-  const otherCrops = useMemo(
-    () => cropCatalog.filter((c) => !POPULAR_CROP_SLUGS.includes(c.slug)),
-    []
-  );
+  const byCategory = useMemo(() => getCropsByCategory(), []);
 
   const updateField = (index: number, patch: Partial<DraftField>) => {
     setFields((prev) => prev.map((f, i) => (i === index ? { ...f, ...patch } : f)));
   };
 
-  const addField = () => {
-    setFields((prev) => [...prev, emptyDraft()]);
-  };
+  const addField = () => setFields((prev) => [...prev, emptyDraft()]);
 
   const removeField = (index: number) => {
-    if (fields.length <= 1) return;
     setFields((prev) => prev.filter((_, i) => i !== index));
   };
 
   const previewAcres = useMemo(() => {
-    const built = fields
-      .filter((f) => f.areaAcres && parseFloat(f.areaAcres) > 0)
-      .map((f) => ({ area: `${f.areaAcres} Acre` }));
-    return totalAreaAcres(built);
+    return fields.reduce((sum, f) => {
+      const n = Number.parseFloat(f.areaAcres);
+      return sum + (Number.isFinite(n) && n > 0 ? n : 0);
+    }, 0);
   }, [fields]);
 
   const handleSubmit = () => {
     setError(null);
-
-    const inputs: OnboardingFieldInput[] = [];
     for (let i = 0; i < fields.length; i++) {
       const f = fields[i];
-      const area = parseFloat(f.areaAcres);
-      if (!f.name.trim()) {
-        setError(`खेत ${i + 1}: नाम भरें`);
-        return;
-      }
-      if (!Number.isFinite(area) || area <= 0) {
-        setError(`खेत ${i + 1}: सही रकबा (एकड़) भरें`);
+      if (!f.areaAcres || Number.parseFloat(f.areaAcres) <= 0) {
+        setError(`खेत ${i + 1}: रकबा भरें`);
         return;
       }
       if (!f.cropSlug) {
         setError(`खेत ${i + 1}: फसल चुनें`);
         return;
       }
-      inputs.push({
-        name: f.name.trim(),
-        areaAcres: area,
-        cropSlug: f.cropSlug,
-        ownership: f.ownership,
-      });
     }
 
-    const built = inputs.map((input, index) => buildFarmFieldFromInput(input, index));
+    const inputs: OnboardingFieldInput[] = fields.map((f, i) => ({
+      name: f.name.trim() || `खेत ${i + 1}`,
+      areaAcres: Number.parseFloat(f.areaAcres),
+      cropSlug: f.cropSlug,
+      ownership: f.ownership,
+    }));
+
+    const built = inputs.map((input, i) => buildFarmFieldFromInput(input, i));
     initializeFarmData(built);
     onComplete(totalAreaAcres(built));
   };
@@ -171,50 +162,41 @@ export default function FarmSetupStep({ farmerName, onComplete, loading }: FarmS
             <p className="mb-2 flex items-center gap-2 text-xs font-bold text-[var(--av-text-muted)]">
               <Sprout className="h-4 w-4" />
               फसल चुनें
+              <span className="font-semibold text-[var(--av-text-muted)]">
+                ({cropCatalog.length})
+              </span>
             </p>
-            <div className="grid grid-cols-4 gap-2">
-              {popularCrops.map((crop) =>
-                crop ? (
-                  <button
-                    key={crop.slug}
-                    type="button"
-                    onClick={() => updateField(index, { cropSlug: crop.slug })}
-                    className={cn(
-                      "rounded-xl border px-1 py-2 text-center text-[10px] font-bold transition",
-                      field.cropSlug === crop.slug
-                        ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-                        : "border-[var(--av-border)] bg-[var(--background)] text-[var(--av-text-muted)]"
-                    )}
-                  >
-                    <span className="block text-lg">{crop.emoji}</span>
-                    {crop.name}
-                  </button>
-                ) : null
-              )}
+            <div className="max-h-56 space-y-3 overflow-y-auto rounded-xl border border-[var(--av-border)] bg-[var(--background)] p-2.5">
+              {categoryOrder.map((cat) => {
+                const list = byCategory[cat];
+                if (!list?.length) return null;
+                return (
+                  <div key={cat}>
+                    <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                      {CATEGORY_HI[cat] ?? cat}
+                    </p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {list.map((crop) => (
+                        <button
+                          key={crop.slug}
+                          type="button"
+                          onClick={() => updateField(index, { cropSlug: crop.slug })}
+                          className={cn(
+                            "rounded-xl border px-1 py-2 text-center text-[10px] font-bold transition",
+                            field.cropSlug === crop.slug
+                              ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                              : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
+                          )}
+                        >
+                          <span className="block text-lg">{crop.emoji}</span>
+                          {crop.nameHi ?? crop.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <details className="mt-2">
-              <summary className="cursor-pointer text-xs font-semibold text-[var(--av-accent)]">
-                और फसलें देखें
-              </summary>
-              <div className="mt-2 grid max-h-32 grid-cols-4 gap-2 overflow-y-auto">
-                {otherCrops.map((crop) => (
-                  <button
-                    key={crop.slug}
-                    type="button"
-                    onClick={() => updateField(index, { cropSlug: crop.slug })}
-                    className={cn(
-                      "rounded-lg border px-1 py-1.5 text-center text-[9px] font-bold",
-                      field.cropSlug === crop.slug
-                        ? "border-emerald-500 bg-emerald-500/15"
-                        : "border-[var(--av-border)]"
-                    )}
-                  >
-                    <span className="block text-base">{crop.emoji}</span>
-                    {crop.name}
-                  </button>
-                ))}
-              </div>
-            </details>
           </div>
         </div>
       ))}

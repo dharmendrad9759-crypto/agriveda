@@ -1,5 +1,7 @@
 import { createHmac, timingSafeEqual, randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { getActiveDevice } from "@/lib/authActiveDevice";
+import { rejectIfNativeAppTooOld } from "@/lib/minNativeVersion";
 
 export const SESSION_COOKIE = "agriveda_session";
 export const SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
@@ -108,10 +110,13 @@ export function readSessionFromRequest(req: NextRequest): SessionPayload | null 
   return verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
 }
 
-/** 401 JSON if not logged in. */
-export function requireSession(
+/** 401/426 JSON if not logged in, native too old, or device superseded. */
+export async function requireSession(
   req: NextRequest
-): { session: SessionPayload } | { error: NextResponse } {
+): Promise<{ session: SessionPayload } | { error: NextResponse }> {
+  const forceUpdate = rejectIfNativeAppTooOld(req);
+  if (forceUpdate) return { error: forceUpdate };
+
   const session = readSessionFromRequest(req);
   if (!session) {
     return {
@@ -121,6 +126,22 @@ export function requireSession(
       ),
     };
   }
+
+  if (session.firebaseUid) {
+    const active = await getActiveDevice(session.firebaseUid);
+    if (active && active.deviceId !== session.deviceId) {
+      return {
+        error: NextResponse.json(
+          {
+            error: "यह खाता दूसरी डिवाइस पर लॉगिन है — यहाँ से फिर लॉगिन करें",
+            code: "SESSION_DEVICE_MISMATCH",
+          },
+          { status: 401 }
+        ),
+      };
+    }
+  }
+
   return { session };
 }
 

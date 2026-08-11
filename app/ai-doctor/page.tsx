@@ -14,7 +14,7 @@ import VoiceInput from "@/components/query/VoiceInput";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { useToast } from "@/components/ui/Toast";
-import { AI_DOCTOR_CROPS, OTHER_CROP } from "@/data/ai-doctor-crops";
+import { OTHER_CROP, aiDoctorCropLabel } from "@/data/ai-doctor-crops";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import {
     analyzeDiagnosis,
@@ -27,9 +27,9 @@ import {
   saveAiDoctorExpertReferral,
   urlToDataUrl,
 } from "@/lib/aiDoctorExpertReferral";
+import { fileToHistoryThumb, srcToHistoryThumb } from "@/lib/aiHistoryThumb";
 import { formatFarmerDose } from "@/lib/units/farmerDose";
 import { track } from "@/lib/analytics";
-import { getCropHindiName } from "@/lib/crops/crop-display";
 import {
     claimPendingAiScan,
     dataUrlToFile,
@@ -247,9 +247,12 @@ export default function AIDoctorPage() {
         symptoms: symptomNotes,
       });
       setResult(diagnosis);
+      const thumb =
+        (selectedFile ? await fileToHistoryThumb(selectedFile) : "") ||
+        (await srcToHistoryThumb(previewUrl));
       addEntry({
         fileName: selectedFile ? fileName || "scan.jpg" : "symptoms.txt",
-        thumbnailUrl: previewUrl || "",
+        thumbnailUrl: thumb,
         result: diagnosis,
       });
       showToast("विश्लेषण पूर्ण ✓");
@@ -321,14 +324,7 @@ export default function AIDoctorPage() {
         >
           <p className="font-bold">दवा लगाते समय</p>
           <p className="mt-1 text-[11px] font-medium opacity-90">
-            दवा का लेबल और कृषि अधिकारी की सलाह मानें। स्कैन फोटो Agriveda पर सेव नहीं होती।{" "}
-            <button
-              type="button"
-              className="font-bold underline underline-offset-2"
-              onClick={() => router.push("/terms")}
-            >
-              नियम पढ़ें
-            </button>
+            दवा का लेबल पढ़ें और कृषि अधिकारी / कृषि विज्ञान केंद्र की सलाह मानें।
           </p>
         </div>
 
@@ -634,10 +630,7 @@ export default function AIDoctorPage() {
                       setReferringExpert(true);
                       try {
                         const slug = selectedCrop || OTHER_CROP.slug;
-                        const listed = AI_DOCTOR_CROPS.find((c) => c.slug === slug);
-                        const cropName =
-                          getCropHindiName(slug, listed?.name) ??
-                          (slug === OTHER_CROP.slug ? "अन्य फसल" : listed?.name ?? slug);
+                        const cropName = aiDoctorCropLabel(slug);
 
                         let photoRaw: string | null = null;
                         if (previewUrl?.startsWith("data:")) {

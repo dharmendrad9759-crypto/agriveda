@@ -15,6 +15,9 @@ android {
         targetSdk = rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+        // Bump versionCode on every Play/APK release. To kill older APKs, set
+        // MIN_NATIVE_VERSION_CODE + NEXT_PUBLIC_MIN_NATIVE_VERSION_CODE on Vercel
+        // to the new versionCode after users can install the new build.
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

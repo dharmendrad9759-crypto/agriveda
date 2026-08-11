@@ -8,6 +8,7 @@ import { AV } from "@/lib/design/tokens";
 
 interface Props {
   params: Promise<{ nutrient: string }>;
+  searchParams: Promise<{ crop?: string }>;
 }
 
 function NutrientDetailSkeleton() {
@@ -33,8 +34,9 @@ function NutrientDetailSkeleton() {
   );
 }
 
-export default function NutrientDetailPage({ params }: Props) {
+export default function NutrientDetailPage({ params, searchParams }: Props) {
   const { nutrient: slug } = use(params);
+  const { crop: cropParam } = use(searchParams);
   const nutrient = getNutrientDeficiency(slug);
 
   if (!nutrient) {
@@ -59,7 +61,7 @@ export default function NutrientDetailPage({ params }: Props) {
     );
   }
 
-  return <NutrientDetailExperience nutrient={nutrient} />;
+  return <NutrientDetailExperience nutrient={nutrient} initialCrop={cropParam} />;
 }
 
 export { NutrientDetailSkeleton };

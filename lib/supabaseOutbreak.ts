@@ -19,6 +19,13 @@ export function decodePestOrDisease(value: string): {
   if ((type === "pest" || type === "disease") && id) {
     return { threatType: type, pestOrDiseaseId: id };
   }
+  // Bare catalog-style ids: d1… = disease, p1… = pest
+  if (/^d\d+$/i.test(value)) {
+    return { threatType: "disease", pestOrDiseaseId: value };
+  }
+  if (/^p\d+$/i.test(value)) {
+    return { threatType: "pest", pestOrDiseaseId: value };
+  }
   return { threatType: "pest", pestOrDiseaseId: value };
 }
 

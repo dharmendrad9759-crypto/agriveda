@@ -1,9 +1,6 @@
 import { CROP_PROTECTION_BY_SLUG } from "@/data/crop-protection";
 import type { CropProtectionThreat } from "@/types/crop-protection";
-
-function norm(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]/g, "");
-}
+import { normThreatText } from "@/lib/pests/matchCatalogThreat";
 
 /** Map pest-disease catalog ids to crop-protection threat ids */
 const CATALOG_THREAT_IDS: Record<string, string> = {
@@ -17,6 +14,7 @@ const CATALOG_THREAT_IDS: Record<string, string> = {
   "potato-disease-d1": "late-blight",
   "maize-pest-p1": "faw",
   "cotton-pest-p1": "pink-bollworm",
+  "moongfali-disease-d1": "tikka",
 };
 
 /** Match pest-disease catalog entry to stage-wise guide data */
@@ -43,11 +41,18 @@ export function findStageGuideForThreat(
       const byId = list.find((t) => t.id === mappedId);
       if (byId) return byId;
     }
+    const byRawId = list.find((t) => t.id === threatId);
+    if (byRawId) return byRawId;
   }
 
-  const n = norm(threatName);
+  const n = normThreatText(threatName);
+  // Empty after strip (e.g. punctuation-only) must NOT match every name via "".includes
+  if (!n) return undefined;
+
   return (
-    list.find((t) => norm(t.name).includes(n) || n.includes(norm(t.name))) ??
-    list.find((t) => t.id && n.includes(norm(t.id)))
+    list.find((t) => {
+      const tn = normThreatText(t.name);
+      return Boolean(tn) && (tn.includes(n) || n.includes(tn));
+    }) ?? list.find((t) => t.id && n.includes(normThreatText(t.id)))
   );
 }

@@ -4,11 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import AgriVedaSplashScreen from "@/components/launch/AgriVedaSplashScreen";
 import IntroCarousel from "@/components/launch/IntroCarousel";
 import { isCapacitorNative } from "@/lib/capacitorNav";
-import { readStorage, writeStorage } from "@/lib/storage";
+import { introDone, markIntroDone } from "@/lib/launchFlags";
 
-/** Once per WebView process — SoftNav hardNavigate remounts React but keeps sessionStorage */
+/** Once per cold process — SoftNav remounts keep this */
 const SPLASH_SESSION_KEY = "agriveda-open-splash-v2";
-const INTRO_KEY = "agriveda-intro-carousel-v2";
+const FARMER_PROFILE_KEY = "agriveda-farmer-profile";
 
 type Phase = "checking" | "splash" | "intro" | "done";
 
@@ -28,12 +28,23 @@ function markSplashShown() {
   }
 }
 
-function introDone(): boolean {
-  return readStorage<boolean>(INTRO_KEY, false) === true;
+function farmerSetupDone(): boolean {
+  try {
+    const raw = localStorage.getItem(FARMER_PROFILE_KEY);
+    if (!raw) return false;
+    const p = JSON.parse(raw) as {
+      onboardingComplete?: boolean;
+      farmSetupComplete?: boolean;
+    };
+    return Boolean(p.onboardingComplete && p.farmSetupComplete);
+  } catch {
+    return false;
+  }
 }
 
-function markIntroDone() {
-  writeStorage(INTRO_KEY, true);
+/** Returning users skip splash + intro — straight into the app. */
+function hasCompletedFirstRun(): boolean {
+  return introDone() || farmerSetupDone();
 }
 
 async function hideNativePluginSplash(fadeMs = 0) {
@@ -53,15 +64,14 @@ function prefersReducedMotion(): boolean {
 
 function resolvePhase(): Phase {
   if (typeof window === "undefined") return "checking";
+  if (hasCompletedFirstRun()) return "done";
   if (!splashAlreadyShown()) return "splash";
-  if (!introDone()) return "intro";
-  return "done";
+  return "intro";
 }
 
 /**
- * Cold open only: cream splash → onboarding (once) → app.
- * SoftNav full reloads do NOT re-show splash (sessionStorage).
- * No appStateChange resume splash — that felt like “every button opens splash”.
+ * First open: splash → swipe intro (once) → app / Google gate.
+ * Later opens: no splash, no carousel — app only.
  */
 export default function LaunchFlow() {
   const [phase, setPhase] = useState<Phase>(() => resolvePhase());
@@ -71,17 +81,13 @@ export default function LaunchFlow() {
     setReduced(prefersReducedMotion());
     const next = resolvePhase();
     setPhase(next);
-    if (next === "splash" || next === "intro") {
-      void hideNativePluginSplash(0);
-    } else {
-      void hideNativePluginSplash(0);
-    }
+    void hideNativePluginSplash(0);
   }, []);
 
   const finishSplash = useCallback(() => {
     markSplashShown();
     void hideNativePluginSplash(0);
-    setPhase(introDone() ? "done" : "intro");
+    setPhase(hasCompletedFirstRun() ? "done" : "intro");
   }, []);
 
   const finishIntro = useCallback(() => {

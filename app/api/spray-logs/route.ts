@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
 
   const limited = await rateLimit(`spray-post:${auth.session.deviceId}`, 30, 60_000);
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
 
   void clientIp(request); // keep import used for future IP logging

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const auth = requireSession(req);
+    const auth = await requireSession(req);
     if ("error" in auth) return auth.error;
 
     const durable = requireDurableRateLimit();

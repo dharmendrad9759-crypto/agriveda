@@ -58,7 +58,6 @@ export const THREAT_DETAIL_OVERRIDES: Record<string, ThreatDetailOverride> = {
   },
   "potato-disease-d2": {
     category: "fungal",
-    image: THREAT_IMAGES.tomato,
     description:
       "Early blight (Alternaria solani) विशिष्ट concentric ring spots पैदा करता है। Crop debris पर survive करता है, warm humid periods में stomata से infect करता है।",
     symptoms: [
@@ -152,7 +151,6 @@ export const THREAT_DETAIL_OVERRIDES: Record<string, ThreatDetailOverride> = {
   },
   "maize-pest-p1": {
     category: "insect",
-    image: THREAT_IMAGES.maize,
     description:
       "Spodoptera frugiperda (Fall Armyworm) भारतीय maize में विनाशकारी invasive pest है। Larvae whorl के अंदर feed करते हैं — foliar sprays whorl में directed होने चाहिए।",
     symptoms: [
@@ -318,7 +316,6 @@ export const THREAT_DETAIL_OVERRIDES: Record<string, ThreatDetailOverride> = {
   },
   "paddy-disease-d1": {
     category: "fungal",
-    image: THREAT_IMAGES.paddy,
     description:
       "Rice blast (Magnaporthe oryzae) भारत में #1 rice disease है। Heading पर neck blast near-total grain loss। Tricyclazole FRAC 16.1 (melanin) है, FRAC 3 नहीं।",
     symptoms: [

@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Expert inbox not configured" }, { status: 503 });
   }
 
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
   const deviceId = auth.session.deviceId;
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
 
   let body: Record<string, unknown>;

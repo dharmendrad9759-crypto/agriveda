@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "315649732293",
+    "project_id": "agriveda-d9dc9",
+    "storage_bucket": "agriveda-d9dc9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315649732293:android:b57290d0a4bfc5a7944aac",
+        "android_client_info": {
+          "package_name": "com.agriveda.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "315649732293-3iiejr661g5rpkh9eif2tup3onpufl4e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbWcx070J2l3xtxBQN48_Gd_ZgFl0vIz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "315649732293-3iiejr661g5rpkh9eif2tup3onpufl4e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

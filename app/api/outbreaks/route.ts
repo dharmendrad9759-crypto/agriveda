@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
   }
 
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
 
   const limited = await rateLimit(`outbreak-post:${auth.session.deviceId}`, 10, 60 * 60_000);

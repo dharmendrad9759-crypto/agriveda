@@ -1,6 +1,6 @@
 import type { NutrientDeficiencyData } from "@/types/deficiency";
 import type { FarmerNutrientView } from "@/lib/nutrients/farmerNutrientView";
-import { simplifySymptomLine } from "@/lib/nutrients/farmerNutrientView";
+import { simplifyFarmerHi, simplifySymptomLine } from "@/lib/nutrients/farmerNutrientView";
 
 export const CROP_EMOJI: Record<string, string> = {
   Paddy: "🌾",
@@ -23,6 +23,15 @@ export const CROP_EMOJI: Record<string, string> = {
   Potato: "🥔",
   Cotton: "☁️",
   Onion: "🧅",
+  Mango: "🥭",
+  Banana: "🍌",
+  Grapes: "🍇",
+  Mustard: "🌼",
+  Ginger: "🫚",
+  Garlic: "🧄",
+  Chana: "🟡",
+  Masoor: "🟠",
+  Urad: "⚫",
 };
 
 export const CROP_LABEL_HI: Record<string, string> = {
@@ -46,7 +55,70 @@ export const CROP_LABEL_HI: Record<string, string> = {
   Potato: "आलू",
   Cotton: "कपास",
   Onion: "प्याज",
+  Mango: "आम",
+  Banana: "केला",
+  Grapes: "अंगूर",
+  Mustard: "सरसों",
+  Ginger: "अदरक",
+  Garlic: "लहसुन",
+  Chana: "चना",
+  Masoor: "मसूर",
+  Urad: "उड़द",
 };
+
+/** App crop slugs → nutrient batch cropName keys */
+const SLUG_TO_CROP_KEY: Record<string, string> = {
+  paddy: "Paddy",
+  rice: "Paddy",
+  wheat: "Wheat",
+  maize: "Maize",
+  bajra: "Bajra",
+  soybean: "Soybean",
+  moongfali: "Groundnut",
+  groundnut: "Groundnut",
+  chilli: "Chilli",
+  chili: "Chilli",
+  capsicum: "Capsicum",
+  cauliflower: "Cauliflower",
+  cabbage: "Cabbage",
+  cucumber: "Cucumber",
+  brinjal: "Brinjal",
+  bhindi: "Okra",
+  okra: "Okra",
+  moong: "Moong",
+  pulses: "Arhar",
+  arhar: "Arhar",
+  sugarcane: "Sugarcane",
+  tomato: "Tomato",
+  potato: "Potato",
+  cotton: "Cotton",
+  onion: "Onion",
+  mango: "Mango",
+  banana: "Banana",
+  grapes: "Grapes",
+  mustard: "Mustard",
+  ginger: "Ginger",
+  garlic: "Garlic",
+  chana: "Chana",
+  masoor: "Masoor",
+  urad: "Urad",
+};
+
+/**
+ * Resolve URL `?crop=` (app slug or batch cropName) to the nutrient crop strip key.
+ */
+export function resolveNutrientCropKey(cropParam?: string | null): string | undefined {
+  if (!cropParam) return undefined;
+  const raw = cropParam.trim();
+  if (!raw) return undefined;
+  const lower = raw.toLowerCase();
+  if (SLUG_TO_CROP_KEY[lower]) return SLUG_TO_CROP_KEY[lower];
+  // Already a batch key (e.g. "Paddy") or Title Case crop name
+  if (CROP_LABEL_HI[raw] || CROP_EMOJI[raw]) return raw;
+  const titled = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+  if (CROP_LABEL_HI[titled] || CROP_EMOJI[titled]) return titled;
+  return titled;
+}
 
 const PRIORITY_CROPS = [
   "Paddy",
@@ -104,9 +176,14 @@ function shorten(text: string, max = 100): string {
   return (sp > 30 ? cut.slice(0, sp) : cut).trim() + "…";
 }
 
-export function getCropOptions(nutrient: NutrientDeficiencyData): CropOption[] {
+export function getCropOptions(
+  nutrient: NutrientDeficiencyData,
+  preferredCropParam?: string | null
+): CropOption[] {
+  const preferred = resolveNutrientCropKey(preferredCropParam);
   const fromData = nutrient.cropSpecificData.map((c) => c.cropName);
   const keys = [
+    ...(preferred ? [preferred] : []),
     ...PRIORITY_CROPS,
     ...fromData.filter((k) => !PRIORITY_CROPS.includes(k)),
   ];
@@ -128,9 +205,9 @@ function splitCause(line: string): { title: string; farmerNote: string; technica
   const [title, ...rest] = line.split(":");
   const technical = rest.join(":").trim();
   return {
-    title: shorten(title, 40),
-    farmerNote: shorten(technical || title, 85),
-    technicalNote: shorten(technical || line, 120),
+    title: simplifyFarmerHi(title, 40),
+    farmerNote: simplifyFarmerHi(technical || title, 90),
+    technicalNote: simplifyFarmerHi(technical || line, 100),
   };
 }
 
@@ -162,20 +239,30 @@ export function buildCropScope(
       part: mobilityPart,
       severity: "high",
     },
-    ...farmer.lakshan.map((s, i) => ({
+  ];
+
+  for (let i = 0; i < farmer.lakshan.length; i++) {
+    const s = farmer.lakshan[i];
+    const sameAsPrimary =
+      !cropSymptom ||
+      s === cropSymptom ||
+      cropSymptom.includes(s.slice(0, 18)) ||
+      s.includes(cropSymptom.slice(0, 18));
+    if (sameAsPrimary && i === 0) continue;
+    symptoms.push({
       id: `general-${i}`,
       title: shorten(s, 42),
       description: s,
       part: mobilityPart,
       severity: (i === 0 ? "high" : "medium") as "high" | "medium",
-    })),
-  ];
+    });
+  }
 
   if (nutrient.symptomDetail?.early) {
     symptoms.push({
       id: "early",
       title: "शुरुआती अवस्था",
-      description: shorten(nutrient.symptomDetail.early, 90),
+      description: simplifyFarmerHi(nutrient.symptomDetail.early, 90),
       part: mobilityPart,
       severity: "low",
     });
@@ -194,25 +281,35 @@ export function buildCropScope(
   if (crop?.cause) {
     causes.unshift({
       id: "crop-cause",
-      title: `${labelHi} में विशेष कारण`,
-      farmerNote: shorten(crop.cause, 90),
-      technicalNote: shorten(crop.notes || crop.cause, 110),
+      title: `${labelHi} में खास वजह`,
+      farmerNote: simplifyFarmerHi(crop.cause, 95),
+      technicalNote: simplifyFarmerHi(crop.notes || crop.cause, 100),
     });
   }
+
+  const cropFixRaw = crop?.correction
+    ? simplifyFarmerHi(crop.correction, 95)
+    : farmer.kyaKaren[0]?.detail ?? "";
 
   return {
     cropKey,
     labelHi,
     emoji,
     cropSymptom,
-    cropFix: crop?.correction ? shorten(crop.correction, 90) : farmer.kyaKaren[0]?.detail ?? "",
-    cropPrevention: crop?.prevention ? shorten(crop.prevention, 80) : farmer.bachav[0] ?? "",
-    cropCause: crop?.cause ? shorten(crop.cause, 90) : "",
-    cropStage: crop?.stage ?? "खेत में निरीक्षण",
+    cropFix: cropFixRaw,
+    cropPrevention: crop?.prevention
+      ? simplifyFarmerHi(crop.prevention, 85)
+      : farmer.bachav[0] ?? "",
+    cropCause: crop?.cause ? simplifyFarmerHi(crop.cause, 95) : "",
+    cropStage: crop?.stage
+      ? simplifyFarmerHi(crop.stage, 40)
+      : "खेत में देखकर समझें",
     symptoms: focusSymptoms,
     causes: causes.slice(0, 5),
-    preventionDos: farmer.bachav,
-    preventionDonts: (nutrient.commonFarmerMistakes ?? []).slice(0, 4).map((m) => shorten(m, 75)),
+    preventionDos: farmer.bachav.map((b) => simplifyFarmerHi(b, 75)),
+    preventionDonts: (nutrient.commonFarmerMistakes ?? [])
+      .slice(0, 4)
+      .map((m) => simplifyFarmerHi(m, 75)),
   };
 }
 

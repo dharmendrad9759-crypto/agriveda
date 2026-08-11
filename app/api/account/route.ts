@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteFarmerAccountServer } from "@/lib/deleteFarmerAccount";
 import { clearSessionCookie, requireSession } from "@/lib/session";
+import { releaseActiveDevice } from "@/lib/authActiveDevice";
 import { rateLimit } from "@/lib/rateLimit";
 
 /**
@@ -9,7 +10,7 @@ import { rateLimit } from "@/lib/rateLimit";
  * Client must also clear localStorage via clearAppData({ fullWipe: true }).
  */
 export async function DELETE(request: NextRequest) {
-  const auth = requireSession(request);
+  const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
 
   const limited = await rateLimit(`account-delete:${auth.session.deviceId}`, 3, 60 * 60_000);
@@ -27,6 +28,10 @@ export async function DELETE(request: NextRequest) {
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
+  }
+
+  if (auth.session.firebaseUid) {
+    await releaseActiveDevice(auth.session.firebaseUid, auth.session.deviceId);
   }
 
   const res = NextResponse.json({

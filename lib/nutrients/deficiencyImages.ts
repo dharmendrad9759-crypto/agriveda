@@ -113,6 +113,16 @@ const CROP_LABEL_TO_SLUG: Record<string, string> = {
   arhar: "moong",
   pigeonpea: "moong",
   "pigeon pea": "moong",
+  mango: "mango",
+  आम: "mango",
+  banana: "banana",
+  केला: "banana",
+  grapes: "grapes",
+  अंगूर: "grapes",
+  mustard: "mustard",
+  सरसों: "mustard",
+  ginger: "ginger",
+  garlic: "garlic",
 };
 
 export function cropLabelToImageSlug(cropLabel: string): string | undefined {

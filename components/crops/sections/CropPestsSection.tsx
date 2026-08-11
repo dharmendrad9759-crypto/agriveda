@@ -8,7 +8,11 @@ import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
 import { getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
-import { getEnrichedCropThreats } from "@/lib/pest-disease-catalog";
+import {
+  catalogThreatDetailHref,
+  matchCatalogThreat,
+} from "@/lib/pests/matchCatalogThreat";
+import { getEnrichedCropThreats, threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import { ChevronRight, Search } from "lucide-react";
@@ -43,18 +47,16 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
   const richPests = useMemo(() => {
     if (!useRichPests || !profile?.pestManagement) return [];
     return profile.pestManagement.map((p, i) => {
-      const nameLc = p.pestName.toLowerCase();
-      const match = catalogPests.find(
-        (c) =>
-          c.scientificName?.toLowerCase() === p.scientificName?.toLowerCase() ||
-          c.name.toLowerCase().includes(nameLc.slice(0, 10)) ||
-          nameLc.includes(c.name.toLowerCase().slice(0, 10))
-      );
+      const match = matchCatalogThreat(catalogPests, {
+        name: p.pestName,
+        scientific: p.scientificName,
+      });
+      const detailHref =
+        catalogThreatDetailHref(crop.slug, "pest", match) ??
+        `/pest-diseases?crop=${encodeURIComponent(crop.slug)}&type=pest`;
       return {
         id: match?.id ?? `${crop.slug}-pest-${i}`,
-        detailHref: match
-          ? `/pest-diseases/${crop.slug}/pest/${match.id}`
-          : `/pest-diseases?crop=${crop.slug}&type=pest`,
+        detailHref,
         name: p.pestName,
         scientific: p.scientificName,
         etl: p.etl,
@@ -67,9 +69,15 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
   const pests = useRichPests
     ? richPests
     : fieldGuidePests.length
-      ? fieldGuidePests
+      ? fieldGuidePests.map((p) => ({
+          ...p,
+          detailHref: threatDetailPath(crop.slug, "pest", p.id),
+        }))
       : ipmPests.length
-        ? ipmPests
+        ? ipmPests.map((p) => ({
+            ...p,
+            detailHref: threatDetailPath(crop.slug, "pest", p.id),
+          }))
         : catalogPests.map((p) => ({
             id: p.id,
             name: p.name,
@@ -77,6 +85,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
             etl: p.etl,
             risk: "high" as const,
             image: pestThumb(p.scientificName, p.image),
+            detailHref: threatDetailPath(crop.slug, "pest", p.id),
           }));
 
   const filtered = pests.filter(
@@ -113,7 +122,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
           const href =
             "detailHref" in pest && pest.detailHref
               ? String(pest.detailHref)
-              : `/pest-diseases/${crop.slug}/pest/${pest.id}`;
+              : threatDetailPath(crop.slug, "pest", pest.id);
           return (
             <li key={pest.id}>
               <AppLink href={href} className="av-card av-card-hover flex items-center gap-3 px-3 py-3">
@@ -136,7 +145,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                     <p className="text-sm font-extrabold text-[var(--av-text-primary)]">{pest.name}</p>
                     <RiskBadge level={pest.risk} />
                   </div>
-                  <p className="mt-0.5 text-[11px] italic text-[var(--av-text-muted)] line-clamp-1">
+                  <p className="mt-0.5 line-clamp-1 text-[11px] italic text-[var(--av-text-muted)]">
                     {"scientific" in pest ? String(pest.scientific) : ""}
                   </p>
                   {"etl" in pest && pest.etl ? (
