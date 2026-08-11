@@ -18,9 +18,102 @@ type FirebaseLookupUser = {
   providerUserInfo?: { providerId?: string; email?: string }[];
 };
 
+type IdpSignInResult = {
+  localId?: string;
+  email?: string;
+  displayName?: string;
+  idToken?: string;
+  error?: { message?: string };
+};
+
+function requestUriForIdp(): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (appUrl?.startsWith("https://")) return appUrl.replace(/\/$/, "");
+  const authDomain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN?.trim();
+  if (authDomain) return `https://${authDomain.replace(/^https?:\/\//, "")}`;
+  return "https://agriveda-theta.vercel.app";
+}
+
+/** Exchange Google OIDC idToken → Firebase user (server-side; avoids WebView Firebase JS). */
+async function signInWithGoogleIdToken(
+  apiKey: string,
+  googleIdToken: string
+): Promise<{ ok: true; user: FirebaseLookupUser } | { ok: false; error: string; status: number }> {
+  const res = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        postBody: `id_token=${encodeURIComponent(googleIdToken)}&providerId=google.com`,
+        requestUri: requestUriForIdp(),
+        returnIdpCredential: true,
+        returnSecureToken: true,
+      }),
+    }
+  );
+
+  const data = (await res.json().catch(() => ({}))) as IdpSignInResult;
+  if (!res.ok || !data.localId) {
+    const msg = String(data.error?.message || "");
+    if (/OPERATION_NOT_ALLOWED/i.test(msg)) {
+      return {
+        ok: false,
+        status: 503,
+        error:
+          "Firebase में Google Sign-in Enable करें — Authentication → Sign-in method → Google",
+      };
+    }
+    if (/INVALID_IDP_RESPONSE|INVALID_ID_TOKEN|id_token/i.test(msg)) {
+      return { ok: false, status: 401, error: "Google login token अमान्य — फिर कोशिश करें" };
+    }
+    console.error("[firebase-session] signInWithIdp failed", res.status, msg);
+    return {
+      ok: false,
+      status: 401,
+      error: "Google login verify नहीं हुआ — Firebase / API key चेक करें",
+    };
+  }
+
+  return {
+    ok: true,
+    user: {
+      localId: data.localId,
+      email: data.email,
+      displayName: data.displayName,
+    },
+  };
+}
+
+async function lookupFirebaseUser(
+  apiKey: string,
+  firebaseIdToken: string
+): Promise<{ ok: true; user: FirebaseLookupUser } | { ok: false; error: string; status: number }> {
+  const lookup = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken: firebaseIdToken }),
+    }
+  );
+
+  if (!lookup.ok) {
+    return { ok: false, status: 401, error: "Invalid Firebase token" };
+  }
+
+  const data = (await lookup.json()) as { users?: FirebaseLookupUser[] };
+  const user = data.users?.[0];
+  if (!user?.localId) {
+    return { ok: false, status: 401, error: "Invalid Firebase token" };
+  }
+  return { ok: true, user };
+}
+
 /**
- * After Firebase Google (or any) Auth succeeds on the client, exchange idToken
- * for an Agriveda httpOnly session.
+ * Create Agriveda httpOnly session from:
+ * - `googleIdToken` — Android native Google Sign-In (preferred on Capacitor)
+ * - `idToken` — Firebase ID token from web popup / JS SDK
  */
 export async function POST(request: NextRequest) {
   try {
@@ -34,11 +127,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const idToken = String(body.idToken ?? "").trim();
+    const firebaseIdToken = String(body.idToken ?? "").trim();
+    const googleIdToken = String(body.googleIdToken ?? "").trim();
     const deviceId = String(body.deviceId ?? "").trim();
 
-    if (!idToken || !isValidDeviceId(deviceId)) {
-      return NextResponse.json({ error: "idToken and valid deviceId required" }, { status: 400 });
+    if ((!firebaseIdToken && !googleIdToken) || !isValidDeviceId(deviceId)) {
+      return NextResponse.json(
+        { error: "idToken/googleIdToken and valid deviceId required" },
+        { status: 400 }
+      );
     }
 
     const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
@@ -46,22 +143,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Firebase not configured" }, { status: 503 });
     }
 
-    const lookup = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      }
-    );
+    const verified = googleIdToken
+      ? await signInWithGoogleIdToken(apiKey, googleIdToken)
+      : await lookupFirebaseUser(apiKey, firebaseIdToken);
 
-    if (!lookup.ok) {
-      return NextResponse.json({ error: "Invalid Firebase token" }, { status: 401 });
+    if (!verified.ok) {
+      return NextResponse.json({ error: verified.error }, { status: verified.status });
     }
 
-    const data = (await lookup.json()) as { users?: FirebaseLookupUser[] };
-    const user = data.users?.[0];
-    if (!user?.localId) {
+    const user = verified.user;
+    if (!user.localId) {
       return NextResponse.json({ error: "Invalid Firebase token" }, { status: 401 });
     }
 
@@ -142,6 +233,7 @@ export async function POST(request: NextRequest) {
       email,
       name: displayName || null,
       phone: phone || null,
+      firebaseUid: user.localId,
     });
     applySessionCookie(res, token);
     return res;

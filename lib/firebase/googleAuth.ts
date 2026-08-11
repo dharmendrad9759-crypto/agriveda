@@ -82,8 +82,41 @@ function googleProvider() {
 }
 
 /**
+ * Native Android: only collect Google idToken — session is created on Agriveda server
+ * (avoids Firebase JS auth/network-request-failed inside Capacitor WebView).
+ */
+export async function getNativeGoogleIdToken(): Promise<{
+  googleIdToken: string;
+  displayName: string | null;
+  email: string | null;
+}> {
+  try {
+    const result = await FirebaseAuthentication.signInWithGoogle({
+      skipNativeAuth: true,
+      useCredentialManager: false,
+    });
+    const googleIdToken = result.credential?.idToken;
+    if (!googleIdToken) {
+      throw new Error(
+        "Google idToken नहीं मिला — android/app/google-services.json और Firebase SHA-1 चेक करें।"
+      );
+    }
+    return {
+      googleIdToken,
+      displayName: result.user?.displayName ?? null,
+      email: result.user?.email ?? null,
+    };
+  } catch (err) {
+    throw new Error(firebaseAuthError(err));
+  }
+}
+
+/**
  * Native: OS account picker (phone की Gmail) — Chrome नहीं खुलता।
  * Web: popup.
+ *
+ * Prefer getNativeGoogleIdToken() + /api/auth/session/firebase on Capacitor.
+ * This path still uses Firebase JS (web / legacy).
  *
  * NOTE: Android Credential Manager often fails with "No credentials available"
  * even when a Google account exists (SHA/JSON ok). Legacy Google Sign-In Intent

@@ -16,8 +16,10 @@ import { isFirebaseConfigured } from "@/lib/firebase/client";
 import {
   completeGoogleRedirectIfAny,
   firebaseAuthError,
+  getNativeGoogleIdToken,
   signInWithGoogle,
 } from "@/lib/firebase/googleAuth";
+import { Capacitor } from "@capacitor/core";
 import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
 import { getDeviceId } from "@/lib/deviceId";
 import { signalForceUpdate, withNativeAppHeaders } from "@/lib/nativeAppInfo";
@@ -66,6 +68,43 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     });
     markIntroDone();
     showToast("Home खुल गया — AgriVeda demo");
+  };
+
+  const establishSessionFromGoogleIdToken = async (
+    googleIdToken: string,
+    hint?: { displayName?: string | null; email?: string | null }
+  ) => {
+    const deviceId = getDeviceId();
+    const headers = await withNativeAppHeaders({
+      "Content-Type": "application/json",
+    });
+    const sessionRes = await fetch("/api/auth/session/firebase", {
+      method: "POST",
+      credentials: "include",
+      headers,
+      body: JSON.stringify({ googleIdToken, deviceId }),
+    });
+    const sessionBody = await sessionRes.json().catch(() => ({}));
+    if (sessionRes.status === 426 || sessionBody.code === "FORCE_UPDATE") {
+      signalForceUpdate(sessionBody.minVersionCode);
+      throw new Error(sessionBody.error || "नया ऐप संस्करण ज़रूरी है");
+    }
+    if (sessionRes.status === 409 || sessionBody.code === "DEVICE_CONFLICT") {
+      throw new Error(
+        sessionBody.error ||
+          "यह Google ID दूसरी डिवाइस पर लॉगिन है। पहले उस फोन से Logout करें।"
+      );
+    }
+    if (!sessionRes.ok) {
+      throw new Error(sessionBody.error || "Session create failed");
+    }
+
+    setFirebaseUid(sessionBody.firebaseUid || null);
+    setEmail(sessionBody.email || hint?.email || "");
+    const suggested = String(sessionBody.name || hint?.displayName || "").trim();
+    if (suggested) setName(suggested);
+    setStep("name");
+    showToast("Google लॉगिन सफल ✓");
   };
 
   const establishSession = async (user: {
@@ -160,8 +199,14 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
           "Firebase config missing — Vercel/.env में NEXT_PUBLIC_FIREBASE_* keys लगाएँ"
         );
       }
-      const user = await signInWithGoogle();
-      await establishSession(user);
+      // Capacitor: never call Firebase JS Auth in WebView (network-request-failed).
+      if (Capacitor.isNativePlatform()) {
+        const native = await getNativeGoogleIdToken();
+        await establishSessionFromGoogleIdToken(native.googleIdToken, native);
+      } else {
+        const user = await signInWithGoogle();
+        await establishSession(user);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : firebaseAuthError(err));
     } finally {
