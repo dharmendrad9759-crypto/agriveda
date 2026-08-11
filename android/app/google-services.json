@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "315649732293-ehmbo1lg4stojhda423tqg56re31vhpa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agriveda.app",
+            "certificate_hash": "3c8b40edec20725757a282c75e11ab9383b73c83"
+          }
+        },
+        {
           "client_id": "315649732293-3iiejr661g5rpkh9eif2tup3onpufl4e.apps.googleusercontent.com",
           "client_type": 3
         }

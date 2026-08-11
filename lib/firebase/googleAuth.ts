@@ -66,6 +66,9 @@ export function firebaseAuthError(err: unknown): string {
   if (/google-services|DEVELOPER_ERROR|10:|ApiException: 10/i.test(message)) {
     return "Android Google Sign-In setup अधूरा है — google-services.json और SHA-1 Firebase में जोड़ें।";
   }
+  if (/no credentials? available|NoCredentialException|cannot find a matching credential/i.test(message)) {
+    return "Google खाता नहीं मिला। फोन में Gmail login करें, फिर ऐप फिर से खोलकर Google से लॉगिन करें। अगर फिर भी न चले तो Firebase में SHA-1 जोड़ें।";
+  }
   if (message) return message;
   return "Google login में समस्या। Firebase Console settings चेक करें।";
 }
@@ -81,6 +84,10 @@ function googleProvider() {
 /**
  * Native: OS account picker (phone की Gmail) — Chrome नहीं खुलता।
  * Web: popup.
+ *
+ * NOTE: Android Credential Manager often fails with "No credentials available"
+ * even when a Google account exists (SHA/JSON ok). Legacy Google Sign-In Intent
+ * shows the picker reliably — so useCredentialManager: false on native.
  */
 export async function signInWithGoogle(): Promise<User> {
   const auth = getFirebaseAuth();
@@ -89,6 +96,7 @@ export async function signInWithGoogle(): Promise<User> {
     try {
       const result = await FirebaseAuthentication.signInWithGoogle({
         skipNativeAuth: true,
+        useCredentialManager: false,
       });
       const idToken = result.credential?.idToken;
       if (!idToken) {
