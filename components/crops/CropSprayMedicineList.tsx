@@ -6,26 +6,29 @@ import type { CropSprayProduct } from "@/types/crop-management";
 export default function CropSprayMedicineList({
   products,
   hi,
+  heading,
 }: {
   products: CropSprayProduct[];
   hi: boolean;
+  /** Omit to keep a single numbered list under the parent section title. */
+  heading?: string;
 }) {
   if (!products.length) return null;
 
   return (
     <div className="mt-2 space-y-2.5" onClick={(e) => e.stopPropagation()}>
-      <p className="text-[11px] font-bold text-[var(--av-text-primary)]">
-        {hi ? "बाजार की मुख्य दवाएँ" : "Key market technicals"}
-      </p>
+      {heading ? (
+        <p className="text-[11px] font-bold text-[var(--av-text-primary)]">{heading}</p>
+      ) : null}
       {products.map((p, i) => {
         const technical = [p.technical, p.formulation].filter(Boolean).join(" ");
         return (
-        <article
-          key={`${p.technical}-${p.doseAcre}-${i}`}
-          className="flex overflow-hidden rounded-xl border border-violet-500/20 bg-violet-500/5 text-left"
-        >
-          <ChemBottleThumb technical={technical} size="sm" />
-          <div className="min-w-0 flex-1 px-2.5 py-2">
+          <article
+            key={`${p.technical}-${p.doseAcre}-${i}`}
+            className="flex overflow-hidden rounded-xl border border-violet-500/20 bg-violet-500/5 text-left"
+          >
+            <ChemBottleThumb technical={technical} size="sm" />
+            <div className="min-w-0 flex-1 px-2.5 py-2">
               <p className="text-[10px] font-bold uppercase tracking-wide text-violet-700 dark:text-violet-300">
                 {hi ? `विकल्प ${i + 1}` : `Option ${i + 1}`}
               </p>
@@ -75,8 +78,8 @@ export default function CropSprayMedicineList({
                   {hi ? "लेबल / स्थानीय अनुमोदन जाँचें" : "Verify label / local approval"}
                 </p>
               ) : null}
-          </div>
-        </article>
+            </div>
+          </article>
         );
       })}
       <p className="text-[9px] text-[var(--av-text-muted)]">

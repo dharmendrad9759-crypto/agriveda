@@ -73,19 +73,21 @@ export default function CropManagementPestManagement({ profile }: Props) {
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-red-400/70">
-                    दवा (ml/g प्रति लीटर पानी)
+                    दवा और मात्रा
                   </p>
-                  <ul className="mt-1 space-y-1">
-                    {formatFarmerChemicalList(pest.chemicalControl, true).map((c) => (
-                      <li key={c} className="text-xs text-red-200/80">• {c}</li>
-                    ))}
-                  </ul>
                   {pest.sprayProducts?.length ? (
                     <CropSprayMedicineList products={pest.sprayProducts} hi />
-                  ) : null}
+                  ) : (
+                    <ul className="mt-1 space-y-1">
+                      {formatFarmerChemicalList(pest.chemicalControl, true).map((c) => (
+                        <li key={c} className="text-xs text-red-200/80">• {c}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
 
+              {!pest.sprayProducts?.length ? (
               <div className="flex overflow-hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5">
                 <ChemBottleThumb
                   technical={technicalFromSprayLine(pest.activeIngredient)}
@@ -103,6 +105,7 @@ export default function CropManagementPestManagement({ profile }: Props) {
                 </p>
                 </div>
               </div>
+              ) : null}
             </div>
           </article>
         ))}
@@ -178,18 +181,25 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
 
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-red-400/70">
-                  दवा (ml/g प्रति लीटर पानी)
+                  दवा और मात्रा
                 </p>
-                <ul className="mt-1 space-y-1">
-                  {formatFarmerChemicalList(disease.chemicalControl, true).map((c) => (
-                    <li key={c} className="text-xs text-red-200/80">• {c}</li>
-                  ))}
-                </ul>
                 {disease.sprayProducts?.length ? (
                   <CropSprayMedicineList products={disease.sprayProducts} hi />
+                ) : (
+                  <ul className="mt-1 space-y-1">
+                    {formatFarmerChemicalList(disease.chemicalControl, true).map((c) => (
+                      <li key={c} className="text-xs text-red-200/80">• {c}</li>
+                    ))}
+                  </ul>
+                )}
+                {disease.waitingPeriod ? (
+                  <p className="mt-2 text-[10px] text-slate-400">
+                    कटाई-पूर्व अंतराल (PHI): {disease.waitingPeriod}
+                  </p>
                 ) : null}
               </div>
 
+              {!disease.sprayProducts?.length ? (
               <div className="flex overflow-hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5">
                 <ChemBottleThumb
                   technical={technicalFromSprayLine(disease.activeIngredient)}
@@ -207,6 +217,7 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
                 </p>
                 </div>
               </div>
+              ) : null}
             </div>
           </article>
         ))}

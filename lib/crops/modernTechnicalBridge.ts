@@ -1,22 +1,40 @@
 import type { CropManagementProfile, CropSprayProduct, CropWeedProgram, HerbicideStep } from "@/types/crop-management";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
+import type { StageSprayRecommendation } from "@/types/crop-protection";
 import { MODERN_TECHNICALS, type ModernKind, type ModernTechnical } from "@/data/modern-technicals";
 import { normalizeCropSlug } from "@/lib/crops/cropImages";
+import { pickFarmerStages } from "@/lib/pest/farmerSpray";
+import { stripMoaCodes } from "@/lib/crops/farmerSprayDose";
+import {
+  classifyChemText,
+  distinctiveNameOverlap,
+  scientificNamesMatch,
+  specificKeyHits,
+} from "@/lib/crops/pestGuild";
 
 const LABEL_POINT = "लेबल पर लिखी फसल, खुराक और PHI मानें — यह आधुनिक टेक्निकल विकल्प है";
-
-function normalizeHay(s: string): string {
-  return s.toLowerCase().replace(/[\u2013\u2014]/g, "-");
-}
 
 function cropHas(entry: ModernTechnical, cropSlug: string): boolean {
   const slug = normalizeCropSlug(cropSlug);
   return entry.crops.includes(slug);
 }
 
-function keysHit(entry: ModernTechnical, haystack: string): boolean {
-  const hay = normalizeHay(haystack);
-  return entry.keys.some((k) => hay.includes(k.toLowerCase()));
+function identityHay(name: string, scientific?: string): string {
+  return `${name} ${scientific ?? ""}`.trim();
+}
+
+function entryMatchesIdentity(entry: ModernTechnical, identity: string): boolean {
+  const threatGuilds = classifyChemText(identity);
+  const chemGuilds = classifyChemText(entry.keys.join(" "));
+
+  if (threatGuilds.size > 0 && chemGuilds.size > 0) {
+    for (const g of threatGuilds) {
+      if (chemGuilds.has(g)) return true;
+    }
+    return false;
+  }
+
+  return entry.keys.some((k) => specificKeyHits(identity, k));
 }
 
 export function toSprayProduct(entry: ModernTechnical): CropSprayProduct {
@@ -38,7 +56,7 @@ export function matchModernTechnicals(opts: {
 }): CropSprayProduct[] {
   const { cropSlug, kind, haystack } = opts;
   return MODERN_TECHNICALS.filter(
-    (e) => e.kind === kind && cropHas(e, cropSlug) && keysHit(e, haystack)
+    (e) => e.kind === kind && cropHas(e, cropSlug) && entryMatchesIdentity(e, haystack)
   ).map(toSprayProduct);
 }
 
@@ -98,7 +116,7 @@ export function attachModernTechnicals(
     const extra = matchModernTechnicals({
       cropSlug: slug,
       kind: "pest",
-      haystack: `${pest.pestName} ${pest.scientificName} ${pest.symptoms.join(" ")} ${pest.identification}`,
+      haystack: identityHay(pest.pestName, pest.scientificName),
     });
     return { ...pest, sprayProducts: mergeSprayProducts(pest.sprayProducts, extra) };
   });
@@ -107,7 +125,7 @@ export function attachModernTechnicals(
     const extra = matchModernTechnicals({
       cropSlug: slug,
       kind: "disease",
-      haystack: `${disease.diseaseName} ${disease.pathogen} ${disease.symptoms.join(" ")} ${disease.type}`,
+      haystack: identityHay(disease.diseaseName, disease.pathogen),
     });
     return { ...disease, sprayProducts: mergeSprayProducts(disease.sprayProducts, extra) };
   });
@@ -130,13 +148,18 @@ export function attachModernTechnicals(
   };
 }
 
-function overlapName(a: string, b: string): boolean {
-  const na = a.toLowerCase().trim();
-  const nb = b.toLowerCase().trim();
-  if (!na || !nb) return false;
-  if (na.includes(nb) || nb.includes(na)) return true;
-  const tokens = na.split(/[^a-z\u0900-\u097f]+/).filter((t) => t.length >= 4);
-  return tokens.some((t) => nb.includes(t));
+function findNamedRow<T extends { sprayProducts?: CropSprayProduct[] }>(
+  rows: T[],
+  name: string,
+  scientific: string | undefined,
+  nameOf: (row: T) => string,
+  sciOf: (row: T) => string
+): T | undefined {
+  const sciHit = scientific
+    ? rows.find((row) => scientificNamesMatch(sciOf(row), scientific))
+    : undefined;
+  if (sciHit) return sciHit;
+  return rows.find((row) => distinctiveNameOverlap(nameOf(row), name));
 }
 
 export function spraysForThreatFromProfile(
@@ -159,13 +182,21 @@ export function spraysForThreatFromProfile(
   }
 
   if (type === "pest") {
-    const hit = profile.pestManagement.find(
-      (p) => overlapName(p.pestName, name) || overlapName(p.scientificName, scientific ?? "")
+    const hit = findNamedRow(
+      profile.pestManagement,
+      name,
+      scientific,
+      (p) => p.pestName,
+      (p) => p.scientificName
     );
     if (hit?.sprayProducts?.length) return hit.sprayProducts;
   } else {
-    const hit = profile.diseaseManagement.find(
-      (d) => overlapName(d.diseaseName, name) || overlapName(d.pathogen, scientific ?? "")
+    const hit = findNamedRow(
+      profile.diseaseManagement,
+      name,
+      scientific,
+      (d) => d.diseaseName,
+      (d) => d.pathogen
     );
     if (hit?.sprayProducts?.length) return hit.sprayProducts;
   }
@@ -173,6 +204,58 @@ export function spraysForThreatFromProfile(
   return matchModernTechnicals({
     cropSlug: profile.slug,
     kind: type,
-    haystack: `${name} ${scientific ?? ""}`,
+    haystack: identityHay(name, scientific),
   });
+}
+
+export function productsFromStageSprays(
+  stages: StageSprayRecommendation[] | undefined,
+  hi: boolean
+): CropSprayProduct[] {
+  const farmer = pickFarmerStages(stages ?? []);
+  const out: CropSprayProduct[] = [];
+  for (const s of farmer) {
+    const parts = stripMoaCodes(s.chemistry)
+      .split(/\s*(?:या|\bor\b|,|\/)\s*/i)
+      .map((t) => t.trim())
+      .filter((t) => t.length > 3);
+    const isAdvanced = s.stage === "advanced";
+    const dose = stripMoaCodes(s.dose);
+    const useWhen = hi
+      ? isAdvanced
+        ? "अगर तेज़ फैल रहा हो"
+        : "शुरुआत में (हल्की लग)"
+      : isAdvanced
+        ? "If spreading fast"
+        : "Start here (early)";
+    for (const chem of parts.length ? parts : [stripMoaCodes(s.chemistry)]) {
+      out.push({
+        technical: chem,
+        doseAcre: dose,
+        bestStage: s.label,
+        bestUseCondition: useWhen,
+        sourceConfidence: "high",
+      });
+    }
+  }
+  return out;
+}
+
+export function buildThreatSprayList(opts: {
+  profile: CropManagementProfile | CropManagementWithDossier | null | undefined;
+  type: "pest" | "disease" | "weed";
+  name: string;
+  scientific?: string;
+  stageSprays?: StageSprayRecommendation[];
+  hi: boolean;
+}): CropSprayProduct[] {
+  const fromProfile = spraysForThreatFromProfile(
+    opts.profile,
+    opts.type,
+    opts.name,
+    opts.scientific
+  );
+  if (opts.type === "weed") return fromProfile;
+  const fromStages = productsFromStageSprays(opts.stageSprays, opts.hi);
+  return mergeSprayProducts(fromProfile, fromStages);
 }

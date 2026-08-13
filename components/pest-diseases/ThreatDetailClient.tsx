@@ -18,8 +18,8 @@ import {
   ZoomIn,
 } from "lucide-react";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
-import StageWiseSprayCard from "@/components/pest-diseases/StageWiseSprayCard";
 import EtlGuideCard from "@/components/shell/EtlGuideCard";
+import { parseRemediationBuckets, shortRotationTip } from "@/lib/pest/farmerSpray";
 import { AV } from "@/lib/design/tokens";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import {
@@ -28,14 +28,13 @@ import {
   stripMoaCodes,
 } from "@/lib/crops/farmerSprayDose";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
-import { parseRemediationBuckets } from "@/lib/pest/farmerSpray";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getWeedStageImages, getWeedCardImage } from "@/lib/weeds/weedStageImages";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
 import { technicalFromSprayLine } from "@/lib/crops/chemBottle";
 import { getCropManagementProfile } from "@/data/crop-management";
-import { spraysForThreatFromProfile } from "@/lib/crops/modernTechnicalBridge";
+import { buildThreatSprayList } from "@/lib/crops/modernTechnicalBridge";
 
 type PestTab = "spray" | "control";
 
@@ -196,22 +195,29 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
     [isWeed, threat, hi]
   );
 
-  const modernSprays = useMemo(
+  const sprayProducts = useMemo(
     () =>
-      spraysForThreatFromProfile(
-        getCropManagementProfile(threat.cropSlug),
-        threat.type,
-        threat.name,
-        threat.scientificName
-      ),
-    [threat.cropSlug, threat.type, threat.name, threat.scientificName]
+      buildThreatSprayList({
+        profile: getCropManagementProfile(threat.cropSlug),
+        type: threat.type,
+        name: threat.name,
+        scientific: threat.scientificName,
+        stageSprays: threat.stageSprays,
+        hi,
+      }),
+    [threat.cropSlug, threat.type, threat.name, threat.scientificName, threat.stageSprays, hi]
+  );
+
+  const rotationTip = useMemo(
+    () => shortRotationTip(stripMoaCodes(threat.rotationNotes || "") || undefined, hi),
+    [threat.rotationNotes, hi]
   );
 
   const hasSpray =
     Boolean(threat.stageSprays?.length) ||
     Boolean(threat.activeIngredient) ||
     parseRemediationBuckets(threat.remediation).chemical.length > 0 ||
-    modernSprays.length > 0;
+    sprayProducts.length > 0;
 
   const [pestTab, setPestTab] = useState<PestTab>("spray");
   const [lightbox, setLightbox] = useState<string | null>(null);
@@ -447,7 +453,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                     </div>
                     <div className="min-w-0 flex-1 py-3 pr-3">
                       <p className="text-[10px] font-bold uppercase tracking-wide text-violet-700 dark:text-violet-300">
-                        {hi ? "टेक्निकल" : "Technical"}
+                        {hi ? `विकल्प ${i + 1}` : `Option ${i + 1}`}
                       </p>
                       <p className="mt-0.5 text-[14px] font-extrabold leading-snug text-[var(--av-text-primary)]">
                         {card.technical}
@@ -538,13 +544,8 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                   <FlaskConical className="h-4 w-4" />
                   {hi ? "दवा और मात्रा" : "Medicine & dose"}
                 </h2>
-                {threat.stageSprays?.length ? (
-                  <div className="mt-3">
-                    <StageWiseSprayCard
-                      stages={threat.stageSprays}
-                      rotationNotes={threat.rotationNotes}
-                    />
-                  </div>
+                {sprayProducts.length > 0 ? (
+                  <CropSprayMedicineList products={sprayProducts} hi={hi} />
                 ) : (
                   <div className="mt-3 space-y-2">
                     {farmerAiDose && (
@@ -555,7 +556,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                         />
                         <div className="min-w-0 flex-1 px-3 py-2.5">
                           <p className="text-[10px] font-bold uppercase text-violet-600">
-                            {hi ? "टेक्निकल + खुराक (प्रति लीटर)" : "Technical + dose (per L)"}
+                            {hi ? "विकल्प 1" : "Option 1"}
                           </p>
                           <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
                             {farmerAiDose}
@@ -569,13 +570,22 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                         className="flex overflow-hidden rounded-lg bg-[var(--av-surface-inset)]"
                       >
                         <ChemBottleThumb technical={technicalFromSprayLine(c)} size="sm" />
-                        <p className="min-w-0 flex-1 px-3 py-2 text-xs">{c}</p>
+                        <p className="min-w-0 flex-1 px-3 py-2 text-xs">
+                          <span className="mr-1 text-[10px] font-bold uppercase text-violet-700">
+                            {hi
+                              ? `विकल्प ${farmerAiDose ? i + 2 : i + 1}`
+                              : `Option ${farmerAiDose ? i + 2 : i + 1}`}
+                          </span>
+                          {c}
+                        </p>
                       </div>
                     ))}
                   </div>
                 )}
-                {modernSprays.length > 0 ? (
-                  <CropSprayMedicineList products={modernSprays} hi={hi} />
+                {rotationTip ? (
+                  <p className="mt-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[11px] font-medium text-amber-900 dark:text-amber-100">
+                    {rotationTip}
+                  </p>
                 ) : null}
                 {(threat.etl || threat.type === "pest") && (
                   <div className="mt-3">
