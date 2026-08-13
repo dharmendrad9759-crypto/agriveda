@@ -91,6 +91,32 @@ function cleanTechnical(technical: string): string {
     .trim();
 }
 
+export function wrapNameForBottle(name: string): string[] {
+  const raw = name.replace(/\s+/g, " ").trim();
+  if (!raw) return [];
+  if (raw.includes("+")) {
+    return raw
+      .split("+")
+      .map((part, i) => {
+        const t = part.trim().toUpperCase();
+        return i === 0 ? t : `+ ${t}`;
+      })
+      .slice(0, 3);
+  }
+  const words = raw.split(" ").filter(Boolean);
+  if (words.length >= 2) {
+    return wrapBottleWords(raw.toUpperCase(), 10, 3);
+  }
+  const u = raw.toUpperCase();
+  if (u.length <= 12) return [u];
+  if (u.length <= 20) {
+    const mid = Math.ceil(u.length / 2);
+    return [u.slice(0, mid), u.slice(mid)];
+  }
+  const a = Math.ceil(u.length / 3);
+  return [u.slice(0, a), u.slice(a, a * 2), u.slice(a * 2)];
+}
+
 export function bottleLabelParts(technical: string): {
   name: string;
   formulation: string;
@@ -99,14 +125,10 @@ export function bottleLabelParts(technical: string): {
   const cleaned = cleanTechnical(technical);
   const hit = lookupChemBottle(cleaned);
   if (hit) {
-    const upper = hit.name.toUpperCase();
-    const nameLines = /[+ ]/.test(hit.name.trim())
-      ? wrapBottleWords(upper, 12, 2)
-      : [upper];
     return {
       name: hit.name,
       formulation: hit.formulation.trim(),
-      nameLines,
+      nameLines: wrapNameForBottle(hit.name),
     };
   }
 
@@ -120,7 +142,7 @@ export function bottleLabelParts(technical: string): {
   return {
     name: name || cleaned,
     formulation,
-    nameLines: wrapBottleWords((name || cleaned).toUpperCase(), 11, 2),
+    nameLines: wrapNameForBottle(name || cleaned),
   };
 }
 
