@@ -442,8 +442,8 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                     key={`${card.technical}-${i}`}
                     className="flex gap-3 overflow-hidden rounded-2xl border border-violet-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]"
                   >
-                    <div className="relative w-[72px] shrink-0 overflow-hidden bg-violet-500/10">
-                      <ChemBottleThumb technical={card.technical} />
+                    <div className="relative shrink-0 overflow-hidden bg-emerald-50">
+                      <ChemBottleThumb technical={card.technical} size="sm" />
                     </div>
                     <div className="min-w-0 flex-1 py-3 pr-3">
                       <p className="text-[10px] font-bold uppercase tracking-wide text-violet-700 dark:text-violet-300">

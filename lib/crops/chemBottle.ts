@@ -83,21 +83,31 @@ export function wrapBottleWords(text: string, maxChars = 13, maxLines = 3): stri
   return lines.filter(Boolean);
 }
 
-export function bottleLabelLines(technical: string): string[] {
-  const cleaned = technical
+function cleanTechnical(technical: string): string {
+  return technical
     .replace(/\([^)]*(?:IRAC|FRAC|HRAC|Group)[^)]*\)/gi, " ")
     .replace(/\b(?:IRAC|FRAC|HRAC)\s*\S*/gi, " ")
     .replace(/\s{2,}/g, " ")
     .trim();
+}
 
+export function bottleLabelParts(technical: string): {
+  name: string;
+  formulation: string;
+  nameLines: string[];
+} {
+  const cleaned = cleanTechnical(technical);
   const hit = lookupChemBottle(cleaned);
   if (hit) {
-    const nameLines = wrapBottleWords(hit.name, 13, 2);
-    const form = hit.formulation.trim();
-    if (form && !nameLines.some((l) => l.toLowerCase().includes(form.toLowerCase()))) {
-      return [...nameLines, form].slice(0, 3);
-    }
-    return nameLines.slice(0, 3);
+    const upper = hit.name.toUpperCase();
+    const nameLines = /[+ ]/.test(hit.name.trim())
+      ? wrapBottleWords(upper, 12, 2)
+      : [upper];
+    return {
+      name: hit.name,
+      formulation: hit.formulation.trim(),
+      nameLines,
+    };
   }
 
   const formMatch = cleaned.match(FORM_RE);
@@ -107,8 +117,16 @@ export function bottleLabelLines(technical: string): string[] {
     .replace(/\s{2,}/g, " ")
     .trim();
 
-  const nameLines = wrapBottleWords(name || cleaned, 13, 2);
-  if (formulation && !nameLines.join(" ").toLowerCase().includes(formulation.toLowerCase())) {
+  return {
+    name: name || cleaned,
+    formulation,
+    nameLines: wrapBottleWords((name || cleaned).toUpperCase(), 11, 2),
+  };
+}
+
+export function bottleLabelLines(technical: string): string[] {
+  const { nameLines, formulation } = bottleLabelParts(technical);
+  if (formulation && !nameLines.some((l) => l.toLowerCase().includes(formulation.toLowerCase()))) {
     return [...nameLines, formulation].slice(0, 3);
   }
   return nameLines.slice(0, 3);
