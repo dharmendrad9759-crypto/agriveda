@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9fd4f0"/>
+      <stop offset="42%" stop-color="#d7ec9a"/>
+      <stop offset="100%" stop-color="#7fbf4a"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e8eef3"/>
+      <stop offset="38%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#d5dde4"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#dfe6ec"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="400" fill="url(#sky)"/>
+  <ellipse cx="120" cy="368" rx="96" ry="14" fill="#6b4a22" opacity="0.45"/>
+  <rect x="86" y="28" width="68" height="28" rx="7" fill="url(#cap)" stroke="#c5d0d8" stroke-width="1"/>
+  <rect x="90" y="32" width="60" height="2.2" rx="1" fill="#ffffff" opacity="0.7"/>
+  <rect x="90" y="37" width="60" height="2.2" rx="1" fill="#b7c4cc"/>
+  <rect x="90" y="42" width="60" height="2.2" rx="1" fill="#b7c4cc"/>
+  <rect x="90" y="47" width="60" height="2.2" rx="1" fill="#b7c4cc"/>
+  <rect x="98" y="54" width="44" height="16" rx="4" fill="#f4f7fa" stroke="#d3dbe2" stroke-width="0.8"/>
+  <path d="M58 78 C58 68 74 64 92 64 H148 C166 64 182 68 182 78 V330 C182 348 160 360 120 360 C80 360 58 348 58 330 Z" fill="url(#body)" stroke="#c8d2da" stroke-width="1.2"/>
+  <rect x="72" y="118" width="96" height="168" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="72" y="118" width="96" height="12" rx="6" fill="#2f9e44"/>
+  <circle cx="120" cy="138" r="6" fill="#3bb54a"/>
+  <circle cx="120" cy="138" r="3" fill="#ffffff"/>
+  <text x="120" y="160" text-anchor="middle" fill="#1d4f9c" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="800">TEBUCONAZOLE</text><text x="120" y="176" text-anchor="middle" fill="#1d4f9c" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="800">+ TRIFLOXYSTROBIN</text>
+  <rect x="74" y="214" width="92" height="20" rx="10" fill="#2f9e44"/>
+       <text x="120" y="228" text-anchor="middle" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="800">50% + 25% WG</text>
+  <text x="120" y="252" text-anchor="middle" fill="#111827" font-family="Arial, Helvetica, sans-serif" font-size="8" font-weight="800" letter-spacing="1.2">FUNGICIDE</text>
+  <rect x="84" y="262" width="72" height="12" rx="6" fill="#1d4f9c"/>
+  <text x="120" y="271" text-anchor="middle" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="6.5" font-weight="700">TECHNICAL NAME</text>
+  <circle cx="120" cy="292" r="12" fill="none" stroke="#3bb54a" stroke-width="2"/>
+  <path d="M114 294 l4 4 8-9" fill="none" stroke="#2f9e44" stroke-width="1.6" stroke-linecap="round"/>
+</svg>
