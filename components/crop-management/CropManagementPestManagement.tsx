@@ -4,6 +4,9 @@ import {
   formatFarmerChemicalList,
   formatFarmerDoseSummary,
 } from "@/lib/crops/farmerSprayDose";
+import { technicalFromSprayLine } from "@/lib/crops/chemBottle";
+import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
+import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
 import { ShieldAlert, Bug } from "lucide-react";
 
 interface Props {
@@ -77,10 +80,18 @@ export default function CropManagementPestManagement({ profile }: Props) {
                       <li key={c} className="text-xs text-red-200/80">• {c}</li>
                     ))}
                   </ul>
+                  {pest.sprayProducts?.length ? (
+                    <CropSprayMedicineList products={pest.sprayProducts} hi />
+                  ) : null}
                 </div>
               </div>
 
-              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
+              <div className="flex overflow-hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5">
+                <ChemBottleThumb
+                  technical={technicalFromSprayLine(pest.activeIngredient)}
+                  size="sm"
+                />
+                <div className="min-w-0 flex-1 p-3">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                   Recommended Chemistry
                 </p>
@@ -90,6 +101,7 @@ export default function CropManagementPestManagement({ profile }: Props) {
                 <p className="mt-0.5 text-[10px] text-emerald-400/60">
                   हर छिड़काव पर अलग क्रिया-विधि की दवा लें — एक ही दवा बार-बार न लगाएँ
                 </p>
+                </div>
               </div>
             </div>
           </article>
@@ -173,9 +185,17 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
                     <li key={c} className="text-xs text-red-200/80">• {c}</li>
                   ))}
                 </ul>
+                {disease.sprayProducts?.length ? (
+                  <CropSprayMedicineList products={disease.sprayProducts} hi />
+                ) : null}
               </div>
 
-              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
+              <div className="flex overflow-hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5">
+                <ChemBottleThumb
+                  technical={technicalFromSprayLine(disease.activeIngredient)}
+                  size="sm"
+                />
+                <div className="min-w-0 flex-1 p-3">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                   Fungicide Protocol
                 </p>
@@ -185,6 +205,7 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
                 <p className="mt-0.5 text-[10px] text-slate-400">
                   कटाई-पूर्व अंतराल (PHI): {disease.waitingPeriod}
                 </p>
+                </div>
               </div>
             </div>
           </article>

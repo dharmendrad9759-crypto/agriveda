@@ -1,7 +1,7 @@
 "use client";
 
+import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import type { CropSprayProduct } from "@/types/crop-management";
-import { FlaskConical } from "lucide-react";
 
 export default function CropSprayMedicineList({
   products,
@@ -17,14 +17,15 @@ export default function CropSprayMedicineList({
       <p className="text-[11px] font-bold text-[var(--av-text-primary)]">
         {hi ? "बाजार की मुख्य दवाएँ" : "Key market technicals"}
       </p>
-      {products.map((p, i) => (
+      {products.map((p, i) => {
+        const technical = [p.technical, p.formulation].filter(Boolean).join(" ");
+        return (
         <article
           key={`${p.technical}-${p.doseAcre}-${i}`}
-          className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-3 py-2.5 text-left"
+          className="flex overflow-hidden rounded-xl border border-violet-500/20 bg-violet-500/5 text-left"
         >
-          <div className="flex items-start gap-2">
-            <FlaskConical className="mt-0.5 h-3.5 w-3.5 shrink-0 text-violet-600" />
-            <div className="min-w-0 flex-1">
+          <ChemBottleThumb technical={technical} size="sm" />
+          <div className="min-w-0 flex-1 px-2.5 py-2">
               <p className="text-[10px] font-bold uppercase tracking-wide text-violet-700 dark:text-violet-300">
                 {hi ? `विकल्प ${i + 1}` : `Option ${i + 1}`}
               </p>
@@ -74,10 +75,10 @@ export default function CropSprayMedicineList({
                   {hi ? "लेबल / स्थानीय अनुमोदन जाँचें" : "Verify label / local approval"}
                 </p>
               ) : null}
-            </div>
           </div>
         </article>
-      ))}
+        );
+      })}
       <p className="text-[9px] text-[var(--av-text-muted)]">
         {hi
           ? "खुराक गाइड है — बोतल लेबल + PHI अनिवार्य। एक ही क्रिया-विधि बार-बार न दोहराएँ।"

@@ -12,7 +12,7 @@ Single Next.js 16 (App Router) app — the web app *is* the product; the `androi
 
 - Run: `npm run dev` (Turbopack dev server on http://localhost:3000). This is the only service to start — there is no separate backend (API routes live in `app/api/**`), no local DB, and no Docker/compose.
 - The app runs with **zero secrets** thanks to graceful degradation. `.env.local` is optional: `SESSION_SECRET` has a dev fallback, and missing external keys make only that feature's route return 503 (or fall back to mock data for mandi). Copy `.env.example` → `.env.local` only when exercising real Supabase/Gemini/OpenWeather/SMS integrations.
-- Login is phone-OTP. **In dev the OTP is returned on-screen (and in the `/api/auth/otp/send` JSON as `demoOtp`)** — no SMS provider needed to log in and test end-to-end.
+- Login is **Google** (Firebase / native Capacitor Google Sign-In). Phone OTP routes are disabled. On Android WebView, prefer the native Google idToken → `/api/auth/session/firebase` path.
 - Onboarding/profile state is stored client-side (localStorage). To re-run the onboarding flow, clear the site's storage (DevTools → Application → Clear site data) and reload.
 - `npm run lint` currently reports pre-existing errors/warnings (React Compiler + eslint-config-next 16 rules) unrelated to environment setup; a clean lint is not expected here.
 - Android/Capacitor npm scripts (`android:*`, `dev:stop`) are Windows PowerShell and won't run on Linux; use `npx cap sync android` directly if needed.

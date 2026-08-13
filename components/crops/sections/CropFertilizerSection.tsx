@@ -448,8 +448,8 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
           {!displaySchedule.length && (
             <p className="mt-2 text-xs text-[var(--av-text-muted)]">
               {hi
-                ? "समयसारिणी जल्द… मिट्टी जाँच के हिसाब से खुराक लें।"
-                : "Schedule data loading… soil-test based dose recommended."}
+                ? "इस फसल की विस्तृत समयसारिणी अभी ऐप में नहीं है। मिट्टी जाँच + राज्य कृषि विभाग / KVK की खुराक लें। ऊपर calculator से सामान्य NPK अनुमान लगा सकते हैं।"
+                : "No detailed schedule for this crop yet. Use soil test + state PoP/KVK. Calculator above gives a general NPK estimate."}
             </p>
           )}
 

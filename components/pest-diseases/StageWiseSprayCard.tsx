@@ -3,13 +3,13 @@
 import type { StageSprayRecommendation } from "@/types/crop-protection";
 import {
   pickFarmerStages,
-  primaryChemistry,
   shortRotationTip,
   WATER_PER_ACRE_EN,
   WATER_PER_ACRE_HI,
 } from "@/lib/pest/farmerSpray";
 import { formatFarmerChemicalLine, stripMoaCodes } from "@/lib/crops/farmerSprayDose";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 
 const STAGE_STYLE: Record<string, string> = {
   early: "border-emerald-400/40 bg-emerald-500/10",
@@ -45,7 +45,7 @@ export default function StageWiseSprayCard({
           : isAdvanced
             ? "If spreading fast"
             : "Start here (early)";
-        const chem = stripMoaCodes(primaryChemistry(s.chemistry));
+        const chem = stripMoaCodes(s.chemistry);
         const doseLine = formatFarmerChemicalLine(
           `${chem} ${s.dose}`.replace(/\s+/g, " ").trim(),
           hi
@@ -57,8 +57,10 @@ export default function StageWiseSprayCard({
         return (
           <div
             key={`${s.stage}-${i}`}
-            className={`rounded-2xl border-2 p-3.5 ${STAGE_STYLE[s.stage] ?? STAGE_STYLE.early}`}
+            className={`flex overflow-hidden rounded-2xl border-2 ${STAGE_STYLE[s.stage] ?? STAGE_STYLE.early}`}
           >
+            <ChemBottleThumb technical={chem} size="sm" />
+            <div className="min-w-0 flex-1 p-3">
             <p className="text-xs font-black text-[var(--av-text-primary)]">{title}</p>
 
             <div className="mt-2.5 space-y-1.5 text-sm">
@@ -80,6 +82,7 @@ export default function StageWiseSprayCard({
                 </span>
                 <span className="font-semibold text-[var(--av-text-primary)]">{water}</span>
               </p>
+            </div>
             </div>
           </div>
         );

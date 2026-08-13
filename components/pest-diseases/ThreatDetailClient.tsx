@@ -31,6 +31,11 @@ import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
 import { parseRemediationBuckets } from "@/lib/pest/farmerSpray";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getWeedStageImages, getWeedCardImage } from "@/lib/weeds/weedStageImages";
+import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
+import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
+import { technicalFromSprayLine } from "@/lib/crops/chemBottle";
+import { getCropManagementProfile } from "@/data/crop-management";
+import { spraysForThreatFromProfile } from "@/lib/crops/modernTechnicalBridge";
 
 type PestTab = "spray" | "control";
 
@@ -106,7 +111,7 @@ function chemicalLinesForWeed(threat: EnrichedThreat): string[] {
     ),
   ];
 
-  const program = getWeedProgramForCrop(threat.cropSlug);
+  const program = getCropManagementProfile(threat.cropSlug)?.weedProgram ?? getWeedProgramForCrop(threat.cropSlug);
   const fromProgram =
     program?.chemical.map((c) => {
       const parts = [
@@ -191,10 +196,22 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
     [isWeed, threat, hi]
   );
 
+  const modernSprays = useMemo(
+    () =>
+      spraysForThreatFromProfile(
+        getCropManagementProfile(threat.cropSlug),
+        threat.type,
+        threat.name,
+        threat.scientificName
+      ),
+    [threat.cropSlug, threat.type, threat.name, threat.scientificName]
+  );
+
   const hasSpray =
     Boolean(threat.stageSprays?.length) ||
     Boolean(threat.activeIngredient) ||
-    parseRemediationBuckets(threat.remediation).chemical.length > 0;
+    parseRemediationBuckets(threat.remediation).chemical.length > 0 ||
+    modernSprays.length > 0;
 
   const [pestTab, setPestTab] = useState<PestTab>("spray");
   const [lightbox, setLightbox] = useState<string | null>(null);
@@ -425,13 +442,8 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                     key={`${card.technical}-${i}`}
                     className="flex gap-3 overflow-hidden rounded-2xl border border-violet-500/25 bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]"
                   >
-                    <div className="relative w-[72px] shrink-0 bg-violet-500/10">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src="/images/chem/herbicide-bottle.jpg"
-                        alt=""
-                        className="h-full min-h-[110px] w-full object-cover object-center"
-                      />
+                    <div className="relative w-[72px] shrink-0 overflow-hidden bg-violet-500/10">
+                      <ChemBottleThumb technical={card.technical} />
                     </div>
                     <div className="min-w-0 flex-1 py-3 pr-3">
                       <p className="text-[10px] font-bold uppercase tracking-wide text-violet-700 dark:text-violet-300">
@@ -536,22 +548,35 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                 ) : (
                   <div className="mt-3 space-y-2">
                     {farmerAiDose && (
-                      <div className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-3 py-2.5">
-                        <p className="text-[10px] font-bold uppercase text-violet-600">
-                          {hi ? "टेक्निकल + खुराक (प्रति लीटर)" : "Technical + dose (per L)"}
-                        </p>
-                        <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
-                          {farmerAiDose}
-                        </p>
+                      <div className="flex overflow-hidden rounded-xl border border-violet-500/20 bg-violet-500/5">
+                        <ChemBottleThumb
+                          technical={technicalFromSprayLine(farmerAiDose)}
+                          size="sm"
+                        />
+                        <div className="min-w-0 flex-1 px-3 py-2.5">
+                          <p className="text-[10px] font-bold uppercase text-violet-600">
+                            {hi ? "टेक्निकल + खुराक (प्रति लीटर)" : "Technical + dose (per L)"}
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
+                            {farmerAiDose}
+                          </p>
+                        </div>
                       </div>
                     )}
                     {farmerChemLines.map((c, i) => (
-                      <p key={i} className="rounded-lg bg-[var(--av-surface-inset)] px-3 py-2 text-xs">
-                        {c}
-                      </p>
+                      <div
+                        key={i}
+                        className="flex overflow-hidden rounded-lg bg-[var(--av-surface-inset)]"
+                      >
+                        <ChemBottleThumb technical={technicalFromSprayLine(c)} size="sm" />
+                        <p className="min-w-0 flex-1 px-3 py-2 text-xs">{c}</p>
+                      </div>
                     ))}
                   </div>
                 )}
+                {modernSprays.length > 0 ? (
+                  <CropSprayMedicineList products={modernSprays} hi={hi} />
+                ) : null}
                 {(threat.etl || threat.type === "pest") && (
                   <div className="mt-3">
                     <EtlGuideCard etl={threat.etl} pestName={threat.name} compact />

@@ -19,6 +19,7 @@ import { cauliflowerDossier } from "@/data/dossiers/cauliflower";
 import { sugarcaneDossier } from "@/data/dossiers/sugarcane";
 import { onionDossier } from "@/data/dossiers/onion";
 import { cottonDossier } from "@/data/dossiers/cotton";
+import { moongDossier } from "@/data/dossiers/moong";
 
 export {
   chilliDossier,
@@ -36,6 +37,7 @@ export {
   sugarcaneDossier,
   onionDossier,
   cottonDossier,
+  moongDossier,
 };
 
 /** Canonical slug → dossier overlay (aliases handled by normalizeCropSlug at the bridge). */
@@ -55,6 +57,7 @@ export const DOSSIERS_BY_SLUG: Record<string, ResearchDossierOverlay> = {
   sugarcane: sugarcaneDossier,
   onion: onionDossier,
   cotton: cottonDossier,
+  moong: moongDossier,
 };
 
 /** All canonical dossier slugs available in the app. */

@@ -3,6 +3,7 @@
 import type { MoASuggestion } from "@/types/spray-rotation";
 import { Sparkles } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 
 interface SuggestedSprayCardProps {
   suggestions: MoASuggestion[];
@@ -36,22 +37,25 @@ export default function SuggestedSprayCard({
         {suggestions.map((s, i) => (
           <div
             key={s.product.id}
-            className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3"
+            className="flex overflow-hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5"
           >
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-xs font-bold theme-text-primary">{s.product.productName}</p>
-              <span className="rounded-md bg-emerald-600 px-1.5 py-0.5 text-[9px] font-bold text-white">
-                #{i + 1}
-              </span>
+            <ChemBottleThumb technical={s.product.activeIngredient} size="sm" />
+            <div className="min-w-0 flex-1 p-3">
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-xs font-bold theme-text-primary">{s.product.productName}</p>
+                <span className="rounded-md bg-emerald-600 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                  #{i + 1}
+                </span>
+              </div>
+              <p className="mt-0.5 text-[10px] italic theme-text-muted">
+                {s.product.activeIngredient}
+              </p>
+              <p className="mt-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                {s.product.moaType} {s.product.moaGroup}
+                {s.product.doseHint && ` • ${s.product.doseHint}`}
+              </p>
+              <p className="mt-1.5 text-[10px] theme-text-muted">{s.reason}</p>
             </div>
-            <p className="mt-0.5 text-[10px] italic theme-text-muted">
-              {s.product.activeIngredient}
-            </p>
-            <p className="mt-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
-              {s.product.moaType} {s.product.moaGroup}
-              {s.product.doseHint && ` • ${s.product.doseHint}`}
-            </p>
-            <p className="mt-1.5 text-[10px] theme-text-muted">{s.reason}</p>
           </div>
         ))}
       </div>

@@ -36,4 +36,5 @@ export type CropManagementWithDossier = CropManagementProfile & {
   dossierTankMixIncompatible?: string[];
   dossierResistanceRotation?: string[];
   dossierPgrNotes?: string[];
+  pgrProducts?: import("@/types/crop-management").CropSprayProduct[];
 };

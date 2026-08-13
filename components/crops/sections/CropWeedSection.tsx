@@ -170,7 +170,7 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
       <div className="crop-premium-empty">
         <p className="text-sm text-[var(--av-text-secondary)]">
           {hi
-            ? `${crop.name} के लिए विस्तृत खरपतवार सूची जल्द। पहले 30–45 दिन खेत साफ रखें।`
+            ? `${crop.name} की विस्तृत खरपतवार सूची सीमित है। पहले 30–45 दिन खेत साफ रखें; खरपतवार हब में उपलब्ध फसलें देखें या कृषि विभाग से पूछें।`
             : `Detailed weed list not ready for ${crop.name} yet. Keep field clean first 30–45 days.`}
         </p>
         <AppLink href="/ai-doctor" className="mt-3 inline-flex text-xs font-bold text-[var(--av-accent)]">

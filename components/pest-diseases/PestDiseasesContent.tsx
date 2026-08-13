@@ -51,10 +51,14 @@ export default function PestDiseasesContent() {
   }, [typeParam]);
 
   useEffect(() => {
-    if (searchParams.get("crop")) {
-      setSelectedSlug(searchParams.get("crop")!);
+    const crop = searchParams.get("crop");
+    if (!crop) return;
+    if (pestDiseaseCropList.some((c) => c.slug === crop)) {
+      setSelectedSlug(crop);
+    } else if (!isWeedHub) {
+      setSelectedSlug(pestDiseaseCropList[0]?.slug ?? "paddy");
     }
-  }, [searchParams]);
+  }, [searchParams, isWeedHub]);
 
   const allThreats = useMemo(() => {
     if (isWeedHub && selectedSlug === "all") {
@@ -263,9 +267,17 @@ export default function PestDiseasesContent() {
           <p className="text-sm font-semibold text-[var(--av-text-primary)]">कोई परिणाम नहीं</p>
           <p className={`mt-1 ${AV.micro}`}>
             {allThreats.length === 0
-              ? `${cropInfo?.name ?? "इस फसल"} के लिए जानकारी उपलब्ध नहीं — दूसरी फसल आज़माओ।`
+              ? `${cropInfo?.name ?? "इस फसल"} की कीट/रोग/खरपतवार सूची ऐप में नहीं है — AI Doctor से फोटो भेजें या दूसरी फसल चुनें।`
               : "खोज या फ़िल्टर बदलो।"}
           </p>
+          {allThreats.length === 0 && (
+            <AppLink
+              href="/ai-doctor"
+              className="mt-3 inline-flex rounded-full bg-[var(--av-accent)] px-4 py-2 text-[11px] font-bold text-white"
+            >
+              AI Doctor खोलो
+            </AppLink>
+          )}
         </DarkCard>
       )}
 

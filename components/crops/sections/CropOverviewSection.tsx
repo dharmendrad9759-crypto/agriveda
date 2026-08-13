@@ -24,6 +24,7 @@ import {
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import GrowthStageImage, { growthKindFromStage } from "@/components/crops/GrowthStageImage";
 import CropGrowthHonestySection from "@/components/crops/sections/CropGrowthHonestySection";
+import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
 import { getGrowthStageImage } from "@/lib/crops/growthStageImages";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
@@ -355,6 +356,13 @@ export default function CropOverviewSection({ crop, detail, onTabChange }: CropO
           })}
         </div>
       </DarkCard>
+
+      {dossier?.pgrProducts?.length ? (
+        <DarkCard delay={5}>
+          <SectionHeader title={hi ? "आधुनिक PGR / बायो-स्टीमुलेंट" : "Modern PGR / biostimulant"} />
+          <CropSprayMedicineList products={dossier.pgrProducts} hi={hi} />
+        </DarkCard>
+      ) : null}
 
       <div className="flex flex-wrap gap-2">
         <AppLink href={`/pest-diseases?crop=${crop.slug}`} className={`${AV.btnSecondarySm}`}>

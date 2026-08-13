@@ -22,7 +22,7 @@ const SECTIONS = [
   {
     title: "जानकारी जो लग सकती है",
     body: [
-      "फोन नंबर — OTP login के लिए (hashed OTP; demo OTP production में नहीं)।",
+      "Google खाता — लॉगिन के लिए (Firebase / Google Sign-In)। फोन OTP अभी ऐप में बंद है।",
       "नाम / गाँव / राज्य — ज़्यादातर आपके फोन की localStorage पर; सर्वर पर limited farmer record जब login हो।",
       "Device id — anonymous, queries जोड़ने के लिए।",
       "लोकेशन — सिर्फ आप अनुमति दें तो मौसम/मंडी/outbreak के लिए।",
@@ -42,9 +42,9 @@ const SECTIONS = [
     title: "तृतीय-पक्ष (जब enabled हो)",
     body: [
       "Google Gemini — AI सुझाव (photo/symptoms)।",
-      "Supabase — farmers, expert queries, OTP durability।",
+      "Supabase — farmers, expert queries, notifications (जब configured)।",
       "OpenWeather / Open-Meteo, data.gov.in — मौसम / मंडी।",
-      "Twilio / Msg91 — OTP या विशेषज्ञ WhatsApp/SMS जवाब।",
+      "विशेषज्ञ जवाब — WhatsApp/SMS सिर्फ जब आप query भेजें और टीम जवाब दे (अलग SMS OTP लॉगिन नहीं)।",
     ],
   },
   {

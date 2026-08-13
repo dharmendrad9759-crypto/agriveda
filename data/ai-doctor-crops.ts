@@ -15,6 +15,9 @@ export const AI_DOCTOR_CROPS = [
   { slug: "wheat", name: "Wheat", nameHi: "गेहूँ", emoji: "🌾" },
   { slug: "bhindi", name: "Bhindi", nameHi: "भिंडी", emoji: "🫛" },
   { slug: "moong", name: "Moong", nameHi: "मूंग", emoji: "🫘" },
+  { slug: "onion", name: "Onion", nameHi: "प्याज", emoji: "🧅" },
+  { slug: "cotton", name: "Cotton", nameHi: "कपास", emoji: "🌸" },
+  { slug: "mustard", name: "Mustard", nameHi: "सरसों", emoji: "🌼" },
 ] as const;
 
 /** Special picker option — shown first; AI identifies crop from photo/symptoms. */

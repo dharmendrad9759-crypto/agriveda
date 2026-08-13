@@ -411,7 +411,13 @@ export function getCropPestDisease(slug: string): CropPestDiseaseData {
   );
 }
 
-export const pestDiseaseCropList = [
+/** True when the crop has at least one pest, disease, or weed row after merges. */
+export function cropHasPestDiseaseContent(slug: string): boolean {
+  const d = getCropPestDisease(slug);
+  return d.pests.length + d.diseases.length + d.weeds.length > 0;
+}
+
+const rawPestDiseaseCropList = [
   ...cropCatalog.map((c) => ({
     slug: c.slug,
     name: c.name,
@@ -424,3 +430,8 @@ export const pestDiseaseCropList = [
       return { slug, name: entry.name, emoji: entry.emoji };
     }),
 ];
+
+/** Crop chips for pest/disease hub — only crops with real PDW content. */
+export const pestDiseaseCropList = rawPestDiseaseCropList.filter((c) =>
+  cropHasPestDiseaseContent(c.slug)
+);

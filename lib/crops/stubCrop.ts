@@ -1,4 +1,5 @@
 import { cropCatalog, type CatalogCrop, type CropCategory } from "@/data/crop-catalog";
+import { getCropPestDisease } from "@/data/pest-disease";
 import type { Crop } from "@/types/crop";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 
@@ -53,6 +54,7 @@ function mapCategory(cat: CropCategory): Crop["category"] {
 /**
  * Minimal Crop for catalog entries not yet detailed in `data/crops.ts`.
  * Honest thin-content note in Hindi; no invented pesticide doses.
+ * When IPM/PDW exists, surface pest/disease names so crop pages aren't blank.
  */
 export function buildStubCrop(catalogEntry: CatalogCrop): Crop {
   const hi = catalogEntry.nameHi ?? catalogEntry.name;
@@ -60,13 +62,21 @@ export function buildStubCrop(catalogEntry: CatalogCrop): Crop {
   const scientific =
     SCIENTIFIC[catalogEntry.slug] ?? `${catalogEntry.name} (species TBA)`;
 
+  // When IPM/PDW exists, surface names so crop pages aren't blank.
+  const pd = getCropPestDisease(catalogEntry.slug);
+  const majorPests = pd.pests.map((p) => p.name).slice(0, 8);
+  const majorDiseases = pd.diseases.map((d) => d.name).slice(0, 8);
+  const hasPdw = majorPests.length + majorDiseases.length + pd.weeds.length > 0;
+
   return {
     slug: catalogEntry.slug,
     name: catalogEntry.name,
     scientificName: scientific,
     category: mapCategory(catalogEntry.category),
     image: resolveCropImage({ slug: catalogEntry.slug, name: catalogEntry.name }),
-    overview: `${hi} की संक्षिप्त stub जानकारी है। विस्तृत किस्म, खाद और सिंचाई गाइड जल्द आएगी। कीट-रोग पहचान / सलाह के लिए AI Doctor इस्तेमाल करें। यहाँ कोई कीटनाशक खुराक नहीं दी गई — कृषि अधिकारी या लेबल निर्देश से लें।`,
+    overview: hasPdw
+      ? `${hi} की संक्षिप्त गाइड है। कीट-रोग सूची उपलब्ध है — नीचे या कीट-रोग हब में देखें। विस्तृत किस्म/खाद तालिका अधूरी हो सकती है। कीटनाशक खुराक लेबल / कृषि अधिकारी से लें।`
+      : `${hi} की संक्षिप्त गाइड है। इस फसल की विस्तृत कीट-रोग सूची अभी ऐप में नहीं है — AI Doctor या कृषि विभाग से सलाह लें। यहाँ कोई कीटनाशक खुराक नहीं दी गई।`,
     durationDays: "—",
     estimatedYield: "क्षेत्र अनुसार अलग",
     seedRate: "स्थानीय कृषि विभाग / पैकेट लेबल देखें",
@@ -86,7 +96,7 @@ export function buildStubCrop(catalogEntry: CatalogCrop): Crop {
       stageWise: [
         {
           stage: "सामान्य",
-          details: ["विस्तृत उर्वरक तालिका stub में नहीं — fertilizer calculator या कृषि विभाग देखें"],
+          details: ["विस्तृत उर्वरक तालिका अधूरी — fertilizer calculator या कृषि विभाग देखें"],
         },
       ],
       micronutrients: ["जरूरत मिट्टी जाँच से तय करें"],
@@ -98,12 +108,16 @@ export function buildStubCrop(catalogEntry: CatalogCrop): Crop {
       schedule: ["ऊपरी मिट्टी सूखने पर सिंचाई; जलभराव से बचें"],
     },
     cropProtection: {
-      majorPests: [],
-      majorDiseases: [],
-      weedManagement: ["समय पर निराई; रासायनिक weedicide stub में नहीं"],
+      majorPests,
+      majorDiseases,
+      weedManagement: pd.weeds.length
+        ? pd.weeds.slice(0, 5).map((w) => w.name)
+        : ["समय पर निराई; रासायनिक weedicide stub में नहीं"],
       symptoms: [],
       prevention: ["साफ बीज / बीजकंद, फसल चक्र, खेत की सफाई"],
-      control: ["खुराक नहीं दी गई — AI Doctor या कृषि सलाहकार से पूछें"],
+      control: hasPdw
+        ? ["कीट-रोग हब / AI Doctor देखें — खुराक लेबल से"]
+        : ["खुराक नहीं दी गई — AI Doctor या कृषि सलाहकार से पूछें"],
     },
     nutrientDeficiencies: [],
     harvestAndYield: {

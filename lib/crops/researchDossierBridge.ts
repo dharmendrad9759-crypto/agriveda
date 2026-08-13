@@ -19,6 +19,8 @@ import { cauliflowerDossier } from "@/data/dossiers/cauliflower";
 import { sugarcaneDossier } from "@/data/dossiers/sugarcane";
 import { onionDossier } from "@/data/dossiers/onion";
 import { cottonDossier } from "@/data/dossiers/cotton";
+import { moongDossier } from "@/data/dossiers/moong";
+import { attachModernTechnicals } from "@/lib/crops/modernTechnicalBridge";
 import { normalizeCropSlug } from "@/lib/crops/cropImages";
 
 const DOSSIERS: Record<string, ResearchDossierOverlay> = {
@@ -38,6 +40,7 @@ const DOSSIERS: Record<string, ResearchDossierOverlay> = {
   sugarcane: sugarcaneDossier,
   onion: onionDossier,
   cotton: cottonDossier,
+  moong: moongDossier,
 };
 
 export function getResearchDossier(slug: string): ResearchDossierOverlay | null {
@@ -53,7 +56,7 @@ export function mergeResearchDossierIntoProfile(
 ): CropManagementWithDossier | null {
   if (!profile) return null;
   const dossier = getResearchDossier(profile.slug);
-  if (!dossier) return profile;
+  if (!dossier) return attachModernTechnicals(profile);
 
   const merged: CropManagementWithDossier = {
     ...profile,
@@ -91,5 +94,5 @@ export function mergeResearchDossierIntoProfile(
     dossierPgrNotes: dossier.pgrNotes,
   };
 
-  return merged;
+  return attachModernTechnicals(merged);
 }

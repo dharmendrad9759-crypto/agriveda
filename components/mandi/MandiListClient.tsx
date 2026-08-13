@@ -70,8 +70,20 @@ export default function MandiListClient() {
       }
     >
       <div className="space-y-3">
-        {data?.error && (
+        {data?.source === "mock" && (
+          <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-900">
+            {isHi
+              ? "डेमो भाव दिख रहे हैं — लाइव मंडी API कुंजी सेट नहीं / उपलब्ध नहीं। असली खरीद-फरोख्त से पहले स्थानीय मंडी जाँचें।"
+              : "Demo prices — live mandi API unavailable. Verify at your local mandi before trading."}
+          </p>
+        )}
+        {data?.error && data.source !== "mock" && (
           <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+            {data.error}
+          </p>
+        )}
+        {data?.error && data.source === "mock" && data.error !== "Failed to load mandi data" && (
+          <p className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600">
             {data.error}
           </p>
         )}

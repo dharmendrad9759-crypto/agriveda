@@ -1,5 +1,6 @@
 import type { SprayProduct } from "@/types/spray-rotation";
 import { resolveMoAGroup } from "@/data/moa-lookup";
+import { MODERN_TECHNICALS } from "@/data/modern-technicals";
 
 /**
  * Indian-market products for Spray Rotation Tracker.
@@ -38,7 +39,7 @@ const MAIZE = ["maize"];
 const GROUNDNUT = ["moongfali", "groundnut"];
 const ALL_FOUR = [...PADDY, ...COTTON, ...MAIZE, ...GROUNDNUT];
 
-export const sprayProducts: SprayProduct[] = [
+const BASE_SPRAY_PRODUCTS: SprayProduct[] = [
   // ─── PADDY INSECTICIDES ───
   p("p01", "Pexalon 106 SC", "Triflumezopyrim", "insecticide", "IRAC", "4E", PADDY, { pests: ["p1", "p2"] }, "0.5 ml/L"),
   p("p02", "Regent 0.3 GR", "Fipronil", "insecticide", "IRAC", "2B", PADDY, { pests: ["p1"] }, "8 kg/ha granules"),
@@ -172,6 +173,26 @@ export const sprayProducts: SprayProduct[] = [
   p("x24", "Carboxin 75 WP", "Carboxin", "fungicide", "FRAC", "7", GROUNDNUT, { diseases: ["d3"] }, "2 g/kg seed"),
   p("x25", "Trichoderma viride 1%", "Trichoderma viride", "fungicide", "FRAC", "BM02", ALL_FOUR, { diseases: ["d2", "d3"] }, "5 g/kg seed"),
 ];
+
+function modernSprayExtras(): SprayProduct[] {
+  return MODERN_TECHNICALS.filter((t) => t.category !== "pgr").map((t, i) => {
+    const cat = t.category as SprayProduct["category"];
+    const moaType: SprayProduct["moaType"] =
+      cat === "fungicide" ? "FRAC" : cat === "herbicide" ? "HRAC" : "IRAC";
+    const group = t.moa.replace(/^(IRAC|FRAC|HRAC)\s*/i, "").split(/[\s(/]/)[0] || "—";
+    return p(
+      `mod${String(i).padStart(2, "0")}`,
+      t.brands[0] ?? t.name,
+      `${t.name} ${t.formulation}`.trim(),
+      cat,
+      moaType,
+      group,
+      t.crops
+    );
+  });
+}
+
+export const sprayProducts: SprayProduct[] = [...BASE_SPRAY_PRODUCTS, ...modernSprayExtras()];
 
 export function getProductById(id: string): SprayProduct | undefined {
   return sprayProducts.find((p) => p.id === id);
