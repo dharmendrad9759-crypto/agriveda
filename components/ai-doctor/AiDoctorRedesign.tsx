@@ -72,7 +72,7 @@ export function AiDoctorHero({
                 पत्ती की फोटो लो
               </h1>
               <p className="mt-0.5 text-xs leading-snug text-[var(--av-text-secondary)] sm:text-sm">
-                फोटो दिखाओ — बीमारी और इलाज दिखेगा
+                फोटो दिखाओ — बीमारी का सुझाव मिलेगा
               </p>
             </div>
           </div>

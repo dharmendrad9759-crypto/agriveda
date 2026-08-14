@@ -71,21 +71,19 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  if (!hasSupabaseServiceRole()) {
-    return NextResponse.json(
-      { error: "Supabase service role not configured" },
-      { status: 503 }
-    );
-  }
-
   const auth = await requireSession(request);
   if ("error" in auth) return auth.error;
 
   void clientIp(request); // keep import used for future IP logging
 
+  // Read can degrade empty — writes still need Supabase (POST → 503).
+  if (!hasSupabaseServiceRole()) {
+    return NextResponse.json({ count: 0, logs: [], configured: false });
+  }
+
   const client = createSupabaseServiceClient();
   if (!client) {
-    return NextResponse.json({ error: "Supabase unavailable" }, { status: 503 });
+    return NextResponse.json({ count: 0, logs: [], configured: false });
   }
 
   const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
@@ -96,5 +94,5 @@ export async function GET(request: NextRequest) {
   }
 
   const logs = await fetchSprayLogsForFarmer(farmerId, client);
-  return NextResponse.json({ count: logs.length, logs, farmerId });
+  return NextResponse.json({ count: logs.length, logs, farmerId, configured: true });
 }

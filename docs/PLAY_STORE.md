@@ -1,14 +1,14 @@
 # Agriveda — Play Store ship pack
 
-Use with production HTTPS URL (Vercel), e.g. `https://YOUR.vercel.app`.
+Use with production HTTPS URL (Vercel), e.g. `https://agriveda-theta.vercel.app`.
 
 ## 1) Legal URLs (Console)
 
 | Field | Value |
 |-------|--------|
-| Privacy policy | `https://YOUR.vercel.app/privacy` |
-| Terms (optional store field) | `https://YOUR.vercel.app/terms` |
-| Account deletion | In-app: **Settings → खाता हटाएँ** (`DELETE /api/account`) |
+| Privacy policy | `https://agriveda-theta.vercel.app/privacy` |
+| Terms (optional store field) | `https://agriveda-theta.vercel.app/terms` |
+| Account deletion | In-app: **Settings → खाता हटाएँ** (`DELETE /api/account`) — works for Google Sign-In (deviceId wipe; phone optional) |
 | Data export | In-app: **Settings → मेरा डेटा डाउनलोड** |
 | Support email | `support@agriveda.in` |
 
@@ -20,13 +20,14 @@ Use with production HTTPS URL (Vercel), e.g. `https://YOUR.vercel.app`.
 
 | Data type | Collected? | Shared? | Purpose | Required / Optional | Notes |
 |-----------|------------|---------|---------|---------------------|--------|
-| Phone number | Yes | No | Account management | Optional (needed to login) | OTP login |
-| Name | Yes | No | App functionality | Optional | Often on-device only |
+| Email address | Yes | No | Account management | Optional (Google Sign-In) | From Google account when user signs in |
+| Name | Yes | No | App functionality | Optional | Google display name / on-device profile |
+| Phone number | No* | No | — | — | *Phone OTP login is disabled. Phone may appear only if user types it in profile / expert query — declare accordingly if you collect it |
 | Approximate location | Yes | No | App functionality | Optional | Weather / mandi / outbreaks — user permission |
 | Precise location | Yes (if GPS used) | No | App functionality | Optional | Same |
 | Photos | Yes | Yes* | App functionality | Optional | *Shared with Google Gemini for AI Doctor when user scans. Expert query photos stored in private Supabase bucket until account delete |
 | App interactions | Yes (opt-in) | No | Analytics | Optional | **Off by default** — Settings → Product analytics |
-| Device or other IDs | Yes | No | App functionality | Optional | Anonymous device id for queries / spray |
+| Device or other IDs | Yes | No | App functionality | Optional | Anonymous device id for session, queries, spray, account delete |
 
 ### Not collected (declare **No**)
 
@@ -36,7 +37,7 @@ Use with production HTTPS URL (Vercel), e.g. `https://YOUR.vercel.app`.
 
 - Data encrypted in transit (HTTPS)
 - Users can request deletion: **Yes** (in-app + email)
-- Committed to Google Play Families? **No** (agriculture tool; target 18+)
+- Committed to Google Play Families? **No** (agriculture tool; target **18+**)
 
 ### Data deletion
 
@@ -46,9 +47,11 @@ Use with production HTTPS URL (Vercel), e.g. `https://YOUR.vercel.app`.
 
 ### Honest notes for reviewers
 
+- Login is **Google Sign-In** (Firebase / native Capacitor on Android). Phone OTP is disabled.
 - Mandi/weather may show **example** data if live API keys missing — UI labels this.
 - No Crashlytics/Sentry today — do **not** claim crash log collection beyond optional product events.
-- AI advice is informational — not licensed agronomist substitute (in-app disclaimer).
+- AI advice is informational — not licensed agronomist / medical substitute (in-app disclaimer).
+- Confirm `/api/health` shows gemini + supabase + firebase **ready** before review.
 
 ## 3) Store listing copy
 
@@ -69,6 +72,7 @@ AI फसल डॉक्टर, मौसम, मंडी और विशे�
 ```
 Agriveda helps Indian farmers protect crops and take clearer field decisions.
 
+• Sign in with Google
 • AI Doctor — leaf photo or symptoms → pest/disease guidance (informational; verify dose on label)
 • Weather & spray window hints for your area
 • Mandi price trends (live when configured; otherwise clearly labelled example data)
@@ -76,8 +80,8 @@ Agriveda helps Indian farmers protect crops and take clearer field decisions.
 • Ask an expert — replies can reach the app and WhatsApp/SMS when configured
 • Your control — download your data, log out, or permanently delete your account
 
-Privacy-first: product analytics stays OFF until you turn it on. We do not sell your data.
-Support: support@agriveda.in
+Internet required for login and AI. Privacy-first: product analytics stays OFF until you turn it on. We do not sell your data.
+For ages 18+. Support: support@agriveda.in
 Privacy: /privacy · Terms: /terms
 ```
 
@@ -86,6 +90,7 @@ Privacy: /privacy · Terms: /terms
 ```
 Agriveda भारतीय किसानों को फसल बचाने और सही फैसला लेने में मदद करता है।
 
+• Google से लॉगिन
 • AI Doctor — पत्ती की फोटो या लक्षण से कीट/रोग सुझाव (सिर्फ जानकारी; दवा हमेशा लेबल से मिलाएँ)
 • मौसम और छिड़काव विंडो
 • मंडी भाव (लाइव जब API हो; वरना उदाहरण डेटा — स्क्रीन पर लिखा)
@@ -93,8 +98,8 @@ Agriveda भारतीय किसानों को फसल बचान�
 • विशेषज्ञ से पूछें — जवाब ऐप / WhatsApp-SMS (जब configured)
 • आपका हक — डेटा डाउनलोड, लॉग आउट, या खाता हमेशा के लिए हटाएँ
 
-निजता पहले: product analytics डिफ़ॉल्ट बंद। डेटा बेचा नहीं जाता।
-सहायता: support@agriveda.in
+लॉगिन और AI के लिए इंटरनेट ज़रूरी। निजता पहले: product analytics डिफ़ॉल्ट बंद। डेटा बेचा नहीं जाता।
+18+ किसानों के लिए। सहायता: support@agriveda.in
 गोपनीयता: /privacy · नियम: /terms
 ```
 
@@ -103,6 +108,7 @@ Agriveda भारतीय किसानों को फसल बचान�
 - Category: **Tools** / Agriculture advisories  
 - User-generated content: limited (expert queries / outbreak reports) — moderate as needed  
 - Not medical device — pest/crop advice with disclaimer  
+- Not designed for children / Families program: **No** (18+)
 
 ## 5) Listing assets checklist
 
@@ -116,20 +122,23 @@ Agriveda भारतीय किसानों को फसल बचान�
 ## 6) Release AAB
 
 ```powershell
-# 1) android/keystore.properties present (from example)
-# 2) Production Vercel live + env: SESSION_SECRET, Supabase, Gemini, SMS…
-npm run android:playstore -- -ProductionUrl "https://YOUR.vercel.app"
+# 1) android/keystore.properties present (from example) — passwords NOT in git
+# 2) Production Vercel live + env: SESSION_SECRET, Supabase service role, Gemini, Firebase…
+npm run android:playstore -- -ProductionUrl "https://agriveda-theta.vercel.app"
 # Upload: android/app/build/outputs/bundle/release/app-release.aab
 ```
 
 Every new Upload → bump `versionCode` in `android/app/build.gradle` (and preferably `versionName` / `lib/appMeta.ts`).
 
+Verify the AAB is **release-signed** (not debug keystore) before Console upload.
+
 ## 7) Pre-submit smoke test (phone)
 
-1. Cold open splash → login OTP  
-2. AI Doctor scan + disclaimer visible  
+1. Cold open splash → **Google Sign-In**  
+2. AI Doctor scan + disclaimer visible (“सुझाव / लेबल”)  
 3. Settings → export JSON  
 4. Settings → logout (crops remain)  
-5. Login again → Settings → delete account (server + wipe)  
+5. Login again with Google → Settings → **खाता हटाएँ** (server + wipe; works without phone)  
 6. `/privacy` and `/terms` open over HTTPS  
 7. Report bug opens mail to support@agriveda.in  
+8. `/api/health` → gemini / supabase / firebase ready  

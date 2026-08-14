@@ -335,7 +335,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
             </p>
             <h2 className="mt-1 text-lg font-black sm:text-xl">किसान पंजीकरण</h2>
             <p className="mt-1 text-xs text-emerald-50/90 sm:text-sm">
-              Google से लॉगिन — OTP नहीं चाहिए
+              Google से लॉगिन — 18+ किसानों के लिए
             </p>
           </div>
         )}
@@ -366,7 +366,15 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                 Google से लॉगिन करें
               </button>
               <p className="text-center text-[11px] text-gray-600">
-                सुरक्षित लॉगिन — Firebase में Google Sign-in Enable होना चाहिए
+                लॉगिन करके आप{" "}
+                <a href="/terms" className="font-bold text-emerald-700 underline">
+                  नियम
+                </a>{" "}
+                और{" "}
+                <a href="/privacy" className="font-bold text-emerald-700 underline">
+                  गोपनीयता
+                </a>{" "}
+                से सहमत हैं · ऐप 18+ के लिए
               </p>
             </>
           )}

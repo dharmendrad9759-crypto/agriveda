@@ -553,7 +553,7 @@ export default function AIDoctorPage() {
                   <div className="rounded-xl border border-[var(--av-border)] p-3.5 sm:p-4">
                     <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
                       <Leaf className="h-4 w-4" />
-                      इलाज / Treatment
+                      सुझाव / Guidance
                     </p>
                     {result.treatments.length > 0 ? (
                       <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">

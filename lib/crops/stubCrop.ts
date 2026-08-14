@@ -132,6 +132,7 @@ export function buildStubCrop(catalogEntry: CatalogCrop): Crop {
       msp: "लागू हो तो सरकारी अधिसूचना देखें",
       priceTrend: "मंडी भाव प्रतिदिन जाँचें",
     },
+    isStub: true,
   };
 }
 

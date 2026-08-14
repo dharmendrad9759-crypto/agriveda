@@ -51,7 +51,8 @@ const SECTIONS = [
     title: "आपके अधिकार (Play + किसान)",
     body: [
       "Settings → मेरा डेटा डाउनलोड — फोन पर जो है वो JSON में।",
-      "Settings → खाता हटाएँ — server (farmer, queries, photos, notifications) + phone wipe।",
+      "Settings → खाता हटाएँ — server (farmer, queries, photos, notifications) + device wipe। Google-only खाते पर भी काम करता है।",
+      "ऐप 18+ किसानों के लिए है — बच्चों के लिए डिज़ाइन नहीं।",
       "लॉग आउट — सिर्फ session; crop data फोन पर रहता है।",
       "Location phone settings से कभी भी बंद।",
       "सहायता: " + SUPPORT_EMAIL,

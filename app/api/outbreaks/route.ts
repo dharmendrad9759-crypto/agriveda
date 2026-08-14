@@ -13,12 +13,9 @@ import { buildOutbreakRadarPayload, toPublicOutbreakReport } from "@/lib/outbrea
 import { detectOutbreakCluster } from "@/lib/outbreakCluster";
 import { requireSession } from "@/lib/session";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { OUTBREAK_SEED_REPORTS } from "@/data/outbreak-seed";
 
 export async function GET(request: NextRequest) {
-  if (!hasSupabaseServiceRole()) {
-    return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
-  }
-
   const lat = parseFloat(request.nextUrl.searchParams.get("lat") ?? "");
   const lon = parseFloat(request.nextUrl.searchParams.get("lon") ?? "");
   const radiusKm = Math.min(
@@ -40,11 +37,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
+  // Graceful degrade: seed demo map when Supabase is not wired (same idea as mandi mock).
+  if (!hasSupabaseServiceRole()) {
+    const payload = buildOutbreakRadarPayload(
+      OUTBREAK_SEED_REPORTS,
+      lat,
+      lon,
+      radiusKm,
+      days
+    );
+    return NextResponse.json({ ...payload, source: "seed" });
+  }
+
   const client = createSupabaseServiceClient();
   const all = await fetchOutbreakReportsSince(days, client);
   const payload = buildOutbreakRadarPayload(all, lat, lon, radiusKm, days);
 
-  return NextResponse.json(payload);
+  return NextResponse.json({ ...payload, source: "live" });
 }
 
 export async function POST(request: NextRequest) {

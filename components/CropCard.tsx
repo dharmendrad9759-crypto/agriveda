@@ -69,7 +69,14 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
             <div className="min-w-0">
               <p className="truncate text-[16px] font-bold text-[var(--av-text-primary)]">{title}</p>
               <p className="truncate text-xs text-[var(--av-text-muted)]">{sub}</p>
-              <div className="mt-1.5">{seasonChip(season, isHi)}</div>
+              <div className="mt-1.5 flex flex-wrap gap-1">
+                {seasonChip(season, isHi)}
+                {crop.isStub ? (
+                  <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-200">
+                    {isHi ? "संक्षिप्त गाइड" : "Brief guide"}
+                  </span>
+                ) : null}
+              </div>
             </div>
             <ChevronRight className="h-5 w-5 shrink-0 text-[var(--av-accent)] transition group-hover:translate-x-0.5" />
           </div>
@@ -107,7 +114,14 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
             priority={index < 4}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10" />
-          <div className="absolute left-2.5 top-2.5">{seasonChip(season, isHi)}</div>
+          <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1">
+            {seasonChip(season, isHi)}
+            {crop.isStub ? (
+              <span className="rounded-md bg-amber-500/95 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                {isHi ? "संक्षिप्त" : "Brief"}
+              </span>
+            ) : null}
+          </div>
           <div className="absolute inset-x-0 bottom-0 p-3 sm:p-3.5">
             <h3 className="font-display text-[18px] font-bold leading-tight text-white drop-shadow sm:text-[20px]">
               {title}

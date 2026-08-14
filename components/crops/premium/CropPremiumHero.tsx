@@ -96,6 +96,11 @@ export default function CropPremiumHero({ crop, detail }: Props) {
             <span className="crop-premium-badge">
               {hi ? CATEGORY_LABEL_HI[crop.category] : CATEGORY_LABEL_EN[crop.category]}
             </span>
+            {crop.isStub ? (
+              <span className="crop-premium-badge crop-premium-badge-muted">
+                {hi ? "संक्षिप्त गाइड" : "Brief guide"}
+              </span>
+            ) : null}
             <span className="crop-premium-badge crop-premium-badge-muted">
               {detail.establishment === "transplant" ? t("cropTransplant") : t("cropDirectSown")}
             </span>

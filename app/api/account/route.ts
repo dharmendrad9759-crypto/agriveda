@@ -22,8 +22,10 @@ export async function DELETE(request: NextRequest) {
   }
 
   const result = await deleteFarmerAccountServer({
-    phone: auth.session.phone,
+    phone: auth.session.phone || undefined,
     deviceId: auth.session.deviceId,
+    email: auth.session.email,
+    firebaseUid: auth.session.firebaseUid,
   });
 
   if (!result.ok) {

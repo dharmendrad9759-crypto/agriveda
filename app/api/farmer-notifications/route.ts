@@ -103,10 +103,10 @@ export async function PATCH(request: NextRequest) {
   }
 
   if (!hasSupabaseServiceRole()) {
-    return NextResponse.json({ ok: false }, { status: 503 });
+    return NextResponse.json({ ok: false, configured: false });
   }
   const client = createSupabaseServiceClient();
-  if (!client) return NextResponse.json({ ok: false }, { status: 503 });
+  if (!client) return NextResponse.json({ ok: false, configured: false });
 
   let body: { id?: string; markAllRead?: boolean };
   try {

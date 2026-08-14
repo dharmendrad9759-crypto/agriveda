@@ -56,4 +56,6 @@ export interface Crop {
     msp: string;
     priceTrend: string;
   };
+  /** Catalog stub — thin guide, not a full package yet */
+  isStub?: boolean;
 }

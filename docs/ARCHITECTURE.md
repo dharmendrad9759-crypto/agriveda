@@ -9,7 +9,7 @@ Farmer-first Android (Capacitor) + Next.js web app. Production shell loads the V
 | UI | Next.js App Router + React 19 + Tailwind 4 | Fast shipping, one codebase for web + WebView |
 | Motion | Framer Motion (reduced on native) + CSS page enter | Premium feel without janking low-end phones |
 | Native | Capacitor 8 (Android) | Play Store shell around the same UI |
-| Auth | OTP / Firebase session cookies | Farmer phone login |
+| Auth | Google Sign-In (Firebase) + session cookies | Phone OTP disabled |
 | Data | Supabase (Postgres) + localStorage caches | Outbreaks, spray logs, farmer records |
 | AI | Google Gemini (server routes) | AI Doctor photo/symptoms + Kisan Saathi |
 | Weather | Open-Meteo (+ fallbacks) | Free, India-friendly |

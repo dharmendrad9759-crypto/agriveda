@@ -152,7 +152,9 @@ export default function SettingsPage() {
       "खाता स्थायी रूप से हटाएँ?\n\n• Server: farmer, queries, photos, notifications\n• Phone: profile, AI history, farm data\n\nयह वापस नहीं आएगा।"
     );
     if (!ok) return;
-    const again = window.confirm("पक्का? खाता मिटाने के बाद नए OTP से दोबारा शुरू होगा।");
+    const again = window.confirm(
+      "पक्का? खाता मिटाने के बाद Google से दोबारा लॉगिन करके नया खाता बनाना पड़ेगा।"
+    );
     if (!again) return;
     setBusy("delete");
     const result = await deleteAccountAndReload();
@@ -340,7 +342,7 @@ export default function SettingsPage() {
         <DarkCard delay={6}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खाता</h3>
           <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-            लॉग आउट = सिर्फ session। खाता हटाएँ = server + phone डेटा मिटाएँ (Play Store अधिकार)।
+            लॉग आउट = सिर्फ session। खाता हटाएँ = server + इस फोन का डेटा मिटाएँ (Play Store अधिकार)।
           </p>
           <button
             type="button"
@@ -371,13 +373,17 @@ export default function SettingsPage() {
         <DarkCard delay={7}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">About {BRAND}</h3>
           <p className="mt-2 text-xs text-[var(--av-text-muted)]">v{APP_VERSION}</p>
-          <p className="mt-1 text-xs text-[var(--av-text-secondary)]">Smart farming companion for Indian farmers.</p>
+          <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
+            Smart farming companion for Indian farmers (18+).
+          </p>
+          <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+            AI/login के लिए इंटरनेट ज़रूरी। दवा हमेशा लेबल + KVK से मिलाएँ।
+          </p>
           <div className="mt-3 space-y-1">
             <SettingsRow label="Terms & Conditions" href="/terms" />
             <SettingsRow label="Privacy Policy" href="/privacy" />
             <SettingsRow label="समस्या बताएँ / Bug Report" href="/report-bug" />
             <SettingsRow label="सहायता / Support" href="/ask-query" />
-            <SettingsRow label="Play Store पर रेट करें" value="जल्द उपलब्ध" />
           </div>
           <ShareAgrivedaButton />
         </DarkCard>

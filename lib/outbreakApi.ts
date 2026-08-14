@@ -138,7 +138,7 @@ export async function submitOutbreakReport(
 
   if (res.status === 401) {
     queueOutbreakReport(input);
-    throw new Error("Login required — पहले OTP verify करें");
+    throw new Error("Login required — पहले Google से लॉगिन करें");
   }
 
   if (!res.ok) {
