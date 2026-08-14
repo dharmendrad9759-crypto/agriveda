@@ -379,6 +379,75 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "w3", name: "गाजर घास (Parthenium)", scientificName: "Parthenium hysterophorus", type: "Broadleaf", criticalPeriod: "Monsoon", preEmergence: "Clean vineyard floor", postEmergence: "बीज बनने से पहले हाथ से हटाएँ", culturalControl: "पंक्तियों के बीच cover crop" },
     ],
   },
+  chana: {
+    slug: "chana", name: "Chana", emoji: "🟡",
+    pests: [
+      { id: "p1", name: "फली छेदक (Pod Borer)", scientificName: "Helicoverpa armigera", image: IMG3, stage: "फली बनना", iracGroup: "IRAC 28", control: "HaNPV / Emamectin — ETL पर" },
+      { id: "p2", name: "कटवर्म (Cutworm)", scientificName: "Agrotis spp.", image: IMG, stage: "अंकुर", iracGroup: "IRAC 3A", control: "मिट्टी bait / लेबल कीटनाशक" },
+    ],
+    diseases: [
+      { id: "d1", name: "मुरझान (Fusarium Wilt)", pathogen: "Fusarium oxysporum f.sp. ciceris", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "प्रतिरोधी किस्म + Trichoderma बीज उपचार" },
+      { id: "d2", name: "एस्कोकाइटा झुलसा", pathogen: "Ascochyta rabiei", image: IMG, stage: "फूल–फली", fracGroup: "FRAC M5", control: "Mancozeb शैली स्प्रे — लेबल" },
+    ],
+    weeds: [
+      { id: "w1", name: "बथुआ (Chenopodium)", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–40 DAS", preEmergence: "Pendimethalin", postEmergence: "निराई", culturalControl: "कतार बुवाई" },
+    ],
+  },
+  masoor: {
+    slug: "masoor", name: "Masoor", emoji: "🟠",
+    pests: [
+      { id: "p1", name: "एफिड (Aphids)", scientificName: "Aphis craccivora", image: IMG3, stage: "फूल", iracGroup: "IRAC 4A", control: "ETL पर सिस्टमिक — लेबल" },
+      { id: "p2", name: "फली छेदक", scientificName: "Helicoverpa armigera", image: IMG, stage: "फली", iracGroup: "IRAC 28", control: "Emamectin / HaNPV — लेबल" },
+    ],
+    diseases: [
+      { id: "d1", name: "रतुआ (Rust)", pathogen: "Uromyces viciae-fabae", image: IMG2, stage: "फूल–फली", fracGroup: "FRAC 3", control: "Propiconazole / sulphur — लेबल" },
+      { id: "d2", name: "मुरझान (Wilt)", pathogen: "Fusarium oxysporum", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "बीज उपचार + जल निकासी" },
+    ],
+    weeds: [
+      { id: "w1", name: "बथुआ", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–35 DAS", preEmergence: "Pendimethalin", postEmergence: "निराई", culturalControl: "साफ बीज" },
+    ],
+  },
+  urad: {
+    slug: "urad", name: "Urad", emoji: "⚫",
+    pests: [
+      { id: "p1", name: "सफेद मक्खी", scientificName: "Bemisia tabaci", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 4A", control: "Thiamethoxam / Diafenthiuron — लेबल" },
+      { id: "p2", name: "फली छेदक", scientificName: "Maruca vitrata", image: IMG, stage: "फली", iracGroup: "IRAC 28", control: "Emamectin / Chlorantraniliprole — लेबल" },
+    ],
+    diseases: [
+      { id: "d1", name: "पीला मोज़ेक (YMV)", pathogen: "Mungbean yellow mosaic virus", image: IMG, stage: "वनस्पति", fracGroup: "— (vector)", control: "प्रतिरोधी किस्म + वेक्टर नियंत्रण" },
+      { id: "d2", name: "पाउडरी मिलड्यू", pathogen: "Erysiphe polygoni", image: IMG2, stage: "फूल", fracGroup: "FRAC 3", control: "Wettable sulphur / Hexaconazole — लेबल" },
+    ],
+    weeds: [
+      { id: "w1", name: "मोठा", scientificName: "Cyperus rotundus", type: "Sedge", criticalPeriod: "15–35 DAS", preEmergence: "Pendimethalin", postEmergence: "निराई", culturalControl: "कतार बुवाई" },
+    ],
+  },
+  ginger: {
+    slug: "ginger", name: "Ginger", emoji: "🫚",
+    pests: [
+      { id: "p1", name: "तना छेदक", scientificName: "Conogethes punctiferalis", image: IMG3, stage: "वानस्पतिक", iracGroup: "IRAC 28", control: "संक्रमित तना हटाएँ + लेबल कीटनाशक" },
+      { id: "p2", name: "सफेद गिडार", scientificName: "Holotrichia spp.", image: IMG, stage: "कंद", iracGroup: "IRAC 1B", control: "मृदा उपचार — लेबल" },
+    ],
+    diseases: [
+      { id: "d1", name: "सॉफ्ट रॉट / राइजोम रॉट", pathogen: "Pythium spp.", image: IMG2, stage: "वर्षा", fracGroup: "FRAC 4", control: "जल निकासी + Metalaxyl शैली — लेबल; संक्रमित उखाड़ें" },
+      { id: "d2", name: "पत्ती धब्बा", pathogen: "Phyllosticta zingiberi", image: IMG, stage: "मानसून", fracGroup: "FRAC M5", control: "Mancozeb / Copper — लेबल" },
+    ],
+    weeds: [
+      { id: "w1", name: "चौड़ी पत्ती खरपतवार", scientificName: "Various", type: "Broadleaf", criticalPeriod: "0–90 DAP", preEmergence: "मल्च", postEmergence: "हाथ निराई", culturalControl: "मोटी मल्च परत" },
+    ],
+  },
+  garlic: {
+    slug: "garlic", name: "Garlic", emoji: "🧄",
+    pests: [
+      { id: "p1", name: "थ्रिप्स", scientificName: "Thrips tabaci", image: IMG3, stage: "वानस्पतिक–बल्ब", iracGroup: "IRAC 5 / 4A", control: "Spinosad / Imidacloprid रोटेशन — लेबल" },
+    ],
+    diseases: [
+      { id: "d1", name: "बैंगनी धब्बा (Purple Blotch)", pathogen: "Alternaria porri", image: IMG2, stage: "बल्ब वृद्धि", fracGroup: "FRAC 3 + 11", control: "Mancozeb / Azoxystrobin मिश्रण — लेबल" },
+      { id: "d2", name: "बेसल रॉट", pathogen: "Fusarium oxysporum", image: IMG, stage: "भंडारण/खेत", fracGroup: "—", control: "स्वस्थ कलियाँ + फसल चक्र" },
+    ],
+    weeds: [
+      { id: "w1", name: "बथुआ / चौड़ी पत्ती", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–40 DAP", preEmergence: "Pendimethalin", postEmergence: "निराई", culturalControl: "मेड़ साफ" },
+    ],
+  },
 };
 
 import { getIpmCatalogEntry, mergeIpmCatalog } from "@/lib/crops/ipmDataBridge";

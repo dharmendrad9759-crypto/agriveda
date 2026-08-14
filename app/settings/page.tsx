@@ -235,6 +235,13 @@ export default function SettingsPage() {
         <DarkCard delay={2}>
           <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("settingsAlerts")}</h3>
           <div className="mt-2">
+            <SettingsRow
+              label={t("settingsFieldMode")}
+              toggle={{ on: settings.fieldMode, onChange: (v) => update({ fieldMode: v }) }}
+            />
+            <p className="pb-2 text-[10px] text-[var(--av-text-muted)]">{t("settingsFieldModeHint")}</p>
+            <p className="pb-2 text-sm font-semibold text-[var(--av-text-primary)]">{t("settingsRegionalLang")}</p>
+            <p className="pb-2 text-[10px] text-[var(--av-text-muted)]">{t("settingsRegionalLangHint")}</p>
             <SettingsRow label={t("settingsWeatherAlerts")} toggle={{ on: settings.weatherAlerts, onChange: (v) => update({ weatherAlerts: v }) }} />
             <SettingsRow label={t("settingsPestAlerts")} toggle={{ on: settings.pestAlerts, onChange: (v) => update({ pestAlerts: v }) }} />
             <SettingsRow label={t("settingsFertilizerReminders")} toggle={{ on: settings.fertilizerReminders, onChange: (v) => update({ fertilizerReminders: v }) }} />

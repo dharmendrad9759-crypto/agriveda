@@ -9,6 +9,7 @@ import { Badge } from "@/components/design-system";
 import { globalSearch, searchTypeLabel } from "@/lib/search/globalSearch";
 import { AV } from "@/lib/design/tokens";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import VoiceInput from "@/components/query/VoiceInput";
 
 const TYPE_BADGE: Record<string, "success" | "info" | "warning" | "neutral"> = {
   crop: "success",
@@ -33,25 +34,28 @@ export default function GlobalSearchClient() {
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("searchTitle") }]}
     >
       <Card>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
-          <input
-            type="search"
-            placeholder="खोजें — Paddy, Zinc, Stem Borer, AI Doctor..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="av-input w-full py-2.5 pl-10 pr-10 text-sm"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--av-text-muted)]"
-              aria-label="Clear"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+        <div className="relative flex gap-2">
+          <div className="relative min-w-0 flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
+            <input
+              type="search"
+              placeholder="खोजें — Paddy, Zinc, Stem Borer, AI Doctor..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="av-input w-full py-2.5 pl-10 pr-10 text-sm"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--av-text-muted)]"
+                aria-label="Clear"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <VoiceInput variant="searchIcon" onTranscript={(text) => setSearchQuery(text)} />
         </div>
       </Card>
 

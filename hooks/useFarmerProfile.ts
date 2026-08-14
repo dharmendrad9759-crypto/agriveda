@@ -9,6 +9,7 @@ export interface FarmerProfile {
   village: string;
   district: string;
   state: string;
+  pincode?: string;
   phone: string;
   email?: string;
   phoneVerified: boolean;

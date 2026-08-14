@@ -30,9 +30,11 @@ interface VoiceInputProps {
   onTranscript: (text: string) => void;
   className?: string;
   compact?: boolean;
+  /** Inline mic for search bars (48dp touch target) */
+  variant?: "default" | "searchIcon";
 }
 
-export default function VoiceInput({ onTranscript, className = "", compact }: VoiceInputProps) {
+export default function VoiceInput({ onTranscript, className = "", compact, variant = "default" }: VoiceInputProps) {
   const { t } = useLocale();
   const { showToast } = useToast();
   const [listening, setListening] = useState(false);
@@ -81,6 +83,8 @@ export default function VoiceInput({ onTranscript, className = "", compact }: Vo
 
   useEffect(() => () => stop(), [stop]);
 
+  if (!supported && variant === "searchIcon") return null;
+
   if (!supported) {
     return (
       <p className={`text-[10px] text-[var(--av-text-muted)] ${className}`}>
@@ -102,6 +106,32 @@ export default function VoiceInput({ onTranscript, className = "", compact }: Vo
           {t("voiceStop")}
         </button>
       </div>
+    );
+  }
+
+  if (listening && variant === "searchIcon") {
+    return (
+      <button
+        type="button"
+        onClick={stop}
+        className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-red-500/40 bg-red-500/15 text-red-600 ${className}`}
+        aria-label={t("voiceStop")}
+      >
+        <Square className="h-5 w-5" />
+      </button>
+    );
+  }
+
+  if (variant === "searchIcon") {
+    return (
+      <button
+        type="button"
+        onClick={start}
+        className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 active:scale-95 dark:text-emerald-300 ${className}`}
+        aria-label={t("voiceSearch")}
+      >
+        <Mic className="h-5 w-5" />
+      </button>
     );
   }
 

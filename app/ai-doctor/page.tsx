@@ -27,7 +27,7 @@ import {
   saveAiDoctorExpertReferral,
   urlToDataUrl,
 } from "@/lib/aiDoctorExpertReferral";
-import { fileToHistoryThumb, srcToHistoryThumb } from "@/lib/aiHistoryThumb";
+import { analyzePhotoBrightness } from "@/lib/photoQuality";
 import { formatFarmerDose } from "@/lib/units/farmerDose";
 import { track } from "@/lib/analytics";
 import {
@@ -172,11 +172,17 @@ export default function AIDoctorPage() {
     });
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file?.type.startsWith("image/")) {
       showToast("सिर्फ़ image file चुनें", "error");
       return;
+    }
+    const quality = await analyzePhotoBrightness(file);
+    if (!quality.ok) {
+      showToast(quality.messageHi, "error");
+    } else {
+      showToast("फोटो साफ लग रही है ✓", "success");
     }
     setFileName(file.name);
     setSelectedFile(file);

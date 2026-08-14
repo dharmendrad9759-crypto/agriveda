@@ -1,3 +1,6 @@
+import { formerStubCrops } from "@/data/former-stub-crops";
+import { importedCropListings } from "@/data/imported-crop-exports";
+
 export interface Crop {
   slug: string;
   name: string;
@@ -115,7 +118,7 @@ const baseCrop = {
   },
 };
 
-export const rawCropsData: Crop[] = [
+const legacyDetailedCrops: Crop[] = [
   {
     ...baseCrop,
     slug: "tomato",
@@ -1002,7 +1005,8 @@ export const rawCropsData: Crop[] = [
   },
 ];
 
-import { importedCropListings } from "@/data/imported-crop-exports";
+/** Legacy detailed crops + former catalog stubs (now full packages). */
+export const rawCropsData: Crop[] = [...legacyDetailedCrops, ...formerStubCrops];
 
 /** Legacy list merged with ClickUp / batch JSON imports */
 export const cropsData: Crop[] = rawCropsData.map((crop) => {

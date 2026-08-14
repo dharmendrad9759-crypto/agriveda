@@ -5,6 +5,7 @@ import type { MandiApiResponse } from "@/lib/mandi/types";
 import { MANDI_PRICES } from "@/data/mock/mandi";
 import { enrichMockWithChange } from "@/lib/mandi/mapDataGov";
 import { recordMandiSnapshot, enrichRowsWithHistory } from "@/lib/mandi/historyCache";
+import { syncMandiHistoryToServiceWorker } from "@/lib/offline/offlinePack";
 
 interface UseMandiPricesOptions {
   state?: string;
@@ -28,6 +29,7 @@ export function useMandiPrices({ state = "Madhya Pradesh", district }: UseMandiP
           ...json,
           rows: enrichRowsWithHistory(state, district, json.rows),
         });
+        void syncMandiHistoryToServiceWorker();
       } else {
         const mockRows = enrichMockWithChange(MANDI_PRICES);
         recordMandiSnapshot(state, district, mockRows);

@@ -424,30 +424,30 @@ body {
 
 .av-btn {
   display: inline-flex;
-  min-height: 34px;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
   border-radius: calc(var(--av-radius) - 2px);
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8125rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.2;
   transition: all 0.15s ease-out;
 }
 
 .av-btn-sm {
-  min-height: 30px;
-  padding: 0.25rem 0.625rem;
-  font-size: 0.75rem;
-  border-radius: 8px;
+  min-height: 44px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  border-radius: 10px;
 }
 
 .av-btn-xs {
-  min-height: 26px;
-  padding: 0.125rem 0.5rem;
-  font-size: 0.6875rem;
-  border-radius: 6px;
+  min-height: 40px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  border-radius: 8px;
 }
 
 .av-btn-primary {
@@ -1281,4 +1281,46 @@ body {
   .ai-doctor-hero {
     animation: none;
   }
+}
+
+/* ── Field mode (खेत मोड) — sunlight readability ── */
+html[data-field-mode="true"] {
+  --av-text-primary: #0a0a0a;
+  --av-text-secondary: #1a1a1a;
+  --av-text-muted: #333333;
+  --av-border: #94a3b8;
+  font-size: 17px;
+}
+
+html[data-field-mode="true"] .av-btn,
+html[data-field-mode="true"] .av-btn-sm,
+html[data-field-mode="true"] .av-btn-xs {
+  min-height: 52px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+html[data-field-mode="true"] .av-chip {
+  min-height: 44px;
+  font-size: 0.9375rem;
+  padding: 0.5rem 1rem;
+}
+
+html[data-field-mode="true"] .av-input {
+  min-height: 52px;
+  font-size: 1rem;
+}
+
+html[data-field-mode="true"] [class*="text-[10px]"],
+html[data-field-mode="true"] [class*="text-[11px]"],
+html[data-field-mode="true"] [class*="text-xs"] {
+  font-size: 0.875rem !important;
+  line-height: 1.35 !important;
+}
+
+html[data-theme="dark"][data-field-mode="true"] {
+  --av-text-primary: #ffffff;
+  --av-text-secondary: #f1f5f9;
+  --av-text-muted: #e2e8f0;
+  --av-border: #64748b;
 }

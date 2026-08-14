@@ -1,4 +1,33 @@
-<!DOCTYPE html>
+#!/usr/bin/env node
+/**
+ * Prepare capacitor-www for bundled/offline-first shell.
+ * Copies public assets + offline emergency pack into capacitor-www/.
+ *
+ * Usage: CAPACITOR_USE_BUNDLED=true npm run cap:bundle
+ */
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const publicDir = path.join(root, "public");
+const outDir = path.join(root, "capacitor-www");
+
+function copyDir(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const s = path.join(src, entry.name);
+    const d = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDir(s, d);
+    else fs.copyFileSync(s, d);
+  }
+}
+
+fs.rmSync(outDir, { recursive: true, force: true });
+fs.mkdirSync(outDir, { recursive: true });
+copyDir(publicDir, outDir);
+
+const indexHtml = `<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="utf-8" />
@@ -30,4 +59,7 @@
     }).catch(()=>{ document.getElementById('emergency').textContent='ऑफ़लाइन डेटा उपलब्ध नहीं'; });
   </script>
 </body>
-</html>
+</html>`;
+
+fs.writeFileSync(path.join(outDir, "index.html"), indexHtml, "utf8");
+console.log("[cap:bundle-www] capacitor-www ready at", outDir);

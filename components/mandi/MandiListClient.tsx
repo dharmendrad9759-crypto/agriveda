@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Bell, ChevronDown, RefreshCw } from "lucide-react";
+import { Bell, ChevronDown, RefreshCw, Search } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import CategoryChips from "@/components/mandi/CategoryChips";
@@ -13,6 +13,7 @@ import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { uniqueCrops, uniqueMarkets } from "@/lib/mandi/marketAnalytics";
 import { cn } from "@/lib/cn";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import VoiceInput from "@/components/query/VoiceInput";
 
 type Tab = "prices" | "alerts";
 
@@ -28,6 +29,7 @@ export default function MandiListClient() {
   const [chip, setChip] = useState("");
   const [marketFilter, setMarketFilter] = useState("All");
   const [tab, setTab] = useState<Tab>("prices");
+  const [searchQ, setSearchQ] = useState("");
 
   const rows = data?.rows ?? [];
   const locationLabel = district ? `${district}, ${state}` : state;
@@ -40,12 +42,18 @@ export default function MandiListClient() {
 
   const filtered = useMemo(() => {
     const chipQ = chip.trim().toLowerCase();
+    const textQ = searchQ.trim().toLowerCase();
     return rows.filter((r) => {
       const matchesChip = !chipQ || r.crop.toLowerCase() === chipQ;
       const matchesMarket = marketFilter === "All" || r.mandi === marketFilter;
-      return matchesChip && matchesMarket;
+      const matchesSearch =
+        !textQ ||
+        r.crop.toLowerCase().includes(textQ) ||
+        r.mandi.toLowerCase().includes(textQ) ||
+        (r.variety ?? "").toLowerCase().includes(textQ);
+      return matchesChip && matchesMarket && matchesSearch;
     });
-  }, [rows, chip, marketFilter]);
+  }, [rows, chip, marketFilter, searchQ]);
 
   return (
     <AppShell
@@ -111,6 +119,19 @@ export default function MandiListClient() {
 
         {tab === "prices" && (
           <div className="space-y-3">
+            <div className="flex gap-2">
+              <div className="relative min-w-0 flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="search"
+                  value={searchQ}
+                  onChange={(e) => setSearchQ(e.target.value)}
+                  placeholder={isHi ? "फसल / मंडी खोजें…" : "Search crop or mandi…"}
+                  className="av-input w-full py-2.5 pl-10 text-sm"
+                />
+              </div>
+              <VoiceInput variant="searchIcon" onTranscript={(text) => setSearchQ(text)} />
+            </div>
             <CategoryChips chips={cropChips} active={chip} onSelect={setChip} />
 
             <div className="space-y-2">

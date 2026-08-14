@@ -12,6 +12,8 @@ export interface AppSettings {
   quietHoursEnabled: boolean;
   /** Off by default — no product telemetry until farmer opts in */
   productAnalytics: boolean;
+  /** Larger touch targets + high contrast for field use */
+  fieldMode: boolean;
 }
 
 const KEY = "agriveda-app-settings";
@@ -24,6 +26,7 @@ const DEFAULT: AppSettings = {
   twoFactorAuth: false,
   quietHoursEnabled: false,
   productAnalytics: false,
+  fieldMode: false,
 };
 
 export function useAppSettings() {
@@ -39,6 +42,9 @@ export function useAppSettings() {
     setSettings((prev) => {
       const next = { ...prev, ...patch };
       writeStorage(KEY, next);
+      if (typeof document !== "undefined" && "fieldMode" in patch) {
+        document.documentElement.toggleAttribute("data-field-mode", Boolean(next.fieldMode));
+      }
       return next;
     });
   }, []);

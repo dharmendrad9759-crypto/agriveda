@@ -33,6 +33,7 @@ function readFileAsDataUrl(file: File): Promise<string> {
 }
 
 /** Compress large phone photos before sending to Gemini API.
+ * Prefers WebP (smaller RAM/size); falls back to JPEG if unsupported.
  * Formats the browser can't decode in a <canvas> (e.g. HEIC/HEIF from many
  * phones) are returned untouched so the server/Gemini can handle the original
  * instead of the whole scan failing. */
@@ -60,13 +61,18 @@ async function compressImageIfNeeded(file: File): Promise<File> {
     if (!ctx) return file;
     ctx.drawImage(img, 0, 0, w, h);
 
-    const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, "image/jpeg", 0.82)
+    const tryWebp = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/webp", 0.82)
     );
+    const blob =
+      tryWebp && tryWebp.size > 0
+        ? tryWebp
+        : await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
+
     if (!blob) return file;
-    return new File([blob], file.name.replace(/\.\w+$/, ".jpg") || "scan.jpg", {
-      type: "image/jpeg",
-    });
+    const ext = tryWebp && tryWebp.size > 0 ? "webp" : "jpg";
+    const mime = ext === "webp" ? "image/webp" : "image/jpeg";
+    return new File([blob], file.name.replace(/\.\w+$/, `.${ext}`) || `scan.${ext}`, { type: mime });
   } catch {
     // Undecodable format (HEIC/HEIF, etc.) — send the original to the server.
     return file;

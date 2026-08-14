@@ -24,6 +24,7 @@ import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-
 import { getDeviceId } from "@/lib/deviceId";
 import { signalForceUpdate, withNativeAppHeaders } from "@/lib/nativeAppInfo";
 import { markIntroDone } from "@/lib/launchFlags";
+import { lookupPincode } from "@/lib/pincodeLookup";
 
 type Step = "auth" | "name" | "location" | "farm";
 
@@ -45,6 +46,8 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const [village, setVillage] = useState("");
   const [district, setDistrict] = useState("");
   const [state, setState] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [pinBusy, setPinBusy] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -223,6 +226,36 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     setStep("location");
   };
 
+  const handlePincodeLookup = async () => {
+    const pin = pincode.replace(/\D/g, "").slice(0, 6);
+    if (pin.length !== 6) {
+      setError("6 अंकों का PIN डालें");
+      return;
+    }
+    setPinBusy(true);
+    setError(null);
+    try {
+      const result = await lookupPincode(pin);
+      if (!result) {
+        setError("PIN नहीं मिला — ज़िला/राज्य हाथ से चुनें");
+        return;
+      }
+      setPincode(result.pincode);
+      setState(result.state);
+      const options = getDistrictsForState(result.state);
+      const match =
+        options.find((d) => d.toLowerCase() === result.district.toLowerCase()) ??
+        options.find((d) => d.toLowerCase().includes(result.district.toLowerCase())) ??
+        result.district;
+      setDistrict(match);
+      showToast(`${result.district}, ${result.state} — PIN से भरा ✓`, "success");
+    } catch {
+      setError("PIN lookup असफल — ज़िला/राज्य चुनें");
+    } finally {
+      setPinBusy(false);
+    }
+  };
+
   const finishLocation = () => {
     if (!village.trim() || !district.trim() || !state.trim()) {
       setError("गाँव, ज़िला और राज्य — तीनों भरें");
@@ -250,6 +283,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
           village: village.trim(),
           district: district.trim(),
           state: state.trim(),
+          pincode: pincode.replace(/\D/g, "").slice(0, 6) || undefined,
           phone: "",
           phoneVerified: false,
           totalFarmAreaAcres: totalAcres,
@@ -413,6 +447,27 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
           {step === "location" && (
             <>
               <p className="text-base font-bold text-gray-900">आपका खेत कहाँ है?</p>
+              <label className="block">
+                <span className="mb-1 text-xs font-bold text-gray-500">PIN कोड (6 अंक)</span>
+                <div className="flex gap-2">
+                  <input
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="462001"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                  />
+                  <button
+                    type="button"
+                    disabled={pinBusy || pincode.length !== 6}
+                    onClick={() => void handlePincodeLookup()}
+                    className="shrink-0 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-black text-white disabled:opacity-50"
+                  >
+                    {pinBusy ? "…" : "खोजें"}
+                  </button>
+                </div>
+              </label>
               <SearchableSelect
                 label="राज्य"
                 placeholder="अपना राज्य चुनें"

@@ -27,16 +27,20 @@ if (serverUrl && !serverUrl.startsWith("https://") && !allowCleartext) {
   throw new Error("[capacitor] CAPACITOR_SERVER_URL must be https:// (or cleartext opt-in)");
 }
 
+const useBundled = process.env.CAPACITOR_USE_BUNDLED === "true";
+
 const config: CapacitorConfig = {
   appId: "com.agriveda.app",
   appName: "Agriveda",
   webDir: "capacitor-www",
-  server: serverUrl
-    ? {
-        url: serverUrl,
-        cleartext: allowCleartext,
-      }
-    : undefined,
+  server: useBundled
+    ? undefined
+    : serverUrl
+      ? {
+          url: serverUrl,
+          cleartext: allowCleartext,
+        }
+      : undefined,
   android: {
     // Never mix http assets into an https WebView
     allowMixedContent: false,

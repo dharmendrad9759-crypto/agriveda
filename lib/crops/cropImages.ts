@@ -30,10 +30,11 @@ const LOCAL_CROP_PHOTOS: Record<string, string> = {
   mango: "/images/crops/mango.jpg",
   banana: "/images/crops/banana.jpg",
   grapes: "/images/crops/grapes.jpg",
-  chana: "/images/crops/pulses.jpg",
-  masoor: "/images/crops/pulses.jpg",
-  urad: "/images/crops/moong.jpg",
-  // ginger/garlic: no local photo yet — use curated remote below (not onion.jpg)
+  chana: "/images/crops/chana.jpg",
+  masoor: "/images/crops/masoor.jpg",
+  urad: "/images/crops/urad.jpg",
+  ginger: "/images/crops/ginger.jpg",
+  garlic: "/images/crops/garlic.jpg",
 };
 
 /**
@@ -67,7 +68,7 @@ const CURATED_REMOTE_PHOTOS: Record<string, string> = {
   ginger:
     "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=1200&h=800&fit=crop&q=80",
   garlic:
-    "https://images.unsplash.com/photo-1540148426949-6bb3a6fbcd67?w=1200&h=800&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1508747703725-719777637510?w=1200&h=800&fit=crop&q=80",
 };
 
 /** Name / alias → canonical slug */

@@ -2,20 +2,26 @@
 
 import AnalyticsBootstrap from "@/components/analytics/AnalyticsBootstrap";
 import CapacitorBootstrap from "@/components/capacitor/CapacitorBootstrap";
+import PushBootstrap from "@/components/capacitor/PushBootstrap";
+import SqliteBootstrap from "@/components/capacitor/SqliteBootstrap";
 import LaunchFlow from "@/components/launch/LaunchFlow";
 import CapacitorNavigationFix from "@/components/capacitor/CapacitorNavigationFix";
 import NativeAppEssentials from "@/components/capacitor/NativeAppEssentials";
 import ForceUpdateGate from "@/components/capacitor/ForceUpdateGate";
 import NativeFetchPatch from "@/components/capacitor/NativeFetchPatch";
 import Footer from "@/components/footer";
+import GoogleTranslateBootstrap from "@/components/i18n/GoogleTranslateBootstrap";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import BottomNav from "@/components/layout/BottomNav";
 import OfflineBanner from "@/components/layout/OfflineBanner";
+import TranslatorFab from "@/components/layout/TranslatorFab";
 import PullToRefresh from "@/components/layout/PullToRefresh";
 import LocationBootstrap from "@/components/location/LocationBootstrap";
 import PageReveal from "@/components/motion/PageReveal";
 import Navbar from "@/components/Navbar";
 import FarmerOnboardingGate from "@/components/onboarding/FarmerOnboardingGate";
+import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
+import FieldModeBootstrap from "@/components/settings/FieldModeBootstrap";
 import AppSidebar from "@/components/shell/AppSidebar";
 import MobileShellTopBar from "@/components/shell/MobileShellTopBar";
 import { NavDrawerProvider } from "@/components/shell/NavDrawerProvider";
@@ -52,11 +58,16 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
             <ForceUpdateGate />
             <NativeAppEssentials />
             <CapacitorNavigationFix />
+            <ServiceWorkerRegister />
+            <FieldModeBootstrap />
+            <SqliteBootstrap />
+            <GoogleTranslateBootstrap />
             {isAdminRoute ? (
               children
             ) : (
               <FarmerOnboardingGate>
                 <LocationBootstrap />
+                <PushBootstrap />
                 <PullToRefresh>
                   <NavDrawerProvider>
                     <OfflineBanner />
@@ -81,6 +92,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
           </MotionConfig>
           {/* Outside MotionConfig so native reduced-motion doesn't kill splash CSS */}
           {!isAdminRoute ? <LaunchFlow /> : null}
+          {!isAdminRoute ? <TranslatorFab /> : null}
         </ToastProvider>
       </LocaleProvider>
     </ThemeProvider>

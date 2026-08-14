@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "updated": "2026-08-14",
+  "titleHi": "आपातकालीन नंबर (भारत)",
+  "titleEn": "Emergency numbers (India)",
+  "numbers": [
+    { "name": "Kisan Call Centre", "nameHi": "किसान कॉल सेंटर", "number": "1800-180-1551", "noteHi": "फसल / योजना सलाह" },
+    { "name": "Police", "nameHi": "पुलिस", "number": "100", "noteHi": "तुरंत मदद" },
+    { "name": "Ambulance", "nameHi": "एम्बुलेंस", "number": "108", "noteHi": "चिकित्सा आपात" },
+    { "name": "Fire", "nameHi": "अग्निशमन", "number": "101", "noteHi": "आग" },
+    { "name": "Women Helpline", "nameHi": "महिला हेल्पलाइन", "number": "1091", "noteHi": "24×7" },
+    { "name": "Animal Husbandry", "nameHi": "पशु चिकित्सा", "number": "1962", "noteHi": "पशु रोग" }
+  ],
+  "tipsHi": [
+    "ऑफ़लाइन में भी यह सूची ऐप में सेव रहती है।",
+    "स्थानीय कृषि विभाग / जिला कृषि अधिकारी का नंबर फ़ोन में सेव करें।"
+  ]
+}

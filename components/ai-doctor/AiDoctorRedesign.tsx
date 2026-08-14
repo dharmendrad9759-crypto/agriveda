@@ -337,7 +337,7 @@ export function AiDoctorPhotoUpload({
         )}
       </div>
       <p className="mb-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-semibold leading-snug text-emerald-800 dark:text-emerald-200">
-        कैमरा खोलो — पत्ती करीब से दिखाओ।
+        कैमरा खोलो — पत्ती करीब से दिखाओ। अँधेरे में <strong>टॉर्च/फ्लैश</strong> चालू करें।
       </p>
       {cameraInput}
       {galleryInput}
