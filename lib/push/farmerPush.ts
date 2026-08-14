@@ -40,7 +40,11 @@ export async function scheduleLocalAlert(input: {
 }): Promise<void> {
   if (typeof window === "undefined" || !isCapacitorNative()) return;
 
-  const settings = readStorage("agriveda-app-settings", { weatherAlerts: true, quietHoursEnabled: false });
+  const settings = readStorage("agriveda-app-settings", {
+    weatherAlerts: true,
+    pestAlerts: true,
+    quietHoursEnabled: false,
+  });
   if (!settings.weatherAlerts && !settings.pestAlerts) return;
 
   try {

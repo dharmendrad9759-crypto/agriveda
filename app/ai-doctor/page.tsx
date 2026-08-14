@@ -28,6 +28,7 @@ import {
   urlToDataUrl,
 } from "@/lib/aiDoctorExpertReferral";
 import { analyzePhotoBrightness } from "@/lib/photoQuality";
+import { fileToHistoryThumb, srcToHistoryThumb } from "@/lib/aiHistoryThumb";
 import { formatFarmerDose } from "@/lib/units/farmerDose";
 import { track } from "@/lib/analytics";
 import {
