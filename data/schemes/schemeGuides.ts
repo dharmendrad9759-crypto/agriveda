@@ -43,6 +43,7 @@ export const SCHEME_GUIDE_IDS = [
   "pm-kisan",
   "pmfby",
   "smam",
+  "soil-health",
 ] as const;
 
 export type SchemeGuideId = (typeof SCHEME_GUIDE_IDS)[number];
