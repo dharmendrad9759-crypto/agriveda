@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
 import { readStorage, writeStorage } from "@/lib/storage";
+import { queueFarmCloudSync } from "@/lib/farm/cloudSync";
 
 export interface FarmerProfile {
   name: string;
@@ -71,12 +72,16 @@ export function useFarmerProfile() {
   useEffect(() => {
     setProfile(loadProfileFromStorage());
     setHydrated(true);
+    const onCloud = () => setProfile(loadProfileFromStorage());
+    window.addEventListener("agriveda-farm-cloud-hydrated", onCloud);
+    return () => window.removeEventListener("agriveda-farm-cloud-hydrated", onCloud);
   }, []);
 
   const saveProfile = useCallback((next: Partial<FarmerProfile>) => {
     setProfile((prev) => {
       const merged = normalizeProfile({ ...prev, ...next });
       writeStorage(KEY, merged);
+      queueFarmCloudSync();
       return merged;
     });
   }, []);
@@ -109,6 +114,7 @@ export function useFarmerProfile() {
         sowingDates: { ...prev.sowingDates, [cropSlug]: date },
       };
       writeStorage(KEY, merged);
+      queueFarmCloudSync();
       return merged;
     });
   }, []);

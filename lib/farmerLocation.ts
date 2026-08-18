@@ -50,6 +50,14 @@ export async function resolveFarmerLocationFromGps(): Promise<ResolvedFarmerLoca
   const lon = pos.coords.longitude;
   saveWeatherLocation({ type: "gps", lat, lon });
   setLocationPermissionStatus("granted");
+  try {
+    localStorage.setItem(
+      "agriveda-last-location",
+      JSON.stringify({ lat, lon, at: new Date().toISOString() })
+    );
+  } catch {
+    /* ignore */
+  }
 
   let state = "";
   let district = "";

@@ -8,16 +8,17 @@ import {
   Camera,
   CloudRain,
   CloudSun,
-  CreditCard,
-  Leaf,
   MapPin,
   MessageCircle,
   ShieldCheck,
   Sparkles,
   Sprout,
   TrendingUp,
+  Droplets,
+  FlaskConical,
   type LucideIcon,
 } from "lucide-react";
+import CropProblemCard from "@/components/home/CropProblemCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -50,40 +51,40 @@ const QUICK_JOBS: {
   imageSrc: string;
 }[] = [
   {
-    id: "photo",
-    hi: "पत्ती की फोटो लो",
-    en: "Take leaf photo",
-    hintHi: "बीमारी बताएगा",
-    hintEn: "Finds the disease",
-    href: "/ai-doctor",
-    icon: Camera,
-    imageSrc: "/images/home/home-job-photo.jpg",
+    id: "spray",
+    hi: "आज स्प्रे?",
+    en: "Spray today?",
+    hintHi: "करें या नहीं",
+    hintEn: "Yes or no",
+    href: "/weather/spray-advisory",
+    icon: FlaskConical,
+    imageSrc: "/images/jobs/job-spray.jpg",
   },
   {
-    id: "leaf",
-    hi: "पत्ती पीली / खराब",
-    en: "Yellow / sick leaf",
-    hintHi: "पोषक कमी देखो",
-    hintEn: "Check nutrient lack",
-    href: "/deficiencies",
-    icon: Leaf,
-    imageSrc: "/images/home/home-job-yellow-leaf.jpg",
+    id: "fert",
+    hi: "खाद कितनी?",
+    en: "How much fertilizer?",
+    hintHi: "बोरी में हिसाब",
+    hintEn: "Bag doses",
+    href: "/services/fertilizer-calculator",
+    icon: Droplets,
+    imageSrc: "/images/jobs/job-fertilizer.jpg",
   },
   {
     id: "mandi",
     hi: "आज का भाव",
     en: "Today's price",
-    hintHi: "मंडी रेट",
-    hintEn: "Mandi rates",
+    hintHi: "मंडी देखें",
+    hintEn: "See mandi rates",
     href: "/mandi",
     icon: TrendingUp,
     imageSrc: "/images/home/home-job-mandi.jpg",
   },
   {
     id: "weather",
-    hi: "मौसम / स्प्रे",
-    en: "Weather / spray",
-    hintHi: "बारिश देखो",
+    hi: "मौसम / पूर्वानुमान",
+    en: "Weather / forecast",
+    hintHi: "बारिश देखें",
     hintEn: "Check rain",
     href: "/weather",
     icon: CloudSun,
@@ -137,22 +138,22 @@ const MORE_JOBS: {
     imageSrc: "/images/threats/threat-weed.jpg",
   },
   {
-    id: "fert",
-    hi: "खाद कितनी?",
-    en: "How much fertilizer?",
-    hintHi: "बोरी में हिसाब",
-    hintEn: "Bag doses",
-    href: "/services/fertilizer-calculator",
-    imageSrc: "/images/jobs/job-fertilizer.jpg",
+    id: "photo",
+    hi: "फोटो लेकर पहचानें",
+    en: "Identify by photo",
+    hintHi: "AI से बीमारी पहचानें",
+    hintEn: "AI finds the disease",
+    href: "/ai-doctor",
+    imageSrc: "/images/home/home-job-photo.jpg",
   },
   {
-    id: "spray",
-    hi: "आज स्प्रे?",
-    en: "Spray today?",
-    hintHi: "करें या नहीं",
-    hintEn: "Yes or no",
-    href: "/weather/spray-advisory",
-    imageSrc: "/images/jobs/job-spray.jpg",
+    id: "leaf",
+    hi: "पत्ती पीली / खराब",
+    en: "Yellow / sick leaf",
+    hintHi: "पोषक कमी देखें",
+    hintEn: "Check nutrient lack",
+    href: "/deficiencies",
+    imageSrc: "/images/home/home-job-yellow-leaf.jpg",
   },
   {
     id: "plan",
@@ -446,6 +447,49 @@ export default function AgriVedaHome() {
           </div>
         </motion.section>
 
+        {/* AI photo CTA — TOP (user request) */}
+        <motion.section {...fade(0.02)}>
+          <AppLink
+            href="/ai-doctor"
+            onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_scan_cta" })}
+            className="group relative flex min-h-[96px] w-full overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 shadow-lg shadow-emerald-900/25 active:scale-[0.99]"
+          >
+            <span className="relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-1.5 bg-emerald-950 px-3.5 py-4 sm:px-5">
+              <span className="inline-flex w-fit items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-100/90">
+                <Camera className="h-3 w-3" />
+                {isHi ? "AI जाँच" : "AI check"}
+              </span>
+              <span className="text-[16px] font-bold leading-snug text-white sm:text-[17px]">
+                {isHi ? "फोटो लो — जाँच शुरू" : "Take photo — start check"}
+              </span>
+              <span className="text-[11px] font-medium leading-snug text-emerald-100/85">
+                {isHi ? "पत्ती की फोटो से बीमारी पता चले" : "Leaf photo finds the disease"}
+              </span>
+              <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-200">
+                {isHi ? "शुरू करें" : "Start"}
+                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+              </span>
+            </span>
+            <span className="relative w-[48%] min-w-[140px] max-w-[240px] shrink-0 self-stretch sm:w-[52%] sm:max-w-[280px]">
+              <Image
+                src="/images/home/home-cta-scan.jpg"
+                alt=""
+                fill
+                sizes="280px"
+                className="object-cover object-[center_28%] transition duration-300 group-hover:scale-105"
+                priority
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-emerald-950 via-emerald-950/50 to-transparent sm:w-16"
+              />
+              <span className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-emerald-900 shadow-md">
+                <Camera className="h-5 w-5" strokeWidth={2.4} />
+              </span>
+            </span>
+          </AppLink>
+        </motion.section>
+
         {/* Look & tap jobs — photo backgrounds */}
         <motion.section {...fade(0.03)} className="grid grid-cols-2 gap-2.5">
           {QUICK_JOBS.map((job) => {
@@ -481,50 +525,13 @@ export default function AgriVedaHome() {
           })}
         </motion.section>
 
-        {/* Huge primary CTA — photo banner */}
+        {/* फसल समस्या पहचानें — only new home insert under the 4 cards */}
+        <motion.section {...fade(0.04)} className="mt-0">
+          <CropProblemCard />
+        </motion.section>
+
         <motion.section {...fade(0.05)}>
-          <AppLink
-            href="/ai-doctor"
-            onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_scan_cta" })}
-            className="group relative flex min-h-[96px] w-full overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 shadow-lg shadow-emerald-900/25 active:scale-[0.99]"
-          >
-            {/* Text — solid green left */}
-            <span className="relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-1.5 bg-emerald-950 px-3.5 py-4 sm:px-5">
-              <span className="inline-flex w-fit items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-100/90">
-                <Camera className="h-3 w-3" />
-                {isHi ? "AI जाँच" : "AI check"}
-              </span>
-              <span className="text-[16px] font-bold leading-snug text-white sm:text-[17px]">
-                {isHi ? "फोटो लो — जाँच शुरू" : "Take photo — start check"}
-              </span>
-              <span className="text-[11px] font-medium leading-snug text-emerald-100/85">
-                {isHi ? "पत्ती की फोटो से बीमारी पता चले" : "Leaf photo finds the disease"}
-              </span>
-              <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-200">
-                {isHi ? "शुरू करें" : "Start"}
-                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-              </span>
-            </span>
-            {/* Photo right — only the join is soft/transparent */}
-            <span className="relative w-[48%] min-w-[140px] max-w-[240px] shrink-0 self-stretch sm:w-[52%] sm:max-w-[280px]">
-              <Image
-                src="/images/home/home-cta-scan.jpg"
-                alt=""
-                fill
-                sizes="280px"
-                className="object-cover object-[center_28%] transition duration-300 group-hover:scale-105"
-                priority
-              />
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-emerald-950 via-emerald-950/50 to-transparent sm:w-16"
-              />
-              <span className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-emerald-900 shadow-md">
-                <Camera className="h-5 w-5" strokeWidth={2.4} />
-              </span>
-            </span>
-          </AppLink>
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <AppLink
               href="/ask-query"
               className="relative flex min-h-[52px] items-center justify-center overflow-hidden rounded-xl border border-emerald-600/25 active:scale-[0.98]"
@@ -539,7 +546,7 @@ export default function AgriVedaHome() {
               <span className="absolute inset-0 bg-emerald-950/65" />
               <span className="relative z-10 flex items-center gap-1.5 text-[13px] font-bold text-white">
                 <MessageCircle className="h-4 w-4" />
-                {isHi ? "पूछो" : "Ask"}
+                {isHi ? "पूछो AI से" : "Ask AI"}
               </span>
             </AppLink>
             <AppLink
@@ -562,20 +569,28 @@ export default function AgriVedaHome() {
           <AppLink
             href="/schemes"
             onClick={() => track("tool_open", { href: "/schemes", label: "home_kcc_banner" })}
-            className="mt-2 flex min-h-[52px] w-full items-center justify-between gap-2 rounded-xl border border-emerald-700/30 bg-gradient-to-r from-emerald-900 to-emerald-800 px-4 py-3 text-white shadow-md shadow-emerald-900/20 active:scale-[0.99]"
+            className="relative mt-2 flex min-h-[88px] w-full items-end overflow-hidden rounded-xl border border-emerald-700/30 shadow-md shadow-emerald-900/20 active:scale-[0.99]"
           >
-            <span className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 shrink-0 text-emerald-200" />
+            <Image
+              src="/images/home/home-job-schemes.jpg"
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, 540px"
+              className="object-cover object-[center_40%]"
+              priority={false}
+            />
+            <span className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-950/45 to-emerald-950/15" />
+            <span className="relative z-10 flex w-full items-end justify-between gap-2 px-4 pb-3 pt-10 text-white">
               <span>
-                <span className="block text-[14px] font-bold leading-tight">
-                  {isHi ? "योजना · KCC · यंत्र" : "Schemes · KCC · Machinery"}
+                <span className="block text-[15px] font-bold leading-tight">
+                  {isHi ? "योजना जानकारी · KCC · यंत्र" : "Scheme info · KCC · Machinery"}
                 </span>
-                <span className="block text-[11px] font-medium text-emerald-100/90">
-                  {isHi ? "लोन, सब्सिडी, बीमा — रास्ता यहाँ" : "Loan, subsidy, insurance — start here"}
+                <span className="mt-0.5 block text-[11px] font-medium text-emerald-50/95">
+                  {isHi ? "जानकारी देखें, पात्रता समझें, आधिकारिक पोर्टल पर जाएँ" : "Learn, check eligibility, go official"}
                 </span>
               </span>
+              <ArrowRight className="mb-0.5 h-4 w-4 shrink-0 text-emerald-100" />
             </span>
-            <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200" />
           </AppLink>
           {lastScan ? (
             <AppLink

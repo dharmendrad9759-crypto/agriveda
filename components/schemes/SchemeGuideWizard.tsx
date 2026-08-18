@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Check,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import AppShell from "@/components/shell/AppShell";
 import AppLink from "@/components/ui/AppLink";
+import OfficialLeaveConfirm, { useOfficialLeave } from "@/components/schemes/OfficialLeaveConfirm";
 import KccLimitCalculator from "@/components/schemes/KccLimitCalculator";
 import MachinerySubsidyCalculator from "@/components/schemes/MachinerySubsidyCalculator";
 import {
@@ -18,12 +20,13 @@ import {
   buildSchemePrepWhatsAppText,
   type SchemeGuide,
 } from "@/data/schemes/schemeGuides";
-import { SCHEMES_LEGAL_NOTE_HI } from "@/data/schemes/farmerSchemes";
+import { SCHEMES_LEGAL_NOTE_HI, farmerSchemes } from "@/data/schemes/farmerSchemes";
 import {
   formatInrHi,
   type KccLimitBreakdown,
 } from "@/lib/schemes/kccLimitEstimate";
 import { getCheckedDocs, setDocChecked } from "@/lib/schemes/schemeProgress";
+import { resolveSchemeImage } from "@/lib/schemes/schemeImages";
 import { openWhatsAppWithText } from "@/lib/whatsappShare";
 import { track } from "@/lib/analytics";
 import { AV } from "@/lib/design/tokens";
@@ -89,10 +92,17 @@ export default function SchemeGuideWizard({ guide }: { guide: SchemeGuide }) {
     track("whatsapp_prep_shared", { id: guide.id });
   };
 
+  const leave = useOfficialLeave();
+
   const openPortal = () => {
     track("scheme_portal_open", { id: guide.id });
-    window.open(guide.portal, "_blank", "noopener,noreferrer");
+    leave.requestLeave(guide.portal, guide.portalLabelHi);
   };
+
+  const schemeMeta = farmerSchemes.find((s) => s.id === guide.id);
+  const heroImg = schemeMeta
+    ? resolveSchemeImage(schemeMeta)
+    : "/images/home/home-job-schemes.jpg";
 
   return (
     <AppShell
@@ -105,6 +115,15 @@ export default function SchemeGuideWizard({ guide }: { guide: SchemeGuide }) {
       ]}
     >
       <div className="mx-auto max-w-lg space-y-4 pb-8">
+        <div className="relative h-[120px] overflow-hidden rounded-2xl border border-[var(--av-border)]">
+          <Image src={heroImg} alt="" fill sizes="512px" className="object-cover" priority />
+          <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 px-3 pb-2.5">
+            <p className="text-[15px] font-bold text-white">{guide.nameHi}</p>
+            <p className="text-[11px] text-white/90">{guide.taglineHi}</p>
+          </div>
+        </div>
+
         <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-[12px] leading-relaxed text-amber-950 dark:text-amber-50">
           {SCHEMES_LEGAL_NOTE_HI}
         </div>
@@ -187,9 +206,23 @@ export default function SchemeGuideWizard({ guide }: { guide: SchemeGuide }) {
               {quizSoftFail ? (
                 <div className="flex gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[12px] leading-snug text-amber-950 dark:text-amber-50">
                   <Shield className="mt-0.5 h-4 w-4 shrink-0" />
-                  <p>{guide.softFailHi}</p>
+                  <div>
+                    <p className="font-bold">वर्तमान जानकारी के आधार पर पात्रता मेल नहीं खाती</p>
+                    <p className="mt-1">{guide.softFailHi} यह केवल प्रारंभिक guidance है। अंतिम निर्णय संबंधित आधिकारिक संस्था का होगा।</p>
+                  </div>
                 </div>
-              ) : null}
+              ) : Object.keys(answers).length ? (
+                <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3 text-[12px] leading-snug text-emerald-950 dark:text-emerald-50">
+                  <p className="font-bold">प्रारंभिक रूप से पात्र हो सकते हैं</p>
+                  <p className="mt-1">
+                    आपके द्वारा दी गई जानकारी योजना की उपलब्ध पात्रता शर्तों से मेल खाती दिखाई देती है। अंतिम पात्रता संबंधित विभाग/अधिकृत संस्था द्वारा निर्धारित की जाएगी।
+                  </p>
+                </div>
+              ) : (
+                <p className="text-[12px] text-[var(--av-text-muted)]">
+                  कुछ जानकारी और चाहिए — यह केवल प्रारंभिक guidance है।
+                </p>
+              )}
             </div>
           ) : null}
 
@@ -253,10 +286,10 @@ export default function SchemeGuideWizard({ guide }: { guide: SchemeGuide }) {
               ) : null}
               <button type="button" onClick={openPortal} className={`w-full ${AV.btnPrimary}`}>
                 <ExternalLink className="h-4 w-4" />
-                {guide.portalLabelHi}
+                आधिकारिक पोर्टल पर जाएं →
               </button>
               <p className="text-center text-[11px] text-[var(--av-text-muted)]">
-                {GOV_PORTAL_SLOW_NOTE_HI}
+                बाहरी आधिकारिक स्रोत · {GOV_PORTAL_SLOW_NOTE_HI}
               </p>
               <button
                 type="button"
@@ -302,6 +335,14 @@ export default function SchemeGuideWizard({ guide }: { guide: SchemeGuide }) {
           )}
         </div>
       </div>
+      <OfficialLeaveConfirm
+        open={Boolean(leave.pending)}
+        hi
+        url={leave.pending?.url ?? ""}
+        title={leave.pending?.title}
+        onClose={leave.closeLeave}
+        onContinue={leave.continueLeave}
+      />
     </AppShell>
   );
 }

@@ -11,6 +11,7 @@ import {
 } from "@/lib/farm/farmInit";
 import { sanitizeLegacyFarmData } from "@/lib/farm/legacyMock";
 import { readStorage, writeStorage } from "@/lib/storage";
+import { queueFarmCloudSync } from "@/lib/farm/cloudSync";
 import type { FarmActivity, FarmData, FarmField, FarmNote } from "@/lib/farm/types";
 
 const KEY = "agriveda-farm-data";
@@ -38,6 +39,9 @@ export function useFarmData() {
   useEffect(() => {
     setData(loadFarmData());
     setHydrated(true);
+    const onCloud = () => setData(loadFarmData());
+    window.addEventListener("agriveda-farm-cloud-hydrated", onCloud);
+    return () => window.removeEventListener("agriveda-farm-cloud-hydrated", onCloud);
   }, []);
 
   const persist = useCallback((next: FarmData) => {
@@ -45,6 +49,7 @@ export function useFarmData() {
     writeStorage(KEY, next);
     syncSprayFieldsFromFarm(next.fields);
     syncMyCropsFromFarm(next.fields);
+    queueFarmCloudSync();
   }, []);
 
   const setFields = useCallback(
@@ -61,6 +66,7 @@ export function useFarmData() {
       writeStorage(KEY, next);
       syncSprayFieldsFromFarm(next.fields);
       syncMyCropsFromFarm(next.fields);
+      queueFarmCloudSync();
       return next;
     });
   }, []);
@@ -70,6 +76,7 @@ export function useFarmData() {
     setData((prev) => {
       const next = { ...prev, activities: [{ ...activity, id }, ...prev.activities] };
       writeStorage(KEY, next);
+      queueFarmCloudSync();
       return next;
     });
   }, []);
@@ -91,6 +98,7 @@ export function useFarmData() {
         ],
       };
       writeStorage(KEY, next);
+      queueFarmCloudSync();
       return next;
     });
   }, []);

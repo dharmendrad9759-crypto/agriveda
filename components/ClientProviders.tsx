@@ -4,6 +4,7 @@ import AnalyticsBootstrap from "@/components/analytics/AnalyticsBootstrap";
 import CapacitorBootstrap from "@/components/capacitor/CapacitorBootstrap";
 import PushBootstrap from "@/components/capacitor/PushBootstrap";
 import SqliteBootstrap from "@/components/capacitor/SqliteBootstrap";
+import FarmCloudSyncBootstrap from "@/components/farm/FarmCloudSyncBootstrap";
 import LaunchFlow from "@/components/launch/LaunchFlow";
 import CapacitorNavigationFix from "@/components/capacitor/CapacitorNavigationFix";
 import NativeAppEssentials from "@/components/capacitor/NativeAppEssentials";
@@ -54,6 +55,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
           >
             <AnalyticsBootstrap />
             <CapacitorBootstrap />
+            <FarmCloudSyncBootstrap />
             <NativeFetchPatch />
             <ForceUpdateGate />
             <NativeAppEssentials />

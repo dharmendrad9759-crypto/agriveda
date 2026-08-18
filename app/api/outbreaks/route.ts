@@ -103,6 +103,16 @@ export async function POST(request: NextRequest) {
       phone: auth.session.phone,
     });
 
+    if (farmerId) {
+      await client
+        .from("farmers")
+        .update({
+          last_lat: body.latitude,
+          last_lon: body.longitude,
+        })
+        .eq("id", farmerId);
+    }
+
     const report = await insertOutbreakReportToSupabase(
       {
         farmerId: farmerId ?? null,
@@ -124,9 +134,25 @@ export async function POST(request: NextRequest) {
     const all = await fetchOutbreakReportsSince(14, client);
     const clusters = detectOutbreakCluster(all);
 
+    // Best-effort nearby FCM (needs push tokens + last_lat/lon + FCM service account)
+    let pushSent = 0;
+    try {
+      const { notifyNearbyFarmersOfOutbreak } = await import("@/lib/push/notifyFarmers");
+      pushSent = await notifyNearbyFarmersOfOutbreak({
+        excludeDeviceId: auth.session.deviceId,
+        latitude: body.latitude,
+        longitude: body.longitude,
+        cropId: body.cropId,
+        threatLabel: `${body.threatType}:${body.pestOrDiseaseId}`,
+      });
+    } catch (err) {
+      console.error("[outbreaks] nearby push", err);
+    }
+
     return NextResponse.json({
       report: toPublicOutbreakReport(report),
       clusters,
+      pushSent,
     });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

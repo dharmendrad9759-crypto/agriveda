@@ -78,13 +78,14 @@ export type NotifyResult = {
   whatsapp: boolean;
   sms: boolean;
   inApp: boolean;
+  push: boolean;
 };
 
-/** After admin saves expert_reply — deliver to WhatsApp/SMS + farmer app inbox. */
+/** After admin saves expert_reply — deliver to WhatsApp/SMS + farmer app inbox + FCM. */
 export async function notifyFarmerOfExpertReply(
   row: ExpertQueryRow
 ): Promise<NotifyResult> {
-  const result: NotifyResult = { whatsapp: false, sms: false, inApp: false };
+  const result: NotifyResult = { whatsapp: false, sms: false, inApp: false, push: false };
   const phone = digitPhone(row.farmer_phone);
   const crop = row.crop_name || "फसल";
   const questionPreview = (row.query_text || "").trim().slice(0, 180);
@@ -139,6 +140,18 @@ export async function notifyFarmerOfExpertReply(
         console.error("[notifyExpertReply] inApp failed", err);
       }
     }
+  }
+
+  try {
+    const { notifyFarmerPushByDevice } = await import("@/lib/push/notifyFarmers");
+    result.push = await notifyFarmerPushByDevice({
+      deviceId: row.device_id,
+      title: "विशेषज्ञ का जवाब आया",
+      body: replyPreview.slice(0, 180) || `आपके ${crop} सवाल का जवाब आ गया है`,
+      href: "/my-queries",
+    });
+  } catch (err) {
+    console.error("[notifyExpertReply] push", err);
   }
 
   return result;

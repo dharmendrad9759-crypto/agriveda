@@ -53,7 +53,15 @@ export default function ShareOutbreakPrompt({
     });
     if (res) {
       setShared(true);
-      showToast("नज़दीकी किसानों को चेतावनी भेज दी ✓");
+      const pushed = typeof (res as { pushSent?: number }).pushSent === "number"
+        ? (res as { pushSent: number }).pushSent
+        : 0;
+      showToast(
+        pushed > 0
+          ? `मैप पर रिपोर्ट + ${pushed} पास किसानों को अलर्ट`
+          : "Outbreak मैप पर रिपोर्ट साझा हो गई",
+        "success"
+      );
       if (res.clusters.length > 0) {
         showToast("आपके इलाके में क्लस्टर मिला", "info");
       }
@@ -75,7 +83,8 @@ export default function ShareOutbreakPrompt({
               रिपोर्ट साझा हो गई
             </p>
             <p className="mt-0.5 text-xs text-[var(--av-text-muted)]">
-              आस-पास के किसानों को अलर्ट मिल सकता है — नाम गुप्त रहेगा।
+              रिपोर्ट outbreak मैप पर दिखेगी। पास के किसानों को ऐप अलर्ट तभी जाएगा जब
+              उनके पास push चालू हो। नाम गुप्त रहेगा।
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Link
@@ -108,7 +117,9 @@ export default function ShareOutbreakPrompt({
             आस-पास किसानों को बताएँ?
           </p>
           <p className="mt-1 text-[12px] leading-relaxed text-[var(--av-text-muted)]">
-            एक टैप से इलाके में चेतावनी। नाम नहीं दिखेगा — सिर्फ फसल, रोग/कीट और लगभग जगह।
+            एक टैप से इलाके के outbreak मैप पर चेतावनी। नाम नहीं दिखेगा — सिर्फ फसल,
+            रोग/कीट और लगभग जगह। पास वालों को push तभी मिलेगा जब FCM + उनका लोकेशन
+            रजिस्टर हो।
           </p>
         </div>
       </div>

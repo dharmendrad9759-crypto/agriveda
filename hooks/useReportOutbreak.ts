@@ -32,6 +32,15 @@ export function useReportOutbreak() {
         lon = pos.coords.longitude;
       }
 
+      try {
+        localStorage.setItem(
+          "agriveda-last-location",
+          JSON.stringify({ lat, lon, at: new Date().toISOString() })
+        );
+      } catch {
+        /* ignore */
+      }
+
       let photoUrl = params.photoUrl;
       if (photoUrl && !photoUrl.startsWith("data:")) {
         photoUrl = await imageUrlToDataUrl(photoUrl);

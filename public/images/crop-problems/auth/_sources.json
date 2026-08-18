@@ -1,0 +1,608 @@
+[
+  {
+    "base": "disease-albugo-candida",
+    "ok": true,
+    "query": "White rust mustard Albugo candida",
+    "title": "File:Mustard- White rust.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Mustard-_White_rust.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-alternaria-brassicae",
+    "ok": true,
+    "query": "Alternaria brassicae",
+    "title": "File:Speise Bete Alternaria Befall, Josef Schlaghecken.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/46/Speise_Bete_Alternaria_Befall%2C_Josef_Schlaghecken.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-alternaria-macrospora",
+    "ok": true,
+    "query": "Alternaria leaf spot cotton",
+    "title": "File:The cotton plant - its history, botany, chemistry, culture, enemies, and uses (1896) (20514695589).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/b7/The_cotton_plant_-_its_history%2C_botany%2C_chemistry%2C_culture%2C_enemies%2C_and_uses_%281896%29_%2820514695589%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-alternaria-porri",
+    "ok": true,
+    "query": "Alternaria porri",
+    "title": "File:Alternaria solani - leaf lesions.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/04/Alternaria_solani_-_leaf_lesions.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-alternaria-solani",
+    "ok": true,
+    "query": "Early blight tomato Alternaria solani",
+    "title": "File:Alternaria solani on Solanum lycopersicum.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/45/Alternaria_solani_on_Solanum_lycopersicum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-begomovirus-leaf-curl",
+    "ok": false,
+    "query": "Tomato leaf curl virus symptoms"
+  },
+  {
+    "base": "disease-bhendi-yvmv",
+    "ok": true,
+    "query": "Bhendi yellow vein mosaic",
+    "title": "File:Bhendi vein clearingPhoto-0028.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/6/64/Bhendi_vein_clearingPhoto-0028.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-bipolaris-maydis",
+    "ok": true,
+    "query": "Southern corn leaf blight Bipolaris maydis",
+    "title": "File:Cochliobolus heterostrophus.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/23/Cochliobolus_heterostrophus.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-bipolaris-oryzae",
+    "ok": true,
+    "query": "Cochliobolus miyabeanus",
+    "title": "File:Cochliobolus miyabeanus.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Cochliobolus_miyabeanus.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-bipolaris-sorokiniana",
+    "ok": true,
+    "query": "Cochliobolus sativus",
+    "title": "File:Cochliobolus sativus - Lindsey.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/57/Cochliobolus_sativus_-_Lindsey.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-blumeria-graminis",
+    "ok": true,
+    "query": "Powdery mildew wheat Blumeria graminis",
+    "title": "File:Erysiphe graminis.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/83/Erysiphe_graminis.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-cercospora-canescens",
+    "ok": true,
+    "query": "Cercospora leaf spot",
+    "title": "File:Spinach- Cercospora leaf spot - 11.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/53/Spinach-_Cercospora_leaf_spot_-_11.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-cercospora-sojina",
+    "ok": true,
+    "query": "Cercospora sojina",
+    "title": "File:Soja Mancha Ojo de Rana MOR.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Soja_Mancha_Ojo_de_Rana_MOR.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-colletotrichum-capsici",
+    "ok": true,
+    "query": "Colletotrichum capsici",
+    "title": "File:Pepper Disease in Tropical Bonakanda.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Pepper_Disease_in_Tropical_Bonakanda.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-colletotrichum-falcatum",
+    "ok": false,
+    "query": "Red rot sugarcane Colletotrichum falcatum"
+  },
+  {
+    "base": "disease-colletotrichum-gloeosporioides",
+    "ok": true,
+    "query": "Colletotrichum gloeosporioides plant",
+    "title": "File:Bitter rot.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Bitter_rot.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-damping-off",
+    "ok": true,
+    "query": "Damping off seedling disease",
+    "title": "File:Rhizoctonia Root Rot on Corn.png",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Rhizoctonia_Root_Rot_on_Corn.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-exserohilum-turcicum",
+    "ok": true,
+    "query": "Setosphaeria turcica",
+    "title": "File:Conidia of Exserohilum turcicum.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Conidia_of_Exserohilum_turcicum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-fusarium-lycopersici",
+    "ok": true,
+    "query": "Fusarium wilt tomato",
+    "title": "File:Karlák VFN socha císaře Josefa II. 1.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/82/Karl%C3%A1k_VFN_socha_c%C3%ADsa%C5%99e_Josefa_II._1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-fusarium-oxysporum",
+    "ok": true,
+    "query": "Fusarium oxysporum wilt plant",
+    "title": "File:Banana (Variety- Koa e Kea)- Fusarium wilt (Panama disease) - 40318102211.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Banana_%28Variety-_Koa_e_Kea%29-_Fusarium_wilt_%28Panama_disease%29_-_40318102211.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-hyaloperonospora-brassicae",
+    "ok": true,
+    "query": "Downy mildew brassica",
+    "title": "File:Rosenkohl Falscher Mehltau-1-DLR-NW-jk.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Rosenkohl_Falscher_Mehltau-1-DLR-NW-jk.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-leveillula-taurica",
+    "ok": true,
+    "query": "Leveillula taurica",
+    "title": "File:Tomaten-Echter Mehltau-JS-1.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Tomaten-Echter_Mehltau-JS-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-magnaporthe-oryzae",
+    "ok": true,
+    "query": "Pyricularia oryzae",
+    "title": "File:P. oryzae 14.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/5b/P._oryzae_14.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-mungbean-yellow-mosaic-virus",
+    "ok": false,
+    "query": "Yellow mosaic virus mungbean"
+  },
+  {
+    "base": "disease-peronospora-destructor",
+    "ok": true,
+    "query": "Downy mildew onion Peronospora",
+    "title": "File:Falscher Mehltau 1 (Peronospora destructor)-DLR-NW-jk.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/2b/Falscher_Mehltau_1_%28Peronospora_destructor%29-DLR-NW-jk.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-phakopsora-pachyrhizi",
+    "ok": true,
+    "query": "Soybean rust Phakopsora",
+    "title": "File:Soybean rust sporulation.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/29/Soybean_rust_sporulation.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-phomopsis-vexans",
+    "ok": true,
+    "query": "Phomopsis blight eggplant",
+    "title": "File:Eggplant phomopsis 1 (5815759324).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Eggplant_phomopsis_1_%285815759324%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-phytophthora-infestans",
+    "ok": true,
+    "query": "Late blight potato Phytophthora infestans",
+    "title": "File:Phytophthora infestans potato 'Doré', aardappelziekte Doré.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/72/Phytophthora_infestans_potato_%27Dor%C3%A9%27%2C_aardappelziekte_Dor%C3%A9.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-phytoplasma-grassy-shoot",
+    "ok": true,
+    "query": "Grassy shoot sugarcane",
+    "title": "File:Saccharum robustum.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Saccharum_robustum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-phytoplasma-leafhopper-vector",
+    "ok": true,
+    "query": "Little leaf brinjal phytoplasma",
+    "title": "File:Brinjal Little leaf phytoplasma.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/6/68/Brinjal_Little_leaf_phytoplasma.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-podosphaera-xanthii",
+    "ok": true,
+    "query": "Podosphaera xanthii",
+    "title": "File:ROC national flag and Taiwan Beer at PX Mart 20200712.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/d/d3/ROC_national_flag_and_Taiwan_Beer_at_PX_Mart_20200712.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-potato-virus-y",
+    "ok": true,
+    "query": "Potato virus Y symptoms",
+    "title": "File:Potato virus Y (PVY) on tobacco.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Potato_virus_Y_%28PVY%29_on_tobacco.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-pseudoperonospora-cubensis",
+    "ok": true,
+    "query": "Downy mildew cucumber Pseudoperonospora",
+    "title": "File:Downy mildew on leaves of Cucumis sativus.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Downy_mildew_on_leaves_of_Cucumis_sativus.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-puccinia-melanocephala",
+    "ok": true,
+    "query": "Puccinia melanocephala",
+    "title": "File:Puccinia melanocephala.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/42/Puccinia_melanocephala.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-puccinia-sorghi",
+    "ok": true,
+    "query": "Common rust maize Puccinia sorghi",
+    "title": "File:A text-book of mycology and plant pathology (1917) (14765035472).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/45/A_text-book_of_mycology_and_plant_pathology_%281917%29_%2814765035472%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-puccinia-striiformis",
+    "ok": true,
+    "query": "Yellow rust wheat Puccinia striiformis",
+    "title": "File:Dz. rūsa z.tritikāle 2015.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/29/Dz._r%C5%ABsa_z.tritik%C4%81le_2015.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-puccinia-triticina",
+    "ok": true,
+    "query": "Brown rust wheat Puccinia triticina",
+    "title": "File:The rusts of Australia, their structure, nature, and classification (1906) (14774103475).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/c/c5/The_rusts_of_Australia%2C_their_structure%2C_nature%2C_and_classification_%281906%29_%2814774103475%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-ralstonia-solanacearum",
+    "ok": true,
+    "query": "Bacterial wilt Ralstonia solanacearum",
+    "title": "File:Ralstonia solanacearum symptoms.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/13/Ralstonia_solanacearum_symptoms.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-rhizoctonia-bataticola",
+    "ok": true,
+    "query": "Macrophomina phaseolina",
+    "title": "File:Macrophomina phaseolina.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/33/Macrophomina_phaseolina.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-rhizoctonia-solani",
+    "ok": true,
+    "query": "rice sheath blight",
+    "title": "File:RiceSheathArk.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/15/RiceSheathArk.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-rice-tungro-virus",
+    "ok": true,
+    "query": "Rice tungro disease",
+    "title": "File:Rice plants affected by tungro disease1.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/24/Rice_plants_affected_by_tungro_disease1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-sclerotium-rolfsii",
+    "ok": true,
+    "query": "Athelia rolfsii",
+    "title": "File:Athelia rolfsii.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/32/Athelia_rolfsii.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-sporisorium-scitamineum",
+    "ok": true,
+    "query": "Sugarcane smut Sporisorium",
+    "title": "File:Sugar cane smut.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/39/Sugar_cane_smut.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-stemphylium-vesicarium",
+    "ok": true,
+    "query": "Stemphylium vesicarium",
+    "title": "File:Stemphylium vesicarium (03).png",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Stemphylium_vesicarium_%2803%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-streptomyces-scabies",
+    "ok": true,
+    "query": "Potato common scab Streptomyces",
+    "title": "File:Streptomyces Scabies.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Streptomyces_Scabies.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-tilletia-indica",
+    "ok": true,
+    "query": "Karnal bunt Tilletia indica",
+    "title": "File:Karnal bunt spore.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/32/Karnal_bunt_spore.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-ustilago-tritici",
+    "ok": true,
+    "query": "Ustilago nuda",
+    "title": "File:Loose smut (Ustilago avenae) 5187022.png",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/12/Loose_smut_%28Ustilago_avenae%29_5187022.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-xanthomonas-campestris",
+    "ok": true,
+    "query": "Black rot cabbage Xanthomonas campestris",
+    "title": "File:Cabbage Black rot (24454043547).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Cabbage_Black_rot_%2824454043547%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-xanthomonas-citri-malvacearum",
+    "ok": true,
+    "query": "Bacterial blight cotton Xanthomonas",
+    "title": "File:Xanthomonas leaf spot.png",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Xanthomonas_leaf_spot.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "disease-xanthomonas-oryzae",
+    "ok": true,
+    "query": "Bacterial leaf blight rice Xanthomonas oryzae",
+    "title": "File:Xanthomonas-disease.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Xanthomonas-disease.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-agrotis-ipsilon",
+    "ok": true,
+    "query": "Black cutworm Agrotis ipsilon",
+    "title": "File:Black cutworm, face, straighton 2014-06-04-19.35.19 ZS PMax (15751686230).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Black_cutworm%2C_face%2C_straighton_2014-06-04-19.35.19_ZS_PMax_%2815751686230%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-agrotis-spp",
+    "ok": true,
+    "query": "Cutworm Agrotis larva",
+    "title": "File:Grotis exclamationis cf larva parasitized Suedliche Weinstrasse.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Grotis_exclamationis_cf_larva_parasitized_Suedliche_Weinstrasse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-amrasca-biguttula",
+    "ok": false,
+    "query": "Cotton jassid Amrasca"
+  },
+  {
+    "base": "pest-aphis-gossypii",
+    "ok": true,
+    "query": "Aphis gossypii",
+    "title": "File:Aphis gossypii04.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Aphis_gossypii04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-athalia-proxima",
+    "ok": true,
+    "query": "Athalia lugens",
+    "title": "File:Athalia lugens, North Wales, July 2015 2 - Flickr - janetgraham84.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Athalia_lugens%2C_North_Wales%2C_July_2015_2_-_Flickr_-_janetgraham84.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-atherigona-soccata",
+    "ok": true,
+    "query": "Shoot fly Atherigona",
+    "title": "File:Shoot fly infested plant.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Shoot_fly_infested_plant.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-aulacophora-foveicollis",
+    "ok": true,
+    "query": "Red pumpkin beetle Aulacophora",
+    "title": "File:Red pumpkin beetle calendar.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Red_pumpkin_beetle_calendar.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-bactrocera-cucurbitae",
+    "ok": true,
+    "query": "Melon fruit fly Bactrocera",
+    "title": "File:B.cucurbitae.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/1c/B.cucurbitae.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-bagrada-hilaris",
+    "ok": true,
+    "query": "Painted bug Bagrada",
+    "title": "File:Bagrada Bug.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/91/Bagrada_Bug.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-bemisia-tabaci",
+    "ok": true,
+    "query": "Bemisia tabaci whitefly",
+    "title": "File:CSIRO ScienceImage 1359 Silverleaf whitefly Bemisia tabaci biotype B.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/32/CSIRO_ScienceImage_1359_Silverleaf_whitefly_Bemisia_tabaci_biotype_B.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-chilo-partellus",
+    "ok": true,
+    "query": "Chilo partellus",
+    "title": "File:Chilo partellus (10.3897-BDJ.9.e73997) Figure 27c.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Chilo_partellus_%2810.3897-BDJ.9.e73997%29_Figure_27c.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-cnaphalocrocis-medinalis",
+    "ok": true,
+    "query": "Cnaphalocrocis medinalis",
+    "title": "File:Cnaphalocrocis medinalis z 0828.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/03/Cnaphalocrocis_medinalis_z_0828.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-delia-antiqua",
+    "ok": true,
+    "query": "Onion maggot Delia antiqua",
+    "title": "File:Delia antiqua maggots at Allium porrum , uienvlieg maden op prei (1).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Delia_antiqua_maggots_at_Allium_porrum_%2C_uienvlieg_maden_op_prei_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-earias-vittella",
+    "ok": true,
+    "query": "Spotted bollworm Earias",
+    "title": "File:Earias vittella (10.3897-BDJ.9.e73997) Figure 26b.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Earias_vittella_%2810.3897-BDJ.9.e73997%29_Figure_26b.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-helicoverpa-armigera",
+    "ok": true,
+    "query": "Helicoverpa armigera larva",
+    "title": "File:Helicoverpa armigera (23361715924).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/07/Helicoverpa_armigera_%2823361715924%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-henosepilachna",
+    "ok": true,
+    "query": "Epilachna beetle",
+    "title": "File:Mexican bean beetle adult laying eggs.JPG",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/78/Mexican_bean_beetle_adult_laying_eggs.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-leucinodes-orbonalis",
+    "ok": true,
+    "query": "Brinjal shoot fruit borer Leucinodes",
+    "title": "File:Leucinodes orbonalis (Brinjal Fruit Borer).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Leucinodes_orbonalis_%28Brinjal_Fruit_Borer%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-lipaphis-erysimi",
+    "ok": true,
+    "query": "Mustard aphid Lipaphis erysimi",
+    "title": "File:Lipaphis erysimi - Mustard aphid - Hardal biti 01.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Lipaphis_erysimi_-_Mustard_aphid_-_Hardal_biti_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-liriomyza-trifolii",
+    "ok": true,
+    "query": "Leaf miner Liriomyza",
+    "title": "File:Liriomyza asclepiadis milkweed.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/94/Liriomyza_asclepiadis_milkweed.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-maconellicoccus-hirsutus",
+    "ok": true,
+    "query": "Mealybug Maconellicoccus",
+    "title": "File:D043-9.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/85/D043-9.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-myzus-persicae",
+    "ok": true,
+    "query": "Myzus persicae green peach aphid",
+    "title": "File:Green peach aphid (Myzus persicae) on a leaf, Lisbon, Portugal (approx. GPS location) julesvernex2.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/6/65/Green_peach_aphid_%28Myzus_persicae%29_on_a_leaf%2C_Lisbon%2C_Portugal_%28approx._GPS_location%29_julesvernex2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-nilaparvata-lugens",
+    "ok": true,
+    "query": "Brown planthopper Nilaparvata lugens",
+    "title": "File:Nilaparvata lugens 439632934.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Nilaparvata_lugens_439632934.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-oberea-brevis",
+    "ok": true,
+    "query": "Oberea",
+    "title": "File:Oberea pupillata 01.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/95/Oberea_pupillata_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-odontotermes-obesus",
+    "ok": true,
+    "query": "Termite Odontotermes",
+    "title": "File:Odontotermes obesus Termites Isoptera (1) 06.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Odontotermes_obesus_Termites_Isoptera_%281%29_06.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-odontotermes-spp",
+    "ok": true,
+    "query": "Termite mound Odontotermes",
+    "title": "File:Odontotermes badius, in oop ventilasietonnel, Skeerpoort, c.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Odontotermes_badius%2C_in_oop_ventilasietonnel%2C_Skeerpoort%2C_c.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-pectinophora-gossypiella",
+    "ok": true,
+    "query": "Pink bollworm Pectinophora",
+    "title": "File:Pectinophora gossypiella 5006025.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/11/Pectinophora_gossypiella_5006025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-phthorimaea-operculella",
+    "ok": true,
+    "query": "Potato tuber moth Phthorimaea",
+    "title": "File:Bulletin of the U.S. Department of Agriculture (1913-1923.) (20499059245).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Bulletin_of_the_U.S._Department_of_Agriculture_%281913-1923.%29_%2820499059245%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-pieris-brassicae",
+    "ok": true,
+    "query": "Cabbage butterfly Pieris brassicae larva",
+    "title": "File:Pieris brassicae (4528683455).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Pieris_brassicae_%284528683455%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-plutella-xylostella",
+    "ok": true,
+    "query": "Diamondback moth Plutella xylostella",
+    "title": "File:Plutella xylostella 95887461.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Plutella_xylostella_95887461.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-polyphagotarsonemus-latus",
+    "ok": true,
+    "query": "Broad mite Polyphagotarsonemus",
+    "title": "File:Polyphagotarsonemus latus, USDA BARC.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/19/Polyphagotarsonemus_latus%2C_USDA_BARC.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-pyrilla-perpusilla",
+    "ok": true,
+    "query": "sugarcane leafhopper",
+    "title": "File:The Sugar-Cane Insects of Hawaii (1911) (14778286585).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/39/The_Sugar-Cane_Insects_of_Hawaii_%281911%29_%2814778286585%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-scirpophaga-excerptalis",
+    "ok": false,
+    "query": "Sugarcane top borer Scirpophaga"
+  },
+  {
+    "base": "pest-scirpophaga-incertulas",
+    "ok": true,
+    "query": "Yellow stem borer Scirpophaga incertulas",
+    "title": "File:Scirpophaga incertulas (10.3897-BDJ.9.e73997) Figure 28e.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Scirpophaga_incertulas_%2810.3897-BDJ.9.e73997%29_Figure_28e.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-scirtothrips-dorsalis",
+    "ok": true,
+    "query": "Chilli thrips Scirtothrips dorsalis",
+    "title": "File:Chilli thrips on Hydrangea macrophylla - 51619010534.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Chilli_thrips_on_Hydrangea_macrophylla_-_51619010534.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-sitobion-avenae",
+    "ok": true,
+    "query": "Sitobion avenae",
+    "title": "File:Aphid mummy (6836219188).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/e/ee/Aphid_mummy_%286836219188%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-spodoptera-frugiperda",
+    "ok": true,
+    "query": "Fall armyworm Spodoptera frugiperda",
+    "title": "File:- 9666 – Spodoptera frugiperda – Fall Armyworm Moth (14862753532).jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/05/-_9666_%E2%80%93_Spodoptera_frugiperda_%E2%80%93_Fall_Armyworm_Moth_%2814862753532%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-spodoptera-litura",
+    "ok": true,
+    "query": "Spodoptera litura larva",
+    "title": "File:Spodoptera litura larvae.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/27/Spodoptera_litura_larvae.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+    "base": "pest-thrips-tabaci",
+    "ok": true,
+    "query": "Onion thrips Thrips tabaci",
+    "title": "File:Thrips tabaci, Frankliniella occidentalis.jpg",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Thrips_tabaci%2C_Frankliniella_occidentalis.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  }
+]

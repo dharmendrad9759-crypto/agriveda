@@ -110,7 +110,7 @@ export async function fetchNearbyOutbreaks(
 
 export async function submitOutbreakReport(
   input: SubmitOutbreakInput
-): Promise<{ report: PublicOutbreakReport; clusters: OutbreakCluster[] }> {
+): Promise<{ report: PublicOutbreakReport; clusters: OutbreakCluster[]; pushSent?: number }> {
   if (!isSupabaseConfigured()) {
     queueOutbreakReport(input);
     throw new Error("Offline — report queued for sync when Supabase is available.");
@@ -149,6 +149,7 @@ export async function submitOutbreakReport(
   return (await res.json()) as {
     report: PublicOutbreakReport;
     clusters: OutbreakCluster[];
+    pushSent?: number;
   };
 }
 

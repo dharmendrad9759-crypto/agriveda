@@ -30,6 +30,7 @@ import {
   openAppLocationPermissionSettings,
   openDeviceLocationSettings,
 } from "@/lib/openLocationSettings";
+import IntegrationStatusBanner from "@/components/settings/IntegrationStatusBanner";
 
 function ShareAgrivedaButton() {
   const { showToast } = useToast();
@@ -171,6 +172,9 @@ export default function SettingsPage() {
       subtitle={t("settingsSubtitle")}
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("settingsTitle") }]}
     >
+      <div className="mb-4 lg:col-span-2 xl:col-span-3">
+        <IntegrationStatusBanner />
+      </div>
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <DarkCard delay={0}>
           <div className="flex flex-col items-center text-center">
@@ -243,7 +247,9 @@ export default function SettingsPage() {
             <p className="pb-2 text-sm font-semibold text-[var(--av-text-primary)]">{t("settingsRegionalLang")}</p>
             <p className="pb-2 text-[10px] text-[var(--av-text-muted)]">{t("settingsRegionalLangHint")}</p>
             <SettingsRow label={t("settingsWeatherAlerts")} toggle={{ on: settings.weatherAlerts, onChange: (v) => update({ weatherAlerts: v }) }} />
+            <p className="pb-1 text-[10px] text-[var(--av-text-muted)]">डिवाइस पर स्थानीय सूचना · FCM जब सर्वर तैयार हो</p>
             <SettingsRow label={t("settingsPestAlerts")} toggle={{ on: settings.pestAlerts, onChange: (v) => update({ pestAlerts: v }) }} />
+            <p className="pb-1 text-[10px] text-[var(--av-text-muted)]">आस-पास outbreak push · ऐप में /alerts भी</p>
             <SettingsRow label={t("settingsFertilizerReminders")} toggle={{ on: settings.fertilizerReminders, onChange: (v) => update({ fertilizerReminders: v }) }} />
             <SettingsRow
               label={t("settingsMarketAlerts")}

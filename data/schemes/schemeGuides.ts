@@ -43,7 +43,6 @@ export const SCHEME_GUIDE_IDS = [
   "pm-kisan",
   "pmfby",
   "smam",
-  "soil-health",
 ] as const;
 
 export type SchemeGuideId = (typeof SCHEME_GUIDE_IDS)[number];
@@ -62,7 +61,7 @@ export const schemeGuides: Record<SchemeGuideId, SchemeGuide> = {
     nameHi: "किसान क्रेडिट कार्ड (KCC)",
     taglineHi: "बीज-खाद-मजदूरी के लिए घूमता सस्ता कर्ज — पहले तैयारी, फिर बैंक/पोर्टल",
     portal: "https://www.jansamarth.in",
-    portalLabelHi: "JanSamarth पर KCC आवेदन खोलें",
+    portalLabelHi: "JanSamarth आधिकारिक पोर्टल पर जाएं",
     branchNoteHi: "या नजदीकी बैंक / CSC में फॉर्म भरवाएँ — PM-KISAN लाभार्थी अक्सर आसान रास्ता पाते हैं।",
     showKccCalculator: true,
     softFailHi: softFail,
@@ -97,7 +96,7 @@ export const schemeGuides: Record<SchemeGuideId, SchemeGuide> = {
       },
       {
         id: "go",
-        titleHi: "अब सरकारी फॉर्म",
+        titleHi: "अब आधिकारिक पोर्टल",
         bodyHi: "तैयारी पूरी हो तो JanSamarth / बैंक पर आवेदन खोलें।",
       },
     ],
@@ -133,7 +132,7 @@ export const schemeGuides: Record<SchemeGuideId, SchemeGuide> = {
     nameHi: "पीएम-किसान",
     taglineHi: "आय सहायता DBT — पंजीकरण/e-KYC और सुधार यहीं तैयार करें",
     portal: "https://pmkisan.gov.in",
-    portalLabelHi: "PM-KISAN पोर्टल खोलें",
+    portalLabelHi: "PM-KISAN आधिकारिक पोर्टल पर जाएं",
     softFailHi: softFail,
     steps: [
       {
@@ -182,7 +181,7 @@ export const schemeGuides: Record<SchemeGuideId, SchemeGuide> = {
     nameHi: "फसल बीमा (PMFBY)",
     taglineHi: "अधिसूचित फसल का बीमा — कट-ऑफ से पहले तैयार रहें",
     portal: "https://pmfby.gov.in",
-    portalLabelHi: "PMFBY पोर्टल खोलें",
+    portalLabelHi: "PMFBY आधिकारिक पोर्टल पर जाएं",
     branchNoteHi: "ऋणी किसान: बैंक अक्सर KCC से जोड़ देता है — पासबुक/पर्ची जाँचें।",
     softFailHi: softFail,
     steps: [
@@ -232,7 +231,7 @@ export const schemeGuides: Record<SchemeGuideId, SchemeGuide> = {
     nameHi: "कृषि यंत्रीकरण (SMAM)",
     taglineHi: "रोटावेटर/ड्रिल आदि — पहले अनुमोदित सूची, फिर राज्य/राष्ट्रीय पोर्टल",
     portal: "https://agrimachinery.nic.in",
-    portalLabelHi: "राष्ट्रीय यंत्र पोर्टल खोलें",
+    portalLabelHi: "राष्ट्रीय यंत्र आधिकारिक पोर्टल पर जाएं",
     branchNoteHi: "अपने राज्य का कृषि यंत्र पोर्टल / जिला कार्यालय से टोकन विंडो पूछें।",
     softFailHi: softFail,
     showMachineryCalculator: true,

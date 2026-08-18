@@ -1,10 +1,31 @@
 /**
  * Push alerts — FCM on native when configured; local notifications as fallback.
+ * Token is uploaded to /api/push/register so server can send expert/outbreak alerts.
  */
 import { isCapacitorNative } from "@/lib/capacitorNav";
 import { readStorage } from "@/lib/storage";
 
 const TOKEN_KEY = "agriveda-push-token";
+
+async function uploadPushToken(token: string): Promise<void> {
+  try {
+    let lastLat: number | undefined;
+    let lastLon: number | undefined;
+    const loc = readStorage<{ lat?: number; lon?: number } | null>("agriveda-last-location", null);
+    if (typeof loc?.lat === "number" && typeof loc?.lon === "number") {
+      lastLat = loc.lat;
+      lastLon = loc.lon;
+    }
+    await fetch("/api/push/register", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, lastLat, lastLon }),
+    });
+  } catch {
+    /* offline / unauthenticated */
+  }
+}
 
 export async function registerFarmerPush(): Promise<string | null> {
   if (typeof window === "undefined" || !isCapacitorNative()) return null;
@@ -21,11 +42,16 @@ export async function registerFarmerPush(): Promise<string | null> {
       void PushNotifications.addListener("registration", (token) => {
         const value = token.value;
         localStorage.setItem(TOKEN_KEY, value);
+        void uploadPushToken(value);
         resolve(value);
       });
       void PushNotifications.addListener("registrationError", () => resolve(null));
       void PushNotifications.register().catch(() => resolve(null));
-      window.setTimeout(() => resolve(localStorage.getItem(TOKEN_KEY)), 8000);
+      window.setTimeout(() => {
+        const existing = localStorage.getItem(TOKEN_KEY);
+        if (existing) void uploadPushToken(existing);
+        resolve(existing);
+      }, 8000);
     });
   } catch {
     return null;
