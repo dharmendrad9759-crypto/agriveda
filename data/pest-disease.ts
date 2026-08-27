@@ -164,6 +164,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "फल छेदक (Fruit Borer)", scientificName: "Helicoverpa armigera", image: IMG3, stage: "फल लगना", iracGroup: "IRAC 28", control: "Emamectin benzoate / HaNPV — ETL पर" },
       { id: "p2", name: "सफेद मक्खी (Whitefly)", scientificName: "Bemisia tabaci", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 4A", control: "Thiamethoxam / Neem oil" },
       { id: "p3", name: "पत्ती खनक (Leaf Miner)", scientificName: "Liriomyza trifolii", image: IMG, stage: "वनस्पति", iracGroup: "IRAC 17", control: "Abamectin / पीले चिपचिपे जाल" },
+      { id: "p4", name: "तंबाकू की इल्ली (Tobacco Caterpillar)", scientificName: "Spodoptera litura", image: IMG3, stage: "वनस्पति–फल", iracGroup: "IRAC 28 / 15 / 6", control: "Chlorantraniliprole / Novaluron / Emamectin — ETL पर" },
     ],
     diseases: [
       { id: "d1", name: "शुरुआती झुलसा (Early Blight)", pathogen: "Alternaria solani", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC M5", control: "Mancozeb + Copper oxychloride" },

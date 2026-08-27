@@ -11,6 +11,7 @@ import {
   type PaddyEcology,
 } from "@/lib/crops/cropVarieties";
 import { stageLabelHi, varietyTraitHi } from "@/lib/i18n/farmer-display";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { Crop } from "@/types/crop";
 import { MapPin, TrendingUp } from "lucide-react";
@@ -133,6 +134,7 @@ function VarietyCard({
 export default function CropVarietiesSection({ crop }: { crop: Crop }) {
   const { t, locale } = useLocale();
   const hi = locale === "hi";
+  const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
   const { profile } = useFarmerProfile();
   const state = profile.state.trim() || undefined;
   const district = profile.district.trim();
@@ -247,8 +249,8 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
         <SectionHeader title={hi ? "अनुशंसित किस्में" : "Recommended Varieties"} />
         <p className="mt-1 text-xs text-[var(--av-text-muted)]">
           {hi
-            ? `${crop.name} — राज्य के हिसाब से सरकारी और प्राइवेट किस्में`
-            : `${crop.name} — state-wise government and private (hybrid) picks`}
+            ? `${cropLabel} — राज्य के हिसाब से सरकारी और प्राइवेट किस्में`
+            : `${cropLabel} — state-wise government and private (hybrid) picks`}
         </p>
         <div className="mt-3 space-y-4">
           {filtered.length === 0 ? (

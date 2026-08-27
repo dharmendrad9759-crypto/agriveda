@@ -6,10 +6,12 @@ import { cn } from "@/lib/cn";
 import GrowthStageImage, {
   growthKindFromStage,
 } from "@/components/crops/GrowthStageImage";
+import CropGrowthHonestySection from "@/components/crops/sections/CropGrowthHonestySection";
 import {
   getGrowthStageCropBadge,
   getGrowthStageImage,
 } from "@/lib/crops/growthStageImages";
+import { getGrowthHonestyForStage } from "@/lib/crops/growthHonesty";
 import type { CropStage } from "@/types/crop-management";
 
 interface Props {
@@ -34,6 +36,11 @@ export default function AnimatedGrowthTimeline({ stages, cropSlug, cropName }: P
         index: active,
       })
     : "/images/growth/growth-stage-veg.jpg";
+  const honesty = getGrowthHonestyForStage(
+    cropSlug,
+    activeStage?.title,
+    activeStage?.period
+  );
 
   return (
     <div className="space-y-4">
@@ -103,32 +110,36 @@ export default function AnimatedGrowthTimeline({ stages, cropSlug, cropName }: P
           animate={{ opacity: 1, x: 0 }}
           exit={reduced ? undefined : { opacity: 0, x: -12 }}
           transition={{ duration: 0.22 }}
-          className="overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]"
+          className="space-y-3"
         >
-          <div className="relative h-40 w-full sm:h-48">
-            <GrowthStageImage src={activeImage} kind={activeKind} className="absolute inset-0" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
-            <div className="absolute inset-x-0 bottom-0 p-4">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-200">
-                {activeStage?.period}
-              </p>
-              <p className="mt-0.5 text-base font-extrabold text-white">{activeStage?.title}</p>
+          <div className="overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]">
+            <div className="relative h-40 w-full sm:h-48">
+              <GrowthStageImage src={activeImage} kind={activeKind} className="absolute inset-0" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
+              <div className="absolute inset-x-0 bottom-0 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-200">
+                  {activeStage?.period}
+                </p>
+                <p className="mt-0.5 text-base font-extrabold text-white">{activeStage?.title}</p>
+              </div>
             </div>
+            <ul className="space-y-2 p-4">
+              {activeStage?.keyPoints.map((point, pi) => (
+                <motion.li
+                  key={point}
+                  initial={reduced ? false : { opacity: 0, x: 8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: pi * 0.05 }}
+                  className="flex gap-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-sm leading-relaxed text-[var(--av-text-secondary)]"
+                >
+                  <span className="shrink-0 font-bold text-[var(--av-accent)]">{pi + 1}.</span>
+                  <span className="break-words text-[var(--av-text-primary)]">{point}</span>
+                </motion.li>
+              ))}
+            </ul>
           </div>
-          <ul className="space-y-2 p-4">
-            {activeStage?.keyPoints.map((point, pi) => (
-              <motion.li
-                key={point}
-                initial={reduced ? false : { opacity: 0, x: 8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: pi * 0.05 }}
-                className="flex gap-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-sm leading-relaxed text-[var(--av-text-secondary)]"
-              >
-                <span className="shrink-0 font-bold text-[var(--av-accent)]">{pi + 1}.</span>
-                <span className="break-words text-[var(--av-text-primary)]">{point}</span>
-              </motion.li>
-            ))}
-          </ul>
+
+          {honesty ? <CropGrowthHonestySection data={honesty} /> : null}
         </motion.div>
       </AnimatePresence>
     </div>

@@ -28,17 +28,12 @@ export default function CropProblemCard() {
 
   return (
     <section aria-label={isHi ? "फसल समस्या पहचानें" : "Identify crop problem"}>
-      <div
-        className="relative overflow-hidden rounded-2xl border border-[#0A4D32]/40 p-3.5 shadow-[var(--av-shadow-md)]"
-        style={{
-          background: "linear-gradient(155deg, #0C6B44 0%, #0B5C3B 40%, #064E3B 100%)",
-        }}
-      >
+      <div className="relative overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 p-3.5 shadow-lg shadow-emerald-900/25">
         <div className="relative z-10">
-          <p className="text-[16px] font-black leading-tight text-white">
+          <p className="text-[16px] font-bold leading-tight text-white sm:text-[17px]">
             {isHi ? "खेत में क्या समस्या है?" : "What is the field problem?"}
           </p>
-          <p className="mt-1 text-[12px] font-semibold leading-snug text-emerald-100/90">
+          <p className="mt-1 text-[12px] font-medium leading-snug text-emerald-100/85">
             {isHi
               ? "समस्या पहचानो · कारण समझो · सही समाधान पाओ"
               : "Spot problem · know cause · get the right cure"}
@@ -49,7 +44,7 @@ export default function CropProblemCard() {
         <div className="relative z-10 mt-3.5 grid grid-cols-5 gap-1.5" aria-hidden>
           {problems.map((problem) => (
             <div key={problem.slug} className="flex min-w-0 flex-col items-center">
-              <span className="relative block aspect-square w-full overflow-hidden rounded-[14px] border-[2.5px] border-white bg-white/10 shadow-[0_6px_14px_-6px_rgba(0,0,0,0.55)] ring-2 ring-white/25">
+              <span className="relative block aspect-square w-full overflow-hidden rounded-[14px] border border-white/20 bg-white/5 shadow-md shadow-black/30">
                 <Image
                   src={problem.image}
                   alt=""
@@ -58,7 +53,7 @@ export default function CropProblemCard() {
                   className="object-cover"
                 />
               </span>
-              <span className="mt-1.5 line-clamp-2 min-h-[2rem] text-center text-[10px] font-bold leading-tight text-white">
+              <span className="mt-1.5 line-clamp-2 min-h-[2rem] text-center text-[10px] font-bold leading-tight text-emerald-50">
                 {isHi ? problem.nameHi : problem.nameEn}
               </span>
             </div>
@@ -68,13 +63,13 @@ export default function CropProblemCard() {
         <AppLink
           href="/crop-problems"
           onClick={() => track("tool_open", { href: "/crop-problems", label: "home_crop_problem_cta" })}
-          className="relative z-10 mt-3 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-[14px] bg-[#16A34A] px-4 py-3 text-[14px] font-black text-white shadow-md shadow-black/25 transition active:scale-[0.99]"
+          className="relative z-10 mt-3 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-[14px] bg-white/90 px-4 py-3 text-[14px] font-bold text-emerald-950 shadow-md shadow-black/20 transition active:scale-[0.99]"
         >
           {isHi ? "सभी फसल · समस्याएं देखें" : "See all crop problems"}
           <ArrowRight size={18} strokeWidth={2.5} />
         </AppLink>
 
-        <p className="relative z-10 mt-2 text-center text-[10px] font-semibold text-emerald-100/85">
+        <p className="relative z-10 mt-2 text-center text-[10px] font-medium text-emerald-200/90">
           {isHi ? "इलाज · दवा · कब छिड़कें — अंदर" : "Cure · dose · when to spray — inside"}
         </p>
       </div>

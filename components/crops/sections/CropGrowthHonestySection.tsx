@@ -2,21 +2,22 @@
 
 import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
-import { getPaddyGrowthHonesty } from "@/data/crops/paddyGrowthHonesty";
+import type { GrowthHonestyPayload } from "@/lib/crops/growthHonesty";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { AlertTriangle, Droplets, Sprout } from "lucide-react";
 
 const ICONS = [Sprout, AlertTriangle, Droplets] as const;
 
-/** Compact tillering / tonic honesty for paddy — growth tab + optional overview */
+/** Stage-gated honesty card — only render when parent passes matching data. */
 export default function CropGrowthHonestySection({
+  data,
   compact = false,
 }: {
+  data: GrowthHonestyPayload;
   compact?: boolean;
 }) {
   const { locale } = useLocale();
   const hi = locale === "hi";
-  const data = getPaddyGrowthHonesty();
   const blocks = compact ? data.blocks.slice(0, 2) : data.blocks;
 
   return (

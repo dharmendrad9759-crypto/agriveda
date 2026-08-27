@@ -9,6 +9,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { isHindiLocale } from "@/lib/i18n/farmer-ui";
 import { riskLabelHi, stageLabelHi } from "@/lib/i18n/farmer-display";
 import { getCropStageAlerts, getCropTasksDue } from "@/lib/crops/cropAgroMeta";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import { AV } from "@/lib/design/tokens";
 import type { Crop } from "@/types/crop";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
@@ -21,6 +22,7 @@ interface Props {
 export default function CropCalendarSection({ crop, detail }: Props) {
   const { t, locale } = useLocale();
   const hi = isHindiLocale(locale);
+  const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
   const harvestStage = detail.growthStages[detail.growthStages.length - 1];
   const tasksDue = getCropTasksDue(crop);
   const stageAlerts = getCropStageAlerts(crop);
@@ -37,7 +39,7 @@ export default function CropCalendarSection({ crop, detail }: Props) {
           <div>
             <p className="text-sm font-bold text-[var(--av-text-primary)]">{t("cropCalendarTitle")}</p>
             <p className="text-xs text-[var(--av-text-muted)]">
-              {crop.name} · {crop.durationDays}
+              {cropLabel} · {crop.durationDays}
             </p>
           </div>
         </div>

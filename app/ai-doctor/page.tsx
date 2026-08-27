@@ -331,7 +331,7 @@ export default function AIDoctorPage() {
         >
           <p className="font-bold">दवा लगाते समय</p>
           <p className="mt-1 text-[11px] font-medium opacity-90">
-            दवा का लेबल पढ़ें और कृषि अधिकारी / कृषि विज्ञान केंद्र की सलाह मानें।
+            दवा का लेबल पढ़ें।
           </p>
         </div>
 
@@ -625,7 +625,7 @@ export default function AIDoctorPage() {
                     ) : null}
 
                     <p className="mt-3 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                      दवा लगाते समय लेबल और स्थानीय कृषि अधिकारी की सलाह मानें।
+                      दवा लगाते समय लेबल पढ़ें।
                     </p>
                   </div>
 

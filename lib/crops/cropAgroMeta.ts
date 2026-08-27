@@ -2,6 +2,63 @@ import type { Crop } from "@/types/crop";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
 import { getCropManagementProfile } from "@/data/crop-management";
 import type { CropStageAlert } from "@/data/mock/crop-overview";
+import { getCropHindiName } from "@/lib/crops/crop-display";
+
+/** English / mixed pest-disease names → simple Hindi for farmer tips */
+export function farmerThreatHi(raw: string | undefined): string {
+  if (!raw?.trim()) return "कीट";
+  const s = raw.trim();
+  const map: [RegExp, string][] = [
+    [/whitefly|सफेद\s*मक्खी|safed/i, "सफेद मक्खी"],
+    [/thrips|थ्रिप्स|रस\s*चूसक/i, "थ्रिप्स"],
+    [/aphid|माहू|माहू/i, "माहू"],
+    [/jassid|hopper|फुदका|तेला/i, "फुदका"],
+    [/fruit\s*borer|फल\s*छेदक|tomato\s*fruit/i, "फल छेदक"],
+    [/shoot\s*(and|&)?\s*fruit\s*borer|तना.*फल/i, "तना–फल छेदक"],
+    [/pink\s*bollworm|गुलाबी\s*सुंडी/i, "गुलाबी सुंडी"],
+    [/bollworm|सुंडी/i, "सुंडी"],
+    [/stem\s*borer|तना\s*छेदक/i, "तना छेदक"],
+    [/fall\s*army|फौजी\s*कीड़ा|FAW/i, "फौजी कीड़ा"],
+    [/caterpillar|इल्ली|leaf\s*eating/i, "इल्ली"],
+    [/stem\s*fly|तना\s*मक्खी/i, "तना मक्खी"],
+    [/fruit\s*fly|फल\s*मक्खी/i, "फल मक्खी"],
+    [/blast|ब्लास्ट/i, "ब्लास्ट"],
+    [/blight|झुलसा/i, "झुलसा"],
+    [/wilt|उकठा/i, "उकठा"],
+    [/rust|रतुआ/i, "रतुआ"],
+    [/mildew|मिल्ड्यू|पाउडरी/i, "मिल्ड्यू"],
+    [/leaf\s*curl|पत्ती\s*मरोड़/i, "पत्ती मरोड़"],
+    [/mosaic|मोज़ेक/i, "मोज़ेक"],
+    [/rot|सड़न/i, "सड़न"],
+  ];
+  for (const [re, hi] of map) {
+    if (re.test(s)) return hi;
+  }
+  // Already Devanagari-heavy → keep short first phrase
+  if (/[\u0900-\u097F]/.test(s)) {
+    return s.split(/[—(,/|]/)[0]?.trim() || s;
+  }
+  return s.split(/[—(,/|]/)[0]?.trim() || s;
+}
+
+function farmerStageHi(raw: string | undefined, fallback = "बीच की अवस्था"): string {
+  if (!raw?.trim()) return fallback;
+  const s = raw.trim();
+  if (/[\u0900-\u097F]/.test(s)) return s.split(/[—(]/)[0]?.trim() || s;
+  const map: [RegExp, string][] = [
+    [/transplant|रोपाई|planting/i, "रोपाई"],
+    [/sowing|बुवाई|establishment/i, "बुवाई"],
+    [/flower|फूल|bloom|silking|tassel/i, "फूल आना"],
+    [/fruit|fruiting|pod|boll|tuber/i, "फल लगना"],
+    [/vegetative|वृद्धि|mid\s*growth|peak/i, "बढ़वार"],
+    [/maturity|harvest|पकना|कटाई/i, "कटाई"],
+    [/nursery|नर्सरी/i, "नर्सरी"],
+  ];
+  for (const [re, hi] of map) {
+    if (re.test(s)) return hi;
+  }
+  return s.split(/[—(]/)[0]?.trim() || fallback;
+}
 
 export type RiskLevel = "high" | "medium" | "low";
 
@@ -309,25 +366,42 @@ export function getCropDiseaseRisk(crop: Crop, detail?: EnrichedCropDetail): Cro
 export function getCropIrrigationSummary(crop: Crop) {
   const agro = getCropAgroMeta(crop.slug);
   const critical = crop.irrigationManagement.criticalStages[0];
+  const more = crop.irrigationManagement.criticalStages
+    .slice(1, 3)
+    .map((s) => farmerStageHi(s))
+    .filter(Boolean);
   return {
     totalWater: agro.waterMm,
     detail: agro.waterDetail,
-    frequency: crop.irrigationManagement.schedule[0] ?? "As per soil moisture",
+    frequency: crop.irrigationManagement.schedule[0] ?? "मिट्टी देखकर पानी दें",
     criticalNote: critical
-      ? `Critical: ${critical}. ${crop.irrigationManagement.criticalStages.slice(1, 3).join(" · ")}`
+      ? `ज़रूरी पानी: ${farmerStageHi(critical)}${more.length ? ` · ${more.join(" · ")}` : ""}`
       : agro.waterDetail,
   };
 }
 
 export function getCropExpertTip(crop: Crop) {
-  const pest = crop.cropProtection.majorPests[0];
-  const stage = crop.irrigationManagement.criticalStages[0] ?? "mid growth";
+  const pestHi = farmerThreatHi(crop.cropProtection.majorPests[0]);
+  const stageHi = farmerStageHi(
+    crop.irrigationManagement.criticalStages[0],
+    "बढ़वार"
+  );
+  const waterStages = crop.irrigationManagement.criticalStages
+    .slice(0, 2)
+    .map((s) => farmerStageHi(s))
+    .filter(Boolean);
+  const cropHi = getCropHindiName(crop.slug) || crop.name;
+
   return {
-    title: `${crop.name} — field tip`,
-    tip: pest
-      ? `At ${stage}, scout every 5–7 days for ${pest}. Spray only after threshold; keep irrigation on critical stages (${crop.irrigationManagement.criticalStages.slice(0, 2).join(", ") || "as per crop guide"}).`
-      : `For ${crop.name}, maintain moisture at critical stages and use certified seed of recommended varieties.`,
-    action: { label: "Ask AI Doctor", href: "/ai-doctor" as const },
+    title: `${cropHi} — खेत की सलाह`,
+    tip: crop.cropProtection.majorPests[0]
+      ? `${stageHi} पर हर 5–7 दिन खेत घूमकर ${pestHi} देखें। कीड़े ज़्यादा हों तभी दवा छिड़कें। ${
+          waterStages.length
+            ? `${waterStages.join(" और ")} पर पानी न छोड़ें।`
+            : "ज़रूरी अवस्था पर पानी न छोड़ें।"
+        }`
+      : `${cropHi} में अच्छी बीज लगाएँ और ज़रूरी अवस्था पर मिट्टी गीली रखें।`,
+    action: { label: "AI डॉक्टर से पूछें", href: "/ai-doctor" as const },
   };
 }
 
@@ -341,26 +415,31 @@ export function getCropStageAlerts(crop: Crop): CropStageAlert[] {
     return [
       {
         id: "1",
-        stage: stages[1]?.title.split(/[—(]/)[0]?.trim() || stages[1]?.title || "Mid growth",
+        stage: farmerStageHi(stages[1]?.title, "बढ़वार"),
         alert: pests[0]
-          ? `Watch ${pests[0]} — scout regularly; spray only at ETL`
-          : "Scout weekly for early pest buildup",
+          ? `${farmerThreatHi(pests[0])} देखें — हर हफ्ते खेत घूमें; कीड़े ज़्यादा हों तभी दवा डालें`
+          : "हर हफ्ते खेत घूमकर कीड़े देखें",
         level: "high",
       },
       {
         id: "2",
-        stage: stages[Math.floor(stages.length / 2)]?.title.split(/[—(]/)[0]?.trim() || "Peak growth",
+        stage: farmerStageHi(
+          stages[Math.floor(stages.length / 2)]?.title,
+          "फूल–फल"
+        ),
         alert: diseases[0]
-          ? `${diseases[0]} risk if weather favourable — follow IDM`
+          ? `${farmerThreatHi(diseases[0])} का खतरा — नमी और मौसम देखकर बचाव करें`
           : irrig[0]
-            ? `Maintain moisture at ${irrig[0]}`
-            : "Keep nutrients balanced; avoid stress",
+            ? `${farmerStageHi(irrig[0])} पर पानी ज़रूर दें`
+            : "खाद संतुलित रखें; पानी की कमी न होने दें",
         level: "medium",
       },
       {
         id: "3",
-        stage: stages[stages.length - 1]?.title.split(/[—(]/)[0]?.trim() || "Maturity",
-        alert: `Harvest window: ${crop.harvestAndYield.harvestingTime}. ${crop.harvestAndYield.maturitySigns[0] ?? "Check maturity signs"}`,
+        stage: farmerStageHi(stages[stages.length - 1]?.title, "कटाई"),
+        alert: `कटाई: ${crop.harvestAndYield.harvestingTime}। ${
+          crop.harvestAndYield.maturitySigns[0] ?? "पके लक्षण देखकर काटें"
+        }`,
         level: "low",
       },
     ];
@@ -369,19 +448,25 @@ export function getCropStageAlerts(crop: Crop): CropStageAlert[] {
   return [
     {
       id: "1",
-      stage: "Early growth",
-      alert: pests[0] ? `Monitor ${pests[0]}` : "Establish crop with recommended seed treatment",
+      stage: "शुरुआत",
+      alert: pests[0]
+        ? `${farmerThreatHi(pests[0])} पर नज़र रखें`
+        : "अच्छी बीज और बीज उपचार से फसल शुरू करें",
       level: "high",
     },
     {
       id: "2",
-      stage: "Mid season",
-      alert: diseases[0] ? `Watch for ${diseases[0]}` : irrig[0] ? `Critical water: ${irrig[0]}` : "Follow fertilizer splits",
+      stage: "बीच का समय",
+      alert: diseases[0]
+        ? `${farmerThreatHi(diseases[0])} देखें`
+        : irrig[0]
+          ? `पानी ज़रूरी: ${farmerStageHi(irrig[0])}`
+          : "खाद की किस्त समय पर डालें",
       level: "medium",
     },
     {
       id: "3",
-      stage: "Harvest",
+      stage: "कटाई",
       alert: crop.harvestAndYield.harvestingTime,
       level: "low",
     },
@@ -395,21 +480,23 @@ export function getCropTasksDue(crop: Crop) {
     {
       id: "1",
       task: fert
-        ? `${fert.stage}: ${fert.details[0] ?? "Apply scheduled fertilizer"}`
-        : `Basal: ${crop.fertilizerSchedule.basalDose[0] ?? "Apply basal fertilizer"}`,
-      due: "This week",
+        ? `${fert.stage}: ${fert.details[0] ?? "खाद डालें"}`
+        : `बुवाई खाद: ${crop.fertilizerSchedule.basalDose[0] ?? "शुरू की खाद डालें"}`,
+      due: "इस हफ्ते",
       priority: "high" as const,
     },
     {
       id: "2",
-      task: pest ? `Scout for ${pest}` : "Scout field for pests",
-      due: "In 3–5 days",
+      task: pest
+        ? `${farmerThreatHi(pest)} के लिए खेत देखें`
+        : "खेत में कीड़े देखें",
+      due: "3–5 दिन में",
       priority: "medium" as const,
     },
     {
       id: "3",
-      task: crop.cropProtection.weedManagement[0] ?? "Timely weeding / herbicide",
-      due: "Next week",
+      task: crop.cropProtection.weedManagement[0] ?? "समय पर निराई / खरपतवार दवा",
+      due: "अगले हफ्ते",
       priority: "low" as const,
     },
   ];

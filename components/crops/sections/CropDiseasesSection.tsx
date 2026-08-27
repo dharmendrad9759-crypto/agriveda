@@ -1,21 +1,21 @@
 "use client";
 
 import RiskBadge from "@/components/shell/RiskBadge";
-import AppLink from "@/components/ui/AppLink";
-import ThreatImage from "@/components/ui/ThreatImage";
+import FarmerSplitCard from "@/components/ui/FarmerSplitCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getDiseaseSpeciesImage } from "@/lib/pests/threatSpeciesImages";
 import {
-  catalogThreatDetailHref,
   matchCatalogThreat,
+  threatCardDetailHref,
 } from "@/lib/pests/matchCatalogThreat";
 import { getEnrichedCropThreats, threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
-import { ChevronRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 function diseaseThumb(pathogen?: string, catalogImage?: string) {
@@ -29,6 +29,7 @@ function diseaseThumb(pathogen?: string, catalogImage?: string) {
 export default function CropDiseasesSection({ crop }: { crop: Crop }) {
   const { t, locale } = useLocale();
   const hi = locale === "hi";
+  const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
   const [search, setSearch] = useState("");
 
   const profile = useMemo(
@@ -54,11 +55,13 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
         name: d.diseaseName,
         scientific: d.pathogen,
       });
-      const detailHref =
-        catalogThreatDetailHref(crop.slug, "disease", match) ??
-        `/pest-diseases?crop=${encodeURIComponent(crop.slug)}&type=disease`;
+      const detailHref = threatCardDetailHref(crop.slug, "disease", match, {
+        name: d.diseaseName,
+        scientific: d.pathogen,
+        index: i,
+      });
       return {
-        id: match?.id ?? `${crop.slug}-dis-${i}`,
+        id: match?.id ?? `md-${i}`,
         detailHref,
         name: d.diseaseName,
         scientific: d.pathogen,
@@ -99,7 +102,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
     <div className="space-y-3">
       <div>
         <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
-          {t("cropDiseasesTitle")} — {crop.name}
+          {t("cropDiseasesTitle")} — {cropLabel}
         </h3>
         <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
           {hi
@@ -118,48 +121,38 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
         />
       </div>
 
-      <ul className="space-y-2">
+      <ul className="space-y-2.5">
         {filtered.map((d) => {
           const href =
             "detailHref" in d && d.detailHref
               ? String(d.detailHref)
               : threatDetailPath(crop.slug, "disease", d.id);
+          const img =
+            "image" in d
+              ? String(d.image)
+              : diseaseThumb("scientific" in d ? String(d.scientific) : undefined);
+          const sci = "scientific" in d ? String(d.scientific) : "";
+          const typeLabel = "type" in d && d.type ? String(d.type) : "";
           return (
             <li key={d.id}>
-              <AppLink href={href} className="av-card av-card-hover flex items-center gap-3 px-3 py-3">
-                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
-                  <ThreatImage
-                    src={
-                      "image" in d
-                        ? String(d.image)
-                        : diseaseThumb(
-                            "scientific" in d ? String(d.scientific) : undefined
-                          )
-                    }
-                    alt={d.name}
-                    category="fungal"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-extrabold text-[var(--av-text-primary)]">{d.name}</p>
+              <FarmerSplitCard
+                href={href}
+                title={d.name}
+                subtitle={sci}
+                image={img}
+                threatCategory="fungal"
+                openHint={hi ? "पूरा रोग पेज" : "Open disease page"}
+                meta={
+                  <span className="flex flex-wrap items-center gap-1.5">
                     <RiskBadge level={d.risk} />
-                  </div>
-                  <p className="mt-0.5 line-clamp-1 text-[11px] italic text-[var(--av-text-muted)]">
-                    {"scientific" in d ? String(d.scientific) : ""}
-                  </p>
-                  {"type" in d && d.type ? (
-                    <p className="mt-1 text-[10px] font-semibold text-[var(--av-accent)]">
-                      {String(d.type)}
-                    </p>
-                  ) : null}
-                  <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-                    {hi ? "पूरा रोग पेज खोलें →" : "Open disease page →"}
-                  </p>
-                </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
-              </AppLink>
+                    {typeLabel ? (
+                      <span className="text-[10px] font-semibold text-[var(--av-accent)]">
+                        {typeLabel}
+                      </span>
+                    ) : null}
+                  </span>
+                }
+              />
             </li>
           );
         })}

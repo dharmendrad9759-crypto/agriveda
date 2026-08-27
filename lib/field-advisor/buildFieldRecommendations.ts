@@ -49,8 +49,8 @@ export function buildFieldRecommendations(alerts: FarmAlert[]): FieldRecommendat
     }));
   }
   return [
-    { crop: "धान (Paddy)", tip: "टिलरिंग में नमी बनाए रखें — यूरिया split dose", href: "/crops/paddy?tab=fertilizer" },
-    { crop: "सोयाबीन (Soybean)", tip: "फूल अवस्था में कीट नियंत्रण की जाँच करें", href: "/crops/soybean?tab=pests" },
-    { crop: "मक्का (Maize)", tip: "वानस्पतिक अवस्था में सिंचाई जारी रखें", href: "/crops/maize?tab=irrigation" },
+    { crop: "धान (Paddy)", tip: "टिलरिंग में नमी बनाए रखें — यूरिया split dose", href: "/crops/paddy/care/fertilizer" },
+    { crop: "सोयाबीन (Soybean)", tip: "फूल अवस्था में कीट नियंत्रण की जाँच करें", href: "/crops/soybean/care/pests" },
+    { crop: "मक्का (Maize)", tip: "वानस्पतिक अवस्था में सिंचाई जारी रखें", href: "/crops/maize/care/irrigation" },
   ];
 }

@@ -1,4 +1,4 @@
-import { dataKeyForSlug } from "@/data/agriveda2/crop-slug-map";
+﻿import { dataKeyForSlug } from "@/data/agriveda2/crop-slug-map";
 
 export type NutrientValue = string | number | Record<string, string | number | boolean>;
 
@@ -19,230 +19,735 @@ export interface FertilizerCropEntry {
   fertilizer_bags_per_acre?: Record<string, string>;
   fertilizer_bags?: Record<string, string>;
   schedule?: { time: string; apply: string }[];
+  /** One short farmer tip shown under the timeline */
+  farmerTipHi?: string;
 }
 
 export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
   "Gehun (Wheat)": {
-    N: { total: 50, basal: 25, top1: "CRI stage (21 DAS): 12.5 kg", top2: "Tillering (45 DAS): 12.5 kg" },
-    P: { total: 25, basal: 25, note: "Poora P bunai ke samay dena hai" },
-    K: { total: 12, basal: 12, note: "Poora K bunai ke samay" },
-    S: { total: 8, source: "Gypsum 40 kg/acre — bunai ke samay", note: "Zyada zaroori agar SSP use na ho" },
-    Zn: { total: 10, source: "ZnSO4 21% — bunai ke samay (~10 kg/acre)", note: "Deficiency soils; ICAR ~25 kg/ha every 2–3 years" },
+    N: {
+      total: 50,
+      basal: 25,
+      top1: "जड़ फूटने पर (21 दिन): 12.5 किग्रा",
+      top2: "कल्ले (45 दिन): 12.5 किग्रा",
+    },
+    P: { total: 25, basal: 25, note: "पूरा फॉस्फोरस बुवाई के समय दें" },
+    K: { total: 12, basal: 12, note: "पूरा पोटाश बुवाई के समय दें" },
+    S: {
+      total: 8,
+      source: "जिप्सम 40 किग्रा/एकड़ — बुवाई के समय",
+      note: "अगर एसएसपी न हो तो ज़्यादा ज़रूरी",
+    },
+    Zn: {
+      total: 10,
+      source: "जिंक सल्फेट 21% — बुवाई के समय (~10 किग्रा/एकड़)",
+      note: "कमी वाली मिट्टी में; हर 2–3 साल में दें",
+    },
     Fe: {
-      apply: "Only if deficiency seen",
-      dose: "FeSO4 10 kg/acre basal OR 0.5% FeSO4 spray",
-      symptoms: "Nyi pattiyaan peeli padna (interveinal chlorosis)",
+      apply: "सिर्फ कमी दिखे तो",
+      dose: "आयरन सल्फेट 10 किग्रा/एकड़ बुवाई पर या 0.5% छिड़काव",
+      symptoms: "नई पत्तियाँ पीली पड़ना",
     },
     fertilizer_bags_per_acre: {
-      DAP: "55 kg (P + N dono milta hai)",
-      Urea: "75 kg (remaining N ke liye)",
-      MOP: "20 kg",
-      Gypsum: "40 kg",
-      ZnSO4_21: "10 kg",
+      DAP: "55 किग्रा",
+      Urea: "75 किग्रा",
+      MOP: "20 किग्रा",
+      Gypsum: "40 किग्रा",
+      ZnSO4_21: "10 किग्रा",
     },
     schedule: [
-      { time: "Bunai ke samay (Basal)", apply: "DAP 55kg + MOP 20kg + Gypsum 40kg + ZnSO4 10kg" },
-      { time: "21 DAS (CRI — pehli sinchai ke baad)", apply: "Urea 38 kg" },
-      { time: "45 DAS (Tillering)", apply: "Urea 37 kg" },
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 55 किग्रा + एमओपी 20 किग्रा + जिप्सम 40 किग्रा + जिंक सल्फेट 10 किग्रा",
+      },
+      { time: "21 दिन बाद (पहली सिंचाई के बाद)", apply: "यूरिया 38 किग्रा" },
+      { time: "45 दिन बाद (कल्ले)", apply: "यूरिया 37 किग्रा" },
     ],
+    farmerTipHi: "नई पत्तियाँ पीली हों तो आयरन सल्फेट 5 ग्राम/लीटर पानी में छिड़कें — ज़रूरत हो तो",
   },
 
   "Dhan (Paddy)": {
-    N: { total: 50, split: "Basal: 12 kg | Tillering (21 DAT): 20 kg | Panicle initiation (45 DAT): 18 kg" },
-    P: { total: 20, basal: 20 },
-    K: { total: 20, split: "Basal: 10 kg | Panicle initiation: 10 kg" },
-    Zn: { total: 10, source: "ZnSO4 21% kg/acre", note: "Khaali khet mein pichli fasal ke baad dena best hai" },
-    S: { total: 8, source: "Gypsum 40 kg/acre", note: "Zyada zaroori is UP/Bihar ki mitti mein" },
-    Fe: {
-      apply: "Agar paudhe peele paden (Fe deficiency)",
-      dose: "FeSO4 0.5% + Citric acid 0.1% spray, 2-3 baar 10 din ke antral par",
+    N: {
+      total: 50,
+      split: "बुवाई/रोपाई: 12 किग्रा | कल्ले (21 दिन): 20 किग्रा | बाली शुरू (45 दिन): 18 किग्रा",
     },
-    fertilizer_bags: { DAP: "44 kg", Urea: "80 kg (total, teen bhagon mein)", MOP: "33 kg", ZnSO4_21: "10 kg" },
+    P: { total: 20, basal: 20 },
+    K: { total: 20, split: "बुवाई: 10 किग्रा | बाली शुरू: 10 किग्रा" },
+    Zn: {
+      total: 10,
+      source: "जिंक सल्फेट 21% किग्रा/एकड़",
+      note: "खाली खेत में पिछली फसल के बाद देना अच्छा",
+    },
+    S: {
+      total: 8,
+      source: "जिप्सम 40 किग्रा/एकड़",
+      note: "यूपी/बिहार की मिट्टी में ज़्यादा ज़रूरी",
+    },
+    Fe: {
+      apply: "अगर पौधे पीले पड़ें (आयरन कमी)",
+      dose: "आयरन सल्फेट 0.5% + नींबू अम्ल 0.1% छिड़काव, 2–3 बार 10 दिन के अंतर पर",
+    },
+    fertilizer_bags: {
+      DAP: "44 किग्रा",
+      Urea: "80 किग्रा (कुल, तीन भागों में)",
+      MOP: "33 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply:
+          "डीएपी 44 किग्रा (पूरी) · एमओपी 17 किग्रा (आधी) · यूरिया 19 किग्रा · जिंक 10 किग्रा (पूरी)",
+      },
+      { time: "20–25 दिन बाद", apply: "यूरिया 32 किग्रा" },
+      {
+        time: "45 दिन बाद",
+        apply: "यूरिया 29 किग्रा · एमओपी 16 किग्रा (बची हुई)",
+      },
+    ],
+    farmerTipHi:
+      "पत्ते पीले दिखें तो आयरन सल्फेट 5 ग्राम/लीटर पानी में घोलकर छिड़कें — 10 दिन में 2–3 बार",
   },
 
   "Makka (Maize)": {
-    N: { total: 60, split: "Basal: 20 kg | V4 stage (30 DAS): 20 kg | V8 stage (50 DAS): 20 kg" },
+    N: {
+      total: 60,
+      split: "बुवाई: 20 किग्रा | 30 दिन: 20 किग्रा | 50 दिन: 20 किग्रा",
+    },
     P: { total: 25, basal: 25 },
     K: { total: 20, basal: 20 },
-    S: { total: 10, source: "Gypsum 50 kg/acre — bunai ke samay" },
-    Zn: { total: 10, source: "ZnSO4 21% — bunai ke samay" },
-    Mg: { dose: "MgSO4 5 kg/acre — foliar spray 0.5% agar chlorosis dike" },
-    fertilizer_bags: { DAP: "55 kg", Urea: "95 kg (3 bhagon mein)", MOP: "33 kg", Gypsum: "50 kg", ZnSO4_21: "10 kg" },
+    S: { total: 10, source: "जिप्सम 50 किग्रा/एकड़ — बुवाई के समय" },
+    Zn: { total: 10, source: "जिंक सल्फेट 21% — बुवाई के समय" },
+    Mg: {
+      dose: "मैग्नीशियम सल्फेट 5 किग्रा/एकड़ — पत्ती पीली हो तो 0.5% छिड़काव",
+    },
+    fertilizer_bags: {
+      DAP: "55 किग्रा",
+      Urea: "95 किग्रा (3 भागों में)",
+      MOP: "33 किग्रा",
+      Gypsum: "50 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 55 किग्रा + एमओपी 33 किग्रा + जिप्सम 50 किग्रा + जिंक 10 किग्रा + यूरिया 32 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 32 किग्रा" },
+      { time: "50 दिन बाद", apply: "यूरिया 31 किग्रा" },
+    ],
+    farmerTipHi: "पत्ती पीली हो तो जिंक या आयरन 5 ग्राम/लीटर पानी में छिड़कें",
   },
 
   "Sarson (Mustard)": {
-    N: { total: 25, split: "Basal: 12.5 kg | 30 DAS: 12.5 kg" },
+    N: { total: 25, split: "बुवाई: 12.5 किग्रा | 30 दिन: 12.5 किग्रा" },
     P: { total: 15, basal: 15 },
     K: { total: 8, basal: 8 },
     S: {
       total: 12,
-      source: "Gypsum 60 kg/acre — BAHUT ZAROORI for mustard quality",
-      note: "S deficiency se erucic acid badhta hai, oil quality girti hai",
+      source: "जिप्सम 60 किग्रा/एकड़ — सरसों के लिए बहुत ज़रूरी",
+      note: "सल्फर कम हो तो तेल कम अच्छा निकलता है",
     },
-    B: { total: 0.5, source: "Borax 1 kg/acre — bunai ke samay", note: "Flowering stage mein foliar: Boron 0.1% spray" },
-    Zn: { dose: "ZnSO4 10 kg/acre agar deficiency history ho" },
-    fertilizer_bags: { DAP: "33 kg", Urea: "24 kg (dono kishtein mila ke)", MOP: "13 kg", Gypsum: "60 kg", Borax: "1 kg" },
+    B: {
+      total: 0.5,
+      source: "बोरेक्स 1 किग्रा/एकड़ — बुवाई के समय",
+      note: "फूल आने पर पत्ती पर बोरॉन 0.1% छिड़काव",
+    },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ अगर पहले कमी रही हो" },
+    fertilizer_bags: {
+      DAP: "33 किग्रा",
+      Urea: "24 किग्रा (दोनों किस्तें मिलाकर)",
+      MOP: "13 किग्रा",
+      Gypsum: "60 किग्रा",
+      Borax: "1 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 33 किग्रा + एमओपी 13 किग्रा + जिप्सम 60 किग्रा + बोरेक्स 1 किग्रा + यूरिया 12 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 12 किग्रा" },
+    ],
+    farmerTipHi: "फूल आने पर बोरॉन 2 ग्राम/लीटर पानी में छिड़कें — तेल अच्छा निकलता है",
+  },
+
+  "Arhar (Pigeonpea)": {
+    N: {
+      total: 10,
+      basal: 10,
+      note: "ज़्यादा यूरिया न दें — जड़ गांठें खुद खाद बनाती हैं",
+    },
+    P: { total: 20, basal: 20 },
+    K: { total: 8, basal: 8 },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ अगर पहले कमी रही हो" },
+    Rhizobium: {
+      essential: true,
+      note: "राइजोबियम कल्चर 200 ग्राम/10 किग्रा बीज — ज़रूर लगाएँ",
+    },
+    fertilizer_bags: {
+      DAP: "44 किग्रा",
+      Urea: "22 किग्रा",
+      MOP: "13 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 44 किग्रा + एमओपी 13 किग्रा + यूरिया 22 किग्रा + जिंक 10 किग्रा (ज़रूरत हो तो)",
+      },
+    ],
+    farmerTipHi: "बीज पर राइजोबियम लगाएँ — अरहर में ज़्यादा यूरिया न डालें",
   },
 
   "Chana (Chickpea)": {
-    N: { total: 8, basal: 8, note: "Zyada N mat dena — nodules se khud N fix karta hai. Starter dose only." },
+    N: {
+      total: 8,
+      basal: 8,
+      note: "ज़्यादा नाइट्रोजन न दें — जड़ गांठें खुद नाइट्रोजन बनाती हैं। सिर्फ शुरू की मात्रा।",
+    },
     P: { total: 20, basal: 20 },
     K: { total: 8, basal: 8 },
-    S: { total: 8, source: "Gypsum 40 kg/acre" },
-    Zn: { dose: "ZnSO4 10 kg/acre basal agar deficiency ho" },
+    S: { total: 8, source: "जिप्सम 40 किग्रा/एकड़" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर अगर कमी हो" },
     Rhizobium: {
       essential: true,
-      note: "Rhizobium culture 200g/10kg beej — 40-60% N ki bachat hoti hai, yield 15-20% badhti hai",
+      note: "राइजोबियम कल्चर 200 ग्राम/10 किग्रा बीज — नाइट्रोजन बचत और उपज बढ़ती है",
     },
-    fertilizer_bags: { SSP: "125 kg (P + S dono milta hai — better for chana)", Urea: "18 kg (sirf basal)", MOP: "13 kg" },
+    fertilizer_bags: {
+      SSP: "125 किग्रा",
+      Urea: "18 किग्रा",
+      MOP: "13 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "एसएसपी 125 किग्रा + एमओपी 13 किग्रा + यूरिया 18 किग्रा + जिप्सम 40 किग्रा (ज़रूरत हो तो)",
+      },
+    ],
+    farmerTipHi: "बीज पर राइजोबियम कल्चर ज़रूर लगाएँ — चने में ज़्यादा यूरिया न दें",
   },
 
-  "Soybean": {
-    N: { total: 8, basal: 8, note: "Rhizobium nodules se N milti hai — zyada N mat dena" },
+  Soybean: {
+    N: {
+      total: 8,
+      basal: 8,
+      note: "राइजोबियम गांठों से नाइट्रोजन मिलती है — ज़्यादा न दें",
+    },
     P: { total: 30, basal: 30 },
     K: { total: 20, basal: 20 },
-    S: { total: 10, source: "Gypsum 50 kg/acre — bahut zaroori protein quality ke liye" },
-    Zn: { total: 10, source: "ZnSO4 10 kg/acre basal" },
-    Mo: { dose: "Ammonium molybdate 200g/acre — seed treatment mein milao", note: "Nodule formation improve karta hai" },
+    S: {
+      total: 10,
+      source: "जिप्सम 50 किग्रा/एकड़ — दाने में प्रोटीन अच्छा रखने के लिए ज़रूरी",
+    },
+    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    Mo: {
+      dose: "अमोनियम मॉलिब्डेट 200 ग्राम/एकड़ — बीज उपचार में मिलाएँ",
+      note: "गांठ बनना बेहतर होता है",
+    },
     Rhizobium_PSB: { essential: true },
+    fertilizer_bags: {
+      DAP: "65 किग्रा",
+      Urea: "18 किग्रा (सिर्फ बुवाई)",
+      MOP: "33 किग्रा",
+      Gypsum: "50 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 65 किग्रा + एमओपी 33 किग्रा + यूरिया 18 किग्रा + जिप्सम 50 किग्रा + जिंक 10 किग्रा",
+      },
+    ],
+    farmerTipHi: "बीज पर राइजोबियम + पीएसबी लगाएँ — सोयाबीन में ज़्यादा यूरिया न दें",
   },
 
   "Alu (Potato)": {
-    N: { total: 80, split: "Bunai ke samay: 40 kg | 30 DAS mitti chadhaate samay: 40 kg" },
-    P: { total: 40, basal: 40 },
-    K: { total: 50, split: "Bunai: 25 kg | 30 DAS: 25 kg", note: "K starch quality improve karta hai — bahut zaroori" },
-    Ca: { total: 20, source: "Gypsum 100 kg/acre ya Calcium nitrate 25 kg", note: "Common scab rokne ke liye important" },
-    Mg: { total: 10, source: "MgSO4 50 kg/acre basal", note: "Chlorophyll ke liye zaroori" },
-    S: { total: 12, source: "Gypsum se milta hai — alag se nahi dena" },
-    Zn: { total: 10, source: "ZnSO4 10 kg/acre basal" },
-    Fe: { dose: "FeSO4 0.5% foliar spray agar interveinal chlorosis dike" },
-    B: { total: 0.5, source: "Borax 1 kg/acre", note: "Tuber size uniform rakta hai" },
-    fertilizer_bags: {
-      DAP: "88 kg",
-      Urea: "95 kg (2 bhagon mein)",
-      MOP: "84 kg",
-      Gypsum: "100 kg",
-      MgSO4: "50 kg",
-      ZnSO4_21: "10 kg",
-      Borax: "1 kg",
+    N: {
+      total: 80,
+      split: "बुवाई: 40 किग्रा | 30 दिन मिट्टी चढ़ाते समय: 40 किग्रा",
     },
+    P: { total: 40, basal: 40 },
+    K: {
+      total: 50,
+      split: "बुवाई: 25 किग्रा | 30 दिन: 25 किग्रा",
+      note: "पोटाश से आलू का गुण सुधरता है — बहुत ज़रूरी",
+    },
+    Ca: {
+      total: 20,
+      source: "जिप्सम 100 किग्रा/एकड़ या कैल्शियम नाइट्रेट 25 किग्रा",
+      note: "कंद खुजली रोकने में मदद",
+    },
+    Mg: {
+      total: 10,
+      source: "मैग्नीशियम सल्फेट 50 किग्रा/एकड़ बुवाई पर",
+      note: "पत्ती हरी रखने के लिए ज़रूरी",
+    },
+    S: { total: 12, source: "जिप्सम से मिल जाता है — अलग से न दें" },
+    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    Fe: { dose: "आयरन सल्फेट 0.5% पत्ती छिड़काव अगर नसों के बीच पीलापन हो" },
+    B: { total: 0.5, source: "बोरेक्स 1 किग्रा/एकड़", note: "कंद का आकार एक जैसा रखता है" },
+    fertilizer_bags: {
+      DAP: "88 किग्रा",
+      Urea: "95 किग्रा (2 भागों में)",
+      MOP: "84 किग्रा",
+      Gypsum: "100 किग्रा",
+      MgSO4: "50 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+      Borax: "1 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply:
+          "डीएपी 88 किग्रा + एमओपी 42 किग्रा + जिप्सम 100 किग्रा + मैग्नीशियम सल्फेट 50 किग्रा + जिंक 10 किग्रा + बोरेक्स 1 किग्रा + यूरिया 48 किग्रा",
+      },
+      {
+        time: "30 दिन बाद (मिट्टी चढ़ाते समय)",
+        apply: "यूरिया 47 किग्रा + एमओपी 42 किग्रा (बची हुई)",
+      },
+    ],
+    farmerTipHi: "पत्ती पीली हो तो आयरन सल्फेट 5 ग्राम/लीटर पानी में छिड़कें",
   },
 
   "Tamatar (Tomato)": {
-    N: { total: 60, split: "Transplanting: 20 kg | 30 DAT: 20 kg | Fruiting: 20 kg" },
-    P: { total: 35, basal: 35, note: "Bunai se pehle hi daalna hai" },
-    K: { total: 45, split: "Transplanting: 15 kg | Fruiting shuru: 20 kg | Mid-fruiting: 10 kg", note: "K fruit quality aur shelf life badhata hai" },
-    Ca: { total: 25, source: "Calcium nitrate 25 kg foliar ya Gypsum 125 kg basal", note: "Blossom End Rot rokne ke liye CRITICAL" },
-    Mg: { total: 8, source: "MgSO4 0.5% foliar spray 3 baar, ya 20 kg basal" },
-    S: { total: 10, source: "Gypsum 50 kg/acre basal" },
-    Zn: { total: 10, source: "ZnSO4 10 kg/acre basal ya 0.5% foliar" },
-    Fe: { dose: "Chelated Fe (EDTA) 0.2% foliar spray agar chlorosis ho" },
-    B: { dose: "Borax 0.1-0.2% foliar spray flowering mein — fruit setting ke liye zaroori" },
-    fertilizer_bags: {
-      DAP: "77 kg",
-      Urea: "80 kg (teen bhagon mein)",
-      MOP: "75 kg",
-      Gypsum: "50 kg",
-      Calcium_nitrate: "25 kg (foliar mein use karo fruiting mein)",
-      MgSO4: "20 kg",
-      ZnSO4_21: "10 kg",
+    N: {
+      total: 60,
+      split: "रोपाई: 20 किग्रा | 30 दिन: 20 किग्रा | फल लगते समय: 20 किग्रा",
     },
+    P: { total: 35, basal: 35, note: "रोपाई से पहले ही डालें" },
+    K: {
+      total: 45,
+      split: "रोपाई: 15 किग्रा | फल शुरू: 20 किग्रा | बीच में: 10 किग्रा",
+      note: "पोटाश से फल अच्छा बनता है और ज़्यादा दिन टिकता है",
+    },
+    Ca: {
+      total: 25,
+      source: "कैल्शियम नाइट्रेट 25 किग्रा पत्ती पर या जिप्सम 125 किग्रा बुवाई पर",
+      note: "फल के सिरे सड़ना रोकने के लिए ज़रूरी",
+    },
+    Mg: {
+      total: 8,
+      source: "मैग्नीशियम सल्फेट 0.5% पत्ती छिड़काव 3 बार, या 20 किग्रा बुवाई पर",
+    },
+    S: { total: 10, source: "जिप्सम 50 किग्रा/एकड़ बुवाई पर" },
+    Zn: {
+      total: 10,
+      source: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर या 0.5% छिड़काव",
+    },
+    Fe: { dose: "आयरन (EDTA) 0.2% पत्ती छिड़काव अगर पीलापन हो" },
+    B: {
+      dose: "बोरेक्स 0.1–0.2% फूल आने पर छिड़काव — फल लगने के लिए ज़रूरी",
+    },
+    fertilizer_bags: {
+      DAP: "77 किग्रा",
+      Urea: "80 किग्रा (तीन भागों में)",
+      MOP: "75 किग्रा",
+      Gypsum: "50 किग्रा",
+      Calcium_nitrate: "25 किग्रा (फल लगते समय पत्ती पर)",
+      MgSO4: "20 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "रोपाई के समय",
+        apply: "डीएपी 77 किग्रा + एमओपी 25 किग्रा + जिप्सम 50 किग्रा + मैग्नीशियम सल्फेट 20 किग्रा + जिंक 10 किग्रा + यूरिया 27 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 27 किग्रा" },
+      {
+        time: "फल लगते समय",
+        apply: "यूरिया 26 किग्रा + एमओपी 50 किग्रा (बची) + कैल्शियम नाइट्रेट 25 किग्रा (पत्ती पर)",
+      },
+    ],
+    farmerTipHi: "फल सिरे सड़ें तो कैल्शियम 3–5 ग्राम/लीटर पानी में छिड़कें",
   },
 
   "Baingan (Brinjal)": {
-    N: { total: 50, split: "Transplanting: 17 kg | 30 DAT: 17 kg | Fruiting: 16 kg" },
+    N: {
+      total: 50,
+      split: "रोपाई: 17 किग्रा | 30 दिन: 17 किग्रा | फल लगते समय: 16 किग्रा",
+    },
     P: { total: 30, basal: 30 },
-    K: { total: 30, split: "Basal: 15 kg | Fruiting mein: 15 kg" },
-    Ca: { dose: "Calcium nitrate 0.5% foliar — fruiting mein 2 baar" },
-    Mg: { dose: "MgSO4 0.5% foliar spray — agar pattiyaan peeli paden" },
-    Zn: { dose: "ZnSO4 10 kg/acre basal" },
-    B: { dose: "Borax 0.1% foliar — flowering mein" },
+    K: { total: 30, split: "बुवाई: 15 किग्रा | फल लगते समय: 15 किग्रा" },
+    Ca: { dose: "कैल्शियम नाइट्रेट 0.5% पत्ती छिड़काव — फल लगते समय 2 बार" },
+    Mg: { dose: "मैग्नीशियम सल्फेट 0.5% छिड़काव — पत्ती पीली हो तो" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    B: { dose: "बोरेक्स 0.1% छिड़काव — फूल आने पर" },
+    fertilizer_bags: {
+      DAP: "65 किग्रा",
+      Urea: "65 किग्रा (तीन भागों में)",
+      MOP: "50 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "रोपाई के समय",
+        apply: "डीएपी 65 किग्रा + एमओपी 25 किग्रा + जिंक 10 किग्रा + यूरिया 22 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा" },
+      { time: "फल लगते समय", apply: "यूरिया 21 किग्रा + एमओपी 25 किग्रा (बची)" },
+    ],
+    farmerTipHi: "फूल आने पर बोरॉन 2 ग्राम/लीटर पानी में छिड़कें",
   },
 
   "Mirch (Chilli)": {
-    N: { total: 50, split: "Transplanting: 17 kg | 30 DAT: 17 kg | Fruiting: 16 kg" },
+    N: {
+      total: 50,
+      split: "रोपाई: 17 किग्रा | 30 दिन: 17 किग्रा | फल लगते समय: 16 किग्रा",
+    },
     P: { total: 30, basal: 30 },
-    K: { total: 35, split: "Basal: 15 kg | Fruiting shuru: 20 kg", note: "K capsaicin content badhata hai" },
-    Ca: { dose: "Calcium nitrate 0.3-0.5% foliar spray blossom end rot rokne ke liye" },
-    Mg: { dose: "MgSO4 0.5% foliar spray 2-3 baar" },
-    S: { dose: "Gypsum 40 kg/acre basal" },
-    Zn: { dose: "ZnSO4 10 kg/acre basal" },
-    B: { dose: "Borax 0.1% foliar — flowering mein" },
+    K: {
+      total: 35,
+      split: "बुवाई: 15 किग्रा | फल शुरू: 20 किग्रा",
+      note: "पोटाश से मिर्च की तीखी ताकत बढ़ती है",
+    },
+    Ca: {
+      dose: "कैल्शियम नाइट्रेट 0.3–0.5% छिड़काव — फल सिरे सड़ना रोकने के लिए",
+    },
+    Mg: { dose: "मैग्नीशियम सल्फेट 0.5% छिड़काव 2–3 बार" },
+    S: { dose: "जिप्सम 40 किग्रा/एकड़ बुवाई पर" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    B: { dose: "बोरेक्स 0.1% छिड़काव — फूल आने पर" },
+    fertilizer_bags: {
+      DAP: "65 किग्रा",
+      Urea: "65 किग्रा (तीन भागों में)",
+      MOP: "58 किग्रा",
+      Gypsum: "40 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "रोपाई के समय",
+        apply: "डीएपी 65 किग्रा + एमओपी 15 किग्रा + जिप्सम 40 किग्रा + जिंक 10 किग्रा + यूरिया 22 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा" },
+      { time: "फल लगते समय", apply: "यूरिया 21 किग्रा + एमओपी 43 किग्रा (बची)" },
+    ],
+    farmerTipHi: "मिर्च तीखी रखनी हो तो फल लगते समय एमओपी पूरा दें",
   },
 
   "Gobhi (Cauliflower)": {
-    N: { total: 55, split: "Transplanting: 18 kg | 25 DAT: 18 kg | Curd formation: 19 kg" },
+    N: {
+      total: 55,
+      split: "रोपाई: 18 किग्रा | 25 दिन: 18 किग्रा | गोभी बनते समय: 19 किग्रा",
+    },
     P: { total: 25, basal: 25 },
     K: { total: 25, basal: 25 },
-    Ca: { total: 15, source: "Gypsum 75 kg/acre", note: "Tip burn rokne ke liye zaroori" },
-    Mg: { dose: "MgSO4 0.5% foliar spray 2 baar" },
-    S: { dose: "Gypsum se milta hai — alag se nahi chahiye" },
-    B: { dose: "Borax 1 kg/acre basal ya 0.2% foliar", note: "Hollow stem aur browning rokta hai — CRITICAL" },
-    Mo: { dose: "Ammonium molybdate 0.5% foliar spray agar whiptail symptom ho" },
+    Ca: {
+      total: 15,
+      source: "जिप्सम 75 किग्रा/एकड़",
+      note: "पत्ती किनारे जलना रोकने के लिए ज़रूरी",
+    },
+    Mg: { dose: "मैग्नीशियम सल्फेट 0.5% छिड़काव 2 बार" },
+    S: { dose: "जिप्सम से मिल जाता है — अलग से नहीं चाहिए" },
+    B: {
+      dose: "बोरेक्स 1 किग्रा/एकड़ बुवाई पर या 0.2% छिड़काव",
+      note: "खोखला तना और भूरापन रोकता है — बहुत ज़रूरी",
+    },
+    Mo: {
+      dose: "अमोनियम मॉलिब्डेट 0.5% छिड़काव अगर पत्ती पतली/टेढ़ी हो",
+    },
+    fertilizer_bags: {
+      DAP: "55 किग्रा",
+      Urea: "72 किग्रा (तीन भागों में)",
+      MOP: "42 किग्रा",
+      Gypsum: "75 किग्रा",
+      Borax: "1 किग्रा",
+    },
+    schedule: [
+      {
+        time: "रोपाई के समय",
+        apply: "डीएपी 55 किग्रा + एमओपी 42 किग्रा + जिप्सम 75 किग्रा + बोरेक्स 1 किग्रा + यूरिया 24 किग्रा",
+      },
+      { time: "25 दिन बाद", apply: "यूरिया 24 किग्रा" },
+      { time: "गोभी बनते समय", apply: "यूरिया 24 किग्रा" },
+    ],
+    farmerTipHi: "गोभी भूरी/खोखली हो तो बोरॉन 2 ग्राम/लीटर पानी में छिड़कें",
   },
 
   "Bhindi (Okra)": {
-    N: { total: 25, split: "Bunai: 12.5 kg | 30 DAS: 12.5 kg" },
+    N: { total: 25, split: "बुवाई: 12.5 किग्रा | 30 दिन: 12.5 किग्रा" },
     P: { total: 20, basal: 20 },
     K: { total: 15, basal: 15 },
-    S: { dose: "Gypsum 30 kg/acre — basal" },
-    Zn: { dose: "ZnSO4 10 kg/acre basal" },
+    S: { dose: "जिप्सम 30 किग्रा/एकड़ — बुवाई पर" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    fertilizer_bags: {
+      DAP: "44 किग्रा",
+      Urea: "22 किग्रा (दो भागों में)",
+      MOP: "25 किग्रा",
+      Gypsum: "30 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 44 किग्रा + एमओपी 25 किग्रा + जिप्सम 30 किग्रा + जिंक 10 किग्रा + यूरिया 11 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 11 किग्रा" },
+    ],
+    farmerTipHi: "फल तोड़ते रहें — भिंडी लगातार देती है",
   },
 
   "Ganna (Sugarcane)": {
-    N: { total: 100, split: "Bunai: 25 kg | 3 mahine: 50 kg | 5-6 mahine: 25 kg" },
+    N: {
+      total: 100,
+      split: "बुवाई: 25 किग्रा | 3 महीने: 50 किग्रा | 5–6 महीने: 25 किग्रा",
+    },
     P: { total: 35, basal: 35 },
-    K: { total: 40, split: "Bunai: 20 kg | 3 mahine: 20 kg" },
-    Ca: { dose: "Lime/Chuna 200 kg/acre agar mitti acidic ho (pH <6.5)" },
-    Mg: { dose: "MgSO4 25 kg/acre agar deficiency ho" },
-    S: { dose: "Gypsum 80 kg/acre — basal" },
-    Zn: { dose: "ZnSO4 10 kg/acre — very important for sugarcane yield" },
-    Fe: { dose: "FeSO4 10 kg/acre basal ya foliar agar chlorosis ho" },
-    Si: { note: "Silica application (200 kg slag/acre) se stem borer resistance badhti hai" },
+    K: { total: 40, split: "बुवाई: 20 किग्रा | 3 महीने: 20 किग्रा" },
+    Ca: { dose: "चूना 200 किग्रा/एकड़ अगर मिट्टी अम्लीय हो (पीएच 6.5 से कम)" },
+    Mg: { dose: "मैग्नीशियम सल्फेट 25 किग्रा/एकड़ अगर कमी हो" },
+    S: { dose: "जिप्सम 80 किग्रा/एकड़ — बुवाई पर" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ — उपज के लिए बहुत ज़रूरी" },
+    Fe: {
+      dose: "आयरन सल्फेट 10 किग्रा/एकड़ बुवाई पर या छिड़काव अगर पीलापन हो",
+    },
+    Si: {
+      note: "सिलिका (200 किग्रा स्लैग/एकड़) से तना छेदक का खतरा कम होता है",
+    },
+    fertilizer_bags: {
+      DAP: "76 किग्रा",
+      Urea: "130 किग्रा (तीन भागों में)",
+      MOP: "67 किग्रा",
+      Gypsum: "80 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई / रोपाई",
+        apply: "डीएपी 76 किग्रा + एमओपी 33 किग्रा + जिप्सम 80 किग्रा + जिंक 10 किग्रा + यूरिया 43 किग्रा",
+      },
+      { time: "3 महीने बाद", apply: "यूरिया 65 किग्रा + एमओपी 34 किग्रा (बची)" },
+      { time: "5–6 महीने बाद", apply: "यूरिया 22 किग्रा" },
+    ],
+    farmerTipHi: "पत्ती पीली हो तो आयरन सल्फेट 5 ग्राम/लीटर पानी में छिड़कें",
   },
 
   "Bajra (Pearl Millet)": {
-    N: { total: 40, split: "Basal: 20 kg | 30 DAS: 20 kg" },
+    N: { total: 40, split: "बुवाई: 20 किग्रा | 30 दिन: 20 किग्रा" },
     P: { total: 16, basal: 16 },
     K: { total: 8, basal: 8 },
-    Zn: { total: 10, source: "ZnSO4 10 kg/acre basal" },
-    fertilizer_bags: { DAP: "35 kg", Urea: "44 kg (2 split)", MOP: "13 kg", ZnSO4_21: "10 kg" },
+    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    fertilizer_bags: {
+      DAP: "35 किग्रा",
+      Urea: "44 किग्रा (2 भागों में)",
+      MOP: "13 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 35 किग्रा + एमओपी 13 किग्रा + जिंक 10 किग्रा + यूरिया 22 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा" },
+    ],
+    farmerTipHi: "सूखे में भी जिंक देना न भूलें — पीलापन रुकता है",
   },
 
   "Moong (Green Gram)": {
-    N: { total: 8, basal: 8, note: "Starter only — Rhizobium se baki N" },
+    N: {
+      total: 8,
+      basal: 8,
+      note: "सिर्फ शुरू की मात्रा — बाकी राइजोबियम से",
+    },
     P: { total: 16, basal: 16 },
     K: { total: 8, basal: 8 },
-    Rhizobium: { essential: true, note: "Rhizobium culture 200g/10kg beej — zaroor" },
-    fertilizer_bags: { DAP: "35 kg", Urea: "18 kg", MOP: "13 kg" },
+    Rhizobium: {
+      essential: true,
+      note: "राइजोबियम कल्चर 200 ग्राम/10 किग्रा बीज — ज़रूर लगाएँ",
+    },
+    fertilizer_bags: { DAP: "35 किग्रा", Urea: "18 किग्रा", MOP: "13 किग्रा" },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 35 किग्रा + एमओपी 13 किग्रा + यूरिया 18 किग्रा",
+      },
+    ],
+    farmerTipHi: "बीज पर राइजोबियम कल्चर ज़रूर लगाएँ — मूंग में ज़्यादा यूरिया न दें",
+  },
+
+  "Masoor (Lentil)": {
+    N: { total: 8, basal: 8, note: "सिर्फ शुरू की मात्रा — बाकी राइजोबियम से" },
+    P: { total: 16, basal: 16 },
+    K: { total: 8, basal: 8 },
+    Rhizobium: { essential: true, note: "राइजोबियम कल्चर 200 ग्राम/10 किग्रा बीज" },
+    fertilizer_bags: { DAP: "35 किग्रा", Urea: "18 किग्रा", MOP: "13 किग्रा" },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 35 किग्रा + एमओपी 13 किग्रा + यूरिया 18 किग्रा",
+      },
+    ],
+    farmerTipHi: "बीज पर राइजोबियम लगाएँ — मसूर में ज़्यादा यूरिया न दें",
+  },
+
+  "Urad (Black Gram)": {
+    N: { total: 8, basal: 8, note: "सिर्फ शुरू की मात्रा" },
+    P: { total: 16, basal: 16 },
+    K: { total: 8, basal: 8 },
+    Rhizobium: { essential: true, note: "राइजोबियम कल्चर 200 ग्राम/10 किग्रा बीज" },
+    fertilizer_bags: { DAP: "35 किग्रा", Urea: "18 किग्रा", MOP: "13 किग्रा" },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 35 किग्रा + एमओपी 13 किग्रा + यूरिया 18 किग्रा",
+      },
+    ],
+    farmerTipHi: "पत्ती पीली हो तो आयरन सल्फेट 5 ग्राम/लीटर पानी में छिड़कें",
+  },
+
+  "Moongfali (Groundnut)": {
+    N: { total: 8, basal: 8, note: "सिर्फ शुरू — बाकी जड़ गांठ से" },
+    P: { total: 16, basal: 16 },
+    K: { total: 20, basal: 20 },
+    S: { total: 10, source: "जिप्सम 200 किग्रा/एकड़ — फूल आने पर" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ अगर कमी हो" },
+    Rhizobium_PSB: { essential: true },
+    fertilizer_bags: {
+      SSP: "125 किग्रा",
+      Urea: "18 किग्रा",
+      MOP: "33 किग्रा",
+      Gypsum: "200 किग्रा",
+      ZnSO4_21: "10 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "एसएसपी 125 किग्रा + एमओपी 33 किग्रा + यूरिया 18 किग्रा + जिंक 10 किग्रा (ज़रूरत हो तो)",
+      },
+      { time: "फूल आने पर", apply: "जिप्सम 200 किग्रा" },
+    ],
+    farmerTipHi: "बीज पर राइजोबियम लगाएँ — फूल पर जिप्सम ज़रूर दें, दाने भरेंगे",
+  },
+
+  "Pyaz (Onion)": {
+    N: { total: 40, split: "बुवाई: 20 किग्रा | 30 दिन: 10 किग्रा | 45 दिन: 10 किग्रा" },
+    P: { total: 20, basal: 20 },
+    K: { total: 20, basal: 20 },
+    S: { dose: "एसएसपी या जिप्सम — प्याज की गंध के लिए" },
+    fertilizer_bags: {
+      DAP: "44 किग्रा",
+      Urea: "65 किग्रा",
+      MOP: "33 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई / रोपाई",
+        apply: "डीएपी 44 किग्रा + एमओपी 33 किग्रा + यूरिया 22 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा" },
+      { time: "45 दिन बाद", apply: "यूरिया 21 किग्रा" },
+    ],
+    farmerTipHi: "देर से ज़्यादा यूरिया न दें — कंद नरम हो जाता है",
+  },
+
+  "Kheera (Cucumber)": {
+    N: { total: 32, split: "बुवाई: 16 किग्रा | 30 दिन: 16 किग्रा" },
+    P: { total: 16, basal: 16 },
+    K: { total: 16, basal: 16 },
+    fertilizer_bags: {
+      DAP: "35 किग्रा",
+      Urea: "55 किग्रा",
+      MOP: "27 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई / रोपाई",
+        apply: "डीएपी 35 किग्रा + एमओपी 27 किग्रा + यूरिया 28 किग्रा",
+      },
+      { time: "30 दिन बाद", apply: "यूरिया 27 किग्रा" },
+    ],
+    farmerTipHi: "फूल और फल के समय पानी की कमी न होने दें",
+  },
+
+  "Kapas (Cotton)": {
+    N: { total: 49, split: "बुवाई: 22 किग्रा | कली: 32 किग्रा | फूल: 33 किग्रा" },
+    P: { total: 24, basal: 24 },
+    K: { total: 24, split: "बुवाई: 20 किग्रा | फूल: 20 किग्रा" },
+    Zn: { total: 5, source: "जिंक सल्फेट — दो कपास-गेहूँ चक्र में एक बार" },
+    fertilizer_bags: {
+      DAP: "52 किग्रा",
+      Urea: "87 किग्रा",
+      MOP: "40 किग्रा",
+      ZnSO4_21: "5 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 52 किग्रा + एमओपी 20 किग्रा + यूरिया 22 किग्रा + जिंक 5 किग्रा",
+      },
+      { time: "कली निकलने पर (30–40 दिन)", apply: "यूरिया 32 किग्रा" },
+      { time: "फूल आने पर", apply: "यूरिया 33 किग्रा + एमओपी 20 किग्रा (बची)" },
+    ],
+    farmerTipHi: "फूल पर पत्ती पीली हो तो यूरिया या डीएपी 2% घोल छिड़कें — ज़रूरत हो तो",
+  },
+
+  "Adrak (Ginger)": {
+    N: { total: 30, split: "रोपाई: 10 | 45–60 दिन: 10 | 90–120 दिन: 10" },
+    P: { total: 20, basal: 20 },
+    K: { total: 40, split: "रोपाई: 20 | 90 दिन: 20" },
+    fertilizer_bags: {
+      DAP: "44 किग्रा",
+      Urea: "50 किग्रा",
+      MOP: "67 किग्रा",
+    },
+    schedule: [
+      {
+        time: "रोपाई के समय",
+        apply: "डीएपी 44 किग्रा + एमओपी 33 किग्रा + यूरिया 17 किग्रा",
+      },
+      { time: "45–60 दिन बाद", apply: "यूरिया 17 किग्रा" },
+      { time: "90–120 दिन बाद", apply: "यूरिया 16 किग्रा + एमओपी 34 किग्रा (बची)" },
+    ],
+    farmerTipHi: "पानी खड़ा न रखें — अदरक सड़ सकता है",
+  },
+
+  "Lahsun (Garlic)": {
+    N: { total: 24, split: "बुवाई: 12 | 30–40 दिन: 12" },
+    P: { total: 20, basal: 20 },
+    K: { total: 20, basal: 20 },
+    S: { dose: "जिप्सम 40 किग्रा/एकड़ — गंध और गुणवत्ता के लिए" },
+    fertilizer_bags: {
+      DAP: "44 किग्रा",
+      Urea: "40 किग्रा",
+      MOP: "33 किग्रा",
+      Gypsum: "40 किग्रा",
+    },
+    schedule: [
+      {
+        time: "बुवाई के समय",
+        apply: "डीएपी 44 किग्रा + एमओपी 33 किग्रा + जिप्सम 40 किग्रा + यूरिया 20 किग्रा",
+      },
+      { time: "30–40 दिन बाद", apply: "यूरिया 20 किग्रा" },
+    ],
+    farmerTipHi: "कटाई से पहले सिंचाई बंद कर दें",
   },
 };
 
 export const FERTILIZER_SOURCES = {
-  "N (Nitrogen)": {
-    "Urea (46% N)": "kg Urea = (N kg × 100) / 46",
-    "DAP (18% N + 46% P2O5)": "P ke hisaab se calculate karo, N bonus milegi",
+  "नाइट्रोजन (N)": {
+    "यूरिया (46% N)": "यूरिया किग्रा = (N किग्रा × 100) / 46",
+    "डीएपी (18% N + 46% P2O5)": "फॉस्फोरस के हिसाब से गिनें, नाइट्रोजन अतिरिक्त मिलती है",
   },
-  "P (Phosphorus as P2O5)": {
-    "DAP (46% P2O5)": "kg DAP = (P kg × 100) / 46",
-    "SSP (16% P2O5)": "kg SSP = (P kg × 100) / 16",
+  "फॉस्फोरस (P2O5)": {
+    "डीएपी (46% P2O5)": "डीएपी किग्रा = (P किग्रा × 100) / 46",
+    "एसएसपी (16% P2O5)": "एसएसपी किग्रा = (P किग्रा × 100) / 16",
   },
-  "K (Potassium as K2O)": {
-    "MOP/KCl (60% K2O)": "kg MOP = (K kg × 100) / 60",
-    "SOP (50% K2O)": "kg SOP = (K kg × 100) / 50",
+  "पोटाश (K2O)": {
+    "एमओपी (60% K2O)": "एमओपी किग्रा = (K किग्रा × 100) / 60",
+    "एसओपी (50% K2O)": "एसओपी किग्रा = (K किग्रा × 100) / 50",
   },
-  Zn: {
-    "ZnSO4 21%": "kg ZnSO4 = Zn requirement × 4.76",
-    "ZnSO4 33%": "kg ZnSO4 = Zn requirement × 3.03",
+  जिंक: {
+    "जिंक सल्फेट 21%": "किग्रा = ज़रूरत × 4.76",
+    "जिंक सल्फेट 33%": "किग्रा = ज़रूरत × 3.03",
   },
-  S: {
-    "Gypsum (18% S)": "kg Gypsum = (S kg × 100) / 18",
-    "Elemental S (90%)": "kg S = (S kg × 100) / 90",
+  सल्फर: {
+    "जिप्सम (18% S)": "जिप्सम किग्रा = (S किग्रा × 100) / 18",
+    "गंधक पाउडर (90%)": "किग्रा = (S किग्रा × 100) / 90",
   },
 };
 
 export const FERTILIZER_UNIT_NOTE =
-  "N = Elemental Nitrogen (kg/acre) · P = P2O5 · K = K2O · Ca/Mg/S = elemental kg/acre · Zn = ZnSO4 · Fe = FeSO4 · B = Borax";
+  "नाइट्रोजन = किग्रा/एकड़ · फॉस्फोरस = P2O5 · पोटाश = K2O · जिंक = जिंक सल्फेट · आयरन = आयरन सल्फेट · बोरॉन = बोरेक्स";
 
 export function getFertilizerForSlug(slug: string): FertilizerCropEntry | null {
   const key = dataKeyForSlug(slug);
@@ -252,13 +757,110 @@ export function getFertilizerForSlug(slug: string): FertilizerCropEntry | null {
 export function formatNutrientValue(v: NutrientValue): string {
   if (typeof v === "string" || typeof v === "number") return String(v);
   return Object.entries(v)
-    .map(([k, val]) => `${k}: ${val}`)
+    .map(([k, val]) => {
+      const label =
+        k === "total"
+          ? "कुल"
+          : k === "basal"
+            ? "बुवाई"
+            : k === "split"
+              ? "भाग"
+              : k === "source"
+                ? "स्रोत"
+                : k === "note"
+                  ? "नोट"
+                  : k === "dose"
+                    ? "खुराक"
+                    : k === "apply"
+                      ? "कब"
+                      : k === "symptoms"
+                        ? "लक्षण"
+                        : k === "essential"
+                          ? "ज़रूरी"
+                          : k === "top1"
+                            ? "पहली किस्त"
+                            : k === "top2"
+                              ? "दूसरी किस्त"
+                              : k === "top3"
+                                ? "तीसरी किस्त"
+                                : k;
+      return `${label}: ${val}`;
+    })
     .join(" · ");
 }
 
+/** Farmer-facing bag / product names — Hindi + grade % + English in brackets. */
+export const FERTILIZER_BAG_LABEL_HI: Record<string, string> = {
+  DAP: "डीएपी 18-46-0 (DAP)",
+  Urea: "यूरिया 46% (Urea)",
+  MOP: "एमओपी 60% (MOP)",
+  SOP: "एसओपी 50% (SOP)",
+  SSP: "एसएसपी 16% (SSP)",
+  TSP: "टीएसपी 46% (TSP)",
+  Gypsum: "जिप्सम (Gypsum)",
+  Borax: "बोरेक्स ~11% B (Boron)",
+  ZnSO4_21: "जिंक सल्फेट 21% (Zn)",
+  ZnSO4: "जिंक सल्फेट 21% (Zn)",
+  MgSO4: "मैग्नीशियम सल्फेट (Mg)",
+  FeSO4: "आयरन सल्फेट ~19% (Fe)",
+  Calcium_nitrate: "कैल्शियम नाइट्रेट (Ca)",
+};
+
+export function fertilizerBagLabel(name: string): string {
+  return FERTILIZER_BAG_LABEL_HI[name] ?? name;
+}
+
+/** Short “why this bag” line — simple Hindi, no N/P/K. */
+export function fertilizerBagPurposeHi(name: string): string {
+  const n = name.toLowerCase();
+  if (n.includes("dap") || n.includes("डीएपी") || n.includes("tsp") || n.includes("टीएसपी")) {
+    return "जड़ के लिए";
+  }
+  if (n.includes("ssp") || n.includes("एसएसपी")) {
+    return "जड़ और गंधक";
+  }
+  if (n.includes("urea") || n.includes("यूरिया")) {
+    return "हरी बढ़ाव";
+  }
+  if (n.includes("mop") || n.includes("एमओपी") || n.includes("sop") || n.includes("एसओपी")) {
+    return "मजबूती और फल";
+  }
+  if (n.includes("zn") || n.includes("जिंक") || n.includes("zinc")) {
+    return "पीलापन रोके";
+  }
+  if (n.includes("gypsum") || n.includes("जिप्सम")) {
+    return "दाने/गांठ भरें";
+  }
+  if (n.includes("borax") || n.includes("बोरेक्स")) {
+    return "फूल–फल के लिए";
+  }
+  if (n.includes("mg") || n.includes("मैग्नीशियम")) {
+    return "पत्ती हरी रखे";
+  }
+  if (n.includes("iron") || n.includes("आयरन") || n.includes("feso")) {
+    return "पीली पत्ती पर";
+  }
+  if (n.includes("calcium") || n.includes("कैल्शियम")) {
+    return "फल सड़न रोके";
+  }
+  return "खेत की ज़रूरत";
+}
+
+/** Pull leading number from "44 किग्रा (...)" for big display. */
+export function fertilizerAmountParts(amount: string): { num: string; rest: string } {
+  const m = amount.match(/^([\d.]+)\s*(किग्रा|kg)?\s*(.*)$/i);
+  if (!m) return { num: amount, rest: "" };
+  const unit = m[2] ? "किग्रा" : "";
+  const note = (m[3] || "").replace(/^[·\-–—]\s*/, "").trim();
+  return {
+    num: m[1],
+    rest: [unit, note].filter(Boolean).join(note ? " · " : " ").trim(),
+  };
+}
+
 export function scaleBagKg(kgStr: string, acres: number): string {
-  const m = kgStr.match(/^([\d.]+)\s*kg/);
+  const m = kgStr.match(/^([\d.]+)\s*(kg|किग्रा)/i);
   if (!m) return kgStr;
   const scaled = Math.round(parseFloat(m[1]) * acres);
-  return kgStr.replace(m[0], `${scaled} kg`);
+  return kgStr.replace(m[0], `${scaled} किग्रा`);
 }

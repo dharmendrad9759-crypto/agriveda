@@ -242,7 +242,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
       : threat.type === "disease"
         ? "diseases"
         : "pests";
-  const backHref = `/crops/${threat.cropSlug}?tab=${cropTab}`;
+  const backHref = `/crops/${threat.cropSlug}/care/${cropTab}`;
   const cropListLabel = cropHi
     ? `${threat.cropName} (${cropHi})`
     : threat.cropName;

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   AnimatePresence,
   motion,
@@ -208,6 +209,7 @@ export default function NutrientDetailExperience({
   initialCrop?: string;
 }) {
   const reduceMotion = useReducedMotion();
+  const router = useRouter();
   const farmer = useMemo(() => toFarmerNutrientView(nutrient), [nutrient]);
   const crops = useMemo(
     () => getCropOptions(nutrient, initialCrop),
@@ -295,14 +297,21 @@ export default function NutrientDetailExperience({
 
       <header className="sticky top-0 z-40 border-b border-[var(--av-border)] bg-[var(--background)]/92 backdrop-blur-xl">
         <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3">
-          <Link
-            href="/deficiencies"
+          <button
+            type="button"
             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-emerald-800 transition hover:text-emerald-950 dark:text-emerald-300"
             aria-label="वापस पोषक तत्व"
+            onClick={() => {
+              if (typeof window !== "undefined" && window.history.length > 1) {
+                router.back();
+              } else {
+                router.push("/deficiencies");
+              }
+            }}
           >
             <ArrowLeft className="h-4 w-4" />
             <span>पोषक तत्व</span>
-          </Link>
+          </button>
           <span className="h-3 w-px bg-[var(--av-border)]" aria-hidden />
           <p className="min-w-0 flex-1 truncate text-[12px] font-medium text-[var(--av-text-muted)]">
             {farmer.symbol} · {catHi}

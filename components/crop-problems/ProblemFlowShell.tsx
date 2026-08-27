@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import AppLink from "@/components/ui/AppLink";
 import { cn } from "@/lib/cn";
 
 /** Forced light mockup skin — matches ChatGPT AgriVeda problem-flow design */
@@ -21,6 +21,7 @@ export default function ProblemFlowShell({
   backHref?: string;
   rightSlot?: ReactNode;
 }) {
+  const router = useRouter();
   return (
     <div
       className="mx-auto min-h-[100dvh] w-full max-w-lg pb-28"
@@ -34,15 +35,22 @@ export default function ProblemFlowShell({
         style={{ background: "rgba(255,255,255,0.94)", backdropFilter: "blur(12px)" }}
       >
         <div className="flex items-center gap-3">
-          <AppLink
-            href={backHref}
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== "undefined" && window.history.length > 1) {
+                router.back();
+              } else {
+                router.push(backHref);
+              }
+            }}
             className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C5DDD0] bg-white text-[#0B5C3B] shadow-sm active:scale-95"
           >
             <ArrowLeft className="h-5 w-5" />
-          </AppLink>
+          </button>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#2F9E63]">
-              Agriveda · चरण {step}/{totalSteps}
+            <p className="text-[10px] font-bold tracking-wide text-[#2F9E63]">
+              AgriVeda · {step}/{totalSteps}
             </p>
             <h1 className="truncate text-[1.15rem] font-black leading-tight text-[#0B3D28]">
               {title}
@@ -102,20 +110,23 @@ export function MockTab({
   active,
   onClick,
   children,
+  className,
 }: {
   active: boolean;
   onClick: () => void;
   children: ReactNode;
+  className?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        "min-h-[42px] shrink-0 rounded-full px-3.5 text-[12px] font-extrabold transition",
+        "min-h-[44px] shrink-0 rounded-xl border-2 px-3 text-[12px] font-black transition active:scale-[0.98]",
         active
-          ? "bg-[#0B5C3B] text-white shadow-md shadow-emerald-900/20"
-          : "bg-[#E8F5EE] text-[#0B5C3B]"
+          ? "border-[#0B5C3B] bg-[#0B5C3B] text-white shadow-md shadow-emerald-900/25"
+          : "border-[#B7D8C6] bg-white text-[#0B5C3B] shadow-sm",
+        className
       )}
     >
       {children}

@@ -1116,7 +1116,7 @@ export default function CropPlannerClient() {
                   {profile.district ? ` · ${profile.district}` : ""}
                 </h3>
               </div>
-              <AppLink href={`/crops/${crop.slug}?tab=varieties`} className={AV.link}>
+              <AppLink href={`/crops/${crop.slug}/care/varieties`} className={AV.link}>
                 {t("plannerViewAll")} →
               </AppLink>
             </div>

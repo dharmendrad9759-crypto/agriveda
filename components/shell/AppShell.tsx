@@ -7,6 +7,7 @@ import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import AppLink from "@/components/ui/AppLink";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
+import { useRouter } from "next/navigation";
 
 interface Breadcrumb {
   label: string;
@@ -42,10 +43,20 @@ export default function AppShell({
   badge = "AGRIVEDA",
   hubPremium = false,
 }: AppShellProps) {
+  const router = useRouter();
   const reduced = useReducedMotion();
   const Comp = reduced ? "div" : motion.div;
   const isHub = variant === "hub";
   const resolvedBackHref = backHref ?? "/";
+  const handleBack = () => {
+    // Prefer history back so "open page -> open next page -> back" behaves naturally.
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    // Fallback when there is no meaningful history (fresh tab / hard navigation).
+    router.push(resolvedBackHref);
+  };
 
   if (isHub) {
     return (
@@ -60,17 +71,19 @@ export default function AppShell({
             )}
           >
             <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3.5">
-              <AppLink
-                href={resolvedBackHref}
-                className={cn(
-                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border active:scale-95",
-                  hubPremium
-                    ? "border-amber-500/25 bg-amber-500/5 text-amber-400"
-                    : "border-emerald-500/25 bg-emerald-500/5 text-emerald-600"
-                )}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </AppLink>
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border active:scale-95",
+                      hubPremium
+                        ? "border-amber-500/25 bg-amber-500/5 text-amber-400"
+                        : "border-emerald-500/25 bg-emerald-500/5 text-emerald-600"
+                    )}
+                    aria-label="Back"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </button>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <Sparkles
@@ -128,15 +141,14 @@ export default function AppShell({
       >
         {(backHref || (breadcrumbs && breadcrumbs.length > 0)) && (
           <div className="mb-3 flex items-start gap-2 lg:mb-4">
-            {backHref ? (
-              <AppLink
-                href={backHref}
-                aria-label="Back"
-                className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-primary)] active:scale-95"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </AppLink>
-            ) : null}
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label="Back"
+              className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-primary)] active:scale-95"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
             {breadcrumbs && breadcrumbs.length > 0 ? (
               <nav className={`min-w-0 flex flex-wrap items-center gap-1 pt-1 ${AV.micro}`}>
                 {breadcrumbs.map((crumb, i) => (

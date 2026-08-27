@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   CalendarDays,
@@ -99,6 +100,7 @@ function PeriodCard({
 
 export default function MandiDetailClient({ id }: { id: string }) {
   const { t } = useLocale();
+  const router = useRouter();
   const { profile } = useFarmerProfile();
   const state = profile.state.trim() || "Madhya Pradesh";
   const district = profile.district.trim() || undefined;
@@ -143,13 +145,20 @@ export default function MandiDetailClient({ id }: { id: string }) {
       ]}
     >
       <div className="mb-2 flex items-center justify-between">
-        <AppLink
-          href="/mandi"
+        <button
+          type="button"
           className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm active:scale-95"
           aria-label="Back"
+          onClick={() => {
+            if (typeof window !== "undefined" && window.history.length > 1) {
+              router.back();
+            } else {
+              router.push("/mandi");
+            }
+          }}
         >
           <ArrowLeft className="h-4 w-4 text-slate-700" />
-        </AppLink>
+        </button>
         <button
           type="button"
           onClick={() => setFav((v) => !v)}

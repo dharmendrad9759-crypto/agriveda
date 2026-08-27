@@ -4,7 +4,9 @@ import {
   getCropIrrigationSummary,
   getCropPestRisk,
   getCropDiseaseRisk,
+  farmerThreatHi,
 } from "@/lib/crops/cropAgroMeta";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 
 export function buildCropFaqs(crop: Crop): { question: string; answer: string }[] {
@@ -14,46 +16,58 @@ export function buildCropFaqs(crop: Crop): { question: string; answer: string }[
   const varieties = getVarietiesForCrop(crop.slug).slice(0, 3).map((v) => v.name);
   const basal = crop.fertilizerSchedule.basalDose[0];
   const weeds = crop.cropProtection.weedManagement[0];
+  const cropHi = getCropHindiName(crop.slug) || crop.name;
+  const otherPests = crop.cropProtection.majorPests
+    .slice(0, 3)
+    .map((p) => farmerThreatHi(p))
+    .join(", ");
+  const otherDiseases = crop.cropProtection.majorDiseases
+    .slice(0, 3)
+    .map((d) => farmerThreatHi(d))
+    .join(", ");
+
+  const riskHi = (level: string) =>
+    level === "high" ? "ज़्यादा खतरा" : level === "medium" ? "मध्यम खतरा" : "कम खतरा";
 
   return [
     {
-      question: `${crop.name} kab boein / lagayein?`,
+      question: `${cropHi} कब बोएँ / लगाएँ?`,
       answer: formatSowingCard(crop.slug, crop.sowingGuide.bestSowingTime),
     },
     {
-      question: `Kitna paani chahiye?`,
+      question: `कितना पानी चाहिए?`,
       answer: `${irrigation.totalWater}. ${irrigation.criticalNote}`,
     },
     {
-      question: `Mukhya keet / pest kaunsa?`,
-      answer: `${pest.top} — ${pest.level} attention. Scout regularly; spray only after threshold. Others: ${crop.cropProtection.majorPests.slice(0, 3).join(", ") || "see Pests tab"}.`,
+      question: `मुख्य कीट कौनसा?`,
+      answer: `${farmerThreatHi(pest.top)} — ${riskHi(pest.level)}। हर हफ्ते खेत देखें; कीड़े ज़्यादा हों तभी दवा डालें। अन्य: ${otherPests || "कीट टैब देखें"}।`,
     },
     {
-      question: `Mukhya bimari kaunsi?`,
-      answer: `${disease.top} — ${disease.level} attention. ${crop.cropProtection.majorDiseases.slice(0, 3).join(", ") || "See Diseases tab"}.`,
+      question: `मुख्य बीमारी कौनसी?`,
+      answer: `${farmerThreatHi(disease.top)} — ${riskHi(disease.level)}। ${otherDiseases || "रोग टैब देखें"}।`,
     },
     {
-      question: `Uple / fertilizer shuruat mein kya dein?`,
+      question: `शुरुआत में कौनसी खाद डालें?`,
       answer: basal
-        ? `${basal}. Stage-wise splits Fertilizer tab mein hain — soil test ke baad adjust karein.`
-        : `Basal NPK soil test ke hisaab se dein. Open Fertilizer tab for ${crop.name} schedule.`,
+        ? `${basal}। बाकी किस्तें खाद टैब में हैं — मिट्टी जाँच के बाद ठीक करें।`
+        : `शुरुआत की खाद मिट्टी जाँच के हिसाब से डालें। ${cropHi} की पूरी योजना खाद टैब में है।`,
     },
     {
-      question: `Kitni paidawar umeed?`,
-      answer: `${crop.estimatedYield}. Duration: ${crop.durationDays}. Harvest sign: ${crop.harvestAndYield.maturitySigns[0] ?? crop.harvestAndYield.harvestingTime}.`,
+      question: `कितनी पैदावार उम्मीद?`,
+      answer: `${crop.estimatedYield}। अवधि: ${crop.durationDays}। कटाई का संकेत: ${crop.harvestAndYield.maturitySigns[0] ?? crop.harvestAndYield.harvestingTime}।`,
     },
     ...(varieties.length
       ? [
           {
-            question: `Kaunsi variety choose karein?`,
-            answer: `Popular options: ${varieties.join(", ")}. Apne zila ke certified seed dealer / Varieties tab se zone-wise chunav karein.`,
+            question: `कौनसी किस्म चुनें?`,
+            answer: `आम विकल्प: ${varieties.join(", ")}। अपने इलाके की प्रमाणित बीज दुकान या किस्म टैब से चुनें।`,
           },
         ]
       : []),
     ...(weeds
       ? [
           {
-            question: `Khapatwar control kab zaroori?`,
+            question: `खरपतवार कब साफ करें?`,
             answer: weeds,
           },
         ]

@@ -1,5 +1,5 @@
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
-import { threatDetailPath } from "@/lib/pest-disease-catalog";
+import { managementThreatId, threatDetailPath } from "@/lib/pests/threatPaths";
 
 /** Keep Latin + Devanagari letters/digits for matching Hindi disease names. */
 export function normThreatText(s: string): string {
@@ -124,4 +124,16 @@ export function catalogThreatDetailHref(
 ): string | undefined {
   if (!match?.id) return undefined;
   return threatDetailPath(cropSlug, type, match.id);
+}
+
+/** Always a real detail URL — catalog match, else stable management id. */
+export function threatCardDetailHref(
+  cropSlug: string,
+  type: "pest" | "disease",
+  match: CatalogThreatLike | undefined,
+  fallback: { name: string; scientific?: string | null; index: number }
+): string {
+  if (match?.id) return threatDetailPath(cropSlug, type, match.id);
+  const id = managementThreatId(type, fallback.name, fallback.scientific, fallback.index);
+  return threatDetailPath(cropSlug, type, id);
 }

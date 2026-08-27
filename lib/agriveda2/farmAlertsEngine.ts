@@ -120,7 +120,7 @@ export function buildFieldAlerts(
         body: `Based on stage (Day ${das}): ${tip}`,
         fieldName: field.name,
         cropSlug: field.cropSlug,
-        actionHref: `/crops/${field.cropSlug}?tab=irrigation`,
+        actionHref: `/crops/${field.cropSlug}/care/irrigation`,
         actionLabel: "Water guide",
       });
     }

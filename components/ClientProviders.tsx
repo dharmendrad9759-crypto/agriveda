@@ -15,7 +15,6 @@ import GoogleTranslateBootstrap from "@/components/i18n/GoogleTranslateBootstrap
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import BottomNav from "@/components/layout/BottomNav";
 import OfflineBanner from "@/components/layout/OfflineBanner";
-import TranslatorFab from "@/components/layout/TranslatorFab";
 import PullToRefresh from "@/components/layout/PullToRefresh";
 import LocationBootstrap from "@/components/location/LocationBootstrap";
 import PageReveal from "@/components/motion/PageReveal";
@@ -94,7 +93,6 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
           </MotionConfig>
           {/* Outside MotionConfig so native reduced-motion doesn't kill splash CSS */}
           {!isAdminRoute ? <LaunchFlow /> : null}
-          {!isAdminRoute ? <TranslatorFab /> : null}
         </ToastProvider>
       </LocaleProvider>
     </ThemeProvider>

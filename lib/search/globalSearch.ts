@@ -28,6 +28,13 @@ const TOOLS: GlobalSearchResult[] = [
   { id: "fertilizer-calc", type: "tool", title: "Fertilizer Calculator", subtitle: "NPK dose by crop", href: "/services/fertilizer-calculator" },
   { id: "seed-calc", type: "tool", title: "Seed Calculator", subtitle: "Seed rate by area", href: "/services/seed-calculator" },
   { id: "spray-advisory", type: "tool", title: "Spray Advisory", subtitle: "Weather spray window", href: "/weather/spray-advisory" },
+  {
+    id: "mix-advisor",
+    type: "tool",
+    title: "दवा मिलाएँ",
+    subtitle: "दो दवा — सुरक्षित मिक्स",
+    href: "/mix-advisor",
+  },
   { id: "mandi", type: "page", title: "Mandi Prices", subtitle: "Live market rates", href: "/mandi" },
   {
     id: "crop-problems",

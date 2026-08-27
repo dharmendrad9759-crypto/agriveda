@@ -11,9 +11,9 @@ import {
 const STATUSES: SoilNutrientStatus[] = ["low", "medium", "high"];
 
 const NUTRIENTS: { key: keyof SoilTestLevels; label: string; hint: string }[] = [
-  { key: "n", label: "N", hint: "नाइट्रोजन" },
-  { key: "p", label: "P", hint: "फॉस्फोरस" },
-  { key: "k", label: "K", hint: "पोटाश" },
+  { key: "n", label: "यूरिया (Urea)", hint: "हरी बढ़ाव" },
+  { key: "p", label: "डीएपी (DAP)", hint: "जड़ की खाद" },
+  { key: "k", label: "एमओपी (MOP)", hint: "मजबूती" },
 ];
 
 interface SoilTestInputsProps {
@@ -67,8 +67,8 @@ export default function SoilTestInputs({ value, onChange, className }: SoilTestI
         {NUTRIENTS.map((n) => (
           <div key={n.key}>
             <p className="text-[10px] font-bold text-[var(--av-text-secondary)]">
-              {n.label}{" "}
-              <span className="font-medium text-[var(--av-text-muted)]">({n.hint})</span>
+              {n.label}
+              <span className="font-medium text-[var(--av-text-muted)]"> — {n.hint}</span>
             </p>
             <div className="mt-1 flex gap-1">
               {STATUSES.map((s) => {
@@ -99,7 +99,7 @@ export default function SoilTestInputs({ value, onChange, className }: SoilTestI
       </div>
 
       <p className="mt-2 text-[9px] leading-snug text-[var(--av-text-muted)]">
-        ज्यादा → उस पोषक ~25% कम · कम → ~20% बढ़ · मध्यम → बिना बदलाव · लेबल नियम मानें
+        ज्यादा → उस खाद ~25% कम · कम → ~20% बढ़ · मध्यम → जैसा ऊपर लिखा है
       </p>
     </div>
   );

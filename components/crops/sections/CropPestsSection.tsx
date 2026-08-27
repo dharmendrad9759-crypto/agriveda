@@ -1,21 +1,21 @@
 "use client";
 
 import RiskBadge from "@/components/shell/RiskBadge";
-import AppLink from "@/components/ui/AppLink";
-import ThreatImage from "@/components/ui/ThreatImage";
+import FarmerSplitCard from "@/components/ui/FarmerSplitCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
 import {
-  catalogThreatDetailHref,
   matchCatalogThreat,
+  threatCardDetailHref,
 } from "@/lib/pests/matchCatalogThreat";
 import { getEnrichedCropThreats, threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
-import { ChevronRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 function pestThumb(scientific?: string, catalogImage?: string) {
@@ -29,6 +29,7 @@ function pestThumb(scientific?: string, catalogImage?: string) {
 export default function CropPestsSection({ crop }: { crop: Crop }) {
   const { t, locale } = useLocale();
   const hi = locale === "hi";
+  const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
   const [search, setSearch] = useState("");
 
   const profile = useMemo(
@@ -51,11 +52,13 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
         name: p.pestName,
         scientific: p.scientificName,
       });
-      const detailHref =
-        catalogThreatDetailHref(crop.slug, "pest", match) ??
-        `/pest-diseases?crop=${encodeURIComponent(crop.slug)}&type=pest`;
+      const detailHref = threatCardDetailHref(crop.slug, "pest", match, {
+        name: p.pestName,
+        scientific: p.scientificName,
+        index: i,
+      });
       return {
-        id: match?.id ?? `${crop.slug}-pest-${i}`,
+        id: match?.id ?? `mp-${i}`,
         detailHref,
         name: p.pestName,
         scientific: p.scientificName,
@@ -98,7 +101,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
     <div className="space-y-3">
       <div>
         <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
-          {t("cropPestsTitle")} — {crop.name}
+          {t("cropPestsTitle")} — {cropLabel}
         </h3>
         <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
           {hi
@@ -117,48 +120,38 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
         />
       </div>
 
-      <ul className="space-y-2">
+      <ul className="space-y-2.5">
         {filtered.map((pest) => {
           const href =
             "detailHref" in pest && pest.detailHref
               ? String(pest.detailHref)
               : threatDetailPath(crop.slug, "pest", pest.id);
+          const img =
+            "image" in pest
+              ? String(pest.image)
+              : pestThumb("scientific" in pest ? String(pest.scientific) : undefined);
+          const sci = "scientific" in pest ? String(pest.scientific) : "";
+          const etl = "etl" in pest && pest.etl ? String(pest.etl) : "";
           return (
             <li key={pest.id}>
-              <AppLink href={href} className="av-card av-card-hover flex items-center gap-3 px-3 py-3">
-                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
-                  <ThreatImage
-                    src={
-                      "image" in pest
-                        ? String(pest.image)
-                        : pestThumb(
-                            "scientific" in pest ? String(pest.scientific) : undefined
-                          )
-                    }
-                    alt={pest.name}
-                    category="insect"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-extrabold text-[var(--av-text-primary)]">{pest.name}</p>
+              <FarmerSplitCard
+                href={href}
+                title={pest.name}
+                subtitle={sci}
+                image={img}
+                threatCategory="insect"
+                openHint={hi ? "पूरा कीट पेज" : "Open pest page"}
+                meta={
+                  <span className="flex flex-wrap items-center gap-1.5">
                     <RiskBadge level={pest.risk} />
-                  </div>
-                  <p className="mt-0.5 line-clamp-1 text-[11px] italic text-[var(--av-text-muted)]">
-                    {"scientific" in pest ? String(pest.scientific) : ""}
-                  </p>
-                  {"etl" in pest && pest.etl ? (
-                    <p className="mt-1 text-[10px] font-semibold text-[var(--av-accent)]">
-                      ETL: {String(pest.etl)}
-                    </p>
-                  ) : null}
-                  <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-                    {hi ? "पूरा कीट पेज खोलें →" : "Open pest page →"}
-                  </p>
-                </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
-              </AppLink>
+                    {etl ? (
+                      <span className="text-[10px] font-semibold text-[var(--av-accent)]">
+                        {hi ? `कब स्प्रे: ${etl}` : `Spray when: ${etl}`}
+                      </span>
+                    ) : null}
+                  </span>
+                }
+              />
             </li>
           );
         })}

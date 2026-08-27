@@ -6,5 +6,5 @@ interface Props {
 
 export default async function CropPestsRedirect({ params }: Props) {
   const { slug } = await params;
-  redirect(`/crops/${slug}?tab=pests`);
+  redirect(`/crops/${slug}/care/pests`);
 }

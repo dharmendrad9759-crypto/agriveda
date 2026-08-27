@@ -38,8 +38,10 @@ export function isCropTabId(value: string | null | undefined): value is CropTabI
   return CROP_TABS.some((t) => t.id === value);
 }
 
+/** Opens a dedicated care page (not in-page slide) */
 export function cropTabHref(slug: string, tab: CropTabId) {
-  return tab === "overview" ? `/crops/${slug}` : `/crops/${slug}?tab=${tab}`;
+  if (tab === "overview") return `/crops/${slug}`;
+  return `/crops/${slug}/care/${tab}`;
 }
 
 export type CropTabItem = (typeof CROP_TABS)[number] & { icon: LucideIcon };

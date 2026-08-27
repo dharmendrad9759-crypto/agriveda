@@ -1,0 +1,107 @@
+/** किसान वाली आसान नाम — UI में दिखाएँ; official name data में रहता है */
+export const SCHEME_FARMER_NAME_HI: Record<string, string> = {
+  "pm-kisan": "किसान पैसा (PM-KISAN)",
+  "mp-cm-kisan": "MP किसान पैसा",
+  "rythu-bandhu": "तेलंगाना किसान पैसा",
+  rgkny: "छत्तीसगढ़ फसल मदद",
+  "pm-kmy": "किसान पेंशन",
+  "pm-kusum": "सोलर पंप मदद",
+  smam: "मशीन खरीद मदद",
+  "chc-hire": "मशीन किराए पर",
+  "crop-residue": "पराली मशीन मदद",
+  pmksy: "ड्रिप / स्प्रिंकलर मदद",
+  "agri-pipeline": "पानी पाइप मदद",
+  "rj-fencing": "तारबंदी मदद",
+  "solar-fencing": "सोलर तार मदद",
+  "free-boring": "बोरिंग मदद",
+  "farm-pond": "खेत तालाब मदद",
+  kcc: "किसान कार्ड (KCC)",
+  pcc: "पशु / मछली कर्ज",
+  "e-nwr": "गोदाम पर कर्ज",
+  aif: "गोदाम · स्टोर कर्ज",
+  pmfby: "फसल बीमा",
+  "cm-accident": "दुर्घटना मदद",
+  "cm-krishak-sathi": "किसान राहत",
+  pmmsy: "मछली पालन मदद",
+  nbhm: "मधुमक्खी मदद",
+  "bamboo-mission": "बांस मदद",
+  "midh-polyhouse": "पॉलीहाउस मदद",
+  ahidf: "डेयरी धंधा मदद",
+  "pm-fme": "खाना प्रोसेस मदद",
+  "rkvy-raftaar": "स्टार्टअप मदद",
+};
+
+export const SCHEME_FARMER_NAME_EN: Record<string, string> = {
+  "pm-kisan": "Farmer cash (PM-KISAN)",
+  "mp-cm-kisan": "MP farmer cash",
+  "rythu-bandhu": "Telangana farmer cash",
+  rgkny: "Chhattisgarh crop help",
+  "pm-kmy": "Farmer pension",
+  "pm-kusum": "Solar pump help",
+  smam: "Buy farm machine help",
+  "chc-hire": "Rent a machine",
+  "crop-residue": "Stubble machine help",
+  pmksy: "Drip / sprinkler help",
+  "agri-pipeline": "Water pipe help",
+  "rj-fencing": "Fencing help",
+  "solar-fencing": "Solar fence help",
+  "free-boring": "Boring help",
+  "farm-pond": "Farm pond help",
+  kcc: "Kisan Credit Card",
+  pcc: "Dairy / fishery credit",
+  "e-nwr": "Warehouse loan",
+  aif: "Storage / infra loan",
+  pmfby: "Crop insurance",
+  "cm-accident": "Accident help",
+  "cm-krishak-sathi": "Farmer relief",
+  pmmsy: "Fishery help",
+  nbhm: "Beekeeping help",
+  "bamboo-mission": "Bamboo help",
+  "midh-polyhouse": "Polyhouse help",
+  ahidf: "Dairy business help",
+  "pm-fme": "Food processing help",
+  "rkvy-raftaar": "Startup help",
+};
+
+/** कार्ड पर छोटी आसान लाइन */
+export const SCHEME_FARMER_HOOK_HI: Record<string, string> = {
+  "pm-kisan": "हर साल खाते में पैसा",
+  "mp-cm-kisan": "MP में अतिरिक्त पैसा",
+  "rythu-bandhu": "प्रति एकड़ नकद मदद",
+  rgkny: "फसल इनपुट पर मदद",
+  "pm-kmy": "बुढ़ापे की पेंशन",
+  "pm-kusum": "सोलर से सिंचाई सस्ती",
+  smam: "ट्रैक्टर / रोटावेटर पर छूट",
+  "chc-hire": "खरीदे बिना मशीन चलाओ",
+  "crop-residue": "पराली जलाए बिना मशीन",
+  pmksy: "पानी बचाओ · पैदावार बढ़ाओ",
+  "agri-pipeline": "खेत तक पानी लाइन",
+  "rj-fencing": "जानवर से फसल बचाओ",
+  "solar-fencing": "सोलर से खेत बचाव",
+  "free-boring": "कुछ जिलों में बोरिंग मदद",
+  "farm-pond": "बारिश का पानी जमा करो",
+  kcc: "बीज-खाद-दवा का सस्ता कर्ज",
+  pcc: "पशु / मछली का कर्ज",
+  "e-nwr": "फसल रखकर तुरंत कर्ज",
+  aif: "गोदाम बनाने पर सस्ता कर्ज",
+  pmfby: "सूखा-बाढ़ पर बीमा",
+  "cm-accident": "दुर्घटना पर राज्य मदद",
+  "cm-krishak-sathi": "राहत / साथी कोष",
+  pmmsy: "तालाब / मछली उपकरण",
+  nbhm: "मधुमक्खी बॉक्स पर मदद",
+  "bamboo-mission": "बांस लगाने पर अनुदान",
+  "midh-polyhouse": "पॉलीहाउस पर सब्सिडी",
+  ahidf: "डेयरी प्लांट पर मदद",
+  "pm-fme": "छोटा प्रोसेसिंग यूनिट",
+  "rkvy-raftaar": "एग्री स्टार्टअप ग्रांट",
+};
+
+export function farmerSchemeName(id: string, nameHi: string, nameEn: string, hi: boolean) {
+  if (hi) return SCHEME_FARMER_NAME_HI[id] ?? nameHi;
+  return SCHEME_FARMER_NAME_EN[id] ?? nameEn;
+}
+
+export function farmerSchemeHook(id: string, hookHi: string, hi: boolean) {
+  if (hi) return SCHEME_FARMER_HOOK_HI[id] ?? hookHi;
+  return hookHi;
+}

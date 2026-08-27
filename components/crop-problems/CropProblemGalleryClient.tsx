@@ -35,6 +35,9 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
             <div className="min-h-[52px] px-2 py-2.5">
               <p className="text-center text-[12px] font-black leading-snug text-[#0B3D28]">
                 {p.nameHi}
+                {p.nameEn ? (
+                  <span className="mt-0.5 block text-[10px] font-semibold text-[#5A7A68]">{p.nameEn}</span>
+                ) : null}
               </p>
             </div>
           </AppLink>

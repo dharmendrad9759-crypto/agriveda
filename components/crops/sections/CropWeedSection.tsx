@@ -5,9 +5,11 @@ import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
 import { getCropPestDisease } from "@/data/pest-disease";
 import AppLink from "@/components/ui/AppLink";
 import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
+import FarmerSplitCard from "@/components/ui/FarmerSplitCard";
 import ThreatImage from "@/components/ui/ThreatImage";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { weedDisplayName } from "@/lib/crops/weedNamesHi";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 import { threatDetailPath } from "@/lib/pest-disease-catalog";
 import {
   getWeedCardImage,
@@ -17,7 +19,6 @@ import {
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { CropSprayProduct } from "@/types/crop-management";
 import type { Crop } from "@/types/crop";
-import { ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const WEED_FALLBACK = "/images/threats/threat-weed.jpg";
@@ -87,6 +88,7 @@ function WeedStageStrip({
 export default function CropWeedSection({ crop }: { crop: Crop }) {
   const { locale, t } = useLocale();
   const hi = locale === "hi";
+  const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
   const profile = useMemo(
     () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
     [crop.slug]
@@ -151,7 +153,7 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
       return (
         <div className="space-y-3">
           <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
-            {t("cropWeedsTitle")} — {crop.name}
+            {t("cropWeedsTitle")} — {cropLabel}
           </h3>
           <ul className="space-y-2">
             {guide.map((w) => (
@@ -170,8 +172,8 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
       <div className="crop-premium-empty">
         <p className="text-sm text-[var(--av-text-secondary)]">
           {hi
-            ? `${crop.name} की विस्तृत खरपतवार सूची सीमित है। पहले 30–45 दिन खेत साफ रखें; खरपतवार हब में उपलब्ध फसलें देखें या कृषि विभाग से पूछें।`
-            : `Detailed weed list not ready for ${crop.name} yet. Keep field clean first 30–45 days.`}
+            ? `${cropLabel} की विस्तृत खरपतवार सूची सीमित है। पहले 30–45 दिन खेत साफ रखें।`
+            : `Detailed weed list not ready for ${cropLabel} yet. Keep field clean first 30–45 days.`}
         </p>
         <AppLink href="/ai-doctor" className="mt-3 inline-flex text-xs font-bold text-[var(--av-accent)]">
           {t("cropOpenAiDoctor")} →
@@ -184,7 +186,7 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
     <div className="space-y-4">
       <div>
         <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
-          {t("cropWeedsTitle")} — {crop.name}
+          {t("cropWeedsTitle")} — {cropLabel}
         </h3>
         <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
           {hi
@@ -194,48 +196,32 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
       </div>
 
       {useProfileWeeds ? (
-        <ul className="space-y-2">
+        <ul className="space-y-2.5">
           {enrichedProfileWeeds.map((w) => {
             const open = openId === w.id;
             return (
-              <li key={w.id} className="av-card overflow-hidden">
-                <button
-                  type="button"
+              <li key={w.id} className="overflow-hidden rounded-2xl">
+                <FarmerSplitCard
+                  title={w.weedName}
+                  subtitle={`${w.scientificName} · ${w.criticalPeriod}`}
+                  image={w.image}
+                  threatCategory="weed"
+                  openHint={hi ? (open ? "बंद करें" : "देखो") : open ? "Close" : "See"}
                   onClick={() => setOpenId(open ? null : w.id)}
-                  className="av-card-hover flex w-full items-center gap-3 px-3 py-3 text-left"
-                >
-                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
-                    <ThreatImage
-                      src={w.image}
-                      alt={w.weedName}
-                      category="weed"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-base font-extrabold leading-snug text-[var(--av-text-primary)]">
-                      {w.weedName}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)] line-clamp-1">
-                      {w.scientificName} · {w.criticalPeriod}
-                    </p>
-                  </div>
-                  <ChevronRight
-                    className={`h-4 w-4 shrink-0 text-[var(--av-text-muted)] transition ${open ? "rotate-90" : ""}`}
-                  />
-                </button>
+                  className={open ? "!rounded-b-none" : undefined}
+                />
                 {open ? (
-                  <div className="space-y-1 border-t border-[var(--av-border)] px-3 pb-3 pt-2 text-xs text-[var(--av-text-secondary)]">
+                  <div className="space-y-1 border border-t-0 border-[#D8E8DE] bg-white px-3 pb-3 pt-2 text-xs text-[var(--av-text-secondary)] rounded-b-2xl">
                     <WeedStageStrip scientificName={w.scientificName} hi={hi} />
                     <p>
                       <span className="font-bold text-[var(--av-text-primary)]">
-                        {hi ? "पूर्व-उद्भव: " : "Pre-em: "}
+                        {hi ? "उगने से पहले: " : "Before sprout: "}
                       </span>
                       {w.preEmergenceHerbicide}
                     </p>
                     <p>
                       <span className="font-bold text-[var(--av-text-primary)]">
-                        {hi ? "उत्तर-उद्भव: " : "Post-em: "}
+                        {hi ? "उगने के बाद: " : "After sprout: "}
                       </span>
                       {w.postEmergenceHerbicide}
                     </p>
@@ -255,7 +241,7 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
           })}
         </ul>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-2.5">
           {weedNames.map((w) => {
             const hasCatalog = catalog.weeds.some((x) => x.id === w.id);
             const href = hasCatalog
@@ -265,36 +251,18 @@ export default function CropWeedSection({ crop }: { crop: Crop }) {
             const open = openId === w.id;
             const thumb = weedThumb(w.scientificName, w.image);
             return (
-              <li key={w.id} className="av-card overflow-hidden">
-                <button
-                  type="button"
+              <li key={w.id} className="overflow-hidden rounded-2xl">
+                <FarmerSplitCard
+                  title={label.primary}
+                  subtitle={label.secondary || undefined}
+                  image={thumb}
+                  threatCategory="weed"
+                  openHint={hi ? (open ? "बंद करें" : "देखो") : open ? "Close" : "See"}
                   onClick={() => setOpenId(open ? null : w.id)}
-                  className="av-card-hover flex w-full items-center gap-3 px-3 py-3 text-left"
-                >
-                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
-                    <ThreatImage
-                      src={thumb}
-                      alt={label.primary}
-                      category="weed"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-base font-extrabold leading-snug text-[var(--av-text-primary)]">
-                      {label.primary}
-                    </p>
-                    {label.secondary ? (
-                      <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)] line-clamp-1">
-                        {label.secondary}
-                      </p>
-                    ) : null}
-                  </div>
-                  <ChevronRight
-                    className={`h-4 w-4 shrink-0 text-[var(--av-text-muted)] transition ${open ? "rotate-90" : ""}`}
-                  />
-                </button>
+                  className={open ? "!rounded-b-none" : undefined}
+                />
                 {open ? (
-                  <div className="border-t border-[var(--av-border)] px-3 pb-3 pt-2">
+                  <div className="border border-t-0 border-[#D8E8DE] bg-white px-3 pb-3 pt-2 rounded-b-2xl">
                     <WeedStageStrip scientificName={w.scientificName} hi={hi} />
                     <AppLink
                       href={href}

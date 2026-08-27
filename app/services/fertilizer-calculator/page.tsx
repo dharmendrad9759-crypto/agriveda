@@ -1,42 +1,40 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle, ChevronDown, Package } from "lucide-react";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
-import DarkCard from "@/components/shell/DarkCard";
 import { cropCatalog } from "@/data/crop-catalog";
 import {
   buildFertilizerPlan,
   listFertilizerCrops,
   type SoilTestLevels,
 } from "@/lib/agriveda2/fertilizerEngine";
-import { FERTILIZER_SOURCES } from "@/data/agriveda2/fertilizer-data";
+import {
+  fertilizerAmountParts,
+  fertilizerBagPurposeHi,
+} from "@/data/agriveda2/fertilizer-data";
 import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
-import { EASE_OUT, staggerContainer, staggerItem } from "@/lib/motion/variants";
+import { EASE_OUT } from "@/lib/motion/variants";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { cn } from "@/lib/cn";
+import { AV } from "@/lib/design/tokens";
 import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
-
-const NUTRIENT_COLORS: Record<string, string> = {
-  N: "from-lime-400 to-green-500",
-  P: "from-amber-400 to-orange-500",
-  K: "from-violet-400 to-purple-500",
-  Ca: "from-sky-400 to-blue-500",
-  Mg: "from-teal-400 to-cyan-500",
-  S: "from-yellow-400 to-amber-500",
-  Zn: "from-rose-400 to-pink-500",
-  Fe: "from-red-400 to-rose-500",
-  B: "from-indigo-400 to-violet-500",
-};
 
 export default function FertilizerCalculatorPage() {
   const slugs = useMemo(() => listFertilizerCrops(), []);
   const crops = cropCatalog.filter((c) => slugs.includes(c.slug));
 
-  const [slug, setSlug] = useState(crops[0]?.slug ?? "wheat");
+  const defaultSlug = slugs.includes("paddy")
+    ? "paddy"
+    : crops[0]?.slug ?? "wheat";
+
+  const [slug, setSlug] = useState(defaultSlug);
   const [area, setArea] = useState("1");
   const [soilTest, setSoilTest] = useState<SoilTestLevels>({});
+  const [editing, setEditing] = useState(false);
+  const [showSoil, setShowSoil] = useState(false);
 
   const acres = useMemo(() => {
     const n = parseFloat(area);
@@ -49,256 +47,267 @@ export default function FertilizerCalculatorPage() {
     return buildFertilizerPlan(slug, acres, soilTest);
   }, [slug, acres, soilTest]);
 
-  const selected = cropCatalog.find((c) => c.slug === slug);
+  const cropHi = getCropHindiName(slug) || cropCatalog.find((c) => c.slug === slug)?.name || slug;
+  const areaLabel = Number.isInteger(acres) ? String(acres) : acres.toFixed(1);
 
   return (
     <Agriveda2Shell
       title="खाद कैलकुलेटर"
-      subtitle="फसल चुनो — बोरे में कितना लगेगा"
+      subtitle="कितनी खाद · कब डालें"
       backHref="/dashboard"
     >
-      <div className="relative mb-4 overflow-hidden rounded-[22px] border border-emerald-500/15">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/jobs/job-fertilizer.jpg"
-          alt=""
-          className="h-36 w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 p-4">
-          <p className="text-[17px] font-bold text-white">खाद का हिसाब</p>
-          <p className="text-[12px] text-white/85">यूरिया / DAP — रकबे के हिसाब से</p>
-        </div>
-      </div>
-
-      <DarkCard className="space-y-4 p-4">
-        <label className="block text-xs font-bold theme-text-muted">फसल टैप करो</label>
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {crops.map((c) => {
-            const active = c.slug === slug;
-            const hi = getCropHindiName(c.slug);
-            return (
-              <button
-                key={c.slug}
-                type="button"
-                onClick={() => setSlug(c.slug)}
-                className={cn(
-                  "flex w-[72px] shrink-0 flex-col items-center gap-1 rounded-2xl border p-1.5 transition",
-                  active
-                    ? "border-emerald-500/50 bg-emerald-500/12"
-                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
-                )}
-              >
-                <span className="relative h-14 w-14 overflow-hidden rounded-xl">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={resolveCropImage({ slug: c.slug, name: c.name })}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </span>
-                <span className="line-clamp-1 text-[10px] font-bold">
-                  {hi || c.name}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <select
-          value={slug}
-          onChange={(e) => setSlug(e.target.value)}
-          className="theme-input w-full rounded-xl border px-3 py-2.5 text-sm font-semibold sr-only"
-          aria-label="फसल"
+      <div className="mx-auto max-w-lg space-y-3">
+        <div
+          className={cn(
+            AV.card,
+            "overflow-hidden rounded-[20px] border border-emerald-500/20 p-[18px] shadow-[var(--av-shadow-sm)]"
+          )}
         >
-          {crops.map((c) => (
-            <option key={c.slug} value={c.slug}>
-              {c.emoji} {c.name}
-            </option>
-          ))}
-        </select>
+          {/* Crop · area summary */}
+          <div className="mb-2.5 flex items-center justify-between gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3.5 py-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={resolveCropImage({
+                    slug,
+                    name: cropCatalog.find((c) => c.slug === slug)?.name ?? slug,
+                  })}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-[15px] font-bold text-[var(--av-text-primary)]">
+                  {cropHi} · {areaLabel} एकड़
+                </p>
+                <p className="text-[12px] text-[var(--av-text-muted)]">फसल और रकबा</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditing((v) => !v)}
+              className="shrink-0 rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-200"
+            >
+              {editing ? "ठीक" : "बदलें"}
+            </button>
+          </div>
 
-        {selected && (
-          <motion.p
-            key={selected.slug}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-800"
-          >
-            {selected.emoji} {selected.name} — नीचे पूरा पोषण कार्यक्रम
-          </motion.p>
-        )}
+          <AnimatePresence initial={false}>
+            {editing && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.25, ease: EASE_OUT }}
+                className="overflow-hidden"
+              >
+                <div className="mb-3 space-y-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3">
+                  <div>
+                    <p className="mb-1.5 text-[11px] font-semibold text-[var(--av-text-muted)]">
+                      फसल चुनें
+                    </p>
+                    <div className="-mx-0.5 flex gap-2 overflow-x-auto px-0.5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                      {crops.map((c) => {
+                        const active = c.slug === slug;
+                        const hi = getCropHindiName(c.slug);
+                        return (
+                          <button
+                            key={c.slug}
+                            type="button"
+                            onClick={() => setSlug(c.slug)}
+                            className={cn(
+                              "flex w-[68px] shrink-0 flex-col items-center gap-1 rounded-xl border p-1",
+                              active
+                                ? "border-emerald-500/55 bg-emerald-500/12"
+                                : "border-[var(--av-border)] bg-[var(--av-surface)]"
+                            )}
+                          >
+                            <span className="relative h-12 w-12 overflow-hidden rounded-lg">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={resolveCropImage({ slug: c.slug, name: c.name })}
+                                alt=""
+                                className="h-full w-full object-cover"
+                              />
+                            </span>
+                            <span className="line-clamp-1 text-[10px] font-bold text-[var(--av-text-primary)]">
+                              {hi || c.name}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                      खेत कितना एकड़?
+                    </label>
+                    <input
+                      type="number"
+                      min="0.1"
+                      step="0.1"
+                      value={area}
+                      onChange={(e) => setArea(e.target.value)}
+                      className="av-input mt-1 w-full rounded-xl px-3 py-2 text-sm font-semibold"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setEditing(false)}
+                    className="av-btn av-btn-primary w-full rounded-xl py-2.5 text-[13px] font-bold"
+                  >
+                    योजना देखें
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        <div>
-          <label className="text-xs font-bold theme-text-muted">खेत का क्षेत्र (एकड़)</label>
-          <input
-            type="number"
-            min="0.1"
-            step="0.1"
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-            className="theme-input mt-1 w-full rounded-xl border px-3 py-2 text-sm"
-          />
-        </div>
-
-        <SoilTestInputs value={soilTest} onChange={setSoilTest} />
-
-        {plan ? (
-          <motion.div
-            key={`${slug}-${acres}-${plan.soilFactors.n}-${plan.soilFactors.p}-${plan.soilFactors.k}`}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: EASE_OUT }}
-            className="space-y-4"
-          >
-              <p className="rounded-lg bg-emerald-500/10 p-2 text-[10px] theme-text-muted">
-                {plan.unitNote}
-                {plan.source === "guide" && " · फसल गाइड अनुमान — मिट्टी जाँच से समायोजित करें"}
+          {!plan ? (
+            <p className="py-6 text-center text-[14px] text-[var(--av-text-muted)]">
+              ऊपर एकड़ भरें — खाद योजना यहाँ आएगी
+            </p>
+          ) : (
+            <motion.div
+              key={`${slug}-${acres}-${plan.soilFactors.n}-${plan.soilFactors.p}-${plan.soilFactors.k}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: EASE_OUT }}
+            >
+              <p className="mb-2.5 text-[14px] font-bold text-[var(--av-text-primary)]">
+                कुल कितनी खाद चाहिए
               </p>
-
-              {plan.soilAdjusted && (
-                <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] font-semibold text-amber-950 dark:text-amber-100">
-                  {plan.soilAdjustNote}
-                  <span className="mt-0.5 block font-medium text-amber-900/80 dark:text-amber-200/80">
-                    गुणांक N×{plan.soilFactors.n} · P×{plan.soilFactors.p} · K×{plan.soilFactors.k}
-                  </span>
-                </p>
-              )}
-
-              {!plan.soilAdjusted &&
-                plan.guideNotes.some((n) => n.includes("मिट्टी जाँच")) && (
-                  <p className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-[10px] font-semibold text-amber-900 dark:text-amber-200">
-                    {plan.guideNotes.find((n) => n.includes("मिट्टी जाँच"))}
-                  </p>
-                )}
-
-              <div>
-                <p className="text-xs font-extrabold theme-text-primary">
-                  🌱 पोषण — {plan.cropKey} ({plan.acres} एकड़)
-                </p>
-                <motion.div
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="show"
-                  className="mt-3 space-y-2"
-                >
-                  {plan.nutrients.map((row) => {
-                    const key = row.nutrient.replace(/[^A-Za-z]/g, "").slice(0, 2);
-                    const grad = NUTRIENT_COLORS[key] ?? "from-emerald-400 to-teal-500";
-                    const kgMatch = row.detail.match(/([\d.]+)\s*kg/i);
-                    const pct = kgMatch
-                      ? Math.min(100, Math.max(12, Math.round((Number(kgMatch[1]) / 80) * 100)))
-                      : 35;
+              {plan.bags.length > 0 ? (
+                <div className="mb-[18px] grid grid-cols-2 gap-2.5">
+                  {plan.bags.map((b) => {
+                    const { num, rest } = fertilizerAmountParts(b.amount);
                     return (
-                      <motion.div
-                        key={row.nutrient}
-                        variants={staggerItem}
-                        className="rounded-xl border border-gray-200/80 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+                      <div
+                        key={b.name}
+                        className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3"
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-sm font-black theme-text-primary">{row.nutrient}</span>
-                          <span className="text-[11px] font-semibold theme-text-muted">{row.detail}</span>
-                        </div>
-                        <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200/80 dark:bg-white/10">
-                          <motion.div
-                            className={`h-full rounded-full bg-gradient-to-r ${grad}`}
-                            initial={{ width: 0 }}
-                            animate={{ width: `${pct}%` }}
-                            transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.05 }}
-                          />
-                        </div>
-                      </motion.div>
+                        <Package
+                          className="h-[18px] w-[18px] text-[var(--av-accent)]"
+                          aria-hidden
+                        />
+                        <p className="mt-2 text-[13px] font-bold leading-tight text-[var(--av-text-primary)]">
+                          {b.name}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
+                          {fertilizerBagPurposeHi(b.name)}
+                        </p>
+                        <p className="mt-2 text-[22px] font-bold leading-none text-[var(--av-text-primary)]">
+                          {num}{" "}
+                          <span className="text-[13px] font-medium text-[var(--av-text-muted)]">
+                            किग्रा
+                          </span>
+                        </p>
+                        {rest && !/^किग्रा/i.test(rest) ? (
+                          <p className="mt-1 text-[10px] text-[var(--av-text-muted)] line-clamp-1">
+                            {rest.replace(/^किग्रा\s*·?\s*/, "")}
+                          </p>
+                        ) : null}
+                      </div>
                     );
                   })}
-                </motion.div>
-              </div>
-
-              {plan.bags.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.15 }}
-                  className="space-y-2"
-                >
-                  <p className="text-xs font-extrabold text-emerald-800 dark:text-emerald-200">
-                    कुल बोरियाँ ({plan.acres} एकड़)
-                  </p>
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {plan.bags.map((b, i) => (
-                      <motion.div
-                        key={b.name}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.15 + i * 0.04 }}
-                        className="relative overflow-hidden rounded-2xl border border-emerald-500/25"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src="/images/jobs/job-fertilizer.jpg"
-                          alt=""
-                          className="absolute inset-0 h-full w-full object-cover"
-                        />
-                        <span className="absolute inset-0 bg-emerald-950/75" />
-                        <div className="relative z-10 p-3.5">
-                          <p className="text-[13px] font-bold text-white">{b.name}</p>
-                          <p className="mt-1 text-lg font-black text-emerald-200">{b.amount}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
+                </div>
+              ) : (
+                <p className="mb-4 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3 text-[13px] text-[var(--av-text-secondary)]">
+                  इस फसल की पूरी खुराक अभी तैयार नहीं — नीचे समय देखें या दूसरी फसल चुनें।
+                </p>
               )}
 
               {plan.schedule.length > 0 && (
-                <div>
-                  <p className="text-xs font-bold theme-text-primary">कार्यक्रम</p>
-                  <motion.ul
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate="show"
-                    className="mt-2 space-y-2 text-xs theme-text-muted"
-                  >
-                    {plan.schedule.map((s) => (
-                      <motion.li
-                        key={s.time}
-                        variants={staggerItem}
-                        whileHover={{ scale: 1.01 }}
-                        className="rounded-lg border border-gray-200 bg-gradient-to-r from-white to-emerald-50/50 p-2.5 dark:border-white/10 dark:from-black/20 dark:to-emerald-950/20"
-                      >
-                        <p className="font-bold theme-text-primary">{s.time}</p>
-                        <p>{s.apply}</p>
-                      </motion.li>
-                    ))}
-                  </motion.ul>
+                <>
+                  <p className="mb-2.5 text-[14px] font-bold text-[var(--av-text-primary)]">
+                    कब कितना डालें
+                  </p>
+                  <div className="mb-2 flex flex-col">
+                    {plan.schedule.map((s, i) => {
+                      const last = i === plan.schedule.length - 1;
+                      return (
+                        <div key={`${s.time}-${i}`} className="flex gap-3">
+                          <div className="flex flex-col items-center">
+                            <div className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-[var(--av-accent)] text-[13px] font-bold text-white">
+                              {i + 1}
+                            </div>
+                            {!last && (
+                              <div className="my-1 w-px flex-1 bg-[var(--av-border)]" />
+                            )}
+                          </div>
+                          <div className={cn(!last && "pb-4")}>
+                            <p className="mb-1.5 text-[14px] font-bold text-[var(--av-text-primary)]">
+                              {s.time}
+                            </p>
+                            <p className="text-[13px] leading-relaxed text-[var(--av-text-secondary)]">
+                              {s.apply}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+
+              {(plan.farmerTipHi ||
+                plan.guideNotes.find((n) => !n.includes("मिट्टी जाँच"))) && (
+                <div className="mt-1.5 flex gap-2.5 rounded-xl border border-amber-500/35 bg-amber-500/10 p-3">
+                  <AlertTriangle
+                    className="mt-0.5 h-[18px] w-[18px] shrink-0 text-amber-600 dark:text-amber-400"
+                    aria-hidden
+                  />
+                  <p className="text-[13px] leading-relaxed text-[var(--av-text-primary)]">
+                    {plan.farmerTipHi ||
+                      plan.guideNotes.find((n) => !n.includes("मिट्टी जाँच"))}
+                  </p>
                 </div>
               )}
 
-              {plan.source === "verified" && (
-                <details className="text-[10px] theme-text-muted">
-                  <summary className="cursor-pointer font-bold theme-text-primary">
-                    रूपांतरण सूत्र
-                  </summary>
-                  <ul className="mt-2 space-y-2">
-                    {Object.entries(FERTILIZER_SOURCES).map(([group, formulas]) => (
-                      <li key={group}>
-                        <span className="font-semibold">{group}:</span>
-                        {Object.entries(formulas).map(([name, formula]) => (
-                          <p key={name} className="ml-2">
-                            {name}: {formula}
-                          </p>
-                        ))}
-                      </li>
-                    ))}
-                  </ul>
-                </details>
+              {plan.soilAdjusted && (
+                <p className="mt-2.5 text-[11px] leading-snug text-amber-800 dark:text-amber-200">
+                  मिट्टी जाँच के हिसाब से मात्रा थोड़ी बदली गई है — लेबल और रिपोर्ट मानें।
+                </p>
               )}
-          </motion.div>
-        ) : (
-          <p className="text-center text-sm theme-text-muted">
-            क्षेत्र भरें — खाद योजना यहाँ दिखेगी
-          </p>
-        )}
-      </DarkCard>
+            </motion.div>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowSoil((v) => !v)}
+          className="flex w-full items-center justify-between rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-left"
+        >
+          <span className="text-[12px] font-bold text-[var(--av-text-primary)]">
+            मिट्टी जाँच है? (वैकल्पिक)
+          </span>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 text-[var(--av-text-muted)] transition",
+              showSoil && "rotate-180"
+            )}
+          />
+        </button>
+        <AnimatePresence initial={false}>
+          {showSoil && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-0.5">
+                <SoilTestInputs value={soilTest} onChange={setSoilTest} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <p className="px-1 text-center text-[10px] leading-snug text-[var(--av-text-muted)]">
+          यह अनुमान है — दवा/खाद का लेबल और स्थानीय सलाह अंतिम है
+        </p>
+      </div>
     </Agriveda2Shell>
   );
 }

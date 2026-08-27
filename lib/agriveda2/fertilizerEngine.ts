@@ -3,11 +3,12 @@ import {
   getFertilizerForSlug,
   formatNutrientValue,
   scaleBagKg,
+  fertilizerBagLabel,
   FERTILIZER_UNIT_NOTE,
   type FertilizerCropEntry,
   type NutrientValue,
 } from "@/data/agriveda2/fertilizer-data";
-import { dataKeyForSlug } from "@/data/agriveda2/crop-slug-map";
+import { dataKeyForSlug, FERTILIZER_SLUGS } from "@/data/agriveda2/crop-slug-map";
 import { cropCatalog } from "@/data/crop-catalog";
 
 export type SoilNutrientStatus = "low" | "medium" | "high";
@@ -31,7 +32,7 @@ export const SOIL_STATUS_FACTORS: Record<SoilNutrientStatus, number> = {
 };
 
 export const SOIL_ADJUST_NOTE_HI =
-  "मिट्टी जाँच के अनुसार समायोजन — अनुमान, लैब रिपोर्ट प्राथमिक";
+  "मिट्टी जाँच के अनुसार मात्रा बदल सकती है — रिपोर्ट और दवा का लेबल मानें";
 
 export const SOIL_ADJUST_NOTE_EN =
   "Illustrative soil-test adjust — follow lab report + product label";
@@ -51,12 +52,29 @@ export interface FertilizerPlan {
   bags: { name: string; amount: string }[];
   schedule: { time: string; apply: string }[];
   guideNotes: string[];
+  farmerTipHi?: string;
   /** Present when any N/P/K status is set (including medium). */
   soilTest?: SoilTestLevels;
   soilAdjusted: boolean;
   soilAdjustNote: string;
   soilFactors: { n: number; p: number; k: number };
 }
+
+const NUTRIENT_LABEL_HI: Record<string, string> = {
+  N: "नाइट्रोजन (N)",
+  P: "फॉस्फोरस (P)",
+  K: "पोटाश (K)",
+  Ca: "कैल्शियम (Ca)",
+  Mg: "मैग्नीशियम (Mg)",
+  S: "सल्फर (S)",
+  Zn: "जिंक (Zn)",
+  Fe: "आयरन (Fe)",
+  B: "बोरॉन (B)",
+  Mo: "मॉलिब्डेनम (Mo)",
+  Si: "सिलिका (Si)",
+  Rhizobium: "राइजोबियम",
+  Rhizobium_PSB: "राइजोबियम + पीएसबी",
+};
 
 const NUTRIENT_ORDER = [
   "N",
@@ -100,7 +118,7 @@ function scaleNutrientValue(v: NutrientValue, factor: number): NutrientValue {
   if (factor === 1) return v;
   if (typeof v === "number") return roundDose(v * factor);
   if (typeof v === "string") {
-    return v.replace(/([\d.]+)(\s*kg)/gi, (_, num: string, unit: string) => {
+    return v.replace(/([\d.]+)(\s*(?:kg|किग्रा))/gi, (_, num: string, unit: string) => {
       return `${roundDose(parseFloat(num) * factor)}${unit}`;
     });
   }
@@ -108,8 +126,8 @@ function scaleNutrientValue(v: NutrientValue, factor: number): NutrientValue {
   for (const [key, val] of Object.entries(v)) {
     if (typeof val === "number" && (key === "total" || key === "basal" || /^(top|split)/i.test(key))) {
       out[key] = roundDose(val * factor);
-    } else if (typeof val === "string" && /[\d.]+\s*kg/i.test(val)) {
-      out[key] = val.replace(/([\d.]+)(\s*kg)/gi, (_, num: string, unit: string) => {
+    } else if (typeof val === "string" && /[\d.]+\s*(?:kg|किग्रा)/i.test(val)) {
+      out[key] = val.replace(/([\d.]+)(\s*(?:kg|किग्रा))/gi, (_, num: string, unit: string) => {
         return `${roundDose(parseFloat(num) * factor)}${unit}`;
       });
     } else {
@@ -145,7 +163,7 @@ function scaleApplyLine(
   else if (/dap|ssp|map/i.test(apply)) factor = factors.p * 0.7 + factors.n * 0.3;
 
   if (Math.abs(factor - 1) < 0.01) return apply;
-  return apply.replace(/([\d.]+)(\s*kg)/gi, (_, num: string, unit: string) => {
+  return apply.replace(/([\d.]+)(\s*(?:kg|किग्रा))/gi, (_, num: string, unit: string) => {
     return `${Math.round(parseFloat(num) * factor)}${unit}`;
   });
 }
@@ -166,7 +184,7 @@ function applySoilToEntry(
     if (f === 1) {
       scaledBags[name] = amount;
     } else {
-      scaledBags[name] = amount.replace(/^([\d.]+)(\s*kg)/i, (_, num: string, unit: string) => {
+      scaledBags[name] = amount.replace(/^([\d.]+)(\s*(?:kg|किग्रा))/i, (_, num: string, unit: string) => {
         return `${Math.round(parseFloat(num) * f)}${unit}`;
       });
     }
@@ -198,13 +216,13 @@ function buildFromGuide(
   const nutrients: FertilizerPlanRow[] = [];
   if (profile.fertilizerSchedule?.length) {
     nutrients.push({
-      nutrient: "Schedule",
+      nutrient: "समयसारिणी",
       detail: profile.fertilizerSchedule.join(" · "),
     });
   }
   if (profile.micronutrients?.length) {
     nutrients.push({
-      nutrient: "Micro",
+      nutrient: "सूक्ष्म पोषक",
       detail: profile.micronutrients.join(" · "),
     });
   }
@@ -212,7 +230,7 @@ function buildFromGuide(
   const guideNotes = [...(profile.irrigationSchedule?.slice(0, 2) ?? [])];
   if (adjusted && wouldScale) {
     guideNotes.push(
-      `${SOIL_ADJUST_NOTE_HI} · गाइड पाठ पर स्वतः स्केल नहीं — verified खुराक वाली फसल चुनें`
+      `${SOIL_ADJUST_NOTE_HI} · गाइड पाठ पर अपने आप मात्रा नहीं बदलती — पुष्ट खुराक वाली फसल चुनें`
     );
   }
 
@@ -225,7 +243,7 @@ function buildFromGuide(
     nutrients,
     bags: [],
     schedule: (profile.fertilizerSchedule ?? []).map((line, i) => ({
-      time: `Step ${i + 1}`,
+      time: `चरण ${i + 1}`,
       apply: line,
     })),
     guideNotes,
@@ -253,19 +271,27 @@ function buildFromVerified(
   for (const key of NUTRIENT_ORDER) {
     const val = working[key as keyof FertilizerCropEntry];
     if (val != null) {
-      nutrients.push({ nutrient: key, detail: formatNutrientValue(val as NutrientValue) });
+      nutrients.push({
+        nutrient: NUTRIENT_LABEL_HI[key] ?? key,
+        detail: formatNutrientValue(val as NutrientValue),
+      });
     }
   }
 
   const bagsRaw = working.fertilizer_bags_per_acre ?? working.fertilizer_bags ?? {};
   const bags = Object.entries(bagsRaw).map(([name, amount]) => ({
-    name,
+    name: fertilizerBagLabel(name),
     amount: acres === 1 ? amount : scaleBagKg(amount, acres),
   }));
 
   const schedule = (working.schedule ?? []).map((s) => ({
     time: s.time,
-    apply: acres === 1 ? s.apply : `${s.apply} (× ${acres} acre)`,
+    apply:
+      acres === 1
+        ? s.apply
+        : s.apply.replace(/([\d.]+)(\s*(?:kg|किग्रा))/gi, (_, num: string, unit: string) => {
+            return `${Math.round(parseFloat(num) * acres)}${unit}`;
+          }),
   }));
 
   return {
@@ -278,6 +304,7 @@ function buildFromVerified(
     bags,
     schedule,
     guideNotes: [],
+    farmerTipHi: entry.farmerTipHi,
     soilTest: adjusted ? soil : undefined,
     soilAdjusted: wouldScale,
     soilAdjustNote: SOIL_ADJUST_NOTE_HI,
@@ -297,9 +324,8 @@ export function buildFertilizerPlan(
 }
 
 export function listFertilizerCrops(): string[] {
-  return cropCatalog
-    .filter((c) => buildFertilizerPlan(c.slug, 1) != null)
-    .map((c) => c.slug);
+  const catalogSlugs = new Set(cropCatalog.map((c) => c.slug));
+  return FERTILIZER_SLUGS.filter((slug) => catalogSlugs.has(slug));
 }
 
 export function soilStatusLabel(status: SoilNutrientStatus, hi = true): string {

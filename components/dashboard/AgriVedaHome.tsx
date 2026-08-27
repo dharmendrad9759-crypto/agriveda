@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Droplets,
   FlaskConical,
+  Landmark,
   type LucideIcon,
 } from "lucide-react";
 import CropProblemCard from "@/components/home/CropProblemCard";
@@ -118,6 +119,15 @@ const MORE_JOBS: {
     hintEn: "Tap leaf or pest",
     href: "/pest-diseases",
     imageSrc: "/images/threats/threat-insect.jpg",
+  },
+  {
+    id: "mix",
+    hi: "दवा मिलाएँ",
+    en: "Mix medicines",
+    hintHi: "दो दवा — मिलाएँ या नहीं",
+    hintEn: "Safe tank mix?",
+    href: "/mix-advisor",
+    imageSrc: "/images/jobs/job-spray.jpg",
   },
   {
     id: "disease",
@@ -569,27 +579,39 @@ export default function AgriVedaHome() {
           <AppLink
             href="/schemes"
             onClick={() => track("tool_open", { href: "/schemes", label: "home_kcc_banner" })}
-            className="relative mt-2 flex min-h-[88px] w-full items-end overflow-hidden rounded-xl border border-emerald-700/30 shadow-md shadow-emerald-900/20 active:scale-[0.99]"
+            className="group relative mt-2 flex min-h-[96px] w-full overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 shadow-lg shadow-emerald-900/25 active:scale-[0.99]"
           >
-            <Image
-              src="/images/home/home-job-schemes.jpg"
-              alt=""
-              fill
-              sizes="(max-width: 640px) 100vw, 540px"
-              className="object-cover object-[center_40%]"
-              priority={false}
-            />
-            <span className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-950/45 to-emerald-950/15" />
-            <span className="relative z-10 flex w-full items-end justify-between gap-2 px-4 pb-3 pt-10 text-white">
-              <span>
-                <span className="block text-[15px] font-bold leading-tight">
-                  {isHi ? "योजना जानकारी · KCC · यंत्र" : "Scheme info · KCC · Machinery"}
-                </span>
-                <span className="mt-0.5 block text-[11px] font-medium text-emerald-50/95">
-                  {isHi ? "जानकारी देखें, पात्रता समझें, आधिकारिक पोर्टल पर जाएँ" : "Learn, check eligibility, go official"}
-                </span>
+            <span className="relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-1.5 bg-emerald-950 px-3.5 py-4 sm:px-5">
+              <span className="inline-flex w-fit items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-100/90">
+                <Landmark className="h-3 w-3" />
+                {isHi ? "सरकारी योजना" : "Govt schemes"}
               </span>
-              <ArrowRight className="mb-0.5 h-4 w-4 shrink-0 text-emerald-100" />
+              <span className="text-[16px] font-bold leading-snug text-white sm:text-[17px]">
+                {isHi ? "योजना · KCC · यंत्र" : "Schemes · KCC · Machinery"}
+              </span>
+              <span className="text-[11px] font-medium leading-snug text-emerald-100/85">
+                {isHi ? "पात्रता समझें, आधिकारिक पोर्टल पर जाएँ" : "Check eligibility, go official"}
+              </span>
+              <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-200">
+                {isHi ? "जानकारी देखें" : "See info"}
+                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+              </span>
+            </span>
+            <span className="relative w-[48%] min-w-[140px] max-w-[240px] shrink-0 self-stretch sm:w-[52%] sm:max-w-[280px]">
+              <Image
+                src="/images/home/home-cta-schemes.jpg"
+                alt=""
+                fill
+                sizes="280px"
+                className="object-cover object-[center_22%] transition duration-300 group-hover:scale-105"
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-emerald-950 via-emerald-950/50 to-transparent sm:w-16"
+              />
+              <span className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-emerald-900 shadow-md">
+                <Landmark className="h-5 w-5" strokeWidth={2.4} />
+              </span>
             </span>
           </AppLink>
           {lastScan ? (

@@ -3,12 +3,16 @@ import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
 import { getWeedCardImage } from "@/lib/weeds/weedStageImages";
 import { getDiseaseSpeciesImage, getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
+import { getCropManagementProfile } from "@/data/crop-management";
+import { getCropHindiName } from "@/lib/crops/crop-display";
 
 import { getIpmThreatOverride } from "@/lib/crops/ipmDataBridge";
 import { getCropFieldGuideThreatOverride } from "@/lib/crops/cropFieldGuideBridge";
 import { getWeedNameHi } from "@/lib/crops/weedNamesHi";
 import { findStageGuideForThreat } from "@/lib/cropProtectionGuide";
 import type { EnrichedThreat, ThreatCategory, ThreatType } from "@/types/pest-disease-ui";
+import { managementThreatId, threatDetailPath } from "@/lib/pests/threatPaths";
+import { normThreatText } from "@/lib/pests/matchCatalogThreat";
 
 const GENERIC_STOCK = /placeholder|picsum|loremflickr/i;
 
@@ -271,11 +275,13 @@ export function getThreatDetail(
   const crop = getCropPestDisease(cropSlug);
   if (threatType === "pest") {
     const pest = crop.pests.find((p) => p.id === threatId);
-    return pest ? enrichPest(crop, pest) : null;
+    if (pest) return enrichPest(crop, pest);
+    return enrichPestFromManagement(cropSlug, threatId);
   }
   if (threatType === "disease") {
     const disease = crop.diseases.find((d) => d.id === threatId);
-    return disease ? enrichDisease(crop, disease) : null;
+    if (disease) return enrichDisease(crop, disease);
+    return enrichDiseaseFromManagement(cropSlug, threatId);
   }
   if (threatType === "weed") {
     const weed = crop.weeds.find((w) => w.id === threatId);
@@ -284,9 +290,130 @@ export function getThreatDetail(
   return null;
 }
 
-export function threatDetailPath(cropSlug: string, type: ThreatType, id: string): string {
-  return `/pest-diseases/${cropSlug}/${type}/${id}`;
+function cropDisplayName(slug: string): string {
+  return getCropHindiName(slug) || getCropPestDisease(slug).name;
 }
+
+function enrichPestFromManagement(
+  cropSlug: string,
+  threatId: string
+): EnrichedThreat | null {
+  const profile = getCropManagementProfile(cropSlug);
+  const list = profile?.pestManagement ?? [];
+  if (!list.length) return null;
+
+  const decoded = decodeURIComponent(threatId);
+  const idx = list.findIndex((p, i) => {
+    const mid = managementThreatId("pest", p.pestName, p.scientificName, i);
+    if (mid === decoded || mid === threatId) return true;
+    // Legacy / loose ids: tomato-pest-5, mp-0, scientific fragment
+    if (decoded === `${cropSlug}-pest-${i}` || decoded === `mp-${i}`) return true;
+    const sci = normThreatText(p.scientificName.split(/[/,(]/)[0] ?? "");
+    if (sci.length >= 6 && normThreatText(decoded).includes(sci)) return true;
+    if (normThreatText(decoded).includes(normThreatText(p.pestName).slice(0, 12))) return true;
+    return false;
+  });
+  if (idx < 0) return null;
+
+  const p = list[idx];
+  const id = managementThreatId("pest", p.pestName, p.scientificName, idx);
+  return pestManagementToThreat(cropSlug, p, id);
+}
+
+function pestManagementToThreat(
+  cropSlug: string,
+  p: {
+    pestName: string;
+    scientificName: string;
+    identification?: string;
+    symptoms: string[];
+    etl: string;
+    biologicalControl: string[];
+    chemicalControl: string[];
+    iracGroup: string;
+    activeIngredient: string;
+    dose: string;
+  },
+  id: string
+): EnrichedThreat {
+  const cropName = cropDisplayName(cropSlug);
+  const chem = p.chemicalControl?.[0] ?? p.dose ?? "लेबल अनुसार दवा";
+  const base: EnrichedThreat = {
+    id,
+    cropSlug,
+    cropName,
+    type: "pest",
+    category: "insect",
+    name: p.pestName,
+    scientificName: p.scientificName,
+    image:
+      getPestSpeciesImage(p.scientificName) || THREAT_IMAGES.insect,
+    stage: "फसल अवधि",
+    description:
+      p.identification ||
+      `${p.pestName} ${cropName} का मुख्य कीट है। खेत घूमकर देखें; कीड़े ज़्यादा हों तभी दवा डालें।`,
+    symptoms: p.symptoms?.length
+      ? p.symptoms
+      : ["पत्तियों / फल पर नुकसान", "कीड़े या इल्ली दिखना"],
+    remediation: [
+      ...(p.biologicalControl ?? []).map((x) => `जैविक: ${x}`),
+      ...(p.chemicalControl ?? []).map((x) => `दवा: ${x}`),
+      p.etl ? `कब स्प्रे: ${p.etl}` : "",
+    ].filter(Boolean),
+    iracGroup: p.iracGroup,
+    activeIngredient: p.activeIngredient || chem,
+    etl: p.etl,
+  };
+  return mergeStageGuide(base, "pest");
+}
+
+function enrichDiseaseFromManagement(
+  cropSlug: string,
+  threatId: string
+): EnrichedThreat | null {
+  const profile = getCropManagementProfile(cropSlug);
+  const list = profile?.diseaseManagement ?? [];
+  if (!list.length) return null;
+
+  const decoded = decodeURIComponent(threatId);
+  const idx = list.findIndex((d, i) => {
+    const mid = managementThreatId("disease", d.diseaseName, d.pathogen, i);
+    if (mid === decoded || mid === threatId) return true;
+    if (decoded === `${cropSlug}-dis-${i}` || decoded === `md-${i}`) return true;
+    const path = normThreatText(d.pathogen.split(/[/,(]/)[0] ?? "");
+    if (path.length >= 6 && normThreatText(decoded).includes(path)) return true;
+    if (normThreatText(decoded).includes(normThreatText(d.diseaseName).slice(0, 12))) return true;
+    return false;
+  });
+  if (idx < 0) return null;
+
+  const d = list[idx];
+  const id = managementThreatId("disease", d.diseaseName, d.pathogen, idx);
+  const cropName = cropDisplayName(cropSlug);
+  const base: EnrichedThreat = {
+    id,
+    cropSlug,
+    cropName,
+    type: "disease",
+    category: inferDiseaseCategory(d.pathogen, d.diseaseName),
+    name: d.diseaseName,
+    scientificName: d.pathogen,
+    pathogen: d.pathogen,
+    image: getDiseaseSpeciesImage(d.pathogen) || THREAT_IMAGES.fungalLeaf,
+    stage: "फसल अवधि",
+    description: `${d.diseaseName} ${cropName} में लगता है। जल्दी पहचान कर इलाज करें।`,
+    symptoms: d.symptoms?.length ? d.symptoms : ["पत्तियों / तने पर दाग या मुरझान"],
+    remediation: [
+      ...(d.integratedManagement ?? []).slice(0, 3).map((x) => `रोकथाम: ${x}`),
+      ...(d.biologicalControl ?? []).map((x) => `जैविक: ${x}`),
+      ...(d.chemicalControl ?? []).map((x) => `दवा: ${x}`),
+    ].filter(Boolean),
+    activeIngredient: d.chemicalControl?.[0],
+  };
+  return mergeStageGuide(base, "disease");
+}
+
+export { threatDetailPath } from "@/lib/pests/threatPaths";
 
 export function filterThreats(
   threats: EnrichedThreat[],

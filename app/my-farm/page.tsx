@@ -645,7 +645,7 @@ export default function MyFarmPage() {
                 const hi = getCropHindiName(f.cropSlug || "") || f.crop;
                 const cropHref = f.cropSlug ? `/crops/${f.cropSlug}` : "/crops";
                 const nutrientHref = f.cropSlug
-                  ? `/crops/${f.cropSlug}?tab=nutrients`
+                  ? `/crops/${f.cropSlug}/care/nutrients`
                   : "/deficiencies";
                 const healthPct = Math.max(0, Math.min(100, f.health ?? 75));
                 return (
