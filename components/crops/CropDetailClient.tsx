@@ -1,14 +1,9 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import CropPageTabs from "@/components/crops/CropPageTabs";
+import CropGeneralInfoCard from "@/components/crops/premium/CropGeneralInfoCard";
 import CropPremiumHero from "@/components/crops/premium/CropPremiumHero";
-import CropOverviewSection from "@/components/crops/sections/CropOverviewSection";
-import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
-import { cropCareHref } from "@/lib/crops/crop-care-href";
-import type { CropTabId } from "@/lib/crops/crop-tabs";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import type { Crop } from "@/types/crop";
@@ -18,17 +13,8 @@ interface Props {
 }
 
 export default function CropDetailClient({ crop }: Props) {
-  const router = useRouter();
   const { t, locale } = useLocale();
-  const detail = useMemo(() => enrichCropDetail(crop), [crop]);
   const hindiName = getCropHindiName(crop.slug);
-
-  const onTabChange = useCallback(
-    (tab: CropTabId) => {
-      router.push(cropCareHref(crop.slug, tab));
-    },
-    [crop.slug, router]
-  );
 
   return (
     <div className="crop-premium-page relative min-h-screen">
@@ -40,11 +26,9 @@ export default function CropDetailClient({ crop }: Props) {
           { label: locale === "hi" && hindiName ? hindiName : crop.name },
         ]}
       >
-        <CropPremiumHero crop={crop} detail={detail} />
+        <CropPremiumHero crop={crop} />
 
-        <div className="mb-3">
-          <CropOverviewSection crop={crop} detail={detail} onTabChange={onTabChange} />
-        </div>
+        <CropGeneralInfoCard crop={crop} />
 
         <CropPageTabs crop={crop} />
 

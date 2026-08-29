@@ -166,12 +166,20 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
     };
   }, [filtered, state]);
 
-  const renderGroup = (title: string, list: MarketVarietyRec[], highlight: boolean) => {
+  const hybridTitle = hi ? "हाइब्रिड किस्में" : "Hybrid varieties";
+  const desiTitle = hi ? "देसी / लोकल किस्में" : "Desi / local varieties";
+
+  const renderGroup = (
+    title: string,
+    list: MarketVarietyRec[],
+    highlight: boolean,
+    kind?: "hybrid" | "desi"
+  ) => {
     if (!list.length) return null;
     return (
       <div className="space-y-2">
         <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--av-text-muted)]">
-          {title}
+          {kind === "hybrid" ? hybridTitle : kind === "desi" ? desiTitle : title}
         </p>
         {list.map((v, i) => (
           <VarietyCard
@@ -249,8 +257,8 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
         <SectionHeader title={hi ? "अनुशंसित किस्में" : "Recommended Varieties"} />
         <p className="mt-1 text-xs text-[var(--av-text-muted)]">
           {hi
-            ? `${cropLabel} — राज्य के हिसाब से सरकारी और प्राइवेट किस्में`
-            : `${cropLabel} — state-wise government and private (hybrid) picks`}
+            ? `${cropLabel} — हाइब्रिड, देसी और लोकल — रोग प्रतिरोध, भंडारण, फल आकार देखें`
+            : `${cropLabel} — hybrid, desi, local — disease resist, storage, fruit size`}
         </p>
         <div className="mt-3 space-y-4">
           {filtered.length === 0 ? (
@@ -261,20 +269,22 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
             </p>
           ) : state ? (
             <>
-              {renderGroup(t("varGovt"), stateGovt, true)}
-              {renderGroup(t("varPrivate"), statePrivate, true)}
+              {renderGroup(t("varGovt"), stateGovt, true, "desi")}
+              {renderGroup(t("varPrivate"), statePrivate, true, "hybrid")}
             </>
           ) : (
             <>
               {renderGroup(
                 t("varGovt"),
                 filtered.filter((v) => v.source === "govt"),
-                false
+                false,
+                "desi"
               )}
               {renderGroup(
                 t("varPrivate"),
                 filtered.filter((v) => v.source === "private"),
-                false
+                false,
+                "hybrid"
               )}
             </>
           )}
@@ -288,8 +298,8 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
           defaultOpen={false}
         >
           <div className="space-y-4">
-            {renderGroup(t("varGovt"), otherGovt, false)}
-            {renderGroup(t("varPrivate"), otherPrivate, false)}
+            {renderGroup(t("varGovt"), otherGovt, false, "desi")}
+            {renderGroup(t("varPrivate"), otherPrivate, false, "hybrid")}
           </div>
         </CropCollapsible>
       )}

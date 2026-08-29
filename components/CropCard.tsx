@@ -9,7 +9,6 @@ import {
   formatCategoryLabel,
   getCropHindiName,
   getCropImageUrl,
-  parseSeasonTag,
 } from "@/lib/crops/crop-display";
 import type { Crop } from "@/types/crop";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -20,37 +19,10 @@ interface CropCardProps {
   variant?: "grid" | "list" | "feature";
 }
 
-function seasonChip(tag: string, isHi: boolean) {
-  const label =
-    isHi
-      ? tag === "Kharif"
-        ? "खरीफ"
-        : tag === "Rabi"
-          ? "रबी"
-          : tag === "Summer"
-            ? "गर्मी"
-            : "साल भर"
-      : tag;
-  const tone =
-    tag === "Kharif"
-      ? "bg-emerald-500/90 text-white"
-      : tag === "Rabi"
-        ? "bg-sky-500/90 text-white"
-        : tag === "Summer"
-          ? "bg-amber-500/90 text-white"
-          : "bg-white/85 text-slate-800";
-  return (
-    <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold shadow-sm backdrop-blur-sm ${tone}`}>
-      {label}
-    </span>
-  );
-}
-
 export default function CropCard({ crop, index, variant = "grid" }: CropCardProps) {
   const { locale } = useLocale();
   const isHi = locale === "hi";
   const hindi = getCropHindiName(crop.slug);
-  const season = parseSeasonTag(crop.suitableSeason);
   const image = getCropImageUrl(crop);
   const title = hindi || crop.name;
   const sub = hindi ? crop.name : formatCategoryLabel(crop.category);
@@ -69,14 +41,13 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
             <div className="min-w-0">
               <p className="truncate text-[16px] font-bold text-[var(--av-text-primary)]">{title}</p>
               <p className="truncate text-xs text-[var(--av-text-muted)]">{sub}</p>
-              <div className="mt-1.5 flex flex-wrap gap-1">
-                {seasonChip(season, isHi)}
-                {crop.isStub ? (
+              {crop.isStub ? (
+                <div className="mt-1.5">
                   <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-200">
                     {isHi ? "संक्षिप्त गाइड" : "Brief guide"}
                   </span>
-                ) : null}
-              </div>
+                </div>
+              ) : null}
             </div>
             <ChevronRight className="h-5 w-5 shrink-0 text-[var(--av-accent)] transition group-hover:translate-x-0.5" />
           </div>
@@ -114,21 +85,20 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
             priority={index < 4}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10" />
-          <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1">
-            {seasonChip(season, isHi)}
-            {crop.isStub ? (
+          {crop.isStub ? (
+            <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1">
               <span className="rounded-md bg-amber-500/95 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
                 {isHi ? "संक्षिप्त" : "Brief"}
               </span>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
           <div className="absolute inset-x-0 bottom-0 p-3 sm:p-3.5">
             <h3 className="font-display text-[18px] font-bold leading-tight text-white drop-shadow sm:text-[20px]">
               {title}
             </h3>
             <p className="mt-0.5 text-[11px] font-medium text-white/75">{sub}</p>
             <span className="mt-2 inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-300">
-              {isHi ? "गाइड खोलो" : "Open guide"}
+              {isHi ? "जानकारी देखो" : "See details"}
               <ChevronRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
             </span>
           </div>

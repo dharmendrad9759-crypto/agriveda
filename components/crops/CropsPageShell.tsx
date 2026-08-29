@@ -32,11 +32,6 @@ export default function CropsPageShell({ children }: { children: React.ReactNode
               <h1 className="mt-2 max-w-xl font-display text-[2.15rem] font-bold leading-[1.05] text-white sm:text-5xl">
                 {isHi ? "अपनी फसल चुनो" : "Pick your crop"}
               </h1>
-              <p className="mt-2 max-w-md text-[14px] leading-snug text-white/85 sm:text-[15px]">
-                {isHi
-                  ? "टैप करो — किस्म, खाद, कीट-रोग गाइड तुरंत खुलेगी।"
-                  : "Tap a crop — varieties, fertilizer & pest guide open instantly."}
-              </p>
 
               <div className="mt-5 flex flex-wrap items-center gap-2.5">
                 <a

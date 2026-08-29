@@ -19,6 +19,7 @@ import { useState } from "react";
 const TAB_PHOTO: Record<CropTabId, string> = {
   overview: "/images/jobs/job-crops-hero.jpg",
   growth: "/images/jobs/job-my-farm.jpg",
+  "field-prep": "/images/jobs/job-my-farm.jpg",
   fertilizer: "/images/jobs/job-fertilizer.jpg",
   pests: "/images/threats/threat-insect.jpg",
   diseases: "/images/threats/threat-disease.jpg",
@@ -28,6 +29,7 @@ const TAB_PHOTO: Record<CropTabId, string> = {
   calendar: "/images/jobs/job-my-farm.jpg",
   varieties: "/images/jobs/job-crops-hero.jpg",
   harvest: "/images/jobs/job-crops-hero.jpg",
+  market: "/images/jobs/job-crops-hero.jpg",
   faq: "/images/home/ask-expert-trust.jpg",
   expert: "/images/home/home-job-ask.jpg",
 };
@@ -35,6 +37,7 @@ const TAB_PHOTO: Record<CropTabId, string> = {
 const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
   overview: "cropTabOverview",
   growth: "cropTabGrowth",
+  "field-prep": "cropTabFieldPrep",
   fertilizer: "cropTabFertilizer",
   pests: "cropTabPests",
   diseases: "cropTabDiseases",
@@ -44,11 +47,11 @@ const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
   calendar: "cropTabCalendar",
   varieties: "cropTabVarieties",
   harvest: "cropTabHarvest",
+  market: "cropTabMarket",
   faq: "cropTabFaq",
   expert: "cropTabExpert",
 };
 
-/** Farmer mental model: work → feed/water → protect → seed/cut → ask */
 type TabGroup = {
   id: string;
   titleHi: string;
@@ -56,56 +59,41 @@ type TabGroup = {
   tabs: CropTabId[];
 };
 
-const GROUPS: TabGroup[] = [
-  {
-    id: "work",
-    titleHi: "१. खेत का काम",
-    titleEn: "1. Field work",
-    tabs: ["calendar", "growth"],
-  },
-  {
-    id: "feed",
-    titleHi: "२. खाद और पानी",
-    titleEn: "2. Feed & water",
-    tabs: ["fertilizer", "nutrients", "irrigation"],
-  },
-  {
-    id: "protect",
-    titleHi: "३. खेत बचाव",
-    titleEn: "3. Protect crop",
-    tabs: ["pests", "diseases", "weeds"],
-  },
-];
-
-const MORE: CropTabId[] = ["varieties", "harvest", "faq", "expert"];
-
 const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
-  fertilizer: "यूरिया / डीएपी कब डालें",
-  pests: "कीड़ा या छेद दिखे तो",
-  diseases: "दाग, सड़न, मुरझान",
-  nutrients: "पत्ती पीली / कमजोर",
-  irrigation: "कितना और कब पानी",
+  varieties: "हाइब्रिड, देसी, लोकल — रोग प्रतिरोध, भंडारण, फल आकार",
+  "field-prep": "नर्सरी, बीज दर, रोपाई, दूरी, मल्चिंग, ड्रिप",
+  fertilizer: "बेसल खाद — यूरिया, डीएपी, एमओपी",
+  irrigation: "कितना और कब पानी दें",
+  pests: "आम कीट — फोटो, लक्षण, समाधान",
+  diseases: "आम रोग — फोटो, लक्षण, समाधान",
+  harvest: "तुड़ाई का समय, सहारा, पकने की अवस्था",
+  market: "भंडारण, पैकिंग, लाइव मंडी भाव",
   weeds: "घास-फूस कैसे हटाएँ",
-  calendar: "आज / इस हफ्ते का काम",
-  growth: "पौधा किस अवस्था में",
-  varieties: "कौन सा बीज बोएँ",
+  growth: "पौधे की अवस्था",
+  calendar: "फसल का कार्यक्रम",
+  nutrients: "पत्ती पीली / कमज़ोर",
   faq: "आम सवाल–जवाब",
   expert: "खेत की सीधी सलाह",
 };
 
 const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
-  fertilizer: "Urea / DAP — when & how much",
-  pests: "If insects or holes show",
-  diseases: "Spots, rot, wilting",
-  nutrients: "Yellow or weak leaf",
+  varieties: "Hybrid, local — disease resist, storage, fruit size",
+  "field-prep": "Nursery, seed rate, transplant, spacing, mulch, drip",
+  fertilizer: "Basal dose — urea, DAP, MOP",
   irrigation: "How much water, when",
+  pests: "Common pests — photo, signs, fix",
+  diseases: "Common diseases — photo, signs, fix",
+  harvest: "When to pick, staking, ripeness",
+  market: "Storage, packing, live mandi",
   weeds: "Clear grass from field",
-  calendar: "Today / this week",
-  growth: "Which plant stage",
-  varieties: "Which seed to sow",
+  growth: "Plant stage",
+  calendar: "Crop schedule",
+  nutrients: "Yellow or weak leaf",
   faq: "Common Q&A",
   expert: "Simple field advice",
 };
+
+const MORE: CropTabId[] = ["weeds", "growth", "calendar", "nutrients", "faq", "expert"];
 
 interface CropPageTabsProps {
   crop: Pick<Crop, "slug" | "category">;
@@ -119,7 +107,46 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   const harvestLabel = cropHarvestLabel(crop, isHi);
   const harvestHint = cropHarvestHint(crop, isHi);
   const hintMap = isHi ? TAB_HINT_HI : TAB_HINT_EN;
-  const openHint = isHi ? "खोलो" : "Open";
+  const openHint = isHi ? "देखो" : "Open";
+
+  const groups: TabGroup[] = [
+    {
+      id: "varieties",
+      titleHi: "२. सही बीज का चुनाव",
+      titleEn: "2. Seed variety",
+      tabs: ["varieties"],
+    },
+    {
+      id: "field-prep",
+      titleHi: "३. तैयारी (ज़मीन और बुवाई)",
+      titleEn: "3. Field prep & sowing",
+      tabs: ["field-prep"],
+    },
+    {
+      id: "feed",
+      titleHi: "४. खाद और सिंचाई",
+      titleEn: "4. Fertilizer & irrigation",
+      tabs: ["fertilizer", "irrigation"],
+    },
+    {
+      id: "protect",
+      titleHi: "५. कीट और रोग नियंत्रण",
+      titleEn: "5. Pest & disease control",
+      tabs: ["pests", "diseases"],
+    },
+    {
+      id: "harvest",
+      titleHi: `६. ${harvestLabel}, सहारा`,
+      titleEn: `6. ${harvestLabel} & staking`,
+      tabs: ["harvest"],
+    },
+    {
+      id: "market",
+      titleHi: "७. मंडी भाव और बिक्री",
+      titleEn: "7. Mandi & sales",
+      tabs: ["market"],
+    },
+  ];
 
   let animIndex = 0;
   const renderJob = (id: CropTabId) => {
@@ -151,17 +178,11 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
 
   return (
     <nav className="mb-3 min-w-0 space-y-4" aria-label={t("cropGuide")}>
-      <div className="px-0.5">
-        <p className="text-[15px] font-extrabold tracking-tight text-[var(--av-text-primary)]">
-          {isHi ? "फसल गाइड — आसान रास्ता" : "Crop guide — simple path"}
-        </p>
-      </div>
-
-      {GROUPS.map((group) => (
+      {groups.map((group) => (
         <section key={group.id} className="space-y-2" aria-labelledby={`crop-tab-${group.id}`}>
           <h2
             id={`crop-tab-${group.id}`}
-            className="px-0.5 text-[13px] font-black text-[var(--av-accent)]"
+            className="px-0.5 text-[16px] font-black leading-tight tracking-tight text-[var(--av-accent)]"
           >
             {isHi ? group.titleHi : group.titleEn}
           </h2>
@@ -177,18 +198,16 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
         >
           <span>
             <span className="block text-[13px] font-extrabold text-[var(--av-text-primary)]">
-              {isHi
-                ? `४. बीज · ${harvestLabel} · सवाल`
-                : `4. Seed · ${harvestLabel.toLowerCase()} · ask`}
+              {isHi ? "और जानकारी" : "More"}
             </span>
             <span className="mt-0.5 block text-[10px] font-semibold text-[var(--av-text-muted)]">
               {isHi
                 ? showMore
                   ? "छिपाएँ"
-                  : `किस्म, ${harvestLabel}, पूछो, सलाह — टैप करके खोलें`
+                  : "खरपतवार, अवस्था, कार्यक्रम, पीली पत्ती, सवाल"
                 : showMore
                   ? "Hide"
-                  : `Variety, ${harvestLabel.toLowerCase()}, FAQ, advice`}
+                  : "Weeds, stages, schedule, nutrients, FAQ"}
             </span>
           </span>
           <ChevronDown

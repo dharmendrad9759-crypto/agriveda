@@ -11,6 +11,8 @@ import CropWeedSection from "@/components/crops/sections/CropWeedSection";
 import CropCalendarSection from "@/components/crops/sections/CropCalendarSection";
 import CropHarvestSection from "@/components/crops/sections/CropHarvestSection";
 import CropVarietiesSection from "@/components/crops/sections/CropVarietiesSection";
+import CropFieldPrepSection from "@/components/crops/sections/CropFieldPrepSection";
+import CropMarketSection from "@/components/crops/sections/CropMarketSection";
 import CropFaqSection from "@/components/crops/sections/CropFaqSection";
 import CropExpertSection from "@/components/crops/sections/CropExpertSection";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
@@ -24,6 +26,7 @@ import { useMemo } from "react";
 
 const TAB_TITLE: Record<Exclude<CropTabId, "overview" | "harvest">, FarmerUiKey> = {
   growth: "cropTabGrowth",
+  "field-prep": "cropTabFieldPrep",
   fertilizer: "cropTabFertilizer",
   pests: "cropTabPests",
   diseases: "cropTabDiseases",
@@ -32,6 +35,7 @@ const TAB_TITLE: Record<Exclude<CropTabId, "overview" | "harvest">, FarmerUiKey>
   weeds: "cropTabWeeds",
   calendar: "cropTabCalendar",
   varieties: "cropTabVarieties",
+  market: "cropTabMarket",
   faq: "cropTabFaq",
   expert: "cropTabExpert",
 };
@@ -78,6 +82,7 @@ export default function CropCarePageClient({ crop, tab }: Props) {
               />
             </div>
           )}
+          {tab === "field-prep" && <CropFieldPrepSection crop={crop} />}
           {tab === "fertilizer" && <CropFertilizerSection crop={crop} />}
           {tab === "pests" && <CropPestsSection crop={crop} />}
           {tab === "diseases" && <CropDiseasesSection crop={crop} />}
@@ -89,6 +94,7 @@ export default function CropCarePageClient({ crop, tab }: Props) {
           {tab === "calendar" && <CropCalendarSection crop={crop} detail={detail} />}
           {tab === "varieties" && <CropVarietiesSection crop={crop} />}
           {tab === "harvest" && <CropHarvestSection crop={crop} />}
+          {tab === "market" && <CropMarketSection crop={crop} />}
           {tab === "faq" && <CropFaqSection crop={crop} />}
           {tab === "expert" && <CropExpertSection crop={crop} />}
         </div>

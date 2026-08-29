@@ -9,6 +9,7 @@ import {
     AiDoctorRecentDiagnoses,
     AiDoctorSymptoms,
 } from "@/components/ai-doctor/AiDoctorRedesign";
+import DiagnosisListenButton from "@/components/ai-doctor/DiagnosisListenButton";
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import VoiceInput from "@/components/query/VoiceInput";
 import AppShell from "@/components/shell/AppShell";
@@ -22,6 +23,12 @@ import {
     checkAiDoctorConfigured,
     type DiagnosisResult,
 } from "@/lib/aiDiagnosis";
+import {
+  buildDiagnosisSpeechText,
+  guessDiagnosisKind,
+  likelyThreatLabel,
+  severityHi,
+} from "@/lib/aiDoctorFarmerUi";
 import {
   compressPhotoForReferral,
   saveAiDoctorExpertReferral,
@@ -478,14 +485,14 @@ export default function AIDoctorPage() {
                 <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
                   <Stethoscope className="h-4 w-4" />
                 </span>
-                <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">जांचें</h2>
+                <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">समाधान</h2>
               </div>
 
               {isScanning && (
                 <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/50 py-10 text-center dark:bg-emerald-950/20 sm:py-12">
                   <Loader2 className="mx-auto h-9 w-9 animate-spin text-emerald-500 sm:h-10 sm:w-10" />
                   <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                    जांच परिणाम तैयार हो रहा है…
+                    समाधान तैयार हो रहा है…
                   </p>
                 </div>
               )}
@@ -499,12 +506,17 @@ export default function AIDoctorPage() {
                 </div>
               )}
 
-              {result && !isScanning && (
+              {result && !isScanning && (() => {
+                const kind = guessDiagnosisKind(result, selectedCrop);
+                const speechText = buildDiagnosisSpeechText(result);
+                return (
                 <div className="space-y-3.5 animate-fade-in sm:space-y-4">
+                  <DiagnosisListenButton text={speechText} />
+
                   {result.visualObservations && (
                     <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3.5 py-3">
                       <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
-                        {previewUrl ? "फोटो में क्या दिखा" : "लक्षण सार"}
+                        {previewUrl ? "फोटो में क्या दिखा" : "समस्या क्या दिखी?"}
                       </p>
                       <p className="mt-1.5 text-[13px] leading-snug text-[var(--av-text-primary)]">
                         {simpleObservation(result.visualObservations)}
@@ -513,22 +525,34 @@ export default function AIDoctorPage() {
                   )}
 
                   <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-3.5 sm:p-4">
-                    <p className="text-xs font-bold text-red-500">{result.riskLevel}</p>
-                    <h3 className="text-xl font-black text-[var(--av-text-primary)] sm:text-2xl">
+                    <p className="text-[11px] font-bold text-red-600 dark:text-red-400">
+                      {likelyThreatLabel(kind)}
+                    </p>
+                    <h3 className="mt-1 text-xl font-black text-[var(--av-text-primary)] sm:text-2xl">
                       {result.diseaseName}
                     </h3>
-                    <p className="text-sm text-[var(--av-text-muted)]">
-                      Pathogen: <span className="font-semibold text-amber-600">{result.pathogen}</span>
-                    </p>
+                    {result.pathogen && result.pathogen !== "—" ? (
+                      <p className="mt-1 text-sm text-[var(--av-text-muted)]">
+                        कारण:{" "}
+                        <span className="font-semibold text-amber-700 dark:text-amber-400">
+                          {result.pathogen}
+                        </span>
+                      </p>
+                    ) : null}
+                    {result.riskLevel && result.riskLevel !== "—" ? (
+                      <p className="mt-2 text-xs font-bold text-red-500">
+                        खतरा: {result.riskLevel}
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-center">
                     <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
-                      <p className="text-[10px] text-[var(--av-text-muted)]">Severity</p>
-                      <p className="font-black text-red-500">{result.severity}</p>
+                      <p className="text-[10px] text-[var(--av-text-muted)]">गंभीरता</p>
+                      <p className="font-black text-red-500">{severityHi(result.severity)}</p>
                     </div>
                     <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
-                      <p className="text-[10px] text-[var(--av-text-muted)]">Stage</p>
+                      <p className="text-[10px] text-[var(--av-text-muted)]">अवस्था</p>
                       <p className="font-black text-[var(--av-text-primary)]">{result.stage}</p>
                     </div>
                   </div>
@@ -560,7 +584,7 @@ export default function AIDoctorPage() {
                   <div className="rounded-xl border border-[var(--av-border)] p-3.5 sm:p-4">
                     <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
                       <Leaf className="h-4 w-4" />
-                      सुझाव / Guidance
+                      समाधान
                     </p>
                     {result.treatments.length > 0 ? (
                       <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
@@ -675,7 +699,8 @@ export default function AIDoctorPage() {
 
                   <ShareOutbreakPrompt result={result} cropSlug={selectedCrop} photoUrl={previewUrl} />
                 </div>
-              )}
+                );
+              })()}
             </DarkCard>
 
             <AiDoctorRecentDiagnoses

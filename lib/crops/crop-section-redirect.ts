@@ -10,7 +10,7 @@ export const CROP_SECTION_TO_TAB: Record<string, CropTabId> = {
   stress: "diseases",
   nutrition: "nutrients",
   harvest: "harvest",
-  market: "overview",
+  market: "market",
 };
 
 export function cropSectionRedirectUrl(slug: string, section: string): string {
@@ -28,7 +28,7 @@ export const CROP_CATEGORY_TO_TAB: Record<string, CropTabId> = {
   stress: "diseases",
   nutrition: "nutrients",
   harvest: "harvest",
-  market: "overview",
+  market: "market",
 };
 
 export function cropCategoryHref(slug: string, categoryId: string): string {
