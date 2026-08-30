@@ -6,7 +6,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Camera,
-  CloudRain,
   CloudSun,
   MapPin,
   MessageCircle,
@@ -33,11 +32,7 @@ import type { FarmField } from "@/lib/farm/types";
 import { track } from "@/lib/analytics";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
-import WeatherSkyFX, {
-  detectWeatherFxMode,
-  weatherSkyInk,
-  weatherSkyPhoto,
-} from "@/components/weather/WeatherSkyFX";
+import HomeWeatherWidget from "@/components/weather/HomeWeatherWidget";
 
 const HOME_DAY_ANCHOR_MS = Date.parse("2026-07-16T12:00:00Z");
 
@@ -255,15 +250,6 @@ function cropLabel(slug: string | undefined, englishName: string): string {
   return hi ? `${hi} (${en})` : en;
 }
 
-function conditionHi(condition: string, isHi: boolean): string {
-  if (!isHi || condition === "…" || condition === "—") return condition;
-  if (/rain|drizzle|shower|बारिश/i.test(condition)) return "बारिश";
-  if (/cloud|बादल|overcast/i.test(condition)) return "बादल";
-  if (/clear|sunny|साफ/i.test(condition)) return "साफ आसमान";
-  if (/storm|thunder|तूफान/i.test(condition)) return "तूफान";
-  if (/fog|mist|धुंध|कोहरा/i.test(condition)) return "धुंध";
-  return condition;
-}
 
 function buildAdvice(opts: {
   isHi: boolean;
@@ -353,16 +339,8 @@ export default function AgriVedaHome() {
 
   const weatherIsSample = Boolean(weather?.isDemo || weatherError);
   const weatherLive = Boolean(weather && !weather.isDemo && !weatherError);
-  const temp = weatherLoading ? "…" : weather?.temp ?? "—";
   const rainChance = weatherLive ? (weather?.hourlyForecast[0]?.rainChancePercent ?? 0) : null;
-  const condition = weatherLoading ? "…" : weather?.condition ?? "—";
   const humidityPct = weatherLive ? Number.parseInt(weather!.humidity, 10) || 0 : 0;
-  const homeWxMode = detectWeatherFxMode(
-    weather?.condition ?? "",
-    rainChance ?? (weatherIsSample ? 55 : null)
-  );
-  const homeSky = weatherSkyInk(homeWxMode);
-  const homeSkyPhoto = weatherSkyPhoto(homeWxMode);
 
   const sourceFields = farm.fields.slice(0, 2);
   const hasFields = sourceFields.length > 0;
@@ -700,83 +678,13 @@ export default function AgriVedaHome() {
           </button>
         </motion.section>
 
-        {/* Weather — Google/Pixel mini widget */}
+        {/* Weather */}
         <motion.section {...fade(0.1)}>
-          <AppLink
-            href="/weather"
-            className="group relative isolate block min-h-[17.5rem] overflow-hidden rounded-[32px] px-5 pb-5 pt-4 text-white active:scale-[0.99]"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={homeSkyPhoto}
-              alt=""
-              className={cn(
-                "absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105",
-                !reduced && "animate-wx-sky-ken"
-              )}
-            />
-            <span className={cn("absolute inset-0", homeSky.veil)} />
-            <WeatherSkyFX mode={homeWxMode} density="home" />
-
-            <div className={cn("relative z-10 flex min-h-[16rem] flex-col", homeSky.ink)}>
-              <div className="flex items-center justify-between gap-2">
-                <p className={cn("flex min-w-0 items-center gap-1.5 text-[14px] font-medium", homeSky.mute)}>
-                  <MapPin className="h-4 w-4 shrink-0 opacity-80" />
-                  <span className="truncate">{hasLocation ? place : placeShort}</span>
-                </p>
-                <ArrowRight className="h-4 w-4 shrink-0 text-white/80 transition group-hover:translate-x-0.5" />
-              </div>
-
-              <div className="mt-auto flex flex-col pt-8">
-                <p className={cn("text-center text-[16px] font-medium", homeSky.mute)}>
-                  {conditionHi(condition, isHi)}
-                </p>
-
-                <div className="mt-1 flex items-end justify-center gap-1">
-                  <p className="font-[family-name:var(--font-display)] text-[5.5rem] font-semibold leading-[0.9] tracking-tight">
-                    {weatherLoading
-                      ? "…"
-                      : temp.replace(/\s/g, "").replace("°C", "").replace("°", "")}
-                  </p>
-                  {homeWxMode !== "clear" &&
-                    (homeWxMode === "rain" || homeWxMode === "storm" ? (
-                      <CloudRain className="mb-3 h-11 w-11 opacity-90" />
-                    ) : (
-                      <CloudSun className="mb-3 h-11 w-11 opacity-90" />
-                    ))}
-                </div>
-
-                <div
-                  className={cn(
-                    "mt-4 rounded-[24px] border px-4 py-3.5 text-[15px] font-semibold leading-snug backdrop-blur-[2px]",
-                    homeSky.card
-                  )}
-                >
-                  {!weatherLive || rainChance == null
-                    ? isHi
-                      ? "पूरा मौसम खोलो — खेत सलाह मिलेगी"
-                      : "Open weather for farm tip"
-                    : rainChance >= 55
-                      ? isHi
-                        ? `बारिश ${rainChance}% — आज स्प्रे मत करो`
-                        : `${rainChance}% rain — skip spray today`
-                      : humidityPct >= 80
-                        ? isHi
-                          ? "नमी ज्यादा — पत्ती पर नज़र रखो"
-                          : "High humidity — watch leaves"
-                        : isHi
-                          ? "स्प्रे और खेत काम ठीक दिख रहे हैं"
-                          : "Spray and field work look fine"}
-                </div>
-
-                {weatherIsSample && !weatherLoading ? (
-                  <p className="mt-3 text-center text-[11px] font-semibold text-amber-100">
-                    {isHi ? "नमूना — लाइव नहीं" : "Sample — not live"}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-          </AppLink>
+          <HomeWeatherWidget
+            weather={weather}
+            loading={weatherLoading}
+            isSample={weatherIsSample}
+          />
         </motion.section>
 
         {/* Fields */}

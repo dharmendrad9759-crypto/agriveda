@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MapPin, Navigation, Search, Loader2, CloudSun } from "lucide-react";
+import { Loader2, CloudSun } from "lucide-react";
 import AppShell from "@/components/shell/AppShell";
 import WeatherRedesign from "@/components/weather/WeatherRedesign";
+import WeatherLocationSheet from "@/components/weather/WeatherLocationSheet";
 import {
   fetchWeatherByCity,
   fetchWeatherByCoords,
@@ -18,7 +19,8 @@ import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function WeatherPage() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const isHi = locale === "hi";
   const { showToast } = useToast();
   const [weatherData, setWeatherData] = useState<WeatherViewModel | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,7 @@ export default function WeatherPage() {
       await loadWeather(() =>
         fetchWeatherByCoords(position.coords.latitude, position.coords.longitude)
       );
+      setShowSearch(false);
       return true;
     } catch (err) {
       setError(geolocationErrorMessage(err));
@@ -62,19 +65,22 @@ export default function WeatherPage() {
     }
   }, [loadWeather]);
 
-  const searchManualCity = useCallback(async () => {
-    const city = manualCity.trim();
-    if (!city) {
-      setError("कृपया शहर का नाम लिखें (जैसे Delhi, Indore)");
-      return;
-    }
-    setLocationMode("manual");
-    await loadWeather(() => fetchWeatherByCity(city));
-    setShowSearch(false);
-  }, [manualCity, loadWeather]);
+  const searchCity = useCallback(
+    async (city: string) => {
+      const trimmed = city.trim();
+      if (!trimmed) {
+        setError("कृपया शहर का नाम लिखें (जैसे Delhi, Indore)");
+        return;
+      }
+      setManualCity(trimmed);
+      setLocationMode("manual");
+      await loadWeather(() => fetchWeatherByCity(trimmed));
+      setShowSearch(false);
+    },
+    [loadWeather]
+  );
 
   const refreshWeather = useCallback(async () => {
-    // Location check on refresh: re-request GPS when available
     try {
       setLocLoading(true);
       setError(null);
@@ -134,14 +140,10 @@ export default function WeatherPage() {
     showToast(ok ? t("weatherShareOk") : t("weatherShareFail"), ok ? "success" : "error");
   };
 
-  const onPlaceNameClick = useCallback(async () => {
-    const ok = await useCurrentLocation();
-    if (!ok) setShowSearch(true);
-  }, [useCurrentLocation]);
-
   return (
     <AppShell
-      title={t("weatherTitle")}
+      title={isHi ? "मौसम" : "Weather"}
+      subtitle={isHi ? "Weather" : "मौसम"}
       className="overflow-x-hidden"
       actions={
         <AppLink
@@ -152,43 +154,18 @@ export default function WeatherPage() {
         </AppLink>
       }
     >
-      {showSearch && (
-        <div className="mb-4 rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]">
-          <button
-            type="button"
-            onClick={useCurrentLocation}
-            disabled={locLoading || loading}
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--av-accent)] px-3 py-2.5 text-sm font-bold text-white disabled:opacity-60"
-          >
-            {locLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
-            {t("weatherMyLocation")}
-          </button>
-          <div className="mt-2 flex min-w-0 gap-2">
-            <div className="relative min-w-0 flex-1">
-              <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
-              <input
-                value={manualCity}
-                onChange={(e) => setManualCity(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && searchManualCity()}
-                placeholder={t("weatherCityPlaceholder")}
-                className="w-full min-w-0 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-10 pr-3 text-sm text-[var(--av-text-primary)] outline-none focus:border-[var(--av-accent)]"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={searchManualCity}
-              disabled={loading}
-              className="inline-flex shrink-0 items-center justify-center gap-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 text-sm font-bold text-[var(--av-text-primary)]"
-            >
-              {loading && locationMode === "manual" ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Search className="h-4 w-4" />
-              )}
-            </button>
-          </div>
-        </div>
-      )}
+      <WeatherLocationSheet
+        open={showSearch}
+        onClose={() => setShowSearch(false)}
+        manualCity={manualCity}
+        onManualCityChange={setManualCity}
+        onGps={() => {
+          void useCurrentLocation();
+        }}
+        onCitySearch={searchCity}
+        loading={loading && locationMode === "manual"}
+        locLoading={locLoading}
+      />
 
       {!loading && !weatherData && !error && (
         <div className="rounded-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-8 text-center">
@@ -217,7 +194,7 @@ export default function WeatherPage() {
           <p className="text-sm text-red-400">{error}</p>
           <button
             type="button"
-            onClick={useCurrentLocation}
+            onClick={() => void useCurrentLocation()}
             className="mt-2 text-xs font-bold text-[var(--av-accent)]"
           >
             {t("weatherRetryGps")}
@@ -227,7 +204,7 @@ export default function WeatherPage() {
             onClick={() => setShowSearch(true)}
             className="mt-2 block w-full text-xs font-bold text-[var(--av-text-secondary)]"
           >
-            शहर नाम से चुनें
+            {isHi ? "शहर नाम से चुनें" : "Search by city"}
           </button>
         </div>
       )}
@@ -240,7 +217,7 @@ export default function WeatherPage() {
             onRefresh={refreshWeather}
             onShare={shareWeather}
             onEnableLocation={useCurrentLocation}
-            onLocationClick={() => void onPlaceNameClick()}
+            onLocationClick={() => setShowSearch(true)}
           />
         </div>
       )}
