@@ -1,6 +1,7 @@
 import type { MandiRow } from "@/lib/mandi/types";
 
-const PRIORITY_CROPS = [
+/** Commodity names for extra API fan-out (more rows per state, like Finnid's daily sync) */
+export const PRIORITY_COMMODITY_FILTERS = [
   "Paddy",
   "Wheat",
   "Soybean",
@@ -16,7 +17,12 @@ const PRIORITY_CROPS = [
   "Bajra",
   "Tur",
   "Sugarcane",
+  "Garlic",
+  "Banana",
+  "Ginger",
 ];
+
+const PRIORITY_CROPS = PRIORITY_COMMODITY_FILTERS;
 
 /** Extra crop names always offered in filters (even if current API slice is thin) */
 export const EXTRA_CROP_OPTIONS = [
@@ -83,19 +89,40 @@ export function uniqueCrops(rows: MandiRow[]): string[] {
   const rest = sorted.filter((c) => !priority.includes(c) && !/wood/i.test(c));
   const fromData = [...priority, ...rest];
   const merged = [...fromData];
-  for (const c of EXTRA_CROP_OPTIONS) {
-    if (!merged.some((x) => x.toLowerCase() === c.toLowerCase())) merged.push(c);
+  if (rows.length < 20) {
+    for (const c of EXTRA_CROP_OPTIONS) {
+      if (!merged.some((x) => x.toLowerCase() === c.toLowerCase())) merged.push(c);
+    }
   }
-  return merged.slice(0, 28);
+  return merged.slice(0, rows.length >= 20 ? 80 : 28);
 }
 
 export function uniqueMarkets(rows: MandiRow[]): string[] {
   const fromData = [...new Set(rows.map((r) => r.mandi))].filter((m) => m && m !== "—");
   const merged = [...fromData];
-  for (const m of EXTRA_MARKET_OPTIONS) {
-    if (!merged.some((x) => x.toLowerCase() === m.toLowerCase())) merged.push(m);
+  if (rows.length < 20) {
+    for (const m of EXTRA_MARKET_OPTIONS) {
+      if (!merged.some((x) => x.toLowerCase() === m.toLowerCase())) merged.push(m);
+    }
   }
-  return merged.slice(0, 40);
+  return merged.sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+}
+
+export function uniqueGrades(rows: MandiRow[]): string[] {
+  const set = new Set<string>();
+  rows.forEach((r) => {
+    const v = r.variety?.trim();
+    if (v && v !== "—") set.add(v);
+  });
+  return [...set].sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+}
+
+export function buildMandiFilterOptions(rows: MandiRow[]) {
+  return {
+    markets: uniqueMarkets(rows),
+    commodities: uniqueCrops(rows),
+    grades: uniqueGrades(rows),
+  };
 }
 
 export function filterMandiRows(

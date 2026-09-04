@@ -62,7 +62,7 @@ type TabGroup = {
 const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
   varieties: "हाइब्रिड, देसी, लोकल — रोग प्रतिरोध, भंडारण, फल आकार",
   "field-prep": "नर्सरी, बीज दर, रोपाई, दूरी, मल्चिंग, ड्रिप",
-  fertilizer: "बेसल खाद — यूरिया, डीएपी, एमओपी",
+  fertilizer: "कब डालें और कितनी — यूरिया, डीएपी, एमओपी",
   irrigation: "कितना और कब पानी दें",
   pests: "आम कीट — फोटो, लक्षण, समाधान",
   diseases: "आम रोग — फोटो, लक्षण, समाधान",
@@ -79,7 +79,7 @@ const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
 const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
   varieties: "Hybrid, local — disease resist, storage, fruit size",
   "field-prep": "Nursery, seed rate, transplant, spacing, mulch, drip",
-  fertilizer: "Basal dose — urea, DAP, MOP",
+  fertilizer: "When & how much — urea, DAP, MOP",
   irrigation: "How much water, when",
   pests: "Common pests — photo, signs, fix",
   diseases: "Common diseases — photo, signs, fix",
@@ -112,37 +112,37 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   const groups: TabGroup[] = [
     {
       id: "varieties",
-      titleHi: "२. सही बीज का चुनाव",
+      titleHi: "2. सही बीज का चुनाव",
       titleEn: "2. Seed variety",
       tabs: ["varieties"],
     },
     {
       id: "field-prep",
-      titleHi: "३. तैयारी (ज़मीन और बुवाई)",
+      titleHi: "3. तैयारी (ज़मीन और बुवाई)",
       titleEn: "3. Field prep & sowing",
       tabs: ["field-prep"],
     },
     {
       id: "feed",
-      titleHi: "४. खाद और सिंचाई",
+      titleHi: "4. खाद और सिंचाई",
       titleEn: "4. Fertilizer & irrigation",
       tabs: ["fertilizer", "irrigation"],
     },
     {
       id: "protect",
-      titleHi: "५. कीट और रोग नियंत्रण",
+      titleHi: "5. कीट और रोग नियंत्रण",
       titleEn: "5. Pest & disease control",
       tabs: ["pests", "diseases"],
     },
     {
       id: "harvest",
-      titleHi: `६. ${harvestLabel}, सहारा`,
+      titleHi: `6. ${harvestLabel}, सहारा`,
       titleEn: `6. ${harvestLabel} & staking`,
       tabs: ["harvest"],
     },
     {
       id: "market",
-      titleHi: "७. मंडी भाव और बिक्री",
+      titleHi: "7. मंडी भाव और बिक्री",
       titleEn: "7. Mandi & sales",
       tabs: ["market"],
     },

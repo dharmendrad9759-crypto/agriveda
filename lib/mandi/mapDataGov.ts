@@ -8,6 +8,7 @@ interface DataGovRecord {
   market?: string;
   commodity?: string;
   variety?: string;
+  grade?: string;
   min_price?: string | number;
   max_price?: string | number;
   modal_price?: string | number;
@@ -56,13 +57,15 @@ export function mapDataGovRecords(records: DataGovRecord[]): MandiRow[] {
     if (!modal && !min && !max) return;
 
     const modalVal = modal || Math.round((min + max) / 2);
+    const grade = r.grade?.trim() || r.variety?.trim() || "—";
     rows.push({
-        id: `live-${r.market ?? "m"}-${crop}-${r.variety ?? "v"}-${r.arrival_date ?? i}-${i}`,
+        id: `live-${r.market ?? "m"}-${crop}-${grade}-${r.arrival_date ?? i}-${i}`,
       crop,
       cropHi: CROP_HI[crop] ?? crop,
-      variety: r.variety?.trim() || "—",
+      variety: grade,
       mandi: r.market?.trim() || "—",
       state: r.state?.trim() || "—",
+      district: r.district?.trim() || undefined,
       min: min || modalVal,
       max: max || modalVal,
       modal: modalVal,

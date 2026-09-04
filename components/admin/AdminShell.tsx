@@ -10,6 +10,7 @@ import {
   Menu,
   MessageSquareText,
   Settings,
+  Tractor,
   Users,
   X,
 } from "lucide-react";
@@ -74,6 +75,12 @@ export function AdminShell({
   const nav = [
     { href: "/admin/home", icon: Home, label: "Home", show: true },
     { href: "/admin/queries", icon: MessageSquareText, label: "Queries", show: true },
+    {
+      href: "/admin/farmers",
+      icon: Tractor,
+      label: "Farmers",
+      show: me.permissions.viewAllQueries,
+    },
     {
       href: "/admin/experts",
       icon: Users,

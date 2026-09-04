@@ -168,7 +168,12 @@ export const CROP_TIMING: Record<string, CropTimingPack> = {
       { label: "Pegging stage Ca", dose: "Gypsum 100 kg/acre", timing: "30-35 DAS", timingRef: "DAS", notes: "Critical for pod fill" },
     ],
     irrigations: [
-      { label: "If rain fails", amount: "Light irrigation", timing: "25-35 DAS (pegging)", timingRef: "DAS" },
+      {
+        label: "बारिश कम हो",
+        amount: "हल्की सिंचाई",
+        timing: "बुवाई के 25–35 दिन (गाँठ बनने पर)",
+        notes: "फली भरने के लिए बहुत ज़रूरी",
+      },
     ],
   },
   sugarcane: {

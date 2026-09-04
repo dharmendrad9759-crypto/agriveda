@@ -1,28 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { Loader2, MessageSquareText, Users, CheckCircle2, Clock3 } from "lucide-react";
+import { Loader2, MessageSquareText, Users, CheckCircle2, Clock3, Tractor } from "lucide-react";
 import { AdminShell, useAdminSession } from "@/components/admin/AdminShell";
 import { useEffect, useState } from "react";
 
 export default function AdminHomePage() {
   const { me, ready, logout } = useAdminSession();
-  const [stats, setStats] = useState({ pending: 0, answered: 0, total: 0 });
+  const [stats, setStats] = useState({ pending: 0, answered: 0, total: 0, farmers: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!ready) return;
-    fetch("/api/admin/expert-queries?status=all", { credentials: "include" })
-      .then((r) => r.json())
-      .then((d) => {
+    Promise.all([
+      fetch("/api/admin/expert-queries?status=all", { credentials: "include" }).then((r) =>
+        r.json()
+      ),
+      me?.permissions.viewAllQueries
+        ? fetch("/api/admin/farmers?countOnly=1", { credentials: "include" }).then((r) => r.json())
+        : Promise.resolve({ total: 0 }),
+    ])
+      .then(([queries, farmers]) => {
         setStats({
-          pending: d.counts?.pending ?? 0,
-          answered: d.counts?.answered ?? 0,
-          total: d.counts?.total ?? 0,
+          pending: queries.counts?.pending ?? 0,
+          answered: queries.counts?.answered ?? 0,
+          total: queries.counts?.total ?? 0,
+          farmers: farmers.total ?? 0,
         });
       })
       .finally(() => setLoading(false));
-  }, [ready]);
+  }, [ready, me?.permissions.viewAllQueries]);
 
   if (!ready || !me) {
     return (
@@ -51,7 +58,7 @@ export default function AdminHomePage() {
         {loading ? (
           <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
         ) : (
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-4">
             {[
               { label: "Pending", value: stats.pending, icon: Clock3, color: "text-amber-600" },
               {
@@ -60,7 +67,17 @@ export default function AdminHomePage() {
                 icon: CheckCircle2,
                 color: "text-emerald-600",
               },
-              { label: "Visible", value: stats.total, icon: MessageSquareText, color: "text-sky-600" },
+              { label: "Queries", value: stats.total, icon: MessageSquareText, color: "text-sky-600" },
+              ...(me.permissions.viewAllQueries
+                ? [
+                    {
+                      label: "Farmers",
+                      value: stats.farmers,
+                      icon: Tractor,
+                      color: "text-violet-600",
+                    },
+                  ]
+                : []),
             ].map((s) => (
               <div
                 key={s.label}
@@ -85,6 +102,18 @@ export default function AdminHomePage() {
               किसान के सवाल देखें → जवाब भेजें (WhatsApp/SMS/ऐप)
             </p>
           </Link>
+          {me.permissions.viewAllQueries ? (
+            <Link
+              href="/admin/farmers"
+              className="admin-cine__glass rounded-2xl border border-emerald-500/25 p-5 transition hover:border-emerald-500/50 hover:shadow-md hover:shadow-emerald-600/10"
+            >
+              <Tractor className="h-5 w-5 text-emerald-600" />
+              <p className="mt-3 text-sm font-bold text-emerald-950">किसान डेटा</p>
+              <p className="mt-1 text-xs text-emerald-900/50">
+                लॉगिन किए किसान — नाम, फोन, जिला, खेत, फसल
+              </p>
+            </Link>
+          ) : null}
           {me.permissions.manageExperts || me.permissions.assignQueries ? (
             <Link
               href="/admin/experts"

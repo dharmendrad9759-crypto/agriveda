@@ -29,6 +29,14 @@ export function isValidDistrict(state: string, district: string): boolean {
   return getDistrictsForState(state).includes(district);
 }
 
+export function defaultDistrictForState(state: string, preferred?: string): string {
+  const districts = getDistrictsForState(state);
+  if (!districts.length) return "";
+  const pick = preferred?.trim();
+  if (pick && districts.includes(pick)) return pick;
+  return districts[0];
+}
+
 export function matchOption(items: string[], typed: string): string | null {
   const q = typed.trim().toLowerCase();
   if (!q) return null;

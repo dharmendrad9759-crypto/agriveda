@@ -5,6 +5,7 @@ export interface MandiRow {
   variety: string;
   mandi: string;
   state: string;
+  district?: string;
   min: number;
   max: number;
   modal: number;
@@ -15,12 +16,20 @@ export interface MandiRow {
   arrivalDate?: string;
 }
 
+export interface MandiFilterOptions {
+  markets: string[];
+  commodities: string[];
+  grades: string[];
+}
+
 export interface MandiApiResponse {
   source: "live" | "mock";
   state: string;
   district?: string;
   lastUpdated: string;
   rows: MandiRow[];
+  filters?: MandiFilterOptions;
+  syncNote?: string;
   error?: string;
 }
 

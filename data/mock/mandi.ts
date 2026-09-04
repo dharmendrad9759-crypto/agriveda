@@ -5,6 +5,7 @@ export interface MandiRow {
   variety: string;
   mandi: string;
   state: string;
+  district?: string;
   min: number;
   max: number;
   modal: number;
@@ -12,6 +13,7 @@ export interface MandiRow {
   changeAmt: number;
   trend: number[];
   category: string;
+  arrivalDate?: string;
 }
 
 export const MANDI_STATS = {
@@ -23,14 +25,14 @@ export const MANDI_STATS = {
 };
 
 export const MANDI_PRICES: MandiRow[] = [
-  { id: "1", crop: "Paddy", cropHi: "धान", variety: "Lok-1", mandi: "Sehore", state: "M.P.", min: 2100, max: 2250, modal: 2180, change: 2.38, changeAmt: 50, trend: [2100, 2120, 2140, 2150, 2160, 2170, 2180], category: "Cereals" },
-  { id: "2", crop: "Soybean", cropHi: "सोयाबीन", variety: "JS 335", mandi: "Indore", state: "M.P.", min: 4100, max: 4450, modal: 4280, change: 1.2, changeAmt: 50, trend: [4200, 4220, 4240, 4250, 4260, 4270, 4280], category: "Oilseeds" },
-  { id: "3", crop: "Wheat", cropHi: "गेहूँ", variety: "HD 2967", mandi: "Ujjain", state: "M.P.", min: 2275, max: 2400, modal: 2340, change: 0.5, changeAmt: 12, trend: [2320, 2325, 2330, 2332, 2335, 2338, 2340], category: "Cereals" },
-  { id: "4", crop: "Maize", cropHi: "मक्का", variety: "HQPM-1", mandi: "Bhopal", state: "M.P.", min: 1950, max: 2200, modal: 2080, change: -0.8, changeAmt: -17, trend: [2120, 2110, 2100, 2095, 2090, 2085, 2080], category: "Cereals" },
-  { id: "5", crop: "Gram", cropHi: "चना", variety: "JG 11", mandi: "Vidisha", state: "M.P.", min: 5400, max: 5800, modal: 5620, change: 1.8, changeAmt: 100, trend: [5500, 5520, 5550, 5570, 5580, 5600, 5620], category: "Pulses" },
-  { id: "6", crop: "Mustard", cropHi: "सरसों", variety: "Pusa Bold", mandi: "Bhopal", state: "M.P.", min: 5200, max: 5650, modal: 5420, change: 2.1, changeAmt: 110, trend: [5300, 5320, 5350, 5370, 5390, 5410, 5420], category: "Oilseeds" },
-  { id: "7", crop: "Cotton", cropHi: "कपास", variety: "Bt Cotton", mandi: "Khandwa", state: "M.P.", min: 6800, max: 7500, modal: 7150, change: 3.2, changeAmt: 220, trend: [6900, 6950, 7000, 7050, 7080, 7120, 7150], category: "Cash Crops" },
-  { id: "8", crop: "Tomato", cropHi: "टमाटर", variety: "Hybrid", mandi: "Indore", state: "M.P.", min: 2400, max: 3200, modal: 2800, change: 4.5, changeAmt: 120, trend: [2600, 2650, 2680, 2720, 2750, 2780, 2800], category: "Vegetables" },
+  { id: "1", crop: "Paddy", cropHi: "धान", variety: "FAQ", mandi: "Sehore", state: "Madhya Pradesh", district: "Sehore", min: 2100, max: 2250, modal: 2180, change: 2.38, changeAmt: 50, trend: [2100, 2120, 2140, 2150, 2160, 2170, 2180], category: "Cereals", arrivalDate: "2026-08-25" },
+  { id: "2", crop: "Soybean", cropHi: "सोयाबीन", variety: "FAQ", mandi: "Indore", state: "Madhya Pradesh", district: "Indore", min: 4100, max: 4450, modal: 4280, change: 1.2, changeAmt: 50, trend: [4200, 4220, 4240, 4250, 4260, 4270, 4280], category: "Oilseeds", arrivalDate: "2026-08-25" },
+  { id: "3", crop: "Wheat", cropHi: "गेहूँ", variety: "FAQ", mandi: "Ujjain", state: "Madhya Pradesh", district: "Ujjain", min: 2275, max: 2400, modal: 2340, change: 0.5, changeAmt: 12, trend: [2320, 2325, 2330, 2332, 2335, 2338, 2340], category: "Cereals", arrivalDate: "2026-08-25" },
+  { id: "4", crop: "Maize", cropHi: "मक्का", variety: "FAQ", mandi: "Bhopal", state: "Madhya Pradesh", district: "Bhopal", min: 1950, max: 2200, modal: 2080, change: -0.8, changeAmt: -17, trend: [2120, 2110, 2100, 2095, 2090, 2085, 2080], category: "Cereals", arrivalDate: "2026-08-25" },
+  { id: "5", crop: "Gram", cropHi: "चना", variety: "FAQ", mandi: "Vidisha", state: "Madhya Pradesh", district: "Vidisha", min: 5400, max: 5800, modal: 5620, change: 1.8, changeAmt: 100, trend: [5500, 5520, 5550, 5570, 5580, 5600, 5620], category: "Pulses", arrivalDate: "2026-08-25" },
+  { id: "6", crop: "Mustard", cropHi: "सरसों", variety: "FAQ", mandi: "Bhopal", state: "Madhya Pradesh", district: "Bhopal", min: 5200, max: 5650, modal: 5420, change: 2.1, changeAmt: 110, trend: [5300, 5320, 5350, 5370, 5390, 5410, 5420], category: "Oilseeds", arrivalDate: "2026-08-25" },
+  { id: "7", crop: "Cotton", cropHi: "कपास", variety: "FAQ", mandi: "Khandwa", state: "Madhya Pradesh", district: "Khandwa", min: 6800, max: 7500, modal: 7150, change: 3.2, changeAmt: 220, trend: [6900, 6950, 7000, 7050, 7080, 7120, 7150], category: "Cash Crops", arrivalDate: "2026-08-25" },
+  { id: "8", crop: "Tomato", cropHi: "टमाटर", variety: "FAQ", mandi: "Indore", state: "Madhya Pradesh", district: "Indore", min: 2400, max: 3200, modal: 2800, change: 4.5, changeAmt: 120, trend: [2600, 2650, 2680, 2720, 2750, 2780, 2800], category: "Vegetables", arrivalDate: "2026-08-25" },
 ];
 
 export const TOP_MANDIS = [
