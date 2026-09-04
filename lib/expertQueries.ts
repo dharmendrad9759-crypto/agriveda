@@ -91,11 +91,15 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-/** Compress / strip oversized data URLs before storage upload. */
+const ALLOWED_PHOTO_MIME = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp"]);
+
+/** Compress / strip oversized data URLs before storage upload. JPEG/PNG/WebP only. */
 export function sanitizePhotoDataUrl(raw: string | null | undefined): string | null {
   if (!raw || typeof raw !== "string") return null;
-  if (!raw.startsWith("data:image/")) return null;
-  // ~350KB text ≈ safe for API + storage
+  const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,/.exec(raw);
+  if (!match) return null;
+  const mime = match[1].toLowerCase();
+  if (!ALLOWED_PHOTO_MIME.has(mime)) return null;
   if (raw.length > 350_000) return null;
   return raw;
 }
@@ -175,7 +179,8 @@ async function uploadPhoto(
   try {
     const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(dataUrl);
     if (!match) return null;
-    const mime = match[1];
+    const mime = match[1].toLowerCase();
+    if (!ALLOWED_PHOTO_MIME.has(mime)) return null;
     const b64 = match[2];
     const ext = mime.includes("png") ? "png" : mime.includes("webp") ? "webp" : "jpg";
     const bytes = Buffer.from(b64, "base64");

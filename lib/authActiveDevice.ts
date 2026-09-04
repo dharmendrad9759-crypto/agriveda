@@ -1,4 +1,4 @@
-import { kvDelete, kvGet, kvSet, durableKvReady } from "@/lib/durableKv";
+import { kvDelete, kvGet, kvInsertIfAbsent, kvSet, durableKvReady } from "@/lib/durableKv";
 
 /** Match session cookie lifetime (30 days). */
 const ACTIVE_DEVICE_TTL_MS = 60 * 60 * 24 * 30 * 1000;
@@ -29,7 +29,7 @@ export async function getActiveDevice(
 
 /**
  * One Google account → one device.
- * Same device re-login refreshes TTL. Different device → conflict (block_new).
+ * Insert-if-absent avoids two phones winning the same claim at once.
  */
 export async function claimActiveDevice(
   firebaseUid: string,
@@ -37,20 +37,32 @@ export async function claimActiveDevice(
   email: string
 ): Promise<{ ok: true } | { ok: false; conflict: true; activeDeviceId: string }> {
   const uid = firebaseUid.trim();
+  const record: ActiveDeviceRecord = {
+    deviceId,
+    email: email.trim().toLowerCase(),
+    updatedAt: Date.now(),
+  };
+
+  const created = await kvInsertIfAbsent(keyFor(uid), record, ACTIVE_DEVICE_TTL_MS);
+  if (created) return { ok: true };
+
   const existing = await getActiveDevice(uid);
-  if (existing && existing.deviceId !== deviceId) {
+  if (!existing) {
+    const retry = await kvInsertIfAbsent(keyFor(uid), record, ACTIVE_DEVICE_TTL_MS);
+    if (retry) return { ok: true };
+    const again = await getActiveDevice(uid);
+    if (again && again.deviceId !== deviceId) {
+      return { ok: false, conflict: true, activeDeviceId: again.deviceId };
+    }
+    await kvSet(keyFor(uid), record, ACTIVE_DEVICE_TTL_MS);
+    return { ok: true };
+  }
+
+  if (existing.deviceId !== deviceId) {
     return { ok: false, conflict: true, activeDeviceId: existing.deviceId };
   }
 
-  await kvSet(
-    keyFor(uid),
-    {
-      deviceId,
-      email: email.trim().toLowerCase(),
-      updatedAt: Date.now(),
-    } satisfies ActiveDeviceRecord,
-    ACTIVE_DEVICE_TTL_MS
-  );
+  await kvSet(keyFor(uid), record, ACTIVE_DEVICE_TTL_MS);
   return { ok: true };
 }
 

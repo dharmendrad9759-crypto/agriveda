@@ -78,10 +78,10 @@ function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
 }
 
 const MIX_CAT_META: Record<TankMixCategory, { hint: string; Icon: LucideIcon }> = {
-  "insecticide+fungicide": { hint: "कीट दवा + फफूंद दवा", Icon: Bug },
-  "insecticide+insecticide": { hint: "दो कीट दवा", Icon: Bug },
-  "fungicide+fungicide": { hint: "दो फफूंद दवा", Icon: Leaf },
-  "herbicide+herbicide": { hint: "दो खरपतवार दवा", Icon: Sprout },
+  "insecticide+fungicide": { hint: "कीड़े और फंगस एक साथ", Icon: Bug },
+  "insecticide+insecticide": { hint: "दो कीटनाशक मिलाएँ", Icon: Bug },
+  "fungicide+fungicide": { hint: "दो फफूंदनाशक मिलाएँ", Icon: Leaf },
+  "herbicide+herbicide": { hint: "दो खरपतवारनाशक मिलाएँ", Icon: Sprout },
   "chem+fertilizer": { hint: "दवा + खाद", Icon: FlaskConical },
   "micro+pgr": { hint: "माइक्रो / हॉर्मोन", Icon: Sprout },
   biological: { hint: "जैव + दवा", Icon: Leaf },

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { normalizePincodeDistrict, normalizePincodeState } from "@/lib/pincodeLookup";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,11 @@ interface PostalOffice {
 }
 
 export async function GET(request: NextRequest) {
+  const limited = await rateLimit(`pincode:${clientIp(request)}`, 30, 60_000);
+  if (!limited.ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const pin = request.nextUrl.searchParams.get("pin")?.replace(/\D/g, "").slice(0, 6);
   if (!pin || pin.length !== 6) {
     return NextResponse.json({ error: "Valid 6-digit PIN required" }, { status: 400 });

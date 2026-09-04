@@ -78,7 +78,7 @@ const checks = [
   {
     name: "Admin panel",
     ok: isSet(get("ADMIN_PANEL_SECRET")) && String(get("ADMIN_PANEL_SECRET")).length >= 12,
-    need: "ADMIN_PANEL_SECRET",
+    need: "ADMIN_PANEL_SECRET (≥16 in production, ≥12 local)",
     without: "/admin auth → 503",
   },
 ];

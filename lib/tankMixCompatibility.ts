@@ -168,10 +168,10 @@ function stripJarLanguage(text: string): string {
 
 export function getTankMixCategories(): { id: TankMixCategory; hi: string; en: string }[] {
   return [
-    { id: "insecticide+fungicide", hi: "कीट + फफूंद", en: "Insecticide + Fungicide" },
-    { id: "insecticide+insecticide", hi: "कीट + कीट", en: "Insecticide + Insecticide" },
-    { id: "fungicide+fungicide", hi: "फफूंद + फफूंद", en: "Fungicide + Fungicide" },
-    { id: "herbicide+herbicide", hi: "खरपतवार + खरपतवार", en: "Herbicide + Herbicide" },
+    { id: "insecticide+fungicide", hi: "कीड़ों की दवा + फंगस की दवा", en: "Insecticide + Fungicide" },
+    { id: "insecticide+insecticide", hi: "दो कीड़ों की दवा", en: "Insecticide + Insecticide" },
+    { id: "fungicide+fungicide", hi: "दो फंगस की दवा", en: "Fungicide + Fungicide" },
+    { id: "herbicide+herbicide", hi: "दो खरपतवार की दवा", en: "Herbicide + Herbicide" },
     { id: "chem+fertilizer", hi: "दवा + खाद", en: "Pesticide + Fertilizer" },
     { id: "micro+pgr", hi: "माइक्रो / PGR", en: "Micro + Biostimulant" },
     { id: "biological", hi: "जैव नियंत्रण", en: "Biologicals" },

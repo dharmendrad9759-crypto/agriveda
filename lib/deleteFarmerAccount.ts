@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { kvDelete } from "@/lib/durableKv";
 import { createSupabaseServiceClient } from "@/lib/supabase";
+import { deleteFirebaseAuthUser } from "@/lib/firebase/deleteAuthUser";
 
 function storagePathFromPhotoUrl(url: string | null | undefined): string | null {
   if (!url) return null;
@@ -31,8 +32,7 @@ async function removeStorageFolder(client: SupabaseClient, folder: string) {
 
 /**
  * Wipe server-side farmer data for Play Store account deletion.
- * Google Sign-In users often have empty phone — deviceId is enough.
- * Session cookie must be cleared by the API route separately.
+ * Scoped to this session's device_id only — never mass-delete by phone.
  */
 export async function deleteFarmerAccountServer(opts: {
   phone?: string;
@@ -42,6 +42,7 @@ export async function deleteFarmerAccountServer(opts: {
 }): Promise<{ ok: true; farmerId: string | null } | { ok: false; error: string }> {
   const deviceId = (opts.deviceId || "").trim();
   const phone = (opts.phone || "").trim();
+  const firebaseUid = (opts.firebaseUid || "").trim();
   if (!deviceId) {
     return { ok: false, error: "deviceId required" };
   }
@@ -49,9 +50,11 @@ export async function deleteFarmerAccountServer(opts: {
   if (phone) {
     await kvDelete(`otp:${phone}`);
   }
+  if (firebaseUid) {
+    await kvDelete(`auth:activeDevice:${firebaseUid}`);
+  }
 
   const client = createSupabaseServiceClient();
-  // Production with Supabase URL but no service role = cannot wipe server rows honestly
   if (!client) {
     if (
       process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
@@ -62,6 +65,7 @@ export async function deleteFarmerAccountServer(opts: {
         error: "Server wipe unavailable — support@agriveda.in पर लिखें",
       };
     }
+    await deleteFirebaseAuthUser(firebaseUid);
     return { ok: true, farmerId: null };
   }
 
@@ -77,17 +81,6 @@ export async function deleteFarmerAccountServer(opts: {
       if (row?.id) farmerIds.add(String(row.id));
     }
 
-    if (phone) {
-      const { data: byPhone } = await client
-        .from("farmers")
-        .select("id")
-        .eq("phone", phone)
-        .limit(20);
-      for (const row of byPhone ?? []) {
-        if (row?.id) farmerIds.add(String(row.id));
-      }
-    }
-
     const photoPaths = new Set<string>();
     const { data: byDevQ } = await client
       .from("expert_queries")
@@ -98,26 +91,12 @@ export async function deleteFarmerAccountServer(opts: {
       const p = storagePathFromPhotoUrl(q.photo_url as string | null);
       if (p) photoPaths.add(p);
     }
-    if (phone) {
-      const { data: byPhoneQ } = await client
-        .from("expert_queries")
-        .select("photo_url")
-        .eq("farmer_phone", phone)
-        .limit(200);
-      for (const q of byPhoneQ ?? []) {
-        const p = storagePathFromPhotoUrl(q.photo_url as string | null);
-        if (p) photoPaths.add(p);
-      }
-    }
     if (photoPaths.size) {
       await client.storage.from("expert-query-photos").remove([...photoPaths]);
     }
     await removeStorageFolder(client, deviceId);
 
     await client.from("expert_queries").delete().eq("device_id", deviceId);
-    if (phone) {
-      await client.from("expert_queries").delete().eq("farmer_phone", phone);
-    }
     for (const fid of farmerIds) {
       await client.from("expert_queries").delete().eq("farmer_id", fid);
       await client.from("outbreak_reports").delete().eq("farmer_id", fid);
@@ -125,17 +104,13 @@ export async function deleteFarmerAccountServer(opts: {
     }
 
     await client.from("farmer_notifications").delete().eq("device_id", deviceId);
-    if (phone) {
-      await client.from("farmer_notifications").delete().eq("farmer_phone", phone);
-    }
 
     for (const fid of farmerIds) {
       await client.from("farmers").delete().eq("id", fid);
     }
     await client.from("farmers").delete().eq("device_id", deviceId);
-    if (phone) {
-      await client.from("farmers").delete().eq("phone", phone);
-    }
+
+    await deleteFirebaseAuthUser(firebaseUid);
 
     return { ok: true, farmerId: [...farmerIds][0] ?? null };
   } catch (err) {

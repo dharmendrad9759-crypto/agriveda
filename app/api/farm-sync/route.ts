@@ -123,7 +123,7 @@ export async function PUT(request: NextRequest) {
       if (body.profile && typeof body.profile === "object") {
         const p = body.profile as Record<string, unknown>;
         if (typeof p.name === "string" && p.name.trim()) patch.name = p.name.trim().slice(0, 120);
-        if (typeof p.phone === "string" && p.phone.trim()) patch.phone = String(p.phone).replace(/\D/g, "").slice(-10);
+        // Identity phone comes only from the signed session — never client overwrite.
       }
     }
     if (body.farm !== undefined) {

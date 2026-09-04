@@ -49,6 +49,47 @@ export async function kvGet<T>(key: string): Promise<T | null> {
   }
 }
 
+/**
+ * Insert only if the key is missing (or expired). Used for atomic device claims.
+ * Returns true if this caller created the row.
+ */
+export async function kvInsertIfAbsent(
+  key: string,
+  value: unknown,
+  ttlMs: number
+): Promise<boolean> {
+  const expiresAt = Date.now() + Math.max(1000, ttlMs);
+  if (!hasSupabaseServiceRole()) {
+    purgeMemory();
+    const hit = memory.get(key);
+    if (hit && hit.expiresAt > Date.now()) return false;
+    memory.set(key, { value, expiresAt });
+    return true;
+  }
+  const client = createSupabaseServiceClient();
+  if (!client) {
+    purgeMemory();
+    const hit = memory.get(key);
+    if (hit && hit.expiresAt > Date.now()) return false;
+    memory.set(key, { value, expiresAt });
+    return true;
+  }
+  try {
+    const { error } = await client.from("app_kv").insert({
+      key,
+      value,
+      expires_at: new Date(expiresAt).toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    if (!error) return true;
+    if (error.code === "23505") return false;
+    console.error("[kvInsertIfAbsent]", error.message);
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 export async function kvSet(key: string, value: unknown, ttlMs: number): Promise<void> {
   const expiresAt = Date.now() + Math.max(1000, ttlMs);
   if (!hasSupabaseServiceRole()) {

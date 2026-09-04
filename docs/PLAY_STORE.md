@@ -8,11 +8,11 @@ Use with production HTTPS URL (Vercel), e.g. `https://agriveda-theta.vercel.app`
 |-------|--------|
 | Privacy policy | `https://agriveda-theta.vercel.app/privacy` |
 | Terms (optional store field) | `https://agriveda-theta.vercel.app/terms` |
-| Account deletion | In-app: **Settings → खाता हटाएँ** (`DELETE /api/account`) — works for Google Sign-In (deviceId wipe; phone optional) |
-| Data export | In-app: **Settings → मेरा डेटा डाउनलोड** |
+| Account deletion | In-app: **Settings → खाता हटाएँ** (`DELETE /api/account`) — wipes **this device** + optional Firebase Auth user |
+| Data export | In-app: **Settings → मेरा डेटा डाउनलोड** (on-device JSON; server photos/queries deleted with account) |
 | Support email | `support@agriveda.in` |
 
-**Before submit:** send a test mail to `support@agriveda.in` from a personal inbox and confirm delivery. Set MX/forwarding on the domain if empty.
+**Before submit:** send a test mail to `support@agriveda.in` from a personal inbox and confirm delivery. Set MX/forwarding on the domain if empty. This cannot be verified from the repo.
 
 ## 2) Data Safety form (fill exactly)
 
@@ -22,34 +22,38 @@ Use with production HTTPS URL (Vercel), e.g. `https://agriveda-theta.vercel.app`
 |-----------|------------|---------|---------|---------------------|--------|
 | Email address | Yes | No | Account management | Optional (Google Sign-In) | From Google account when user signs in |
 | Name | Yes | No | App functionality | Optional | Google display name / on-device profile |
-| Phone number | No* | No | — | — | *Phone OTP login is disabled. Phone may appear only if user types it in profile / expert query — declare accordingly if you collect it |
+| Phone number | Yes | No | App functionality | Optional | OTP login is **off**. User may type phone in profile / expert query. Stored for that account/device only |
 | Approximate location | Yes | No | App functionality | Optional | Weather / mandi / outbreaks — user permission |
 | Precise location | Yes (if GPS used) | No | App functionality | Optional | Same |
-| Photos | Yes | Yes* | App functionality | Optional | *Shared with Google Gemini for AI Doctor when user scans. Expert query photos stored in private Supabase bucket until account delete |
-| App interactions | Yes (opt-in) | No | Analytics | Optional | **Off by default** — Settings → Product analytics |
+| Photos | Yes | Yes* | App functionality | Optional | *Shared with **Google Gemini** only when user runs AI Doctor. Expert-query photos stay in **private** Supabase bucket until account delete. JPEG/PNG/WebP only |
+| App interactions | Yes (opt-in) | No | Analytics | Optional | **Off by default** — Settings → Product analytics. No Crashlytics / Sentry / Firebase Crash Reporting |
 | Device or other IDs | Yes | No | App functionality | Optional | Anonymous device id for session, queries, spray, account delete |
 
 ### Not collected (declare **No**)
 
-- Financial info, health records (beyond crop/pest advice text), contacts, SMS/call log content, web browsing history, installed apps list, user-generated sensitive docs beyond crop photos they upload.
+- Financial info, health records (beyond crop/pest advice text), contacts, SMS/call log content, web browsing history, installed apps list
+- Crash logs / diagnostics SDKs (Crashlytics, Sentry) — **do not tick** these
+- Advertising ID
 
 ### Security practices
 
 - Data encrypted in transit (HTTPS)
-- Users can request deletion: **Yes** (in-app + email)
+- Users can request deletion: **Yes** (in-app Settings → खाता हटाएँ + email)
+- Users can request export: **Yes** (Settings → मेरा डेटा डाउनलोड)
 - Committed to Google Play Families? **No** (agriculture tool; target **18+**)
 
 ### Data deletion
 
 - Users can delete: Yes  
-- URL / instructions: Privacy page + Settings → खाता हटाएँ  
+- How: Settings → खाता हटाएँ — server rows for **this device_id** (farmers, queries, spray, outbreaks, notifications, photos). Does **not** delete other farmers who happen to share a phone number.  
 - Email fallback: support@agriveda.in  
 
 ### Honest notes for reviewers
 
 - Login is **Google Sign-In** (Firebase / native Capacitor on Android). Phone OTP is disabled.
 - Mandi/weather may show **example** data if live API keys missing — UI labels this.
-- No Crashlytics/Sentry today — do **not** claim crash log collection beyond optional product events.
+- **No Crashlytics / Sentry** — do **not** claim crash log collection.
+- Product analytics is opt-in and PII-scrubbed.
 - AI advice is informational — not licensed agronomist / medical substitute (in-app disclaimer).
 - Confirm `/api/health` shows gemini + supabase + firebase **ready** before review.
 
@@ -110,35 +114,66 @@ Agriveda भारतीय किसानों को फसल बचान�
 - Not medical device — pest/crop advice with disclaimer  
 - Not designed for children / Families program: **No** (18+)
 
-## 5) Listing assets checklist
+## 5) Listing assets (in repo)
 
-| Asset | Spec | Status |
-|-------|------|--------|
-| App icon | 512×512 PNG | Use Play Console high-res from adaptive icon / branding |
-| Feature graphic | 1024×500 | Create in `public/play-listing/` or Canva |
-| Phone screenshots | 2–8, 16:9 or 9:16 | Capture from real device: Home, AI Doctor, Weather, Mandi, Settings (delete/export visible) |
-| Tablet | Optional | Skip for phone-first |
+| Asset | Spec | File |
+|-------|------|------|
+| High-res icon | 512×512 PNG | `public/play-listing/high-res-icon-512.png` and `public/icons/icon-512.png` |
+| Feature graphic | **1024×500** PNG | `public/play-listing/feature-graphic.png` |
+| Phone screenshots | 2–8, 1080×1920 | `public/play-listing/screenshots/` (home, weather, AI doctor, mandi, settings with delete/export) |
 
-## 6) Release AAB
+Upload these in Play Console → Store listing. Screenshots are listing mockups — recapture from a real device before final submit if Console reviewers expect pixel-perfect in-app UI.
+
+## 6) Vercel production env (must be live)
+
+Set on **Vercel Production** (same names as `.env.example`):
+
+| Variable | Required |
+|----------|----------|
+| `SESSION_SECRET` | Yes (≥16 chars) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes (never `NEXT_PUBLIC_`) |
+| `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes |
+| `NEXT_PUBLIC_FIREBASE_*` | Yes (Google login) |
+| `GEMINI_API_KEY` | Yes (AI Doctor) |
+| `ADMIN_PANEL_SECRET` | Yes (≥16 in production) |
+| `ADMIN_COOKIE_SECRET` | Recommended (≥16) |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | Recommended (account delete + FCM) |
+| `CAPACITOR_SERVER_URL` | For AAB sync only |
+
+Then run `npm run check-env` locally and open `https://YOUR_DOMAIN/api/health`.
+
+**Supabase:** run `supabase/rls-lockdown.sql` then `supabase/verify-rls.sql`. Confirm `expert-query-photos` is **private** and anon cannot SELECT `farmers`.
+
+## 7) Release AAB (do not skip ProductionUrl)
 
 ```powershell
-# 1) android/keystore.properties present (from example) — passwords NOT in git
-# 2) Production Vercel live + env: SESSION_SECRET, Supabase service role, Gemini, Firebase…
+# android/keystore.properties present — passwords NOT in git
 npm run android:playstore -- -ProductionUrl "https://agriveda-theta.vercel.app"
 # Upload: android/app/build/outputs/bundle/release/app-release.aab
 ```
 
-Every new Upload → bump `versionCode` in `android/app/build.gradle` (and preferably `versionName` / `lib/appMeta.ts`).
+Without `-ProductionUrl`, Capacitor syncs the **offline stub** and Google login / APIs will not hit production.
 
-Verify the AAB is **release-signed** (not debug keystore) before Console upload.
+Every new upload → bump `versionCode` in `android/app/build.gradle` (and `versionName` / `lib/appMeta.ts`).
 
-## 7) Pre-submit smoke test (phone)
+## 8) Firebase Play App Signing SHA (required after first AAB)
+
+Play Console re-signs the app. Google Sign-In fails (`DEVELOPER_ERROR` / ApiException 10) until **both** certs are in Firebase:
+
+1. Play Console → Test and release → App integrity → **App signing key certificate** → copy SHA-1 and SHA-256  
+2. Also copy **Upload key certificate** SHA-1  
+3. Firebase Console → Project settings → Your Android app `com.agriveda.app` → Add fingerprints  
+4. Download fresh `google-services.json` if prompted  
+
+This step is in Google/Firebase consoles — not in git.
+
+## 9) Pre-submit smoke test (phone)
 
 1. Cold open splash → **Google Sign-In**  
-2. AI Doctor scan + disclaimer visible (“सुझाव / लेबल”)  
+2. AI Doctor scan + disclaimer visible  
 3. Settings → export JSON  
-4. Settings → logout (crops remain)  
-5. Login again with Google → Settings → **खाता हटाएँ** (server + wipe; works without phone)  
-6. `/privacy` and `/terms` open over HTTPS  
-7. Report bug opens mail to support@agriveda.in  
+4. Settings → logout  
+5. Login again → Settings → **खाता हटाएँ**  
+6. `/privacy` and `/terms` over HTTPS  
+7. Mail to support@agriveda.in  
 8. `/api/health` → gemini / supabase / firebase ready  

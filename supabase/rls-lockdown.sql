@@ -3,6 +3,7 @@
 -- Dashboard → SQL → New query → paste → Run
 --
 -- After this, only the service role (server) can read/write these tables.
+-- Then run verify-rls.sql to confirm.
 -- Set SUPABASE_SERVICE_ROLE_KEY on Vercel / .env.local (never NEXT_PUBLIC_).
 
 -- Core tables

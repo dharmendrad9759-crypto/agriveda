@@ -14,6 +14,7 @@ import { detectOutbreakCluster } from "@/lib/outbreakCluster";
 import { requireSession } from "@/lib/session";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 import { OUTBREAK_SEED_REPORTS } from "@/data/outbreak-seed";
+import { sanitizePhotoDataUrl } from "@/lib/expertQueries";
 
 export async function GET(request: NextRequest) {
   const lat = parseFloat(request.nextUrl.searchParams.get("lat") ?? "");
@@ -113,13 +114,22 @@ export async function POST(request: NextRequest) {
         .eq("id", farmerId);
     }
 
+    let photoUrl: string | null = null;
+    if (typeof body.photoUrl === "string") {
+      if (body.photoUrl.startsWith("data:")) {
+        photoUrl = sanitizePhotoDataUrl(body.photoUrl);
+      } else if (/^https:\/\//i.test(body.photoUrl) && body.photoUrl.length <= 2000) {
+        photoUrl = body.photoUrl;
+      }
+    }
+
     const report = await insertOutbreakReportToSupabase(
       {
         farmerId: farmerId ?? null,
         cropId: body.cropId,
         threatType: body.threatType,
         pestOrDiseaseId: body.pestOrDiseaseId,
-        photoUrl: body.photoUrl,
+        photoUrl,
         latitude: body.latitude,
         longitude: body.longitude,
         severity: body.severity,

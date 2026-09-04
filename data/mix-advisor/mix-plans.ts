@@ -22,7 +22,7 @@ export type MixMedicine = {
 export type MixPlan = {
   cropSlug: string;
   problemIds: string[];
-  /** Usually: फफूंद दवा + कीट दवा (+ sticker separate) */
+  /** Usually: फंगस की दवा + कीड़ों की दवा (+ sticker separate) */
   medicines: MixMedicine[];
   alternatives: MixMedicine[];
   safeFallback?: MixMedicine[];
@@ -57,7 +57,7 @@ export const PROPICONAZOLE: MixMedicine = {
   activeId: "propiconazole",
   nameHi: "प्रोपिकोनाज़ोल",
   formHi: "25% EC",
-  kindHi: "फफूंद दवा",
+  kindHi: "फंगस की दवा",
   doseHi: "150 मिली/एकड़",
 };
 
@@ -65,7 +65,7 @@ export const DELTAMETHRIN: MixMedicine = {
   activeId: "deltamethrin",
   nameHi: "डेल्टामेथ्रिन",
   formHi: "2.8% EC",
-  kindHi: "कीट दवा",
+  kindHi: "कीड़ों की दवा",
   doseHi: "200 मिली/एकड़",
 };
 
@@ -73,7 +73,7 @@ export const MANCOZEB: MixMedicine = {
   activeId: "mancozeb",
   nameHi: "मैंकोज़ेब",
   formHi: "75% WP",
-  kindHi: "फफूंद दवा",
+  kindHi: "फंगस की दवा",
   doseHi: "600 ग्राम/एकड़",
 };
 
@@ -81,7 +81,7 @@ export const CARBENDAZIM: MixMedicine = {
   activeId: "carbendazim",
   nameHi: "कार्बेन्डाजिम",
   formHi: "50% WP",
-  kindHi: "फफूंद दवा",
+  kindHi: "फंगस की दवा",
   doseHi: "200 ग्राम/एकड़",
 };
 
@@ -89,7 +89,7 @@ export const AZOXYSTROBIN: MixMedicine = {
   activeId: "azoxystrobin",
   nameHi: "एज़ोक्सीस्ट्रोबिन",
   formHi: "23% SC",
-  kindHi: "फफूंद दवा",
+  kindHi: "फंगस की दवा",
   doseHi: "200 मिली/एकड़",
 };
 
@@ -97,7 +97,7 @@ export const CHLOROTHALONIL: MixMedicine = {
   activeId: "chlorothalonil",
   nameHi: "क्लोरोथैलोनिल",
   formHi: "75% WP",
-  kindHi: "फफूंद दवा",
+  kindHi: "फंगस की दवा",
   doseHi: "400 ग्राम/एकड़",
 };
 
@@ -105,7 +105,7 @@ export const EMAMECTIN: MixMedicine = {
   activeId: "emamectin benzoate",
   nameHi: "इमामेक्टिन",
   formHi: "5% SG",
-  kindHi: "कीट दवा",
+  kindHi: "कीड़ों की दवा",
   doseHi: "80–100 ग्राम/एकड़",
 };
 
@@ -113,7 +113,7 @@ export const IMIDACLOPRID: MixMedicine = {
   activeId: "imidacloprid",
   nameHi: "इमिडाक्लोप्रिड",
   formHi: "17.8% SL",
-  kindHi: "कीट दवा",
+  kindHi: "कीड़ों की दवा",
   doseHi: "100 मिली/एकड़",
 };
 
@@ -121,7 +121,7 @@ export const METALAXYL_MZ: MixMedicine = {
   activeId: "metalaxyl",
   nameHi: "मेटालैक्सिल + मैंकोज़ेब",
   formHi: "8% + 64% WP",
-  kindHi: "फफूंद दवा",
+  kindHi: "फंगस की दवा",
   doseHi: "500 ग्राम/एकड़",
 };
 
@@ -153,7 +153,7 @@ const PROBLEM_MED: Record<string, MixMedicine> = {
     activeId: "abamectin",
     nameHi: "एबामेक्टिन",
     formHi: "1.9% EC",
-    kindHi: "कीट दवा",
+    kindHi: "कीड़ों की दवा",
     doseHi: "200 मिली/एकड़",
   },
   aphid: IMIDACLOPRID,
@@ -165,7 +165,7 @@ function isPestTag(tagHi: string): boolean {
 }
 
 function isFungusTag(tagHi: string): boolean {
-  return tagHi.includes("फफूंद");
+  return tagHi.includes("फफूंद") || tagHi.includes("फंगस");
 }
 
 function isVectorTag(tagHi: string): boolean {

@@ -25,14 +25,18 @@ type LegacyPayload = { role: "admin"; exp: number };
 
 function adminSecret(): string | null {
   const secret = process.env.ADMIN_PANEL_SECRET;
-  if (secret && secret.length >= 12) return secret;
+  const min = process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production" ? 16 : 12;
+  if (secret && secret.length >= min) return secret;
   if (process.env.NODE_ENV !== "production" && process.env.VERCEL_ENV !== "production") {
     return "dev-admin-agriveda";
   }
   return null;
 }
 
+/** Cookie HMAC — never reuse the login password as the only key when a dedicated secret exists. */
 function signingKey(): string | null {
+  const dedicated = process.env.ADMIN_COOKIE_SECRET;
+  if (dedicated && dedicated.length >= 16) return dedicated;
   return (
     process.env.SESSION_SECRET ||
     process.env.AUTH_SECRET ||

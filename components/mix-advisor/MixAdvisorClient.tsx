@@ -314,7 +314,9 @@ export default function MixAdvisorClient() {
     const sameKind = plan.alternatives.filter(
       (a) =>
         a.kindHi === current.kindHi ||
+        (current.kindHi.includes("फंगस") && a.kindHi.includes("फंगस")) ||
         (current.kindHi.includes("फफूंद") && a.kindHi.includes("फफूंद")) ||
+        (current.kindHi.includes("कीड़") && a.kindHi.includes("कीड़")) ||
         (current.kindHi.includes("कीट") && a.kindHi.includes("कीट"))
     );
     const pool = sameKind.length ? sameKind : plan.alternatives;
@@ -338,7 +340,7 @@ export default function MixAdvisorClient() {
     <AppShell
       variant="hub"
       title="दवा मिलाएँ"
-      subtitle="कीट + फफूंद एक साथ — स्टिकर सहित"
+      subtitle="कीड़ों की दवा + फंगस की दवा — स्टिकर सहित"
       backHref="/dashboard"
     >
       <div className="mx-auto max-w-lg space-y-4 px-1 pb-8">
@@ -462,7 +464,7 @@ export default function MixAdvisorClient() {
                   <div>
                     <p className={AV.sectionTitle}>समस्याएँ चुनें</p>
                     <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                      एक साथ कई हो सकती हैं — कीट + फफूंद दोनों चुनो (अधिकतम {MAX_PROBLEMS})
+                      एक साथ कई हो सकती हैं — कीड़ों और फंगस दोनों चुनो (अधिकतम {MAX_PROBLEMS})
                     </p>
                   </div>
                   <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
