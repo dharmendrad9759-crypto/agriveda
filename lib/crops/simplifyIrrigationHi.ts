@@ -11,6 +11,21 @@ function replaceAll(text: string, pairs: [RegExp | string, string][]): string {
 }
 
 const HI_REPLACEMENTS: [RegExp | string, string][] = [
+  [/\bV\d+\s*[–\-]\s*V\d+\b/gi, ""],
+  [/\bV\d+\b/gi, ""],
+  [/\bVT\s*[–\-]\s*R\d+\b/gi, "मूंछ/फूल"],
+  [/\bR\d+\s*[–\-]\s*R\d+\b/gi, ""],
+  [/\bVT\b/gi, "मूंछ निकलना"],
+  [/\bR1\b/gi, "सिल्क / मूंछ"],
+  [/\bR3\b/gi, "दाना भरना"],
+  [/\bR6\b/gi, "पकना"],
+  [/\bVE\b/gi, "अंकुरण"],
+  [/\bCRI\b/gi, "जड़ फूटना"],
+  [/\(\s*DAS[^)]*\)/gi, ""],
+  [/\(\s*DAT[^)]*\)/gi, ""],
+  [/\b\d+\s*[–\-]\s*\d+\s*DAS\b/gi, ""],
+  [/\b\d+\s*DAS\b/gi, ""],
+  [/\b\d+\s*DAT\b/gi, ""],
   [/\bDAT\b/gi, "रोपाई के दिन"],
   [/\bDAS\b/gi, "बुवाई के दिन"],
   [/Alternate Wetting\s*&\s*Drying/gi, "सूखा–गीला तरीका"],
@@ -28,7 +43,11 @@ const HI_REPLACEMENTS: [RegExp | string, string][] = [
   [/Every\s*7\s*days/gi, "हर 7 दिन"],
   [/Germination/gi, "अंकुरण"],
   [/Grand growth/gi, "तेज़ वृद्धि"],
-  [/Vegetative/gi, "पत्ती-तने की अवस्था"],
+  [/Vegetative/gi, "बढ़वार अवस्था"],
+  [/Tasseling\s*&\s*silking/gi, "मूंछ व भुट्टा"],
+  [/Tasseling/gi, "मूंछ निकलना"],
+  [/Silking/gi, "मूंछ / सिल्क"],
+  [/Moisture\s*stress/gi, "पानी की कमी से नुकसान"],
   [/Tuber bulking/gi, "कंद बढ़ना"],
   [/Pre-harvest/gi, "कटाई से पहले"],
   [/Planting/gi, "बुवाई"],
@@ -44,7 +63,11 @@ const HI_REPLACEMENTS: [RegExp | string, string][] = [
 ];
 
 export function simplifyIrrigationLineHi(line: string): string {
-  return replaceAll(line, HI_REPLACEMENTS).replace(/\s+/g, " ").trim();
+  return replaceAll(line, HI_REPLACEMENTS)
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+([,.;।])/g, "$1")
+    .replace(/[·\-–—]\s*$/g, "")
+    .trim();
 }
 
 export function simplifyWaterNeedHi(text: string): string {

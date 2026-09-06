@@ -7,7 +7,6 @@ import {
   ArrowRight,
   Camera,
   CloudSun,
-  MapPin,
   MessageCircle,
   ShieldCheck,
   Sparkles,
@@ -325,17 +324,6 @@ export default function AgriVedaHome() {
   const [showMoreTools, setShowMoreTools] = useState(false);
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
-  const hasLocation = Boolean(profile.village || profile.district || profile.state);
-  const place = hasLocation
-    ? [profile.district || profile.village, profile.state].filter(Boolean).join(", ")
-    : null;
-  const placeShort = place
-    ? place.length > 22
-      ? `${place.slice(0, 20)}…`
-      : place
-    : isHi
-      ? "स्थान सेट करें"
-      : "Set location";
 
   const weatherIsSample = Boolean(weather?.isDemo || weatherError);
   const weatherLive = Boolean(weather && !weather.isDemo && !weatherError);
@@ -409,20 +397,6 @@ export default function AgriVedaHome() {
               <Sprout className="h-3 w-3 shrink-0" />
               <span className="truncate">{primaryCropChip}</span>
             </AppLink>
-            {hasLocation ? (
-              <span className="inline-flex max-w-[46%] items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2.5 py-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-                <MapPin className="h-3 w-3 shrink-0 text-sky-600" />
-                <span className="truncate">{placeShort}</span>
-              </span>
-            ) : (
-              <AppLink
-                href="/profile/edit"
-                className="inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-50/90 px-2.5 py-1 text-[11px] font-semibold text-sky-800"
-              >
-                <MapPin className="h-3 w-3" />
-                {placeShort}
-              </AppLink>
-            )}
             <span
               className={cn(
                 "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold",

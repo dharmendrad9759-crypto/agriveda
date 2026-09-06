@@ -1,6 +1,6 @@
 /**
- * Alternate Wetting & Drying (AWD) — paddy-first field guidance.
- * Practical steps farmers can follow with a field water tube; not a subsidy claim.
+ * धान — सूखा–गीला पानी तरीका (AWD)।
+ * किसान भाषा में: ट्यूब से पानी देखो, ज़रूरत पर सींचो।
  */
 
 export const AWD_FIELD_TUBE_CM = 15;
@@ -30,55 +30,55 @@ export interface AwdGuidance {
 }
 
 export const AWD_GUIDANCE: AwdGuidance = {
-  titleHi: "AWD सिंचाई — धान में पानी बचाएँ",
-  titleEn: "AWD irrigation — save water in paddy",
-  subtitleHi: `खेत में ट्यूब लगाएँ · पानी ट्यूब में ${AWD_FIELD_TUBE_CM} सेमी नीचे उतरे तब दोबारा सिंचाई`,
-  subtitleEn: `Install a field tube · re-irrigate when water drops ${AWD_FIELD_TUBE_CM} cm below soil surface`,
+  titleHi: "पानी बचाओ तरीका",
+  titleEn: "Save-water method",
+  subtitleHi: "खेत में छोटा पाइप गाड़ें · पानी सूखने पर फिर सींचें — रोज़ पानी भरना ज़रूरी नहीं",
+  subtitleEn: "Put a small pipe in the field · water again when it dries — daily flooding not needed",
   steps: [
     {
       id: "tube",
-      titleHi: "1. खेत ट्यूब लगाएँ",
-      titleEn: "1. Install field tube",
+      titleHi: "1. खेत में पाइप गाड़ें",
+      titleEn: "1. Put a pipe in the field",
       detailHi:
-        "10–20 सेमी व्यास वाला छिद्रित पाइप/ट्यूब खेत में गाड़ें (करीब 25–30 सेमी गहरा)। पानी का स्तर ट्यूब में साफ़ दिखे — यही AWD का मीटर है।",
+        "एक छोटा पाइप (लगभग मुट्ठी जितना मोटा) खेत में आधा हाथ गहरा गाड़ दें। पाइप में छेद हों ताकि अंदर का पानी दिखे। यही बताएगा कि खेत में पानी कितना है।",
       detailEn:
-        "Drive a perforated pipe/tube (10–20 cm dia) ~25–30 cm into the field so the water level is readable — that is your AWD gauge.",
+        "Drive a small perforated pipe about half an arm deep. The water level inside shows how wet the field is.",
     },
     {
       id: "irrigate",
-      titleHi: `2. पानी गायब होकर ${AWD_FIELD_TUBE_CM} सेमी नीचे आए तब सींचें`,
-      titleEn: `2. Irrigate when water disappears to ${AWD_FIELD_TUBE_CM} cm below`,
-      detailHi: `सतही पानी सूखने दें। ट्यूब में पानी मिट्टी की सतह से ~${AWD_FIELD_TUBE_CM} सेमी नीचे दिखे — तब ही फिर से बाढ़ दें (लगभग 2–5 सेमी खड़ा पानी)। हर दिन बाढ़ ज़रूरी नहीं।`,
-      detailEn: `Let ponded water disappear. When the tube reads ~${AWD_FIELD_TUBE_CM} cm below the soil surface, re-flood to ~2–5 cm. Continuous flooding is not required.`,
+      titleHi: `2. पानी ${AWD_FIELD_TUBE_CM} सेमी नीचे उतरे तब सींचें`,
+      titleEn: `2. Irrigate when water is ${AWD_FIELD_TUBE_CM} cm down`,
+      detailHi: `ऊपर का खड़ा पानी सूखने दें। पाइप में पानी ज़मीन से करीब ${AWD_FIELD_TUBE_CM} सेमी (दो–तीन उंगली से ज़्यादा) नीचे दिखे — तब फिर हल्का पानी भरें (लगभग दो उंगली जितना)। रोज़ बाढ़ भरना ज़रूरी नहीं।`,
+      detailEn: `Let surface water dry. When the pipe shows water about ${AWD_FIELD_TUBE_CM} cm below ground, flood lightly again (~2–5 cm). Continuous flooding is not needed.`,
     },
     {
       id: "never-pi",
-      titleHi: "3. PI / फूल पर कभी तनाव न दें",
-      titleEn: "3. NEVER stress at PI / flowering",
+      titleHi: "3. बाली–फूल समय पानी न रोकें",
+      titleEn: "3. Never skip water at heading / flowering",
       detailHi:
-        "पैनिकल आरंभ (PI) से फूल आने तक खेत में नमी बनाए रखें — पानी न काटें। इस अवस्था में AWD बंद / सतर्क बाढ़ रखें।",
+        "जब बाली बनने लगे और फूल आए — तब खेत सूखने न दें। इस समय हमेशा हल्की नमी रखें। पानी कम हुआ तो पैदावार गिर सकती है।",
       detailEn:
-        "From panicle initiation (PI) through flowering, keep the field moist — do not dry down. Pause safe-AWD dryness in this window.",
+        "From heading through flowering, keep the field moist — do not dry down. Skipping water now can cut yield.",
     },
   ],
   neverStressHi:
-    "महत्वपूर्ण: बाली निकलने (PI) और फूल आने पर पानी की कमी न होने दें — उपज गिर सकती है।",
+    "सबसे ज़रूरी: बाली निकलते और फूल आते समय खेत सूखा न छोड़ें — दाना कमज़ोर पड़ सकता है।",
   neverStressEn:
-    "Critical: never water-stress at PI or flowering — yield can drop sharply.",
+    "Most important: never let the field dry at heading or flowering — grain can suffer.",
   safeNotesHi: [
-    "रोपाई के बाद पहले ~10–15 दिन हल्की खड़ी पानी रखें — जड़ जमें।",
-    "लवणीय / बहुत बलुआ / खराब जल निकासी खेत में AWD सीमित रखें — स्थानीय सलाह लें।",
-    "खरपतवार बढ़े तो एक बार पानी कुछ दिन खड़ा रख सकते हैं।",
-    "यह सामान्य मार्गदर्शन है — खेत की ढलान और मिट्टी अनुसार बदलें। सब्सिडी % का दावा यहाँ नहीं।",
+    "रोपाई के बाद पहले 10–15 दिन हल्का पानी रखें — जड़ पकड़े।",
+    "बहुत रेतीली या खराब निकासी वाली ज़मीन पर यह तरीका सावधानी से अपनाएँ — पड़ोसी किसान या कृषि विभाग से पूछ लें।",
+    "खरपतवार ज़्यादा हो तो कुछ दिन पानी खड़ा रख सकते हैं।",
+    "यह आम सलाह है — अपने खेत की मिट्टी और ढलान देखकर पानी बदलें।",
   ],
   safeNotesEn: [
-    "Keep light standing water for ~10–15 days after transplant so roots establish.",
-    "Limit AWD on saline, very sandy, or poorly drained fields — ask local advisory.",
-    "If weeds surge, a short flooded spell can help suppress them.",
-    "General guidance only — adapt to field slope and soil. No subsidy % claimed here.",
+    "Keep light water for 10–15 days after transplant so roots establish.",
+    "On very sandy or poorly drained land, use carefully — ask a local advisor.",
+    "If weeds surge, keep standing water for a few days.",
+    "General advice — adjust to your soil and slope.",
   ],
-  checklistLabelHi: "आज AWD ट्यूब चेक किया",
-  checklistLabelEn: "Checked AWD tube today",
+  checklistLabelHi: "आज पाइप में पानी देख लिया",
+  checklistLabelEn: "Checked the field pipe today",
 };
 
 export function getAwdGuidance(): AwdGuidance {

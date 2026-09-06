@@ -291,7 +291,7 @@ export const formerStubCrops: Crop[] = [
     slug: "mustard",
     name: "Mustard (सरसों)",
     scientificName: "Brassica juncea",
-    category: "Pulses",
+    category: "Oilseeds",
     image: "/images/crops/mustard.jpg",
     overview:
       "रबी तिलहन — सल्फर-संतुलित पोषण, समय पर सिंचाई, और माहू/सफेद रतुआ/अल्टरनेरिया निगरानी से तेल उपज व गुणवत्ता। जलभराव से बचें।",
@@ -412,10 +412,7 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
-    slug: "ginger",
-    name: "Ginger (अदरक)",
-    scientificName: "Zingiber officinale",
-    category: "Vegetables",
+    category: "Spices",
     image: "/images/crops/ginger.jpg",
     overview:
       "मसाला प्रकंद फसल — स्वस्थ बीजकंद, मल्च, जल निकासी, और मृदा जनित सड़न/कीट निगरानी। ज्यादा पानी से rhizome rot।",
@@ -473,10 +470,7 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
-    slug: "garlic",
-    name: "Garlic (लहसुन)",
-    scientificName: "Allium sativum",
-    category: "Vegetables",
+    category: "Spices",
     image: "/images/crops/garlic.jpg",
     overview:
       "रबी मसाला — स्वस्थ कलियाँ, सल्फर पोषण, और थ्रिप्स/बैंगनी धब्बा नियंत्रण। कटाई से पहले पानी बंद कर curing करें।",
@@ -534,10 +528,7 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
-    slug: "mango",
-    name: "Mango (आम)",
-    scientificName: "Mangifera indica",
-    category: "Vegetables",
+    category: "Fruits",
     image: "/images/crops/mango.jpg",
     overview:
       "बारहमासी बागवानी — किस्म अनुसार स्थान, नियमित कांट-छांट, पोषण व सिंचाई, और मिज्ज/पाउडरी/एंथ्रेक्नोज निगरानी। पौध प्रमाणित नर्सरी से लें।",
@@ -595,10 +586,7 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
-    slug: "banana",
-    name: "Banana (केला)",
-    scientificName: "Musa spp.",
-    category: "Vegetables",
+    category: "Fruits",
     image: "/images/crops/banana.jpg",
     overview:
       "उष्ण बागवानी — स्वस्थ सकर/टिश्यूकल्चर पौध, नियमित पानी-पोषण, और सिगाटोका/थ्रिप्स/नेमाटोड प्रबंधन। हवा से तना टूटने से बचाव।",
@@ -656,10 +644,7 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
-    slug: "grapes",
-    name: "Grapes (अंगूर)",
-    scientificName: "Vitis vinifera",
-    category: "Vegetables",
+    category: "Fruits",
     image: "/images/crops/grapes.jpg",
     overview:
       "वाइनयार्ड फसल — कांट-छांट कैलेंडर, ड्रिप पोषण, और डाउनी/पाउडरी/थ्रिप्स प्रबंधन। महाराष्ट्र/कर्नाटक शैली प्रशिक्षण अपनाएँ।",

@@ -1,6 +1,7 @@
 import { cropCatalog } from "@/data/crop-catalog";
 import type { Crop } from "@/types/crop";
 import { resolveCropImage } from "@/lib/crops/cropImages";
+import { listingGroupForCrop } from "@/lib/crops/icarCropGroups";
 
 const EMOJI_BY_SLUG = Object.fromEntries(cropCatalog.map((c) => [c.slug, c.emoji]));
 
@@ -161,34 +162,20 @@ export function formatCategoryLabel(category: Crop["category"]): string {
 export const CROP_LISTING_CATEGORIES = [
   "All",
   "Cereals",
+  "Millets",
   "Pulses",
   "Oilseeds",
   "Vegetables",
+  "Spices",
   "Fruits",
   "Cash Crops",
-  "Spices",
-  "Fodder",
-  "Millets",
 ] as const;
 
 export type CropListingCategory = (typeof CROP_LISTING_CATEGORIES)[number];
 
-const OILSEED_SLUGS = new Set(["soybean", "moongfali", "mustard"]);
-const FRUIT_SLUGS = new Set(["mango", "banana", "grapes"]);
-const SPICE_SLUGS = new Set(["chilli", "mustard", "ginger", "garlic"]);
-const FODDER_SLUGS = new Set(["bajra", "maize"]);
-const PULSE_SLUGS = new Set(["pulses", "moong", "chana", "masoor", "urad", "soybean"]);
-
 export function matchesListingCategory(crop: Crop, category: CropListingCategory): boolean {
   if (category === "All") return true;
-  if (category === "Oilseeds") return OILSEED_SLUGS.has(crop.slug);
-  if (category === "Fruits") return FRUIT_SLUGS.has(crop.slug);
-  if (category === "Spices") return SPICE_SLUGS.has(crop.slug);
-  if (category === "Fodder") return FODDER_SLUGS.has(crop.slug);
-  if (category === "Pulses") return PULSE_SLUGS.has(crop.slug) || crop.category === "Pulses";
-  if (category === "Cash Crops") return crop.category === "Cash-Crops";
-  if (category === "Millets") return crop.category === "Millets";
-  return crop.category === category;
+  return listingGroupForCrop(crop) === category;
 }
 
 export function matchesSeasonFilter(crop: Crop, season: "All Seasons" | SeasonTag): boolean {

@@ -7,10 +7,20 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
 import { BRAND } from "@/lib/brand";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { countInAppIrrigationAlerts, onIrrigationAlertsChanged } from "@/lib/irrigationReminders";
+import { useEffect, useState } from "react";
 
 export default function MobileShellTopBar() {
   const { profile } = useFarmerProfile();
   const { t } = useLocale();
+  const [irrCount, setIrrCount] = useState(0);
+
+  useEffect(() => {
+    const refresh = () => setIrrCount(countInAppIrrigationAlerts());
+    refresh();
+    return onIrrigationAlertsChanged(refresh);
+  }, []);
+
   const hasLocation = Boolean(profile.village || profile.district || profile.state);
   const location = hasLocation
     ? [profile.village || profile.district, profile.state].filter(Boolean).join(", ")
@@ -58,6 +68,11 @@ export default function MobileShellTopBar() {
             aria-label={t("shellNotifications")}
           >
             <Bell className="h-4 w-4" />
+            {irrCount > 0 ? (
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white">
+                {irrCount > 9 ? "9+" : irrCount}
+              </span>
+            ) : null}
           </AppLink>
           <AppLink
             href="/profile"

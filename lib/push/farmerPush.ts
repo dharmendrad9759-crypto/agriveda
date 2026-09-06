@@ -63,15 +63,19 @@ export async function scheduleLocalAlert(input: {
   title: string;
   body: string;
   at?: Date;
-}): Promise<void> {
-  if (typeof window === "undefined" || !isCapacitorNative()) return;
+  /** User-requested (e.g. irrigation reminder) — ignore alert toggle settings */
+  force?: boolean;
+}): Promise<boolean> {
+  if (typeof window === "undefined" || !isCapacitorNative()) return false;
 
-  const settings = readStorage("agriveda-app-settings", {
-    weatherAlerts: true,
-    pestAlerts: true,
-    quietHoursEnabled: false,
-  });
-  if (!settings.weatherAlerts && !settings.pestAlerts) return;
+  if (!input.force) {
+    const settings = readStorage("agriveda-app-settings", {
+      weatherAlerts: true,
+      pestAlerts: true,
+      quietHoursEnabled: false,
+    });
+    if (!settings.weatherAlerts && !settings.pestAlerts) return false;
+  }
 
   try {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
@@ -79,7 +83,7 @@ export async function scheduleLocalAlert(input: {
     if (perm.display === "prompt") {
       perm = await LocalNotifications.requestPermissions();
     }
-    if (perm.display !== "granted") return;
+    if (perm.display !== "granted") return false;
 
     await LocalNotifications.schedule({
       notifications: [
@@ -93,8 +97,9 @@ export async function scheduleLocalAlert(input: {
         },
       ],
     });
+    return true;
   } catch {
-    /* plugin missing or denied */
+    return false;
   }
 }
 

@@ -5,7 +5,7 @@ export interface Crop {
   slug: string;
   name: string;
   image: string;
-  category: "Cereals" | "Vegetables" | "Pulses" | "Millets" | "Cash-Crops";
+  category: "Cereals" | "Vegetables" | "Pulses" | "Oilseeds" | "Millets" | "Cash-Crops" | "Fruits" | "Spices";
   scientificName: string;
   overview: string;
   durationDays: string;
@@ -245,9 +245,9 @@ const legacyDetailedCrops: Crop[] = [
     ...baseCrop,
     slug: "soybean",
     name: "Soybean (सोयाबीन)",
-    category: "Pulses",
+    category: "Oilseeds",
     scientificName: "Glycine max",
-    overview: "समय पर बुवाई, जड़ पर अच्छे गांठ बनने और कीटों से सुरक्षा चाहने वाली लाभदायक दलहन फसल।",
+    overview: "समय पर बुवाई, जड़ पर अच्छे गांठ बनने और कीटों से सुरक्षा चाहने वाली लाभदायक तिलहन फसल।",
     durationDays: "90-110 दिन",
     estimatedYield: "10-15 क्विंटल प्रति एकड़",
     seedRate: "60-70 kg/acre",
@@ -361,7 +361,7 @@ const legacyDetailedCrops: Crop[] = [
     ...baseCrop,
     slug: "moongfali",
     name: "Groundnut / Peanut (मूंगफली)",
-    category: "Pulses",
+    category: "Oilseeds",
     scientificName: "Arachis hypogaea",
     overview: "अच्छे फली विकास, संतुलित पोषण और समय पर सिंचाई पर सबसे अच्छा प्रदर्शन करने वाली मूल्यवान तिलहन फसल।",
     durationDays: "100-120 दिन",
@@ -419,9 +419,9 @@ const legacyDetailedCrops: Crop[] = [
     ...baseCrop,
     slug: "chilli",
     name: "Chilli (मिर्च)",
-    category: "Vegetables",
+    category: "Spices",
     scientificName: "Capsicum annuum",
-    overview: "नियमित पोषण, समय पर सिंचाई और मजबूत कीट नियंत्रण चाहने वाली उच्च मूल्य की सब्जी।",
+    overview: "नियमित पोषण, समय पर सिंचाई और मजबूत कीट नियंत्रण चाहने वाली उच्च मूल्य की मसाला फसल।",
     durationDays: "90-120 दिन",
     estimatedYield: "80-120 क्विंटल प्रति एकड़",
     seedRate: "200-250 g/acre",

@@ -2,6 +2,7 @@ import type { Crop } from "@/types/crop";
 import type { CropManagementProfile } from "@/types/crop-management";
 import type { CropDashboardData, AgronomicSection } from "@/data/crop-dashboard";
 import { resolveCropImage } from "@/lib/crops/cropImages";
+import { cropCategoryFromIcarGroup, getIcarCropGroup } from "@/lib/crops/icarCropGroups";
 
 /** Tom / ClickUp export shape (batch JSON) */
 export interface AgrivedaCropExport {
@@ -155,15 +156,21 @@ function joinLines(lines: string[]): string {
   return lines.filter(Boolean).join(" ");
 }
 
-function mapCategory(raw: string): Crop["category"] {
+function mapCategory(raw: string, slug?: string): Crop["category"] {
+  if (slug) {
+    const icar = getIcarCropGroup(slug);
+    if (icar) return cropCategoryFromIcarGroup(icar);
+  }
   const n = raw.toLowerCase();
   if (n.includes("cereal")) return "Cereals";
   if (n.includes("vegetable")) return "Vegetables";
   if (n.includes("pulse")) return "Pulses";
   if (n.includes("millet")) return "Millets";
-  if (n.includes("oil")) return "Pulses";
-  if (n.includes("cash")) return "Cash-Crops";
-  return "Pulses";
+  if (n.includes("oil")) return "Oilseeds";
+  if (n.includes("fruit")) return "Fruits";
+  if (n.includes("spice")) return "Spices";
+  if (n.includes("cash") || n.includes("fibre") || n.includes("sugar")) return "Cash-Crops";
+  return "Vegetables";
 }
 
 function sectionFromBlock(id: string, title: string, emoji: string, block: SectionBlock): AgronomicSection {
@@ -190,7 +197,7 @@ export function mapToManagementProfile(exportCrop: AgrivedaCropExport): CropMana
     slug,
     name: b.hindiName ? `${b.name} (${b.hindiName})` : b.name,
     scientificName: b.scientificName,
-    category: mapCategory(b.category),
+    category: mapCategory(b.category, slug),
     image: resolveCropImage({ slug }),
     summary: b.summary,
     overview: b.overview,
@@ -276,7 +283,7 @@ export function mapToCropListing(exportCrop: AgrivedaCropExport): Partial<Crop> 
     slug,
     name: m.basicInfo.name,
     scientificName: m.basicInfo.scientificName,
-    category: mapCategory(m.basicInfo.category),
+    category: mapCategory(m.basicInfo.category, slug),
     image: resolveCropImage({ slug }),
     overview: m.basicInfo.overview,
     durationDays: c.duration,

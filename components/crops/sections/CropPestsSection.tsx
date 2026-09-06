@@ -7,6 +7,7 @@ import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import { formatPestSprayWhen } from "@/lib/crops/simplifyPestEtlHi";
 import { getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
 import {
   matchCatalogThreat,
@@ -103,11 +104,6 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
         <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
           {t("cropPestsTitle")} — {cropLabel}
         </h3>
-        <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
-          {hi
-            ? `${pests.length} मुख्य कीट · टैप कर पूरा पेज खोलें`
-            : `${pests.length} major pests · tap to open full page`}
-        </p>
       </div>
 
       <div className="relative">
@@ -140,13 +136,13 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                 subtitle={sci}
                 image={img}
                 threatCategory="insect"
-                openHint={hi ? "पूरा कीट पेज" : "Open pest page"}
+                openHint={hi ? "कीट देखो" : "Open pest page"}
                 meta={
                   <span className="flex flex-wrap items-center gap-1.5">
                     <RiskBadge level={pest.risk} />
                     {etl ? (
                       <span className="text-[10px] font-semibold text-[var(--av-accent)]">
-                        {hi ? `कब स्प्रे: ${etl}` : `Spray when: ${etl}`}
+                        {formatPestSprayWhen(etl, hi)}
                       </span>
                     ) : null}
                   </span>

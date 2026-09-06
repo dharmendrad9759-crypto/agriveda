@@ -1,12 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { Bell, ChevronRight } from "lucide-react";
 import { useSprayFields } from "@/hooks/useSprayFields";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { useToast } from "@/components/ui/Toast";
 import { buildFieldAlerts } from "@/lib/agriveda2/farmAlertsEngine";
+import {
+  buildIrrigationInAppAlerts,
+  markIrrigationDone,
+  onIrrigationAlertsChanged,
+} from "@/lib/irrigationReminders";
+import { AV } from "@/lib/design/tokens";
+import { cn } from "@/lib/cn";
 
 const SEV = {
   critical: "border-l-red-500 bg-red-50 dark:bg-red-500/10",
@@ -15,11 +24,24 @@ const SEV = {
 };
 
 export default function AlertsHub() {
+  const { locale } = useLocale();
+  const hi = locale === "hi";
+  const { showToast } = useToast();
   const { fields } = useSprayFields();
   const { profile } = useFarmerProfile();
   const { crops } = useMyCrops();
+  const [irrTick, setIrrTick] = useState(0);
 
-  const allAlerts = useMemo(() => {
+  useEffect(() => onIrrigationAlertsChanged(() => setIrrTick((n) => n + 1)), []);
+
+  const irrigationAlerts = useMemo(
+    () => buildIrrigationInAppAlerts(hi),
+    // irrTick refreshes after "पानी दे दिया"
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hi, irrTick]
+  );
+
+  const fieldAlerts = useMemo(() => {
     const list =
       fields.length > 0
         ? fields
@@ -42,6 +64,22 @@ export default function AlertsHub() {
       });
   }, [fields, crops, profile.sowingDates]);
 
+  const allAlerts = useMemo(() => {
+    const order = { critical: 0, warning: 1, info: 2 };
+    return [...irrigationAlerts, ...fieldAlerts].sort(
+      (a, b) => order[a.severity] - order[b.severity]
+    );
+  }, [irrigationAlerts, fieldAlerts]);
+
+  const onWatered = useCallback(
+    async (cropSlug: string) => {
+      await markIrrigationDone(cropSlug);
+      setIrrTick((n) => n + 1);
+      showToast(hi ? "अगली पानी याद लगा दी ✓" : "Next water reminder set ✓");
+    },
+    [hi, showToast]
+  );
+
   return (
     <div className="space-y-4">
       <div className="relative overflow-hidden rounded-[22px] border border-amber-500/20 shadow-[var(--av-shadow-sm)]">
@@ -57,9 +95,13 @@ export default function AlertsHub() {
             <Bell className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-[17px] font-bold text-white">आज का अलर्ट</p>
+            <p className="text-[17px] font-bold text-white">
+              {hi ? "आज का अलर्ट" : "Today's alerts"}
+            </p>
             <p className="text-[12px] font-medium text-white/85">
-              मौसम + फसल अवस्था — पहले से सावधान
+              {hi
+                ? "पानी याद · मौसम · फसल — ऐप के अंदर"
+                : "Water reminders · weather · crop — in app"}
             </p>
           </div>
         </div>
@@ -67,29 +109,44 @@ export default function AlertsHub() {
 
       {allAlerts.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-emerald-500/30 bg-emerald-500/5 px-4 py-8 text-center text-sm font-semibold text-[var(--av-text-muted)]">
-          कोई अलर्ट नहीं — सब ठीक ✓
+          {hi ? "कोई अलर्ट नहीं — सब ठीक ✓" : "No alerts — all good ✓"}
         </p>
       ) : (
-        allAlerts.map((a) => (
-          <Link key={a.id + a.fieldName} href={a.actionHref ?? "/dashboard"}>
-            <div
-              className={`mb-3 rounded-xl border border-[var(--av-border)] border-l-4 p-4 ${SEV[a.severity].replace(/rounded-r-2xl|shadow-sm/g, "")}`}
-            >
-              <p className="text-[10px] font-bold uppercase text-[var(--av-text-muted)]">
-                {a.fieldName}
-                {a.daysAhead ? ` · ${a.daysAhead} दिन पहले` : ""}
-              </p>
-              <p className="mt-1 font-bold text-[var(--av-text-primary)]">{a.title}</p>
-              <p className="mt-1 text-sm text-[var(--av-text-secondary)]">{a.body}</p>
-              {a.actionLabel && (
-                <p className="mt-2 flex items-center gap-1 text-xs font-bold text-[var(--av-accent)]">
-                  {a.actionLabel}
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </p>
-              )}
+        allAlerts.map((a) => {
+          const isIrrDue = a.id.startsWith("irr-due-");
+          const cropSlug = a.cropSlug;
+          return (
+            <div key={a.id + (a.fieldName ?? "")} className="mb-3">
+              <Link href={a.actionHref ?? "/dashboard"}>
+                <div
+                  className={`rounded-xl border border-[var(--av-border)] border-l-4 p-4 ${SEV[a.severity]}`}
+                >
+                  <p className="text-[10px] font-bold uppercase text-[var(--av-text-muted)]">
+                    {a.fieldName}
+                    {a.daysAhead ? ` · ${a.daysAhead} ${hi ? "दिन पहले" : "days ahead"}` : ""}
+                  </p>
+                  <p className="mt-1 font-bold text-[var(--av-text-primary)]">{a.title}</p>
+                  <p className="mt-1 text-sm text-[var(--av-text-secondary)]">{a.body}</p>
+                  {a.actionLabel && (
+                    <p className="mt-2 flex items-center gap-1 text-xs font-bold text-[var(--av-accent)]">
+                      {a.actionLabel}
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </p>
+                  )}
+                </div>
+              </Link>
+              {isIrrDue && cropSlug ? (
+                <button
+                  type="button"
+                  onClick={() => void onWatered(cropSlug)}
+                  className={cn(AV.btnSecondarySm, "mt-2 w-full justify-center")}
+                >
+                  {hi ? "पानी दे दिया — अगली याद लगाओ" : "Watered — set next reminder"}
+                </button>
+              ) : null}
             </div>
-          </Link>
-        ))
+          );
+        })
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import { cropCatalog, type CatalogCrop, type CropCategory } from "@/data/crop-ca
 import { getCropPestDisease } from "@/data/pest-disease";
 import type { Crop } from "@/types/crop";
 import { resolveCropImage } from "@/lib/crops/cropImages";
+import { cropCategoryFromIcarGroup, getIcarCropGroup } from "@/lib/crops/icarCropGroups";
 
 const SCIENTIFIC: Record<string, string> = {
   bhindi: "Abelmoschus esculentus",
@@ -33,19 +34,24 @@ const SEASON_BY_SLUG: Record<string, string> = {
   garlic: "Rabi",
 };
 
-function mapCategory(cat: CropCategory): Crop["category"] {
+function mapCategory(cat: CropCategory, slug: string): Crop["category"] {
+  const icar = getIcarCropGroup(slug);
+  if (icar) return cropCategoryFromIcarGroup(icar);
   switch (cat) {
     case "Cereals":
       return "Cereals";
+    case "Millets":
+      return "Millets";
     case "Pulses":
       return "Pulses";
     case "Cash Crops":
       return "Cash-Crops";
     case "Oilseeds":
-      return "Pulses";
+      return "Oilseeds";
     case "Fruits":
-    case "Vegetables":
+      return "Fruits";
     case "Spices":
+      return "Spices";
     default:
       return "Vegetables";
   }
@@ -72,7 +78,7 @@ export function buildStubCrop(catalogEntry: CatalogCrop): Crop {
     slug: catalogEntry.slug,
     name: catalogEntry.name,
     scientificName: scientific,
-    category: mapCategory(catalogEntry.category),
+    category: mapCategory(catalogEntry.category, catalogEntry.slug),
     image: resolveCropImage({ slug: catalogEntry.slug, name: catalogEntry.name }),
     overview: hasPdw
       ? `${hi} की संक्षिप्त गाइड है। कीट-रोग सूची उपलब्ध है — नीचे या कीट-रोग हब में देखें। विस्तृत किस्म/खाद तालिका अधूरी हो सकती है। कीटनाशक खुराक लेबल / कृषि अधिकारी से लें।`

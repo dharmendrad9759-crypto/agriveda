@@ -13,6 +13,7 @@ import { cn } from "@/lib/cn";
 
 const CATEGORY_HI: Record<string, string> = {
   Cereals: "अनाज",
+  Millets: "मिलेट",
   Vegetables: "सब्ज़ी",
   "Cash Crops": "नकदी फसल",
   Fruits: "फल",

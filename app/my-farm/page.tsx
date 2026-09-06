@@ -35,6 +35,7 @@ import { track } from "@/lib/analytics";
 
 const CATEGORY_HI: Record<string, string> = {
   Cereals: "अनाज",
+  Millets: "मिलेट",
   Vegetables: "सब्ज़ी",
   "Cash Crops": "नकदी",
   Fruits: "फल",

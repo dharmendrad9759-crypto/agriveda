@@ -13,7 +13,7 @@ import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { Crop } from "@/types/crop";
 import { motion, useReducedMotion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Sprout } from "lucide-react";
 import { useState } from "react";
 
 const TAB_PHOTO: Record<CropTabId, string> = {
@@ -64,8 +64,8 @@ const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
   "field-prep": "नर्सरी, बीज दर, रोपाई, दूरी, मल्चिंग, ड्रिप",
   fertilizer: "कब डालें और कितनी — यूरिया, डीएपी, एमओपी",
   irrigation: "कितना और कब पानी दें",
-  pests: "आम कीट — फोटो, लक्षण, समाधान",
-  diseases: "आम रोग — फोटो, लक्षण, समाधान",
+  pests: "फोटो देखो · क्या लगे · क्या दवा डालें",
+  diseases: "फोटो देखो · पत्ती/डंठल का हाल · इलाज",
   harvest: "तुड़ाई का समय, सहारा, पकने की अवस्था",
   market: "भंडारण, पैकिंग, लाइव मंडी भाव",
   weeds: "घास-फूस कैसे हटाएँ",
@@ -81,8 +81,8 @@ const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
   "field-prep": "Nursery, seed rate, transplant, spacing, mulch, drip",
   fertilizer: "When & how much — urea, DAP, MOP",
   irrigation: "How much water, when",
-  pests: "Common pests — photo, signs, fix",
-  diseases: "Common diseases — photo, signs, fix",
+  pests: "See photo · what it is · which spray",
+  diseases: "See photo · leaf/stem signs · treatment",
   harvest: "When to pick, staking, ripeness",
   market: "Storage, packing, live mandi",
   weeds: "Clear grass from field",
@@ -92,6 +92,9 @@ const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
   faq: "Common Q&A",
   expert: "Simple field advice",
 };
+
+const MORE_TEASER_HI = ["घास", "पीली पत्ती", "हफ्ते का काम", "सवाल"] as const;
+const MORE_TEASER_EN = ["Weeds", "Yellow leaf", "This week", "Ask"] as const;
 
 const MORE: CropTabId[] = ["weeds", "growth", "calendar", "nutrients", "faq", "expert"];
 
@@ -190,32 +193,84 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
         </section>
       ))}
 
-      <div className="space-y-2">
+      <div className="space-y-2 pt-1">
         <button
           type="button"
           onClick={() => setShowMore((v) => !v)}
-          className="flex w-full items-center justify-between gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-left active:scale-[0.99]"
+          aria-expanded={showMore}
+          className={cn(
+            "group relative w-full overflow-hidden rounded-2xl border text-left transition active:scale-[0.99]",
+            "border-amber-600/35 bg-gradient-to-br from-amber-50 via-orange-50/80 to-emerald-50",
+            "shadow-[0_8px_24px_-12px_rgba(180,83,9,0.45)]",
+            "dark:border-amber-400/25 dark:from-amber-950/50 dark:via-orange-950/30 dark:to-emerald-950/40",
+            showMore && "ring-2 ring-amber-500/40"
+          )}
         >
-          <span>
-            <span className="block text-[13px] font-extrabold text-[var(--av-text-primary)]">
-              {isHi ? "और जानकारी" : "More"}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-amber-400/25 blur-2xl dark:bg-amber-500/15"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-10 left-8 h-24 w-24 rounded-full bg-emerald-400/20 blur-2xl"
+          />
+
+          <span className="relative flex items-start gap-3 p-3.5 sm:p-4">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md shadow-amber-700/30">
+              <Sprout className="h-6 w-6" strokeWidth={2.25} />
             </span>
-            <span className="mt-0.5 block text-[10px] font-semibold text-[var(--av-text-muted)]">
-              {isHi
-                ? showMore
-                  ? "छिपाएँ"
-                  : "खरपतवार, अवस्था, कार्यक्रम, पीली पत्ती, सवाल"
-                : showMore
-                  ? "Hide"
-                  : "Weeds, stages, schedule, nutrients, FAQ"}
+
+            <span className="min-w-0 flex-1">
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="text-[15px] font-black tracking-tight text-amber-950 dark:text-amber-50">
+                  {isHi
+                    ? showMore
+                      ? "बाकी गाइड खुली है"
+                      : "बाकी गाइड भी देखो"
+                    : showMore
+                      ? "Extra guide open"
+                      : "See more crop guide"}
+                </span>
+                {!showMore ? (
+                  <span className="rounded-md bg-amber-600 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-white">
+                    {isHi ? "टैप करो" : "Tap"}
+                  </span>
+                ) : null}
+              </span>
+
+              <span className="mt-1 block text-[11px] font-semibold leading-snug text-amber-900/75 dark:text-amber-100/75">
+                {isHi
+                  ? showMore
+                    ? "ऊपर वापस छिपाने के लिए फिर टैप करें"
+                    : "घास, पीली पत्ती, हफ्ते का काम और सवाल — यहाँ"
+                  : showMore
+                    ? "Tap again to hide"
+                    : "Weeds, yellow leaf, weekly work & questions"}
+              </span>
+
+              {!showMore ? (
+                <span className="mt-2.5 flex flex-wrap gap-1.5">
+                  {(isHi ? MORE_TEASER_HI : MORE_TEASER_EN).map((label) => (
+                    <span
+                      key={label}
+                      className="rounded-lg border border-amber-700/15 bg-white/70 px-2 py-1 text-[10px] font-bold text-amber-950/90 dark:border-amber-300/20 dark:bg-black/25 dark:text-amber-50"
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </span>
+              ) : null}
+            </span>
+
+            <span
+              className={cn(
+                "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-600 text-white shadow-sm transition group-hover:bg-amber-700",
+                showMore && "rotate-180"
+              )}
+            >
+              <ChevronDown className="h-5 w-5" strokeWidth={2.5} />
             </span>
           </span>
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 text-[var(--av-accent)] transition",
-              showMore && "rotate-180"
-            )}
-          />
         </button>
 
         {showMore ? <div className="space-y-2">{MORE.map((id) => renderJob(id))}</div> : null}

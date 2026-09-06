@@ -2,6 +2,7 @@
 
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropAgroMeta } from "@/lib/crops/cropAgroMeta";
+import { formatInrRange, getCropFieldBand } from "@/lib/crops/cropFieldBands";
 import type { Crop } from "@/types/crop";
 import { CloudSun, Coins, Calendar, Timer, Wheat } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -16,6 +17,7 @@ type InfoRow = {
   label: string;
   value: string;
   lines?: string[];
+  note?: string;
   wide?: boolean;
   highlight?: boolean;
 };
@@ -63,6 +65,11 @@ function InfoCell({ row }: { row: InfoRow }) {
             {row.value}
           </p>
         )}
+        {row.note ? (
+          <p className="mt-1.5 text-[11px] font-medium leading-snug text-[var(--av-text-muted)]">
+            {row.note}
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -72,21 +79,14 @@ export default function CropGeneralInfoCard({ crop }: Props) {
   const { locale } = useLocale();
   const hi = locale === "hi";
   const agro = getCropAgroMeta(crop.slug);
-  const market = crop.marketInformation;
-
-  const profitHint = market?.msp
-    ? hi
-      ? `एमएसपी ${market.msp} · ${market.demand} · ${market.priceTrend}`
-      : `MSP ${market.msp} · ${market.demand} · ${market.priceTrend}`
-    : hi
-      ? "प्रति एकड़ लागत और मुनाफ़े का विस्तृत अनुमान जल्द जोड़ेंगे"
-      : "Per-acre cost and profit estimate coming soon";
+  const band = getCropFieldBand(crop.slug);
+  const phLine = `${band.phMin.toFixed(1)}–${band.phMax.toFixed(1)}`;
 
   const rows: InfoRow[] = [
     {
       id: "duration",
       icon: Timer,
-      label: hi ? "समय (अवधि)" : "Duration",
+      label: hi ? "फसल अवधि" : "Crop duration",
       value: crop.durationDays,
     },
     {
@@ -104,11 +104,13 @@ export default function CropGeneralInfoCard({ crop }: Props) {
         ? [
             `मौसम: ${crop.climate}`,
             `मिट्टी: ${crop.suitableSoil}`,
+            `pH: ${phLine}`,
             `तापमान: ${agro.tempMinC}–${agro.tempMaxC}°C`,
           ]
         : [
             `Climate: ${crop.climate}`,
             `Soil: ${crop.suitableSoil}`,
+            `pH: ${phLine}`,
             `Temperature: ${agro.tempMinC}–${agro.tempMaxC}°C`,
           ],
       wide: true,
@@ -123,7 +125,19 @@ export default function CropGeneralInfoCard({ crop }: Props) {
       id: "profit",
       icon: Coins,
       label: hi ? "प्रति एकड़ लागत और मुनाफ़ा (अनुमान)" : "Cost & profit per acre (est.)",
-      value: profitHint,
+      value: "",
+      lines: hi
+        ? [
+            `लागत: ${formatInrRange(band.costMin, band.costMax)} / एकड़`,
+            `मुनाफ़ा: ${formatInrRange(band.profitMin, band.profitMax)} / एकड़`,
+          ]
+        : [
+            `Cost: ${formatInrRange(band.costMin, band.costMax)} / acre`,
+            `Profit: ${formatInrRange(band.profitMin, band.profitMax)} / acre`,
+          ],
+      note: hi
+        ? "जिला, मौसम और मंडी भाव से वास्तविक आंकड़ा बदल सकता है"
+        : "Actuals vary by district, season and mandi price",
       wide: true,
       highlight: true,
     },

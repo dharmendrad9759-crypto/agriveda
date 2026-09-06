@@ -356,7 +356,7 @@ function mapLegacyCrop(crop: LegacyCrop): CropManagementProfile {
     sowingTime: [crop.sowingGuide.bestSowingTime],
     seedRate: crop.seedRate,
     spacing: crop.spacing,
-    nursery: ["स्थानीय सलाह के अनुसार नर्सरी तैयार करें।"],
+    nursery: [],
     transplanting: [crop.sowingGuide.sowingMethod],
     irrigationSchedule: crop.irrigationManagement.schedule,
     fertilizerSchedule: [
@@ -381,7 +381,7 @@ function mapLegacyCrop(crop: LegacyCrop): CropManagementProfile {
         keyPoints: ["Support yield formation"],
       },
     ],
-    interculturalOperations: ["Use timely interculture and mulching."],
+    interculturalOperations: ["समय पर निराई-गुड़ाई करें; ज़रूरत हो तो मल्चिंग करें।"],
     weedManagement: [
       {
         weedName: "Common weed",

@@ -1,4 +1,12 @@
-export type CropCategory = "Cereals" | "Vegetables" | "Cash Crops" | "Fruits" | "Pulses" | "Oilseeds" | "Spices";
+export type CropCategory =
+  | "Cereals"
+  | "Millets"
+  | "Vegetables"
+  | "Cash Crops"
+  | "Fruits"
+  | "Pulses"
+  | "Oilseeds"
+  | "Spices";
 
 export interface CatalogCrop {
   slug: string;
@@ -14,11 +22,11 @@ export const cropCatalog: CatalogCrop[] = [
   { slug: "paddy", name: "Paddy", nameHi: "धान", emoji: "🌾", category: "Cereals", gradient: "from-amber-100 to-yellow-50" },
   { slug: "wheat", name: "Wheat", nameHi: "गेहूँ", emoji: "🌾", category: "Cereals", gradient: "from-amber-50 to-orange-50" },
   { slug: "maize", name: "Maize", nameHi: "मक्का", emoji: "🌽", category: "Cereals", gradient: "from-yellow-100 to-amber-50" },
-  { slug: "bajra", name: "Bajra", nameHi: "बाजरा", emoji: "🌿", category: "Cereals", gradient: "from-lime-100 to-green-50" },
+  { slug: "bajra", name: "Bajra", nameHi: "बाजरा", emoji: "🌿", category: "Millets", gradient: "from-lime-100 to-green-50" },
   { slug: "potato", name: "Potato", nameHi: "आलू", emoji: "🥔", category: "Vegetables", gradient: "from-orange-100 to-amber-50" },
   { slug: "tomato", name: "Tomato", nameHi: "टमाटर", emoji: "🍅", category: "Vegetables", gradient: "from-red-100 to-rose-50" },
   { slug: "onion", name: "Onion", nameHi: "प्याज", emoji: "🧅", category: "Vegetables", gradient: "from-purple-100 to-violet-50" },
-  { slug: "chilli", name: "Chilli", nameHi: "मिर्च", emoji: "🌶️", category: "Vegetables", gradient: "from-red-100 to-orange-50" },
+  { slug: "chilli", name: "Chilli", nameHi: "मिर्च", emoji: "🌶️", category: "Spices", gradient: "from-red-100 to-orange-50" },
   { slug: "cauliflower", name: "Cauliflower", nameHi: "फूलगोभी", emoji: "🥦", category: "Vegetables", gradient: "from-green-100 to-emerald-50" },
   { slug: "cucumber", name: "Cucumber", nameHi: "खीरा", emoji: "🥒", category: "Vegetables", gradient: "from-lime-100 to-green-50" },
   { slug: "brinjal", name: "Brinjal", nameHi: "बैंगन", emoji: "🍆", category: "Vegetables", gradient: "from-purple-100 to-violet-50" },
@@ -42,12 +50,13 @@ export const cropCatalog: CatalogCrop[] = [
 
 export const categoryOrder: CropCategory[] = [
   "Cereals",
-  "Vegetables",
-  "Cash Crops",
-  "Fruits",
+  "Millets",
   "Pulses",
   "Oilseeds",
+  "Vegetables",
   "Spices",
+  "Fruits",
+  "Cash Crops",
 ];
 
 export function getCropsByCategory(): Record<CropCategory, CatalogCrop[]> {

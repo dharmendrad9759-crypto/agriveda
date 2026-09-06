@@ -2,7 +2,7 @@ export interface Crop {
   slug: string;
   name: string;
   scientificName: string;
-  category: "Cereals" | "Vegetables" | "Pulses" | "Millets" | "Cash-Crops";
+  category: "Cereals" | "Vegetables" | "Pulses" | "Oilseeds" | "Millets" | "Cash-Crops" | "Fruits" | "Spices";
   image: string;
   overview: string;
   durationDays: string;

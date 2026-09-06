@@ -12,10 +12,18 @@ import {
 } from "@/lib/crops/agrivedaExportMapper";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import type { CropCategory } from "@/data/crop-catalog";
+import { cropCategoryFromIcarGroup, getIcarCropGroup } from "@/lib/crops/icarCropGroups";
 
-function mapCatalogCategory(cat: CropCategory): Crop["category"] {
+function mapCatalogCategory(cat: CropCategory, slug?: string): Crop["category"] {
+  if (slug) {
+    const icar = getIcarCropGroup(slug);
+    if (icar) return cropCategoryFromIcarGroup(icar);
+  }
   if (cat === "Cash Crops") return "Cash-Crops";
-  if (cat === "Oilseeds" || cat === "Fruits" || cat === "Spices") return "Vegetables";
+  if (cat === "Oilseeds") return "Oilseeds";
+  if (cat === "Fruits") return "Fruits";
+  if (cat === "Spices") return "Spices";
+  if (cat === "Millets") return "Millets";
   if (cat === "Cereals" || cat === "Vegetables" || cat === "Pulses") return cat;
   return "Cereals";
 }
@@ -65,7 +73,7 @@ for (const slug of BATCH2_PRIORITY_SLUGS) {
       listingMap[slug] = {
         slug: cat.slug,
         name: cat.name,
-        category: mapCatalogCategory(cat.category),
+        category: mapCatalogCategory(cat.category, cat.slug),
         image: resolveCropImage({ slug: cat.slug }),
         overview: `${cat.name} cultivation guide — package of practices for Indian farmers.`,
       };
