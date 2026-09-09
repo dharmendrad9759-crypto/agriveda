@@ -96,7 +96,7 @@ export async function getMandiRowsForLocation(
 
   if (
     !store.days.some((d) => d.date === todayKey()) ||
-    Date.now() - Date.parse(store.updatedAt || 0) > CACHE_TTL_MS
+    Date.now() - Date.parse(store.updatedAt || "0") > CACHE_TTL_MS
   ) {
     void syncNationalMandiSnapshot().catch(() => undefined);
   }

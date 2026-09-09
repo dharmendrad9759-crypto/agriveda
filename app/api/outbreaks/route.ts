@@ -114,10 +114,10 @@ export async function POST(request: NextRequest) {
         .eq("id", farmerId);
     }
 
-    let photoUrl: string | null = null;
+    let photoUrl: string | undefined;
     if (typeof body.photoUrl === "string") {
       if (body.photoUrl.startsWith("data:")) {
-        photoUrl = sanitizePhotoDataUrl(body.photoUrl);
+        photoUrl = sanitizePhotoDataUrl(body.photoUrl) ?? undefined;
       } else if (/^https:\/\//i.test(body.photoUrl) && body.photoUrl.length <= 2000) {
         photoUrl = body.photoUrl;
       }

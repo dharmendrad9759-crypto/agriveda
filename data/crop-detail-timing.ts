@@ -172,6 +172,7 @@ export const CROP_TIMING: Record<string, CropTimingPack> = {
         label: "बारिश कम हो",
         amount: "हल्की सिंचाई",
         timing: "बुवाई के 25–35 दिन (गाँठ बनने पर)",
+        timingRef: "DAS",
         notes: "फली भरने के लिए बहुत ज़रूरी",
       },
     ],

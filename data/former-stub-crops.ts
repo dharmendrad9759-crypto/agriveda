@@ -412,6 +412,9 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
+    slug: "ginger",
+    name: "Ginger (अदरक)",
+    scientificName: "Zingiber officinale",
     category: "Spices",
     image: "/images/crops/ginger.jpg",
     overview:
@@ -470,6 +473,9 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
+    slug: "garlic",
+    name: "Garlic (लहसुन)",
+    scientificName: "Allium sativum",
     category: "Spices",
     image: "/images/crops/garlic.jpg",
     overview:
@@ -528,6 +534,9 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
+    slug: "mango",
+    name: "Mango (आम)",
+    scientificName: "Mangifera indica",
     category: "Fruits",
     image: "/images/crops/mango.jpg",
     overview:
@@ -586,6 +595,9 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
+    slug: "banana",
+    name: "Banana (केला)",
+    scientificName: "Musa spp.",
     category: "Fruits",
     image: "/images/crops/banana.jpg",
     overview:
@@ -644,6 +656,9 @@ export const formerStubCrops: Crop[] = [
     },
   },
   {
+    slug: "grapes",
+    name: "Grapes (अंगूर)",
+    scientificName: "Vitis vinifera",
     category: "Fruits",
     image: "/images/crops/grapes.jpg",
     overview:

@@ -11,53 +11,59 @@ import { syncMandiHistoryToServiceWorker } from "@/lib/offline/offlinePack";
 
 interface UseMandiPricesOptions {
   state?: string;
+  district?: string;
 }
 
-export function useMandiPrices({ state = "Madhya Pradesh" }: UseMandiPricesOptions = {}) {
+export function useMandiPrices({
+  state = "Madhya Pradesh",
+  district,
+}: UseMandiPricesOptions = {}) {
   const [data, setData] = useState<MandiApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [districtLoading, setDistrictLoading] = useState(false);
+  const districtKey = district?.trim() || undefined;
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ state });
+      if (districtKey) params.set("district", districtKey);
       const res = await fetch(`/api/mandi?${params}`);
       if (res.ok) {
         const json = (await res.json()) as MandiApiResponse;
-        recordMandiSnapshot(state, undefined, json.rows);
+        recordMandiSnapshot(state, districtKey, json.rows);
         setData({
           ...json,
-          rows: enrichRowsWithHistory(state, undefined, json.rows),
+          rows: enrichRowsWithHistory(state, districtKey, json.rows),
         });
         void syncMandiHistoryToServiceWorker();
       } else {
         const mockRows = enrichMockWithChange(expandMockMandi(state));
-        recordMandiSnapshot(state, undefined, mockRows);
+        recordMandiSnapshot(state, districtKey, mockRows);
         setData({
           source: "mock",
           state,
           lastUpdated: new Date().toLocaleString("en-IN"),
-          rows: enrichRowsWithHistory(state, undefined, mockRows),
+          rows: enrichRowsWithHistory(state, districtKey, mockRows),
           filters: buildMandiFilterOptions(mockRows),
           error: "Failed to load mandi data",
         });
       }
     } catch {
       const mockRows = enrichMockWithChange(expandMockMandi(state));
-      recordMandiSnapshot(state, undefined, mockRows);
+      recordMandiSnapshot(state, districtKey, mockRows);
       setData({
         source: "mock",
         state,
         lastUpdated: new Date().toLocaleString("en-IN"),
-        rows: enrichRowsWithHistory(state, undefined, mockRows),
+        rows: enrichRowsWithHistory(state, districtKey, mockRows),
         filters: buildMandiFilterOptions(mockRows),
         error: "Network error",
       });
     } finally {
       setLoading(false);
     }
-  }, [state]);
+  }, [state, districtKey]);
 
   const enrichDistrict = useCallback(
     async (state: string, district: string) => {
