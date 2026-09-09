@@ -7,6 +7,8 @@ const BADGE_CLASS = {
 export type RiskLevel = keyof typeof BADGE_CLASS;
 
 export default function RiskBadge({ level, label }: { level: RiskLevel; label?: string }) {
-  const text = label ?? (level === "high" ? "High Risk" : level === "medium" ? "Medium Risk" : "Low Risk");
+  const text =
+    label ??
+    (level === "high" ? "HIGH RISK" : level === "medium" ? "MEDIUM RISK" : "LOW RISK");
   return <span className={BADGE_CLASS[level]}>{text}</span>;
 }

@@ -120,3 +120,27 @@ export function getDisplayStageLabel(
     das: growth.das,
   };
 }
+
+/** Map crop-care stages (period) onto the shared DAS engine. */
+export function resolveCurrentCropStageIndex(
+  stages: { title: string; period: string }[],
+  sowingDateISO: string | undefined
+): { index: number | null; das: number | null } {
+  if (!stages.length) return { index: null, das: null };
+  if (!sowingDateISO) return { index: null, das: null };
+
+  const mapped = stages.map((s, i) => ({
+    name: s.title,
+    das: s.period,
+    status: "upcoming" as const,
+    id: `stage-${i}`,
+    emoji: "",
+  }));
+
+  const growth = applySowingToStages(mapped, sowingDateISO);
+  const idx = growth.stages.findIndex((s) => s.status === "current");
+  return {
+    index: idx >= 0 ? idx : growth.stages.length - 1,
+    das: growth.das,
+  };
+}

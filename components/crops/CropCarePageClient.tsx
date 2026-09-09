@@ -15,6 +15,7 @@ import CropFieldPrepSection from "@/components/crops/sections/CropFieldPrepSecti
 import CropMarketSection from "@/components/crops/sections/CropMarketSection";
 import CropFaqSection from "@/components/crops/sections/CropFaqSection";
 import CropExpertSection from "@/components/crops/sections/CropExpertSection";
+import CropThreatPageHero from "@/components/crops/CropThreatPageHero";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropHindiName } from "@/lib/crops/crop-display";
@@ -53,9 +54,19 @@ export default function CropCarePageClient({ crop, tab }: Props) {
   const title =
     tab === "harvest"
       ? cropHarvestLabel(crop, locale === "hi")
-      : t(TAB_TITLE[tab]);
+      : tab === "pests"
+        ? locale === "hi"
+          ? `${cropLabel} के कीट`
+          : `${cropLabel} pests`
+        : tab === "diseases"
+          ? locale === "hi"
+            ? `${cropLabel} के रोग`
+            : `${cropLabel} diseases`
+          : t(TAB_TITLE[tab]);
   const timingHint =
     detail.establishment === "transplant" ? t("cropDatHint") : t("cropDasHint");
+
+  const isThreatTab = tab === "pests" || tab === "diseases";
 
   return (
     <div className="crop-premium-page relative min-h-screen">
@@ -68,9 +79,21 @@ export default function CropCarePageClient({ crop, tab }: Props) {
           { label: title },
         ]}
       >
-        <div className="mb-3">
-          <h1 className="text-[20px] font-black leading-tight text-[#0B3D28]">{title}</h1>
-        </div>
+        {isThreatTab ? (
+          <CropThreatPageHero
+            crop={crop}
+            cropLabel={cropLabel}
+            title={title}
+            kind={tab}
+            hi={locale === "hi"}
+          />
+        ) : (
+          <div className="mb-3">
+            <h1 className="text-[22px] font-black leading-tight tracking-tight text-[#0B3D28]">
+              {title}
+            </h1>
+          </div>
+        )}
 
         <div className="min-w-0">
           {tab === "growth" && (

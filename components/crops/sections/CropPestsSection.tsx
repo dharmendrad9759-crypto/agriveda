@@ -6,7 +6,6 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
-import { getCropHindiName } from "@/lib/crops/crop-display";
 import { formatPestSprayWhen } from "@/lib/crops/simplifyPestEtlHi";
 import { getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
 import {
@@ -28,9 +27,8 @@ function pestThumb(scientific?: string, catalogImage?: string) {
 }
 
 export default function CropPestsSection({ crop }: { crop: Crop }) {
-  const { t, locale } = useLocale();
+  const { locale } = useLocale();
   const hi = locale === "hi";
-  const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
   const [search, setSearch] = useState("");
 
   const profile = useMemo(
@@ -100,23 +98,23 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-3">
-      <div>
-        <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
-          {t("cropPestsTitle")} — {cropLabel}
-        </h3>
-      </div>
+      <p className="px-0.5 text-[11px] font-medium text-[#7A8B82]">
+        {hi
+          ? `${pests.length} मुख्य कीट · टैप कर पूरा पेज खोलें`
+          : `${pests.length} main pests · tap to open full page`}
+      </p>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A9A91]" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={hi ? "कीट खोजें..." : "Search pest..."}
-          className="av-input py-2.5 pl-10"
+          className="w-full rounded-full border border-[#DCE8E0] bg-white py-3 pl-10 pr-4 text-[14px] font-medium text-[#12281C] shadow-[0_4px_14px_-8px_rgba(11,61,40,0.28)] outline-none placeholder:text-[#8A9A91] focus:border-[#0B6B45]/40 focus:ring-2 focus:ring-[#0B6B45]/15"
         />
       </div>
 
-      <ul className="space-y-2.5">
+      <ul className="space-y-3">
         {filtered.map((pest) => {
           const href =
             "detailHref" in pest && pest.detailHref
@@ -128,21 +126,26 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
               : pestThumb("scientific" in pest ? String(pest.scientific) : undefined);
           const sci = "scientific" in pest ? String(pest.scientific) : "";
           const etl = "etl" in pest && pest.etl ? String(pest.etl) : "";
+          const sprayWhen = etl ? formatPestSprayWhen(etl, hi) : "";
           return (
             <li key={pest.id}>
               <FarmerSplitCard
+                tone="light"
                 href={href}
                 title={pest.name}
-                subtitle={sci}
+                subtitle={sci || undefined}
+                subtitleItalic={Boolean(sci)}
                 image={img}
                 threatCategory="insect"
-                openHint={hi ? "कीट देखो" : "Open pest page"}
+                openHint={hi ? "पूरा कीट पेज" : "Full pest page"}
                 meta={
-                  <span className="flex flex-wrap items-center gap-1.5">
-                    <RiskBadge level={pest.risk} />
-                    {etl ? (
-                      <span className="text-[10px] font-semibold text-[var(--av-accent)]">
-                        {formatPestSprayWhen(etl, hi)}
+                  <span className="flex flex-col gap-1">
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <RiskBadge level={pest.risk} />
+                    </span>
+                    {sprayWhen ? (
+                      <span className="line-clamp-2 text-[10px] font-semibold leading-snug text-[#0B6B45]">
+                        {sprayWhen}
                       </span>
                     ) : null}
                   </span>
@@ -154,7 +157,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
       </ul>
 
       {!filtered.length && (
-        <p className="rounded-xl border border-dashed border-[var(--av-border)] px-4 py-6 text-center text-sm text-[var(--av-text-muted)]">
+        <p className="rounded-2xl border border-dashed border-[#D8E8DE] bg-white/70 px-4 py-6 text-center text-sm text-[#7A8B82]">
           {hi ? "कोई कीट नहीं मिला" : "No pests found"}
         </p>
       )}

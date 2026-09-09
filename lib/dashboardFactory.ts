@@ -46,9 +46,9 @@ export function buildDashboardFromCatalog(slug: string): CropDashboardData | nul
         { label: "Spacing", value: "Follow package of practices for your variety" },
       ],
       tips: [
-        "Treat seed with fungicide + bio-agent before sowing",
-        "Sow at recommended depth — not too deep",
-        "Ensure good soil moisture at germination",
+        "बुवाई से पहले बीज को फफूंदनाशक और जैविक दवा से उपचारित करें",
+        "बीज सही गहराई पर बोएँ — बहुत गहरा न बोएँ",
+        "अंकुरण के समय मिट्टी में सही नमी रखें",
       ],
     },
     fertilizerSchedule: {
@@ -63,9 +63,9 @@ export function buildDashboardFromCatalog(slug: string): CropDashboardData | nul
         { label: "Micronutrients", value: "ZnSO₄ foliar if deficiency symptoms appear" },
       ],
       tips: [
-        "Never apply full nitrogen in one dose — causes lodging and disease",
-        "Soil test every season for precise dosing",
-        "Fertigation via drip improves nutrient use efficiency by 30%",
+        "पूरी नाइट्रोजन एक साथ न डालें — पौधा गिर सकता है और बीमारी बढ़ती है",
+        "हर मौसम मिट्टी जाँच कराकर ही खाद की मात्रा तय करें",
+        "ड्रिप से खाद–पानी देने से खाद का फायदा ज़्यादा मिलता है",
       ],
     },
     irrigationManagement: {
@@ -79,8 +79,8 @@ export function buildDashboardFromCatalog(slug: string): CropDashboardData | nul
         { label: "Method", value: "Drip or furrow — avoid waterlogging" },
       ],
       tips: [
-        "Irrigate early morning or evening to reduce evaporation",
-        "Drain excess water after heavy rains",
+        "सुबह या शाम पानी दें — धूप में पानी उड़ जाता है",
+        "भारी बारिश के बाद खेत से अतिरिक्त पानी निकाल दें",
       ],
     },
     nutrientDeficiency: {
@@ -94,7 +94,10 @@ export function buildDashboardFromCatalog(slug: string): CropDashboardData | nul
         { label: "Potassium", value: "Brown leaf margins, weak stems" },
         { label: "Zinc", value: "Interveinal chlorosis, stunted new leaves" },
       ],
-      tips: ["Foliar spray gives faster correction than soil application", "Check pH — nutrients lock up in extreme pH"],
+      tips: [
+        "पत्तों पर छिड़काव से कमी जल्दी ठीक होती है",
+        "मिट्टी का pH जाँचें — गलत pH पर खाद काम नहीं करती",
+      ],
     },
     harvestingYield: {
       id: "harvest",
@@ -105,7 +108,7 @@ export function buildDashboardFromCatalog(slug: string): CropDashboardData | nul
         { label: "Maturity", value: "Harvest when crop-specific maturity signs appear" },
         { label: "Moisture", value: "Dry grains/tubers to safe storage moisture" },
       ],
-      tips: ["Harvest in dry weather", "Grade produce for better mandi price"],
+      tips: ["सूखे मौसम में कटाई करें", "माल छाँटकर बेचें — मंडी में बेहतर भाव मिलता है"],
     },
     marketInformation: {
       id: "market",
@@ -117,7 +120,10 @@ export function buildDashboardFromCatalog(slug: string): CropDashboardData | nul
         { label: "MSP", value: "Verify government MSP for eligible crops" },
         { label: "Trend", value: "Prices peak in off-season for most crops" },
       ],
-      tips: ["Store properly to sell when prices rise", "Direct farmer-group marketing improves margins"],
+      tips: [
+        "ठीक से रखें — भाव बढ़ने पर बेचें",
+        "किसान समूह से सीधी बिक्री से मुनाफा बेहतर हो सकता है",
+      ],
     },
   };
 }

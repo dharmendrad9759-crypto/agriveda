@@ -10,6 +10,8 @@ import type { ReactNode } from "react";
 interface FarmerSplitCardProps {
   title: string;
   subtitle?: string;
+  /** Scientific name style — italic muted */
+  subtitleItalic?: boolean;
   meta?: ReactNode;
   image: string;
   imageAlt?: string;
@@ -29,6 +31,7 @@ interface FarmerSplitCardProps {
 export default function FarmerSplitCard({
   title,
   subtitle,
+  subtitleItalic = false,
   meta,
   image,
   imageAlt = "",
@@ -45,14 +48,14 @@ export default function FarmerSplitCard({
     <>
       <span
         className={cn(
-          "relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-3 py-3",
-          dark ? "bg-emerald-950" : "bg-[var(--av-surface)]"
+          "relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-3.5 py-3",
+          dark ? "bg-emerald-950" : "bg-white"
         )}
       >
         <span
           className={cn(
             "line-clamp-2 text-[14px] font-extrabold leading-snug",
-            dark ? "text-white" : "text-[var(--av-text-primary)]"
+            dark ? "text-white" : "text-[#12281C]"
           )}
         >
           {title}
@@ -60,19 +63,20 @@ export default function FarmerSplitCard({
         {subtitle ? (
           <span
             className={cn(
-              "line-clamp-2 text-[11px] font-medium leading-snug",
-              dark ? "text-emerald-100/85" : "text-[var(--av-text-secondary)]"
+              "line-clamp-2 text-[11px] leading-snug",
+              subtitleItalic ? "italic font-normal" : "font-medium",
+              dark ? "text-emerald-100/85" : "text-[#6B7C72]"
             )}
           >
             {subtitle}
           </span>
         ) : null}
-        {meta ? <span className="mt-0.5">{meta}</span> : null}
+        {meta ? <span className="mt-1">{meta}</span> : null}
         {openHint ? (
           <span
             className={cn(
-              "mt-1 inline-flex items-center gap-1 text-[11px] font-bold",
-              dark ? "text-emerald-200" : "text-[#0B5C3B]"
+              "mt-1.5 inline-flex items-center gap-1 text-[12px] font-bold",
+              dark ? "text-emerald-200" : "text-[#0B6B45]"
             )}
           >
             {openHint}
@@ -81,7 +85,12 @@ export default function FarmerSplitCard({
         ) : null}
       </span>
 
-      <span className="relative w-[44%] min-w-[112px] max-w-[168px] shrink-0 self-stretch overflow-hidden bg-[#EAF7EF]">
+      <span
+        className={cn(
+          "relative w-[38%] min-w-[108px] max-w-[150px] shrink-0 self-stretch overflow-hidden",
+          dark ? "bg-[#EAF7EF]" : "bg-[#F3FAF5]"
+        )}
+      >
         <ThreatImage
           src={image}
           alt={imageAlt || title}
@@ -91,10 +100,10 @@ export default function FarmerSplitCard({
         <span
           aria-hidden
           className={cn(
-            "pointer-events-none absolute inset-y-0 left-0 w-11 bg-gradient-to-r to-transparent",
+            "pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r to-transparent",
             dark
               ? "from-emerald-950 via-emerald-950/55"
-              : "from-[var(--av-surface)] via-[var(--av-surface)]/70"
+              : "from-white via-white/75"
           )}
         />
       </span>
@@ -102,10 +111,10 @@ export default function FarmerSplitCard({
   );
 
   const shell = cn(
-    "group relative flex min-h-[92px] w-full overflow-hidden rounded-2xl text-left transition active:scale-[0.99]",
+    "group relative flex min-h-[100px] w-full overflow-hidden rounded-2xl text-left transition active:scale-[0.99]",
     dark
       ? "border border-emerald-800/20 bg-emerald-950 shadow-md shadow-emerald-900/20"
-      : "border border-[#D8E8DE] bg-[var(--av-surface)] shadow-[0_8px_22px_-14px_rgba(11,92,59,0.4)]",
+      : "border border-[#E3EEE7] bg-white shadow-[0_6px_18px_-10px_rgba(11,61,40,0.28)]",
     className
   );
 

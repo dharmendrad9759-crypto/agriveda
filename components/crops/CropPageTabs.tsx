@@ -9,6 +9,8 @@ import {
   cropHarvestHint,
   cropHarvestLabel,
 } from "@/lib/crops/harvestLabel";
+import { getCropHindiName } from "@/lib/crops/crop-display";
+import { getCatalogCrop } from "@/data/crop-catalog";
 import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { Crop } from "@/types/crop";
@@ -64,12 +66,12 @@ const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
   "field-prep": "नर्सरी, बीज दर, रोपाई, दूरी, मल्चिंग, ड्रिप",
   fertilizer: "कब डालें और कितनी — यूरिया, डीएपी, एमओपी",
   irrigation: "कितना और कब पानी दें",
-  pests: "फोटो देखो · क्या लगे · क्या दवा डालें",
-  diseases: "फोटो देखो · पत्ती/डंठल का हाल · इलाज",
+  pests: "फोटो, लक्षण, दवा",
+  diseases: "फोटो, लक्षण, इलाज",
   harvest: "तुड़ाई का समय, सहारा, पकने की अवस्था",
   market: "भंडारण, पैकिंग, लाइव मंडी भाव",
   weeds: "घास-फूस कैसे हटाएँ",
-  growth: "पौधे की अवस्था",
+  growth: "बुवाई की तारीख डालो — आज का काम",
   calendar: "फसल का कार्यक्रम",
   nutrients: "पत्ती पीली / कमज़ोर",
   faq: "आम सवाल–जवाब",
@@ -86,7 +88,7 @@ const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
   harvest: "When to pick, staking, ripeness",
   market: "Storage, packing, live mandi",
   weeds: "Clear grass from field",
-  growth: "Plant stage",
+  growth: "Add sowing date — see today’s work",
   calendar: "Crop schedule",
   nutrients: "Yellow or weak leaf",
   faq: "Common Q&A",
@@ -152,9 +154,23 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   ];
 
   let animIndex = 0;
+  const cropLabelHi = getCropHindiName(crop.slug) || crop.slug;
+  const cropLabelEn = getCatalogCrop(crop.slug)?.name || crop.slug;
+
   const renderJob = (id: CropTabId) => {
     const i = animIndex++;
-    const title = id === "harvest" ? harvestLabel : t(TAB_I18N[id]);
+    const title =
+      id === "harvest"
+        ? harvestLabel
+        : id === "pests"
+          ? isHi
+            ? `${cropLabelHi} के कीट`
+            : `${cropLabelEn} pests`
+          : id === "diseases"
+            ? isHi
+              ? `${cropLabelHi} के रोग`
+              : `${cropLabelEn} diseases`
+            : t(TAB_I18N[id]);
     const subtitle = id === "harvest" ? harvestHint : hintMap[id];
     return (
       <motion.div
@@ -221,31 +237,14 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="flex flex-wrap items-center gap-2">
-                <span className="text-[15px] font-black tracking-tight text-amber-950 dark:text-amber-50">
-                  {isHi
-                    ? showMore
-                      ? "बाकी गाइड खुली है"
-                      : "बाकी गाइड भी देखो"
-                    : showMore
-                      ? "Extra guide open"
-                      : "See more crop guide"}
-                </span>
-                {!showMore ? (
-                  <span className="rounded-md bg-amber-600 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-white">
-                    {isHi ? "टैप करो" : "Tap"}
-                  </span>
-                ) : null}
-              </span>
-
-              <span className="mt-1 block text-[11px] font-semibold leading-snug text-amber-900/75 dark:text-amber-100/75">
+              <span className="text-[15px] font-black tracking-tight text-amber-950 dark:text-amber-50">
                 {isHi
                   ? showMore
-                    ? "ऊपर वापस छिपाने के लिए फिर टैप करें"
-                    : "घास, पीली पत्ती, हफ्ते का काम और सवाल — यहाँ"
+                    ? "और बातें खुली हैं"
+                    : "और बातें भी देखो"
                   : showMore
-                    ? "Tap again to hide"
-                    : "Weeds, yellow leaf, weekly work & questions"}
+                    ? "More tips are open"
+                    : "See more tips too"}
               </span>
 
               {!showMore ? (

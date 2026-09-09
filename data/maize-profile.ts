@@ -52,11 +52,31 @@ export const maizeProfile: CropManagementProfile = {
     "S-कमी वाली मिट्टी में gypsum के रूप में Sulphur 20 kg/ha।",
   ],
   growthStages: [
-    { title: "अंकुरण (VE–V2)", period: "0–14 DAS", keyPoints: ["एक समान खड़ी फसल", "Pre-emergence herbicide का समय"] },
-    { title: "वनस्पति वृद्धि (V3–V12)", period: "15–50 DAS", keyPoints: ["गुच्छ कीट निरीक्षण", "घुटने की ऊँचाई पर 1st N split"] },
-    { title: "प्रजनन (VT–R1)", period: "50–65 DAS", keyPoints: ["सिल्किंग सिंचाई महत्वपूर्ण", "2nd N split"] },
-    { title: "दाना भरना (R2–R6)", period: "65–100 DAS", keyPoints: ["Turcicum blight पर नज़र", "नमी की कमी से बचें"] },
-    { title: "परिपक्वता (R6)", period: "100–110 DAS", keyPoints: ["Black layer बनना", "20–25% grain moisture पर कटाई"] },
+    {
+      title: "अंकुरण — छोटा पौधा",
+      period: "बुवाई के 0–14 दिन",
+      keyPoints: ["पौधे समान खड़े हों", "उगने से पहले घास की दवा का समय"],
+    },
+    {
+      title: "पत्ते–तना बढ़ना",
+      period: "बुवाई के 15–50 दिन",
+      keyPoints: ["गोफ में कीट देखें", "घुटना ऊँचाई पर नाइट्रोजन की पहली खुराक"],
+    },
+    {
+      title: "मूंछ और भुट्टा निकलना",
+      period: "बुवाई के 50–65 दिन",
+      keyPoints: ["इस समय पानी सबसे ज़रूरी", "नाइट्रोजन की दूसरी खुराक"],
+    },
+    {
+      title: "दाना भरना",
+      period: "बुवाई के 65–100 दिन",
+      keyPoints: ["पत्ती झुलसा पर नज़र", "पानी की कमी से बचाएँ"],
+    },
+    {
+      title: "पकना और कटाई",
+      period: "बुवाई के 100–110 दिन",
+      keyPoints: ["दाना पक चुका है", "नमी 20–25% पर कटाई"],
+    },
   ],
   interculturalOperations: [
     "घुटने की ऊँचाई पर मिट्टी चढ़ाना — जड़ों की पकड़ मजबूत होती है और खरपतवार नियंत्रित होते हैं।",

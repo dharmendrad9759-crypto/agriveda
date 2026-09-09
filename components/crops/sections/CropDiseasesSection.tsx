@@ -6,7 +6,6 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmDiseaseListForCrop } from "@/lib/crops/ipmDataBridge";
-import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getDiseaseSpeciesImage } from "@/lib/pests/threatSpeciesImages";
 import {
   matchCatalogThreat,
@@ -26,10 +25,30 @@ function diseaseThumb(pathogen?: string, catalogImage?: string) {
   );
 }
 
+function pathogenTypeLabel(raw: string | undefined, hi: boolean): string {
+  if (!raw?.trim()) return "";
+  const t = raw.trim();
+  if (/virus|वायरस|viral|टंग्रो|tungro/i.test(t)) return hi ? "वायरस" : "Virus";
+  if (/bacter|जीवाणु|blb|bacterial/i.test(t)) return hi ? "जीवाणु" : "Bacteria";
+  if (/fung|कवक|blast|smut|blight|spot/i.test(t)) return hi ? "कवक" : "Fungus";
+  if (hi) {
+    if (/कवक/.test(t)) return "कवक";
+    if (/जीवाणु/.test(t)) return "जीवाणु";
+    if (/वायरस/.test(t)) return "वायरस";
+  }
+  return t;
+}
+
+function diseaseThreatCategory(type?: string): "fungal" | "bacterial" | "viral" {
+  const t = type ?? "";
+  if (/virus|वायरस|viral|टंग्रो|tungro/i.test(t)) return "viral";
+  if (/bacter|जीवाणु/i.test(t)) return "bacterial";
+  return "fungal";
+}
+
 export default function CropDiseasesSection({ crop }: { crop: Crop }) {
-  const { t, locale } = useLocale();
+  const { locale } = useLocale();
   const hi = locale === "hi";
-  const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
   const [search, setSearch] = useState("");
 
   const profile = useMemo(
@@ -65,7 +84,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
         detailHref,
         name: d.diseaseName,
         scientific: d.pathogen,
-        risk: /virus|वायरस|bacterial wilt|टंग्रो/i.test(d.diseaseName + d.type)
+        risk: /virus|वायरस|bacterial wilt|टंग्रो|tungro/i.test(d.diseaseName + d.type)
           ? ("high" as const)
           : ("medium" as const),
         type: d.type,
@@ -96,32 +115,31 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
             detailHref: threatDetailPath(crop.slug, "disease", d.id),
           }));
 
-  const filtered = diseases.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = diseases.filter(
+    (d) =>
+      d.name.toLowerCase().includes(search.toLowerCase()) ||
+      ("scientific" in d && String(d.scientific ?? "").toLowerCase().includes(search.toLowerCase()))
+  );
 
   return (
     <div className="space-y-3">
-      <div>
-        <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">
-          {t("cropDiseasesTitle")} — {cropLabel}
-        </h3>
-        <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
-          {hi
-            ? `${diseases.length} रोग · टैप कर पूरा पेज खोलें`
-            : `${diseases.length} diseases · tap to open full page`}
-        </p>
-      </div>
+      <p className="px-0.5 text-[11px] font-medium text-[#7A8B82]">
+        {hi
+          ? `${diseases.length} रोग · टैप कर पूरा पेज खोलें`
+          : `${diseases.length} diseases · tap to open full page`}
+      </p>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A9A91]" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={hi ? "रोग खोजें..." : "Search disease..."}
-          className="av-input py-2.5 pl-10"
+          className="w-full rounded-full border border-[#DCE8E0] bg-white py-3 pl-10 pr-4 text-[14px] font-medium text-[#12281C] shadow-[0_4px_14px_-8px_rgba(11,61,40,0.28)] outline-none placeholder:text-[#8A9A91] focus:border-[#0B6B45]/40 focus:ring-2 focus:ring-[#0B6B45]/15"
         />
       </div>
 
-      <ul className="space-y-2.5">
+      <ul className="space-y-3">
         {filtered.map((d) => {
           const href =
             "detailHref" in d && d.detailHref
@@ -131,22 +149,25 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
             "image" in d
               ? String(d.image)
               : diseaseThumb("scientific" in d ? String(d.scientific) : undefined);
-          const sci = "scientific" in d ? String(d.scientific) : "";
-          const typeLabel = "type" in d && d.type ? String(d.type) : "";
+          const sci = "scientific" in d ? String(d.scientific ?? "") : "";
+          const typeRaw = "type" in d && d.type ? String(d.type) : "";
+          const typeLabel = pathogenTypeLabel(typeRaw || sci || d.name, hi);
           return (
             <li key={d.id}>
               <FarmerSplitCard
+                tone="light"
                 href={href}
                 title={d.name}
-                subtitle={sci}
+                subtitle={sci || undefined}
+                subtitleItalic={Boolean(sci)}
                 image={img}
-                threatCategory="fungal"
-                openHint={hi ? "पूरा रोग पेज" : "Open disease page"}
+                threatCategory={diseaseThreatCategory(typeRaw || d.name)}
+                openHint={hi ? "पूरा रोग पेज" : "Full disease page"}
                 meta={
                   <span className="flex flex-wrap items-center gap-1.5">
                     <RiskBadge level={d.risk} />
                     {typeLabel ? (
-                      <span className="text-[10px] font-semibold text-[var(--av-accent)]">
+                      <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-[#0B6B45]">
                         {typeLabel}
                       </span>
                     ) : null}
@@ -159,7 +180,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
       </ul>
 
       {!filtered.length && (
-        <p className="rounded-xl border border-dashed border-[var(--av-border)] px-4 py-6 text-center text-sm text-[var(--av-text-muted)]">
+        <p className="rounded-2xl border border-dashed border-[#D8E8DE] bg-white/70 px-4 py-6 text-center text-sm text-[#7A8B82]">
           {hi ? "कोई रोग नहीं मिला" : "No diseases found"}
         </p>
       )}

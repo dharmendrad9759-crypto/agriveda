@@ -453,11 +453,11 @@ const STRINGS = {
 
     // Crop detail chrome
     cropTabOverview: "About",
-    cropTabGrowth: "Plant stage",
+    cropTabGrowth: "Today's crop work",
     cropTabFieldPrep: "Field prep",
     cropTabFertilizer: "How much fertilizer",
-    cropTabPests: "Insects in crop",
-    cropTabDiseases: "Crop disease",
+    cropTabPests: "Common pests",
+    cropTabDiseases: "Common diseases",
     cropTabNutrients: "Yellow leaf",
     cropTabIrrigation: "Water",
     cropTabWeeds: "Weeds",
@@ -973,11 +973,11 @@ const STRINGS = {
 
     // Crop detail chrome
     cropTabOverview: "जानकारी",
-    cropTabGrowth: "पौधे की अवस्था",
+    cropTabGrowth: "आज का फसल काम",
     cropTabFieldPrep: "तैयारी",
     cropTabFertilizer: "खाद कितनी डालें",
-    cropTabPests: "कीड़े",
-    cropTabDiseases: "बीमारी",
+    cropTabPests: "आम कीट",
+    cropTabDiseases: "आम रोग",
     cropTabNutrients: "पीली पत्ती",
     cropTabIrrigation: "सिंचाई",
     cropTabWeeds: "खरपतवार / घास",

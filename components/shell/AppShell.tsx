@@ -198,12 +198,17 @@ export function ShellCtaBanner({
   href: string;
 }) {
   return (
-    <div className="av-hero mt-6 p-5 lg:flex lg:items-center lg:justify-between lg:gap-6">
+    <div className="mt-6 overflow-hidden rounded-2xl border border-[#D4E8DB] bg-[#EEF8F1] p-4 shadow-[0_6px_18px_-12px_rgba(11,61,40,0.22)] sm:p-5">
       <div>
-        <h3 className={AV.sectionTitle}>{title}</h3>
-        <p className={`mt-1 ${AV.body}`}>{description}</p>
+        <h3 className="text-[16px] font-extrabold leading-snug text-[#0B3D28]">{title}</h3>
+        <p className="mt-1 text-[13px] font-medium leading-relaxed text-[#3D5A4A]">
+          {description}
+        </p>
       </div>
-      <AppLink href={href} className={`mt-4 lg:mt-0 ${AV.btnPrimarySm}`}>
+      <AppLink
+        href={href}
+        className="mt-3.5 flex w-full min-h-[48px] items-center justify-center rounded-xl bg-[#0B6B45] px-4 text-[14px] font-bold text-white shadow-sm transition hover:bg-[#095C3B] active:scale-[0.99]"
+      >
         {buttonLabel} →
       </AppLink>
     </div>
