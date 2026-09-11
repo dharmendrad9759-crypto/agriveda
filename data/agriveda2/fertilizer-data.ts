@@ -1,4 +1,4 @@
-﻿import { dataKeyForSlug } from "@/data/agriveda2/crop-slug-map";
+import { dataKeyForSlug } from "@/data/agriveda2/crop-slug-map";
 
 export type NutrientValue = string | number | Record<string, string | number | boolean>;
 
@@ -814,36 +814,36 @@ export function fertilizerBagLabel(name: string): string {
 export function fertilizerBagPurposeHi(name: string): string {
   const n = name.toLowerCase();
   if (n.includes("dap") || n.includes("डीएपी") || n.includes("tsp") || n.includes("टीएसपी")) {
-    return "जड़ के लिए";
+    return "जड़ की ताकत के लिए";
   }
   if (n.includes("ssp") || n.includes("एसएसपी")) {
-    return "जड़ और गंधक";
+    return "जड़ और गंधक के लिए";
   }
   if (n.includes("urea") || n.includes("यूरिया")) {
-    return "हरी बढ़ाव";
+    return "हरियाली और बढ़वार";
   }
   if (n.includes("mop") || n.includes("एमओपी") || n.includes("sop") || n.includes("एसओपी")) {
-    return "मजबूती और फल";
+    return "मजबूती और फल के लिए";
   }
   if (n.includes("zn") || n.includes("जिंक") || n.includes("zinc")) {
-    return "पीलापन रोके";
+    return "पत्ती का पीलापन रोकें";
   }
   if (n.includes("gypsum") || n.includes("जिप्सम")) {
-    return "दाने/गांठ भरें";
+    return "दाने और गाँठ भरने के लिए";
   }
   if (n.includes("borax") || n.includes("बोरेक्स")) {
-    return "फूल–फल के लिए";
+    return "फूल और फल के लिए";
   }
   if (n.includes("mg") || n.includes("मैग्नीशियम")) {
-    return "पत्ती हरी रखे";
+    return "पत्ती हरी रखने के लिए";
   }
   if (n.includes("iron") || n.includes("आयरन") || n.includes("feso")) {
-    return "पीली पत्ती पर";
+    return "पत्ती पीली होने से बचाएँ";
   }
   if (n.includes("calcium") || n.includes("कैल्शियम")) {
-    return "फल सड़न रोके";
+    return "फल सड़न रोकने के लिए";
   }
-  return "खेत की ज़रूरत";
+  return "खेत की ज़रूरत के अनुसार";
 }
 
 /** Pull leading number from "44 किग्रा (...)" for big display. */

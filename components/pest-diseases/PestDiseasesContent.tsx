@@ -8,7 +8,7 @@ import DarkCard from "@/components/shell/DarkCard";
 import ThreatCard from "@/components/pest-diseases/ThreatCard";
 import PestDiseaseFilters from "@/components/pest-diseases/PestDiseaseFilters";
 import { pestDiseaseCropList } from "@/data/pest-disease";
-import { getEnrichedCropThreats, filterThreats, getAllWeedsAcrossCrops } from "@/lib/pest-disease-catalog";
+import { getEnrichedCropThreats, filterThreats } from "@/lib/pest-disease-catalog";
 import type { ThreatCategory } from "@/types/pest-disease-ui";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { resolveCropImage } from "@/lib/crops/cropImages";
@@ -41,7 +41,7 @@ export default function PestDiseasesContent() {
   const isWeedHub = typeParam === "weed";
   const initialCrop = searchParams.get("crop") ?? pestDiseaseCropList[0]?.slug ?? "paddy";
 
-  const [selectedSlug, setSelectedSlug] = useState(isWeedHub ? "all" : initialCrop);
+  const [selectedSlug, setSelectedSlug] = useState(initialCrop);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<ThreatCategory | "all">(categoryFromParam(typeParam));
   const { t } = useLocale();
@@ -61,9 +61,6 @@ export default function PestDiseasesContent() {
   }, [searchParams, isWeedHub]);
 
   const allThreats = useMemo(() => {
-    if (isWeedHub && selectedSlug === "all") {
-      return getAllWeedsAcrossCrops();
-    }
     const threats = getEnrichedCropThreats(selectedSlug);
     return isWeedHub ? threats.filter((t) => t.type === "weed") : threats;
   }, [selectedSlug, isWeedHub]);
@@ -72,7 +69,7 @@ export default function PestDiseasesContent() {
     [allThreats, search, category]
   );
 
-  const cropInfo = selectedSlug === "all" ? null : pestDiseaseCropList.find((c) => c.slug === selectedSlug);
+  const cropInfo = pestDiseaseCropList.find((c) => c.slug === selectedSlug);
   const pageTitle = isWeedHub ? t("weeds") : t("pestDiseasesTitle");
   const pageSubtitle = isWeedHub
     ? "घास देखो — फोटो टैप करो"
@@ -181,29 +178,6 @@ export default function PestDiseasesContent() {
       <DarkCard className={isWeedHub ? "mt-0" : "mt-1"} delay={0}>
         <h3 className={AV.sectionTitle}>फसल टैप करो</h3>
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {isWeedHub && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedSlug("all");
-                setSearch("");
-              }}
-              className={cn(
-                "flex w-[68px] shrink-0 flex-col items-center gap-1 overflow-hidden rounded-xl border p-1 transition",
-                selectedSlug === "all"
-                  ? "border-[var(--av-accent)] bg-[var(--av-accent-soft)]"
-                  : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
-              )}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/threats/threat-weed.jpg"
-                alt=""
-                className="h-12 w-full rounded-lg object-cover"
-              />
-              <span className="text-[10px] font-semibold text-[var(--av-accent)]">सब</span>
-            </button>
-          )}
           {pestDiseaseCropList.map((crop) => {
             const hi = getCropHindiName(crop.slug);
             return (

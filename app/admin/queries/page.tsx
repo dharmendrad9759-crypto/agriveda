@@ -234,7 +234,7 @@ export default function AdminQueriesPage() {
               value={inboxSearch}
               onChange={(e) => setInboxSearch(e.target.value)}
               placeholder="Search inbox…"
-              className="w-full rounded-xl border border-emerald-900/12 bg-white py-2 pl-8 pr-2 text-[11px] text-emerald-950 outline-none"
+              className="w-full rounded-xl border border-emerald-900/12 bg-white py-2 pl-9 pr-2 text-[11px] text-emerald-950 outline-none"
             />
           </div>
           <div className="grid grid-cols-3 gap-1 rounded-xl bg-emerald-50/80 p-1">

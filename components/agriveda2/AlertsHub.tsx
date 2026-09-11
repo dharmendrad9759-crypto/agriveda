@@ -14,6 +14,10 @@ import {
   markIrrigationDone,
   onIrrigationAlertsChanged,
 } from "@/lib/irrigationReminders";
+import {
+  answerAiFollowUp,
+  buildAiFollowUpAlerts,
+} from "@/lib/aiDoctorFollowUp";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 
@@ -31,6 +35,7 @@ export default function AlertsHub() {
   const { profile } = useFarmerProfile();
   const { crops } = useMyCrops();
   const [irrTick, setIrrTick] = useState(0);
+  const [fuTick, setFuTick] = useState(0);
 
   useEffect(() => onIrrigationAlertsChanged(() => setIrrTick((n) => n + 1)), []);
 
@@ -39,6 +44,12 @@ export default function AlertsHub() {
     // irrTick refreshes after "पानी दे दिया"
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hi, irrTick]
+  );
+
+  const aiFollowUps = useMemo(
+    () => buildAiFollowUpAlerts(hi),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hi, fuTick]
   );
 
   const fieldAlerts = useMemo(() => {
@@ -66,16 +77,45 @@ export default function AlertsHub() {
 
   const allAlerts = useMemo(() => {
     const order = { critical: 0, warning: 1, info: 2 };
-    return [...irrigationAlerts, ...fieldAlerts].sort(
+    const mappedFu = aiFollowUps.map((f) => ({
+      id: f.id,
+      severity: f.severity as "info",
+      title: f.title,
+      body: f.body,
+      fieldName: hi ? "AI Doctor जाँच" : "AI Doctor check-in",
+      actionLabel: hi ? "AI Doctor खोलें" : "Open AI Doctor",
+      actionHref: f.href,
+      followUpId: f.followUpId as string | undefined,
+      cropSlug: undefined as string | undefined,
+      daysAhead: undefined as number | undefined,
+    }));
+    return [...irrigationAlerts, ...fieldAlerts, ...mappedFu].sort(
       (a, b) => order[a.severity] - order[b.severity]
     );
-  }, [irrigationAlerts, fieldAlerts]);
+  }, [irrigationAlerts, fieldAlerts, aiFollowUps, hi]);
 
   const onWatered = useCallback(
     async (cropSlug: string) => {
       await markIrrigationDone(cropSlug);
       setIrrTick((n) => n + 1);
       showToast(hi ? "अगली पानी याद लगा दी ✓" : "Next water reminder set ✓");
+    },
+    [hi, showToast]
+  );
+
+  const onFollowUp = useCallback(
+    (id: string, status: "improved" | "same" | "worse") => {
+      answerAiFollowUp(id, status);
+      setFuTick((n) => n + 1);
+      showToast(
+        hi
+          ? status === "improved"
+            ? "अच्छा — सुधार नोट किया ✓"
+            : status === "worse"
+              ? "नोट किया — विशेषज्ञ से पूछें"
+              : "नोट किया ✓"
+          : "Thanks — noted ✓"
+      );
     },
     [hi, showToast]
   );
@@ -114,7 +154,12 @@ export default function AlertsHub() {
       ) : (
         allAlerts.map((a) => {
           const isIrrDue = a.id.startsWith("irr-due-");
+          const isAiFu = a.id.startsWith("ai-fu-");
           const cropSlug = a.cropSlug;
+          const followUpId =
+            "followUpId" in a && typeof (a as { followUpId?: unknown }).followUpId === "string"
+              ? (a as { followUpId: string }).followUpId
+              : undefined;
           return (
             <div key={a.id + (a.fieldName ?? "")} className="mb-3">
               <Link href={a.actionHref ?? "/dashboard"}>
@@ -127,7 +172,7 @@ export default function AlertsHub() {
                   </p>
                   <p className="mt-1 font-bold text-[var(--av-text-primary)]">{a.title}</p>
                   <p className="mt-1 text-sm text-[var(--av-text-secondary)]">{a.body}</p>
-                  {a.actionLabel && (
+                  {a.actionLabel && !isAiFu && (
                     <p className="mt-2 flex items-center gap-1 text-xs font-bold text-[var(--av-accent)]">
                       {a.actionLabel}
                       <ChevronRight className="h-3.5 w-3.5" />
@@ -143,6 +188,26 @@ export default function AlertsHub() {
                 >
                   {hi ? "पानी दे दिया — अगली याद लगाओ" : "Watered — set next reminder"}
                 </button>
+              ) : null}
+              {isAiFu && followUpId ? (
+                <div className="mt-2 grid grid-cols-3 gap-1.5">
+                  {(
+                    [
+                      { id: "improved" as const, label: hi ? "सुधार" : "Better" },
+                      { id: "same" as const, label: hi ? "वैसा ही" : "Same" },
+                      { id: "worse" as const, label: hi ? "बढ़ी" : "Worse" },
+                    ] as const
+                  ).map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => onFollowUp(followUpId, opt.id)}
+                      className={cn(AV.btnSecondarySm, "justify-center px-1 text-[11px]")}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               ) : null}
             </div>
           );

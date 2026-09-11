@@ -42,7 +42,7 @@ export default function GlobalSearchClient() {
               placeholder="खोजें — Paddy, Zinc, Stem Borer, AI Doctor..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="av-input w-full py-2.5 pl-10 pr-10 text-sm"
+              className="av-input av-input--icon w-full py-2.5 pr-10 text-sm"
             />
             {searchQuery && (
               <button

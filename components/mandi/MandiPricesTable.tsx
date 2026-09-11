@@ -320,7 +320,7 @@ export default function MandiPricesTable({
                   setPage(1);
                 }}
                 placeholder={isHi ? "टेबल में खोजें…" : "Search table…"}
-                className="w-full rounded-lg border border-[var(--av-border)] py-2 pl-9 pr-3 text-[13px] outline-none focus:border-emerald-500"
+                className="w-full rounded-lg border border-[var(--av-border)] py-2 pl-10 pr-3 text-[13px] outline-none focus:border-emerald-500"
               />
             </div>
             <button

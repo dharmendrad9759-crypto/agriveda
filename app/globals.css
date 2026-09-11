@@ -387,10 +387,20 @@ body {
   border: 1px solid var(--av-border);
   background: var(--av-surface);
   color: var(--av-text-primary);
-  padding: 0.625rem 0.875rem;
+  /* Separate sides so Tailwind pl-* / pr-* can override (shorthand blocks them). */
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
   font-size: 0.875rem;
   outline: none;
   transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+/* Search fields with a leading icon — keep placeholder clear of the icon. */
+.av-input.av-input--icon,
+input.av-input--icon {
+  padding-left: 2.75rem !important;
 }
 
 .av-input:focus {

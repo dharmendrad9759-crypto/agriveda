@@ -10,6 +10,7 @@ import {
   Bug,
   CheckCircle2,
   CloudRain,
+  Droplets,
   FlaskConical,
   Leaf,
   Loader2,
@@ -17,6 +18,10 @@ import {
   Search,
   ShieldAlert,
   Sprout,
+  Sun,
+  Sunrise,
+  Sunset,
+  Wind,
   X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -49,10 +54,11 @@ function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
       subtitle: reasonHi || "सुबह 7–11 बजे अच्छा समय",
       verb: "करो",
       image: "/images/jobs/job-spray.jpg",
-      // Neutral veil — photo stays readable, color only on status chip
-      tint: "from-black/75 via-black/35 to-black/10",
+      tint: "from-[#042f1a]/92 via-[#0a3d24]/55 to-[#04140f]/25",
+      accent: "emerald" as const,
       Icon: CheckCircle2,
-      iconTone: "bg-white text-emerald-700",
+      iconTone: "bg-emerald-400 text-emerald-950 ring-1 ring-emerald-200/60",
+      chip: "bg-emerald-400 text-emerald-950",
     };
   }
   if (status === "CAUTION") {
@@ -61,9 +67,11 @@ function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
       subtitle: reasonHi || "हवा/नमी सीमा पर — बड़ी बूँद डालो",
       verb: "ध्यान",
       image: "/images/jobs/job-spray.jpg",
-      tint: "from-black/75 via-black/40 to-black/15",
+      tint: "from-[#3b2108]/92 via-[#5c3a12]/50 to-[#1a1208]/30",
+      accent: "amber" as const,
       Icon: AlertTriangle,
-      iconTone: "bg-white text-amber-700",
+      iconTone: "bg-amber-300 text-amber-950 ring-1 ring-amber-100/50",
+      chip: "bg-amber-300 text-amber-950",
     };
   }
   return {
@@ -71,9 +79,11 @@ function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
     subtitle: reasonHi || "बारिश या तेज़ हवा — कल देखो",
     verb: "मत",
     image: "/images/jobs/job-spray-avoid.jpg",
-    tint: "from-black/78 via-black/42 to-black/15",
+    tint: "from-[#3f0a14]/92 via-[#5c1220]/50 to-[#1a080c]/30",
+    accent: "rose" as const,
     Icon: ShieldAlert,
-    iconTone: "bg-white text-rose-700",
+    iconTone: "bg-rose-300 text-rose-950 ring-1 ring-rose-100/50",
+    chip: "bg-rose-300 text-rose-950",
   };
 }
 
@@ -100,7 +110,6 @@ function buildDayPartWindows(
 
   const morningTone: WindowTone =
     status === "AVOID" ? "bad" : status === "GOOD" ? "good" : "ok";
-  const afternoonTone: WindowTone = status === "AVOID" ? "bad" : "ok";
   const eveningTone: WindowTone = rain >= 40 || status === "AVOID" ? "bad" : "ok";
 
   return [
@@ -110,13 +119,6 @@ function buildDayPartWindows(
       detail: `हवा ${wind} km/h, नमी ${hum}%`,
       badge: morningTone === "good" ? "उत्तम" : morningTone === "ok" ? "ठीक है" : "न करें",
       tone: morningTone,
-    },
-    {
-      id: "afternoon",
-      label: "दोपहर 12-3 बजे",
-      detail: "गर्मी अधिक, असर कम",
-      badge: afternoonTone === "bad" ? "न करें" : "ठीक है",
-      tone: afternoonTone,
     },
     {
       id: "evening",
@@ -274,138 +276,218 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
       )}
 
       <main className={embedded ? "space-y-5" : "mx-auto max-w-lg space-y-5 px-4 py-5 pb-28"}>
-        {/* Hero status — photo first, soft black veil (not tinted green) */}
-        <section className="relative min-h-[220px] overflow-hidden rounded-[22px] border border-white/10 shadow-[var(--av-shadow-md)] sm:min-h-[250px]">
+        {/* Hero — status command panel */}
+        <section className="relative overflow-hidden rounded-[28px] border border-white/10 shadow-[0_20px_50px_-28px_rgba(4,47,26,0.55)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={hero.image}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full scale-105 object-cover"
           />
-          <span className={`absolute inset-0 bg-gradient-to-t ${hero.tint}`} />
-          <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-5 sm:min-h-[250px]">
+          <span className={`absolute inset-0 bg-gradient-to-br ${hero.tint}`} />
+          <span className="pointer-events-none absolute -right-10 top-0 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+          <span className="pointer-events-none absolute bottom-0 left-1/3 h-24 w-48 rounded-full bg-emerald-400/10 blur-2xl" />
+
+          <div className="relative z-10 flex min-h-[248px] flex-col justify-between gap-5 p-5 sm:min-h-[268px] sm:p-6">
             {weatherLoading ? (
-              <div className="flex flex-col items-start gap-3 py-2">
+              <div className="flex flex-1 flex-col items-start justify-center gap-3 py-6">
                 <Loader2 className="h-7 w-7 animate-spin text-white/85" />
                 <p className="text-sm font-semibold text-white/90">मौसम देख रहे हैं…</p>
               </div>
             ) : (
               <>
-                <span
-                  className={`mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl shadow-md ${hero.iconTone}`}
-                >
-                  <HeroIcon className="h-6 w-6" />
-                </span>
-                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/80">
-                  आज · {hero.verb}
-                </p>
-                <h2 className="mt-1 text-[28px] font-black leading-tight tracking-tight text-white drop-shadow-sm">
-                  {hero.title}
-                </h2>
-                <p className="mt-2 max-w-md text-[14px] font-medium leading-snug text-white/92">
-                  {hero.subtitle}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-black/35 px-3 py-1 text-[11px] font-bold text-white ring-1 ring-white/25 backdrop-blur-[2px]">
-                    हवा {windKmh ?? "—"} km/h
+                <div className="flex items-start justify-between gap-3">
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-extrabold tracking-wide ${hero.chip}`}
+                  >
+                    <HeroIcon className="h-3.5 w-3.5" />
+                    आज · {hero.verb}
                   </span>
-                  <span className="rounded-full bg-black/35 px-3 py-1 text-[11px] font-bold text-white ring-1 ring-white/25 backdrop-blur-[2px]">
-                    नमी {humidity ?? "—"}%
+                  <span
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-lg ${hero.iconTone}`}
+                  >
+                    <HeroIcon className="h-5 w-5" />
                   </span>
-                  <span className="rounded-full bg-black/35 px-3 py-1 text-[11px] font-bold text-white ring-1 ring-white/25 backdrop-blur-[2px]">
-                    बारिश {rainPct ?? "—"}%
-                  </span>
+                </div>
+
+                <div>
+                  <h2 className="font-display text-[30px] font-bold leading-[1.05] tracking-tight text-white sm:text-[34px]">
+                    {hero.title}
+                  </h2>
+                  <p className="mt-2 max-w-md text-[14px] font-medium leading-relaxed text-white/88">
+                    {hero.subtitle}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {(
+                    [
+                      { label: "हवा", value: `${windKmh ?? "—"}`, unit: "km/h", Icon: Wind },
+                      { label: "नमी", value: `${humidity ?? "—"}`, unit: "%", Icon: Droplets },
+                      { label: "बारिश", value: `${rainPct ?? "—"}`, unit: "%", Icon: CloudRain },
+                    ] as const
+                  ).map((m) => (
+                    <div
+                      key={m.label}
+                      className="rounded-2xl border border-white/15 bg-white/10 px-2.5 py-2.5 backdrop-blur-md"
+                    >
+                      <div className="flex items-center gap-1 text-white/70">
+                        <m.Icon className="h-3 w-3" />
+                        <span className="text-[10px] font-bold uppercase tracking-wide">{m.label}</span>
+                      </div>
+                      <p className="mt-1 text-[18px] font-black leading-none text-white">
+                        {m.value}
+                        <span className="ml-0.5 text-[10px] font-bold text-white/65">{m.unit}</span>
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </>
             )}
           </div>
         </section>
 
-        {/* Simple rules */}
-        <section className="grid grid-cols-2 gap-3">
-          {[
-            {
-              ok: true,
-              title: "कब करें",
-              lines: ["हवा धीमी हो", "बारिश न हो", "सुबह ठंडी हो"],
-              image: "/images/jobs/spray-morning.jpg",
-            },
-            {
-              ok: false,
-              title: "कब न करें",
-              lines: ["तेज़ हवा हो", "बादल/बारिश हो", "बहुत गर्मी हो"],
-              image: "/images/jobs/job-spray-avoid.jpg",
-            },
-          ].map((rule) => (
-            <div
-              key={rule.title}
-              className="relative min-h-[168px] overflow-hidden rounded-2xl border border-white/15 shadow-[var(--av-shadow-md)]"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={rule.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-              <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
-              <div className="relative z-10 flex h-full flex-col justify-end p-3.5">
+        {/* Do / Don't — split guide */}
+        <section className="overflow-hidden rounded-[24px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]">
+          <div className="border-b border-[var(--av-border)] px-4 py-3">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--av-text-muted)]">
+              आसान नियम
+            </p>
+            <h3 className="mt-0.5 text-[16px] font-extrabold text-[var(--av-text-primary)]">
+              कब करें · कब न करें
+            </h3>
+          </div>
+          <div className="grid grid-cols-2 divide-x divide-[var(--av-border)]">
+            {(
+              [
+                {
+                  ok: true,
+                  title: "करें",
+                  lines: [
+                    { t: "हवा धीमी हो", Icon: Wind },
+                    { t: "बारिश न हो", Icon: CloudRain },
+                    { t: "सुबह ठंडी हो", Icon: Sunrise },
+                  ],
+                  head: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300",
+                  bullet: "bg-emerald-500",
+                },
+                {
+                  ok: false,
+                  title: "न करें",
+                  lines: [
+                    { t: "तेज़ हवा हो", Icon: Wind },
+                    { t: "बादल/बारिश हो", Icon: CloudRain },
+                    { t: "बहुत गर्मी हो", Icon: Sun },
+                  ],
+                  head: "bg-rose-500/10 text-rose-800 dark:text-rose-300",
+                  bullet: "bg-rose-500",
+                },
+              ] as const
+            ).map((rule) => (
+              <div key={rule.title} className="p-3.5 sm:p-4">
                 <p
-                  className={`inline-flex w-fit rounded-lg px-2 py-0.5 text-[13px] font-black tracking-tight ${
-                    rule.ok ? "bg-white text-emerald-800" : "bg-white text-rose-800"
-                  }`}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-extrabold ${rule.head}`}
                 >
+                  {rule.ok ? (
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  ) : (
+                    <ShieldAlert className="h-3.5 w-3.5" />
+                  )}
                   {rule.title}
                 </p>
-                <ul className="mt-2 space-y-1">
+                <ul className="mt-3 space-y-2.5">
                   {rule.lines.map((line) => (
-                    <li key={line} className="text-[12px] font-semibold text-white drop-shadow-sm">
-                      · {line}
+                    <li key={line.t} className="flex items-start gap-2">
+                      <span
+                        className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${
+                          rule.ok ? "bg-emerald-500/15 text-emerald-700" : "bg-rose-500/15 text-rose-700"
+                        }`}
+                      >
+                        <line.Icon className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="pt-0.5 text-[13px] font-semibold leading-snug text-[var(--av-text-primary)]">
+                        {line.t}
+                      </span>
                     </li>
                   ))}
                 </ul>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </section>
 
-        {/* Spray windows */}
-        <section>
-          <h3 className="mb-2 text-sm font-bold text-[var(--av-text-primary)]">कब करूँ?</h3>
-          <ul className="space-y-2">
-            {windows.map((w) => (
-              <li
-                key={w.id}
-                className="relative flex min-h-[72px] items-center overflow-hidden rounded-2xl border border-white/10"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={
-                    w.id === "morning"
-                      ? "/images/jobs/spray-morning.jpg"
-                      : w.id === "afternoon"
-                        ? "/images/jobs/spray-afternoon.jpg"
-                        : "/images/jobs/spray-evening.jpg"
-                  }
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                <span className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/45 to-black/25" />
-                <div className="relative z-10 flex w-full items-center gap-3 px-3.5 py-3.5">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[15px] font-extrabold text-white">{w.label}</p>
-                    <p className="text-[12px] font-medium text-white/90">{w.detail}</p>
-                  </div>
-                  <span
-                    className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-extrabold ${
-                      w.tone === "good"
-                        ? "bg-white text-emerald-800"
-                        : w.tone === "ok"
-                          ? "bg-white text-amber-800"
-                          : "bg-white text-rose-800"
-                    }`}
+        {/* Day timeline */}
+        <section className="overflow-hidden rounded-[24px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]">
+          <div className="flex items-end justify-between gap-3 border-b border-[var(--av-border)] px-4 py-3">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--av-text-muted)]">
+                आज का समय
+              </p>
+              <h3 className="mt-0.5 text-[16px] font-extrabold text-[var(--av-text-primary)]">
+                कब करूँ?
+              </h3>
+            </div>
+            <p className="text-[10px] font-bold text-[var(--av-text-muted)]">2 विंडो</p>
+          </div>
+
+          <ol className="relative space-y-0 px-3 py-2 sm:px-4">
+            <span
+              aria-hidden
+              className="absolute bottom-6 left-[1.85rem] top-6 w-px bg-gradient-to-b from-emerald-400/50 via-amber-400/40 to-rose-400/30 sm:left-[2.1rem]"
+            />
+            {windows.map((w, idx) => {
+              const SlotIcon = w.id === "morning" ? Sunrise : Sunset;
+              const toneBg =
+                w.tone === "good"
+                  ? "from-emerald-500/12 to-transparent ring-emerald-500/25"
+                  : w.tone === "ok"
+                    ? "from-amber-500/12 to-transparent ring-amber-500/25"
+                    : "from-rose-500/12 to-transparent ring-rose-500/25";
+              const nodeBg =
+                w.tone === "good"
+                  ? "bg-emerald-500 text-white shadow-emerald-500/40"
+                  : w.tone === "ok"
+                    ? "bg-amber-500 text-white shadow-amber-500/40"
+                    : "bg-rose-500 text-white shadow-rose-500/40";
+              const badgeCls =
+                w.tone === "good"
+                  ? "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
+                  : w.tone === "ok"
+                    ? "bg-amber-500/15 text-amber-900 dark:text-amber-300"
+                    : "bg-rose-500/15 text-rose-800 dark:text-rose-300";
+              return (
+                <li key={w.id} className="relative flex gap-3 py-2.5">
+                  <div
+                    className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl shadow-md ${nodeBg}`}
                   >
-                    {w.badge}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
+                    <SlotIcon className="h-5 w-5" />
+                  </div>
+                  <div
+                    className={`min-w-0 flex-1 rounded-2xl bg-gradient-to-r p-3.5 ring-1 ${toneBg}`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--av-text-muted)]">
+                          विंडो {idx + 1}
+                        </p>
+                        <p className="mt-0.5 text-[15px] font-extrabold text-[var(--av-text-primary)]">
+                          {w.label}
+                        </p>
+                        <p className="mt-1 text-[12px] font-medium text-[var(--av-text-secondary)]">
+                          {w.detail}
+                        </p>
+                      </div>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-extrabold ${badgeCls}`}
+                      >
+                        {w.badge}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
         </section>
 
         {/* Mix two medicines — tap type, tap two names, instant yes/no */}
@@ -522,7 +604,7 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
                 value={mixQuery}
                 onChange={(e) => setMixQuery(e.target.value)}
                 placeholder={pickSlot === 1 ? "दवा 1 खोजो…" : "दवा 2 खोजो…"}
-                className="w-full rounded-xl border-0 bg-white/10 py-2.5 pl-9 pr-3 text-[13px] font-semibold text-white outline-none placeholder:text-emerald-100/50 ring-1 ring-white/10"
+                className="w-full rounded-xl border-0 bg-white/10 py-2.5 pl-11 pr-3 text-[13px] font-semibold text-white outline-none placeholder:text-emerald-100/50 ring-1 ring-white/10"
               />
             </label>
 

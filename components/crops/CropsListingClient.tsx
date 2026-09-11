@@ -62,7 +62,7 @@ export default function CropsListingClient({ crops }: Props) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={isHi ? "धान, चना, अदरक खोजो…" : "Search paddy, chana, ginger…"}
-            className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2 pl-9 pr-3 text-[13px] font-medium text-[var(--av-text-primary)] placeholder:text-[var(--av-text-muted)] outline-none focus:border-[var(--av-accent)]"
+            className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2 pl-11 pr-3 text-[13px] font-medium text-[var(--av-text-primary)] placeholder:text-[var(--av-text-muted)] outline-none focus:border-[var(--av-accent)]"
           />
         </label>
 

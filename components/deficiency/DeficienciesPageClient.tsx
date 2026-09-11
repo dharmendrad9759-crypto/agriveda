@@ -376,7 +376,7 @@ export default function DeficienciesPageClient() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={isHi ? "N, Zn, नाइट्रोजन…" : "N, Zn, nitrogen…"}
-                className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-9 pr-3 text-sm font-medium outline-none focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/25"
+                className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-11 pr-3 text-sm font-medium outline-none focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/25"
               />
             </div>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">

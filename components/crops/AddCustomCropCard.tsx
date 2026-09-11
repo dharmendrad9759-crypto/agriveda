@@ -143,7 +143,7 @@ export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
                     placeholder="जैसे: धान, aloo, sarson, cotton…"
-                    className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[var(--av-accent)]"
+                    className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-11 pr-3 text-sm outline-none focus:border-[var(--av-accent)]"
                     autoFocus
                   />
                 </div>

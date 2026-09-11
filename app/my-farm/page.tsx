@@ -546,7 +546,7 @@ export default function MyFarmPage() {
                       value={cropQuery}
                       onChange={(e) => setCropQuery(e.target.value)}
                       placeholder={isHi ? "खोजें: आम, धान, tomato…" : "Search: mango, paddy…"}
-                      className="av-input w-full py-2.5 pl-9 text-sm"
+                      className="av-input av-input--icon w-full py-2.5 text-sm"
                     />
                   </div>
 

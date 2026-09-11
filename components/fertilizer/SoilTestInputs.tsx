@@ -11,9 +11,9 @@ import {
 const STATUSES: SoilNutrientStatus[] = ["low", "medium", "high"];
 
 const NUTRIENTS: { key: keyof SoilTestLevels; label: string; hint: string }[] = [
-  { key: "n", label: "यूरिया (Urea)", hint: "हरी बढ़ाव" },
-  { key: "p", label: "डीएपी (DAP)", hint: "जड़ की खाद" },
-  { key: "k", label: "एमओपी (MOP)", hint: "मजबूती" },
+  { key: "n", label: "यूरिया (Urea)", hint: "हरियाली और बढ़वार" },
+  { key: "p", label: "डीएपी (DAP)", hint: "जड़ की ताकत" },
+  { key: "k", label: "एमओपी (MOP)", hint: "पौधे की मजबूती" },
 ];
 
 interface SoilTestInputsProps {

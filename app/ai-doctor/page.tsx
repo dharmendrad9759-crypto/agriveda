@@ -29,6 +29,7 @@ import {
   likelyThreatLabel,
   severityHi,
 } from "@/lib/aiDoctorFarmerUi";
+import { sanitizeDiagnosisForFarmer } from "@/lib/aiDoctorSanitize";
 import {
   compressPhotoForReferral,
   saveAiDoctorExpertReferral,
@@ -38,6 +39,7 @@ import { analyzePhotoBrightness } from "@/lib/photoQuality";
 import { fileToHistoryThumb, srcToHistoryThumb } from "@/lib/aiHistoryThumb";
 import { formatFarmerDose } from "@/lib/units/farmerDose";
 import { track } from "@/lib/analytics";
+import { scheduleAiDoctorFollowUp } from "@/lib/aiDoctorFollowUp";
 import {
     claimPendingAiScan,
     dataUrlToFile,
@@ -164,7 +166,7 @@ export default function AIDoctorPage() {
   }, []);
 
   const openHistoryEntry = (entry: (typeof history)[0]) => {
-    setResult(entry.result);
+    setResult(sanitizeDiagnosisForFarmer(entry.result));
     setPreviewUrl(entry.thumbnailUrl || null);
     setPreviewFailed(false);
     setFileName(entry.fileName);
@@ -264,11 +266,21 @@ export default function AIDoctorPage() {
       const thumb =
         (selectedFile ? await fileToHistoryThumb(selectedFile) : "") ||
         (await srcToHistoryThumb(previewUrl));
-      addEntry({
+      const entry = addEntry({
         fileName: selectedFile ? fileName || "scan.jpg" : "symptoms.txt",
         thumbnailUrl: thumb,
         result: diagnosis,
       });
+      const isHealthy =
+        diagnosis.problemType === "healthy" ||
+        /स्वस्थ|कोई स्पष्ट समस्या नहीं/i.test(diagnosis.diseaseName);
+      if (!isHealthy) {
+        scheduleAiDoctorFollowUp({
+          historyId: entry.id,
+          cropSlug: selectedCrop || OTHER_CROP.slug,
+          diseaseName: diagnosis.diseaseName,
+        });
+      }
       showToast("विश्लेषण पूर्ण ✓");
       track("ai_scan", {
         crop: selectedCrop || OTHER_CROP.slug,
@@ -485,7 +497,7 @@ export default function AIDoctorPage() {
                 <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
                   <Stethoscope className="h-4 w-4" />
                 </span>
-                <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">समाधान</h2>
+                <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">नतीजा</h2>
               </div>
 
               {isScanning && (
@@ -570,77 +582,92 @@ export default function AIDoctorPage() {
                   </button>
                   {showWhy && (
                     <ul className="space-y-2 text-sm text-[var(--av-text-muted)]">
-                      {result.whyItHappens.map((w, i) => (
-                        <li key={i} className="rounded-lg bg-[var(--av-surface-inset)] p-2">
-                          • {w}
-                        </li>
-                      ))}
-                      <li className="text-xs font-semibold text-sky-600">
-                        मौसम: {result.environmentalFactors.join(" • ")}
-                      </li>
+                      {[
+                        ...result.whyItHappens,
+                        ...result.environmentalFactors,
+                      ]
+                        .map((w) => w.trim())
+                        .filter(Boolean)
+                        .map((w, i) => (
+                          <li key={i} className="rounded-lg bg-[var(--av-surface-inset)] p-2">
+                            • {w}
+                          </li>
+                        ))}
                     </ul>
                   )}
 
-                  <div className="rounded-xl border border-[var(--av-border)] p-3.5 sm:p-4">
-                    <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
-                      <Leaf className="h-4 w-4" />
-                      समाधान
-                    </p>
-                    {result.treatments.length > 0 ? (
-                      <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
-                        {result.treatments.map((t, i) => (
-                          <li key={i}>• {formatFarmerDose(t)}</li>
-                        ))}
-                      </ul>
-                    ) : null}
+                  <div className="space-y-3">
+                    <div className="rounded-xl border border-[var(--av-border)] p-3.5 sm:p-4">
+                      <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
+                        <Leaf className="h-4 w-4" />
+                        समाधान
+                      </p>
+                      {result.treatments.length > 0 ? (
+                        <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
+                          {result.treatments.map((t, i) => (
+                            <li key={i}>• {formatFarmerDose(t)}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mt-2 text-xs text-[var(--av-text-muted)]">
+                          खेत के कदम नहीं मिले — दवा सेक्शन देखें।
+                        </p>
+                      )}
+                    </div>
 
-                    <div className="mt-3">
-                      <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-                        दवा (Medicines)
+                    <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
+                      <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
+                        दवा
                       </p>
                       <div className="mt-2 space-y-2">
                         {result.activeIngredients.length > 0 ? (
                           result.activeIngredients.map((ai, i) => (
                             <div key={i} className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs">
-                              <span className="font-bold text-emerald-700 dark:text-emerald-300">
+                              <p className="font-bold text-emerald-700 dark:text-emerald-300">
                                 {ai.name}
-                              </span>
-                              <span className="text-[var(--av-text-muted)]">
-                                {" "}
-                                — {formatFarmerDose(ai.dose)}
-                              </span>
-                              {ai.fracIrac && ai.fracIrac !== "—" ? (
-                                <span className="mt-0.5 block text-[10px] text-[var(--av-text-muted)]">
-                                  {ai.fracIrac}
-                                </span>
+                              </p>
+                              <p className="mt-0.5 text-[var(--av-text-muted)]">
+                                मात्रा: {formatFarmerDose(ai.dose)}
+                              </p>
+                              {ai.brands && ai.brands.length > 0 ? (
+                                <p className="mt-1 text-[11px] font-semibold leading-snug text-amber-800 dark:text-amber-200">
+                                  बाज़ार में: {ai.brands.join(" · ")}
+                                </p>
                               ) : null}
                             </div>
                           ))
                         ) : (
                           <p className="text-xs text-[var(--av-text-muted)]">
-                            दवा का सुझाव नहीं मिला — विशेषज्ञ से पूछें।
+                            {kind === "virus"
+                              ? "वायरस की सीधी दवा नहीं — वेक्टर नियंत्रण / विशेषज्ञ से पूछें।"
+                              : "दवा का सुझाव नहीं मिला — विशेषज्ञ से पूछें।"}
                           </p>
                         )}
                       </div>
+
+                      {result.spraySticker ? (
+                        <div className="mt-3 rounded-lg border border-sky-500/20 bg-sky-500/10 px-3 py-2">
+                          <p className="text-[11px] font-bold text-sky-800 dark:text-sky-200">
+                            स्प्रे स्टिकर
+                          </p>
+                          <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
+                            {formatFarmerDose(result.spraySticker)}
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
 
-                    {result.spraySticker ? (
-                      <div className="mt-3 rounded-lg border border-sky-500/20 bg-sky-500/10 px-3 py-2">
-                        <p className="text-[11px] font-bold text-sky-800 dark:text-sky-200">
-                          स्प्रे स्टिकर
-                        </p>
-                        <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                          {formatFarmerDose(result.spraySticker)}
-                        </p>
-                      </div>
-                    ) : null}
-
                     {result.recoveryTonics && result.recoveryTonics.length > 0 ? (
-                      <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2">
-                        <p className="text-[11px] font-bold text-amber-900 dark:text-amber-200">
-                          रोग रिकवरी टॉनिक
+                      <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3.5 sm:p-4">
+                        <p className="text-sm font-bold text-amber-900 dark:text-amber-200">
+                          रिकवरी टॉनिक
                         </p>
-                        <ul className="mt-1 space-y-1 text-xs text-[var(--av-text-secondary)]">
+                        <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+                          {kind === "virus"
+                            ? "वायरस के बाद पौधा मज़बूत करने के लिए — वायरस की दवा नहीं"
+                            : "रोग के बाद पौधा मज़बूत करने के लिए"}
+                        </p>
+                        <ul className="mt-2 space-y-1 text-xs text-[var(--av-text-secondary)]">
                           {result.recoveryTonics.map((tonic, i) => (
                             <li key={i}>• {formatFarmerDose(tonic)}</li>
                           ))}
@@ -648,7 +675,7 @@ export default function AIDoctorPage() {
                       </div>
                     ) : null}
 
-                    <p className="mt-3 text-[10px] leading-snug text-[var(--av-text-muted)]">
+                    <p className="text-[10px] leading-snug text-[var(--av-text-muted)]">
                       दवा लगाते समय लेबल पढ़ें।
                     </p>
                   </div>

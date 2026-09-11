@@ -13,7 +13,7 @@ export default function SearchBar({ query, onChange }: SearchBarProps) {
         value={query}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search nutrient, symbol or function"
-        className="w-full rounded-full border border-white/10 bg-slate-950/70 py-3 pl-11 pr-4 text-sm text-white outline-none ring-0 placeholder:text-slate-500"
+        className="w-full rounded-full border border-white/10 bg-slate-950/70 py-3 pl-12 pr-4 text-sm text-white outline-none ring-0 placeholder:text-slate-500"
       />
       {query ? (
         <button

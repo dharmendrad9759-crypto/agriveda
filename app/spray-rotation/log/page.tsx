@@ -179,7 +179,7 @@ export default function LogSprayPage() {
                 setProductQuery(e.target.value);
                 setSelectedProduct(null);
               }}
-              className="av-input w-full py-2.5 pl-10"
+              className="av-input av-input--icon w-full py-2.5"
             />
           </div>
           {!selectedProduct && productResults.length > 0 && (

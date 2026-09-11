@@ -1,6 +1,8 @@
 import type { DiagnosisResult } from "@/lib/aiDiagnosis";
 import { AI_DOCTOR_CROPS, isOtherCrop } from "@/data/ai-doctor-crops";
 import { buildKnowledgeContext } from "@/lib/knowledge/retrieve";
+import { sanitizeDiagnosisForFarmer } from "@/lib/aiDoctorSanitize";
+import { enrichMedicineDisplay } from "@/lib/aiDoctorMedicineBrands";
 
 /** Ordered fallbacks — older 2.0/1.5 models were shut down June 2026 */
 const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-3.5-flash", "gemini-3.1-flash-lite"] as const;
@@ -28,6 +30,21 @@ const RESPONSE_SCHEMA = {
       type: "string",
       description: "Simple Hindi reason if not a valid plant photo; empty string if valid",
     },
+    problemType: {
+      type: "string",
+      enum: [
+        "pest",
+        "fungal",
+        "bacterial",
+        "viral",
+        "nutrient",
+        "abiotic",
+        "healthy",
+        "unknown",
+      ],
+      description:
+        "pest=insect/mite; fungal/bacterial/viral=disease; nutrient=deficiency; abiotic=weather/water; healthy=no problem",
+    },
     diseaseName: { type: "string" },
     pathogen: { type: "string" },
     confidence: { type: "number" },
@@ -36,29 +53,45 @@ const RESPONSE_SCHEMA = {
     riskLevel: { type: "string" },
     whyItHappens: { type: "array", items: { type: "string" } },
     environmentalFactors: { type: "array", items: { type: "string" } },
-    treatments: { type: "array", items: { type: "string" } },
+    treatments: {
+      type: "array",
+      items: { type: "string" },
+      description:
+        "Hindi CULTURAL / field steps ONLY. No chemical names, brands, or ml/L doses.",
+    },
     activeIngredients: {
       type: "array",
       items: {
         type: "object",
         properties: {
-          name: { type: "string" },
+          name: {
+            type: "string",
+            description:
+              "Full technical + formulation, e.g. Hexaconazole 5% SC — not just Hexaconazole",
+          },
           dose: { type: "string" },
           fracIrac: { type: "string" },
+          brands: {
+            type: "array",
+            items: { type: "string" },
+            description:
+              "2-3 real Indian shop brand names (e.g. Contaf Plus, Folicur) farmers can ask for in bazaar",
+          },
         },
-        required: ["name", "dose", "fracIrac"],
+        required: ["name", "dose", "fracIrac", "brands"],
       },
+      description: "ALL spray medicines with dose + market brands — never put these in treatments",
     },
     spraySticker: {
       type: "string",
       description:
-        "Hindi: which spray sticker/spreader to mix, dose (ml/L), and when. Empty if not needed.",
+        "Hindi: spray sticker/spreader with dose (ml/L). Empty if not spraying.",
     },
     recoveryTonics: {
       type: "array",
       items: { type: "string" },
       description:
-        "Hindi: 1-3 plant recovery tonics after disease (seaweed, micronutrient, humic, etc.) with dose",
+        "ONLY fungal/bacterial/viral: seaweed/humic/micronutrient/plant tonics with dose. EMPTY for pest-only, healthy, nutrient, abiotic.",
     },
     prevention: { type: "array", items: { type: "string" } },
     cropContext: { type: "string" },
@@ -71,6 +104,7 @@ const RESPONSE_SCHEMA = {
   required: [
     "isValidPlantPhoto",
     "rejectionReason",
+    "problemType",
     "diseaseName",
     "pathogen",
     "confidence",
@@ -91,9 +125,9 @@ const RESPONSE_SCHEMA = {
 
 function knowledgeBlockFor(cropSlug: string): string {
   if (isOtherCrop(cropSlug)) return "";
-  const knowledge = buildKnowledgeContext({ cropSlug, maxChunks: 5 });
+  const knowledge = buildKnowledgeContext({ cropSlug, maxChunks: 8 });
   return knowledge
-    ? `\n\nREFERENCE KNOWLEDGE (ICAR PoP / diagnostic guides — use for doses and disease names):\n${knowledge.slice(0, 2500)}`
+    ? `\n\nREFERENCE KNOWLEDGE (ICAR PoP / diagnostic guides — prefer these names & doses when symptoms match):\n${knowledge.slice(0, 4000)}`
     : "";
 }
 
@@ -115,26 +149,36 @@ function buildPhotoPrompt(cropSlug: string, symptoms?: string): string {
     ? `\n\nFarmer notes / symptoms (use as supporting context with the photo):\n${notes.slice(0, 500)}`
     : "";
 
-  return `You are Agriveda AI Plant Doctor — an expert agronomist helping Indian farmers.
+  return `You are Agriveda AI Plant Doctor — accuracy is critical. Ground every claim in the PHOTO + REFERENCE KNOWLEDGE.
 
 ${cropLine}${knowledgeBlock}${notesBlock}
 
-Analyze the uploaded photo carefully. Your answer MUST be based on what you ACTUALLY SEE in this specific image — not a generic template.
+Analyze the uploaded photo carefully. Answer MUST match what you ACTUALLY SEE — not a generic crop template.
 
-RULES:
-1. If the image is NOT a crop/plant photo (person, animal, vehicle, food plate, wall, floor, unrelated object, or too blurry to see leaves), set isValidPlantPhoto=false and rejectionReason in simple Hindi (1-2 sentences).
-2. If the plant looks healthy with no clear pest/disease/nutrient problem, set diseaseName to "स्वस्थ पौधा / कोई स्पष्ट समस्या नहीं" and give preventive care tips.
+ACCURACY:
+A. Match visible symptoms to ONE most likely diagnosis. If unsure between 2, pick the better match and set confidence below 60.
+B. Prefer disease/pest names from REFERENCE KNOWLEDGE when they fit.
+C. Do NOT invent symptoms that are not visible. Do NOT pick a random common disease for the crop.
+D. Set problemType exactly: pest | fungal | bacterial | viral | nutrient | abiotic | healthy | unknown.
+
+SEPARATION (farmer UI):
+1. treatments = ONLY cultural/field steps in simple Hindi (पत्ती काटना, दूरी, पानी, जाल, उखाड़ना). NEVER medicine names, brands, or ml/L.
+2. activeIngredients = ALL दवा with practical Indian doses. name MUST be full technical + %.formulation (e.g. "Hexaconazole 5% SC"). brands = 2-3 real Indian shop names (Contaf Plus, Folicur, Tilt…) so farmer can ask in bazaar.
+3. recoveryTonics = ONLY if problemType is fungal, bacterial, or viral (seaweed/humic/micronutrient/plant tonics). EMPTY for pest-only, healthy, nutrient, abiotic.
+4. Virus: NO direct chemical cure. treatments = rogue + hygiene; activeIngredients = VECTOR control; recoveryTonics OK for vigor — never claim virus cure.
+5. Pest-only: recoveryTonics MUST be [].
+
+OTHER:
+1. Non-plant photo → isValidPlantPhoto=false + Hindi rejectionReason.
+2. Healthy plant → problemType=healthy, diseaseName="स्वस्थ पौधा / कोई स्पष्ट समस्या नहीं", empty activeIngredients + recoveryTonics.
 3. ${problemLine}
-4. confidence: 0-100 based on image clarity and diagnostic certainty. Use below 55 if unsure.
-5. severity: Low, Medium, or High only.
-6. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage, spraySticker, recoveryTonics) in SIMPLE HINDI. Technical chemical names can stay in English.
-7. treatments: cultural + field steps (remove leaves, spacing, irrigation). Also mention spray timing in Hindi.
-8. activeIngredients: MUST list realistic Indian दवाई / fungicide-insecticide with practical doses (ml/L or g/L or kg/acre). Always give at least 1 medicine when disease is present. Add short note that doses are typical published ranges — farmer must follow the product label / CIBRC and local agri officer.
-9. spraySticker: ALWAYS give a spray sticker/spreader (e.g. sticker 0.5–1 ml/L) unless disease is absent.
-10. recoveryTonics: 1-3 recovery tonics after infection (seaweed extract, micronutrient mix, humic/fulvic, plant tonic) with dose — help crop recover.
-11. visualObservations: 1-2 short Hindi sentences only — what the farmer can see (रंग, धब्बे, पत्तियाँ). No English jargon, no scientific terms, no long paragraphs.
-12. Do NOT copy generic text unrelated to the visible symptoms. If 2 photos are provided, use BOTH (front + back of leaf / different angles).
-13. Never recommend banned/restricted actives (Endosulfan, Phorate, Dichlorvos, Monocrotophos especially on vegetables, Methomyl on fruits/veg, Carbofuran/Furadan 3G). Prefer labelled modern MoA. This is informational guidance — not a substitute for a licensed agronomist.
+4. confidence 0-100; below 55 if unsure.
+5. severity: Low | Medium | High.
+6. Farmer text in SIMPLE HINDI; chemical names OK inside activeIngredients.name.
+7. spraySticker when spraying; else empty.
+8. visualObservations: 1-2 short Hindi sentences of visible signs only.
+9. Never recommend banned actives (Endosulfan, Phorate, Dichlorvos, Monocrotophos on vegetables, Methomyl on fruits/veg, Carbofuran). Prefer labelled modern MoA.
+10. If 2 photos provided, use BOTH.
 
 Return ONLY valid JSON matching the schema.`;
 }
@@ -142,6 +186,19 @@ Return ONLY valid JSON matching the schema.`;
 const SYMPTOM_RESPONSE_SCHEMA = {
   type: "object",
   properties: {
+    problemType: {
+      type: "string",
+      enum: [
+        "pest",
+        "fungal",
+        "bacterial",
+        "viral",
+        "nutrient",
+        "abiotic",
+        "healthy",
+        "unknown",
+      ],
+    },
     diseaseName: { type: "string" },
     pathogen: { type: "string" },
     confidence: { type: "number" },
@@ -150,38 +207,51 @@ const SYMPTOM_RESPONSE_SCHEMA = {
     riskLevel: { type: "string" },
     whyItHappens: { type: "array", items: { type: "string" } },
     environmentalFactors: { type: "array", items: { type: "string" } },
-    treatments: { type: "array", items: { type: "string" } },
+    treatments: {
+      type: "array",
+      items: { type: "string" },
+      description: "Cultural/field steps only — no medicine names",
+    },
     activeIngredients: {
       type: "array",
       items: {
         type: "object",
         properties: {
-          name: { type: "string" },
+          name: {
+            type: "string",
+            description: "Full technical + formulation, e.g. Tebuconazole 25.9% EC",
+          },
           dose: { type: "string" },
           fracIrac: { type: "string" },
+          brands: {
+            type: "array",
+            items: { type: "string" },
+            description: "2-3 Indian market brand names",
+          },
         },
-        required: ["name", "dose", "fracIrac"],
+        required: ["name", "dose", "fracIrac", "brands"],
       },
     },
     spraySticker: {
       type: "string",
       description:
-        "Hindi: which spray sticker/spreader to mix, dose (ml/L), and when. Empty if not needed.",
+        "Hindi: spray sticker/spreader with dose. Empty if not needed.",
     },
     recoveryTonics: {
       type: "array",
       items: { type: "string" },
       description:
-        "Hindi: 1-3 plant recovery tonics after disease (seaweed, micronutrient, humic, etc.) with dose",
+        "Only fungal/bacterial/viral. Empty for pest-only / healthy / nutrient / abiotic.",
     },
     prevention: { type: "array", items: { type: "string" } },
     cropContext: { type: "string" },
     visualObservations: {
       type: "string",
-      description: "Brief Hindi summary of the farmer-described symptoms used for this diagnosis",
+      description: "Brief Hindi summary of the farmer-described symptoms",
     },
   },
   required: [
+    "problemType",
     "diseaseName",
     "pathogen",
     "confidence",
@@ -209,7 +279,7 @@ function buildSymptomsPrompt(cropSlug: string, symptoms: string): string {
     ? `The farmer chose "Other" crop and described symptoms in text (no photo). Infer the crop from the notes if possible, otherwise give a general field-crop diagnosis and state assumptions in cropContext.`
     : `The farmer selected crop: ${crop}`;
 
-  return `You are Agriveda AI Plant Doctor — an expert agronomist helping Indian farmers.
+  return `You are Agriveda AI Plant Doctor — accuracy first. Diagnose from symptoms + REFERENCE KNOWLEDGE for Indian farming.
 
 ${cropLine}${knowledgeBlock}
 
@@ -220,15 +290,14 @@ ${symptoms.slice(0, 800)}
 """
 
 RULES:
-1. Base the diagnosis on the described symptoms for Indian farming conditions — not a generic template.
-2. confidence: 0-100; typically 40-70 without a photo. Use below 50 if symptoms are vague.
-3. severity: Low, Medium, or High only.
-4. All farmer advice (whyItHappens, treatments, prevention, cropContext, riskLevel, stage, spraySticker, recoveryTonics) in SIMPLE HINDI. Technical chemical names can stay in English.
-5. activeIngredients: realistic Indian दवाई with doses. Give medicines when disease likely.
-6. spraySticker: spray sticker/spreader advice with dose when recommending spray.
-7. recoveryTonics: 1-3 recovery tonics with dose.
-8. visualObservations: 1-2 sentences in Hindi summarizing the symptoms the farmer described.
-9. If symptoms are too vague to diagnose, set diseaseName to "अधिक जानकारी चाहिए" and ask for clearer symptoms or a photo in treatments.
+1. Prefer knowledge-base disease/pest names that match. Do not invent.
+2. confidence: 0-100; typically 40-70 without a photo. Below 50 if vague.
+3. problemType: pest | fungal | bacterial | viral | nutrient | abiotic | healthy | unknown.
+4. treatments = cultural steps ONLY (no medicine names). activeIngredients = medicines with full name+formulation, dose, and 2-3 bazaar brand names.
+5. recoveryTonics ONLY for fungal/bacterial/viral; empty for pest-only.
+6. Virus: no direct cure; vector control in activeIngredients; rogue plants in treatments.
+7. All farmer advice in SIMPLE HINDI. Chemical names OK in activeIngredients.name.
+8. If too vague: diseaseName="अधिक जानकारी चाहिए", ask for photo in treatments.
 
 Return ONLY valid JSON matching the schema.`;
 }
@@ -236,6 +305,7 @@ Return ONLY valid JSON matching the schema.`;
 interface GeminiRawResponse {
   isValidPlantPhoto?: boolean;
   rejectionReason?: string;
+  problemType?: DiagnosisResult["problemType"];
   diseaseName: string;
   pathogen: string;
   confidence: number;
@@ -245,7 +315,7 @@ interface GeminiRawResponse {
   whyItHappens: string[];
   environmentalFactors: string[];
   treatments: string[];
-  activeIngredients: { name: string; dose: string; fracIrac: string }[];
+  activeIngredients: { name: string; dose: string; fracIrac: string; brands?: string[] }[];
   spraySticker?: string;
   recoveryTonics?: string[];
   prevention: string[];
@@ -292,7 +362,7 @@ function normalizeSeverity(s: string): DiagnosisResult["severity"] {
 }
 
 function toDiagnosisResult(raw: GeminiRawResponse, cropSlug: string): DiagnosisResult {
-  return {
+  const base: DiagnosisResult = {
     diseaseName: raw.diseaseName?.trim() || "अज्ञात समस्या",
     pathogen: raw.pathogen?.trim() || "—",
     confidence: clampConfidence(raw.confidence),
@@ -305,11 +375,16 @@ function toDiagnosisResult(raw: GeminiRawResponse, cropSlug: string): DiagnosisR
       : [],
     treatments: Array.isArray(raw.treatments) ? raw.treatments.filter(Boolean) : [],
     activeIngredients: Array.isArray(raw.activeIngredients)
-      ? raw.activeIngredients.map((a) => ({
-          name: a.name || "—",
-          dose: a.dose || "—",
-          fracIrac: a.fracIrac || "—",
-        }))
+      ? raw.activeIngredients.map((a) =>
+          enrichMedicineDisplay({
+            name: a.name || "—",
+            dose: a.dose || "—",
+            fracIrac: a.fracIrac || "—",
+            brands: Array.isArray((a as { brands?: string[] }).brands)
+              ? (a as { brands?: string[] }).brands
+              : [],
+          })
+        )
       : [],
     spraySticker: raw.spraySticker?.trim() || undefined,
     recoveryTonics: Array.isArray(raw.recoveryTonics)
@@ -318,8 +393,10 @@ function toDiagnosisResult(raw: GeminiRawResponse, cropSlug: string): DiagnosisR
     prevention: Array.isArray(raw.prevention) ? raw.prevention.filter(Boolean) : [],
     cropContext: raw.cropContext?.trim() || cropLabel(cropSlug),
     visualObservations: raw.visualObservations?.trim(),
+    problemType: raw.problemType,
     source: "gemini",
   };
+  return sanitizeDiagnosisForFarmer(base);
 }
 
 async function callGeminiGenerate(
@@ -346,7 +423,7 @@ async function callGeminiGenerate(
     body: JSON.stringify({
       contents: [{ parts }],
       generationConfig: {
-        temperature: 0.35,
+        temperature: 0.2,
         maxOutputTokens: 4096,
         responseMimeType: "application/json",
         responseSchema,

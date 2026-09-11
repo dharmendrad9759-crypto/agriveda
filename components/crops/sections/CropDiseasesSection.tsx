@@ -135,7 +135,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={hi ? "रोग खोजें..." : "Search disease..."}
-          className="w-full rounded-full border border-[#DCE8E0] bg-white py-3 pl-10 pr-4 text-[14px] font-medium text-[#12281C] shadow-[0_4px_14px_-8px_rgba(11,61,40,0.28)] outline-none placeholder:text-[#8A9A91] focus:border-[#0B6B45]/40 focus:ring-2 focus:ring-[#0B6B45]/15"
+          className="w-full rounded-full border border-[#DCE8E0] bg-white py-3 pl-12 pr-4 text-[14px] font-medium text-[#12281C] shadow-[0_4px_14px_-8px_rgba(11,61,40,0.28)] outline-none placeholder:text-[#8A9A91] focus:border-[#0B6B45]/40 focus:ring-2 focus:ring-[#0B6B45]/15"
         />
       </div>
 

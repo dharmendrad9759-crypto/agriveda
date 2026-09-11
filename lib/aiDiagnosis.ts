@@ -1,24 +1,41 @@
 export interface DiagnosisResult {
   diseaseName: string;
   pathogen: string;
-  /** Kept for API/history compat — not shown in farmer UI */
+  /** Kept for API/history compat — not shown as “judge the AI” UI */
   confidence: number;
   severity: "Low" | "Medium" | "High";
   stage: string;
   riskLevel: string;
   whyItHappens: string[];
   environmentalFactors: string[];
+  /** Field / cultural steps only — no medicine brand or active names */
   treatments: string[];
-  activeIngredients: { name: string; dose: string; fracIrac: string }[];
+  activeIngredients: {
+    name: string;
+    dose: string;
+    fracIrac: string;
+    /** Market / shop brand names farmers can ask for */
+    brands?: string[];
+  }[];
   /** स्प्रे स्टिकर / spreader — better leaf coverage */
   spraySticker?: string;
-  /** रोग के बाद रिकवरी टॉनिक */
+  /** रोग/वायरस के बाद रिकवरी टॉनिक (कीट-only पर नहीं) */
   recoveryTonics?: string[];
   prevention: string[];
   cropContext?: string;
   /** What Gemini actually saw in the photo */
   visualObservations?: string;
   source?: "gemini" | "demo";
+  /** pest | fungal | bacterial | viral | nutrient | abiotic | healthy | unknown */
+  problemType?:
+    | "pest"
+    | "fungal"
+    | "bacterial"
+    | "viral"
+    | "nutrient"
+    | "abiotic"
+    | "healthy"
+    | "unknown";
 }
 
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;

@@ -14,7 +14,6 @@ import {
   Sprout,
   Eye,
   FlaskConical,
-  X,
   ZoomIn,
 } from "lucide-react";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
@@ -35,6 +34,7 @@ import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
 import { technicalFromSprayLine } from "@/lib/crops/chemBottle";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { buildThreatSprayList } from "@/lib/crops/modernTechnicalBridge";
+import ImageLightbox from "@/components/ui/ImageLightbox";
 
 type PestTab = "spray" | "control";
 
@@ -624,30 +624,11 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
         {hi ? "AI Doctor से फोटो चेक करें" : "Check photo with AI Doctor"}
       </AppLink>
 
-      {lightbox ? (
-        <div
-          className="fixed inset-0 z-[90] flex items-center justify-center bg-black/90 p-4"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setLightbox(null)}
-        >
-          <button
-            type="button"
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white"
-            aria-label={hi ? "बंद करें" : "Close"}
-            onClick={() => setLightbox(null)}
-          >
-            <X className="h-5 w-5" />
-          </button>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={lightbox}
-            alt=""
-            className="max-h-[85vh] max-w-full rounded-2xl object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      ) : null}
+      <ImageLightbox
+        src={lightbox}
+        onClose={() => setLightbox(null)}
+        closeLabel={hi ? "बंद करें" : "Close"}
+      />
     </AppShell>
   );
 }

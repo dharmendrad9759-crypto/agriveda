@@ -405,7 +405,7 @@ export default function SchemesClient() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={hi ? "योजना खोजो… जैसे KCC, बीमा" : "Search… KCC, insurance"}
-            className="min-h-[44px] w-full rounded-2xl border border-emerald-800/15 bg-[var(--av-surface)] py-2.5 pl-10 pr-3 text-[13px] font-medium text-[var(--av-text-primary)] shadow-sm outline-none ring-emerald-600/30 focus:ring-2"
+            className="min-h-[44px] w-full rounded-2xl border border-emerald-800/15 bg-[var(--av-surface)] py-2.5 pl-12 pr-3 text-[13px] font-medium text-[var(--av-text-primary)] shadow-sm outline-none ring-emerald-600/30 focus:ring-2"
             aria-label={hi ? "योजना खोजो" : "Search schemes"}
           />
         </div>

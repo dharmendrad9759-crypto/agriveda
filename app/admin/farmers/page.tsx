@@ -177,7 +177,7 @@ export default function AdminFarmersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="नाम, फोन, जिला, गाँव, फसल…"
-            className="w-full rounded-2xl border border-emerald-900/10 bg-white py-3 pl-10 pr-4 text-sm outline-none focus:border-emerald-500/40"
+            className="w-full rounded-2xl border border-emerald-900/10 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-emerald-500/40"
           />
         </div>
 

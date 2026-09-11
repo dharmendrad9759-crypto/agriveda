@@ -28,7 +28,7 @@ export default function PestDiseaseFilters({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={placeholder}
-          className="av-input w-full rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)] py-3 pl-11 pr-4 text-sm shadow-sm outline-none ring-[var(--av-accent-ring)] transition focus:border-[var(--av-accent)] focus:ring-2"
+          className="av-input av-input--icon w-full rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)] py-3 pr-4 text-sm shadow-sm outline-none ring-[var(--av-accent-ring)] transition focus:border-[var(--av-accent)] focus:ring-2"
         />
       </div>
       <p className={AV.micro}>
