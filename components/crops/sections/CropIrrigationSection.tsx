@@ -217,7 +217,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
                     ? rainAlert?.bodyHi
                     : rainAlert?.bodyEn}
                 {!weatherLoading && !weather && (hi
-                  ? "लोकेशन सेट करें — मौसम पेज से GPS या शहर चुनें।"
+                  ? "स्थान डालें — मौसम पेज से जीपीएस या शहर चुनें।"
                   : "Set location on Weather page (GPS or city).")}
               </p>
             </div>

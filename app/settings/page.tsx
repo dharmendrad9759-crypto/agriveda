@@ -1,7 +1,6 @@
 "use client";
 
-import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
-import DarkCard from "@/components/shell/DarkCard";
+import AppShell from "@/components/shell/AppShell";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import AppLink from "@/components/ui/AppLink";
@@ -11,15 +10,36 @@ import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { shareAgriveda } from "@/lib/appEssentials";
-import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/appMeta";
+import { APP_VERSION, SUPPORT_MAILTO } from "@/lib/appMeta";
 import { BRAND } from "@/lib/brand";
 import { deleteAccountAndReload, logoutAndReload } from "@/lib/appReset";
 import { downloadLocalDataExport } from "@/lib/exportFarmerData";
-import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
-import { Check, ChevronRight, Download, LogOut, MapPin, Navigation, Settings, Share2, Trash2, User } from "lucide-react";
-import { useState } from "react";
+import {
+  Bell,
+  Bug,
+  Check,
+  ChevronRight,
+  CloudSun,
+  Download,
+  HelpCircle,
+  Languages,
+  LogOut,
+  MapPin,
+  MessageCircle,
+  Moon,
+  Navigation,
+  Share2,
+  Shield,
+  Sprout,
+  Sun,
+  Trash2,
+  TrendingUp,
+  UserRound,
+  type LucideIcon,
+} from "lucide-react";
+import { useState, type ReactNode } from "react";
 import {
   clearLocationPermissionCache,
   locationFlowErrorMessage,
@@ -30,26 +50,6 @@ import {
   openAppLocationPermissionSettings,
   openDeviceLocationSettings,
 } from "@/lib/openLocationSettings";
-import IntegrationStatusBanner from "@/components/settings/IntegrationStatusBanner";
-
-function ShareAgrivedaButton() {
-  const { showToast } = useToast();
-  const { t } = useLocale();
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        const result = await shareAgriveda();
-        if (result === "copied") showToast(t("shareCopied"), "success");
-        else if (result === true) showToast(t("shareDone"), "success");
-      }}
-      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-300"
-    >
-      <Share2 className="h-4 w-4" />
-      {t("shareAgriveda")}
-    </button>
-  );
-}
 
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -58,26 +58,114 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
       role="switch"
       aria-checked={on}
       onClick={() => onChange(!on)}
-      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${on ? "bg-[var(--av-accent)]" : "bg-[#374151]"}`}
+      className={cn(
+        "relative h-7 w-12 shrink-0 rounded-full transition-colors",
+        on ? "bg-emerald-600" : "bg-stone-300 dark:bg-stone-600"
+      )}
     >
-      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${on ? "left-[22px]" : "left-0.5"}`} />
+      <span
+        className={cn(
+          "absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform",
+          on ? "left-[22px]" : "left-0.5"
+        )}
+      />
     </button>
   );
 }
 
-function SettingsRow({ label, value, href, toggle }: { label: string; value?: string; href?: string; toggle?: { on: boolean; onChange: (v: boolean) => void } }) {
-  const inner = (
-    <div className="flex min-h-[36px] items-center justify-between gap-3 py-2">
-      <span className="text-sm text-[var(--av-text-primary)]">{label}</span>
-      {toggle ? <Toggle on={toggle.on} onChange={toggle.onChange} /> : (
-        <span className="flex items-center gap-1 text-xs text-[var(--av-text-muted)]">
-          {value} {href && <ChevronRight className="h-4 w-4" />}
+function Section({
+  eyebrow,
+  title,
+  children,
+}: {
+  eyebrow?: string;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="space-y-2.5">
+      <div className="px-0.5">
+        {eyebrow ? (
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700/70 dark:text-emerald-300/70">
+            {eyebrow}
+          </p>
+        ) : null}
+        <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">{title}</h2>
+      </div>
+      <div className="overflow-hidden rounded-[1.35rem] border border-emerald-900/8 bg-[var(--av-surface)] shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)] dark:border-white/8">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function Stick({
+  icon: Icon,
+  tone,
+  title,
+  hint,
+  href,
+  toggle,
+  value,
+  onClick,
+}: {
+  icon: LucideIcon;
+  tone: string;
+  title: string;
+  hint?: string;
+  href?: string;
+  value?: string;
+  toggle?: { on: boolean; onChange: (v: boolean) => void };
+  onClick?: () => void;
+}) {
+  const body = (
+    <div className="flex items-center gap-3 px-3.5 py-3">
+      <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl", tone)}>
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[14px] font-bold leading-tight text-[var(--av-text-primary)]">
+          {title}
+        </span>
+        {hint ? (
+          <span className="mt-0.5 block text-[11px] leading-snug text-[var(--av-text-muted)]">
+            {hint}
+          </span>
+        ) : null}
+      </span>
+      {toggle ? (
+        <Toggle on={toggle.on} onChange={toggle.onChange} />
+      ) : (
+        <span className="flex shrink-0 items-center gap-0.5 text-[12px] font-semibold text-[var(--av-text-muted)]">
+          {value}
+          {href || onClick ? <ChevronRight className="h-4 w-4" /> : null}
         </span>
       )}
     </div>
   );
-  if (href) return <AppLink href={href} className="block border-b border-[var(--av-border)] last:border-0">{inner}</AppLink>;
-  return <div className="border-b border-[var(--av-border)] last:border-0">{inner}</div>;
+
+  if (href) {
+    return (
+      <AppLink
+        href={href}
+        className="block border-b border-emerald-900/6 last:border-0 active:bg-emerald-500/5 dark:border-white/6"
+      >
+        {body}
+      </AppLink>
+    );
+  }
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="block w-full border-b border-emerald-900/6 text-left last:border-0 active:bg-emerald-500/5 dark:border-white/6"
+      >
+        {body}
+      </button>
+    );
+  }
+  return <div className="border-b border-emerald-900/6 last:border-0 dark:border-white/6">{body}</div>;
 }
 
 export default function SettingsPage() {
@@ -90,11 +178,20 @@ export default function SettingsPage() {
   const { showToast } = useToast();
   const [busy, setBusy] = useState<"logout" | "delete" | null>(null);
   const [locBusy, setLocBusy] = useState(false);
+  const isHi = locale === "hi";
 
-  const langOptions: { code: AppLocale; label: string; hint: string }[] = [
-    { code: "en", label: t("english"), hint: t("langEnglishHint") },
-    { code: "hi", label: t("hindi"), hint: t("langHindiHint") },
-  ];
+  const greetName = profile.name.trim()
+    ? profile.name.trim().charAt(0).toUpperCase() + profile.name.trim().slice(1)
+    : t("settingsAddName");
+  const initial = greetName.charAt(0).toUpperCase();
+  const place = [profile.village, profile.district, profile.state].filter(Boolean).join(" · ");
+  const fieldCount = farm.fields.length;
+  const areaLabel =
+    farmStats.totalAreaAcres > 0
+      ? `${farmStats.totalAreaAcres.toFixed(1)} ${isHi ? "एकड़" : "acre"}`
+      : isHi
+        ? "रकबा जोड़ें"
+        : "Add area";
 
   const handleDetectLocation = async () => {
     setLocBusy(true);
@@ -107,14 +204,20 @@ export default function SettingsPage() {
       if (Object.keys(patch).length) saveProfile(patch);
       showToast(
         loc.district || loc.state
-          ? `स्थान सेट · ${[loc.district, loc.state].filter(Boolean).join(", ")}`
-          : "GPS स्थान सेव हो गया ✓",
+          ? `${isHi ? "स्थान सेट" : "Location set"} · ${[loc.district, loc.state].filter(Boolean).join(", ")}`
+          : isHi
+            ? "स्थान सेव हो गया"
+            : "Location saved",
         "success"
       );
     } catch (err) {
       locationFlowErrorMessage(err);
       showToast(
-        err instanceof Error ? err.message : "लोकेशन नहीं मिली — Settings से Allow करें",
+        err instanceof Error
+          ? err.message
+          : isHi
+            ? "स्थान नहीं मिला — फ़ोन से अनुमति दें"
+            : "Location not found — allow permission",
         "error"
       );
     } finally {
@@ -128,11 +231,17 @@ export default function SettingsPage() {
     } else {
       await openDeviceLocationSettings();
     }
-    showToast("फ़ोन Settings में Location → Allow करें", "success");
+    showToast(isHi ? "फ़ोन में स्थान अनुमति दें" : "Allow location on the phone", "success");
   };
 
   const handleLogout = async () => {
-    if (!window.confirm("लॉग आउट करें? फसल और local डेटा फ़ोन पर रहेगा। सर्वर session बंद हो जाएगा।"))
+    if (
+      !window.confirm(
+        isHi
+          ? "लॉग आउट करें? खेत का डेटा फ़ोन पर रहेगा।"
+          : "Log out? Farm data stays on this phone."
+      )
+    )
       return;
     setBusy("logout");
     try {
@@ -144,270 +253,400 @@ export default function SettingsPage() {
 
   const handleExport = () => {
     const result = downloadLocalDataExport();
-    if (result.ok) showToast("डेटा फ़ाइल डाउनलोड हो गई ✓", "success");
-    else showToast(result.error || "Export fail", "error");
+    if (result.ok) showToast(isHi ? "डेटा फ़ाइल तैयार है" : "Data file ready", "success");
+    else showToast(result.error || (isHi ? "डाउनलोड नहीं हुआ" : "Download failed"), "error");
   };
 
   const handleDeleteAccount = async () => {
     const ok = window.confirm(
-      "खाता स्थायी रूप से हटाएँ?\n\n• Server: farmer, queries, photos, notifications\n• Phone: profile, AI history, farm data\n\nयह वापस नहीं आएगा।"
+      isHi
+        ? "खाता हमेशा के लिए हटाएँ?\nखेत, फ़ोटो और सवाल मिट जाएँगे। यह वापस नहीं आएगा।"
+        : "Delete account forever?\nFields, photos and queries will be removed. This cannot be undone."
     );
     if (!ok) return;
     const again = window.confirm(
-      "पक्का? खाता मिटाने के बाद Google से दोबारा लॉगिन करके नया खाता बनाना पड़ेगा।"
+      isHi
+        ? "पक्का? बाद में गूगल से नया खाता बनाना पड़ेगा।"
+        : "Sure? You will need Google login to start again."
     );
     if (!again) return;
     setBusy("delete");
     const result = await deleteAccountAndReload();
     if (!result.ok) {
       setBusy(null);
-      showToast(result.error || "हटाने में समस्या", "error");
+      showToast(result.error || (isHi ? "हटाने में समस्या" : "Could not delete"), "error");
     }
   };
 
+  const handleShare = async () => {
+    const result = await shareAgriveda();
+    if (result === "copied") showToast(t("shareCopied"), "success");
+    else if (result === true) showToast(t("shareDone"), "success");
+  };
+
+  const langs: { code: AppLocale; label: string; mark: string }[] = [
+    { code: "hi", label: t("hindi"), mark: "अ" },
+    { code: "en", label: t("english"), mark: "A" },
+  ];
+
   return (
-    <AppShell
-      className="!bg-transparent"
-      title={t("settingsTitle")}
-      subtitle={t("settingsSubtitle")}
-      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("settingsTitle") }]}
-    >
-      <div className="mb-4 lg:col-span-2 xl:col-span-3">
-        <IntegrationStatusBanner />
-      </div>
-      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        <DarkCard delay={0}>
-          <div className="flex flex-col items-center text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--av-accent)]/20">
-              <User className="h-8 w-8 text-[var(--av-accent)]" />
+    <AppShell className="!bg-transparent" backHref="/" title={t("settingsTitle")}>
+      <div className="mx-auto max-w-lg space-y-5">
+        <section className="relative overflow-hidden rounded-[1.75rem] border border-white/15 bg-emerald-950 text-white shadow-[0_18px_40px_-20px_rgba(6,78,59,0.7)]">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-emerald-400/25 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-16 left-8 h-36 w-36 rounded-full bg-amber-300/15 blur-3xl"
+          />
+          <div className="relative p-4 pb-3.5">
+            <div className="flex items-start gap-3.5">
+              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-emerald-300 via-emerald-500 to-teal-700 text-[1.65rem] font-black text-emerald-950 shadow-lg shadow-emerald-950/30 ring-2 ring-white/25">
+                {initial}
+              </span>
+              <div className="min-w-0 flex-1 pt-0.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-200/80">
+                  {isHi ? "मेरा खाता" : "My account"}
+                </p>
+                <h2 className="mt-0.5 truncate font-display text-[1.35rem] font-bold leading-tight">
+                  {greetName}
+                </h2>
+                <p className="mt-1 truncate text-[12px] font-medium text-emerald-100/80">
+                  {profile.phone ? `+91 ${profile.phone}` : t("settingsAddPhone")}
+                  {place ? ` · ${place}` : ""}
+                </p>
+              </div>
             </div>
-            <h2 className="mt-3 text-base font-bold text-[var(--av-text-primary)]">
-              {profile.name || t("settingsAddName")}
-            </h2>
-            <p className="text-xs text-[var(--av-text-muted)]">
-              {profile.phone ? `+91 ${profile.phone}` : t("settingsAddPhone")}
-            </p>
-            <AppLink href="/profile/edit" className={`mt-4 flex w-full justify-center ${AV.btnSecondarySm}`}>
+
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {[
+                { k: isHi ? "खेत" : "Fields", v: String(fieldCount) },
+                { k: isHi ? "रकबा" : "Area", v: areaLabel },
+                {
+                  k: isHi ? "भाषा" : "Lang",
+                  v: locale === "hi" ? "हिंदी" : "EN",
+                },
+              ].map((s) => (
+                <div
+                  key={s.k}
+                  className="rounded-2xl bg-white/8 px-2 py-2 text-center ring-1 ring-white/10"
+                >
+                  <p className="text-[15px] font-extrabold leading-none">{s.v}</p>
+                  <p className="mt-1 text-[10px] font-semibold text-emerald-100/70">{s.k}</p>
+                </div>
+              ))}
+            </div>
+
+            <AppLink
+              href="/profile/edit"
+              className="mt-3.5 flex min-h-11 items-center justify-center rounded-2xl bg-white text-[13px] font-extrabold text-emerald-950 active:scale-[0.99]"
+            >
               {t("settingsEditProfile")}
             </AppLink>
           </div>
-        </DarkCard>
+        </section>
 
-        <DarkCard delay={1}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("settingsPreferences")}</h3>
-          <div className="mt-2">
-            <SettingsRow
-              label={t("settingsTheme")}
-              value={theme === "dark" ? t("settingsDark") : t("settingsLight")}
-            />
+        <div className="grid grid-cols-2 gap-2.5">
+          {(
+            [
+              {
+                href: "#look",
+                icon: Sun,
+                title: isHi ? "रंग" : "Theme",
+                hint: theme === "dark" ? t("settingsDark") : t("settingsLight"),
+                tone: "from-amber-400 to-orange-500",
+              },
+              {
+                href: "#look",
+                icon: Languages,
+                title: isHi ? "भाषा" : "Language",
+                hint: locale === "hi" ? "हिंदी" : "English",
+                tone: "from-sky-400 to-blue-600",
+              },
+              {
+                href: "/my-farm",
+                icon: Sprout,
+                title: isHi ? "मेरे खेत" : "My farm",
+                hint: fieldCount ? `${fieldCount}` : isHi ? "जोड़ें" : "Add",
+                tone: "from-emerald-400 to-teal-600",
+              },
+              {
+                href: "/ask-query",
+                icon: MessageCircle,
+                title: isHi ? "मदद" : "Help",
+                hint: isHi ? "सवाल पूछें" : "Ask us",
+                tone: "from-violet-400 to-indigo-600",
+              },
+            ] as const
+          ).map((tile) => {
+            const Icon = tile.icon;
+            return (
+              <AppLink
+                key={tile.title}
+                href={tile.href}
+                className="group relative overflow-hidden rounded-[1.35rem] border border-emerald-900/8 bg-[var(--av-surface)] p-3.5 shadow-[0_10px_24px_-18px_rgba(11,61,40,0.4)] active:scale-[0.98] dark:border-white/8"
+              >
+                <span
+                  className={cn(
+                    "flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-md",
+                    tile.tone
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
+                </span>
+                <p className="mt-3 text-[14px] font-extrabold text-[var(--av-text-primary)]">
+                  {tile.title}
+                </p>
+                <p className="text-[11px] font-medium text-[var(--av-text-muted)]">{tile.hint}</p>
+              </AppLink>
+            );
+          })}
+        </div>
+
+        <div id="look" className="scroll-mt-20 space-y-2.5">
+          <h2 className="px-0.5 text-[15px] font-extrabold text-[var(--av-text-primary)]">
+            {isHi ? "देखने का अंदाज़" : "Look & language"}
+          </h2>
+          <div className="grid grid-cols-2 gap-2.5">
+            {(
+              [
+                { id: "light" as const, icon: Sun, label: t("settingsLight") },
+                { id: "dark" as const, icon: Moon, label: t("settingsDark") },
+              ] as const
+            ).map((opt) => {
+              const Icon = opt.icon;
+              const on = theme === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setTheme(opt.id)}
+                  className={cn(
+                    "relative overflow-hidden rounded-[1.35rem] border p-3.5 text-left transition active:scale-[0.98]",
+                    on
+                      ? "border-emerald-500 bg-emerald-500/12 ring-2 ring-emerald-500/25"
+                      : "border-emerald-900/8 bg-[var(--av-surface)] dark:border-white/8"
+                  )}
+                >
+                  <Icon className={cn("h-5 w-5", on ? "text-emerald-700 dark:text-emerald-300" : "text-amber-600")} />
+                  <p className="mt-2 text-[13px] font-extrabold text-[var(--av-text-primary)]">{opt.label}</p>
+                  {on ? <Check className="absolute right-3 top-3 h-4 w-4 text-emerald-600" /> : null}
+                </button>
+              );
+            })}
+          </div>
+          <div className="grid grid-cols-2 gap-2.5">
+            {langs.map((opt) => {
+              const on = locale === opt.code;
+              return (
+                <button
+                  key={opt.code}
+                  type="button"
+                  onClick={() => setLocale(opt.code)}
+                  className={cn(
+                    "relative rounded-[1.35rem] border p-3.5 text-left transition active:scale-[0.98]",
+                    on
+                      ? "border-emerald-500 bg-emerald-500/12 ring-2 ring-emerald-500/25"
+                      : "border-emerald-900/8 bg-[var(--av-surface)] dark:border-white/8"
+                  )}
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-500/15 text-[15px] font-black text-sky-800 dark:text-sky-200">
+                    {opt.mark}
+                  </span>
+                  <p className="mt-2 text-[13px] font-extrabold text-[var(--av-text-primary)]">{opt.label}</p>
+                  {on ? <Check className="absolute right-3 top-3 h-4 w-4 text-emerald-600" /> : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <Section eyebrow={isHi ? "सूचना" : "Alerts"} title={t("settingsAlerts")}>
+          <Stick
+            icon={Sun}
+            tone="bg-amber-500/15 text-amber-700 dark:text-amber-300"
+            title={t("settingsFieldMode")}
+            hint={t("settingsFieldModeHint")}
+            toggle={{ on: settings.fieldMode, onChange: (v) => update({ fieldMode: v }) }}
+          />
+          <Stick
+            icon={CloudSun}
+            tone="bg-sky-500/15 text-sky-700 dark:text-sky-300"
+            title={t("settingsWeatherAlerts")}
+            hint={isHi ? "बारिश और स्प्रे का इशारा" : "Rain and spray hints"}
+            toggle={{ on: settings.weatherAlerts, onChange: (v) => update({ weatherAlerts: v }) }}
+          />
+          <Stick
+            icon={Bug}
+            tone="bg-rose-500/15 text-rose-700 dark:text-rose-300"
+            title={t("settingsPestAlerts")}
+            hint={isHi ? "आस-पास कीट-रोग खबर" : "Nearby pest news"}
+            toggle={{ on: settings.pestAlerts, onChange: (v) => update({ pestAlerts: v }) }}
+          />
+          <Stick
+            icon={Sprout}
+            tone="bg-lime-500/15 text-lime-800 dark:text-lime-300"
+            title={t("settingsFertilizerReminders")}
+            hint={isHi ? "खाद का समय याद रहे" : "Fertilizer timing"}
+            toggle={{
+              on: settings.fertilizerReminders,
+              onChange: (v) => update({ fertilizerReminders: v }),
+            }}
+          />
+          <Stick
+            icon={TrendingUp}
+            tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
+            title={t("settingsMarketAlerts")}
+            hint={isHi ? "मंडी भाव ऊपर-नीचे" : "Mandi price moves"}
+            toggle={{ on: priceSettings.masterEnabled, onChange: setMasterEnabled }}
+          />
+          <Stick
+            icon={Bell}
+            tone="bg-teal-500/15 text-teal-800 dark:text-teal-300"
+            title={t("settingsManagePriceAlerts")}
+            value={`${priceSettings.alerts.filter((a) => a.enabled).length}`}
+            href="/mandi#price-alerts"
+          />
+          <Stick
+            icon={Moon}
+            tone="bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
+            title={t("settingsQuietHours")}
+            hint={isHi ? "रात 10 से सुबह 6 तक शांत" : "10 PM to 6 AM quiet"}
+            toggle={{
+              on: settings.quietHoursEnabled,
+              onChange: (v) => update({ quietHoursEnabled: v }),
+            }}
+          />
+        </Section>
+
+        <Section eyebrow={isHi ? "खेत" : "Farm"} title={isHi ? "स्थान और खेत" : "Place & fields"}>
+          <Stick
+            icon={MapPin}
+            tone="bg-rose-500/15 text-rose-700 dark:text-rose-300"
+            title={isHi ? "मेरा स्थान" : "My place"}
+            hint={place || (isHi ? "ज़िला जोड़ें — मौसम सही आएगा" : "Add district for weather")}
+            href="/profile/edit"
+          />
+          <div className="grid grid-cols-2 gap-2 px-3.5 py-3">
             <button
               type="button"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="mt-2 w-full rounded-lg bg-[var(--av-surface-inset)] py-2 text-xs text-[var(--av-accent)]"
+              disabled={locBusy}
+              onClick={() => void handleDetectLocation()}
+              className="flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-emerald-700 text-[12px] font-extrabold text-white disabled:opacity-60"
             >
-              {t("settingsToggleTheme")}
+              <Navigation className="h-3.5 w-3.5" />
+              {locBusy ? "…" : isHi ? "जीपीएस" : "GPS"}
             </button>
-            <p className="mt-4 text-sm font-semibold text-[var(--av-text-primary)]">{t("settingsLanguage")}</p>
-            <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">{t("langSwitchNote")}</p>
-            <ul className="mt-2 space-y-2">
-              {langOptions.map((opt) => (
-                <li key={opt.code}>
-                  <button
-                    type="button"
-                    onClick={() => setLocale(opt.code)}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-left text-sm font-bold transition",
-                      locale === opt.code
-                        ? "border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                        : "border-[var(--av-border)] text-[var(--av-text-primary)]"
-                    )}
-                  >
-                    <span>
-                      {opt.label}
-                      <span className="mt-0.5 block text-[10px] font-medium text-[var(--av-text-muted)]">
-                        {opt.hint}
-                      </span>
-                    </span>
-                    {locale === opt.code ? <Check className="h-4 w-4 text-emerald-500" /> : null}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <button
+              type="button"
+              onClick={() => void handleOpenLocationSettings()}
+              className="flex min-h-11 items-center justify-center gap-1.5 rounded-2xl border border-emerald-900/10 bg-[var(--av-surface-inset)] text-[12px] font-extrabold text-[var(--av-text-primary)] dark:border-white/10"
+            >
+              {isHi ? "अनुमति" : "Permission"}
+            </button>
           </div>
-        </DarkCard>
+          <Stick
+            icon={Sprout}
+            tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
+            title={isHi ? "खेत देखें" : "See fields"}
+            hint={
+              fieldCount
+                ? isHi
+                  ? `${fieldCount} खेत जुड़े`
+                  : `${fieldCount} fields`
+                : isHi
+                  ? "पहला खेत जोड़ें"
+                  : "Add first field"
+            }
+            href="/my-farm"
+          />
+        </Section>
 
-        <DarkCard delay={2}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{t("settingsAlerts")}</h3>
-          <div className="mt-2">
-            <SettingsRow
-              label={t("settingsFieldMode")}
-              toggle={{ on: settings.fieldMode, onChange: (v) => update({ fieldMode: v }) }}
-            />
-            <p className="pb-2 text-[10px] text-[var(--av-text-muted)]">{t("settingsFieldModeHint")}</p>
-            <p className="pb-2 text-sm font-semibold text-[var(--av-text-primary)]">{t("settingsRegionalLang")}</p>
-            <p className="pb-2 text-[10px] text-[var(--av-text-muted)]">{t("settingsRegionalLangHint")}</p>
-            <SettingsRow label={t("settingsWeatherAlerts")} toggle={{ on: settings.weatherAlerts, onChange: (v) => update({ weatherAlerts: v }) }} />
-            <p className="pb-1 text-[10px] text-[var(--av-text-muted)]">डिवाइस पर स्थानीय सूचना · FCM जब सर्वर तैयार हो</p>
-            <SettingsRow label={t("settingsPestAlerts")} toggle={{ on: settings.pestAlerts, onChange: (v) => update({ pestAlerts: v }) }} />
-            <p className="pb-1 text-[10px] text-[var(--av-text-muted)]">आस-पास outbreak push · ऐप में /alerts भी</p>
-            <SettingsRow label={t("settingsFertilizerReminders")} toggle={{ on: settings.fertilizerReminders, onChange: (v) => update({ fertilizerReminders: v }) }} />
-            <SettingsRow
-              label={t("settingsMarketAlerts")}
-              toggle={{ on: priceSettings.masterEnabled, onChange: setMasterEnabled }}
-            />
-            <SettingsRow label={t("settingsManagePriceAlerts")} value={`${priceSettings.alerts.filter((a) => a.enabled).length}`} href="/mandi#price-alerts" />
-            <SettingsRow
-              label={t("settingsQuietHours")}
-              value="10:00 PM - 6:00 AM"
-              toggle={{ on: settings.quietHoursEnabled, onChange: (v) => update({ quietHoursEnabled: v }) }}
-            />
-          </div>
-        </DarkCard>
+        <Section eyebrow={isHi ? "सुरक्षा" : "Privacy"} title={isHi ? "निजता" : "Your data"}>
+          <Stick
+            icon={Shield}
+            tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
+            title={isHi ? "ऐप सुधारने में मदद" : "Help improve the app"}
+            hint={isHi ? "बंद रखें — डेटा नहीं बिकता" : "Off by default — data is never sold"}
+            toggle={{
+              on: settings.productAnalytics,
+              onChange: (v) => update({ productAnalytics: v }),
+            }}
+          />
+          <Stick
+            icon={Download}
+            tone="bg-sky-500/15 text-sky-700 dark:text-sky-300"
+            title={isHi ? "मेरा डेटा निकालें" : "Download my data"}
+            hint={isHi ? "फ़ोन पर फ़ाइल रह जाएगी" : "Saves a file on this phone"}
+            onClick={handleExport}
+          />
+          <Stick
+            icon={Share2}
+            tone="bg-amber-500/15 text-amber-800 dark:text-amber-300"
+            title={t("shareAgriveda")}
+            hint={isHi ? "गाँव के किसान भाई को भेजें" : "Send to another farmer"}
+            onClick={() => void handleShare()}
+          />
+        </Section>
 
-        <DarkCard delay={3}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Units & Language</h3>
-          <div className="mt-2">
-            <SettingsRow label="Temperature" value="°C" />
-            <SettingsRow label="Area Unit" value="Acre" />
-            <SettingsRow label="Weight Unit" value="Quintal" />
-          </div>
-        </DarkCard>
+        <Section eyebrow={isHi ? "खाता" : "Account"} title={isHi ? "लॉग आउट और हटाना" : "Sign out"}>
+          <Stick
+            icon={LogOut}
+            tone="bg-stone-500/15 text-stone-700 dark:text-stone-300"
+            title={busy === "logout" ? "…" : isHi ? "लॉग आउट" : "Log out"}
+            hint={isHi ? "खेत का डेटा फ़ोन पर रहता है" : "Farm data stays on the phone"}
+            onClick={() => void handleLogout()}
+          />
+          <Stick
+            icon={Trash2}
+            tone="bg-rose-500/15 text-rose-700 dark:text-rose-300"
+            title={busy === "delete" ? "…" : isHi ? "खाता हटाएँ" : "Delete account"}
+            hint={isHi ? "सब मिट जाएगा — सोचकर करें" : "Everything is removed"}
+            onClick={() => void handleDeleteAccount()}
+          />
+        </Section>
 
-        <DarkCard delay={4}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">स्थान और खेत</h3>
-          <div className="mt-2">
-            <SettingsRow
-              label="मेरा स्थान"
-              value={[profile.district, profile.state].filter(Boolean).join(", ") || "स्थान जोड़ें"}
-              href="/profile/edit"
-            />
-            <div className="space-y-2 border-b border-[var(--av-border)] py-2">
-              <button
-                type="button"
-                disabled={locBusy}
-                onClick={() => void handleDetectLocation()}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2.5 text-sm font-bold text-white disabled:opacity-60"
-              >
-                <Navigation className="h-4 w-4" />
-                {locBusy ? "स्थान लगा रहे हैं…" : "GPS से स्थान लगाएँ"}
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleOpenLocationSettings()}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs font-bold text-[var(--av-text-primary)]"
-              >
-                <Settings className="h-3.5 w-3.5" />
-                लोकेशन Settings खोलें
-              </button>
-              <p className="flex items-start gap-1.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
-                मौसम और सलाह के लिए GPS अनुमति दें। ज़िला न दिखे तो ऊपर «मेरा स्थान» से चुनें।
+        <section className="relative overflow-hidden rounded-[1.75rem] border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-[var(--av-surface)] to-amber-50/50 p-4 dark:from-emerald-950/40 dark:to-amber-950/20">
+          <div className="flex items-start gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white">
+              <UserRound className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300">
+                {BRAND}
+              </p>
+              <p className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
+                {isHi ? "भारतीय किसानों का साथी" : "Companion for Indian farmers"}
+              </p>
+              <p className="mt-0.5 text-[12px] text-[var(--av-text-muted)]">
+                {isHi ? `संस्करण ${APP_VERSION} · 18+` : `Version ${APP_VERSION} · 18+`}
               </p>
             </div>
-            <SettingsRow label="खेत प्रबंधित करें" value={farm.fields.length ? `${farm.fields.length} खेत जोड़े` : "खेत जोड़ें"} href="/my-farm" />
-            <SettingsRow
-              label="डिफ़ॉल्ट खेत"
-              value={
-                farm.fields[0]
-                  ? `${farm.fields[0].name} (${farm.fields[0].area})`
-                  : farmStats.totalAreaAcres > 0
-                    ? `${farmStats.totalAreaAcres.toFixed(2)} Acre कुल`
-                    : "अभी सेट नहीं"
-              }
-              href="/my-farm"
-            />
           </div>
-        </DarkCard>
-
-        <DarkCard delay={5}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">निजता व सुरक्षा</h3>
-          <p className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
-            डिफ़ॉल्ट: कोई product analytics नहीं। Google Ads / Crashlytics नहीं। आपका डेटा बेचा नहीं जाता।
-          </p>
-          <div className="mt-2">
-            <SettingsRow
-              label="Product analytics (optional)"
-              toggle={{
-                on: settings.productAnalytics,
-                onChange: (v) => update({ productAnalytics: v }),
-              }}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleExport}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 py-2.5 text-sm font-bold text-emerald-700 dark:text-emerald-300"
-          >
-            <Download className="h-4 w-4" />
-            मेरा डेटा डाउनलोड (JSON)
-          </button>
-          <div className="mt-2 space-y-1 text-[10px] text-[var(--av-text-muted)]">
-            <AppLink href="/privacy" className="font-semibold text-[var(--av-accent)] hover:underline">
-              गोपनीयता नीति
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <AppLink
+              href="/report-bug"
+              className="flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-emerald-700 text-[12px] font-extrabold text-white"
+            >
+              <HelpCircle className="h-3.5 w-3.5" />
+              {isHi ? "समस्या बताएँ" : "Report issue"}
             </AppLink>
-            {" · "}
-            <AppLink href="/terms" className="font-semibold text-[var(--av-accent)] hover:underline">
-              नियम
-            </AppLink>
-          </div>
-        </DarkCard>
-
-        <DarkCard delay={6}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खाता</h3>
-          <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-            लॉग आउट = सिर्फ session। खाता हटाएँ = server + इस फोन का डेटा मिटाएँ (Play Store अधिकार)।
-          </p>
-          <button
-            type="button"
-            disabled={busy !== null}
-            onClick={() => void handleLogout()}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 text-sm font-bold text-[var(--av-text-primary)] disabled:opacity-60"
-          >
-            <LogOut className="h-4 w-4" />
-            {busy === "logout" ? "…" : "लॉग आउट"}
-          </button>
-          <button
-            type="button"
-            disabled={busy !== null}
-            onClick={() => void handleDeleteAccount()}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 py-2.5 text-sm font-bold text-red-600 disabled:opacity-60 dark:text-red-400"
-          >
-            <Trash2 className="h-4 w-4" />
-            {busy === "delete" ? "हटा रहे हैं…" : "खाता हटाएँ"}
-          </button>
-          <p className="mt-2 text-center text-[10px] text-[var(--av-text-muted)]">
-            मदद:{" "}
-            <a href={SUPPORT_MAILTO} className="font-semibold text-[var(--av-accent)]">
-              {SUPPORT_EMAIL}
+            <a
+              href={SUPPORT_MAILTO}
+              className="flex min-h-11 items-center justify-center rounded-2xl border border-emerald-900/10 bg-[var(--av-surface)] text-[12px] font-extrabold text-[var(--av-text-primary)] dark:border-white/10"
+            >
+              {isHi ? "ईमेल लिखें" : "Email us"}
             </a>
-          </p>
-        </DarkCard>
-
-        <DarkCard delay={7}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">About {BRAND}</h3>
-          <p className="mt-2 text-xs text-[var(--av-text-muted)]">v{APP_VERSION}</p>
-          <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-            Smart farming companion for Indian farmers (18+).
-          </p>
-          <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
-            AI/login के लिए इंटरनेट ज़रूरी। दवा हमेशा लेबल + KVK से मिलाएँ।
-          </p>
-          <div className="mt-3 space-y-1">
-            <SettingsRow label="Terms & Conditions" href="/terms" />
-            <SettingsRow label="Privacy Policy" href="/privacy" />
-            <SettingsRow label="समस्या बताएँ / Bug Report" href="/report-bug" />
-            <SettingsRow label="सहायता / Support" href="/ask-query" />
           </div>
-          <ShareAgrivedaButton />
-        </DarkCard>
+          <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
+            <AppLink href="/privacy">{isHi ? "गोपनीयता" : "Privacy"}</AppLink>
+            <AppLink href="/terms">{isHi ? "नियम" : "Terms"}</AppLink>
+            <AppLink href="/ask-query">{isHi ? "सवाल पूछें" : "Ask"}</AppLink>
+          </div>
+        </section>
       </div>
-
-      <ShellCtaBanner
-        title="Need Help?"
-        description="Bug या सवाल — हमें बताएँ।"
-        buttonLabel="Report a problem"
-        href="/report-bug"
-      />
     </AppShell>
   );
 }

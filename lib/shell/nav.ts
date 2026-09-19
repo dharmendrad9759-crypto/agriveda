@@ -51,7 +51,7 @@ export const SHELL_NAV_PRIMARY: ShellNavItem[] = [
       !p.includes("/nutrients") &&
       !p.includes("/fertilizer"),
   },
-  { label: "Plan", labelKey: "shellCropCalendar", href: "/crop-calendar", icon: Calendar },
+  { label: "Method", labelKey: "shellCropCalendar", href: "/crop-calendar", icon: Calendar },
   { label: "Advice", labelKey: "shellFieldAdvisor", href: "/field-advisor", icon: Brain },
   {
     label: "Weather",

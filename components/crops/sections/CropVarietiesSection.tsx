@@ -211,7 +211,7 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
                 ? `सरकारी ${stateGovt.length} · प्राइवेट ${statePrivate.length}`
                 : `Govt ${stateGovt.length} · Private ${statePrivate.length}`
               : hi
-                ? "प्रोफ़ाइल में राज्य सेट करें — बेहतर किस्म सुझाव मिलेगा।"
+                ? "प्रोफ़ाइल में राज्य डालें — बेहतर किस्म सुझाव मिलेगा।"
                 : "Set state in profile for better variety tips."}
           </p>
         </DarkCard>

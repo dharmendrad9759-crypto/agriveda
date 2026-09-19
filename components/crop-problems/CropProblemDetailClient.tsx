@@ -304,7 +304,7 @@ export default function CropProblemDetailClient({
               <p className="text-[14px] font-black text-[#0B5C3B]">सेव हो गया</p>
             </div>
           ) : (
-            <p className="mb-2 text-[12px] font-bold text-[#3D6B54]">सेव करें या शेयर करें</p>
+            <p className="mb-2 text-[12px] font-bold text-[#3D6B54]">सहेजें या भेजें</p>
           )}
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -312,7 +312,7 @@ export default function CropProblemDetailClient({
               onClick={saveSolution}
               className="flex min-h-[46px] items-center justify-center rounded-xl bg-[#0B5C3B] text-[13px] font-black text-white"
             >
-              सेव करें
+              सहेजें
             </button>
             <button
               type="button"
@@ -320,7 +320,7 @@ export default function CropProblemDetailClient({
               className="flex min-h-[46px] items-center justify-center gap-1 rounded-xl border-2 border-[#0B5C3B] text-[13px] font-black text-[#0B5C3B]"
             >
               <Share2 className="h-4 w-4" />
-              शेयर करें
+              भेजें
             </button>
           </div>
           <div className="mt-2 grid grid-cols-2 gap-2">

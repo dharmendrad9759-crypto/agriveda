@@ -122,14 +122,6 @@ export default function MyFarmPage() {
   const [activityField, setActivityField] = useState("");
   const [activityDate, setActivityDate] = useState("");
 
-  const popularCrops = useMemo(
-    () =>
-      ["paddy", "wheat", "soybean", "maize", "tomato", "potato", "chilli", "mango"]
-        .map((slug) => cropCatalog.find((c) => c.slug === slug))
-        .filter(Boolean) as typeof cropCatalog,
-    []
-  );
-
   const filteredCrops = useMemo(() => {
     const q = cropQuery.trim().toLowerCase();
     return cropCatalog.filter((c) => {
@@ -309,13 +301,6 @@ export default function MyFarmPage() {
                 </span>
                 <span className="mt-1 font-display text-[1.55rem] font-bold leading-tight text-white">
                   {isHi ? "पहला खेत जोड़ो" : "Add your first field"}
-                </span>
-                <span className="mt-2 text-[13px] font-medium text-white/85">
-                  {isHi ? "नाम · रकबा · फसल — एक टैप से शुरू" : "Name · area · crop — start in one tap"}
-                </span>
-                <span className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[13px] font-extrabold text-emerald-900">
-                  <Plus className="h-4 w-4" />
-                  {isHi ? "अभी जोड़ो" : "Add now"}
                 </span>
               </span>
             </button>
@@ -512,34 +497,6 @@ export default function MyFarmPage() {
                     ) : null}
                   </div>
 
-                  {!cropQuery && cropCategory === "all" ? (
-                    <div className="mb-2 flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                      {popularCrops.map((crop) => {
-                        const hi = getCropHindiName(crop.slug);
-                        const active = fieldCropSlug === crop.slug;
-                        return (
-                          <button
-                            key={crop.slug}
-                            type="button"
-                            onClick={() => {
-                              setFieldCropSlug(crop.slug);
-                              setFieldCrop(crop.name);
-                            }}
-                            className={cn(
-                              "flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[11px] font-bold transition",
-                              active
-                                ? "border-emerald-500 bg-emerald-500/15 text-emerald-800 dark:text-emerald-200"
-                                : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]"
-                            )}
-                          >
-                            <span>{crop.emoji}</span>
-                            {isHi ? hi || crop.nameHi || crop.name : crop.name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-
                   <div className="relative mb-2">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--av-text-muted)]" />
                     <input
@@ -630,7 +587,7 @@ export default function MyFarmPage() {
                   className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-700 py-3 text-[14px] font-bold text-white shadow-md shadow-emerald-800/20 active:scale-[0.99] disabled:opacity-45"
                 >
                   <Plus className="h-4 w-4" />
-                  {isHi ? "खेत सेव करें" : "Save field"}
+                  {isHi ? "खेत सहेजें" : "Save field"}
                 </button>
               </div>
             </div>
@@ -768,12 +725,6 @@ export default function MyFarmPage() {
                 );
               })}
             </div>
-          ) : !showAddField ? (
-            <p className="px-0.5 text-[12px] text-[var(--av-text-muted)]">
-              {isHi
-                ? "ऊपर टैप करके पहला खेत जोड़ें।"
-                : "Tap above to add your first field."}
-            </p>
           ) : null}
         </motion.section>
 
@@ -879,7 +830,7 @@ export default function MyFarmPage() {
                 onClick={handleAddActivity}
                 className="av-btn av-btn-sm av-btn-primary"
               >
-                {isHi ? "कार्य सेव करें" : "Save task"}
+                {isHi ? "काम सहेजें" : "Save task"}
               </button>
             </div>
           ) : null}
@@ -900,7 +851,7 @@ export default function MyFarmPage() {
                 className="av-input w-full resize-none text-xs"
               />
               <button type="button" onClick={handleAddNote} className="av-btn av-btn-sm av-btn-primary">
-                {isHi ? "नोट सेव करें" : "Save note"}
+                {isHi ? "नोट सहेजें" : "Save note"}
               </button>
             </div>
           ) : null}

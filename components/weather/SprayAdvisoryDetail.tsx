@@ -165,7 +165,7 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
     try {
       const bundle = await fetchSprayWeatherFromSaved();
       if (!bundle) {
-        setStatusReason("स्प्रे सलाह के लिए पहले मौसम पेज पर स्थान सेट करें।");
+        setStatusReason("स्प्रे सलाह के लिए पहले मौसम पेज पर स्थान डालें।");
         setSprayStatus("CAUTION");
         return;
       }

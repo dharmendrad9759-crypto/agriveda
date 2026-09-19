@@ -211,7 +211,7 @@ export default function MixAdvisorClient() {
         const bundle = await fetchSprayWeatherFromSaved();
         if (cancelled || !bundle) {
           if (!cancelled) {
-            setWeatherLine("मौसम नहीं मिला — लोकेशन सेट करें");
+            setWeatherLine("मौसम नहीं मिला — स्थान डालें");
             setWeatherBad(false);
           }
           return;

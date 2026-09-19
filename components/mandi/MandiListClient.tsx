@@ -46,7 +46,7 @@ export default function MandiListClient() {
           className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 shadow-sm active:scale-95 disabled:opacity-60"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
-          {isHi ? "रिफ्रेश" : "Refresh"}
+          {isHi ? "ताज़ा करें" : "Refresh"}
         </button>
       }
     >

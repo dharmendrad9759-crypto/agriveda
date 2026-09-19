@@ -144,7 +144,7 @@ export default function MyQueriesPage() {
             className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--av-border)] px-2.5 py-1.5 text-[11px] font-bold text-[var(--av-accent)]"
           >
             <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
-            {isHi ? "रिफ्रेश" : "Refresh"}
+            {isHi ? "ताज़ा करें" : "Refresh"}
           </button>
         </div>
 
@@ -281,7 +281,7 @@ export default function MyQueriesPage() {
                   ) : (
                     <p className="rounded-xl bg-[var(--av-surface-inset)] px-3 py-3 text-xs text-[var(--av-text-muted)]">
                       {isHi
-                        ? "एडमिन / विशेषज्ञ जवाब लिख रहे हैं। थोड़ी देर बाद रिफ्रेश करें।"
+                        ? "विशेषज्ञ जवाब लिख रहे हैं। थोड़ी देर बाद ताज़ा करें।"
                         : "Admin/expert is reviewing. Refresh in a while."}
                     </p>
                   )}

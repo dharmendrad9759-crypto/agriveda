@@ -123,7 +123,7 @@ export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
                     फसल चुनें
                   </h2>
                   <p className="text-[11px] text-[var(--av-text-muted)]">
-                    नाम / हिंदी / alias से सर्च करें
+                    नाम या हिंदी से खोजें
                   </p>
                 </div>
                 <button

@@ -76,22 +76,22 @@ export default function EditProfilePage() {
     setForm(next);
     saveProfile(next);
     track("profile_save", { hasPhone: Boolean(phone), state: next.state, district: next.district });
-    showToast(isHi ? "प्रोफ़ाइल सेव हो गई ✓" : "Profile saved ✓");
+    showToast(isHi ? "प्रोफ़ाइल सहेज ली गई" : "Profile saved ✓");
     router.push("/profile");
   };
 
   return (
     <AppShell
-      title={isHi ? "प्रोफ़ाइल संपादित करें" : "Edit profile"}
+      title={isHi ? "प्रोफ़ाइल बदलें" : "Edit profile"}
       subtitle={
         isHi
-          ? "नाम, मोबाइल और जगह अपडेट करें"
+          ? "नाम, मोबाइल और जगह बदलें"
           : "Update name, mobile and farm location"
       }
       breadcrumbs={[
         { label: t("navHome"), href: "/" },
         { label: isHi ? "प्रोफ़ाइल" : "Profile", href: "/profile" },
-        { label: isHi ? "एडिट" : "Edit" },
+        { label: isHi ? "बदलें" : "Edit" },
       ]}
       backHref="/profile"
     >
@@ -188,7 +188,7 @@ export default function EditProfilePage() {
 
           <button type="button" onClick={handleSave} className={`w-full ${AV.btnPrimary}`}>
             <Save className="mr-2 inline h-4 w-4" />
-            {isHi ? "सेव करें" : "Save"}
+            {isHi ? "सहेजें" : "Save"}
           </button>
         </div>
       </DarkCard>

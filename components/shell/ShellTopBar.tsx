@@ -15,7 +15,7 @@ export default function ShellTopBar() {
   );
   const location = useMemo(() => {
     const parts = [profile.village || profile.district, profile.state].filter(Boolean);
-    return parts.length ? parts.join(", ") : "स्थान सेट करें";
+    return parts.length ? parts.join(", ") : "स्थान डालें";
   }, [profile]);
 
   const pill =

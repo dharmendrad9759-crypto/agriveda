@@ -12,8 +12,8 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/appMeta";
 
 const TOPICS = [
-  { id: "bug", label: "ऐप में गड़बड़ / Bug" },
-  { id: "ai", label: "AI Doctor गलत जवाब" },
+  { id: "bug", label: "ऐप में गड़बड़" },
+  { id: "ai", label: "फसल डॉक्टर गलत जवाब दे रहा है" },
   { id: "slow", label: "ऐप धीमा खुलता है" },
   { id: "other", label: "और सुझाव" },
 ] as const;
@@ -49,14 +49,13 @@ export default function ReportBugPage() {
 
     setSending(false);
     setMessage("");
-    showToast(`ईमेल ऐप खुलेगा → ${SUPPORT_EMAIL}`, "success");
+    showToast("आपका ईमेल ऐप खुलेगा", "success");
   };
 
   return (
     <AppShell
       className="!bg-transparent"
       title="समस्या बताएँ"
-      subtitle="सीधे support ईमेल — डेटा बिना तीसरे SDK के"
       breadcrumbs={[
         { label: t("navHome"), href: "/" },
         { label: t("shellReportBug") },
@@ -69,9 +68,6 @@ export default function ReportBugPage() {
           </span>
           <div>
             <h2 className={AV.sectionTitle}>क्या समस्या है?</h2>
-            <p className={AV.micro}>
-              रिपोर्ट आपके ईमेल ऐप से {SUPPORT_EMAIL} पर जाएगी
-            </p>
           </div>
         </div>
 
@@ -96,7 +92,7 @@ export default function ReportBugPage() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={5}
-          placeholder="उदाहरण: AI Doctor खोलते ही ऐप रुक जाता है…"
+          placeholder="उदाहरण: फसल डॉक्टर खोलते ही ऐप रुक जाता है…"
           className="av-input mt-3 w-full resize-none text-sm"
         />
 
@@ -107,7 +103,7 @@ export default function ReportBugPage() {
           className={`mt-3 flex w-full items-center justify-center gap-2 ${AV.btnPrimary}`}
         >
           <Send className="h-4 w-4" />
-          {sending ? "…" : "ईमेल से भेजें"}
+          {sending ? "…" : "भेजें"}
         </button>
 
         <a

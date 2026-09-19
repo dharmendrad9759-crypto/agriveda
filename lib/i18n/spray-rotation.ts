@@ -66,7 +66,7 @@ const translations: Record<SprayLocale, Record<SprayTranslationKey, string>> = {
     language: "Language",
   },
   hi: {
-    title: "स्प्रे रोटेशन ट्रैकर",
+    title: "स्प्रे बारी-बारी",
     subtitle: "प्रतिरोध रोकें — MoA समूह बदलें",
     logSpray: "स्प्रे दर्ज करें",
     rotationStatus: "रोटेशन स्थिति",
@@ -77,7 +77,7 @@ const translations: Record<SprayLocale, Record<SprayTranslationKey, string>> = {
     sprayDate: "स्प्रे की तारीख",
     dose: "प्रयुक्त मात्रा",
     growthStage: "वृद्धि अवस्था",
-    save: "सेव करें",
+    save: "सहेजें",
     saved: "स्प्रे सफलतापूर्वक दर्ज",
     riskLow: "कम प्रतिरोध जोखिम",
     riskMedium: "मध्यम जोखिम — MoA बदलें",

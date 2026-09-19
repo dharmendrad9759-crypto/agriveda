@@ -161,8 +161,8 @@ const MORE_JOBS: {
   },
   {
     id: "plan",
-    hi: "फसल योजना",
-    en: "Crop plan",
+    hi: "फसल तरीका",
+    en: "Crop method",
     hintHi: "कब क्या करूँ",
     hintEn: "What to do when",
     href: "/crop-calendar",
@@ -235,48 +235,6 @@ function cropChipLabel(slug: string | undefined, englishName: string): string {
   );
 }
 
-function cropLabel(slug: string | undefined, englishName: string): string {
-  const key = (slug || "").trim().toLowerCase();
-  const catalog = key ? cropCatalog.find((c) => c.slug === key) : undefined;
-  const hi = getCropHindiName(key) ?? getCropHindiName(englishName.toLowerCase());
-  const en =
-    catalog?.name ||
-    (englishName && !key
-      ? englishName
-      : key
-        ? key.charAt(0).toUpperCase() + key.slice(1)
-        : englishName);
-  return hi ? `${hi} (${en})` : en;
-}
-
-
-function buildAdvice(opts: {
-  isHi: boolean;
-  rainChance: number;
-  crop: string;
-  stage: string;
-}): { title: string; body: string; href: string; cta: string } {
-  const { isHi, rainChance, crop, stage } = opts;
-  if (rainChance >= 55) {
-    return {
-      title: isHi ? "आज स्प्रे मत करो" : "Skip spray today",
-      body: isHi
-        ? `बारिश ${rainChance}% — स्प्रे बाद में`
-        : `${rainChance}% rain — spray later`,
-      href: "/weather/spray-advisory",
-      cta: isHi ? "स्प्रे सलाह" : "Spray advice",
-    };
-  }
-  return {
-    title: isHi ? "आज का एक काम" : "One job today",
-    body: isHi
-      ? `${crop} (${stage}) — पत्ती देखो, शक हो तो फोटो लो`
-      : `${crop} (${stage}) — check leaves, photo if unsure`,
-    href: "/ai-doctor",
-    cta: isHi ? "फोटो लो" : "Take photo",
-  };
-}
-
 function buildRisk(opts: {
   isHi: boolean;
   humidityPct: number;
@@ -333,23 +291,12 @@ export default function AgriVedaHome() {
   const sourceFields = farm.fields.slice(0, 2);
   const hasFields = sourceFields.length > 0;
   const primary = hasFields ? fieldCard(sourceFields[0], 0) : null;
-  const primaryCropLabel = primary
-    ? cropLabel(primary.cropSlug, primary.crop)
-    : isHi
-      ? "आपकी फसल"
-      : "Your crop";
   const primaryCropChip = primary
     ? cropChipLabel(primary.cropSlug, primary.crop)
     : isHi
       ? "फसल जोड़ें"
       : "Add crop";
 
-  const advice = buildAdvice({
-    isHi,
-    rainChance: rainChance ?? 0,
-    crop: primaryCropLabel,
-    stage: primary?.stage ?? "—",
-  });
   const risk =
     weatherLive && rainChance != null
       ? buildRisk({ isHi, humidityPct, rainChance })
@@ -721,26 +668,6 @@ export default function AgriVedaHome() {
           )}
         </motion.section>
 
-        {/* One job */}
-        <motion.section
-          {...fade(0.14)}
-          className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-[var(--av-surface)] to-amber-50/40 p-3.5 dark:from-emerald-950/35 dark:via-[var(--av-surface)] dark:to-amber-950/15"
-        >
-          <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-            {isHi ? "आज का काम" : "Today's job"}
-          </p>
-          <h2 className="mt-0.5 text-[15px] font-bold text-[var(--av-text-primary)]">
-            {advice.title}
-          </h2>
-          <p className="mt-1 text-[13px] text-[var(--av-text-secondary)]">{advice.body}</p>
-          <AppLink
-            href={advice.href}
-            className="mt-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-emerald-700 px-3.5 text-[13px] font-bold text-white active:scale-[0.98]"
-          >
-            {advice.cta}
-            <ArrowRight className="h-4 w-4" />
-          </AppLink>
-        </motion.section>
       </div>
     </div>
   );

@@ -25,7 +25,7 @@ export default function MobileShellTopBar() {
   const location = hasLocation
     ? [profile.village || profile.district, profile.state].filter(Boolean).join(", ")
     : null;
-  const shortPlace = location ? location.split(",")[0] || location : "स्थान सेट करें";
+  const shortPlace = location ? location.split(",")[0] || location : "स्थान डालें";
   const initials = (profile.name.trim() || "क")
     .split(/\s+/)
     .slice(0, 2)

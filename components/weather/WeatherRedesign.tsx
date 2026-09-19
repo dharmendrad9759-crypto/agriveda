@@ -88,7 +88,7 @@ export default function WeatherRedesign({
             <button
               type="button"
               onClick={onRefresh}
-              aria-label={hi ? "रिफ्रेश" : "Refresh"}
+              aria-label={hi ? "ताज़ा करें" : "Refresh"}
               className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
             >
               <RefreshCw className="h-4 w-4" />
@@ -98,7 +98,7 @@ export default function WeatherRedesign({
             <button
               type="button"
               onClick={onShare}
-              aria-label={hi ? "शेयर" : "Share"}
+              aria-label={hi ? "भेजें" : "Share"}
               className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
             >
               <Share2 className="h-4 w-4" />

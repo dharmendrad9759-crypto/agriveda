@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import {
   Calendar,
@@ -35,7 +36,6 @@ import {
   pickDefaultPlannerSeason,
   type PlannerSeasonId,
 } from "@/lib/crops/crop-display";
-import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import { buildFertilizerPlan } from "@/lib/agriveda2/fertilizerEngine";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -43,11 +43,16 @@ import { writeStorage } from "@/lib/storage";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import { shortenFarmerLine, shortenFarmerLines, stageTipsFromPoints } from "@/lib/crops/farmerShortCopy";
+import { applyHarvestVerb, farmerSpeak, farmerSpeakLines } from "@/lib/crops/farmerSpeak";
+import { cropHarvestLabel } from "@/lib/crops/harvestLabel";
+import { clampSowingDate, datesInOfficialWindow, sowingBoundsForSeason } from "@/lib/crops/sowingDateOptions";
+import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+import { fertilizerBagLabel } from "@/data/agriveda2/fertilizer-data";
 
 const SEASONS: { id: PlannerSeasonId; labelKey: FarmerUiKey; months: string; monthsHi: string }[] = [
-  { id: "kharif", labelKey: "plannerKharif", months: "Jun–Oct", monthsHi: "जून–अक्तू" },
-  { id: "rabi", labelKey: "plannerRabi", months: "Nov–Mar", monthsHi: "नव–मार्च" },
-  { id: "zaid", labelKey: "plannerZaid", months: "Apr–Jun", monthsHi: "अप्रै–जून" },
+  { id: "kharif", labelKey: "plannerKharif", months: "Jun–Oct", monthsHi: "जून–अक्तूबर" },
+  { id: "rabi", labelKey: "plannerRabi", months: "Oct–Mar", monthsHi: "अक्तूबर–मार्च" },
+  { id: "zaid", labelKey: "plannerZaid", months: "Feb–Jun", monthsHi: "फरवरी–जून" },
 ];
 
 const AREA_PRESETS = ["0.5", "1", "2", "5"];
@@ -103,6 +108,9 @@ export default function CropPlannerClient() {
   const [generated, setGenerated] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [planStamp, setPlanStamp] = useState<string | null>(null);
+  const [sowingDate, setSowingDate] = useState("");
+  const [pickOpen, setPickOpen] = useState(false);
+  const reduced = useReducedMotion();
 
   const crop = crops.find((c) => c.slug === cropSlug) ?? crops[0];
   const hindi = getCropHindiName(crop.slug);
@@ -130,9 +138,9 @@ export default function CropPlannerClient() {
         { id: "Pest Control" as const, label: t("plannerTabPest"), hint: t("plannerTabHintScout") },
         { id: "Disease Control" as const, label: t("plannerTabDisease"), hint: t("plannerTabHintProtect") },
         { id: "Weed Control" as const, label: t("plannerTabWeed"), hint: t("plannerTabHintClean") },
-        { id: "Harvest" as const, label: t("plannerTabHarvest"), hint: t("plannerTabHintYield") },
+        { id: "Harvest" as const, label: cropHarvestLabel(crop, hi), hint: t("plannerTabHintYield") },
       ] as const,
-    [t]
+    [t, crop, hi]
   );
 
   const allowedSeasons = useMemo(
@@ -150,14 +158,27 @@ export default function CropPlannerClient() {
     setSeason((prev) => (allowedSeasons.includes(prev) ? prev : next));
   }, [crop.slug, allowedSeasons]);
 
+  const sowingPack = useMemo(
+    () => sowingBoundsForSeason(crop.slug, season, profile.state),
+    [crop.slug, season, profile.state]
+  );
+  const sowingDays = useMemo(
+    () => datesInOfficialWindow(crop.slug, season, profile.state),
+    [crop.slug, season, profile.state]
+  );
+
+  useEffect(() => {
+    setPickOpen(false);
+  }, [crop.slug, season]);
+
+  useEffect(() => {
+    setSowingDate((prev) => clampSowingDate(prev, sowingPack.min, sowingPack.max));
+    setGenerated(false);
+  }, [sowingPack.min, sowingPack.max]);
+
   const fertPlan = useMemo(
     () => (generated ? buildFertilizerPlan(crop.slug, acres) : null),
     [generated, crop.slug, acres, planStamp]
-  );
-
-  const varieties = useMemo(
-    () => getVarietiesForCrop(crop.slug, profile.state || undefined).slice(0, 3),
-    [crop.slug, profile.state, planStamp]
   );
 
   const timeline = useMemo(() => {
@@ -462,22 +483,21 @@ export default function CropPlannerClient() {
     }
 
     if (activeTab === "Irrigation") {
-      const lines = shortenFarmerLines(
+      const lines = farmerSpeakLines(
         mgmt?.irrigationSchedule?.length
           ? mgmt.irrigationSchedule
           : [
               crop.irrigationManagement.waterRequirement,
-              ...crop.irrigationManagement.criticalStages.map((c) => `Critical: ${c}`),
+              ...crop.irrigationManagement.criticalStages.map((c) => `ज़रूरी समय: ${c}`),
               ...crop.irrigationManagement.schedule,
             ],
-        4,
-        70
+        6,
+        160
       );
       return (
         <PlanPanel
           className="xl:col-span-12"
           eyebrow={t("plannerTabWater")}
-          title={`${displayName} — ${t("plannerTabHintWater")}`}
           accent="sky"
         >
           <ul className="space-y-2">
@@ -496,7 +516,7 @@ export default function CropPlannerClient() {
     }
 
     if (activeTab === "Fertilizer") {
-      const lines = shortenFarmerLines(
+      const lines = farmerSpeakLines(
         fertPlan?.schedule?.length
           ? fertPlan.schedule.map((s) => `${s.time}: ${s.apply}`)
           : [
@@ -505,17 +525,17 @@ export default function CropPlannerClient() {
                 s.details.map((d) => `${s.stage}: ${d}`)
               ),
             ],
-        5,
-        75
+        6,
+        180
       );
       return (
         <PlanPanel
           className="xl:col-span-12"
           eyebrow={t("plannerTabFert")}
-          title={`${displayName} — ${acres} ${acreUnit}`}
           accent="emerald"
         >
-          <ul className="space-y-2">
+          <FertilizerBags bags={fertPlan?.bags?.length ? fertPlan.bags : inferBagsFromLines(lines)} />
+          <ul className="mt-3 space-y-2">
             {lines.map((line) => (
               <li
                 key={line}
@@ -525,19 +545,6 @@ export default function CropPlannerClient() {
               </li>
             ))}
           </ul>
-          {fertPlan?.bags?.length ? (
-            <div className="mt-3 grid grid-cols-3 gap-2">
-              {fertPlan.bags.slice(0, 3).map((b) => (
-                <div
-                  key={b.name}
-                  className="rounded-2xl border border-emerald-500/25 bg-gradient-to-b from-emerald-500/10 to-transparent px-2 py-3 text-center"
-                >
-                  <p className="text-[9px] text-[var(--av-text-muted)]">{shortenFarmerLine(b.name, 18)}</p>
-                  <p className="mt-1 text-lg font-black text-emerald-600 dark:text-emerald-300">{b.amount}</p>
-                </div>
-              ))}
-            </div>
-          ) : null}
         </PlanPanel>
       );
     }
@@ -548,7 +555,6 @@ export default function CropPlannerClient() {
         <PlanPanel
           className="xl:col-span-12"
           eyebrow={t("plannerTabPest")}
-          title={`${t("plannerTabPest")} — ${displayName}`}
           accent="amber"
         >
           {pests.length ? (
@@ -556,10 +562,10 @@ export default function CropPlannerClient() {
               {pests.map((p) => (
                 <li key={p.pestName} className="rounded-2xl border border-amber-500/20 bg-amber-500/5 px-3 py-2.5">
                   <p className="text-sm font-bold text-[var(--av-text-primary)]">
-                    {shortenFarmerLine(p.pestName, 40)}
+                    {farmerSpeak(p.pestName, 48)}
                   </p>
                   <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                    {shortenFarmerLine(`${p.activeIngredient} — ${p.dose}`, 70)}
+                    {farmerSpeak(`${p.activeIngredient} ${p.dose}`, 90)}
                   </p>
                   <p className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
                     <AlertTriangle className="h-3 w-3" />
@@ -583,16 +589,15 @@ export default function CropPlannerClient() {
         <PlanPanel
           className="xl:col-span-12"
           eyebrow={t("plannerTabDisease")}
-          title={`${t("plannerTabDisease")} — ${displayName}`}
           accent="rose"
         >
           {diseases.length ? (
             <ul className="space-y-2">
               {diseases.map((d) => (
                 <li key={d.diseaseName} className="rounded-2xl border border-rose-500/20 bg-rose-500/5 px-3 py-2.5">
-                  <p className="text-sm font-bold">{shortenFarmerLine(d.diseaseName, 40)}</p>
+                  <p className="text-sm font-bold">{farmerSpeak(d.diseaseName, 48)}</p>
                   <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                    {shortenFarmerLine(`${d.activeIngredient} — ${d.dose}`, 70)}
+                    {farmerSpeak(`${d.activeIngredient} ${d.dose}`, 90)}
                   </p>
                 </li>
               ))}
@@ -613,23 +618,22 @@ export default function CropPlannerClient() {
         <PlanPanel
           className="xl:col-span-12"
           eyebrow={t("plannerTabWeed")}
-          title={`${t("plannerTabWeed")} — ${displayName}`}
           accent="lime"
         >
           {program?.criticalPeriod ? (
             <p className="mb-2 text-xs font-semibold text-lime-700 dark:text-lime-300">
-              {shortenFarmerLine(program.criticalPeriod, 50)}
+              {farmerSpeak(program.criticalPeriod, 90)}
             </p>
           ) : null}
           {weeds.length ? (
             <ul className="space-y-2">
               {weeds.map((w) => (
                 <li key={w.weedName} className="rounded-2xl border border-lime-500/20 bg-lime-500/5 px-3 py-2.5">
-                  <p className="text-sm font-bold">{shortenFarmerLine(w.weedName, 36)}</p>
+                  <p className="text-sm font-bold">{farmerSpeak(w.weedName, 48)}</p>
                   <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                    {shortenFarmerLine(
-                      `${w.postEmergenceHerbicide || w.preEmergenceHerbicide} · ${w.dose}`,
-                      72
+                    {farmerSpeak(
+                      `${w.postEmergenceHerbicide || w.preEmergenceHerbicide} ${w.dose}`,
+                      120
                     )}
                   </p>
                 </li>
@@ -637,7 +641,7 @@ export default function CropPlannerClient() {
             </ul>
           ) : (
             <ul className="space-y-1.5">
-              {shortenFarmerLines(crop.cropProtection.weedManagement, 3, 70).map((w) => (
+              {farmerSpeakLines(crop.cropProtection.weedManagement, 5, 160).map((w) => (
                 <li
                   key={w}
                   className="rounded-2xl border border-[var(--av-border)] px-3 py-2 text-sm text-[var(--av-text-secondary)]"
@@ -654,29 +658,30 @@ export default function CropPlannerClient() {
     return (
       <PlanPanel
         className="xl:col-span-12"
-        eyebrow={t("plannerTabHarvest")}
-        title={`${t("plannerTabHarvest")} — ${displayName}`}
+        eyebrow={cropHarvestLabel(crop, hi)}
         accent="amber"
       >
         <p className="text-base font-black text-amber-600 dark:text-amber-300">
-          {shortenFarmerLine(crop.harvestAndYield.harvestingTime, 50)}
+          {applyHarvestVerb(farmerSpeak(crop.harvestAndYield.harvestingTime), cropHarvestLabel(crop, hi))}
         </p>
         <p className="mt-1 text-xs text-[var(--av-text-muted)]">
-          {t("plannerYield")}: {shortenFarmerLine(crop.estimatedYield, 40)}
+          {t("plannerYield")}: {farmerSpeak(crop.estimatedYield)}
         </p>
         <ul className="mt-3 space-y-1.5">
-          {shortenFarmerLines(
-            [...crop.harvestAndYield.maturitySigns, ...crop.harvestAndYield.storageTips.slice(0, 2)],
-            4,
-            70
-          ).map((m) => (
+          {farmerSpeakLines(
+            [...crop.harvestAndYield.maturitySigns, ...crop.harvestAndYield.storageTips],
+            8
+          ).map((m) => {
+            const line = applyHarvestVerb(m, cropHarvestLabel(crop, hi));
+            return (
             <li
-              key={m}
+              key={line}
               className="rounded-2xl border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-sm text-[var(--av-text-secondary)]"
             >
-              {m}
+              {line}
             </li>
-          ))}
+          );
+          })}
         </ul>
       </PlanPanel>
     );
@@ -742,11 +747,12 @@ export default function CropPlannerClient() {
       <div className="grid grid-cols-3 gap-2">
         {[
           { n: "01", label: t("plannerStepCrop"), done: true },
-          { n: "02", label: t("plannerStepSeason"), done: true },
+          { n: "02", label: t("plannerStepSeason"), done: Boolean(season) },
           { n: "03", label: t("plannerStepPlan"), done: generated },
         ].map((s) => (
-          <div
+          <motion.div
             key={s.n}
+            layout
             className={cn(
               "rounded-2xl border px-3 py-2.5",
               s.done
@@ -756,105 +762,177 @@ export default function CropPlannerClient() {
           >
             <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-300">{s.n}</p>
             <p className="text-xs font-bold text-[var(--av-text-primary)]">{s.label}</p>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      {/* Crop picker */}
-      <section className="rounded-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-        <div className="mb-3 flex items-end justify-between gap-2">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--av-accent)]">
-              {t("plannerStep1")}
-            </p>
-            <h3 className="text-base font-bold text-[var(--av-text-primary)]">{t("plannerWhichCrop")}</h3>
-          </div>
-          <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">{crops.length}</p>
+      <motion.section
+        initial={reduced ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: MOTION.slow, ease: EASE_OUT }}
+        className="overflow-hidden rounded-[1.85rem] border border-emerald-900/8 bg-[var(--av-surface)] shadow-[0_18px_40px_-24px_rgba(6,78,59,0.45)] dark:border-white/8"
+      >
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 text-white">
+          <p className="text-[10px] font-bold tracking-[0.16em] text-emerald-100">{t("plannerStep1")}</p>
+          <h3 className="font-display text-lg font-bold">{hi ? "फसल चुनो" : t("plannerWhichCrop")}</h3>
         </div>
-
-        <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-2 scrollbar-hide">
+        <div className="-mx-0 flex gap-3 overflow-x-auto px-4 py-4 scrollbar-hide">
           {crops.map((c) => {
             const active = c.slug === cropSlug;
             const h = getCropHindiName(c.slug);
             const short = cropShortName(c.name);
             return (
-              <button
+              <motion.button
                 key={c.slug}
                 type="button"
+                whileTap={reduced ? undefined : { scale: 0.96 }}
                 onClick={() => selectCrop(c.slug)}
                 className={cn(
-                  "group relative w-[5.6rem] shrink-0 overflow-hidden rounded-2xl border text-left transition active:scale-[0.98]",
+                  "group relative w-[7.2rem] shrink-0 overflow-hidden rounded-[1.35rem] border text-left",
                   active
-                    ? "border-emerald-500 ring-2 ring-emerald-500/35 shadow-[0_12px_28px_-12px_rgba(16,185,129,0.55)]"
-                    : "border-[var(--av-border)] opacity-90 hover:opacity-100"
+                    ? "border-emerald-500 ring-2 ring-emerald-400/40 shadow-[0_16px_32px_-16px_rgba(16,185,129,0.7)]"
+                    : "border-transparent"
                 )}
               >
-                <div className="relative h-16 w-full">
+                <div className="relative h-[5.4rem] w-full">
                   <Image
                     src={getCropImageUrl(c)}
-                    alt={short}
+                    alt={h || short}
                     fill
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                    sizes="90px"
+                    className="object-cover transition duration-700 group-hover:scale-110"
+                    sizes="120px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
                   {active ? (
-                    <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-400 text-emerald-950">
+                      <CheckCircle2 className="h-4 w-4" />
                     </span>
                   ) : null}
+                  <p className="absolute bottom-2 left-2 right-2 truncate text-[13px] font-extrabold text-white">
+                    {hi ? h || short : short}
+                  </p>
                 </div>
-                <div className="bg-[var(--av-surface-inset)] px-2 py-2">
-                  <p className="truncate text-[11px] font-bold text-[var(--av-text-primary)]">{short}</p>
-                  {h ? <p className="truncate text-[9px] text-[var(--av-text-muted)]">{h}</p> : null}
-                </div>
-              </button>
+              </motion.button>
             );
           })}
         </div>
-        <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-          {t("plannerSeasonFit")}:{" "}
-          <span className="font-semibold text-[var(--av-text-secondary)]">{crop.suitableSeason}</span>
-        </p>
-      </section>
+      </motion.section>
 
-      {/* Season + area */}
-      <section className="rounded-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--av-accent)]">
-          {t("plannerStep2")}
-        </p>
-        <h3 className="mt-0.5 text-base font-bold text-[var(--av-text-primary)]">{t("plannerSeasonArea")}</h3>
+      <motion.section
+        initial={reduced ? false : { opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: MOTION.slow, ease: EASE_OUT, delay: 0.06 }}
+        className="overflow-hidden rounded-[1.85rem] border border-emerald-900/8 bg-[var(--av-surface)] shadow-[0_18px_40px_-24px_rgba(6,78,59,0.4)] dark:border-white/8"
+      >
+        <div className="px-4 pt-4">
+          <p className="text-[10px] font-bold tracking-[0.16em] text-emerald-700 dark:text-emerald-300">
+            {t("plannerStep2")}
+          </p>
+          <h3 className="font-display text-lg font-bold text-[var(--av-text-primary)]">
+            {hi ? "मौसम चुनो — तारीख खुद खुल जाएगी" : t("plannerSeasonArea")}
+          </h3>
+        </div>
 
-        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        <div className="mt-3 grid grid-cols-3 gap-2 px-4">
           {seasonOptions.map((s) => {
             const active = season === s.id;
             return (
-              <button
+              <motion.button
                 key={s.id}
                 type="button"
+                whileTap={reduced ? undefined : { scale: 0.97 }}
                 onClick={() => {
                   setSeason(s.id);
                   setGenerated(false);
                 }}
                 className={cn(
-                  "rounded-2xl border px-3 py-3 text-left transition",
+                  "relative overflow-hidden rounded-[1.2rem] border px-2.5 py-3 text-left",
                   active
-                    ? "border-emerald-500 bg-emerald-500/10 shadow-[inset_0_0_0_1px_rgba(16,185,129,0.25)]"
+                    ? "border-emerald-500 bg-emerald-600 text-white shadow-lg shadow-emerald-700/25"
                     : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
                 )}
               >
-                <p className="text-sm font-black text-[var(--av-text-primary)]">{t(s.labelKey)}</p>
-                <p className="mt-0.5 text-[10px] font-medium text-[var(--av-text-muted)]">
+                <p className="text-[13px] font-extrabold">{t(s.labelKey)}</p>
+                <p className={cn("mt-0.5 text-[10px] font-medium", active ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
                   {hi ? s.monthsHi : s.months}
                 </p>
-              </button>
+              </motion.button>
             );
           })}
         </div>
 
-        <div className="mt-4">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${crop.slug}-${season}`}
+            initial={reduced ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduced ? undefined : { opacity: 0, y: -8 }}
+            transition={{ duration: 0.28, ease: EASE_OUT }}
+            className="mx-4 mt-3 overflow-hidden rounded-[1.35rem] bg-gradient-to-br from-amber-50 via-emerald-50 to-sky-50 p-3.5 dark:from-emerald-950/50 dark:via-stone-900 dark:to-sky-950/30"
+          >
+            <p className="text-[11px] font-bold text-emerald-900 dark:text-emerald-100">
+              {hi ? "बुवाई का सही समय" : "Best sowing time"}
+            </p>
+            <p className="mt-1 font-display text-[1.25rem] font-bold leading-tight text-emerald-950 dark:text-emerald-50">
+              {sowingPack.window.rangeHi}
+            </p>
+            <p className="mt-3 text-[11px] font-bold text-emerald-900/70 dark:text-emerald-100/70">
+              {hi ? "बुवाई की तारीख चुनें" : "Choose sowing date"}
+            </p>
+            <button
+              type="button"
+              onClick={() => setPickOpen((v) => !v)}
+              className="mt-1.5 flex w-full items-center justify-between rounded-2xl border border-emerald-900/10 bg-white px-3.5 py-3 text-left dark:border-white/10 dark:bg-white/5"
+            >
+              <span className="text-[14px] font-extrabold text-emerald-950 dark:text-emerald-50">
+                {sowingDays.find((d) => d.iso === sowingDate)?.label ||
+                  sowingPack.window.startLabel}
+              </span>
+              <Calendar className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
+            </button>
+            <AnimatePresence>
+              {pickOpen ? (
+                <motion.div
+                  initial={reduced ? false : { opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={reduced ? undefined : { opacity: 0, height: 0 }}
+                  className="mt-2 overflow-hidden"
+                >
+                  <div className="grid max-h-48 grid-cols-4 gap-1.5 overflow-y-auto pr-0.5">
+                    {sowingDays.map((d) => {
+                      const on = sowingDate === d.iso;
+                      return (
+                        <button
+                          key={d.iso}
+                          type="button"
+                          onClick={() => {
+                            setSowingDate(d.iso);
+                            setPickOpen(false);
+                            setGenerated(false);
+                          }}
+                          className={cn(
+                            "rounded-xl px-1 py-2 text-[11px] font-extrabold",
+                            on
+                              ? "bg-emerald-600 text-white"
+                              : "bg-white/80 text-emerald-950 dark:bg-white/10 dark:text-emerald-50"
+                          )}
+                        >
+                          {d.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="px-4 py-4">
           <div className="flex items-center justify-between gap-2">
-            <label className="text-xs font-bold text-[var(--av-text-secondary)]">{t("plannerArea")}</label>
+            <label className="text-xs font-bold text-[var(--av-text-secondary)]">
+              {hi ? "खेत कितना बड़ा?" : t("plannerArea")}
+            </label>
             <div className="flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-1">
               <input
                 type="number"
@@ -870,7 +948,7 @@ export default function CropPlannerClient() {
               <span className="text-[10px] font-bold text-[var(--av-text-muted)]">{acreUnit}</span>
             </div>
           </div>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-2 grid grid-cols-4 gap-2">
             {AREA_PRESETS.map((preset) => (
               <button
                 key={preset}
@@ -880,18 +958,18 @@ export default function CropPlannerClient() {
                   setGenerated(false);
                 }}
                 className={cn(
-                  "rounded-full border px-3 py-1.5 text-[11px] font-bold transition",
+                  "rounded-xl border py-2 text-[12px] font-extrabold",
                   area === preset
-                    ? "border-emerald-500 bg-emerald-500 text-white"
+                    ? "border-emerald-500 bg-emerald-600 text-white"
                     : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]"
                 )}
               >
-                {preset} {acreUnit}
+                {preset}
               </button>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Generate CTA — commitment trap */}
       <section className="sticky bottom-24 z-20 overflow-hidden rounded-[1.75rem] border border-emerald-500/30 bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 p-4 text-white shadow-[0_18px_40px_-16px_rgba(16,185,129,0.65)] lg:static lg:bottom-auto">
@@ -905,6 +983,9 @@ export default function CropPlannerClient() {
               {displayName}
               {hindi ? ` (${hindi})` : ""} · {seasonMeta ? t(seasonMeta.labelKey) : season} · {acres}{" "}
               {acreUnit}
+              {sowingDate
+                ? ` · ${new Date(`${sowingDate}T00:00:00`).toLocaleDateString(hi ? "hi-IN" : "en-IN", { day: "numeric", month: "short" })}`
+                : ""}
             </p>
           </div>
           <button
@@ -1104,41 +1185,6 @@ export default function CropPlannerClient() {
             )}
           </div>
 
-          {/* Varieties */}
-          <section className="rounded-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-600 dark:text-amber-300">
-                  {t("plannerVarietiesBadge")}
-                </p>
-                <h3 className="text-sm font-bold text-[var(--av-text-primary)]">
-                  {t("plannerVarietiesTitle")} — {displayName}
-                  {profile.district ? ` · ${profile.district}` : ""}
-                </h3>
-              </div>
-              <AppLink href={`/crops/${crop.slug}/care/varieties`} className={AV.link}>
-                {t("plannerViewAll")} →
-              </AppLink>
-            </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {varieties.map((v, i) => (
-                <div
-                  key={v.name}
-                  className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-transparent p-3"
-                >
-                  {i === 0 ? (
-                    <span className="absolute right-2 top-2 rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-black text-white">
-                      {t("plannerTop")}
-                    </span>
-                  ) : null}
-                  <p className="pr-10 text-xs font-bold text-[var(--av-text-primary)]">{v.name}</p>
-                  <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">{v.trait}</p>
-                  <p className="mt-2 text-[10px] font-semibold text-amber-700 dark:text-amber-300">{v.season}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
           {/* Upsell CTA */}
           <section className="relative overflow-hidden rounded-[1.85rem] border border-emerald-500/25 bg-gradient-to-br from-stone-950 via-emerald-950 to-stone-900 p-5 text-white">
             <div className="pointer-events-none absolute -right-6 top-0 h-32 w-32 rounded-full bg-emerald-400/20 blur-3xl" />
@@ -1152,7 +1198,6 @@ export default function CropPlannerClient() {
                     {t("plannerNextUnlock")}
                   </p>
                   <p className="mt-1 text-base font-bold">{t("plannerAiTitle")}</p>
-                  <p className="mt-0.5 text-xs text-white/65">{t("plannerAiDesc")}</p>
                 </div>
               </div>
               <AppLink
@@ -1170,6 +1215,77 @@ export default function CropPlannerClient() {
   );
 }
 
+const BAG_FACE: Record<string, { en: string; tone: string }> = {
+  DAP: { en: "DAP", tone: "from-rose-700 to-rose-900" },
+  Urea: { en: "UREA", tone: "from-sky-600 to-sky-900" },
+  MOP: { en: "MOP", tone: "from-amber-600 to-amber-900" },
+  SOP: { en: "SOP", tone: "from-orange-600 to-orange-900" },
+  SSP: { en: "SSP", tone: "from-lime-700 to-lime-900" },
+  Gypsum: { en: "GYPSUM", tone: "from-stone-500 to-stone-800" },
+  ZnSO4: { en: "ZnSO4", tone: "from-teal-600 to-teal-900" },
+  ZnSO4_21: { en: "ZnSO4", tone: "from-teal-600 to-teal-900" },
+  Calcium_nitrate: { en: "CaNO3", tone: "from-emerald-700 to-emerald-950" },
+};
+
+function bagCode(name: string): string {
+  const n = name.toLowerCase();
+  if (n.includes("dap") || n.includes("डीएपी")) return "DAP";
+  if (n.includes("urea") || n.includes("यूरिया")) return "Urea";
+  if (n.includes("mop") || n.includes("एमओपी")) return "MOP";
+  if (n.includes("sop") || n.includes("एसओपी")) return "SOP";
+  if (n.includes("ssp") || n.includes("एसएसपी")) return "SSP";
+  if (n.includes("gypsum") || n.includes("जिप्सम")) return "Gypsum";
+  if (n.includes("zn") || n.includes("जिंक") || n.includes("zinc")) return "ZnSO4";
+  if (n.includes("calcium") || n.includes("कैल्शियम")) return "Calcium_nitrate";
+  return name;
+}
+
+function inferBagsFromLines(lines: string[]): { name: string; amount: string }[] {
+  const seen = new Set<string>();
+  const out: { name: string; amount: string }[] = [];
+  for (const line of lines) {
+    const code = bagCode(line);
+    if (!BAG_FACE[code] || seen.has(code)) continue;
+    seen.add(code);
+    const kg = line.match(/(\d+(?:\.\d+)?)\s*(किग्रा|kg|किलो)/i)?.[1];
+    out.push({ name: code, amount: kg ? `${kg} kg` : "" });
+  }
+  return out.slice(0, 4);
+}
+
+function FertilizerBags({ bags }: { bags: { name: string; amount: string }[] }) {
+  if (!bags.length) return null;
+  return (
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+      {bags.slice(0, 4).map((b) => {
+        const code = bagCode(b.name);
+        const face = BAG_FACE[code] ?? { en: code.slice(0, 6).toUpperCase(), tone: "from-emerald-700 to-emerald-950" };
+        return (
+          <div key={`${b.name}-${b.amount}`} className="flex flex-col items-center gap-1.5">
+            <div
+              className={cn(
+                "relative flex h-[72px] w-[54px] flex-col items-center justify-end overflow-hidden rounded-b-lg rounded-t-[6px] bg-gradient-to-b pb-1.5 shadow-md",
+                face.tone
+              )}
+            >
+              <span className="absolute top-0 h-2 w-full bg-black/25" />
+              <span className="px-0.5 text-center text-[10px] font-black leading-none tracking-wide text-white">
+                {face.en}
+              </span>
+            </div>
+            <p className="text-center text-[10px] font-bold leading-tight text-[var(--av-text-primary)]">
+              {fertilizerBagLabel(code)}
+            </p>
+            {b.amount ? (
+              <p className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300">{b.amount}</p>
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function PlanPanel({
   className,
   eyebrow,
@@ -1179,7 +1295,7 @@ function PlanPanel({
 }: {
   className?: string;
   eyebrow: string;
-  title: string;
+  title?: string;
   accent: "emerald" | "sky" | "amber" | "rose" | "lime";
   children: ReactNode;
 }) {
@@ -1205,7 +1321,7 @@ function PlanPanel({
         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--av-text-muted)]">
           {eyebrow}
         </p>
-        <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{title}</h3>
+        {title ? <h3 className="text-sm font-bold text-[var(--av-text-primary)]">{title}</h3> : null}
       </div>
       <div className="p-4">{children}</div>
     </section>

@@ -2,6 +2,7 @@
 
 import { Loader2, ShieldCheck } from "lucide-react";
 import { AdminShell, useAdminSession } from "@/components/admin/AdminShell";
+import IntegrationStatusBanner from "@/components/settings/IntegrationStatusBanner";
 import { APP_VERSION } from "@/lib/appMeta";
 
 export default function AdminSettingsPage() {
@@ -19,6 +20,8 @@ export default function AdminSettingsPage() {
     <AdminShell me={me} onLogout={() => void logout()} title="Settings">
       <div className="mx-auto max-w-2xl space-y-4">
         <h1 className="font-display text-2xl font-bold text-emerald-950">Console settings</h1>
+
+        <IntegrationStatusBanner />
 
         <div className="admin-cine__glass rounded-2xl border border-emerald-900/10 p-5">
           <p className="flex items-center gap-2 text-sm font-bold text-emerald-700">

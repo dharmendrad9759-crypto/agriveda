@@ -132,14 +132,14 @@ export default function ProfilePage() {
                       className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 text-[11px] font-bold text-emerald-800 transition active:scale-[0.98] dark:text-emerald-200"
                     >
                       <Pencil className="h-3 w-3" />
-                      {isHi ? "एडिट" : "Edit"}
+                      {isHi ? "बदलें" : "Edit"}
                     </AppLink>
                   </div>
 
                   <p className="mt-2.5 flex items-start gap-1.5 text-[13px] font-medium leading-snug text-[var(--av-text-secondary)]">
                     <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
                     <span className="min-w-0 break-words">
-                      {placeLine || (isHi ? "जगह अभी सेट नहीं" : "Location not set yet")}
+                      {placeLine || (isHi ? "जगह अभी नहीं डाली" : "Location not set yet")}
                     </span>
                   </p>
 
@@ -168,7 +168,7 @@ export default function ProfilePage() {
                 href: "/select-crops",
               },
               {
-                label: isHi ? "AI स्कैन" : "AI scans",
+                label: isHi ? "फसल जाँच" : "Leaf checks",
                 value: String(history.length),
                 icon: Stethoscope,
                 href: "/ai-doctor",
@@ -212,7 +212,7 @@ export default function ProfilePage() {
                 href="/select-crops"
                 className="inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
               >
-                {isHi ? "मैनेज" : "Manage"}
+                {isHi ? "बदलें" : "Change"}
                 <ChevronRight className="h-3.5 w-3.5" />
               </AppLink>
             </div>
@@ -259,7 +259,7 @@ export default function ProfilePage() {
           >
             <div className="border-b border-[var(--av-border-subtle)] px-4 py-3">
               <h3 className="text-[15px] font-bold text-[var(--av-text-primary)]">
-                {isHi ? "त्वरित सेटिंग्स" : "Quick settings"}
+                {isHi ? "जल्दी बदलें" : "Quick settings"}
               </h3>
             </div>
 
@@ -285,7 +285,7 @@ export default function ProfilePage() {
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
                     <Palette className="h-4 w-4" />
                   </span>
-                  {isHi ? "थीम" : "Theme"}
+                  {isHi ? "स्क्रीन रंग" : "Theme"}
                 </span>
                 <ThemeToggle />
               </div>

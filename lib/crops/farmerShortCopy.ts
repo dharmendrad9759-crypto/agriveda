@@ -1,13 +1,15 @@
 /** Short, farmer-friendly lines — no institute jargon, easy to scan. */
 
+import { farmerSpeak } from "@/lib/crops/farmerSpeak";
+
 const JARGON =
   /\b(ICAR|SAU|NFSM|NHRDF|KVK|CIB\s*&?\s*RC|State Agricultural University|Package of Practices|PoP|FRAC|IRAC|HRAC|ETL)\b/gi;
 
 const FILLER =
-  /\s*(for the local ecosystem|as per (the )?label|recommended by[^.,;]*|according to[^.,;]*)/gi;
+  /\s*(for the local ecosystem|as per (the )?label|recommended by[^.,;]*|according to[^.,;]*|लेबल\s*अनुसार|लेबल\s*के\s*अनुसार)\s*/gi;
 
 export function shortenFarmerLine(raw: string, maxLen = 72): string {
-  let t = raw
+  let t = farmerSpeak(raw)
     .replace(JARGON, "")
     .replace(FILLER, "")
     .replace(/\s{2,}/g, " ")

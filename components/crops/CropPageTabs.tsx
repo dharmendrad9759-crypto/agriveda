@@ -10,6 +10,7 @@ import {
   cropHarvestLabel,
 } from "@/lib/crops/harvestLabel";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import { getCropTabPhoto } from "@/lib/crops/cropTabPhotos";
 import { getCatalogCrop } from "@/data/crop-catalog";
 import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
@@ -17,24 +18,6 @@ import type { Crop } from "@/types/crop";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, Sprout } from "lucide-react";
 import { useState } from "react";
-
-const TAB_PHOTO: Record<CropTabId, string> = {
-  overview: "/images/jobs/job-crops-hero.jpg",
-  growth: "/images/jobs/job-my-farm.jpg",
-  "field-prep": "/images/jobs/job-my-farm.jpg",
-  fertilizer: "/images/jobs/job-fertilizer.jpg",
-  pests: "/images/threats/threat-insect.jpg",
-  diseases: "/images/threats/threat-disease.jpg",
-  nutrients: "/images/home/home-job-yellow-leaf.jpg",
-  irrigation: "/images/home/home-job-weather.jpg",
-  weeds: "/images/threats/threat-weed.jpg",
-  calendar: "/images/jobs/job-my-farm.jpg",
-  varieties: "/images/jobs/job-crops-hero.jpg",
-  harvest: "/images/jobs/job-crops-hero.jpg",
-  market: "/images/jobs/job-crops-hero.jpg",
-  faq: "/images/home/ask-expert-trust.jpg",
-  expert: "/images/home/home-job-ask.jpg",
-};
 
 const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
   overview: "cropTabOverview",
@@ -62,7 +45,6 @@ type TabGroup = {
 };
 
 const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
-  varieties: "हाइब्रिड, देसी, लोकल — रोग प्रतिरोध, भंडारण, फल आकार",
   "field-prep": "नर्सरी, बीज दर, रोपाई, दूरी, मल्चिंग, ड्रिप",
   fertilizer: "कब डालें और कितनी — यूरिया, डीएपी, एमओपी",
   irrigation: "कितना और कब पानी दें",
@@ -79,7 +61,6 @@ const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
 };
 
 const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
-  varieties: "Hybrid, local — disease resist, storage, fruit size",
   "field-prep": "Nursery, seed rate, transplant, spacing, mulch, drip",
   fertilizer: "When & how much — urea, DAP, MOP",
   irrigation: "How much water, when",
@@ -188,7 +169,10 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
           href={cropCareHref(crop.slug, id)}
           title={title}
           subtitle={subtitle}
-          image={TAB_PHOTO[id]}
+          image={getCropTabPhoto(crop.slug, id)}
+          threatCategory={
+            id === "pests" ? "insect" : id === "diseases" ? "fungal" : id === "weeds" ? "weed" : "crop"
+          }
           openHint={openHint}
         />
       </motion.div>

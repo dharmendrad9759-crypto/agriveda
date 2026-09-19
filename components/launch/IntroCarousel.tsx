@@ -71,7 +71,7 @@ const SLIDES: Slide[] = [
       {
         icon: <Camera className="h-5 w-5" strokeWidth={2.2} />,
         title: "फोटो से पहचान",
-        sub: "पत्ते की फोटो अपलोड करें",
+        sub: "पत्ते की फोटो लगाएँ",
       },
       {
         icon: <FileSearch className="h-5 w-5" strokeWidth={2.2} />,
