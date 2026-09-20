@@ -10,7 +10,14 @@ import {
   getCropIrrigationGuide,
   irrigationStagePhoto,
   irrigationStagePhotoFallback,
+  type IrrigationStageGuide,
 } from "@/lib/crops/cropIrrigationGuide";
+import {
+  farmerIrrigationHi,
+  formatIrrigationPeriodHi,
+  formatIrrigationSequenceHi,
+  stripLeadingIndex,
+} from "@/lib/crops/simplifyIrrigationHi";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { AV } from "@/lib/design/tokens";
@@ -19,11 +26,13 @@ import type { Crop } from "@/types/crop";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
 import {
   AlertTriangle,
-  CalendarClock,
+  CheckCircle2,
   CloudRain,
   Droplets,
+  Eye,
   Grid2x2,
-  TrendingUp,
+  Lightbulb,
+  Sparkles,
 } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -40,7 +49,7 @@ function StagePhoto({
   alt,
 }: {
   cropSlug: string;
-  kind: "sow" | "veg" | "flower" | "bulk" | "harvest";
+  kind: IrrigationStageGuide["photoKind"];
   alt: string;
 }) {
   const primary = irrigationStagePhoto(cropSlug, kind);
@@ -71,7 +80,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
   const hindi = getCropHindiName(crop.slug);
   const cropLabel = hi && hindi ? hindi : crop.name;
   const cropImg = resolveCropImage({ slug: crop.slug, name: crop.name, image: crop.image });
-  const showAwd = crop.slug === "paddy";
+  const showAwd = crop.slug === "paddy" || crop.slug === "rice" || crop.slug === "dhaan";
 
   const guide = useMemo(
     () =>
@@ -118,47 +127,49 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
     };
   }, [weather]);
 
+  const criticalCount = guide.stages.filter((s) => s.critical).length;
+
   return (
     <div className="space-y-3">
-      {/* Hero summary */}
-      <section className="overflow-hidden rounded-2xl border border-emerald-800/20 bg-gradient-to-br from-emerald-800 via-emerald-700 to-lime-800 text-white shadow-[var(--av-shadow-sm)]">
+      {/* Hero */}
+      <section className="overflow-hidden rounded-2xl border border-sky-800/25 bg-gradient-to-br from-sky-900 via-cyan-800 to-teal-800 text-white shadow-[var(--av-shadow-sm)]">
         <div className="flex gap-3 p-3.5 sm:p-4">
           <div className="min-w-0 flex-1">
-            <p className="text-[16px] font-black leading-tight tracking-tight">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-cyan-100/80">
+              {hi ? "सिंचाई · महत्वपूर्ण अवस्था गाइड" : "Irrigation · critical stage guide"}
+            </p>
+            <p className="mt-1 text-[17px] font-black leading-tight tracking-tight">
               {hi ? `${cropLabel} — पानी कब दें` : `${cropLabel} — when to water`}
             </p>
             <div className="mt-3 grid grid-cols-3 gap-1.5">
               {[
                 {
-                  icon: CalendarClock,
-                  label: hi ? "मौसम" : "Season",
-                  value: crop.suitableSeason,
+                  label: hi ? "कुल सिंचाई" : "Total",
+                  value: hi
+                    ? farmerIrrigationHi(guide.irrigationsHi)
+                    : guide.irrigationsEn,
                 },
                 {
-                  icon: Grid2x2,
-                  label: hi ? "क्षेत्र" : "Area",
-                  value: hi ? "1 एकड़" : "1 acre",
+                  label: hi ? "विधि" : "Method",
+                  value: hi ? farmerIrrigationHi(guide.methodHi) : guide.methodEn,
                 },
                 {
-                  icon: TrendingUp,
-                  label: hi ? "पैदावार" : "Yield",
-                  value: crop.estimatedYield.replace(/प्रति\s*एकड़/gi, "").trim(),
+                  label: hi ? "क्रिटिकल" : "Critical",
+                  value: hi
+                    ? `${criticalCount || guide.stages.length} महत्वपूर्ण अवस्था`
+                    : `${criticalCount || guide.stages.length} stages`,
                 },
-              ].map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div
-                    key={item.label}
-                    className="rounded-xl bg-black/20 px-2 py-2 backdrop-blur-[2px]"
-                  >
-                    <Icon className="mb-1 h-3.5 w-3.5 text-lime-200" />
-                    <p className="text-[9px] font-bold text-white/70">{item.label}</p>
-                    <p className="mt-0.5 line-clamp-2 text-[10px] font-extrabold leading-snug">
-                      {item.value}
-                    </p>
-                  </div>
-                );
-              })}
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-xl bg-black/25 px-2 py-2 backdrop-blur-[2px]"
+                >
+                  <p className="text-[9px] font-bold text-white/70">{item.label}</p>
+                  <p className="mt-0.5 line-clamp-3 text-[10px] font-extrabold leading-snug">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
           <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-white/20 bg-white/10 sm:h-28 sm:w-28">
@@ -173,7 +184,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
         </div>
       </section>
 
-      {/* Live weather alert */}
+      {/* Weather */}
       <DarkCard
         className={cn(
           rainAlert?.postpone
@@ -216,9 +227,11 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
                   : hi
                     ? rainAlert?.bodyHi
                     : rainAlert?.bodyEn}
-                {!weatherLoading && !weather && (hi
-                  ? "स्थान डालें — मौसम पेज से जीपीएस या शहर चुनें।"
-                  : "Set location on Weather page (GPS or city).")}
+                {!weatherLoading &&
+                  !weather &&
+                  (hi
+                    ? "स्थान डालें — मौसम पेज से जीपीएस या शहर चुनें।"
+                    : "Set location on Weather page (GPS or city).")}
               </p>
             </div>
           </div>
@@ -231,23 +244,56 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
         </div>
       </DarkCard>
 
+      {/* Principle + soil */}
+      {(guide.principleHi || guide.soilOrRegionHi) && (
+        <DarkCard className="border-violet-500/25 bg-gradient-to-br from-violet-500/10 to-transparent">
+          <div className="flex gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-violet-700 dark:text-violet-300">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[12px] font-extrabold text-violet-900 dark:text-violet-100">
+                {hi ? "मुख्य सिद्धांत" : "Key principle"}
+              </p>
+              {guide.principleHi ? (
+                <p className="mt-1 text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+                  {hi
+                    ? farmerIrrigationHi(guide.principleHi)
+                    : guide.principleEn ?? guide.principleHi}
+                </p>
+              ) : null}
+              {(guide.soilOrRegionHi || guide.noteHi) && (
+                <p className="mt-2 rounded-lg border border-violet-500/20 bg-white/50 px-2 py-1.5 text-[11px] font-bold leading-snug text-[var(--av-text-primary)] dark:bg-black/20">
+                  {hi ? "मिट्टी / क्षेत्र: " : "Soil / region: "}
+                  {hi
+                    ? farmerIrrigationHi(guide.soilOrRegionHi ?? guide.noteHi)
+                    : guide.soilOrRegionEn ?? guide.noteEn}
+                </p>
+              )}
+            </div>
+          </div>
+        </DarkCard>
+      )}
+
       {/* Quick facts */}
       <div className="grid grid-cols-3 gap-2">
         {[
           {
             icon: Droplets,
             label: hi ? "कुल सिंचाई" : "Total irrigations",
-            value: hi ? guide.irrigationsHi : guide.irrigationsEn,
+            value: hi
+              ? farmerIrrigationHi(guide.irrigationsHi)
+              : guide.irrigationsEn,
           },
           {
             icon: Grid2x2,
             label: hi ? "विधि" : "Method",
-            value: hi ? guide.methodHi : guide.methodEn,
+            value: hi ? farmerIrrigationHi(guide.methodHi) : guide.methodEn,
           },
           {
             icon: AlertTriangle,
             label: hi ? "ध्यान" : "Note",
-            value: hi ? guide.noteHi : guide.noteEn,
+            value: hi ? farmerIrrigationHi(guide.noteHi) : guide.noteEn,
           },
         ].map((item) => {
           const Icon = item.icon;
@@ -258,7 +304,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
             >
               <Icon className="mx-auto h-4 w-4 text-sky-600" />
               <p className="mt-1 text-[9px] font-bold text-[var(--av-text-muted)]">{item.label}</p>
-              <p className="mt-0.5 text-[11px] font-extrabold leading-snug text-[var(--av-text-primary)]">
+              <p className="mt-0.5 line-clamp-3 text-[11px] font-extrabold leading-snug text-[var(--av-text-primary)]">
                 {item.value}
               </p>
             </div>
@@ -271,10 +317,10 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
         <div className="flex gap-3">
           <div className="min-w-0 flex-1">
             <p className="text-[12px] font-extrabold text-red-800 dark:text-red-200">
-              {hi ? "सबसे ज़रूरी बात" : "Most important"}
+              {hi ? "सबसे ज़रूरी सावधानी" : "Most important caution"}
             </p>
             <p className="mt-1 text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]">
-              {hi ? guide.warningHi : guide.warningEn}
+              {hi ? farmerIrrigationHi(guide.warningHi) : guide.warningEn}
             </p>
           </div>
           <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-red-500/20 bg-white">
@@ -296,65 +342,181 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
         <div className="flex items-center gap-2">
           <Droplets className="h-4 w-4 text-sky-600" />
           <h3 className="text-sm font-black text-[var(--av-text-primary)]">
-            {hi ? "सिंचाई समय सारणी" : "Irrigation schedule"}
+            {hi ? "सिंचाई क्रम · महत्वपूर्ण अवस्था" : "Irrigation sequence · critical stages"}
           </h3>
         </div>
+        <p className="mt-1 text-[11px] font-semibold text-[var(--av-text-muted)]">
+          {hi
+            ? "समय + खेत की पहचान + पानी का तरीका"
+            : "Timing (DAS/DAT) + field ID + water method"}
+        </p>
 
         <ol className="relative mt-4 space-y-0 pl-1">
           <span
             aria-hidden
             className="absolute bottom-4 left-[15px] top-4 w-0.5 bg-sky-500/25"
           />
-          {guide.stages.map((stage, i) => (
-            <li key={stage.titleHi} className="relative pb-4 pl-9">
-              <span className="absolute left-0 top-1 flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-[11px] font-black text-white shadow-sm">
-                {i + 1}
-              </span>
-              <div className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-2.5">
-                <div className="flex gap-2.5">
-                  <StagePhoto
-                    cropSlug={crop.slug}
-                    kind={stage.photoKind}
-                    alt={hi ? stage.titleHi : stage.titleEn}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-start justify-between gap-1.5">
-                      <div>
-                        <p className="text-[12px] font-extrabold text-[var(--av-text-primary)]">
-                          {hi ? stage.titleHi : stage.titleEn}
-                        </p>
-                        <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">
-                          {hi ? stage.periodHi : stage.periodEn}
-                        </p>
-                      </div>
-                      <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold text-sky-800 dark:text-sky-200">
-                        {hi ? stage.badgeHi : stage.badgeEn}
-                      </span>
-                    </div>
-                    {stage.critical ? (
-                      <span className="mt-1.5 inline-flex rounded-full bg-red-500/15 px-2 py-0.5 text-[10px] font-extrabold text-red-700 dark:text-red-300">
-                        {hi ? "सबसे महत्वपूर्ण समय" : "Most critical stage"}
-                      </span>
-                    ) : null}
-                    <ul className="mt-2 space-y-1">
-                      {(hi ? stage.pointsHi : stage.pointsEn).map((p) => (
-                        <li
-                          key={p}
-                          className="text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]"
+          {guide.stages.map((stage, i) => {
+            const fieldIds = hi
+              ? stage.fieldIdHi
+              : stage.fieldIdEn ?? stage.fieldIdHi;
+            const waterRaw = hi ? stage.waterHi : stage.waterEn ?? stage.waterHi;
+            const water = hi && waterRaw ? farmerIrrigationHi(waterRaw) : waterRaw;
+            const seqLabel = hi
+              ? formatIrrigationSequenceHi(stage.sequenceHi, i)
+              : stage.sequenceHi
+                ? `Irrigation ${stage.sequenceHi}`
+                : null;
+            const periodLabel = hi
+              ? formatIrrigationPeriodHi(stage.periodHi)
+              : stage.periodEn;
+            const titleLabel = hi
+              ? farmerIrrigationHi(stage.titleHi)
+              : stage.titleEn;
+            const badgeLabel = hi
+              ? farmerIrrigationHi(stage.badgeHi)
+              : stage.badgeEn;
+            return (
+              <li key={`${stage.titleHi}-${i}`} className="relative pb-4 pl-9">
+                <span
+                  className={cn(
+                    "absolute left-0 top-1 flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-black text-white shadow-sm",
+                    stage.critical ? "bg-red-600" : "bg-sky-600"
+                  )}
+                >
+                  {i + 1}
+                </span>
+                <div
+                  className={cn(
+                    "rounded-xl border p-2.5",
+                    stage.critical
+                      ? "border-red-500/30 bg-gradient-to-r from-red-500/10 to-[var(--av-surface-inset)]"
+                      : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
+                  )}
+                >
+                  <div className="flex gap-2.5">
+                    <StagePhoto
+                      cropSlug={crop.slug}
+                      kind={stage.photoKind}
+                      alt={titleLabel}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-start justify-between gap-1.5">
+                        <div className="min-w-0">
+                          {seqLabel ? (
+                            <p className="text-[10px] font-bold tracking-wide text-sky-700 dark:text-sky-300">
+                              {seqLabel}
+                            </p>
+                          ) : null}
+                          <p className="text-[13px] font-extrabold leading-snug text-[var(--av-text-primary)]">
+                            {titleLabel}
+                          </p>
+                          <p className="mt-0.5 text-[11px] font-bold text-[var(--av-text-muted)]">
+                            {periodLabel}
+                          </p>
+                        </div>
+                        <span
+                          className={cn(
+                            "rounded-full px-2 py-0.5 text-[10px] font-bold",
+                            stage.critical
+                              ? "bg-red-500/15 text-red-800 dark:text-red-200"
+                              : "bg-sky-500/15 text-sky-800 dark:text-sky-200"
+                          )}
                         >
-                          • {p}
-                        </li>
-                      ))}
-                    </ul>
+                          {badgeLabel}
+                        </span>
+                      </div>
+
+                      {stage.critical ? (
+                        <span className="mt-1.5 inline-flex rounded-full bg-red-500/15 px-2 py-0.5 text-[10px] font-extrabold text-red-700 dark:text-red-300">
+                          {hi ? "सबसे महत्वपूर्ण समय" : "Most critical stage"}
+                        </span>
+                      ) : null}
+
+                      {water ? (
+                        <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-sky-500/10 px-2 py-1.5 text-[11px] font-bold leading-snug text-sky-900 dark:text-sky-100">
+                          <Droplets className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          {water}
+                        </p>
+                      ) : null}
+
+                      {fieldIds && fieldIds.length > 0 ? (
+                        <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2 py-1.5">
+                          <p className="flex items-center gap-1 text-[10px] font-extrabold text-emerald-800 dark:text-emerald-200">
+                            <Eye className="h-3 w-3" />
+                            {hi ? "खेत में कैसे पहचानें" : "How to spot in field"}
+                          </p>
+                          <ul className="mt-1 space-y-1">
+                            {fieldIds.map((p) => (
+                              <li
+                                key={p}
+                                className="text-[11px] font-semibold leading-snug text-[var(--av-text-secondary)]"
+                              >
+                                • {hi ? farmerIrrigationHi(p) : p}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+
+                      <ul className="mt-2 space-y-1">
+                        {(hi ? stage.pointsHi : stage.pointsEn).map((p) => (
+                          <li
+                            key={p}
+                            className="flex items-start gap-1.5 text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]"
+                          >
+                            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-600" />
+                            {hi ? farmerIrrigationHi(p) : p}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ol>
       </DarkCard>
 
-      {/* Desi moisture check */}
+      {/* Field experience */}
+      {guide.experiences && guide.experiences.length > 0 ? (
+        <DarkCard className="border-amber-500/25 bg-amber-500/5">
+          <div className="flex items-center gap-2">
+            <Lightbulb className="h-4 w-4 text-amber-600" />
+            <h3 className="text-sm font-black text-[var(--av-text-primary)]">
+              {hi ? "खेत का अनुभव · सावधानियां" : "Field experience · cautions"}
+            </h3>
+          </div>
+          <div className="mt-3 space-y-2.5">
+            {guide.experiences.map((ex, idx) => (
+              <div
+                key={ex.titleHi}
+                className="rounded-xl border border-amber-500/20 bg-[var(--av-surface)] px-3 py-2.5"
+              >
+                <p className="text-[12px] font-extrabold text-amber-950 dark:text-amber-100">
+                  {idx + 1}.{" "}
+                  {hi
+                    ? farmerIrrigationHi(stripLeadingIndex(ex.titleHi))
+                    : stripLeadingIndex(ex.titleEn)}
+                </p>
+                <ul className="mt-1.5 space-y-1">
+                  {(hi ? ex.pointsHi : ex.pointsEn).map((p) => (
+                    <li
+                      key={p}
+                      className="text-[11px] font-semibold leading-snug text-[var(--av-text-secondary)]"
+                    >
+                      • {hi ? farmerIrrigationHi(p) : p}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </DarkCard>
+      ) : null}
+
+      {/* Desi moisture */}
       <DarkCard className="border-amber-500/30 bg-amber-500/8">
         <div className="flex gap-3">
           <div className="min-w-0 flex-1">
@@ -379,39 +541,14 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
         </div>
       </DarkCard>
 
-      {/* Tips grid */}
-      <div className="grid grid-cols-2 gap-2">
-        {(hi
-          ? [
-              "सुबह या शाम सिंचाई करें",
-              crop.slug === "maize"
-                ? "मूंछ / भुट्टा समय पानी न रोकें"
-                : "बालियों के समय पानी न रोकें",
-              "खेत में पानी खड़ा न रखें",
-            ]
-          : [
-              "Irrigate morning or evening",
-              crop.slug === "maize"
-                ? "Do not skip water at silk / cob time"
-                : "Do not stop water at panicle / ear stage",
-              "Avoid standing water in field",
-            ]
-        ).map((tip) => (
-          <div
-            key={tip}
-            className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-[11px] font-bold leading-snug text-[var(--av-text-primary)]"
-          >
-            {tip}
-          </div>
-        ))}
-      </div>
-
       <IrrigationReminderButton
         cropSlug={crop.slug}
         cropLabel={cropLabel}
         hi={hi}
         badgeHints={guide.stages.flatMap((s) =>
-          hi ? [s.badgeHi, ...s.pointsHi] : [s.badgeEn, ...s.pointsEn]
+          hi
+            ? [s.badgeHi, s.waterHi ?? "", ...(s.fieldIdHi ?? []), ...s.pointsHi]
+            : [s.badgeEn, s.waterEn ?? "", ...(s.fieldIdEn ?? []), ...s.pointsEn]
         )}
       />
     </div>

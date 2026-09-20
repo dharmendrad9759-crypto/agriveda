@@ -4,8 +4,10 @@ import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { getCropFieldPrepGuide } from "@/lib/crops/cropFieldPrepGuide";
+import { getPracticalSeedRate } from "@/lib/crops/practicalSeedRates";
 import type { Crop } from "@/types/crop";
-import { Droplets, LayoutGrid, Shovel, Sprout, Tractor } from "lucide-react";
+import { Droplets, LayoutGrid, Shield, Shovel, Sprout, Tractor } from "lucide-react";
 import { useMemo } from "react";
 
 const GENERIC_NURSERY = /स्थानीय सलाह के अनुसार नर्सरी तैयार करें/;
@@ -48,26 +50,54 @@ function ListBlock({ items }: { items: string[] }) {
 export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
   const { locale } = useLocale();
   const hi = locale === "hi";
+  const guide = useMemo(() => getCropFieldPrepGuide(crop.slug), [crop.slug]);
   const profile = useMemo(() => getCropManagementProfile(crop.slug), [crop.slug]);
   const sow = crop.sowingGuide;
-  const seedRate = sow.seedRate || crop.seedRate;
-  const spacing = sow.spacing || crop.spacing;
+  const practicalSeed = useMemo(() => getPracticalSeedRate(crop.slug), [crop.slug]);
+  const seedRate =
+    practicalSeed?.labelHi || sow.seedRate || crop.seedRate;
+  const seedRateNote = practicalSeed?.noteHi;
 
   const landPrep =
-    profile?.landPreparation?.length
-      ? profile.landPreparation
-      : [
-          hi
-            ? "खेत साफ करें, गहरी जुताई और पाटा लगाएँ।"
-            : "Clear field, deep plough and level.",
-        ];
+    guide?.landPreparation?.length
+      ? guide.landPreparation
+      : profile?.landPreparation?.length
+        ? profile.landPreparation
+        : [
+            hi
+              ? "खेत साफ करें, गहरी जुताई और पाटा लगाएँ।"
+              : "Clear field, deep plough and level.",
+          ];
 
-  const nursery = (profile?.nursery ?? []).filter(
-    (line) => !GENERIC_NURSERY.test(line.trim())
-  );
-  const transplanting = profile?.transplanting ?? [];
-  const hasNursery = nursery.length > 0 || cropUsesNursery(crop);
-  const seedTreatment = sow.seedTreatment;
+  const seedTreatmentLines =
+    guide?.seedTreatment?.length
+      ? guide.seedTreatment
+      : sow.seedTreatment
+        ? [sow.seedTreatment]
+        : profile?.seedTreatment?.filter(Boolean) ?? [];
+
+  const spacing = guide?.spacing || sow.spacing || crop.spacing;
+  const sowingTimeLines =
+    guide?.sowingTime?.length
+      ? guide.sowingTime
+      : sow.bestSowingTime
+        ? [sow.bestSowingTime]
+        : [];
+
+  const nursery =
+    guide?.nurseryNotes?.length
+      ? guide.nurseryNotes
+      : (profile?.nursery ?? []).filter((line) => !GENERIC_NURSERY.test(line.trim()));
+
+  const transplanting =
+    guide?.transplanting?.length
+      ? guide.transplanting
+      : (profile?.transplanting ?? []).filter(Boolean);
+
+  const hasNursery =
+    Boolean(guide?.usesNursery) ||
+    nursery.length > 0 ||
+    cropUsesNursery(crop);
 
   const mulchingDrip = [
     ...(profile?.interculturalOperations?.filter((line) =>
@@ -80,16 +110,31 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
 
   return (
     <div className="space-y-4">
+      {seedTreatmentLines.length > 0 ? (
+        <DarkCard>
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-violet-600" />
+            <SectionHeader title={hi ? "बीज उपचार" : "Seed treatment"} />
+          </div>
+          <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
+            {hi
+              ? "बुवाई / रोपाई से पहले बीज या सेट का इलाज"
+              : "Treat seed or planting material before sowing"}
+          </p>
+          <ListBlock items={seedTreatmentLines} />
+        </DarkCard>
+      ) : null}
+
       {hasNursery ? (
         <DarkCard>
           <div className="flex items-center gap-2">
             <Shovel className="h-4 w-4 text-amber-600" />
-            <SectionHeader title={hi ? "नर्सरी प्रबंधन" : "Nursery management"} />
+            <SectionHeader title={hi ? "नर्सरी" : "Nursery"} />
           </div>
           <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
             {hi
-              ? "नर्सरी में बीज लगाने से रोपाई तक (लगभग 25–30 दिन)"
-              : "From nursery sowing to transplant (about 25–30 days)"}
+              ? "नर्सरी में बीज से रोपाई तक"
+              : "From nursery sowing to transplant"}
           </p>
           {seedRate ? (
             <div className="mt-2 crop-premium-inset text-xs">
@@ -97,14 +142,11 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
                 {hi ? "बीज की मात्रा" : "Seed rate"}
               </p>
               <p className="mt-0.5 text-[var(--av-text-primary)]">{seedRate}</p>
-            </div>
-          ) : null}
-          {seedTreatment ? (
-            <div className="mt-2 crop-premium-inset text-xs">
-              <p className="font-bold text-[var(--av-text-muted)]">
-                {hi ? "बीज उपचार" : "Seed treatment"}
-              </p>
-              <p className="mt-0.5 text-[var(--av-text-primary)]">{seedTreatment}</p>
+              {seedRateNote ? (
+                <p className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
+                  {seedRateNote}
+                </p>
+              ) : null}
             </div>
           ) : null}
           <ListBlock items={nursery} />
@@ -125,24 +167,49 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
           <SectionHeader title={hi ? "खेत में दूरी और बुवाई" : "Field spacing & sowing"} />
         </div>
         <dl className="mt-3 space-y-2 text-xs">
-          {[
-            ...(!hasNursery && seedRate
-              ? [{ label: hi ? "बीज की मात्रा" : "Seed rate", value: seedRate }]
-              : []),
-            { label: hi ? "दूरी (पंक्ति × पौधा)" : "Spacing (R × P)", value: spacing },
-            ...(!hasNursery
-              ? [{ label: hi ? "बीज उपचार" : "Seed treatment", value: seedTreatment }]
-              : []),
-            { label: hi ? "बुवाई का तरीका" : "Sowing method", value: sow.sowingMethod },
-            { label: hi ? "बुवाई का समय" : "Sowing time", value: sow.bestSowingTime },
-          ]
-            .filter((row) => row.value)
-            .map((row) => (
-              <div key={row.label} className="crop-premium-inset">
-                <dt className="font-bold text-[var(--av-text-muted)]">{row.label}</dt>
-                <dd className="mt-0.5 text-[var(--av-text-primary)]">{row.value}</dd>
-              </div>
-            ))}
+          {spacing ? (
+            <div className="crop-premium-inset">
+              <dt className="font-bold text-[var(--av-text-muted)]">
+                {hi ? "दूरी (पंक्ति × पौधा)" : "Spacing (R × P)"}
+              </dt>
+              <dd className="mt-0.5 text-[var(--av-text-primary)]">{spacing}</dd>
+            </div>
+          ) : null}
+          {!hasNursery && seedRate ? (
+            <div className="crop-premium-inset">
+              <dt className="font-bold text-[var(--av-text-muted)]">
+                {hi ? "बीज की मात्रा" : "Seed rate"}
+              </dt>
+              <dd className="mt-0.5 text-[var(--av-text-primary)]">{seedRate}</dd>
+              {seedRateNote ? (
+                <dd className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
+                  {seedRateNote}
+                </dd>
+              ) : null}
+            </div>
+          ) : null}
+          {sowingTimeLines.length > 0 ? (
+            <div className="crop-premium-inset">
+              <dt className="font-bold text-[var(--av-text-muted)]">
+                {hi ? "बुवाई / रोपाई का समय" : "Sowing / transplant time"}
+              </dt>
+              <dd className="mt-1 space-y-1.5 text-[var(--av-text-primary)]">
+                {sowingTimeLines.map((line) => (
+                  <p key={line} className="leading-relaxed">
+                    {line}
+                  </p>
+                ))}
+              </dd>
+            </div>
+          ) : null}
+          {!guide && sow.sowingMethod ? (
+            <div className="crop-premium-inset">
+              <dt className="font-bold text-[var(--av-text-muted)]">
+                {hi ? "बुवाई का तरीका" : "Sowing method"}
+              </dt>
+              <dd className="mt-0.5 text-[var(--av-text-primary)]">{sow.sowingMethod}</dd>
+            </div>
+          ) : null}
         </dl>
       </DarkCard>
 
@@ -150,7 +217,7 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
         <DarkCard>
           <div className="flex items-center gap-2">
             <Sprout className="h-4 w-4 text-emerald-600" />
-            <SectionHeader title={hi ? "रोपाई का समय" : "Transplanting"} />
+            <SectionHeader title={hi ? "रोपाई" : "Transplanting"} />
           </div>
           <ListBlock items={transplanting} />
         </DarkCard>
@@ -160,7 +227,9 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
         <DarkCard>
           <div className="flex items-center gap-2">
             <Droplets className="h-4 w-4 text-cyan-600" />
-            <SectionHeader title={hi ? "मल्चिंग और ड्रिप (ज़रूरत हो तो)" : "Mulching & drip (if needed)"} />
+            <SectionHeader
+              title={hi ? "मल्चिंग और ड्रिप (ज़रूरत हो तो)" : "Mulching & drip (if needed)"}
+            />
           </div>
           <ListBlock items={mulchingDrip} />
         </DarkCard>

@@ -33,7 +33,7 @@ export const moongfaliProfile: CropManagementProfile = {
     "खरीफ: 15 जून - 31 जुलाई।",
     "रबी: नवंबर - दिसंबर।",
   ],
-  seedRate: "Kharif 125-150 kg kernel/ha; Rabi 150-180 kg/ha",
+  seedRate: "गुच्छेदार गिरी: 40–50 किलो/एकड़",
   spacing: "Spanish Kharif 30×10 cm; Virginia 30×15 cm",
   nursery: ["प्रत्यक्ष बोवाई।"],
   transplanting: ["लागू नहीं।"],

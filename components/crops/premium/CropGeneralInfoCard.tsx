@@ -20,53 +20,71 @@ type InfoRow = {
   note?: string;
   wide?: boolean;
   highlight?: boolean;
+  /** Compact 2×2 facts inside (climate/soil) — denser on phone */
+  factGrid?: { k: string; v: string }[];
 };
 
 function InfoCell({ row }: { row: InfoRow }) {
   const Icon = row.icon;
   return (
     <div
-      className={`flex gap-3 rounded-xl border px-3 py-2.5 ${
+      className={`flex gap-2 rounded-xl border px-2.5 py-2 sm:gap-3 sm:px-3 sm:py-2.5 ${
         row.highlight
-          ? "border-amber-500/25 bg-gradient-to-r from-amber-500/8 to-transparent sm:col-span-2"
+          ? "border-amber-500/25 bg-gradient-to-r from-amber-500/8 to-transparent"
           : "border-[var(--av-border)] bg-[var(--av-surface-inset)]"
       }`}
     >
       <span
-        className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+        className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg sm:h-8 sm:w-8 ${
           row.highlight
             ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
             : "bg-[color-mix(in_srgb,var(--av-accent-soft)_70%,transparent)] text-[var(--av-accent)]"
         }`}
       >
-        <Icon className="h-4 w-4" strokeWidth={2.4} />
+        <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={2.4} />
       </span>
       <div className="min-w-0 flex-1">
         <p
-          className={`text-[11px] font-bold ${
+          className={`text-[10px] font-bold leading-tight sm:text-[11px] ${
             row.highlight ? "text-amber-800 dark:text-amber-200" : "text-[var(--av-text-muted)]"
           }`}
         >
           {row.label}
         </p>
-        {row.lines?.length ? (
-          <ul className="mt-1 space-y-1">
+        {row.factGrid?.length ? (
+          <div className="mt-1.5 grid grid-cols-2 gap-1 sm:gap-1.5">
+            {row.factGrid.map((f) => (
+              <div
+                key={f.k}
+                className="rounded-lg bg-[var(--av-surface)]/80 px-1.5 py-1 sm:px-2 sm:py-1.5"
+              >
+                <p className="text-[9px] font-bold text-[var(--av-text-muted)] sm:text-[10px]">
+                  {f.k}
+                </p>
+                <p className="mt-0.5 text-[11px] font-semibold leading-snug text-[var(--av-text-primary)] sm:text-[12px]">
+                  {f.v}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : row.lines?.length ? (
+          <ul className="mt-0.5 space-y-0.5 sm:mt-1 sm:space-y-1">
             {row.lines.map((line) => (
               <li
                 key={line}
-                className="text-[13px] font-semibold leading-snug text-[var(--av-text-primary)]"
+                className="text-[12px] font-semibold leading-snug text-[var(--av-text-primary)] sm:text-[13px]"
               >
                 {line}
               </li>
             ))}
           </ul>
         ) : (
-          <p className="mt-0.5 text-[13px] font-semibold leading-snug text-[var(--av-text-primary)]">
+          <p className="mt-0.5 text-[12px] font-semibold leading-snug text-[var(--av-text-primary)] sm:text-[13px]">
             {row.value}
           </p>
         )}
         {row.note ? (
-          <p className="mt-1.5 text-[11px] font-medium leading-snug text-[var(--av-text-muted)]">
+          <p className="mt-1 text-[10px] font-medium leading-snug text-[var(--av-text-muted)] sm:mt-1.5 sm:text-[11px]">
             {row.note}
           </p>
         ) : null}
@@ -96,48 +114,49 @@ export default function CropGeneralInfoCard({ crop }: Props) {
       value: crop.sowingGuide.bestSowingTime,
     },
     {
+      id: "yield",
+      icon: Wheat,
+      label: hi ? "औसत उत्पादन / एकड़" : "Avg yield / acre",
+      value: crop.estimatedYield,
+      wide: true,
+    },
+    {
       id: "climate-soil",
       icon: CloudSun,
       label: hi ? "उपयुक्त मौसम और मिट्टी" : "Ideal climate & soil",
       value: "",
-      lines: hi
+      factGrid: hi
         ? [
-            `मौसम: ${crop.climate}`,
-            `मिट्टी: ${crop.suitableSoil}`,
-            `pH: ${phLine}`,
-            `तापमान: ${agro.tempMinC}–${agro.tempMaxC}°C`,
+            { k: "मौसम", v: crop.climate },
+            { k: "मिट्टी", v: crop.suitableSoil },
+            { k: "pH", v: phLine },
+            { k: "तापमान", v: `${agro.tempMinC}–${agro.tempMaxC}°C` },
           ]
         : [
-            `Climate: ${crop.climate}`,
-            `Soil: ${crop.suitableSoil}`,
-            `pH: ${phLine}`,
-            `Temperature: ${agro.tempMinC}–${agro.tempMaxC}°C`,
+            { k: "Climate", v: crop.climate },
+            { k: "Soil", v: crop.suitableSoil },
+            { k: "pH", v: phLine },
+            { k: "Temp", v: `${agro.tempMinC}–${agro.tempMaxC}°C` },
           ],
       wide: true,
     },
     {
-      id: "yield",
-      icon: Wheat,
-      label: hi ? "औसत उत्पादन (प्रति एकड़)" : "Average yield (per acre)",
-      value: crop.estimatedYield,
-    },
-    {
       id: "profit",
       icon: Coins,
-      label: hi ? "प्रति एकड़ लागत और मुनाफ़ा (अनुमान)" : "Cost & profit per acre (est.)",
+      label: hi ? "लागत और मुनाफ़ा / एकड़" : "Cost & profit / acre",
       value: "",
       lines: hi
         ? [
-            `लागत: ${formatInrRange(band.costMin, band.costMax)} / एकड़`,
-            `मुनाफ़ा: ${formatInrRange(band.profitMin, band.profitMax)} / एकड़`,
+            `लागत: ${formatInrRange(band.costMin, band.costMax)}`,
+            `मुनाफ़ा: ${formatInrRange(band.profitMin, band.profitMax)}`,
           ]
         : [
-            `Cost: ${formatInrRange(band.costMin, band.costMax)} / acre`,
-            `Profit: ${formatInrRange(band.profitMin, band.profitMax)} / acre`,
+            `Cost: ${formatInrRange(band.costMin, band.costMax)}`,
+            `Profit: ${formatInrRange(band.profitMin, band.profitMax)}`,
           ],
       note: hi
-        ? "जिला, मौसम और मंडी भाव से वास्तविक आंकड़ा बदल सकता है"
-        : "Actuals vary by district, season and mandi price",
+        ? "जिला, मौसम और मंडी भाव से आंकड़ा बदल सकता है"
+        : "Varies by district, season and mandi",
       wide: true,
       highlight: true,
     },
@@ -145,18 +164,22 @@ export default function CropGeneralInfoCard({ crop }: Props) {
 
   return (
     <section
-      className="mb-4 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]"
+      className="mb-3 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] sm:mb-4"
       aria-label={hi ? "फसल की सामान्य जानकारी" : "Crop overview"}
     >
-      <div className="border-b border-[var(--av-border-subtle)] bg-[color-mix(in_srgb,var(--av-accent-soft)_40%,var(--av-surface))] px-3.5 py-3">
-        <p className="text-[16px] font-black leading-tight tracking-tight text-[var(--av-text-primary)]">
+      <div className="border-b border-[var(--av-border-subtle)] bg-[color-mix(in_srgb,var(--av-accent-soft)_40%,var(--av-surface))] px-3 py-2 sm:px-3.5 sm:py-3">
+        <p className="text-[14px] font-black leading-tight tracking-tight text-[var(--av-text-primary)] sm:text-[16px]">
           {hi ? "1. फसल की सामान्य जानकारी" : "1. Crop overview"}
         </p>
       </div>
 
-      <div className="grid gap-2 p-3.5 sm:grid-cols-2">
+      {/* Mobile: 2-col for short cards → less vertical length; sm+ same */}
+      <div className="grid grid-cols-2 gap-1.5 p-2.5 sm:gap-2 sm:p-3.5">
         {rows.map((row) => (
-          <div key={row.id} className={row.wide ? "sm:col-span-2" : undefined}>
+          <div
+            key={row.id}
+            className={row.wide ? "col-span-2" : undefined}
+          >
             <InfoCell row={row} />
           </div>
         ))}

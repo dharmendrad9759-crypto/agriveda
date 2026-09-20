@@ -29,7 +29,7 @@ export const maizeProfile: CropManagementProfile = {
     "खरीफ: उत्तर भारत में मानसून की शुरुआत (जून–जुलाई) के साथ।",
     "रबी/वसंत: सिंचित क्षेत्रों में नवंबर–फरवरी (UP, Bihar, Punjab)।",
   ],
-  seedRate: "8–10 kg/acre (hybrids); 6–8 kg/acre (composites)",
+  seedRate: "हाइब्रिड: 7–8 kg/acre",
   spacing: "60 × 20 cm (33,333 plants/ha) — संकर वृद्धि के अनुसार समायोजित करें",
   nursery: ["प्रत्यक्ष बोवाई — अनाज मक्का के लिए नर्सरी की आवश्यकता नहीं।"],
   transplanting: ["अनाज मक्का के लिए लागू नहीं; मीठी मक्का plug से लगाई जा सकती है।"],

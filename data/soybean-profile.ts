@@ -33,7 +33,7 @@ export const soybeanProfile: CropManagementProfile = {
     "खरीफ: मानसून के साथ — जून अंत से जुलाई पहला पखवाड़ा (क्षेत्रानुकूल)।",
     "पर्याप्त मिट्टी नमी से पहले बहुत जल्दी बुवाई से बचें।",
   ],
-  seedRate: "70-80 kg/ha (60-70 kg/acre approx.)",
+  seedRate: "30–35 किलो/एकड़",
   spacing: "30×5 cm to 45×5 cm — 0.4-0.5 million plants/ha",
   nursery: ["केवल सीधी बुवाई।"],
   transplanting: ["लागू नहीं।"],

@@ -1,6 +1,11 @@
 /**
- * Farmer-first irrigation guides — simple Hindi stages, no V6/VT/R1/DAS codes.
+ * Farmer-first irrigation guides — critical stages, DAS/DAT, field ID, experience.
  */
+
+import {
+  CRITICAL_IRRIGATION_ALIASES,
+  CRITICAL_IRRIGATION_GUIDES,
+} from "@/lib/crops/irrigationCriticalGuides";
 
 export type IrrigationStageGuide = {
   titleHi: string;
@@ -14,6 +19,21 @@ export type IrrigationStageGuide = {
   /** Growth photo kind for crop-specific images */
   photoKind: "sow" | "veg" | "flower" | "bulk" | "harvest";
   critical?: boolean;
+  /** 1st / 2nd / स्थापना */
+  sequenceHi?: string;
+  /** हल्की सिंचाई / 4–5 सेमी पानी */
+  waterHi?: string;
+  waterEn?: string;
+  /** खेत देखकर पहचान */
+  fieldIdHi?: string[];
+  fieldIdEn?: string[];
+};
+
+export type IrrigationExperience = {
+  titleHi: string;
+  titleEn: string;
+  pointsHi: string[];
+  pointsEn: string[];
 };
 
 export type CropIrrigationGuide = {
@@ -28,6 +48,14 @@ export type CropIrrigationGuide = {
   moistureHi: string;
   moistureEn: string;
   stages: IrrigationStageGuide[];
+  /** मिट्टी / क्षेत्र अनुसार सिंचाई संख्या */
+  soilOrRegionHi?: string;
+  soilOrRegionEn?: string;
+  /** मुख्य सिद्धांत */
+  principleHi?: string;
+  principleEn?: string;
+  /** खेत का अनुभव / सावधानियां */
+  experiences?: IrrigationExperience[];
 };
 
 const DESI_MOISTURE_HI =
@@ -589,6 +617,7 @@ const ALIASES: Record<string, string> = {
   dhaan: "paddy",
   arhar: "pulses",
   tur: "pulses",
+  ...CRITICAL_IRRIGATION_ALIASES,
 };
 
 function fallbackFromCrop(input: {
@@ -634,7 +663,9 @@ export function getCropIrrigationGuide(
     waterRequirement: string;
   }
 ): CropIrrigationGuide {
-  const key = ALIASES[slug] ?? slug;
+  const key = ALIASES[slug] ?? CRITICAL_IRRIGATION_ALIASES[slug] ?? slug;
+  const critical = CRITICAL_IRRIGATION_GUIDES[key];
+  if (critical) return critical;
   if (GUIDES[key]) return GUIDES[key];
 
   if (/brinjal|cucumber|bhindi|cauliflower/.test(key)) {

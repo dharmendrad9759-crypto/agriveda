@@ -157,8 +157,15 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const hi = locale === "hi";
   const [activeSubTab, setActiveSubTab] = useState<SubTabId>("schedule");
   const [fertMode, setFertMode] = useState<FertMode>("normal");
-  const [acres, setAcres] = useState(1);
+  const [acresText, setAcresText] = useState("1");
   const [soilTest, setSoilTest] = useState<SoilTestLevels>({});
+
+  /** Clamped acres for math — input can be empty while typing. */
+  const acres = useMemo(() => {
+    const n = Number.parseFloat(acresText);
+    if (!Number.isFinite(n) || n <= 0) return 1;
+    return Math.min(50, Math.max(0.5, n));
+  }, [acresText]);
 
   const hindi = getCropHindiName(crop.slug);
   const supportsDrip = cropSupportsDripFertigation(crop);
@@ -421,7 +428,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
         </div>
         <div className="border-t border-emerald-600/10 bg-white/40 px-3.5 py-2.5 dark:bg-black/20 sm:px-4">
           <AppLink
-            href="/services/fertilizer-calculator"
+            href={`/services/fertilizer-calculator?crop=${encodeURIComponent(crop.slug)}&acres=${encodeURIComponent(String(acres))}`}
             className={cn(AV.btnPrimarySm, "w-full justify-center sm:w-auto")}
           >
             <Calculator className="mr-1.5 inline h-3.5 w-3.5" />
@@ -670,11 +677,18 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               {hi ? "क्षेत्र (एकड़)" : "Area (acre)"}
               <input
                 type="number"
+                inputMode="decimal"
                 min={0.5}
                 max={50}
                 step={0.5}
-                value={acres}
-                onChange={(e) => setAcres(Math.max(0.5, Number(e.target.value) || 1))}
+                value={acresText}
+                onChange={(e) => setAcresText(e.target.value)}
+                onBlur={() => {
+                  const n = Number.parseFloat(acresText);
+                  if (!Number.isFinite(n) || n < 0.5) setAcresText("0.5");
+                  else if (n > 50) setAcresText("50");
+                  else setAcresText(String(n));
+                }}
                 className="w-20 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-1.5 text-sm font-bold"
               />
             </label>

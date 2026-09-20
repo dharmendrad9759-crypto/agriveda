@@ -79,10 +79,9 @@ function VarietyCard({
   const grainLabel = showMeta && v.grainType
     ? GRAIN_OPTS.find((o) => o.id === v.grainType)
     : null;
-  const duration =
-    showMeta && v.durationDays
-      ? `${v.durationDays.min}–${v.durationDays.max} ${hi ? "दिन" : "days"}`
-      : null;
+  const duration = v.durationDays
+    ? `${v.durationDays.min}–${v.durationDays.max} ${hi ? "दिन" : "days"}`
+    : null;
 
   return (
     <div
@@ -93,15 +92,21 @@ function VarietyCard({
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-[var(--av-text-primary)]">
             {index}. {v.name}
           </p>
           <p className="mt-0.5 text-xs text-[var(--av-text-secondary)]">
             {hi ? varietyTraitHi(v.trait) : v.trait}
           </p>
-          {(ecologyLabel || grainLabel || duration) && (
-            <p className="mt-1 flex flex-wrap gap-1.5 text-[10px] text-[var(--av-text-muted)]">
+          {v.regionHi ? (
+            <p className="mt-1 text-[10px] leading-snug text-[var(--av-text-muted)]">
+              {hi ? "क्षेत्र: " : "Region: "}
+              {v.regionHi}
+            </p>
+          ) : null}
+          {(ecologyLabel || grainLabel || duration || v.yieldHi) && (
+            <p className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-[var(--av-text-muted)]">
               {ecologyLabel ? (
                 <span className="rounded-md bg-[var(--av-accent-soft)] px-1.5 py-0.5 font-semibold text-[var(--av-accent)]">
                   {hi ? ecologyLabel.hi : ecologyLabel.en}
@@ -112,7 +117,17 @@ function VarietyCard({
                   {hi ? grainLabel.hi : grainLabel.en}
                 </span>
               ) : null}
-              {duration ? <span className="px-0.5 py-0.5">{duration}</span> : null}
+              {duration ? (
+                <span className="rounded-md border border-[var(--av-border)] px-1.5 py-0.5 font-semibold">
+                  {duration}
+                </span>
+              ) : null}
+              {v.yieldHi ? (
+                <span className="rounded-md bg-amber-500/15 px-1.5 py-0.5 font-semibold text-amber-800 dark:text-amber-200">
+                  {hi ? "उपज: " : "Yield: "}
+                  {v.yieldHi}
+                </span>
+              ) : null}
             </p>
           )}
         </div>
@@ -120,13 +135,22 @@ function VarietyCard({
           {hi ? stageLabelHi(v.season) : v.season}
         </span>
       </div>
-      <p className="mt-1.5 flex items-start gap-1 text-[10px] text-[var(--av-text-muted)]">
-        <TrendingUp className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
-        {v.marketNote}
-        {v.states.length > 0 && (
-          <span className="text-[var(--av-text-muted)]"> · {v.states.slice(0, 3).join(", ")}</span>
-        )}
-      </p>
+      {v.tipHi ? (
+        <p className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2 py-1.5 text-[11px] leading-snug text-[var(--av-text-secondary)]">
+          <span className="font-bold text-emerald-700 dark:text-emerald-300">
+            {hi ? "खास बात: " : "Tip: "}
+          </span>
+          {v.tipHi}
+        </p>
+      ) : (
+        <p className="mt-1.5 flex items-start gap-1 text-[10px] text-[var(--av-text-muted)]">
+          <TrendingUp className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
+          {v.marketNote}
+          {v.states.length > 0 && (
+            <span className="text-[var(--av-text-muted)]"> · {v.states.slice(0, 3).join(", ")}</span>
+          )}
+        </p>
+      )}
     </div>
   );
 }
@@ -257,8 +281,8 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
         <SectionHeader title={hi ? "अनुशंसित किस्में" : "Recommended Varieties"} />
         <p className="mt-1 text-xs text-[var(--av-text-muted)]">
           {hi
-            ? `${cropLabel} — हाइब्रिड, देसी और लोकल — रोग प्रतिरोध, भंडारण, फल आकार देखें`
-            : `${cropLabel} — hybrid, desi, local — disease resist, storage, fruit size`}
+            ? `${cropLabel} — क्षेत्र, अवधि, उपज और खास बात — अपनी ज़मीन के हिसाब से चुनें`
+            : `${cropLabel} — region, duration, yield and field tip — pick for your land`}
         </p>
         <div className="mt-3 space-y-4">
           {filtered.length === 0 ? (

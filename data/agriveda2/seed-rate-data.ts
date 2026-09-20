@@ -19,7 +19,7 @@ export interface SeedRateEntry {
 export const SEED_RATE_DATA: Record<string, SeedRateEntry> = {
   "Gehun (Wheat)": {
     methods: [
-      { id: "seed_drill", label: "Seed drill", min: 35, max: 40, unit: "kg/acre" },
+      { id: "seed_drill", label: "Seed drill (timely)", min: 40, max: 45, unit: "kg/acre" },
       { id: "broadcast", label: "Broadcast", min: 45, max: 50, unit: "kg/acre" },
       {
         id: "late_sowing",
@@ -37,18 +37,25 @@ export const SEED_RATE_DATA: Record<string, SeedRateEntry> = {
   "Dhan (Paddy)": {
     methods: [
       {
-        id: "transplanted",
-        label: "Transplanted (nursery seed)",
-        min: 5,
+        id: "hybrid_transplant",
+        label: "Hybrid transplanted (farmer practice)",
+        min: 4,
         max: 6,
-        unit: "kg/acre (nursery ke liye)",
-        note: "1 acre nursery se lagbhag 8-10 acre main field transplant",
+        unit: "kg/acre",
+        note: "Aajkal hybrid — 4-6 kg/acre nursery seed",
+      },
+      {
+        id: "opv_transplant",
+        label: "Desi / OPV transplanted",
+        min: 8,
+        max: 10,
+        unit: "kg/acre",
       },
       { id: "direct_wet", label: "Direct seeded (wet)", min: 10, max: 12, unit: "kg/acre" },
       { id: "direct_dry", label: "Direct seeded (dry)", min: 15, max: 18, unit: "kg/acre" },
     ],
     seedTreatment: "Carbendazim 2g/kg + Tricyclazole 1g/kg beej",
-    unitExplanation: "kg/acre — nursery ke liye alag, direct seeding ke liye alag",
+    unitExplanation: "kg/acre — hybrid ropai mein 4-6 kg; desi mein zyada",
   },
 
   "Makka (Maize)": {
@@ -56,12 +63,12 @@ export const SEED_RATE_DATA: Record<string, SeedRateEntry> = {
       {
         id: "hybrid",
         label: "Hybrid",
-        min: 8,
-        max: 10,
+        min: 7,
+        max: 8,
         unit: "kg/acre",
-        note: "60x20 cm spacing",
+        note: "Single-cross hybrid — packet spacing",
       },
-      { id: "composite", label: "Composite", min: 12, max: 15, unit: "kg/acre" },
+      { id: "composite", label: "Composite", min: 8, max: 10, unit: "kg/acre" },
     ],
     seedTreatment:
       "Thiram 2g + Carbendazim 1g pratikg beej; Atrazine 500g/acre (weed control)",
@@ -106,10 +113,10 @@ export const SEED_RATE_DATA: Record<string, SeedRateEntry> = {
       {
         id: "line_sowing",
         label: "Line sowing",
-        min: 25,
-        max: 30,
+        min: 30,
+        max: 35,
         unit: "kg/acre",
-        note: "45 cm spacing",
+        note: "45 cm spacing — practical farmer rate",
       },
     ],
     seedTreatment:
@@ -191,10 +198,10 @@ export const SEED_RATE_DATA: Record<string, SeedRateEntry> = {
     methods: [
       {
         id: "nursery",
-        label: "Nursery seed",
-        min: 100,
-        max: 150,
-        unit: "gram/acre (nursery ke liye paafi hai)",
+        label: "Nursery seed (hybrid)",
+        min: 80,
+        max: 100,
+        unit: "gram/acre",
       },
     ],
     seedTreatment: "Thiram 2g/kg; Trichoderma 5g/kg; 30 min garam paani (50°C) treatment",
@@ -223,10 +230,10 @@ export const SEED_RATE_DATA: Record<string, SeedRateEntry> = {
     methods: [
       {
         id: "nursery",
-        label: "Nursery seed",
-        min: 200,
-        max: 300,
-        unit: "gram/acre (nursery ke liye)",
+        label: "Nursery seed (hybrid)",
+        min: 150,
+        max: 200,
+        unit: "gram/acre",
       },
     ],
     seedTreatment: "Trichoderma viride 5g/kg; Thiram 2g/kg",
@@ -238,14 +245,13 @@ export const SEED_RATE_DATA: Record<string, SeedRateEntry> = {
   "Bhindi (Okra)": {
     methods: [
       {
-        id: "spring",
-        label: "Spring",
-        min: 4,
-        max: 5,
+        id: "hybrid",
+        label: "Hybrid (farmer practice)",
+        min: 2,
+        max: 3,
         unit: "kg/acre",
-        note: "45x30 cm spacing",
+        note: "Zaid thoda kam, kharif thoda zyada",
       },
-      { id: "kharif", label: "Kharif", min: 3, max: 4, unit: "kg/acre" },
     ],
     seedTreatment: "Thiram 2g + Carbendazim 1g/kg; 12 ghante paani mein bhegoyen",
     unitExplanation: "kg/acre — poora beej seedling nahi, directly khet mein bota hai",

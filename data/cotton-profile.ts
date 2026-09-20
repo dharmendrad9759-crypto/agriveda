@@ -33,7 +33,7 @@ export const cottonProfile: CropManagementProfile = {
     "उत्तर/मध्य वर्षा आधारित: जून-जुलाई मानसून के साथ।",
     "तमिलनाडु सिंचित: फरवरी-मार्च (गर्मी) या सितंबर-अक्टूबर।",
   ],
-  seedRate: "Bt hybrid: 1.5-2 kg/ha; varieties 10-22 kg/ha zone-wise",
+  seedRate: "बीटी हाइब्रिड: 450–600 ग्राम/एकड़",
   spacing: "Bt hybrid irrigated: 90×60 cm; rainfed 60×30 to 75×45 cm",
   nursery: ["सीधी बुवाई — रेशा कपास के लिए नर्सरी नहीं।"],
   transplanting: ["लागू नहीं।"],
