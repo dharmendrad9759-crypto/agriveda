@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, ArrowLeft, ChevronDown, Package } from "lucide-react";
@@ -32,7 +32,7 @@ function parseAcresParam(raw: string | null): string | null {
   return String(Math.min(50, Math.max(0.1, n)));
 }
 
-export default function FertilizerCalculatorPage() {
+function FertilizerCalculatorInner() {
   const searchParams = useSearchParams();
   const slugs = useMemo(() => listFertilizerCrops(), []);
   const crops = cropCatalog.filter((c) => slugs.includes(c.slug));
@@ -379,5 +379,25 @@ export default function FertilizerCalculatorPage() {
         </AnimatePresence>
       </div>
     </Agriveda2Shell>
+  );
+}
+
+export default function FertilizerCalculatorPage() {
+  return (
+    <Suspense
+      fallback={
+        <Agriveda2Shell
+          title="खाद कैलकुलेटर"
+          subtitle="लोड हो रहा है…"
+          backHref="/dashboard"
+        >
+          <div className="mx-auto max-w-lg px-1 py-8 text-center text-sm text-[var(--av-text-muted)]">
+            कैलकुलेटर खुल रहा है…
+          </div>
+        </Agriveda2Shell>
+      }
+    >
+      <FertilizerCalculatorInner />
+    </Suspense>
   );
 }
