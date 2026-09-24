@@ -171,7 +171,7 @@ export function buildMixinFoliarCards(
     }
     // PGR foliar sprays that weren't duplicated
     for (const item of flattenOptions(stage.pgr)) {
-      if (!/स्प्रे|spray|लीटर|L\b|ml|ppm/i.test(`${item.doseHi} ${item.waterHi || ""} ${item.applicationHi || ""}`)) {
+      if (!/स्प्रे|spray|लीटर|L\b|ml|ppm/i.test(`${item.doseHi} ${item.waterHi || ""} ${stage.applicationHi || ""}`)) {
         // if stage is mostly foliar stage and pgr has water, include
         if (!item.waterHi && !/ml|मि\.?ली/i.test(item.doseHi)) continue;
       }
