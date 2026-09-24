@@ -1,3 +1,5 @@
+import { riskLabelHi } from "@/lib/i18n/farmer-display";
+
 const BADGE_CLASS = {
   high: "av-badge av-badge-high",
   medium: "av-badge av-badge-medium",
@@ -6,9 +8,24 @@ const BADGE_CLASS = {
 
 export type RiskLevel = keyof typeof BADGE_CLASS;
 
-export default function RiskBadge({ level, label }: { level: RiskLevel; label?: string }) {
+export default function RiskBadge({
+  level,
+  label,
+  hi = true,
+}: {
+  level: RiskLevel;
+  label?: string;
+  /** Prefer farmer Hindi + (English) — default true for field UI */
+  hi?: boolean;
+}) {
   const text =
     label ??
-    (level === "high" ? "HIGH RISK" : level === "medium" ? "MEDIUM RISK" : "LOW RISK");
+    (hi
+      ? riskLabelHi(level)
+      : level === "high"
+        ? "High risk"
+        : level === "medium"
+          ? "Medium risk"
+          : "Low risk");
   return <span className={BADGE_CLASS[level]}>{text}</span>;
 }

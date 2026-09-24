@@ -3,6 +3,8 @@
  * Acre→per-L uses standard knapsack volume ~200 L/acre (common field guide assumption).
  */
 
+import { applyBilingualAgriNames, bilingualAgriName } from "@/lib/crops/bilingualAgriName";
+
 export const FARMER_SPRAY_L_PER_ACRE = 200;
 
 export function stripMoaCodes(text: string): string {
@@ -89,7 +91,8 @@ function replaceDoseWithPerL(text: string, hi: boolean): string {
 export function formatFarmerChemicalLine(line: string, hi = true): string {
   const cleaned = stripMoaCodes(line);
   if (!cleaned) return line;
-  return replaceDoseWithPerL(cleaned, hi);
+  const withDose = replaceDoseWithPerL(cleaned, hi);
+  return hi ? applyBilingualAgriNames(withDose) : withDose;
 }
 
 /** Format product + dose fields without MoA jargon. */
@@ -98,7 +101,8 @@ export function formatFarmerDoseSummary(
   dose: string,
   hi = true
 ): string {
-  const ai = stripMoaCodes(activeIngredient);
+  const aiRaw = stripMoaCodes(activeIngredient);
+  const ai = hi ? bilingualAgriName(aiRaw) : aiRaw;
   const dRaw = stripMoaCodes(dose);
   const d = dRaw ? formatFarmerChemicalLine(dRaw, hi) : "";
   if (!ai) return d || (hi ? "लेबल अनुसार" : "Follow label");

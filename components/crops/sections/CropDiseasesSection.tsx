@@ -1,7 +1,7 @@
 "use client";
 
 import RiskBadge from "@/components/shell/RiskBadge";
-import FarmerSplitCard from "@/components/ui/FarmerSplitCard";
+import ThreatBrowseCard from "@/components/ui/ThreatBrowseCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuideDiseaseListForCrop } from "@/lib/crops/cropFieldGuideBridge";
@@ -28,13 +28,16 @@ function diseaseThumb(pathogen?: string, catalogImage?: string) {
 function pathogenTypeLabel(raw: string | undefined, hi: boolean): string {
   if (!raw?.trim()) return "";
   const t = raw.trim();
-  if (/virus|वायरस|viral|टंग्रो|tungro/i.test(t)) return hi ? "वायरस" : "Virus";
-  if (/bacter|जीवाणु|blb|bacterial/i.test(t)) return hi ? "जीवाणु" : "Bacteria";
-  if (/fung|कवक|blast|smut|blight|spot/i.test(t)) return hi ? "कवक" : "Fungus";
+  if (/virus|वायरस|viral|टंग्रो|tungro/i.test(t))
+    return hi ? "वायरस (Virus)" : "Virus";
+  if (/bacter|जीवाणु|blb|bacterial/i.test(t))
+    return hi ? "जीवाणु (Bacteria)" : "Bacteria";
+  if (/fung|कवक|blast|smut|blight|spot/i.test(t))
+    return hi ? "फफूंद (Fungus)" : "Fungus";
   if (hi) {
-    if (/कवक/.test(t)) return "कवक";
-    if (/जीवाणु/.test(t)) return "जीवाणु";
-    if (/वायरस/.test(t)) return "वायरस";
+    if (/कवक|फफूंद/.test(t)) return "फफूंद (Fungus)";
+    if (/जीवाणु/.test(t)) return "जीवाणु (Bacteria)";
+    if (/वायरस/.test(t)) return "वायरस (Virus)";
   }
   return t;
 }
@@ -122,25 +125,30 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
   );
 
   return (
-    <div className="space-y-3">
-      <p className="px-0.5 text-[11px] font-medium text-[#7A8B82]">
-        {hi
-          ? `${diseases.length} रोग · टैप कर पूरा पेज खोलें`
-          : `${diseases.length} diseases · tap to open full page`}
-      </p>
+    <div className="space-y-3.5">
+      <div className="flex items-end justify-between gap-3 px-0.5">
+        <p className="text-[12px] font-semibold leading-snug text-[var(--av-text-muted)]">
+          {hi
+            ? `${diseases.length} रोग · फोटो देखो, टैप करो`
+            : `${diseases.length} diseases · tap a card`}
+        </p>
+        <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700/80">
+          {hi ? "रोग गाइड" : "Disease guide"}
+        </p>
+      </div>
 
       <div className="relative">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A9A91]" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={hi ? "रोग खोजें..." : "Search disease..."}
-          className="w-full rounded-full border border-[#DCE8E0] bg-white py-3 pl-12 pr-4 text-[14px] font-medium text-[#12281C] shadow-[0_4px_14px_-8px_rgba(11,61,40,0.28)] outline-none placeholder:text-[#8A9A91] focus:border-[#0B6B45]/40 focus:ring-2 focus:ring-[#0B6B45]/15"
+          placeholder={hi ? "रोग का नाम लिखो…" : "Search disease…"}
+          className="w-full rounded-2xl border border-[#DCE8E0] bg-white py-3 pl-12 pr-4 text-[14px] font-medium text-[#12281C] shadow-[0_8px_22px_-14px_rgba(11,61,40,0.35)] outline-none placeholder:text-[#8A9A91] focus:border-emerald-700/35 focus:ring-2 focus:ring-emerald-700/15"
         />
       </div>
 
       <ul className="space-y-3">
-        {filtered.map((d) => {
+        {filtered.map((d, i) => {
           const href =
             "detailHref" in d && d.detailHref
               ? String(d.detailHref)
@@ -154,25 +162,23 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
           const typeLabel = pathogenTypeLabel(typeRaw || sci || d.name, hi);
           return (
             <li key={d.id}>
-              <FarmerSplitCard
-                tone="light"
-                href={href}
+              <ThreatBrowseCard
+                index={i + 1}
                 title={d.name}
-                subtitle={sci || undefined}
-                subtitleItalic={Boolean(sci)}
+                scientific={sci || undefined}
                 image={img}
+                href={href}
+                accent="disease"
                 threatCategory={diseaseThreatCategory(typeRaw || d.name)}
-                openHint={hi ? "पूरा रोग पेज" : "Full disease page"}
-                meta={
-                  <span className="flex flex-wrap items-center gap-1.5">
-                    <RiskBadge level={d.risk} />
-                    {typeLabel ? (
-                      <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-[#0B6B45]">
-                        {typeLabel}
-                      </span>
-                    ) : null}
-                  </span>
+                riskChip={<RiskBadge level={d.risk} hi={hi} />}
+                typeChip={
+                  typeLabel ? (
+                    <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-950">
+                      {typeLabel}
+                    </span>
+                  ) : null
                 }
+                openHint={hi ? "क्या करें — पूरा पेज" : "What to do — open"}
               />
             </li>
           );

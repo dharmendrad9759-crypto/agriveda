@@ -1,42 +1,53 @@
-import { Target } from "lucide-react";
-import DarkCard from "@/components/shell/DarkCard";
-import { AV } from "@/lib/design/tokens";
+"use client";
 
-interface EtlGuideCardProps {
+import { AlertTriangle } from "lucide-react";
+import { farmerSpeak } from "@/lib/crops/farmerSpeak";
+
+interface Props {
   etl?: string;
   pestName?: string;
   monitoring?: string;
   compact?: boolean;
 }
 
-export default function EtlGuideCard({ etl, pestName, monitoring, compact }: EtlGuideCardProps) {
-  const threshold =
-    etl ??
-    "सप्ताह में दो बार निगरानी करें। स्प्रे (Spray) तभी करें जब कीट की संख्या आर्थिक क्षति स्तर (ETL — Economic Threshold Level) पार कर जाए — सिर्फ़ कैलेंडर से नहीं।";
+/**
+ * Farmer-simple ETL card — Hindi first, English in brackets.
+ */
+export default function EtlGuideCard({ etl, pestName, monitoring, compact }: Props) {
+  const body = farmerSpeak(
+    etl?.trim() ||
+      "सप्ताह में दो बार खेत घूमो। छिड़काव (Spray) तभी करो जब कीट नुकसान सीमा (ETL) पार करें — सिर्फ़ तारीख देखकर नहीं।"
+  );
+  const monitor = monitoring ? farmerSpeak(monitoring) : "";
 
   return (
-    <DarkCard className={compact ? "p-3" : ""} delay={0}>
-      <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/15">
-          <Target className="h-4 w-4 text-amber-600" />
-        </div>
+    <div className={compact ? "p-3" : "p-4"}>
+      <div className="flex items-start gap-2">
+        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-800">
+          <AlertTriangle className="h-3.5 w-3.5" />
+        </span>
         <div className="min-w-0 flex-1">
-          <h3 className={AV.sectionTitle}>
-            {pestName ? `ETL — ${pestName}` : "आर्थिक क्षति स्तर (ETL — Economic Threshold Level)"}
+          <h3 className="text-[13px] font-bold text-[var(--av-text-primary)]">
+            {pestName
+              ? `नुकसान सीमा (ETL) — ${pestName}`
+              : "नुकसान सीमा (ETL)"}
           </h3>
-          <p className={`mt-1 ${compact ? AV.micro : AV.body}`}>{threshold}</p>
-          {monitoring && (
-            <p className={`mt-2 ${AV.micro}`}>
-              <span className="font-semibold text-[var(--av-text-primary)]">निगरानी:</span> {monitoring}
+          <p className="mt-1 text-[12px] font-medium leading-snug text-[var(--av-text-secondary)]">
+            {body}
+          </p>
+          {monitor ? (
+            <p className="mt-1.5 text-[11px] text-[var(--av-text-muted)]">
+              <span className="font-semibold text-[var(--av-text-primary)]">खेत देखना: </span>
+              {monitor}
             </p>
-          )}
-          <ul className={`mt-2 space-y-1 ${AV.micro}`}>
-            <li>• ETL से पहले स्प्रे (Spray) न करें — प्राकृतिक शत्रु बचे रहते हैं</li>
-            <li>• पहाड़ी / मीटर पंक्ति / जाल में गिनती — खेत रिकॉर्ड रखें</li>
-            <li>• दोहराए स्प्रे पर अलग क्रिया-विधि की दवा लें</li>
+          ) : null}
+          <ul className="mt-2 space-y-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
+            <li>• नुकसान सीमा (ETL) से पहले छिड़काव (Spray) न करें — मित्र कीट बचते हैं</li>
+            <li>• खेत में गिनती करो — याद रखो / नोट करो</li>
+            <li>• दोबारा दवा लगे तो अलग किस्म की दवा लो (Rotation)</li>
           </ul>
         </div>
       </div>
-    </DarkCard>
+    </div>
   );
 }

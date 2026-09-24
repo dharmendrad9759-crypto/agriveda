@@ -1,7 +1,7 @@
 "use client";
 
 import RiskBadge from "@/components/shell/RiskBadge";
-import FarmerSplitCard from "@/components/ui/FarmerSplitCard";
+import ThreatBrowseCard from "@/components/ui/ThreatBrowseCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
@@ -97,25 +97,30 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
   );
 
   return (
-    <div className="space-y-3">
-      <p className="px-0.5 text-[11px] font-medium text-[#7A8B82]">
-        {hi
-          ? `${pests.length} मुख्य कीट · टैप कर पूरा पेज खोलें`
-          : `${pests.length} main pests · tap to open full page`}
-      </p>
+    <div className="space-y-3.5">
+      <div className="flex items-end justify-between gap-3 px-0.5">
+        <p className="text-[12px] font-semibold leading-snug text-[var(--av-text-muted)]">
+          {hi
+            ? `${pests.length} मुख्य कीट · फोटो देखो, टैप करो`
+            : `${pests.length} main pests · tap a card`}
+        </p>
+        <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.14em] text-rose-600/80">
+          {hi ? "कीट गाइड" : "Pest guide"}
+        </p>
+      </div>
 
       <div className="relative">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A9A91]" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={hi ? "कीट खोजें..." : "Search pest..."}
-          className="w-full rounded-full border border-[#DCE8E0] bg-white py-3 pl-12 pr-4 text-[14px] font-medium text-[#12281C] shadow-[0_4px_14px_-8px_rgba(11,61,40,0.28)] outline-none placeholder:text-[#8A9A91] focus:border-[#0B6B45]/40 focus:ring-2 focus:ring-[#0B6B45]/15"
+          placeholder={hi ? "कीट का नाम लिखो…" : "Search pest…"}
+          className="w-full rounded-2xl border border-[#DCE8E0] bg-white py-3 pl-12 pr-4 text-[14px] font-medium text-[#12281C] shadow-[0_8px_22px_-14px_rgba(11,61,40,0.35)] outline-none placeholder:text-[#8A9A91] focus:border-emerald-700/35 focus:ring-2 focus:ring-emerald-700/15"
         />
       </div>
 
       <ul className="space-y-3">
-        {filtered.map((pest) => {
+        {filtered.map((pest, i) => {
           const href =
             "detailHref" in pest && pest.detailHref
               ? String(pest.detailHref)
@@ -129,27 +134,17 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
           const sprayWhen = etl ? formatPestSprayWhen(etl, hi) : "";
           return (
             <li key={pest.id}>
-              <FarmerSplitCard
-                tone="light"
-                href={href}
+              <ThreatBrowseCard
+                index={i + 1}
                 title={pest.name}
-                subtitle={sci || undefined}
-                subtitleItalic={Boolean(sci)}
+                scientific={sci || undefined}
                 image={img}
+                href={href}
+                accent="pest"
                 threatCategory="insect"
-                openHint={hi ? "पूरा कीट पेज" : "Full pest page"}
-                meta={
-                  <span className="flex flex-col gap-1">
-                    <span className="flex flex-wrap items-center gap-1.5">
-                      <RiskBadge level={pest.risk} />
-                    </span>
-                    {sprayWhen ? (
-                      <span className="line-clamp-2 text-[10px] font-semibold leading-snug text-[#0B6B45]">
-                        {sprayWhen}
-                      </span>
-                    ) : null}
-                  </span>
-                }
+                riskChip={<RiskBadge level={pest.risk} hi={hi} />}
+                tipLine={sprayWhen || undefined}
+                openHint={hi ? "क्या करें — पूरा पेज" : "What to do — open"}
               />
             </li>
           );

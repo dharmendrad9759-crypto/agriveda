@@ -789,21 +789,21 @@ export function formatNutrientValue(v: NutrientValue): string {
     .join(" · ");
 }
 
-/** Farmer-facing bag / product names — Hindi + grade % + English in brackets. */
+/** Farmer-facing bag / product names — Technical (हिंदी) + grade. */
 export const FERTILIZER_BAG_LABEL_HI: Record<string, string> = {
-  DAP: "डीएपी 18-46-0 (DAP)",
-  Urea: "यूरिया 46% (Urea)",
-  MOP: "एमओपी 60% (MOP)",
-  SOP: "एसओपी 50% (SOP)",
-  SSP: "एसएसपी 16% (SSP)",
-  TSP: "टीएसपी 46% (TSP)",
-  Gypsum: "जिप्सम (Gypsum)",
-  Borax: "बोरेक्स ~11% B (Boron)",
-  ZnSO4_21: "जिंक सल्फेट 21% (Zn)",
-  ZnSO4: "जिंक सल्फेट 21% (Zn)",
-  MgSO4: "मैग्नीशियम सल्फेट (Mg)",
-  FeSO4: "आयरन सल्फेट ~19% (Fe)",
-  Calcium_nitrate: "कैल्शियम नाइट्रेट (Ca)",
+  DAP: "DAP (डीएपी) 18-46-0",
+  Urea: "Urea (यूरिया) 46%",
+  MOP: "MOP (एमओपी) 60%",
+  SOP: "SOP (एसओपी) 50%",
+  SSP: "SSP (एसएसपी) 16%",
+  TSP: "TSP (टीएसपी) 46%",
+  Gypsum: "Gypsum (जिप्सम)",
+  Borax: "Borax (बोरेक्स) ~11% B",
+  ZnSO4_21: "Zinc Sulphate (जिंक सल्फेट) 21%",
+  ZnSO4: "Zinc Sulphate (जिंक सल्फेट) 21%",
+  MgSO4: "Magnesium Sulphate (मैग्नीशियम सल्फेट)",
+  FeSO4: "Ferrous Sulphate (आयरन सल्फेट) ~19%",
+  Calcium_nitrate: "Calcium Nitrate (कैल्शियम नाइट्रेट)",
 };
 
 export function fertilizerBagLabel(name: string): string {

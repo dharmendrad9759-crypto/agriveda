@@ -3,6 +3,8 @@
  * शुद्ध साहित्यिक नहीं, आधी-अंग्रेज़ी भी नहीं।
  */
 
+import { applyBilingualAgriNames } from "@/lib/crops/bilingualAgriName";
+
 function replaceAll(text: string, pairs: [RegExp | string, string][]): string {
   let out = text;
   for (const [from, to] of pairs) {
@@ -217,6 +219,8 @@ export function farmerWeedHi(text: string): string {
     .replace(/\s{2,}/g, " ")
     .replace(/^[:\-–—·•]+\s*/, "")
     .trim();
+  // Product actives: Technical (हिंदी)
+  t = applyBilingualAgriNames(t);
   return t;
 }
 

@@ -117,12 +117,12 @@ export function stageLabelHi(stage: string): string {
 }
 
 const RISK_MAP: Record<string, string> = {
-  critical: "गंभीर",
-  high: "अधिक",
-  medium: "मध्यम",
-  low: "कम",
-  priority: "प्राथमिकता",
-  monitor: "निगरानी",
+  critical: "बहुत गंभीर (Critical)",
+  high: "ज्यादा खतरा (High)",
+  medium: "मध्यम खतरा (Medium)",
+  low: "कम खतरा (Low)",
+  priority: "पहले करें (Priority)",
+  monitor: "नज़र रखें (Monitor)",
 };
 
 export function riskLabelHi(level: string): string {

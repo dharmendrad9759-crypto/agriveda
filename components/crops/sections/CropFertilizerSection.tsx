@@ -34,6 +34,14 @@ import {
 import { AV } from "@/lib/design/tokens";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
+import CropFertilizerMixinPanel from "@/components/crops/sections/CropFertilizerMixinPanel";
+import { getCropFertilizerMixinGuide } from "@/lib/crops/fertilizerMixinFieldGuide";
+import {
+  buildMixinFoliarCardsRich,
+  buildMixinNotes,
+  buildMixinOrganicCards,
+} from "@/lib/crops/fertilizerMixinTabs";
+import { simplifyMixinFarmerHi } from "@/lib/crops/simplifyMixinFarmerHi";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import {
@@ -170,6 +178,22 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const hindi = getCropHindiName(crop.slug);
   const supportsDrip = cropSupportsDripFertigation(crop);
   const cropImg = resolveCropImage({ slug: crop.slug, name: crop.name, image: crop.image });
+  const mixinGuide = useMemo(
+    () => getCropFertilizerMixinGuide(crop.slug),
+    [crop.slug]
+  );
+  const mixinFoliar = useMemo(
+    () => (mixinGuide ? buildMixinFoliarCardsRich(mixinGuide) : []),
+    [mixinGuide]
+  );
+  const mixinOrganic = useMemo(
+    () => (mixinGuide ? buildMixinOrganicCards(mixinGuide) : []),
+    [mixinGuide]
+  );
+  const mixinNotes = useMemo(
+    () => (mixinGuide ? buildMixinNotes(mixinGuide) : null),
+    [mixinGuide]
+  );
 
   useEffect(() => {
     if (!supportsDrip) setFertMode("normal");
@@ -424,6 +448,20 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                 </dd>
               </div>
             </dl>
+            {mixinGuide ? (
+              <label className="mt-2 flex items-center gap-2 text-[11px] font-semibold text-emerald-900 dark:text-emerald-100">
+                <span>{hi ? "एकड़ बदलें:" : "Acres:"}</span>
+                <input
+                  type="number"
+                  min={0.5}
+                  max={50}
+                  step={0.5}
+                  value={acresText}
+                  onChange={(e) => setAcresText(e.target.value)}
+                  className="w-20 rounded-lg border border-emerald-600/25 bg-white/80 px-2 py-1 text-[12px] font-bold dark:bg-black/30"
+                />
+              </label>
+            ) : null}
           </div>
         </div>
         <div className="border-t border-emerald-600/10 bg-white/40 px-3.5 py-2.5 dark:bg-black/20 sm:px-4">
@@ -478,7 +516,11 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
         })}
       </div>
 
-      {activeSubTab === "schedule" && (
+      {activeSubTab === "schedule" && mixinGuide ? (
+        <CropFertilizerMixinPanel guide={mixinGuide} acres={acres} />
+      ) : null}
+
+      {activeSubTab === "schedule" && !mixinGuide ? (
         <DarkCard>
           {supportsDrip ? (
             <div className="mb-3 grid grid-cols-2 gap-2">
@@ -587,81 +629,183 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </p>
           </div>
         </DarkCard>
-      )}
+      ) : null}
 
       {activeSubTab === "foliar" && (
         <DarkCard>
           <h3 className="text-sm font-black text-[var(--av-text-primary)]">
-            {hi ? "पत्तियों पर छिड़काव की सलाह" : "Leaf spray advice"}
+            {hi ? "पत्ती पर छिड़काव" : "Leaf spray"}
           </h3>
           <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
             {hi
-              ? "सुबह या शाम · लगभग 150–200 लीटर पानी / एकड़"
-              : "Morning or evening · about 150–200 L water / acre"}
+              ? "सुबह या शाम · अमूमन 150 लीटर पानी प्रति एकड़"
+              : "Morning or evening · usually 150 L water / acre"}
           </p>
-          <ul className="mt-3 space-y-2.5">
-            {foliarCards.map((card, i) => (
-              <li
-                key={`${card.title}-${i}`}
-                className="flex gap-3 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-2.5"
-              >
-                <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-cyan-500/15 bg-white sm:h-[72px] sm:w-[72px]">
-                  <Image
-                    src={foliarCardImage(card.title, card.medicine)}
-                    alt={card.title}
-                    fill
-                    className="object-cover"
-                    sizes="72px"
-                  />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-extrabold text-[var(--av-text-primary)]">
-                    {card.title}
+
+          {mixinFoliar.length ? (
+            <ul className="mt-3 space-y-2.5">
+              {mixinFoliar.map((card, i) => (
+                <li
+                  key={`${card.stageHi}-${card.name}-${i}`}
+                  className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-2.5"
+                >
+                  <p className="text-[10px] font-bold text-cyan-800 dark:text-cyan-200">
+                    {simplifyMixinFarmerHi(
+                      `${card.stageHi}${card.timingHi ? ` · ${card.timingHi}` : ""}`
+                    )}
                   </p>
-                  <p className="mt-1 text-[12px] text-[var(--av-text-secondary)]">
-                    <span className="font-bold">{hi ? "दवा: " : "Product: "}</span>
-                    {card.medicine}
-                  </p>
-                  <p className="mt-0.5 text-[12px] text-[var(--av-text-secondary)]">
-                    <span className="font-bold">{hi ? "मात्रा: " : "Dose: "}</span>
-                    {card.dose}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+                  <div className="mt-1.5 flex gap-3">
+                    <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-cyan-500/15 bg-white">
+                      <Image
+                        src={foliarCardImage(card.name, card.name)}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="56px"
+                      />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-extrabold text-[var(--av-text-primary)]">
+                        {simplifyMixinFarmerHi(card.name)}
+                      </p>
+                      <p className="mt-0.5 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+                        {simplifyMixinFarmerHi(card.doseHi)}
+                      </p>
+                      {card.waterHi ? (
+                        <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                          पानी: {simplifyMixinFarmerHi(card.waterHi)}
+                        </p>
+                      ) : null}
+                      {card.purposeHi ? (
+                        <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                          {simplifyMixinFarmerHi(card.purposeHi)}
+                        </p>
+                      ) : null}
+                      {card.brands?.length ? (
+                        <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                          बाज़ार / दुकान में इस नाम से: {card.brands.join(" / ")}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul className="mt-3 space-y-2.5">
+              {foliarCards.map((card, i) => (
+                <li
+                  key={`${card.title}-${i}`}
+                  className="flex gap-3 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-2.5"
+                >
+                  <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-cyan-500/15 bg-white sm:h-[72px] sm:w-[72px]">
+                    <Image
+                      src={foliarCardImage(card.title, card.medicine)}
+                      alt={card.title}
+                      fill
+                      className="object-cover"
+                      sizes="72px"
+                    />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-extrabold text-[var(--av-text-primary)]">
+                      {card.title}
+                    </p>
+                    <p className="mt-1 text-[12px] text-[var(--av-text-secondary)]">
+                      <span className="font-bold">{hi ? "दवा: " : "Product: "}</span>
+                      {card.medicine}
+                    </p>
+                    <p className="mt-0.5 text-[12px] text-[var(--av-text-secondary)]">
+                      <span className="font-bold">{hi ? "मात्रा: " : "Dose: "}</span>
+                      {card.dose}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </DarkCard>
       )}
 
       {activeSubTab === "organic" && (
         <DarkCard>
           <h3 className="text-sm font-black text-[var(--av-text-primary)]">
-            {hi ? "प्राकृतिक व जैविक विकल्प" : "Natural & organic options"}
+            {hi ? "जैविक और जड़ की मदद" : "Organic & root support"}
           </h3>
           <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
             {hi
-              ? "रासायनिक खाद के साथ मिलाकर इस्तेमाल करें — सिर्फ एक पर निर्भर न रहें"
-              : "Use with chemical fertilizer — do not rely on one alone"}
+              ? "ह्यूमिक · समुद्री शैवाल · ट्राइकोडर्मा · नीम — चरण के साथ"
+              : "Humic · Seaweed · Trichoderma · Neem — by stage"}
           </p>
-          <ul className="mt-3 space-y-2.5">
-            {organicRows.map((r) => (
-              <li
-                key={r}
-                className="flex gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-2.5 text-[12px] leading-snug text-[var(--av-text-secondary)]"
-              >
-                <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-emerald-500/15 bg-white">
-                  <Image
-                    src={organicTipImage(r)}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="64px"
-                  />
-                </span>
-                <span className="min-w-0 flex-1 pt-0.5">{r}</span>
-              </li>
-            ))}
-          </ul>
+
+          {mixinOrganic.length ? (
+            <ul className="mt-3 space-y-2.5">
+              {mixinOrganic.map((card, i) => (
+                <li
+                  key={`${card.stageHi}-${card.name}-${i}`}
+                  className="flex gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-2.5"
+                >
+                  <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-emerald-500/15 bg-white">
+                    <Image
+                      src={organicTipImage(card.name)}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="56px"
+                    />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-bold text-emerald-800 dark:text-emerald-200">
+                      {simplifyMixinFarmerHi(
+                        `${card.stageHi}${card.timingHi ? ` · ${card.timingHi}` : ""}`
+                      )}
+                    </p>
+                    <p className="mt-0.5 text-xs font-extrabold text-[var(--av-text-primary)]">
+                      {simplifyMixinFarmerHi(card.name)}
+                    </p>
+                    <p className="mt-0.5 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+                      {simplifyMixinFarmerHi(card.doseHi)}
+                    </p>
+                    {card.purposeHi ? (
+                      <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                        {simplifyMixinFarmerHi(card.purposeHi)}
+                      </p>
+                    ) : null}
+                    {card.howHi ? (
+                      <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                        {simplifyMixinFarmerHi(card.howHi)}
+                      </p>
+                    ) : null}
+                    {card.brands?.length ? (
+                      <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
+                        बाज़ार / दुकान में इस नाम से: {card.brands.join(" / ")}
+                      </p>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul className="mt-3 space-y-2.5">
+              {organicRows.map((r) => (
+                <li
+                  key={r}
+                  className="flex gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-2.5 text-[12px] leading-snug text-[var(--av-text-secondary)]"
+                >
+                  <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-emerald-500/15 bg-white">
+                    <Image
+                      src={organicTipImage(r)}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  </span>
+                  <span className="min-w-0 flex-1 pt-0.5">{r}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </DarkCard>
       )}
 
@@ -763,12 +907,18 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               </h3>
             </div>
             <ul className="mt-2 space-y-2">
-              {(tipGroups.doList.length ? tipGroups.doList : notes.slice(0, 3)).map((n) => (
+              {(
+                mixinNotes?.doList.length
+                  ? mixinNotes.doList
+                  : tipGroups.doList.length
+                    ? tipGroups.doList
+                    : notes.slice(0, 3)
+              ).map((n) => (
                 <li
                   key={n}
                   className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[12px] leading-snug text-[var(--av-text-secondary)]"
                 >
-                  {n}
+                  {hi ? simplifyMixinFarmerHi(n) : n}
                 </li>
               ))}
             </ul>
@@ -782,25 +932,49 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               </h3>
             </div>
             <ul className="mt-2 space-y-2">
-              {(tipGroups.dontList.length
-                ? tipGroups.dontList
-                : [
-                    hi
-                      ? "सारा यूरिया एक साथ कभी न डालें — पौधा जल सकता है।"
-                      : "Never apply all urea at once — crop may burn.",
-                  ]
+              {(
+                mixinNotes?.dontList.length
+                  ? mixinNotes.dontList
+                  : tipGroups.dontList.length
+                    ? tipGroups.dontList
+                    : [
+                        hi
+                          ? "सारा यूरिया एक साथ कभी न डालें — पौधा जल सकता है।"
+                          : "Never apply all urea at once — crop may burn.",
+                      ]
               ).map((n) => (
                 <li
                   key={n}
                   className="rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2 text-[12px] leading-snug text-[var(--av-text-secondary)]"
                 >
-                  {n}
+                  {hi ? simplifyMixinFarmerHi(n) : n}
                 </li>
               ))}
             </ul>
           </DarkCard>
 
-          {tipGroups.extraList.length ? (
+          {(mixinNotes?.warnings.length || mixinNotes?.tips.length) ? (
+            <DarkCard>
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <h3 className="text-sm font-black text-[var(--av-text-primary)]">
+                  {hi ? "खेत की सावधानी" : "Field cautions"}
+                </h3>
+              </div>
+              <ul className="mt-2 space-y-2">
+                {[...(mixinNotes?.warnings ?? []), ...(mixinNotes?.tips ?? [])].map(
+                  (n) => (
+                    <li
+                      key={n}
+                      className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-[12px] leading-snug text-[var(--av-text-secondary)]"
+                    >
+                      {simplifyMixinFarmerHi(n)}
+                    </li>
+                  )
+                )}
+              </ul>
+            </DarkCard>
+          ) : tipGroups.extraList.length ? (
             <DarkCard>
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-amber-600" />
@@ -818,6 +992,36 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                   </li>
                 ))}
               </ul>
+            </DarkCard>
+          ) : null}
+
+          {mixinNotes?.mixingRules.length ? (
+            <DarkCard>
+              <h3 className="text-sm font-black text-[var(--av-text-primary)]">
+                {hi ? "मिश्रण के नियम" : "Mixing rules"}
+              </h3>
+              <div className="mt-2 space-y-2">
+                {mixinNotes.mixingRules.map((rule) => (
+                  <div
+                    key={rule.titleHi}
+                    className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2"
+                  >
+                    <p className="text-[11px] font-extrabold text-[var(--av-text-primary)]">
+                      {simplifyMixinFarmerHi(rule.titleHi)}
+                    </p>
+                    <ul className="mt-1 space-y-0.5">
+                      {rule.pointsHi.map((p) => (
+                        <li
+                          key={p}
+                          className="text-[11px] leading-snug text-[var(--av-text-secondary)]"
+                        >
+                          • {simplifyMixinFarmerHi(p)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </DarkCard>
           ) : null}
         </div>

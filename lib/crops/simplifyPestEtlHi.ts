@@ -11,12 +11,12 @@ function replaceAll(text: string, pairs: [RegExp | string, string][]): string {
 }
 
 const ETL_HI: [RegExp | string, string][] = [
-  [/\bETL\b/gi, "नुकसान सीमा"],
-  [/Economic Threshold Level/gi, "नुकसान सीमा"],
-  [/dead\s*hearts?/gi, "मध्य तना सूखा"],
+  [/\bETL\b/gi, "नुकसान सीमा (ETL)"],
+  [/Economic Threshold Level/gi, "नुकसान सीमा (ETL)"],
+  [/dead\s*hearts?/gi, "मध्य तना सूखा (Dead heart)"],
   [/डेडहार्ट/gi, "मध्य तना सूखा"],
   [/डेड\s*हार्ट/gi, "मध्य तना सूखा"],
-  [/white\s*ears?/gi, "सफेद बाली"],
+  [/white\s*ears?/gi, "सफेद बाली (White ear)"],
   [/व्हाइट\s*ईयर/gi, "सफेद बाली"],
   [/वानस्पतिक\s*अवस्था/gi, "बढ़वार समय"],
   [/वनस्पति(?:क)?/gi, "बढ़वार"],
@@ -37,10 +37,21 @@ const ETL_HI: [RegExp | string, string][] = [
   [/nymphs?/gi, "बच्चे कीट"],
   [/aphids?/gi, "माहू"],
   [/Follow local ETL/gi, "खेत देखकर स्थानीय सलाह लें"],
-  [/on\s*ETL/gi, "नुकसान सीमा पर"],
-  [/at\s*ETL/gi, "नुकसान सीमा पर"],
-  [/—\s*ETL\s*पर/gi, "— नुकसान सीमा पर"],
-  [/ETL\s*पर/gi, "नुकसान सीमा पर"],
+  [/on\s*ETL/gi, "नुकसान सीमा (ETL) पर"],
+  [/at\s*ETL/gi, "नुकसान सीमा (ETL) पर"],
+  [/—\s*ETL\s*पर/gi, "— नुकसान सीमा (ETL) पर"],
+  [/ETL\s*पर/gi, "नुकसान सीमा (ETL) पर"],
+  [/preventive/gi, "पहले से बचाव (Preventive)"],
+  [/prevention/gi, "पहले से बचाव (Prevention)"],
+  [/\bPI\b/g, "बाली बनना"],
+  [/सिल्वर\s*शूट|silver\s*shoot/gi, "चाँदी जैसा सूखा कल्ला"],
+  [/\bhills?\b/gi, "झाड़"],
+  [/प्रति\s*हिल/gi, "प्रति झाड़"],
+  [/\/हिल/gi, "/झाड़"],
+  [/वेक्टर/gi, "फैलाने वाला कीट"],
+  [/\bvector\b/gi, "फैलाने वाला कीट"],
+  [/क्षतिग्रस्त/gi, "खराब"],
+  [/टंग्रो[-\s]*प्रभावित/gi, "टंग्रो वाले"],
 ];
 
 export function simplifyPestEtlHi(raw: string): string {

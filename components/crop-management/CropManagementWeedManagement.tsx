@@ -6,6 +6,7 @@ import type { CropManagementProfile } from "@/types/crop-management";
 import DarkCard from "@/components/shell/DarkCard";
 import { ShellTabBar } from "@/components/shell/AppShell";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
+import { bilingualAgriName } from "@/lib/crops/bilingualAgriName";
 
 type WeedTab = "prevention" | "monitoring" | "cultural" | "chemical";
 
@@ -38,7 +39,7 @@ export default function CropManagementWeedManagement({ profile }: Props) {
     tab === "chemical"
       ? program.chemical.map(
           (c) =>
-            `${c.technical} @ ${c.dose} (${c.timing})${c.targets ? ` — ${c.targets}` : ""}${c.note ? ` · ${c.note}` : ""}`
+            `${bilingualAgriName(c.technical)} @ ${c.dose} (${c.timing})${c.targets ? ` — ${c.targets}` : ""}${c.note ? ` · ${c.note}` : ""}`
         )
       : program[tab];
 
@@ -105,7 +106,9 @@ export default function CropManagementWeedManagement({ profile }: Props) {
             <tbody>
               {program.chemical.map((c) => (
                 <tr key={`${c.technical}-${c.timing}`} className="border-b border-[var(--av-border)]/50">
-                  <td className="py-2 pr-2 font-medium text-[var(--av-text-primary)]">{c.technical}</td>
+                  <td className="py-2 pr-2 font-medium text-[var(--av-text-primary)]">
+                    {bilingualAgriName(c.technical)}
+                  </td>
                   <td className="py-2 pr-2 text-sky-400">{c.dose}</td>
                   <td className="py-2 pr-2 text-amber-400">{c.timing}</td>
                   <td className="py-2 text-[var(--av-text-muted)]">{c.targets ?? "—"}</td>
