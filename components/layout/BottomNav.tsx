@@ -70,7 +70,7 @@ function NavItem({
     <AppLink
       href={path}
       onClick={() => softTap(10)}
-      className="relative flex min-h-[44px] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 transition-colors duration-150"
+      className="relative flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 transition-colors duration-150"
     >
       {isActive && !reduced && (
         <motion.span

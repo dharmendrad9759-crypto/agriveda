@@ -81,7 +81,7 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
             alt={crop.name}
             fill
             className="object-cover object-center transition duration-500 group-hover:scale-110"
-            sizes={isFeature ? "180px" : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"}
+            sizes={isFeature ? "180px" : "(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"}
             priority={index < 4}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10" />
@@ -92,15 +92,17 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
               </span>
             </div>
           ) : null}
-          <div className="absolute inset-x-0 bottom-0 p-3 sm:p-3.5">
-            <h3 className="font-display text-[18px] font-bold leading-tight text-white drop-shadow sm:text-[20px]">
+          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3">
+            <h3 className="font-display text-[15px] font-bold leading-tight text-white drop-shadow sm:text-[18px]">
               {title}
             </h3>
-            <p className="mt-0.5 text-[11px] font-medium text-white/75">{sub}</p>
-            <span className="mt-2 inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-300">
-              {isHi ? "जानकारी देखो" : "See details"}
-              <ChevronRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-            </span>
+            <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-white/80">{sub}</p>
+            {isFeature ? (
+              <span className="mt-2 inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-300">
+                {isHi ? "जानकारी देखो" : "See details"}
+                <ChevronRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+              </span>
+            ) : null}
           </div>
         </article>
       </Link>

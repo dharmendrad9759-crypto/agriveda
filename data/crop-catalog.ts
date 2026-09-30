@@ -28,6 +28,8 @@ export const cropCatalog: CatalogCrop[] = [
   { slug: "onion", name: "Onion", nameHi: "प्याज", emoji: "🧅", category: "Vegetables", gradient: "from-purple-100 to-violet-50" },
   { slug: "chilli", name: "Chilli", nameHi: "मिर्च", emoji: "🌶️", category: "Spices", gradient: "from-red-100 to-orange-50" },
   { slug: "cauliflower", name: "Cauliflower", nameHi: "फूलगोभी", emoji: "🥦", category: "Vegetables", gradient: "from-green-100 to-emerald-50" },
+  { slug: "cabbage", name: "Cabbage", nameHi: "पत्तागोभी", emoji: "🥬", category: "Vegetables", gradient: "from-green-100 to-lime-50" },
+  { slug: "capsicum", name: "Capsicum", nameHi: "शिमला मिर्च", emoji: "🫑", category: "Vegetables", gradient: "from-green-100 to-emerald-50" },
   { slug: "cucumber", name: "Cucumber", nameHi: "खीरा", emoji: "🥒", category: "Vegetables", gradient: "from-lime-100 to-green-50" },
   { slug: "brinjal", name: "Brinjal", nameHi: "बैंगन", emoji: "🍆", category: "Vegetables", gradient: "from-purple-100 to-violet-50" },
   { slug: "bhindi", name: "Bhindi", nameHi: "भिंडी", emoji: "🫛", category: "Vegetables", gradient: "from-green-100 to-lime-50" },

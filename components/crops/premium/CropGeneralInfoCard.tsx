@@ -129,7 +129,7 @@ export default function CropGeneralInfoCard({ crop }: Props) {
         ? [
             { k: "मौसम", v: crop.climate },
             { k: "मिट्टी", v: crop.suitableSoil },
-            { k: "pH", v: phLine },
+            { k: "मिट्टी का स्वभाव (pH)", v: phLine },
             { k: "तापमान", v: `${agro.tempMinC}–${agro.tempMaxC}°C` },
           ]
         : [
@@ -169,7 +169,7 @@ export default function CropGeneralInfoCard({ crop }: Props) {
     >
       <div className="border-b border-[var(--av-border-subtle)] bg-[color-mix(in_srgb,var(--av-accent-soft)_40%,var(--av-surface))] px-3 py-2 sm:px-3.5 sm:py-3">
         <p className="text-[14px] font-black leading-tight tracking-tight text-[var(--av-text-primary)] sm:text-[16px]">
-          {hi ? "1. फसल की सामान्य जानकारी" : "1. Crop overview"}
+          {hi ? "फसल एक नज़र में" : "Crop at a glance"}
         </p>
       </div>
 

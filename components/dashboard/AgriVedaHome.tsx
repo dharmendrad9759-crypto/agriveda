@@ -6,14 +6,12 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Camera,
-  CloudSun,
   MessageCircle,
   ShieldCheck,
   Sparkles,
   Sprout,
   TrendingUp,
   Droplets,
-  FlaskConical,
   Landmark,
   type LucideIcon,
 } from "lucide-react";
@@ -32,8 +30,8 @@ import { track } from "@/lib/analytics";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import HomeWeatherWidget from "@/components/weather/HomeWeatherWidget";
-
-const HOME_DAY_ANCHOR_MS = Date.parse("2026-07-16T12:00:00Z");
+import SpeakButton from "@/components/ui/SpeakButton";
+import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 
 const QUICK_JOBS: {
   id: string;
@@ -45,16 +43,6 @@ const QUICK_JOBS: {
   icon: LucideIcon;
   imageSrc: string;
 }[] = [
-  {
-    id: "spray",
-    hi: "आज स्प्रे?",
-    en: "Spray today?",
-    hintHi: "करें या नहीं",
-    hintEn: "Yes or no",
-    href: "/weather/spray-advisory",
-    icon: FlaskConical,
-    imageSrc: "/images/jobs/job-spray.jpg",
-  },
   {
     id: "fert",
     hi: "खाद कितनी?",
@@ -69,21 +57,31 @@ const QUICK_JOBS: {
     id: "mandi",
     hi: "आज का भाव",
     en: "Today's price",
-    hintHi: "मंडी देखें",
-    hintEn: "See mandi rates",
+    hintHi: "नज़दीकी मंडी",
+    hintEn: "Nearest mandi",
     href: "/mandi",
     icon: TrendingUp,
     imageSrc: "/images/home/home-job-mandi.jpg",
   },
   {
-    id: "weather",
-    hi: "मौसम / पूर्वानुमान",
-    en: "Weather / forecast",
-    hintHi: "बारिश देखें",
-    hintEn: "Check rain",
-    href: "/weather",
-    icon: CloudSun,
-    imageSrc: "/images/home/home-job-weather.jpg",
+    id: "schemes",
+    hi: "सरकारी योजना",
+    en: "Govt schemes",
+    hintHi: "किसान मदद",
+    hintEn: "Farmer help",
+    href: "/schemes",
+    icon: Landmark,
+    imageSrc: "/images/home/home-cta-schemes.jpg",
+  },
+  {
+    id: "ask",
+    hi: "खेती सलाह",
+    en: "Field advice",
+    hintHi: "विशेषज्ञ से पूछो",
+    hintEn: "Ask an expert",
+    href: "/ask-query",
+    icon: MessageCircle,
+    imageSrc: "/images/home/ask-expert-trust.jpg",
   },
 ];
 
@@ -220,9 +218,12 @@ const MORE_JOBS_FIRST = 6;
 
 function daysSince(dateStr: string): number | null {
   if (!dateStr) return null;
-  const d = Date.parse(dateStr);
-  if (Number.isNaN(d)) return null;
-  const diff = Math.floor((HOME_DAY_ANCHOR_MS - d) / 86_400_000);
+  const sown = new Date(dateStr);
+  if (Number.isNaN(sown.getTime())) return null;
+  sown.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.floor((today.getTime() - sown.getTime()) / 86_400_000);
   return diff >= 0 ? diff : null;
 }
 
@@ -336,6 +337,14 @@ export default function AgriVedaHome() {
           <h1 className="mt-0.5 font-display text-[1.45rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
             {isHi ? "आज क्या करना है?" : "What do you need today?"}
           </h1>
+          <p className="mt-1 text-[13px] font-semibold text-[var(--av-text-muted)]">
+            {new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
+              weekday: "short",
+              day: "numeric",
+              month: "short",
+            })}
+            {weatherLive && weather?.temp ? ` · ${weather.temp}` : ""}
+          </p>
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
             <AppLink
               href="/my-farm"
@@ -356,7 +365,73 @@ export default function AgriVedaHome() {
           </div>
         </motion.section>
 
-        {/* AI photo CTA — TOP (user request) */}
+        <motion.section {...fade(0.015)}>
+          {primary ? (
+            <AppLink
+              href={
+                primary.cropSlug
+                  ? `/crops/${primary.cropSlug}/fertilizer-schedule`
+                  : "/my-farm"
+              }
+              className="flex items-center gap-3 rounded-2xl border border-[#D0DDD7] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)] active:scale-[0.99]"
+            >
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
+                <Image src={primary.img} alt="" fill sizes="56px" className="object-cover" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
+                  {isHi ? "मेरी फसल" : "My crop"}
+                </p>
+                <p className="truncate text-[16px] font-bold leading-snug text-[var(--av-text-primary)]">
+                  {cropChipLabel(primary.cropSlug, primary.crop)}
+                  {primary.days != null
+                    ? isHi
+                      ? ` · बुवाई के ${primary.days} दिन बाद`
+                      : ` · day ${primary.days}`
+                    : ""}
+                </p>
+                <p className="truncate text-[13px] font-medium text-[var(--av-text-secondary)]">
+                  {isHi ? farmerSpeak(primary.stage) : primary.stage}
+                </p>
+              </div>
+              <span className="flex shrink-0 flex-col items-end gap-1">
+                <span className="text-[12px] font-bold text-emerald-800">
+                  {isHi ? "खाद" : "Fertilizer"}
+                </span>
+                <SpeakButton
+                  hi={isHi}
+                  text={
+                    isHi
+                      ? `मेरी फसल ${cropChipLabel(primary.cropSlug, primary.crop)}. ${
+                          primary.days != null ? `बुवाई के ${primary.days} दिन बाद।` : ""
+                        } ${farmerSpeak(primary.stage)}`
+                      : `My crop ${primary.crop}. ${primary.days != null ? `Day ${primary.days}.` : ""} ${primary.stage}`
+                  }
+                />
+              </span>
+            </AppLink>
+          ) : (
+            <AppLink
+              href="/my-farm"
+              className="flex min-h-[64px] items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-500/35 bg-emerald-50/50 px-4 dark:bg-emerald-950/20"
+            >
+              <Sprout className="h-5 w-5 text-emerald-600" />
+              <span className="text-[15px] font-bold text-emerald-800 dark:text-emerald-200">
+                {isHi ? "अपनी फसल जोड़ो" : "Add your crop"}
+              </span>
+            </AppLink>
+          )}
+        </motion.section>
+
+        <motion.section {...fade(0.02)}>
+          <HomeWeatherWidget
+            weather={weather}
+            loading={weatherLoading}
+            isSample={weatherIsSample}
+          />
+        </motion.section>
+
+        {/* AI photo CTA */}
         <motion.section {...fade(0.02)}>
           <AppLink
             href="/ai-doctor"
@@ -369,10 +444,10 @@ export default function AgriVedaHome() {
                 {isHi ? "AI जाँच" : "AI check"}
               </span>
               <span className="text-[16px] font-bold leading-snug text-white sm:text-[17px]">
-                {isHi ? "फोटो लो — जाँच शुरू" : "Take photo — start check"}
+                {isHi ? "फसल में बीमारी है? फोटो खींचो" : "Crop looks sick? Take a photo"}
               </span>
-              <span className="text-[11px] font-medium leading-snug text-emerald-100/85">
-                {isHi ? "पत्ती की फोटो से बीमारी पता चले" : "Leaf photo finds the disease"}
+              <span className="text-[13px] font-medium leading-snug text-emerald-100/85">
+                {isHi ? "तुरंत इलाज और मात्रा मिले" : "Get the treatment and dose"}
               </span>
               <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-200">
                 {isHi ? "शुरू करें" : "Start"}
@@ -475,44 +550,6 @@ export default function AgriVedaHome() {
               </span>
             </AppLink>
           </div>
-          <AppLink
-            href="/schemes"
-            onClick={() => track("tool_open", { href: "/schemes", label: "home_kcc_banner" })}
-            className="group relative mt-2 flex min-h-[96px] w-full overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 shadow-lg shadow-emerald-900/25 active:scale-[0.99]"
-          >
-            <span className="relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-1.5 bg-emerald-950 px-3.5 py-4 sm:px-5">
-              <span className="inline-flex w-fit items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-100/90">
-                <Landmark className="h-3 w-3" />
-                {isHi ? "सरकारी योजना" : "Govt schemes"}
-              </span>
-              <span className="text-[16px] font-bold leading-snug text-white sm:text-[17px]">
-                {isHi ? "योजना · KCC · यंत्र" : "Schemes · KCC · Machinery"}
-              </span>
-              <span className="text-[11px] font-medium leading-snug text-emerald-100/85">
-                {isHi ? "पात्रता समझें, आधिकारिक पोर्टल पर जाएँ" : "Check eligibility, go official"}
-              </span>
-              <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-200">
-                {isHi ? "जानकारी देखें" : "See info"}
-                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-              </span>
-            </span>
-            <span className="relative w-[48%] min-w-[140px] max-w-[240px] shrink-0 self-stretch sm:w-[52%] sm:max-w-[280px]">
-              <Image
-                src="/images/home/home-cta-schemes.jpg"
-                alt=""
-                fill
-                sizes="280px"
-                className="object-cover object-[center_22%] transition duration-300 group-hover:scale-105"
-              />
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-emerald-950 via-emerald-950/50 to-transparent sm:w-16"
-              />
-              <span className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-emerald-900 shadow-md">
-                <Landmark className="h-5 w-5" strokeWidth={2.4} />
-              </span>
-            </span>
-          </AppLink>
           {lastScan ? (
             <AppLink
               href="/ai-doctor"
@@ -599,15 +636,6 @@ export default function AgriVedaHome() {
           </button>
         </motion.section>
 
-        {/* Weather */}
-        <motion.section {...fade(0.1)}>
-          <HomeWeatherWidget
-            weather={weather}
-            loading={weatherLoading}
-            isSample={weatherIsSample}
-          />
-        </motion.section>
-
         {/* Fields */}
         <motion.section {...fade(0.12)}>
           <div className="mb-2 flex items-center justify-between px-0.5">
@@ -642,7 +670,7 @@ export default function AgriVedaHome() {
                         {cropChipLabel(card.cropSlug, card.crop)}
                       </p>
                       <p className="truncate text-[11px] text-[var(--av-text-muted)]">
-                        {card.stage}
+                        {isHi ? farmerSpeak(card.stage) : card.stage}
                         {card.days != null
                           ? isHi
                             ? ` · ${card.days} दिन`

@@ -2,6 +2,7 @@
 
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import WeatherSummaryCard from "@/components/weather/WeatherSummaryCard";
+import AppLink from "@/components/ui/AppLink";
 import type { WeatherViewModel } from "@/lib/weatherApi";
 import { cn } from "@/lib/cn";
 
@@ -29,25 +30,24 @@ export default function HomeWeatherWidget({ weather, loading, isSample, classNam
 
   const rainChance = weather.hourlyForecast[0]?.rainChancePercent ?? 0;
   const humidityPct = Number.parseInt(weather.humidity, 10) || 0;
-  const tip =
-  !isSample && rainChance >= 55
-      ? isHi
-        ? `बारिश ${rainChance}% — आज स्प्रे मत करो`
-        : `${rainChance}% rain — skip spray today`
-      : !isSample && humidityPct >= 80
-        ? isHi
-          ? "नमी ज्यादा — पत्ती पर नज़र रखो"
-          : "High humidity — watch leaves"
-        : isHi
-          ? "पूरा मौसम खोलो — खेत सलाह मिलेगी"
-          : "Open weather for farm tips";
+  const holdSpray = !isSample && (rainChance >= 40 || humidityPct >= 85);
+  const tip = holdSpray
+    ? isHi
+      ? `बारिश ${rainChance}% — आज छिड़काव टालें`
+      : `${rainChance}% rain — hold spray today`
+    : isHi
+      ? "आज छिड़काव करें या टालें?"
+      : "Spray today, or wait?";
 
   return (
     <div className={className}>
       <WeatherSummaryCard weather={weather} compact />
-      <p className="mt-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+      <AppLink
+        href="/weather/spray-advisory"
+        className="mt-2 block rounded-xl border border-[#D0DDD7] bg-[var(--av-surface)] px-3 py-3 text-[14px] font-bold leading-snug text-[var(--av-text-primary)]"
+      >
         {tip}
-      </p>
+      </AppLink>
       {isSample ? (
         <p className="mt-1.5 text-center text-[11px] font-semibold text-amber-600">
           {isHi ? "नमूना — लाइव नहीं" : "Sample — not live"}

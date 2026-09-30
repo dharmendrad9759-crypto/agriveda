@@ -42,6 +42,7 @@ import {
   buildMixinOrganicCards,
 } from "@/lib/crops/fertilizerMixinTabs";
 import { simplifyMixinFarmerHi } from "@/lib/crops/simplifyMixinFarmerHi";
+import { buildFertilizerSlipText, openWhatsAppWithText } from "@/lib/whatsappShare";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
 import {
@@ -52,6 +53,7 @@ import {
   FileText,
   FlaskConical,
   Leaf,
+  Share2,
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
@@ -870,6 +872,25 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                 </li>
               ))}
             </ul>
+            {bags.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  openWhatsAppWithText(
+                    buildFertilizerSlipText({
+                      hi,
+                      crop: hindi || crop.name,
+                      acres,
+                      bags,
+                    })
+                  );
+                }}
+                className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#D0DDD7] bg-[#F8FAF8] px-3 text-[14px] font-bold text-[#0B6B45]"
+              >
+                <Share2 className="h-4 w-4" />
+                {hi ? "खाद की पर्ची WhatsApp करें" : "Send the bag slip on WhatsApp"}
+              </button>
+            ) : null}
             {!bags.length && (
               <p className="mt-2 text-xs text-[var(--av-text-muted)]">
                 {hi

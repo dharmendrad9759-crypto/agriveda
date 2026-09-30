@@ -7,6 +7,7 @@ import {
 import { technicalFromSprayLine } from "@/lib/crops/chemBottle";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
+import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 import { ShieldAlert, Bug } from "lucide-react";
 
 interface Props {
@@ -52,7 +53,7 @@ export default function CropManagementPestManagement({ profile }: Props) {
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Symptoms</p>
                 <ul className="mt-1 flex flex-wrap gap-1.5">
-                  {pest.symptoms.map((s) => (
+                  {pest.symptoms.map((s) => farmerSpeak(s)).filter(Boolean).map((s) => (
                     <li key={s} className="rounded-lg border border-white/8 bg-white/5 px-2.5 py-1 text-xs text-slate-300">
                       {s}
                     </li>
@@ -66,7 +67,7 @@ export default function CropManagementPestManagement({ profile }: Props) {
                     Biological Control
                   </p>
                   <ul className="mt-1 space-y-1">
-                    {pest.biologicalControl.map((b) => (
+                    {pest.biologicalControl.map((b) => farmerSpeak(b)).filter(Boolean).map((b) => (
                       <li key={b} className="text-xs text-emerald-200/80">• {b}</li>
                     ))}
                   </ul>
@@ -151,7 +152,7 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Symptoms</p>
                 <ul className="mt-1 flex flex-wrap gap-1.5">
-                  {disease.symptoms.map((s) => (
+                  {disease.symptoms.map((s) => farmerSpeak(s)).filter(Boolean).map((s) => (
                     <li key={s} className="rounded-lg border border-purple-500/15 bg-purple-500/5 px-2.5 py-1 text-xs text-purple-200">
                       {s}
                     </li>
@@ -173,7 +174,7 @@ function CropManagementDiseaseSection({ profile }: { profile: CropManagementProf
                   Integrated Management (IPM)
                 </p>
                 <ul className="mt-1 space-y-1">
-                  {disease.integratedManagement.map((m) => (
+                  {disease.integratedManagement.map((m) => farmerSpeak(m)).filter(Boolean).map((m) => (
                     <li key={m} className="text-xs text-emerald-200/80">• {m}</li>
                   ))}
                 </ul>

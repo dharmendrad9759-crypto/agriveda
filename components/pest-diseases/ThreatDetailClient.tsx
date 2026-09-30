@@ -29,12 +29,16 @@ import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 import { farmerThreatDisplayName } from "@/lib/crops/farmerThreatTitle";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import SpeakButton from "@/components/ui/SpeakButton";
 import { getWeedStageImages, getWeedCardImage } from "@/lib/weeds/weedStageImages";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
 import { technicalFromSprayLine } from "@/lib/crops/chemBottle";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { buildThreatSprayList } from "@/lib/crops/modernTechnicalBridge";
+import { findFieldMedicine } from "@/lib/crops/fieldMedicine";
+import { ALL_FIELD_MEDICINE } from "@/data/field-medicine-all";
+import FieldMedicinePanel from "@/components/crops/FieldMedicinePanel";
 import ImageLightbox from "@/components/ui/ImageLightbox";
 
 type PestTab = "identify" | "spray" | "control";
@@ -63,6 +67,14 @@ function farmerSymptomLine(s: string, hi: boolean): string {
       .replace(/\bNode\s*rot\b/gi, "गाँठ सड़न (Node rot)")
       .replace(/plant\s*breakage/gi, "पौधा टूटना")
       .replace(/\blesions?\b/gi, "धब्बे")
+      .replace(/\bwindow[-\s]*pane feeding\b/gi, "पत्ती पर खिड़की जैसे सफेद धब्बे")
+      .replace(/\bwhorl\b/gi, "चोँगा (गोभ)")
+      .replace(/\bleaf axils\b/gi, "पत्ती के कोने")
+      .replace(/\bragged holes\b/gi, "फटे छेद")
+      .replace(/\bseedling stage\b/gi, "अंकुर अवस्था")
+      .replace(/\btassel\b/gi, "नर मंजरी")
+      .replace(/\bcob damage\b/gi, "भुट्टे को नुकसान")
+      .replace(/\byoung leaves\b/gi, "नई पत्तियाँ")
   );
 }
 
@@ -262,7 +274,16 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
     [threat.rotationNotes, hi]
   );
 
+  const fieldMedicine = findFieldMedicine(
+    threat.cropSlug,
+    threat.type,
+    threat.name,
+    `${threat.scientificName} ${threat.pathogen ?? ""}`,
+    ALL_FIELD_MEDICINE
+  );
+
   const hasSpray =
+    Boolean(fieldMedicine) ||
     Boolean(threat.stageSprays?.length) ||
     Boolean(threat.activeIngredient) ||
     parseRemediationBuckets(threat.remediation).chemical.length > 0 ||
@@ -400,11 +421,12 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                 {names.secondary}
               </p>
             ) : null}
-            {threat.scientificName ? (
-              <p className="text-[12px] italic text-[var(--av-text-muted)]">
-                {threat.scientificName}
-              </p>
-            ) : null}
+            <SpeakButton
+              hi={hi}
+              text={hi
+                ? `${names.primary}. ${names.secondary ?? ""}. पहचान टैब में निशान देखें, दवा टैब में पहली पसंद से शुरू करें।`
+                : `${names.primary}. Open the medicine tab and start with the first choice.`}
+            />
           </header>
 
           {/* Segmented field tabs */}
@@ -477,17 +499,29 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                   <h2 className="font-display text-[1.2rem] font-bold tracking-tight text-[var(--av-text-primary)]">
                     {hi ? "दवा और मात्रा" : "Medicine & dose"}
                   </h2>
-                  <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
-                    {hi
-                      ? "ऊपर वाली पहली पसंद से शुरू करें"
-                      : "Start with the first pick"}
+                  <p className="mt-0.5 text-[13px] text-[var(--av-text-muted)]">
+                    {fieldMedicine
+                      ? hi
+                        ? "सब दवाएँ नीचे हैं — शुरू की रोकथाम से तेज़ प्रकोप तक"
+                        : "Every dose is below, from early prevention to heavy attack"
+                      : hi
+                        ? "ऊपर वाली पहली पसंद से शुरू करें"
+                        : "Start with the first pick"}
                   </p>
                 </div>
                 <FlaskConical className="mb-1 h-5 w-5 text-emerald-800/45" />
               </div>
 
-              {sprayProducts.length > 0 ? (
-                <CropSprayMedicineList products={sprayProducts} hi={hi} initialVisible={3} />
+              {fieldMedicine ? (
+                <FieldMedicinePanel guide={fieldMedicine} hi={hi} />
+              ) : sprayProducts.length > 0 ? (
+                <CropSprayMedicineList
+                  products={sprayProducts}
+                  hi={hi}
+                  initialVisible={2}
+                  shareCrop={cropHi || threat.cropSlug}
+                  shareProblem={names.primary}
+                />
               ) : (
                 <div className="space-y-2">
                   {farmerAiDose ? (
@@ -624,11 +658,6 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                       {displaySecondary ? (
                         <p className="mt-0.5 text-[13px] font-semibold text-white/85">
                           {displaySecondary}
-                        </p>
-                      ) : null}
-                      {threat.scientificName ? (
-                        <p className="mt-1 text-[11px] font-medium italic text-white/75">
-                          {threat.scientificName}
                         </p>
                       ) : null}
                     </div>

@@ -42,7 +42,7 @@ const RATES: Record<string, PracticalSeedRate> = {
   },
   cotton: {
     labelHi: "बीटी हाइब्रिड: 450–600 ग्राम/एकड़",
-    noteHi: "पैकेट के साथ रिफ्यूज बीज बॉर्डर पर ज़रूर बोएँ।",
+    noteHi: "पैकेट के साथ रिफ्यूज बीज बॉर्डर पर ज़रूर बोएँ। देशी कपास: 5–6 किलो/एकड़।",
   },
   tomato: {
     labelHi: "नर्सरी बीज: 80–100 ग्राम/एकड़",
@@ -113,6 +113,14 @@ const RATES: Record<string, PracticalSeedRate> = {
   grapes: {
     labelHi: "ग्राफ्टेड बेल: दूरी अनुसार (अक्सर ~450/एकड़ @ 3×3 मी)",
   },
+  cabbage: {
+    labelHi: "नर्सरी बीज: 200–250 ग्राम/एकड़",
+    noteHi: "पत्तागोभी की नर्सरी, फूलगोभी जितनी बीज मात्रा।",
+  },
+  capsicum: {
+    labelHi: "नर्सरी बीज: 150–200 ग्राम/एकड़",
+    noteHi: "शिमला मिर्च का हाइब्रिड नर्सरी बीज। पैकेट पर लिखी मात्रा मानें।",
+  },
   papaya: {
     labelHi: "नर्सरी बीज: 50–80 ग्राम/एकड़",
     noteHi: "या तैयार पौध: लगभग 700–1,000/एकड़।",
@@ -126,4 +134,31 @@ export function getPracticalSeedRate(slug: string): PracticalSeedRate | null {
 /** Single line for sowingGuide / cards */
 export function getPracticalSeedRateLabel(slug: string): string | null {
   return getPracticalSeedRate(slug)?.labelHi ?? null;
+}
+
+/** Seed rate for one variety, using only the rates already written for that crop. */
+export function varietySeedRate(
+  slug: string,
+  variety: { name: string; shop: boolean }
+): PracticalSeedRate | null {
+  const rate = getPracticalSeedRate(slug);
+  if (!rate) return null;
+  const name = variety.name;
+
+  if (slug === "paddy" && !variety.shop) {
+    return { labelHi: "देशी/खुली किस्म, रोपाई: 8–10 किलो/एकड़" };
+  }
+  if (slug === "mustard" && variety.shop) {
+    return { labelHi: "हाइब्रिड: 1–1.5 किलो/एकड़" };
+  }
+  if (slug === "chana" && /काबुली|डॉलर|उज्जवल/.test(name)) {
+    return { labelHi: "काबुली: 25–30 किलो/एकड़" };
+  }
+  if (slug === "cotton" && /धनवंतरी/.test(name)) {
+    return { labelHi: "देशी कपास: 5–6 किलो/एकड़" };
+  }
+  if (slug === "pulses" && !/उपास/.test(name)) {
+    return { labelHi: "मध्य/पछेती अरहर: 5–6 किलो/एकड़", noteHi: rate.labelHi };
+  }
+  return rate;
 }

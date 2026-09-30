@@ -24,6 +24,8 @@ type Props = {
   hi: boolean;
   /** Badge texts from irrigation stages — used to suggest interval */
   badgeHints: string[];
+  /** Next 48 hours look rainy — do not set a water reminder */
+  rainHold?: boolean;
 };
 
 export default function IrrigationReminderButton({
@@ -31,6 +33,7 @@ export default function IrrigationReminderButton({
   cropLabel,
   hi,
   badgeHints,
+  rainHold = false,
 }: Props) {
   const { showToast } = useToast();
   const { data: farm, addActivity } = useFarmData();
@@ -65,6 +68,12 @@ export default function IrrigationReminderButton({
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  const previewDate = useMemo(() => {
+    const next = new Date();
+    next.setDate(next.getDate() + intervalDays);
+    return formatReminderDate(next.toISOString(), hi);
+  }, [intervalDays, hi]);
 
   const fieldLabel =
     matchingFields.find((f) => f.id === fieldId)?.name ||
@@ -154,14 +163,45 @@ export default function IrrigationReminderButton({
           </div>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className={cn(AV.btnPrimary, "w-full justify-center")}
-        >
-          <CalendarClock className="mr-1.5 inline h-4 w-4" />
-          {hi ? "पानी की याद लगाएँ" : "Set water reminder"}
-        </button>
+        <div className="space-y-2">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => {
+              if (rainHold) {
+                showToast(
+                  hi
+                    ? "अगले 2 दिन बारिश का मौका है — पानी अभी टालें"
+                    : "Rain likely in 2 days — hold irrigation",
+                  "success"
+                );
+                return;
+              }
+              void handleSave();
+            }}
+            className={cn(AV.btnPrimary, "w-full justify-center text-left")}
+          >
+            <CalendarClock className="mr-1.5 inline h-4 w-4" />
+            {rainHold
+              ? hi
+                ? "बारिश आ रही है — पानी की याद टालें"
+                : "Rain coming — hold the water reminder"
+              : saving
+                ? hi
+                  ? "याद लग रही है…"
+                  : "Setting…"
+                : hi
+                  ? `अगली सिंचाई: ${intervalDays} दिन बाद (${previewDate}) — याद लगाएँ`
+                  : `Next water: ${intervalDays} days (${previewDate}) — set reminder`}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="w-full text-center text-[13px] font-bold text-emerald-800"
+          >
+            {hi ? "दिन बदलें" : "Change the day count"}
+          </button>
+        </div>
       )}
 
       {open ? (
@@ -209,10 +249,15 @@ export default function IrrigationReminderButton({
                       : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-primary)]"
                   )}
                 >
-                  {d}
+                  {hi ? `${d} दिन` : `${d}d`}
                 </button>
               ))}
             </div>
+            <p className="mt-2 text-[14px] font-bold text-[var(--av-text-primary)]">
+              {hi
+                ? `याद की तारीख: ${previewDate}`
+                : `Reminder date: ${previewDate}`}
+            </p>
 
             {matchingFields.length > 0 ? (
               <div className="mt-4">

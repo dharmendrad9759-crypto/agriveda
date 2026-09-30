@@ -61,7 +61,7 @@ export default function CropsListingClient({ crops }: Props) {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={isHi ? "धान, चना, अदरक खोजो…" : "Search paddy, chana, ginger…"}
+            placeholder={isHi ? "धान, गेहूँ, मक्का खोजो…" : "Search paddy, wheat, maize…"}
             className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2 pl-11 pr-3 text-[13px] font-medium text-[var(--av-text-primary)] placeholder:text-[var(--av-text-muted)] outline-none focus:border-[var(--av-accent)]"
           />
         </label>
@@ -96,7 +96,7 @@ export default function CropsListingClient({ crops }: Props) {
 
       <motion.div
         layout
-        className="grid grid-cols-2 gap-3.5 sm:gap-4 md:grid-cols-3 xl:grid-cols-4"
+        className="grid grid-cols-3 gap-2 sm:gap-3 md:grid-cols-4 xl:grid-cols-5"
       >
         <AnimatePresence mode="popLayout">
           {filtered.map((crop, index) => (

@@ -545,6 +545,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
         cropSlug={crop.slug}
         cropLabel={cropLabel}
         hi={hi}
+        rainHold={Boolean(rainAlert?.postpone)}
         badgeHints={guide.stages.flatMap((s) =>
           hi
             ? [s.badgeHi, s.waterHi ?? "", ...(s.fieldIdHi ?? []), ...s.pointsHi]

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 import { INDIAN_STATES, getDistrictsForState } from "@/lib/india-locations";
+import { isFarmerPlaceName } from "@/lib/farmerPlaceName";
 
 export const runtime = "nodejs";
 
@@ -100,7 +101,9 @@ export async function GET(req: Request) {
   }
 
   const state = matchState(stateRaw);
-  const district = matchDistrict(state, districtRaw) || districtRaw;
+  const district =
+    matchDistrict(state, districtRaw) ||
+    (isFarmerPlaceName(districtRaw) ? districtRaw.trim() : "");
 
   return NextResponse.json({
     lat,

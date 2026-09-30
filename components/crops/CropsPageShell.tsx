@@ -15,7 +15,7 @@ export default function CropsPageShell({ children }: { children: React.ReactNode
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("navCrops") }]}
       hero={
         <section className="relative -mx-3 mb-4 overflow-hidden sm:-mx-4 sm:mb-5 lg:-mx-6">
-          <div className="relative min-h-[200px] w-full sm:min-h-[240px] lg:min-h-[280px]">
+          <div className="relative min-h-[108px] w-full sm:min-h-[128px] lg:min-h-[148px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/jobs/job-crops-hero.jpg"
@@ -25,11 +25,11 @@ export default function CropsPageShell({ children }: { children: React.ReactNode
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(16,185,129,0.25),transparent_55%)]" />
 
-            <div className="relative flex h-full min-h-[200px] flex-col justify-end px-4 pb-4 pt-10 sm:min-h-[240px] sm:px-6 sm:pb-5 sm:pt-12 lg:min-h-[280px] lg:px-8 lg:pb-6">
-              <p className="font-display text-[11px] font-semibold tracking-[0.2em] text-emerald-300/95 sm:text-[13px] sm:tracking-[0.22em]">
+            <div className="relative flex h-full min-h-[108px] flex-col justify-end px-4 pb-3 pt-6 sm:min-h-[128px] sm:px-6 sm:pb-4 lg:min-h-[148px] lg:px-8">
+              <p className="font-display text-[11px] font-semibold tracking-[0.16em] text-emerald-300/95">
                 AGRIVEDA
               </p>
-              <h1 className="mt-1 max-w-xl font-display text-[1.65rem] font-bold leading-[1.1] text-white sm:mt-2 sm:text-4xl lg:text-[2.5rem]">
+              <h1 className="mt-0.5 max-w-xl font-display text-[1.35rem] font-bold leading-[1.1] text-white sm:text-3xl">
                 {isHi ? "अपनी फसल चुनो" : "Pick your crop"}
               </h1>
 

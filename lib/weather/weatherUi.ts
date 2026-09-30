@@ -1,9 +1,14 @@
+import { isFarmerPlaceName } from "@/lib/farmerPlaceName";
 import type { WeatherViewModel } from "@/lib/weatherApi";
 import { buildFarmDashboardData } from "@/lib/weatherDashboardData";
 import { tf, type AppLocale, type FarmerUiKey } from "@/lib/i18n/farmer-ui";
 
 export function shortLocation(location: string) {
-  return location.split(",")[0]?.trim() || location;
+  const parts = location
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  return parts.find((part) => isFarmerPlaceName(part)) || "आपका इलाका";
 }
 
 export function parseTempNum(temp: string): number {

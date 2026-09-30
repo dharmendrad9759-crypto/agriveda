@@ -198,16 +198,12 @@ export function ShellCtaBanner({
   href: string;
 }) {
   return (
-    <div className="mt-6 overflow-hidden rounded-2xl border border-[#D4E8DB] bg-[#EEF8F1] p-4 shadow-[0_6px_18px_-12px_rgba(11,61,40,0.22)] sm:p-5">
-      <div>
-        <h3 className="text-[16px] font-extrabold leading-snug text-[#0B3D28]">{title}</h3>
-        <p className="mt-1 text-[13px] font-medium leading-relaxed text-[#3D5A4A]">
-          {description}
-        </p>
-      </div>
+    <div className="mt-4 rounded-xl border border-[#D4E8DB] bg-[#F8FAF8] px-3 py-2.5">
+      <p className="text-[14px] font-bold leading-snug text-[#0B3D28]">{title}</p>
+      <p className="mt-0.5 text-[13px] font-medium leading-relaxed text-[#3D5A4A]">{description}</p>
       <AppLink
         href={href}
-        className="mt-3.5 flex w-full min-h-[48px] items-center justify-center rounded-xl bg-[#0B6B45] px-4 text-[14px] font-bold text-white shadow-sm transition hover:bg-[#095C3B] active:scale-[0.99]"
+        className="mt-2 inline-flex min-h-[44px] items-center text-[14px] font-bold text-[#0B6B45]"
       >
         {buttonLabel} →
       </AppLink>

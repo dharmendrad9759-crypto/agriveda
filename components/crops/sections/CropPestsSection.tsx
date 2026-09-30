@@ -3,6 +3,8 @@
 import RiskBadge from "@/components/shell/RiskBadge";
 import ThreatBrowseCard from "@/components/ui/ThreatBrowseCard";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { daysAfterSowing } from "@/lib/cropGrowthStage";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropFieldGuidePestListForCrop } from "@/lib/crops/cropFieldGuideBridge";
 import { getIpmPestListForCrop } from "@/lib/crops/ipmDataBridge";
@@ -18,6 +20,23 @@ import type { Crop } from "@/types/crop";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
+function pestFieldRisk(
+  name: string,
+  days: number | null,
+  index: number
+): "high" | "medium" | "low" {
+  const n = name.toLowerCase();
+  if (days == null) return index === 0 ? "high" : index < 3 ? "medium" : "low";
+  if (/shoot fly|अंकुर|atherigona|cutworm|termite|दीमक/.test(n)) {
+    return days < 25 ? "high" : "low";
+  }
+  if (/armyworm|fall army|फॉल|आर्मी|stem borer|तना छेदक|chilo|scirpophaga/.test(n)) {
+    return days >= 20 && days <= 75 ? "high" : "medium";
+  }
+  if (/aphid|माहू|rhopalosiphum/.test(n)) return days > 45 ? "medium" : "low";
+  return index === 0 ? "high" : index < 3 ? "medium" : "low";
+}
+
 function pestThumb(scientific?: string, catalogImage?: string) {
   return (
     getPestSpeciesImage(scientific) ||
@@ -29,6 +48,10 @@ function pestThumb(scientific?: string, catalogImage?: string) {
 export default function CropPestsSection({ crop }: { crop: Crop }) {
   const { locale } = useLocale();
   const hi = locale === "hi";
+  const { profile: farmer } = useFarmerProfile();
+  const sownDays = farmer.sowingDates?.[crop.slug]
+    ? daysAfterSowing(farmer.sowingDates[crop.slug])
+    : null;
   const [search, setSearch] = useState("");
 
   const profile = useMemo(
@@ -62,30 +85,32 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
         name: p.pestName,
         scientific: p.scientificName,
         etl: p.etl,
-        risk: "high" as const,
+        risk: pestFieldRisk(p.pestName, sownDays, i),
         image: pestThumb(p.scientificName, match?.image),
       };
     });
-  }, [crop.slug, useRichPests, profile, catalogPests]);
+  }, [crop.slug, useRichPests, profile, catalogPests, sownDays]);
 
   const pests = useRichPests
     ? richPests
     : fieldGuidePests.length
-      ? fieldGuidePests.map((p) => ({
+      ? fieldGuidePests.map((p, i) => ({
           ...p,
+          risk: pestFieldRisk(p.name, sownDays, i),
           detailHref: threatDetailPath(crop.slug, "pest", p.id),
         }))
       : ipmPests.length
-        ? ipmPests.map((p) => ({
+        ? ipmPests.map((p, i) => ({
             ...p,
+            risk: pestFieldRisk(p.name, sownDays, i),
             detailHref: threatDetailPath(crop.slug, "pest", p.id),
           }))
-        : catalogPests.map((p) => ({
+        : catalogPests.map((p, i) => ({
             id: p.id,
             name: p.name,
             scientific: p.scientificName,
             etl: p.etl,
-            risk: "high" as const,
+            risk: pestFieldRisk(p.name, sownDays, i),
             image: pestThumb(p.scientificName, p.image),
             detailHref: threatDetailPath(crop.slug, "pest", p.id),
           }));

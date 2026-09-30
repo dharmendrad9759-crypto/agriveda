@@ -4,20 +4,27 @@ import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import { bilingualAgriName } from "@/lib/crops/bilingualAgriName";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 import { shopBrandLine } from "@/lib/crops/shopBrandLine";
+import { tankDoseLine } from "@/lib/crops/tankDose";
+import { buildSpraySlipText, openWhatsAppWithText } from "@/lib/whatsappShare";
 import type { CropSprayProduct } from "@/types/crop-management";
+import { Share2 } from "lucide-react";
 import { useState } from "react";
 
 export default function CropSprayMedicineList({
   products,
   hi,
   heading,
-  initialVisible = 3,
+  initialVisible = 2,
+  shareCrop,
+  shareProblem,
 }: {
   products: CropSprayProduct[];
   hi: boolean;
   heading?: string;
   /** Keep first screen clean — expand for the rest */
   initialVisible?: number;
+  shareCrop?: string;
+  shareProblem?: string;
 }) {
   const [showAll, setShowAll] = useState(false);
   if (!products.length) return null;
@@ -38,6 +45,8 @@ export default function CropSprayMedicineList({
           const technical = [p.technical, p.formulation].filter(Boolean).join(" ");
           const title = hi ? bilingualAgriName(p.technical) : p.technical;
           const isPrimary = i === 0 && !showAll;
+          const isAlt = i === 1 && !showAll;
+          const tank = hi ? tankDoseLine(p.doseAcre) : null;
           return (
             <li key={`${p.technical}-${p.doseAcre}-${i}`}>
               <article
@@ -49,10 +58,17 @@ export default function CropSprayMedicineList({
               >
                 {isPrimary ? (
                   <div className="flex items-center justify-between gap-2 border-b border-emerald-800/10 bg-emerald-950 px-3 py-1.5">
-                    <p className="text-[10px] font-bold tracking-[0.1em] text-emerald-100">
-                      {hi ? "पहली पसंद · यहीं से शुरू" : "FIRST PICK · START HERE"}
+                    <p className="text-[12px] font-bold text-emerald-100">
+                      {hi ? "पहली पसंद · यहीं से शुरू" : "First choice · start here"}
                     </p>
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </div>
+                ) : null}
+                {isAlt ? (
+                  <div className="border-b border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-1.5">
+                    <p className="text-[12px] font-bold text-[var(--av-text-secondary)]">
+                      {hi ? "दूसरा विकल्प" : "Second option"}
+                    </p>
                   </div>
                 ) : null}
                 <div className="flex min-h-[88px]">
@@ -78,10 +94,15 @@ export default function CropSprayMedicineList({
                           {shopBrandLine(p.brands, hi)}
                         </p>
                       ) : null}
-                      <p className="mt-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300">
-                        {hi ? "खुराक · " : "Dose · "}
+                      <p className="mt-1.5 text-[14px] font-bold leading-snug text-emerald-800 dark:text-emerald-300">
+                        {hi ? "मात्रा · " : "Dose · "}
                         {p.doseAcre}
                       </p>
+                      {tank ? (
+                        <p className="mt-0.5 text-[13px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+                          {tank}
+                        </p>
+                      ) : null}
                       {p.bestStage ? (
                         <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
                           {hi ? "कब · " : "When · "}
@@ -89,12 +110,12 @@ export default function CropSprayMedicineList({
                         </p>
                       ) : null}
                       {p.bestUseCondition ? (
-                        <p className="mt-1 line-clamp-2 text-[10px] leading-snug text-[var(--av-text-muted)]">
+                        <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-[var(--av-text-secondary)]">
                           {hi ? farmerSpeak(p.bestUseCondition) : p.bestUseCondition}
                         </p>
                       ) : null}
                       {p.sourceConfidence === "label-check" ? (
-                        <p className="mt-1 text-[9px] font-semibold text-amber-800 dark:text-amber-200">
+                        <p className="mt-1 text-[12px] font-semibold text-amber-800 dark:text-amber-200">
                           {hi
                             ? "डिब्बे का लेबल (Label) ज़रूर देखें"
                             : "Check bottle label"}
@@ -136,7 +157,30 @@ export default function CropSprayMedicineList({
         </button>
       ) : null}
 
-      <p className="text-[9px] leading-snug text-[var(--av-text-muted)]">
+      <button
+        type="button"
+        onClick={() => {
+          const picks = products.slice(0, 2);
+          const text = buildSpraySlipText({
+            hi,
+            crop: shareCrop,
+            problem: shareProblem,
+            items: picks.map((p) => ({
+              title: hi ? bilingualAgriName(p.technical) : p.technical,
+              brands: p.brands?.length ? shopBrandLine(p.brands, hi) : undefined,
+              dose: p.doseAcre,
+              tank: hi ? tankDoseLine(p.doseAcre) : null,
+            })),
+          });
+          openWhatsAppWithText(text);
+        }}
+        className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#D0DDD7] bg-[#F8FAF8] px-3 text-[14px] font-bold text-[#0B6B45]"
+      >
+        <Share2 className="h-4 w-4" />
+        {hi ? "दुकान वाले को WhatsApp करें" : "Send to the shop on WhatsApp"}
+      </button>
+
+      <p className="text-[12px] leading-snug text-[var(--av-text-muted)]">
         {hi
           ? "खुराक गाइड है — बोतल लेबल अनिवार्य। एक ही दवा बार-बार न लगाएँ।"
           : "Guide only — follow bottle label. Rotate products."}

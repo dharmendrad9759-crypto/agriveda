@@ -47,6 +47,77 @@ export function buildConsultWhatsAppText(opts: {
   ].join("\n");
 }
 
+export function buildSpraySlipText(opts: {
+  hi: boolean;
+  crop?: string;
+  problem?: string;
+  items: {
+    title: string;
+    brands?: string;
+    dose: string;
+    tank?: string | null;
+  }[];
+}): string {
+  const hi = opts.hi;
+  const lines = [
+    hi ? "🌱 Agriveda — दवा पर्ची" : "🌱 Agriveda — spray slip",
+    opts.crop ? (hi ? `फसल: ${opts.crop}` : `Crop: ${opts.crop}`) : "",
+    opts.problem ? (hi ? `समस्या: ${opts.problem}` : `Problem: ${opts.problem}`) : "",
+    "",
+  ];
+  opts.items.slice(0, 2).forEach((item, i) => {
+    lines.push(
+      hi
+        ? i === 0
+          ? "1. पहली पसंद"
+          : "2. दूसरा विकल्प"
+        : i === 0
+          ? "1. First choice"
+          : "2. Second option"
+    );
+    lines.push(item.title);
+    if (item.brands) lines.push(item.brands);
+    lines.push(hi ? `मात्रा: ${item.dose}` : `Dose: ${item.dose}`);
+    if (item.tank) lines.push(item.tank);
+    lines.push("");
+  });
+  lines.push(
+    hi
+      ? "डिब्बे का लेबल ज़रूर देखें। एक ही दवा बार-बार न लगाएँ।"
+      : "Check the bottle label. Do not repeat the same product."
+  );
+  lines.push("— Agriveda");
+  return lines.filter((line, i, arr) => line !== "" || arr[i - 1] !== "").join("\n");
+}
+
+export function buildFertilizerSlipText(opts: {
+  hi: boolean;
+  crop: string;
+  acres: number;
+  bags: { name: string; amount: string }[];
+}): string {
+  const hi = opts.hi;
+  const acres = String(opts.acres);
+  const lines = [
+    hi ? "🌱 Agriveda — खाद की पर्ची" : "🌱 Agriveda — fertilizer slip",
+    hi ? `फसल: ${opts.crop}` : `Crop: ${opts.crop}`,
+    hi ? `खेत: ${acres} एकड़` : `Field: ${acres} acre`,
+    "",
+    hi ? "दुकान से ये बोरी / किलो:" : "Bags / kg to buy:",
+  ];
+  for (const bag of opts.bags) {
+    lines.push(`• ${bag.name} — ${bag.amount}`);
+  }
+  lines.push("");
+  lines.push(
+    hi
+      ? "अनुमान है। मिट्टी जाँच और बोरी पर लिखी बात से मिलाएँ।"
+      : "Estimate only. Match it with a soil test and the bag label."
+  );
+  lines.push("— Agriveda");
+  return lines.join("\n");
+}
+
 /** Opens WhatsApp compose with text. Returns false if blocked. */
 export function openWhatsAppWithText(text: string): boolean {
   if (typeof window === "undefined") return false;

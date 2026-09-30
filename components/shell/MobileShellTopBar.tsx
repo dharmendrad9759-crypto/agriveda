@@ -4,6 +4,7 @@ import AppLink from "@/components/ui/AppLink";
 import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
 import { Bell, MapPin, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { farmerPlaceLine } from "@/lib/farmerPlaceName";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
 import { BRAND } from "@/lib/brand";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -21,11 +22,9 @@ export default function MobileShellTopBar() {
     return onIrrigationAlertsChanged(refresh);
   }, []);
 
-  const hasLocation = Boolean(profile.village || profile.district || profile.state);
-  const location = hasLocation
-    ? [profile.village || profile.district, profile.state].filter(Boolean).join(", ")
-    : null;
-  const shortPlace = location ? location.split(",")[0] || location : "स्थान डालें";
+  const place = farmerPlaceLine(profile);
+  const hasLocation = place.ok;
+  const shortPlace = place.short || "स्थान डालें";
   const initials = (profile.name.trim() || "क")
     .split(/\s+/)
     .slice(0, 2)

@@ -3,6 +3,7 @@
  */
 
 import { applyBilingualAgriNames } from "@/lib/crops/bilingualAgriName";
+import { plainTalk } from "@/lib/crops/farmerSpeak";
 
 export function simplifyMixinFarmerHi(raw: string): string {
   if (!raw) return "";
@@ -49,6 +50,13 @@ export function simplifyMixinFarmerHi(raw: string): string {
     [/Amino\s*Acid\s*\/?\s*Biostimulant\s*Tonic/gi, "Amino Acid"],
     [/Amino\s*(Acid\s*)?Tonic/gi, "Amino Acid"],
     [/जैविक व जड़ सहायता/gi, "जैविक और जड़ की मदद"],
+    [/\bEthephon\b/gi, "ऊँचाई रोकने / पकाने वाली दवा (एथिफॉन)"],
+    [/\bV(\d+)\s*[-–]\s*V(\d+)\b/g, "जब $1 से $2 पत्तियाँ आ जाएँ"],
+    [
+      /(\d+(?:\.\d+)?)\s*[–\-]\s*(\d+(?:\.\d+)?)\s*kg\s*N\b/gi,
+      "नाइट्रोजन $1–$2 किलो (यूरिया में गिनी जाती है)",
+    ],
+    [/(\d+(?:\.\d+)?)\s*kg\s*N\b/gi, "नाइट्रोजन $1 किलो (यूरिया में गिनी जाती है)"],
   ];
 
   for (const [re, rep] of phrases) t = t.replace(re, rep);
@@ -92,8 +100,7 @@ export function simplifyMixinFarmerHi(raw: string): string {
 
   // Product names: Technical (हिंदी)
   t = applyBilingualAgriNames(t);
-
-  return t;
+  return plainTalk(t);
 }
 
 export function simplifyMixinLinesHi(lines: string[]): string[] {

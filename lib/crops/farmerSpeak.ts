@@ -4,6 +4,19 @@ const LABEL_JUNK =
   /\s*[—\-–]?\s*(लेबल\s*अनुसार|लेबल\s*के\s*अनुसार|बोतल\s*के\s*लेबल\s*के\s*अनुसार|as per (the )?label|follow( the)? label|label dose)\s*/gi;
 
 const PHRASES: [RegExp, string][] = [
+  [
+    /adult monitoring pheromone traps?\s*@?\s*\d+(?:\.\d+)?\s*\/\s*ha/gi,
+    "नर पतंगा फंदा (फेरोमोन ट्रैप): 1 एकड़ में 2 लगाएँ",
+  ],
+  [/\bpheromone traps?\b/gi, "नर पतंगा फंदा (फेरोमोन ट्रैप)"],
+  [/\bfield season\b/gi, "खेत का मौसम"],
+  [/\bquality protein maize\b/gi, "पौष्टिक मक्का दाना"],
+  [/\bfeed mill\b/gi, "मुर्गी दाने की फैक्ट्री"],
+  [/\bpoultry\b/gi, "मुर्गी पालन"],
+  [/\bindustrial starch\b/gi, "कारखाने का स्टार्च"],
+  [/\bV(\d+)\s*[-–]\s*V(\d+)\b/g, "जब $1 से $2 पत्तियाँ आ जाएँ"],
+  [/plug से/gi, "ट्रे वाली पौध से"],
+  [/\bFeed mills?\b/gi, "मुर्गी दाने की फैक्ट्री"],
   [/\bDAT\s*(\d+)\s*[–\-]\s*(\d+)/gi, "रोपाई के $1–$2 दिन"],
   [/\bDAT\s*(\d+)/gi, "रोपाई के $1 दिन"],
   [/\bDAS\s*(\d+)\s*[–\-]\s*(\d+)/gi, "बुवाई के $1–$2 दिन"],
@@ -92,11 +105,50 @@ const PHRASES: [RegExp, string][] = [
   [/(?<!\()\brotation\b(?!\))/gi, "बारी-बारी दवा (Rotation)"],
 ];
 
+/** Lab / kitabi Hindi → words a farmer actually says. */
+const PLAIN: [RegExp, string][] = [
+  [
+    /Trichogramma(?:\s+[A-Za-z]+)?\s*@\s*[\d,\s]+\/\s*(?:acre|ha|एकड़)(?:\s*साप्ताहिक)?[^।;\n]*/gi,
+    "मित्र कीड़ा कार्ड (ट्राइकोग्रामा): हर हफ्ते 1 एकड़ में 1 कार्ड छोड़ें",
+  ],
+  [/Leucinodes/gi, "बैंगन का फल छेदक"],
+  [/Earias/gi, "भिंडी / कपास का फल छेदक"],
+  [/फेरोमोन जाल/g, "नर पतंगा फंदा"],
+  [/साप्ताहिक क्षति ग्रेड(?:िंग)?/g, "हर हफ्ते नुकसान गिनो"],
+  [/\(सबसे प्रभावी कदम\)/g, "— यही सबसे अच्छा काम है"],
+  [/काट(?:कर| के) नष्ट/g, "काट के बाहर फेंक दो"],
+  [/नुकसान फल/g, "खराब फल"],
+  [/निगरानी करें/g, "खेत देखो"],
+  [/(\d+(?:\s*[-–]\s*\d+)?)\s*\/\s*एकड़/g, "1 एकड़ में $1"],
+  [/\/\s*acre\b/gi, " प्रति एकड़"],
+  [/साप्ताहिक/g, "हर हफ्ते"],
+  [/(\d+)\s*[–\-]\s*(\d+)\s*सप्ताह/g, "$1–$2 हफ्ते"],
+  [/सप्ताह/g, "हफ्ते"],
+  [/निगरानी/g, "खेत देखना"],
+  [/स्काउटिंग/g, "खेत देखना"],
+  [/स्काउट/g, "खेत देखो"],
+  [/क्षति/g, "नुकसान"],
+  [/छिद्रित/g, "छेद वाली"],
+  [/ग्रेडिंग/g, "गिनती"],
+  [/प्रभावी/g, "अच्छा"],
+  [/नष्ट/g, "बाहर फेंक दो"],
+  [/प्रारंभिक/g, "शुरू का"],
+  [/अनुशंसित/g, "सही"],
+  [/([\u0900-\u097F])\s*\+\s*(?=[\u0900-\u097F])/g, "$1 और "],
+];
+
+export function plainTalk(raw: string): string {
+  let t = raw;
+  for (const [re, to] of PLAIN) t = t.replace(re, to);
+  return t.replace(/\s{2,}/g, " ").replace(/\s+([,.;।])/g, "$1").trim();
+}
+
 export function farmerSpeak(raw: string, maxLen?: number): string {
   if (!raw?.trim()) return "";
   let t = raw.replace(/\s+/g, " ").trim();
   t = t.replace(LABEL_JUNK, " ");
   for (const [re, to] of PHRASES) t = t.replace(re, to);
+  t = plainTalk(t);
   t = t
     .replace(/\s{2,}/g, " ")
     .replace(/\s+([,.;।])/g, "$1")

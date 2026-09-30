@@ -2,6 +2,8 @@
  * Farmer Hindi for pest ETL / spray-when lines on crop pest cards.
  */
 
+import { plainTalk } from "@/lib/crops/farmerSpeak";
+
 function replaceAll(text: string, pairs: [RegExp | string, string][]): string {
   let out = text;
   for (const [from, to] of pairs) {
@@ -11,6 +13,9 @@ function replaceAll(text: string, pairs: [RegExp | string, string][]): string {
 }
 
 const ETL_HI: [RegExp | string, string][] = [
+  [/\bV(\d+)\s*[-–]\s*V(\d+)\b/g, "जब $1 से $2 पत्तियाँ आ जाएँ"],
+  [/व्होर्ल/gi, "चोँगा (गोभ)"],
+  [/\bwhorl\b/gi, "चोँगा (गोभ)"],
   [/\bETL\b/gi, "नुकसान सीमा (ETL)"],
   [/Economic Threshold Level/gi, "नुकसान सीमा (ETL)"],
   [/dead\s*hearts?/gi, "मध्य तना सूखा (Dead heart)"],
@@ -62,7 +67,7 @@ export function simplifyPestEtlHi(raw: string): string {
     .replace(/\s+([,.;।])/g, "$1")
     .replace(/[·\-–—]\s*$/g, "")
     .trim();
-  return t;
+  return plainTalk(t);
 }
 
 export function formatPestSprayWhen(etl: string, hi: boolean): string {

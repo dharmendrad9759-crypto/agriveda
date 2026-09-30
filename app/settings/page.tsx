@@ -11,6 +11,7 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { shareAgriveda } from "@/lib/appEssentials";
 import { APP_VERSION, SUPPORT_MAILTO } from "@/lib/appMeta";
+import { farmerPlaceLine } from "@/lib/farmerPlaceName";
 import { BRAND } from "@/lib/brand";
 import { deleteAccountAndReload, logoutAndReload } from "@/lib/appReset";
 import { downloadLocalDataExport } from "@/lib/exportFarmerData";
@@ -184,7 +185,7 @@ export default function SettingsPage() {
     ? profile.name.trim().charAt(0).toUpperCase() + profile.name.trim().slice(1)
     : t("settingsAddName");
   const initial = greetName.charAt(0).toUpperCase();
-  const place = [profile.village, profile.district, profile.state].filter(Boolean).join(" · ");
+  const place = farmerPlaceLine(profile).full;
   const fieldCount = farm.fields.length;
   const areaLabel =
     farmStats.totalAreaAcres > 0

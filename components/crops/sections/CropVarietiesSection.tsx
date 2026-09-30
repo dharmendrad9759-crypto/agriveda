@@ -12,6 +12,8 @@ import {
 } from "@/lib/crops/cropVarieties";
 import { stageLabelHi, varietyTraitHi } from "@/lib/i18n/farmer-display";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import { getFieldVarietyGuide } from "@/lib/crops/fieldVarietyGuide";
+import FieldVarietyBoard from "@/components/crops/sections/FieldVarietyBoard";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { Crop } from "@/types/crop";
 import { MapPin, TrendingUp } from "lucide-react";
@@ -162,9 +164,9 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
   const { profile } = useFarmerProfile();
   const state = profile.state.trim() || undefined;
   const district = profile.district.trim();
+  const fieldGuide = getFieldVarietyGuide(crop.slug);
   const varieties = getVarietiesForCrop(crop.slug, state);
   const isPaddy = crop.slug === "paddy" || crop.slug === "rice" || crop.slug === "dhaan";
-
   const [ecology, setEcology] = useState<PaddyEcology | "all">("all");
   const [grain, setGrain] = useState<GrainType | "all">("all");
 
@@ -189,6 +191,10 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
       otherPrivate: otherList.filter((v) => v.source === "private"),
     };
   }, [filtered, state]);
+
+  if (fieldGuide) {
+    return <FieldVarietyBoard guide={fieldGuide} state={state} cropSlug={crop.slug} cropLabel={cropLabel} />;
+  }
 
   const hybridTitle = hi ? "हाइब्रिड किस्में" : "Hybrid varieties";
   const desiTitle = hi ? "देसी / लोकल किस्में" : "Desi / local varieties";
@@ -278,18 +284,38 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
       ) : null}
 
       <DarkCard>
-        <SectionHeader title={hi ? "अनुशंसित किस्में" : "Recommended Varieties"} />
-        <p className="mt-1 text-xs text-[var(--av-text-muted)]">
+        <SectionHeader
+          title={
+            hi
+              ? state
+                ? "आपके इलाके के लिए बीज"
+                : "बीज चुनें"
+              : state
+                ? "Seed for your area"
+                : "Choose seed"
+          }
+        />
+        <p className="mt-1 text-[13px] leading-snug text-[var(--av-text-muted)]">
           {hi
-            ? `${cropLabel} — क्षेत्र, अवधि, उपज और खास बात — अपनी ज़मीन के हिसाब से चुनें`
-            : `${cropLabel} — region, duration, yield and field tip — pick for your land`}
+            ? state
+              ? `${cropLabel} — ${[district, state].filter(Boolean).join(", ")} के लिए लिखी किस्में।`
+              : `${cropLabel} — प्रोफ़ाइल में ज़िला डालें, तभी इलाके के बीज दिखेंगे।`
+            : state
+              ? `${cropLabel} — listed for ${[district, state].filter(Boolean).join(", ")}.`
+              : `${cropLabel} — set your district to see local seed.`}
         </p>
         <div className="mt-3 space-y-4">
           {filtered.length === 0 ? (
-            <p className="text-xs text-[var(--av-text-secondary)]">
+            <p className="text-[13px] leading-snug text-[var(--av-text-secondary)]">
               {hi
                 ? "इस फ़िल्टर पर कोई किस्म नहीं — फ़िल्टर बदलें।"
                 : "No varieties for this filter — try another chip."}
+            </p>
+          ) : state && stateGovt.length + statePrivate.length === 0 ? (
+            <p className="text-[14px] font-semibold leading-snug text-[var(--av-text-primary)]">
+              {hi
+                ? `${state} के लिए इस सूची में अभी बीज दर्ज नहीं है। नज़दीकी कृषि विज्ञान केंद्र (KVK) से अपनी ज़मीन के बीज पूछें। नीचे दूसरे राज्यों की किस्में हैं — उन्हें अपने इलाके का बीज न समझें।`
+                : `No seed in this list is marked for ${state} yet. Ask your local KVK. Varieties below are for other states.`}
             </p>
           ) : state ? (
             <>
@@ -317,8 +343,12 @@ export default function CropVarietiesSection({ crop }: { crop: Crop }) {
 
       {state && (otherGovt.length > 0 || otherPrivate.length > 0) && (
         <CropCollapsible
-          title={t("varOtherStates")}
-          subtitle={hi ? "अन्य राज्यों की किस्में" : "Varieties popular elsewhere"}
+          title={hi ? "दूसरे राज्यों की किस्में" : "Other states"}
+          subtitle={
+            hi
+              ? "ये आपके इलाके की सलाह नहीं हैं"
+              : "Not a recommendation for your area"
+          }
           defaultOpen={false}
         >
           <div className="space-y-4">

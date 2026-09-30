@@ -17,6 +17,8 @@ const SCIENTIFIC: Record<string, string> = {
   urad: "Vigna mungo",
   ginger: "Zingiber officinale",
   garlic: "Allium sativum",
+  cabbage: "Brassica oleracea var. capitata",
+  capsicum: "Capsicum annuum var. grossum",
 };
 
 const SEASON_BY_SLUG: Record<string, string> = {
@@ -32,6 +34,8 @@ const SEASON_BY_SLUG: Record<string, string> = {
   urad: "Kharif",
   ginger: "Kharif",
   garlic: "Rabi",
+  cabbage: "Rabi / Autumn",
+  capsicum: "Rabi / Polyhouse",
 };
 
 function mapCategory(cat: CropCategory, slug: string): Crop["category"] {

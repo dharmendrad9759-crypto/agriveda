@@ -4,19 +4,15 @@ import AppLink from "@/components/ui/AppLink";
 import WeatherPill from "@/components/weather/WeatherPill";
 import { Bell, ChevronDown, MapPin, User } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { farmerPlaceLine } from "@/lib/farmerPlaceName";
 import { useMemo } from "react";
 
 export default function ShellTopBar() {
   const { profile } = useFarmerProfile();
 
-  const hasLocation = useMemo(
-    () => Boolean(profile.district || profile.state || profile.village),
-    [profile]
-  );
-  const location = useMemo(() => {
-    const parts = [profile.village || profile.district, profile.state].filter(Boolean);
-    return parts.length ? parts.join(", ") : "स्थान डालें";
-  }, [profile]);
+  const place = useMemo(() => farmerPlaceLine(profile), [profile]);
+  const hasLocation = place.ok;
+  const location = place.full || "स्थान डालें";
 
   const pill =
     "flex items-center gap-1.5 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 text-xs font-medium text-[var(--av-text-primary)]";

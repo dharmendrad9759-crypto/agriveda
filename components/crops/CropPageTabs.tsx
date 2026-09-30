@@ -1,7 +1,10 @@
 "use client";
 
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { daysAfterSowing } from "@/lib/cropGrowthStage";
 import FarmerSplitCard from "@/components/ui/FarmerSplitCard";
+import SpeakButton from "@/components/ui/SpeakButton";
 import { cn } from "@/lib/cn";
 import { cropCareHref } from "@/lib/crops/crop-care-href";
 import type { CropTabId } from "@/lib/crops/crop-tabs";
@@ -17,7 +20,7 @@ import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { Crop } from "@/types/crop";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, Sprout } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
   overview: "cropTabOverview",
@@ -37,12 +40,29 @@ const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
   expert: "cropTabExpert",
 };
 
+type StageId = "sowing" | "feed" | "protect" | "finish";
+
 type TabGroup = {
   id: string;
+  stage: StageId;
   titleHi: string;
   titleEn: string;
   tabs: CropTabId[];
 };
+
+const STAGES: { id: StageId; hi: string; en: string; hintHi: string; hintEn: string }[] = [
+  { id: "sowing", hi: "बुवाई", en: "Sowing", hintHi: "बीज", hintEn: "Seed" },
+  { id: "feed", hi: "खाद", en: "Feed", hintHi: "पानी", hintEn: "Water" },
+  { id: "protect", hi: "कीट", en: "Pests", hintHi: "रोग", hintEn: "Disease" },
+  { id: "finish", hi: "कटाई", en: "Harvest", hintHi: "मंडी", hintEn: "Mandi" },
+];
+
+function stageForDays(days: number | null): StageId {
+  if (days == null || days < 20) return "sowing";
+  if (days < 55) return "feed";
+  if (days < 95) return "protect";
+  return "finish";
+}
 
 const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
   "field-prep": "नर्सरी, बीज दर, रोपाई, दूरी, मल्चिंग, ड्रिप",
@@ -89,7 +109,17 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   const reduced = useReducedMotion();
   const { t, locale } = useLocale();
   const isHi = locale === "hi";
+  const { profile, hydrated } = useFarmerProfile();
+  const [stage, setStage] = useState<StageId>("sowing");
+  const [stageTouched, setStageTouched] = useState(false);
   const [showMore, setShowMore] = useState(false);
+
+  useEffect(() => {
+    if (!hydrated || stageTouched) return;
+    const iso = profile.sowingDates?.[crop.slug];
+    const days = iso ? daysAfterSowing(iso) : null;
+    setStage(stageForDays(days));
+  }, [hydrated, stageTouched, profile.sowingDates, crop.slug]);
   const harvestLabel = cropHarvestLabel(crop, isHi);
   const harvestHint = cropHarvestHint(crop, isHi);
   const hintMap = isHi ? TAB_HINT_HI : TAB_HINT_EN;
@@ -98,38 +128,44 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   const groups: TabGroup[] = [
     {
       id: "varieties",
-      titleHi: "2. सही बीज का चुनाव",
-      titleEn: "2. Seed variety",
+      stage: "sowing",
+      titleHi: "बीज",
+      titleEn: "Seed",
       tabs: ["varieties"],
     },
     {
       id: "field-prep",
-      titleHi: "3. तैयारी (ज़मीन और बुवाई)",
-      titleEn: "3. Field prep & sowing",
+      stage: "sowing",
+      titleHi: "ज़मीन और बुवाई",
+      titleEn: "Field prep & sowing",
       tabs: ["field-prep"],
     },
     {
       id: "feed",
-      titleHi: "4. खाद और सिंचाई",
-      titleEn: "4. Fertilizer & irrigation",
+      stage: "feed",
+      titleHi: "खाद और सिंचाई",
+      titleEn: "Fertilizer & irrigation",
       tabs: ["fertilizer", "irrigation"],
     },
     {
       id: "protect",
-      titleHi: "5. कीट और रोग नियंत्रण",
-      titleEn: "5. Pest & disease control",
+      stage: "protect",
+      titleHi: "कीट और रोग",
+      titleEn: "Pest & disease",
       tabs: ["pests", "diseases"],
     },
     {
       id: "harvest",
-      titleHi: `6. ${harvestLabel}, सहारा`,
-      titleEn: `6. ${harvestLabel} & staking`,
+      stage: "finish",
+      titleHi: harvestLabel,
+      titleEn: harvestLabel,
       tabs: ["harvest"],
     },
     {
       id: "market",
-      titleHi: "7. मंडी भाव और बिक्री",
-      titleEn: "7. Mandi & sales",
+      stage: "finish",
+      titleHi: "मंडी भाव और बिक्री",
+      titleEn: "Mandi & sales",
       tabs: ["market"],
     },
   ];
@@ -179,9 +215,47 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
     );
   };
 
+  const visible = groups.filter((group) => group.stage === stage);
+
   return (
     <nav className="mb-3 min-w-0 space-y-4" aria-label={t("cropGuide")}>
-      {groups.map((group) => (
+      <div className="grid grid-cols-4 gap-1.5" role="tablist" aria-label={isHi ? "फसल का चरण" : "Crop stage"}>
+        {STAGES.map((item) => {
+          const on = item.id === stage;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              onClick={() => {
+                setStageTouched(true);
+                setStage(item.id);
+              }}
+              className={cn(
+                "min-h-12 rounded-xl border px-1 py-1.5 text-center leading-tight transition active:scale-[0.98]",
+                on
+                  ? "border-emerald-700 bg-emerald-800 text-white"
+                  : "border-[#D0DDD7] bg-[var(--av-surface)] text-[var(--av-text-primary)]"
+              )}
+            >
+              <span className="block text-[13px] font-black">{isHi ? item.hi : item.en}</span>
+              <span className={cn("block text-[11px] font-semibold", on ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
+                {isHi ? item.hintHi : item.hintEn}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <SpeakButton
+        hi={isHi}
+        text={visible
+          .map((group) => (isHi ? `${group.titleHi}. ${(hintMap[group.tabs[0]] ?? "")}` : group.titleEn))
+          .join(" ")}
+      />
+
+      {visible.map((group) => (
         <section key={group.id} className="space-y-2" aria-labelledby={`crop-tab-${group.id}`}>
           <h2
             id={`crop-tab-${group.id}`}

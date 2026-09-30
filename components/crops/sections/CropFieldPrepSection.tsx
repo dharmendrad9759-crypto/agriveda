@@ -6,6 +6,7 @@ import { getCropManagementProfile } from "@/data/crop-management";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropFieldPrepGuide } from "@/lib/crops/cropFieldPrepGuide";
 import { getPracticalSeedRate } from "@/lib/crops/practicalSeedRates";
+import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 import type { Crop } from "@/types/crop";
 import { Droplets, LayoutGrid, Shield, Shovel, Sprout, Tractor } from "lucide-react";
 import { useMemo } from "react";
@@ -219,7 +220,7 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
             <Sprout className="h-4 w-4 text-emerald-600" />
             <SectionHeader title={hi ? "रोपाई" : "Transplanting"} />
           </div>
-          <ListBlock items={transplanting} />
+          <ListBlock items={hi ? transplanting.map((line) => farmerSpeak(line)) : transplanting} />
         </DarkCard>
       ) : null}
 

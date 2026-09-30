@@ -4,6 +4,7 @@ import {
   fetchOpenMeteoBundle,
   geocodeOpenMeteo,
 } from "@/lib/openMeteo";
+import { isFarmerPlaceName } from "@/lib/farmerPlaceName";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 function readOpenWeatherKey(): string | undefined {
@@ -161,10 +162,12 @@ export async function GET(request: NextRequest) {
           const district =
             a.state_district || a.county || a.district || a.city || a.town || a.village || "";
           const state = a.state || "";
-          const label = [district, state].filter(Boolean).join(", ");
+          const safeDistrict = isFarmerPlaceName(district) ? district : "";
+          const safeState = isFarmerPlaceName(state) ? state : "";
+          const label = [safeDistrict, safeState].filter(Boolean).join(", ");
           if (label) {
             placeName = label;
-            placeState = state || undefined;
+            placeState = safeState || undefined;
           }
         }
       } catch {

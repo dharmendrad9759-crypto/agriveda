@@ -78,13 +78,25 @@ export default function AskQueryPage() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const referralAppliedRef = useRef(false);
 
-  const availableCrops = hydrated
-    ? crops.map((c) => ({ id: c.slug, name: c.name, emoji: c.emoji }))
-    : cropCatalog.slice(0, 4).map((c) => ({
+  const availableCrops = (() => {
+    const label = (slug: string, fallback: string) =>
+      (isHi ? getCropHindiName(slug, fallback) : undefined) || fallback;
+    const mine = hydrated ? crops : [];
+    const mineIds = new Set(mine.map((c) => c.slug));
+    const mineChips = mine.map((c) => ({
+      id: c.slug,
+      name: label(c.slug, c.name),
+      emoji: c.emoji || getCropEmoji(c.slug),
+    }));
+    const rest = cropCatalog
+      .filter((c) => !mineIds.has(c.slug))
+      .map((c) => ({
         id: c.slug,
-        name: c.name,
+        name: label(c.slug, c.name),
         emoji: c.emoji,
       }));
+    return [...mineChips, ...rest];
+  })();
 
   const [selectedCrop, setSelectedCrop] = useState(availableCrops[0]?.id ?? "paddy");
   const [query, setQuery] = useState("");

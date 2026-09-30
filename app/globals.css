@@ -492,10 +492,9 @@ input.av-input--icon {
   align-items: center;
   border-radius: 6px;
   padding: 0.125rem 0.5rem;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0;
 }
 
 .av-badge-high {

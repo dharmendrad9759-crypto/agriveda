@@ -1,4 +1,5 @@
 import { cropCatalog } from "@/data/crop-catalog";
+import { MEDICINE_LIST_EXTRAS } from "@/data/field-medicine-list-extra";
 
 const IMG = "/images/threats/threat-yellow.jpg";
 const IMG2 = "/images/threats/threat-disease.jpg";
@@ -59,6 +60,10 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p3", name: "धान सेना इल्ली (Rice Armyworm)", scientificName: "Spodoptera mauritia", image: IMG3, stage: "कल्ले", iracGroup: "IRAC 6 / 28", control: "Emamectin benzoate 5 SG @ 0.4 g/L — शाम को छिड़काव" },
       { id: "p4", name: "पत्ती मोड़क (Leaf Folder)", scientificName: "Cnaphalocrocis medinalis", image: IMG, stage: "बाली आरंभ", iracGroup: "IRAC 28 / 5", control: "Flubendiamide 20 WG @ 0.25 g/L या Spinosad 45 SC @ 0.3 ml/L" },
       { id: "p5", name: "हरा पत्ती फुदका (Green Leafhopper)", scientificName: "Nephotettix virescens", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 4A", control: "Imidacloprid 200 SL @ 0.3 ml/L या Thiamethoxam 25 WG @ 0.2 g/L (tungro वाहक)" },
+      { id: "p6", name: "सफेद पीठ फुदका (Whitebacked Planthopper)", scientificName: "Sogatella furcifera", image: IMG3, stage: "कल्ले", iracGroup: "IRAC 4A", control: "Dinotefuran / Pexalon" },
+      { id: "p7", name: "गंधी बग (Gundhi Bug)", scientificName: "Leptocorisa acuta", image: IMG3, stage: "दूधिया दाना", iracGroup: "IRAC 3A", control: "Malathion डस्ट सुबह" },
+      { id: "p8", name: "राइस हिस्पा (Rice Hispa)", scientificName: "Dicladispa armigera", image: IMG, stage: "रोपाई", iracGroup: "IRAC 2B", control: "सिरे काटें + Fipronil" },
+      { id: "p9", name: "गॉल मिज (Gall Midge)", scientificName: "Orseolia oryzae", image: IMG3, stage: "कल्ले", iracGroup: "IRAC 2B", control: "Fipronil GR रोपाई पर" },
     ],
     diseases: [
       { id: "d1", name: "धान ब्लास्ट (Rice Blast)", pathogen: "Magnaporthe oryzae", image: IMG2, stage: "कल्ले–बाली", fracGroup: "FRAC 16.1", control: "Tricyclazole 75 WP @ 0.6 g/L बूट लीफ पर; बदलकर Isoprothiolane 40 EC @ 1.5 ml/L" },
@@ -82,6 +87,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "एफिड (Aphids)", scientificName: "Sitobion avenae", image: IMG3, stage: "बाली", iracGroup: "IRAC 4A", control: "Imidacloprid बीज उपचार / Dimethoate छिड़काव" },
       { id: "p2", name: "दीमक (Termites)", scientificName: "Odontotermes obesus", image: IMG, stage: "अंकुर", iracGroup: "IRAC 13", control: "Chlorpyrifos बीज उपचार" },
       { id: "p3", name: "गुलाबी तना छेदक (Pink Stem Borer)", scientificName: "Sesamia inferens", image: IMG3, stage: "कल्ले", iracGroup: "IRAC 28", control: "Cartap hydrochloride छिड़काव" },
+      { id: "p4", name: "आर्मीवर्म (Armyworm)", scientificName: "Mythimna separata", image: IMG3, stage: "बाली", iracGroup: "IRAC 6", control: "Emamectin — शाम को स्प्रे" },
     ],
     diseases: [
       { id: "d1", name: "पीला रतुआ (Yellow Rust)", pathogen: "Puccinia striiformis", image: IMG2, stage: "कल्ले–बाली", fracGroup: "FRAC 3", control: "Propiconazole / Tebuconazole पहले लक्षण पर" },
@@ -104,6 +110,8 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "फॉल आर्मीवर्म (Fall Armyworm)", scientificName: "Spodoptera frugiperda", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 28", control: "Emamectin benzoate / Chlorantraniliprole" },
       { id: "p2", name: "तना छेदक (Stem Borer)", scientificName: "Chilo partellus", image: IMG, stage: "घुटने-ऊँचाई", iracGroup: "IRAC 14", control: "Cartap hydrochloride, प्रकाश जाल" },
       { id: "p3", name: "अंकुर मक्खी (Shoot Fly)", scientificName: "Atherigona soccata", image: IMG3, stage: "अंकुर", iracGroup: "IRAC 4A", control: "Imidacloprid/Thiamethoxam FS बीज उपचार — लेबल" },
+      { id: "p4", name: "दीमक व सफेद गिडार (Termite & White Grub)", scientificName: "Holotrichia consanguinea", image: IMG, stage: "जड़", iracGroup: "IRAC 1B", control: "Fipronil बीज + सिंचाई" },
+      { id: "p5", name: "मक्का का माहू (Corn Aphid)", scientificName: "Rhopalosiphum maidis", image: IMG3, stage: "भुट्टा", iracGroup: "IRAC 4A", control: "Thiamethoxam" },
     ],
     diseases: [
       { id: "d1", name: "टर्सिकम पत्ती झुलसा (Turcicum Leaf Blight)", pathogen: "Exserohilum turcicum", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC 3", control: "Mancozeb + Metalaxyl छिड़काव" },
@@ -111,6 +119,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d3", name: "पट्टेदार पत्ती-आवरण सड़न (Banded Leaf Sheath Blight)", pathogen: "Rhizoctonia solani", image: IMG2, stage: "तेज़ वृद्धि", fracGroup: "FRAC 32", control: "Validamycin मिट्टी डrench" },
       { id: "d4", name: "सामान्य रतुआ (Common Rust)", pathogen: "Puccinia sorghi", image: IMG2, stage: "वनस्पति–फूल", fracGroup: "FRAC 3", control: "Propiconazole / Tebuconazole — पहले पुस्ट्यूल पर" },
       { id: "d5", name: "तना सड़न / चारकोल रॉट (Charcoal Rot)", pathogen: "Macrophomina phaseolina", image: IMG, stage: "दाना भरना", fracGroup: "—", control: "बीज उपचार Trichoderma; सिंचाई तनाव से बचें" },
+      { id: "d6", name: "डाउनी मिल्ड्यू (Downy Mildew)", pathogen: "Peronosclerospora sorghi", image: IMG2, stage: "शुरुआत", fracGroup: "FRAC 4", control: "Metalaxyl बीज उपचार" },
     ],
     weeds: [
       { id: "w1", name: "सांवा घास (Barnyard Grass)", scientificName: "Echinochloa colona", type: "Grassy", criticalPeriod: "0–35 DAS", preEmergence: "Atrazine @ 1.0 kg/ha", postEmergence: "Tembotrione @ 120 g/ha", culturalControl: "घुटने-ऊँचाई पर मेड़-निराई" },
@@ -124,12 +133,16 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "अंकुर मक्खी (Shoot Fly)", scientificName: "Atherigona approximata", image: IMG3, stage: "अंकुर", iracGroup: "IRAC 4A", control: "Imidacloprid/Thiamethoxam FS बीज उपचार — लेबल" },
       { id: "p2", name: "तना छेदक (Stem Borer)", scientificName: "Coniesta ignefusalis", image: IMG, stage: "कल्ले", iracGroup: "IRAC 14", control: "Quinalphos छिड़काव — डेड-हार्ट अवस्था पर" },
       { id: "p3", name: "बाली इल्ली (Earhead Caterpillar)", scientificName: "Helicoverpa armigera", image: IMG3, stage: "फूल आना", iracGroup: "IRAC 28", control: "Indoxacarb / HaNPV छिड़काव" },
+      { id: "p4", name: "सफेद ग्रब (White Grub)", scientificName: "Holotrichia consanguinea", image: IMG, stage: "जड़", iracGroup: "IRAC 1B", control: "Chlorpyrifos सिंचाई के साथ" },
+      { id: "p5", name: "माहूँ (Aphid)", scientificName: "Rhopalosiphum maidis", image: IMG3, stage: "बाली", iracGroup: "IRAC 4A", control: "Dimethoate / Thiamethoxam" },
+      { id: "p6", name: "ग्रे वीविल (Grey Weevil)", scientificName: "Myllocerus spp.", image: IMG3, stage: "पत्ती", iracGroup: "IRAC 3A", control: "Lambda-cyhalothrin" },
     ],
     diseases: [
       { id: "d1", name: "बलूत फफूंद (Downy Mildew)", pathogen: "Sclerospora graminicola", image: IMG2, stage: "अंकुर", fracGroup: "FRAC 4", control: "Metalaxyl बीज उपचार, प्रतिरोधी किस्में" },
       { id: "d2", name: "अर्गोट (Ergot)", pathogen: "Claviceps fusiformis", image: IMG, stage: "फूल आना", fracGroup: "—", control: "संक्रमित बालियाँ हटाएँ, फूल आने से पहले छिड़काव" },
       { id: "d3", name: "रतुआ (Rust)", pathogen: "Puccinia penniseti", image: IMG2, stage: "दाना भरना", fracGroup: "FRAC 3", control: "Mancozeb / Propiconazole" },
       { id: "d4", name: "कंड (Grain Smut)", pathogen: "Tolyposporium penicillariae", image: IMG, stage: "बाली", fracGroup: "—", control: "Thiram / Captan बीज उपचार; संक्रमित बालियाँ काटें" },
+      { id: "d5", name: "ब्लास्ट (Blast)", pathogen: "Pyricularia grisea", image: IMG2, stage: "पत्ती", fracGroup: "FRAC 16.1", control: "Tricyclazole" },
     ],
     weeds: [
       { id: "w1", name: "जंगली ज्वार (Wild Sorghum)", scientificName: "Sorghum halepense", type: "Grassy", criticalPeriod: "10–35 DAS", preEmergence: "Atrazine @ 0.5 kg/ha", postEmergence: "2,4-D Na salt", culturalControl: "पंक्ति बुवाई — मेड़-निराई के लिए" },
@@ -143,6 +156,9 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "एफिड (Aphids)", scientificName: "Myzus persicae", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 4A", control: "Imidacloprid / Dimethoate" },
       { id: "p2", name: "कटवर्म (Cut Worm)", scientificName: "Agrotis ipsilon", image: IMG, stage: "शुरुआती वृद्धि", iracGroup: "IRAC 1A", control: "Chlorpyrifos मिट्टी स्तर पर डrench" },
       { id: "p3", name: "आलू कंद मोथ (Potato Tuber Moth)", scientificName: "Phthorimaea operculella", image: IMG3, stage: "भंडारण", iracGroup: "IRAC 22A", control: "Malathion powder भंडार में, खेत सफाई" },
+      { id: "p4", name: "पत्ती सुरंगक / माइट (Leaf Miner)", scientificName: "Liriomyza huidobrensis", image: IMG, stage: "कंद विकास", iracGroup: "IRAC 6", control: "Abamectin — पत्तियों के नीचे" },
+      { id: "p5", name: "सफेद गिडार (White Grub)", scientificName: "Holotrichia serrata", image: IMG3, stage: "कंद", iracGroup: "IRAC 1B", control: "Fipronil मिट्टी में बुवाई पर" },
+      { id: "p6", name: "हैड्डा बीटल (Hadda Beetle)", scientificName: "Henosepilachna vigintioctopunctata", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 22A", control: "Indoxacarb / Emamectin" },
     ],
     diseases: [
       { id: "d1", name: "देर से झुलसा (Late Blight)", pathogen: "Phytophthora infestans", image: IMG2, stage: "कंद भरना", fracGroup: "FRAC 40", control: "Metalaxyl-M + Mancozeb रोकथाम छिड़काव" },
@@ -151,6 +167,8 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d4", name: "जीवाणु मुरझान (Bacterial Wilt)", pathogen: "Ralstonia solanacearum", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "प्रतिरोधी किस्में; पानी भरा खेत न रखें; दूषित कंद न लगाएँ" },
       { id: "d5", name: "पत्ती मोज़ेक वायरस (Potato Mosaic)", pathogen: "Potato virus Y (aphid vector)", image: IMG, stage: "वनस्पति", fracGroup: "— (vector)", control: "बीज कंद प्रमाणित लें; एफिड नियंत्रण — Imidacloprid" },
       { id: "d6", name: "आम स्कैब (Common Scab)", pathogen: "Streptomyces scabies", image: IMG2, stage: "कंद बनना", fracGroup: "—", control: "मिट्टी pH 5.2–5.5 रखें; संक्रमित कंद न लगाएँ; सिंचाई समान" },
+      { id: "d7", name: "ब्लैकलेग / सॉफ्ट रॉट (Blackleg)", pathogen: "Pectobacterium carotovorum", image: IMG2, stage: "अंकुर–कंद", fracGroup: "—", control: "साबुत कंद + कॉपर और स्ट्रेप्टोसाइक्लिन" },
+      { id: "d8", name: "पत्ती मोज़ेक PVX (Potato virus X)", pathogen: "Potato virus X", image: IMG, stage: "वनस्पति", fracGroup: "—", control: "चाकू साफ रखें; रस चूसक रोकें" },
     ],
     weeds: [
       { id: "w1", name: "बथुआ (Bathua)", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–45 DAS", preEmergence: "Metribuzin @ 0.35 kg/ha", postEmergence: "Rimsulfuron @ 25 g/ha", culturalControl: "मेड़ चढ़ाने से छोटे खरपतवार दब जाते हैं" },
@@ -165,6 +183,9 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p2", name: "सफेद मक्खी (Whitefly)", scientificName: "Bemisia tabaci", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 4A", control: "Thiamethoxam / Neem oil" },
       { id: "p3", name: "पत्ती खनक (Leaf Miner)", scientificName: "Liriomyza trifolii", image: IMG, stage: "वनस्पति", iracGroup: "IRAC 17", control: "Abamectin / पीले चिपचिपे जाल" },
       { id: "p4", name: "तंबाकू की इल्ली (Tobacco Caterpillar)", scientificName: "Spodoptera litura", image: IMG3, stage: "वनस्पति–फल", iracGroup: "IRAC 28 / 15 / 6", control: "Chlorantraniliprole / Novaluron / Emamectin — ETL पर" },
+      { id: "p5", name: "पिनवर्म (Tomato Pinworm)", scientificName: "Tuta absoluta", image: IMG3, stage: "पत्ती–फल", iracGroup: "IRAC 30", control: "Broflanilide / Spinetoram — ट्रैप के साथ" },
+      { id: "p6", name: "एफिड (Aphids)", scientificName: "Myzus persicae", image: IMG3, stage: "कोपल–फूल", iracGroup: "IRAC 29", control: "Flonicamid" },
+      { id: "p7", name: "थ्रिप्स (Thrips)", scientificName: "Thrips tabaci", image: IMG, stage: "फूल–फल", iracGroup: "IRAC 5", control: "Spinetoram — नीला ट्रैप" },
     ],
     diseases: [
       { id: "d1", name: "शुरुआती झुलसा (Early Blight)", pathogen: "Alternaria solani", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC M5", control: "Mancozeb + Copper oxychloride" },
@@ -173,6 +194,9 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d4", name: "पत्ती मोड़ वायरस (Tomato Leaf Curl)", pathogen: "Begomovirus (whitefly vector)", image: IMG2, stage: "वनस्पति", fracGroup: "— (vector)", control: "संक्रमित पौधे उखाड़ें; सफेद मक्खी — Pyriproxyfen / Diafenthiuron" },
       { id: "d5", name: "फ्यूजेरियम मुरझान (Fusarium Wilt)", pathogen: "Fusarium oxysporum f.sp. lycopersici", image: IMG, stage: "वनस्पति–फल", fracGroup: "—", control: "प्रतिरोधी संकर; Carbendazim डrench; फसल चक्र" },
       { id: "d6", name: "सेप्टोरिया पत्ती धब्बा (Septoria Leaf Spot)", pathogen: "Septoria lycopersici", image: IMG2, stage: "वनस्पति", fracGroup: "FRAC M5", control: "Mancozeb / Chlorothalonil — निचली पत्तियाँ हटाएँ" },
+      { id: "d7", name: "ब्लॉसम-एंड रॉट (Blossom-End Rot)", pathogen: "Calcium disorder", image: IMG, stage: "फल", fracGroup: "—", control: "कैल्शियम + समान सिंचाई" },
+      { id: "d8", name: "एन्थ्रेक्नोज / फल सड़न (Anthracnose)", pathogen: "Colletotrichum coccodes", image: IMG2, stage: "पका फल", fracGroup: "FRAC 11", control: "Pyraclostrobin / Nativo" },
+      { id: "d9", name: "आर्द्र गलन (Damping-off)", pathogen: "Pythium aphanidermatum", image: IMG2, stage: "नर्सरी", fracGroup: "FRAC 4", control: "Metalaxyl बीज + Ridomil" },
     ],
     weeds: [
       { id: "w1", name: "गाजर घास (Parthenium)", scientificName: "Parthenium hysterophorus", type: "Broadleaf", criticalPeriod: "0–30 DAT", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "हाथ से निराई + मल्च", culturalControl: "काली प्लास्टिक मल्च" },
@@ -186,12 +210,15 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "थ्रिप्स (Thrips)", scientificName: "Thrips tabaci", image: IMG3, stage: "कंद बनना", iracGroup: "IRAC 4A", control: "Fipronil / Spinosad छिड़काव" },
       { id: "p2", name: "प्याज की मक्खी (Onion Maggot)", scientificName: "Delia antiqua", image: IMG, stage: "अंकुर", iracGroup: "IRAC 1B", control: "Chlorpyrifos रोपाई/लगाई पर डrench" },
       { id: "p3", name: "कटवर्म (Cut Worm)", scientificName: "Agrotis spp.", image: IMG3, stage: "शुरुआती वृद्धि", iracGroup: "IRAC 1A", control: "Chlorantraniliprole प्रलोभन" },
+      { id: "p4", name: "आर्मीवर्म (Spodoptera)", scientificName: "Spodoptera exigua", image: IMG3, stage: "पत्ती", iracGroup: "IRAC 6", control: "Emamectin / Novaluron" },
+      { id: "p5", name: "कंद माइट (Bulb Mite)", scientificName: "Rhizoglyphus echinopus", image: IMG, stage: "कंद–भंडार", iracGroup: "IRAC 6", control: "Spiromesifen / Sulphur" },
     ],
     diseases: [
       { id: "d1", name: "बैंगनी धब्बा (Purple Blotch)", pathogen: "Alternaria porri", image: IMG2, stage: "कंद विकास", fracGroup: "FRAC M5", control: "Mancozeb + Metalaxyl छिड़काव" },
       { id: "d2", name: "स्टेम्फिलियम झुलसा (Stemphylium Blight)", pathogen: "Stemphylium vesicarium", image: IMG, stage: "पकना", fracGroup: "FRAC 3", control: "Propiconazole / Iprodione" },
       { id: "d3", name: "आधार सड़न (Basal Rot)", pathogen: "Fusarium oxysporum", image: IMG2, stage: "भंडारण", fracGroup: "—", control: "Carbendazim कंद डुबोना, फसल चक्र" },
       { id: "d4", name: "बलूत फफूंद (Downy Mildew)", pathogen: "Peronospora destructor", image: IMG2, stage: "कंद विकास", fracGroup: "FRAC 4 + M3", control: "Metalaxyl-M + Mancozeb — ओस/बारिश से पहले" },
+      { id: "d5", name: "सॉफ्ट रॉट (Soft Rot)", pathogen: "Pectobacterium carotovorum", image: IMG2, stage: "कटाई–भंडार", fracGroup: "—", control: "गर्दन सुखाकर Curing" },
     ],
     weeds: [
       { id: "w1", name: "बथुआ (Chenopodium)", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–45 DAS", preEmergence: "Oxyfluorfen @ 0.15 kg/ha", postEmergence: "Hand weeding (no selective herbicide)", culturalControl: "मल्च, उथली जुताई" },
@@ -228,6 +255,10 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "गुलाबी रुई इल्ली (Pink Bollworm)", scientificName: "Pectinophora gossypiella", image: IMG3, stage: "कली–रुई", iracGroup: "IRAC 28", control: "Bt cotton + फेरोमोन जाल, Flubendiamide" },
       { id: "p2", name: "सफेद मक्खी (Whitefly)", scientificName: "Bemisia tabaci", image: IMG3, stage: "वनस्पति", iracGroup: "IRAC 4A", control: "Pyriproxyfen / Diafenthiuron" },
       { id: "p3", name: "हरा तैलक (Jassids)", scientificName: "Amrasca biguttula", image: IMG, stage: "कली बनना", iracGroup: "IRAC 4A", control: "Imidacloprid बीज उपचार" },
+      { id: "p4", name: "थ्रिप्स (Thrips)", scientificName: "Thrips tabaci", image: IMG3, stage: "शुरुआती 30–60 दिन", iracGroup: "IRAC 2B", control: "Fipronil / Spinetoram" },
+      { id: "p5", name: "माहू (Aphid)", scientificName: "Aphis gossypii", image: IMG3, stage: "बादल मौसम", iracGroup: "IRAC 4A", control: "Flonicamid / Acetamiprid" },
+      { id: "p6", name: "मिलीबग (Mealybug)", scientificName: "Phenacoccus solenopsis", image: IMG, stage: "तना–डाली", iracGroup: "IRAC 23", control: "Spirotetramat + स्टीकर" },
+      { id: "p7", name: "चित्तीदार सुंडी (American Bollworm)", scientificName: "Earias vittella", image: IMG3, stage: "कली–टिंडा", iracGroup: "IRAC 28", control: "Coragen / Chlorantraniliprole" },
     ],
     diseases: [
       { id: "d1", name: "जीवाणु झुलसा (Bacterial Blight)", pathogen: "Xanthomonas citri pv. malvacearum", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "अम्ल-डिलिंटेड बीज, Streptocycline छिड़काव" },
@@ -249,6 +280,10 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "ऊपरी छेदक (Top Borer)", scientificName: "Scirpophaga excerptalis", image: IMG3, stage: "तेज़ वृद्धि", iracGroup: "IRAC 28", control: "Chlorantraniliprole लेबल दर, Trichogramma" },
       { id: "p2", name: "पायरिला (Pyrilla)", scientificName: "Pyrilla perpusilla", image: IMG3, stage: "कल्ले", iracGroup: "IRAC 4A", control: "Dimethoate + Epiricania छोड़ें" },
       { id: "p3", name: "दीमक (Termites)", scientificName: "Odontotermes spp.", image: IMG, stage: "अंकुरण", iracGroup: "IRAC 13", control: "Chlorpyrifos बीज डुबोना" },
+      { id: "p4", name: "शुरुआती अंकुर छेदक (Early Shoot Borer)", scientificName: "Chilo infuscatellus", image: IMG3, stage: "पहले 90 दिन", iracGroup: "IRAC 28", control: "Ferterra कूंड़ में बुवाई पर" },
+      { id: "p5", name: "पोर छेदक (Internode Borer)", scientificName: "Chilo sacchariphagus indicus", image: IMG3, stage: "कल्ले–पकना", iracGroup: "IRAC 28", control: "Trichogramma + Coragen" },
+      { id: "p6", name: "सफेद गिडार (White Grub)", scientificName: "Holotrichia consanguinea", image: IMG, stage: "जुलाई–सितंबर", iracGroup: "IRAC 1B", control: "Chlorpyrifos सिंचाई के साथ" },
+      { id: "p7", name: "ऊनी माहूँ (Woolly Aphid)", scientificName: "Ceratovacuna lanigera", image: IMG3, stage: "कल्ले", iracGroup: "IRAC 23", control: "Spirotetramat + सूखी पत्ती उतारें" },
     ],
     diseases: [
       { id: "d1", name: "लाल सड़न (Red Rot)", pathogen: "Colletotrichum falcatum", image: IMG2, stage: "पकना", fracGroup: "—", control: "प्रतिरोधी किस्में, गर्म पानी से बीज उपचार" },
@@ -256,6 +291,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d3", name: "घास जैसी कली (Grassy Shoot)", pathogen: "Phytoplasma (leafhopper vector)", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "संक्रमित गुच्छे उखाड़ें, वाहक नियंत्रण" },
       { id: "d4", name: "मुरझान (Wilt)", pathogen: "Fusarium sacchari", image: IMG, stage: "तेज़ वृद्धि", fracGroup: "—", control: "स्वस्थ सेट लगाएँ; Carbendazim डrench; जल निकास" },
       { id: "d5", name: "रतुआ (Rust)", pathogen: "Puccinia melanocephala", image: IMG2, stage: "कल्ले–पकना", fracGroup: "FRAC 3", control: "Propiconazole / Tebuconazole — पहले पुस्ट्यूल पर" },
+      { id: "d6", name: "पोक्का बोएंग (Pokkah Boeng)", pathogen: "Fusarium moniliforme", image: IMG, stage: "मानसून", fracGroup: "FRAC 11", control: "Carbendazim + Mancozeb — गोभ पर" },
     ],
     weeds: [
       { id: "w1", name: "मोठा (Cyperus)", scientificName: "Cyperus rotundus", type: "Sedge", criticalPeriod: "0–90 DAP", preEmergence: "Atrazine @ 2.0 kg/ha", postEmergence: "2,4-D Na salt @ 1.0 kg/ha", culturalControl: "परali मल्च, मेड़ चढ़ाना" },
@@ -309,12 +345,18 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "p1", name: "फली छेदक (Pod Borer)", scientificName: "Helicoverpa armigera", image: IMG3, stage: "फली बनना", iracGroup: "IRAC 28", control: "HaNPV / Emamectin benzoate" },
       { id: "p2", name: "एफिड (Aphids)", scientificName: "Aphis craccivora", image: IMG3, stage: "फूल आना", iracGroup: "IRAC 4A", control: "Dimethoate छिड़काव — ETL पर" },
       { id: "p3", name: "दाल की कीड़ा (Bruchids)", scientificName: "Callosobruchus chinensis", image: IMG, stage: "भंडारण", iracGroup: "IRAC 13", control: "Neem oil / Phosphine धूमन — भंडार में" },
+      { id: "p4", name: "पंख वाली मोथ (Plume Moth)", scientificName: "Exelastis atomosa", image: IMG3, stage: "फली बनना", iracGroup: "IRAC 28", control: "Bt / Indoxacarb — फली पर" },
+      { id: "p5", name: "फली चूसने वाले कीड़े (Pod Sucking Bugs)", scientificName: "Clavigralla spp.", image: IMG3, stage: "फली भरना", iracGroup: "IRAC 1B", control: "Acephate / Bifenthrin — सुबह स्प्रे" },
+      { id: "p6", name: "फली मक्खी (Pod Fly)", scientificName: "Melanagromyza obtusa", image: IMG3, stage: "फली", iracGroup: "IRAC 1B", control: "Dimethoate — फूल आने पर" },
     ],
     diseases: [
-      { id: "d1", name: "मुरझान (Wilt)", pathogen: "Fusarium oxysporum", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "Trichoderma बीज उपचार, प्रतिरोधी किस्में" },
+      { id: "d1", name: "फ्यूज़ेरियम मुरझान (Fusarium Wilt)", pathogen: "Fusarium udum", image: IMG2, stage: "वनस्पति", fracGroup: "—", control: "Trichoderma बीज उपचार, प्रतिरोधी किस्में" },
       { id: "d2", name: "चूर्णिल फफूंद (Powdery Mildew)", pathogen: "Erysiphe pisi", image: IMG, stage: "फूल आना", fracGroup: "FRAC 3", control: "Wettable sulphur / Hexaconazole" },
       { id: "d3", name: "सर्कोस्पोरा पत्ती धब्बा (Cercospora Leaf Spot)", pathogen: "Cercospora canescens", image: IMG2, stage: "फली भरना", fracGroup: "FRAC M5", control: "Mancozeb छिड़काव" },
       { id: "d4", name: "पीला मोज़ेक (Yellow Mosaic)", pathogen: "Mungbean Yellow Mosaic Virus", image: IMG, stage: "वनस्पति", fracGroup: "— (vector)", control: "प्रतिरोधी किस्में; सफेद मक्खी नियंत्रण — Thiamethoxam" },
+      { id: "d5", name: "फफूंद झुलसा (Phytophthora Blight)", pathogen: "Phytophthora cajani", image: IMG2, stage: "बारिश", fracGroup: "FRAC 4", control: "Ridomil — पानी निकासी के साथ" },
+      { id: "d6", name: "बांझपन मोज़ेक (Sterility Mosaic)", pathogen: "Aceria cajani", image: IMG, stage: "शुरुआत", fracGroup: "— (mite)", control: "Propargite — शुरू में माइट रोकें" },
+      { id: "d7", name: "सूखी जड़ सड़न (Dry Root Rot)", pathogen: "Rhizoctonia bataticola", image: IMG2, stage: "फूल के बाद", fracGroup: "FRAC 11", control: "Trichoderma बीज उपचार + जड़ घोल" },
     ],
     weeds: [
       { id: "w1", name: "गुल्ली-डंडा (Phalaris minor)", scientificName: "Phalaris minor", type: "Grassy", criticalPeriod: "20–45 DAS", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "Quizalofop @ 50 g/ha", culturalControl: "पंक्ति बुवाई, जल्दी उगने वाली किस्में" },
@@ -379,6 +421,25 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "w2", name: "मोठा (Cyperus)", scientificName: "Cyperus rotundus", type: "Sedge", criticalPeriod: "Rainy season", preEmergence: "Glyphosate directed", postEmergence: "बेसिन में हाथ से हटाएँ", culturalControl: "बेलों के नीचे प्लास्टिक मल्च" },
       { id: "w3", name: "गाजर घास (Parthenium)", scientificName: "Parthenium hysterophorus", type: "Broadleaf", criticalPeriod: "Monsoon", preEmergence: "Clean vineyard floor", postEmergence: "बीज बनने से पहले हाथ से हटाएँ", culturalControl: "पंक्तियों के बीच cover crop" },
     ],
+  },
+  cucumber: {
+    slug: "cucumber", name: "Cucumber", emoji: "🥒",
+    pests: [
+      { id: "p1", name: "थ्रिप्स (Thrips)", scientificName: "Thrips palmi", image: IMG3, stage: "कोपल–फूल", iracGroup: "IRAC 5", control: "Spinetoram — फूल और कोपल पर" },
+      { id: "p2", name: "फल मक्खी (Fruit Fly)", scientificName: "Bactrocera cucurbitae", image: IMG3, stage: "फल", iracGroup: "IRAC 1B", control: "Cuelure ट्रैप + चारा स्प्रे" },
+      { id: "p3", name: "लाल कद्दू भृंग (Red Pumpkin Beetle)", scientificName: "Aulacophora foveicollis", image: IMG, stage: "2–4 पत्ती", iracGroup: "IRAC 3A", control: "Lambda-cyhalothrin — छोटी अवस्था" },
+      { id: "p4", name: "लाल मकड़ी माइट (Red Spider Mite)", scientificName: "Tetranychus urticae", image: IMG3, stage: "सूखा मौसम", iracGroup: "IRAC 6", control: "Spiromesifen / Abamectin" },
+      { id: "p5", name: "सफ़ेद मक्खी (Whitefly)", scientificName: "Bemisia tabaci", image: IMG3, stage: "वानस्पतिक", iracGroup: "IRAC 9B", control: "Afropiroen / Pyriproxyfen" },
+    ],
+    diseases: [
+      { id: "d1", name: "डाउनी मिल्ड्यू (Downy Mildew)", pathogen: "Pseudoperonospora cubensis", image: IMG2, stage: "बेल", fracGroup: "FRAC 40", control: "Mandipropamid / Infinito" },
+      { id: "d2", name: "जीवाणु कोणीय धब्बा (Angular Leaf Spot)", pathogen: "Pseudomonas syringae pv. lachrymans", image: IMG2, stage: "पत्ती–फल", fracGroup: "—", control: "Copper + Kasugamycin" },
+      { id: "d3", name: "एन्थ्रेक्नोज (Anthracnose)", pathogen: "Colletotrichum orbiculare", image: IMG, stage: "फल", fracGroup: "FRAC 11", control: "Azoxystrobin + Difenoconazole" },
+      { id: "d4", name: "खीरा मोज़ेक वायरस (CMV / CGMMV)", pathogen: "Cucumber green mottle mosaic virus", image: IMG2, stage: "वानस्पतिक", fracGroup: "— (vector)", control: "सफेद मक्खी रोकें; बीमार बेल उखाड़ें" },
+      { id: "d5", name: "चूर्णिल फफूंद (Powdery Mildew)", pathogen: "Podosphaera xanthii", image: IMG, stage: "गर्म सूखा", fracGroup: "FRAC 3", control: "Myclobutanil / Fluopyram" },
+      { id: "d6", name: "मुरझान एवं जड़ सड़न (Fusarium / Pythium)", pathogen: "Pythium aphanidermatum", image: IMG2, stage: "शुरुआत", fracGroup: "FRAC 4", control: "Trichoderma + Ridomil ड्रेंच" },
+    ],
+    weeds: [],
   },
   chana: {
     slug: "chana", name: "Chana", emoji: "🟡",
@@ -470,14 +531,44 @@ export function emptyCropPestDisease(slug: string): CropPestDiseaseData {
   };
 }
 
+function withMedicineListExtras(data: CropPestDiseaseData): CropPestDiseaseData {
+  const extra = MEDICINE_LIST_EXTRAS[data.slug];
+  if (!extra) return data;
+  const hayOf = (row: { name: string; scientificName?: string; pathogen?: string }) =>
+    `${row.name} ${row.scientificName ?? ""} ${row.pathogen ?? ""}`.toLowerCase();
+  const addMissing = <T extends { name: string; scientificName?: string; pathogen?: string }>(
+    existing: T[],
+    incoming: T[]
+  ): T[] => {
+    const out = [...existing];
+    for (const item of incoming) {
+      const sci = (item.scientificName || item.pathogen || "").toLowerCase();
+      const already = out.some((row) => {
+        const hay = hayOf(row);
+        const rowSci = (row.scientificName || row.pathogen || "").toLowerCase();
+        return (sci.length > 5 && hay.includes(sci)) || (rowSci.length > 5 && sci.includes(rowSci));
+      });
+      if (!already) out.push(item);
+    }
+    return out;
+  };
+  return {
+    ...data,
+    pests: addMissing(data.pests, extra.pests),
+    diseases: addMissing(data.diseases, extra.diseases),
+  };
+}
+
 export function getCropPestDisease(slug: string): CropPestDiseaseData {
   const key = normalizeCropSlug(slug);
   const base = cropPestDiseaseData[key] ?? getIpmCatalogEntry(key);
   if (!base) {
     return mergeWeedAbioticCatalog(emptyCropPestDisease(key));
   }
-  return mergeWeedAbioticCatalog(
-    mergeCropFieldGuideCatalog(mergeIpmCatalog({ ...base, slug: key }))
+  return withMedicineListExtras(
+    mergeWeedAbioticCatalog(
+      mergeCropFieldGuideCatalog(mergeIpmCatalog({ ...base, slug: key }))
+    )
   );
 }
 
