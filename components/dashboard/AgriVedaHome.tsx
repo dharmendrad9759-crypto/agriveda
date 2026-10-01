@@ -376,7 +376,7 @@ export default function AgriVedaHome() {
               className="flex items-center gap-3 rounded-2xl border border-[#D0DDD7] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)] active:scale-[0.99]"
             >
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
-                <Image src={primary.img} alt="" fill sizes="56px" className="object-cover" />
+                <Image src={primary.img} alt="" fill sizes="56px" quality={50} className="object-cover" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
@@ -460,6 +460,7 @@ export default function AgriVedaHome() {
                 alt=""
                 fill
                 sizes="280px"
+                quality={50}
                 className="object-cover object-[center_28%] transition duration-300 group-hover:scale-105"
                 priority
               />
@@ -490,6 +491,7 @@ export default function AgriVedaHome() {
                   alt=""
                   fill
                   sizes="(max-width: 512px) 50vw, 240px"
+                  quality={50}
                   className="object-cover transition duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/15" />
@@ -525,6 +527,7 @@ export default function AgriVedaHome() {
                 alt=""
                 fill
                 sizes="200px"
+                quality={45}
                 className="object-cover"
               />
               <span className="absolute inset-0 bg-emerald-950/65" />
@@ -542,6 +545,7 @@ export default function AgriVedaHome() {
                 alt=""
                 fill
                 sizes="200px"
+                quality={45}
                 className="object-cover object-[center_30%]"
               />
               <span className="absolute inset-0 bg-slate-950/70" />
@@ -603,6 +607,7 @@ export default function AgriVedaHome() {
                   alt=""
                   fill
                   sizes="(max-width: 512px) 50vw, 220px"
+                  quality={50}
                   className="object-cover transition duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/48 to-black/15" />
@@ -662,6 +667,7 @@ export default function AgriVedaHome() {
                         alt=""
                         fill
                         sizes="48px"
+                        quality={45}
                         className="object-cover"
                       />
                     </div>

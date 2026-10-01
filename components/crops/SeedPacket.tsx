@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function SeedPacket({
   photo,
   cropLabel,
@@ -22,9 +24,13 @@ export default function SeedPacket({
         <p className="text-[12px] font-bold text-white">{cropLabel}</p>
       </div>
       <div className={`flex gap-3 px-3 ${large ? "py-4" : "py-3"}`}>
-        <img
+        <Image
           src={photo}
           alt=""
+          width={large ? 96 : 72}
+          height={large ? 96 : 72}
+          quality={50}
+          sizes="96px"
           className={`${large ? "h-24 w-24" : "h-[4.5rem] w-[4.5rem]"} shrink-0 rounded-2xl object-cover ring-2 ring-white shadow-sm`}
         />
         <div className="min-w-0 flex-1">

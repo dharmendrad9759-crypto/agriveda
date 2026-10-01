@@ -56,6 +56,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   allowedDevOrigins: lanDevOrigins(),
   images: {
+    formats: ["image/webp"],
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: "https",

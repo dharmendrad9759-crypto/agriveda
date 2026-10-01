@@ -1,5 +1,5 @@
 /* Agriveda offline pack — crop assets, emergency data, stale page shell */
-const CACHE = "agriveda-offline-v1";
+const CACHE = "agriveda-offline-v2";
 const PRECACHE = [
   "/offline/emergency.json",
   "/manifest.webmanifest",
@@ -17,7 +17,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    )
   );
 });
 
@@ -34,6 +34,21 @@ function isStaticAsset(url) {
   );
 }
 
+function networkWithTimeout(req, ms) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(req.clone(), { signal: ctrl.signal }).finally(() => clearTimeout(timer));
+}
+
+function remember(cache, req, res) {
+  if (res && res.ok) cache.put(req, res.clone());
+}
+
+function slowPage() {
+  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agriveda</title><body style="margin:0;font-family:system-ui,sans-serif;background:#f2faf5;color:#0B3D28;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px;text-align:center"><div><p style="font-size:28px;margin:0">🌱</p><h1 style="font-size:22px;margin:12px 0 8px">नेट धीमा है</h1><p style="font-size:16px;line-height:1.4">एक बार ऐप खुल जाए तो अगली बार फोन पर से खुल जाएगी। थोड़ी देर बाद फिर खोलें।</p><button onclick="location.reload()" style="margin-top:16px;min-height:48px;padding:0 20px;border:0;border-radius:999px;background:#006432;color:#fff;font-weight:700;font-size:16px">फिर खोलें</button></div></body>`;
+  return new Response(html, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } });
+}
+
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -42,43 +57,45 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   if (isApi(url)) {
-    event.respondWith(fetch(req).catch(() => new Response(JSON.stringify({ offline: true }), {
-      status: 503,
-      headers: { "Content-Type": "application/json" },
-    })));
-    return;
-  }
-
-  if (isStaticAsset(url) || url.pathname.startsWith("/offline/")) {
     event.respondWith(
-      caches.match(req).then((cached) => {
-        const network = fetch(req).then((res) => {
-          if (res.ok) {
-            const clone = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, clone));
-          }
-          return res;
-        });
-        return cached || network;
-      })
+      networkWithTimeout(req, 12000).catch(
+        () =>
+          new Response(JSON.stringify({ offline: true }), {
+            status: 503,
+            headers: { "Content-Type": "application/json" },
+          })
+      )
     );
     return;
   }
 
-  // Navigation / pages: network-first, fallback cache
-  if (req.mode === "navigate" || req.headers.get("accept")?.includes("text/html")) {
+  const isPage =
+    req.mode === "navigate" ||
+    req.headers.get("RSC") === "1" ||
+    url.searchParams.has("_rsc") ||
+    (req.headers.get("accept") || "").includes("text/html");
+
+  if (isStaticAsset(url) || isPage) {
     event.respondWith(
-      fetch(req)
-        .then((res) => {
-          if (res.ok) {
-            const clone = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, clone));
-          }
+      caches.open(CACHE).then(async (cache) => {
+        const cached = await cache.match(req);
+        if (cached) {
+          event.waitUntil(
+            networkWithTimeout(req, 8000)
+              .then((res) => remember(cache, req, res))
+              .catch(() => {})
+          );
+          return cached;
+        }
+        try {
+          const res = await networkWithTimeout(req, isPage ? 12000 : 20000);
+          remember(cache, req, res);
           return res;
-        })
-        .catch(() =>
-          caches.match(req).then((cached) => cached || caches.match("/offline/emergency.json"))
-        )
+        } catch {
+          if (isPage && req.mode === "navigate") return slowPage();
+          return new Response("", { status: 504 });
+        }
+      })
     );
   }
 });

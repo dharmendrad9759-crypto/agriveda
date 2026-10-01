@@ -35,7 +35,7 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
           className="group flex items-stretch overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] transition active:scale-[0.99]"
         >
           <div className="relative h-[88px] w-[108px] shrink-0 overflow-hidden">
-            <Image src={image} alt={crop.name} fill className="object-cover" sizes="108px" />
+            <Image src={image} alt={crop.name} fill className="object-cover" sizes="108px" quality={50} />
           </div>
           <div className="flex min-w-0 flex-1 items-center justify-between gap-3 px-3.5 py-3">
             <div className="min-w-0">
@@ -81,8 +81,9 @@ export default function CropCard({ crop, index, variant = "grid" }: CropCardProp
             alt={crop.name}
             fill
             className="object-cover object-center transition duration-500 group-hover:scale-110"
-            sizes={isFeature ? "180px" : "(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"}
-            priority={index < 4}
+            sizes={isFeature ? "180px" : "(max-width: 640px) 42vw, 180px"}
+            quality={50}
+            priority={index < 2}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10" />
           {crop.isStub ? (

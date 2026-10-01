@@ -48,9 +48,9 @@ export default function GoogleTranslateBootstrap() {
     if (native) {
       const idle =
         "requestIdleCallback" in window
-          ? window.requestIdleCallback(() => injectTranslate(), { timeout: 5000 })
+          ? window.requestIdleCallback(() => injectTranslate(), { timeout: 12000 })
           : null;
-      const fallback = window.setTimeout(injectTranslate, 3500);
+      const fallback = window.setTimeout(injectTranslate, 12000);
       return () => {
         if (idle != null && "cancelIdleCallback" in window) {
           window.cancelIdleCallback(idle);
