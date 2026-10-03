@@ -192,12 +192,8 @@ export default function FieldVarietyBoard({
   }
 
   return (
-    <div className="space-y-4 pb-28">
-      <p className="text-[15px] font-semibold leading-snug text-[#34584a]">
-        {hi ? "अपने खेत के लिए सही किस्म खोजें" : "Find a seed that fits your field"}
-      </p>
-
-      <label className="flex min-h-12 items-center gap-2 rounded-2xl border border-emerald-900/10 bg-white px-3">
+    <div className="space-y-2.5 pb-6">
+      <label className="flex min-h-10 items-center gap-2 rounded-xl border border-emerald-900/10 bg-white px-3">
         <Search className="h-5 w-5 shrink-0 text-emerald-800" />
         <input
           value={query}
@@ -208,28 +204,25 @@ export default function FieldVarietyBoard({
         />
       </label>
 
-      <div>
-        <p className="mb-2 text-[14px] font-black text-[#0B3D28]">{hi ? "आपके खेत के लिए" : "For your field"}</p>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          <button type="button" onClick={() => setStateOpen(true)} className="min-h-11 shrink-0 rounded-full bg-emerald-800 px-4 text-[14px] font-black text-white">
-            {hi ? "राज्य" : "State"} · {place}
+      <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+          <button type="button" onClick={() => setStateOpen(true)} className="min-h-9 shrink-0 rounded-full bg-emerald-800 px-3 text-[13px] font-black text-white">
+            {place}
           </button>
           {visibleSituations.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setSituationId(situationId === item.id ? "all" : item.id)}
-              className={`min-h-11 shrink-0 rounded-full border px-4 text-[14px] font-bold ${
+              className={`min-h-9 shrink-0 rounded-full border px-3 text-[13px] font-bold ${
                 situationId === item.id ? "border-emerald-800 bg-emerald-50 text-emerald-900" : "border-emerald-900/10 bg-white text-[#0B3D28]"
               }`}
             >
               {item.label}
             </button>
           ))}
-          <button type="button" onClick={() => setMoreOpen(true)} className="min-h-11 shrink-0 rounded-full border border-emerald-900/10 bg-white px-4 text-[14px] font-bold text-[#0B3D28]">
+          <button type="button" onClick={() => setMoreOpen(true)} className="min-h-9 shrink-0 rounded-full border border-emerald-900/10 bg-white px-3 text-[13px] font-bold text-[#0B3D28]">
             {hi ? "और फ़िल्टर" : "More filters"}
           </button>
-        </div>
       </div>
 
       {situation ? (
@@ -240,20 +233,19 @@ export default function FieldVarietyBoard({
         </div>
       ) : null}
 
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <h2 className="text-[18px] font-black text-[#0B3D28]">{resultTitle}</h2>
-          <p className="text-[14px] font-semibold text-[#34584a]">
-            {hi
-              ? list.length === 0
-                ? "कोई किस्म नहीं मिली"
-                : list.length === 1
-                  ? "1 किस्म मिली"
-                  : `${list.length} किस्में मिलीं`
-              : `${list.length} found`}
-          </p>
-        </div>
-      </div>
+      <p className="text-[14px] font-black text-[#0B3D28]">
+        {resultTitle}
+        <span className="font-semibold text-[#34584a]">
+          {" · "}
+          {hi
+            ? list.length === 0
+              ? "कोई किस्म नहीं"
+              : list.length === 1
+                ? "1 किस्म"
+                : `${list.length} किस्में`
+            : `${list.length}`}
+        </span>
+      </p>
 
       {list.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-emerald-900/20 bg-white px-4 py-8 text-center">
@@ -265,13 +257,13 @@ export default function FieldVarietyBoard({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {list.map((item) => (
             <button
               key={item.name}
               type="button"
               onClick={() => setOpenVariety(item)}
-              className="overflow-hidden rounded-2xl border border-emerald-900/10 bg-white text-left shadow-[0_10px_24px_-18px_rgba(11,61,40,0.5)] active:scale-[0.99]"
+              className="overflow-hidden rounded-2xl border border-emerald-900/10 bg-white text-left active:scale-[0.99]"
             >
               <SeedPacket
                 photo={photo}
@@ -279,28 +271,14 @@ export default function FieldVarietyBoard({
                 englishName={varietyEnglishName(item.name)}
                 hindiName={item.name}
                 kind={packetKind(cropSlug, item.shop)}
+                compact
               />
-              <div className="space-y-2 p-3.5">
-                <div className="flex flex-wrap gap-1.5">
-                  {isLeadSeed(item.name, situation) ? (
-                    <span className="rounded-full bg-emerald-800 px-2 py-0.5 text-[12px] font-black text-white">{hi ? "पहले यही" : "First pick"}</span>
-                  ) : null}
-                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[12px] font-bold text-emerald-900">
-                    {item.shop ? (hi ? "दुकान" : "Shop") : hi ? "सरकारी" : "Govt"}
-                  </span>
-                </div>
-                <p className="text-[20px] font-black leading-tight text-[#0B3D28]">{item.name}</p>
-                <p className="text-[14px] font-semibold text-[#34584a]">{cropLabel}</p>
-                <p className="text-[15px] font-bold text-[#0B3D28]">{hi ? "तैयार: " : "Ready: "}{item.days}</p>
-                <p className="text-[15px] font-bold text-[#0B3D28]">{hi ? "लगभग उपज: " : "Field yield: "}{item.farmQ}</p>
-                {varietySeedRate(cropSlug, item) ? (
-                  <p className="text-[15px] font-bold text-[#0B3D28]">
-                    {hi ? "बीज की मात्रा: " : "Seed rate: "}
-                    {varietySeedRate(cropSlug, item)?.labelHi}
-                  </p>
-                ) : null}
-                <p className="line-clamp-2 text-[14px] leading-snug text-[#34584a]">{item.why}</p>
-                <p className="text-[15px] font-black text-emerald-800">{hi ? "पूरी जानकारी →" : "Full details →"}</p>
+              <div className="flex items-center justify-between gap-2 px-2.5 py-1.5">
+                <p className="min-w-0 text-[12px] font-bold leading-tight text-[#0B3D28]">
+                  {item.days}
+                  <span className="text-[#34584a]"> · {item.farmQ.replace(/^खेत में\s*/, "")}</span>
+                </p>
+                <p className="shrink-0 text-[12px] font-black text-emerald-800">{hi ? "पूरी जानकारी" : "Details"}</p>
               </div>
             </button>
           ))}
@@ -357,7 +335,7 @@ export default function FieldVarietyBoard({
       ) : null}
 
       {openVariety ? (
-        <Sheet title={openVariety.name} onClose={() => setOpenVariety(null)}>
+        <Sheet title={hi ? "पूरी जानकारी" : "Details"} onClose={() => setOpenVariety(null)}>
           <SeedPacket
             photo={photo}
             cropLabel={cropLabel}

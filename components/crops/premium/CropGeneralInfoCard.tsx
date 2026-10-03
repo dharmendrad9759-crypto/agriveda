@@ -1,11 +1,13 @@
 "use client";
 
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import { getCropAgroMeta } from "@/lib/crops/cropAgroMeta";
+import { getCropAgroMeta, getCropTempGuide } from "@/lib/crops/cropAgroMeta";
 import { formatInrRange, getCropFieldBand } from "@/lib/crops/cropFieldBands";
+import { plainTalk } from "@/lib/crops/farmerSpeak";
 import type { Crop } from "@/types/crop";
-import { CloudSun, Coins, Calendar, Timer, Wheat } from "lucide-react";
+import { CloudSun, Coins, Calendar, ChevronDown, Timer, Wheat } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useState } from "react";
 
 interface Props {
   crop: Crop;
@@ -24,7 +26,19 @@ type InfoRow = {
   factGrid?: { k: string; v: string }[];
 };
 
-function InfoCell({ row }: { row: InfoRow }) {
+function InfoCell({
+  row,
+  tempOpen,
+  onTemp,
+  stages,
+  hi,
+}: {
+  row: InfoRow;
+  tempOpen?: boolean;
+  onTemp?: () => void;
+  stages?: { stage: string; temp: string }[];
+  hi?: boolean;
+}) {
   const Icon = row.icon;
   return (
     <div
@@ -53,19 +67,40 @@ function InfoCell({ row }: { row: InfoRow }) {
         </p>
         {row.factGrid?.length ? (
           <div className="mt-1.5 grid grid-cols-2 gap-1 sm:gap-1.5">
-            {row.factGrid.map((f) => (
-              <div
-                key={f.k}
-                className="rounded-lg bg-[var(--av-surface)]/80 px-1.5 py-1 sm:px-2 sm:py-1.5"
-              >
-                <p className="text-[9px] font-bold text-[var(--av-text-muted)] sm:text-[10px]">
-                  {f.k}
-                </p>
-                <p className="mt-0.5 text-[11px] font-semibold leading-snug text-[var(--av-text-primary)] sm:text-[12px]">
-                  {f.v}
-                </p>
-              </div>
-            ))}
+            {row.factGrid.map((f) => {
+              const isTemp = f.k === "तापमान" || f.k === "Temp";
+              const body = (
+                <>
+                  <p className="text-[9px] font-bold text-[var(--av-text-muted)] sm:text-[10px]">
+                    {f.k}
+                  </p>
+                  <p className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold leading-snug text-[var(--av-text-primary)] sm:text-[12px]">
+                    {f.v}
+                    {isTemp ? (
+                      <ChevronDown className={`h-3.5 w-3.5 text-emerald-800 ${tempOpen ? "rotate-180" : ""}`} />
+                    ) : null}
+                  </p>
+                </>
+              );
+              if (!isTemp) {
+                return (
+                  <div key={f.k} className="rounded-lg bg-[var(--av-surface)]/80 px-1.5 py-1 sm:px-2 sm:py-1.5">
+                    {body}
+                  </div>
+                );
+              }
+              return (
+                <button
+                  key={f.k}
+                  type="button"
+                  onClick={onTemp}
+                  className="rounded-lg bg-[var(--av-surface)]/80 px-1.5 py-1 text-left ring-emerald-700/30 active:scale-[0.98] active:ring-2 sm:px-2 sm:py-1.5"
+                  aria-expanded={isTemp ? tempOpen : undefined}
+                >
+                  {body}
+                </button>
+              );
+            })}
           </div>
         ) : row.lines?.length ? (
           <ul className="mt-0.5 space-y-0.5 sm:mt-1 sm:space-y-1">
@@ -83,6 +118,21 @@ function InfoCell({ row }: { row: InfoRow }) {
             {row.value}
           </p>
         )}
+        {tempOpen && stages?.length ? (
+          <div className="mt-2 overflow-hidden rounded-xl border border-emerald-900/10 bg-white">
+            <p className="bg-[#0B3D28] px-2.5 py-1.5 text-[12px] font-black text-white">
+              {hi ? "स्टेज का तापमान" : "Temperature by stage"}
+            </p>
+            <ul>
+              {stages.map((stage) => (
+                <li key={stage.stage} className="flex items-center justify-between gap-3 border-t border-emerald-900/10 px-2.5 py-2">
+                  <span className="text-[14px] font-bold text-[#0B3D28]">{stage.stage}</span>
+                  <span className="text-right text-[14px] font-black text-emerald-800">{stage.temp}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         {row.note ? (
           <p className="mt-1 text-[10px] font-medium leading-snug text-[var(--av-text-muted)] sm:mt-1.5 sm:text-[11px]">
             {row.note}
@@ -99,6 +149,8 @@ export default function CropGeneralInfoCard({ crop }: Props) {
   const agro = getCropAgroMeta(crop.slug);
   const band = getCropFieldBand(crop.slug);
   const phLine = `${band.phMin.toFixed(1)}–${band.phMax.toFixed(1)}`;
+  const [tempOpen, setTempOpen] = useState(false);
+  const tempGuide = getCropTempGuide(crop.slug);
 
   const rows: InfoRow[] = [
     {
@@ -127,14 +179,14 @@ export default function CropGeneralInfoCard({ crop }: Props) {
       value: "",
       factGrid: hi
         ? [
-            { k: "मौसम", v: crop.climate },
-            { k: "मिट्टी", v: crop.suitableSoil },
+            { k: "मौसम", v: plainTalk(crop.climate) },
+            { k: "मिट्टी", v: plainTalk(crop.suitableSoil) },
             { k: "मिट्टी का स्वभाव (pH)", v: phLine },
             { k: "तापमान", v: `${agro.tempMinC}–${agro.tempMaxC}°C` },
           ]
         : [
-            { k: "Climate", v: crop.climate },
-            { k: "Soil", v: crop.suitableSoil },
+            { k: "Climate", v: plainTalk(crop.climate) },
+            { k: "Soil", v: plainTalk(crop.suitableSoil) },
             { k: "pH", v: phLine },
             { k: "Temp", v: `${agro.tempMinC}–${agro.tempMaxC}°C` },
           ],
@@ -180,7 +232,13 @@ export default function CropGeneralInfoCard({ crop }: Props) {
             key={row.id}
             className={row.wide ? "col-span-2" : undefined}
           >
-            <InfoCell row={row} />
+            <InfoCell
+              row={row}
+              hi={hi}
+              tempOpen={row.id === "climate-soil" && tempOpen}
+              onTemp={row.id === "climate-soil" ? () => setTempOpen((open) => !open) : undefined}
+              stages={row.id === "climate-soil" ? tempGuide.stages : undefined}
+            />
           </div>
         ))}
       </div>

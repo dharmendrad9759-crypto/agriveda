@@ -1,6 +1,7 @@
 "use client";
 
 import { Sprout, Ruler, CloudSun, Mountain } from "lucide-react";
+import { plainTalk } from "@/lib/crops/farmerSpeak";
 import type { CropManagementProfile } from "@/types/crop-management";
 
 interface CropQuickFactsProps {
@@ -11,8 +12,8 @@ export default function CropQuickFacts({ profile }: CropQuickFactsProps) {
   const facts = [
     { icon: Sprout, label: "Seed rate", value: profile.seedRate, hint: "per acre" },
     { icon: Ruler, label: "Spacing", value: profile.spacing },
-    { icon: CloudSun, label: "Weather need", value: profile.climate },
-    { icon: Mountain, label: "Soil", value: profile.soil },
+    { icon: CloudSun, label: "Weather need", value: plainTalk(profile.climate) },
+    { icon: Mountain, label: "Soil", value: plainTalk(profile.soil) },
   ];
 
   return (

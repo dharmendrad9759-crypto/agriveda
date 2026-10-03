@@ -34,6 +34,7 @@ const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
   weeds: "cropTabWeeds",
   calendar: "cropTabCalendar",
   varieties: "cropTabVarieties",
+  mistakes: "cropTabMistakes",
   harvest: "cropTabHarvest",
   market: "cropTabMarket",
   faq: "cropTabFaq",
@@ -78,6 +79,7 @@ const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
   nutrients: "पत्ती पीली / कमज़ोर",
   faq: "आम सवाल–जवाब",
   expert: "खेत की सीधी सलाह",
+  mistakes: "बुवाई से पहले, बाद में, और बाकी",
 };
 
 const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
@@ -94,6 +96,7 @@ const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
   nutrients: "Yellow or weak leaf",
   faq: "Common Q&A",
   expert: "Simple field advice",
+  mistakes: "Before sowing, after sowing, and the rest",
 };
 
 const MORE_TEASER_HI = ["घास", "पीली पत्ती", "हफ्ते का काम", "सवाल"] as const;
@@ -132,6 +135,13 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
       titleHi: "बीज",
       titleEn: "Seed",
       tabs: ["varieties"],
+    },
+    {
+      id: "mistakes",
+      stage: "sowing",
+      titleHi: "आम गलतियाँ",
+      titleEn: "Common mistakes",
+      tabs: ["mistakes"],
     },
     {
       id: "field-prep",
@@ -220,32 +230,32 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   return (
     <nav className="mb-3 min-w-0 space-y-4" aria-label={t("cropGuide")}>
       <div className="grid grid-cols-4 gap-1.5" role="tablist" aria-label={isHi ? "फसल का चरण" : "Crop stage"}>
-        {STAGES.map((item) => {
-          const on = item.id === stage;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              aria-selected={on}
-              onClick={() => {
-                setStageTouched(true);
-                setStage(item.id);
-              }}
-              className={cn(
-                "min-h-12 rounded-xl border px-1 py-1.5 text-center leading-tight transition active:scale-[0.98]",
-                on
-                  ? "border-emerald-700 bg-emerald-800 text-white"
-                  : "border-[#D0DDD7] bg-[var(--av-surface)] text-[var(--av-text-primary)]"
-              )}
-            >
-              <span className="block text-[13px] font-black">{isHi ? item.hi : item.en}</span>
-              <span className={cn("block text-[11px] font-semibold", on ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
-                {isHi ? item.hintHi : item.hintEn}
-              </span>
-            </button>
-          );
-        })}
+          {STAGES.map((item) => {
+            const on = item.id === stage;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => {
+                  setStageTouched(true);
+                  setStage(item.id);
+                }}
+                className={cn(
+                  "min-h-12 rounded-xl border px-1 py-1.5 text-center leading-tight transition active:scale-[0.98]",
+                  on
+                    ? "border-emerald-700 bg-emerald-800 text-white"
+                    : "border-[#D0DDD7] bg-[var(--av-surface)] text-[var(--av-text-primary)]"
+                )}
+              >
+                <span className="block text-[13px] font-black">{isHi ? item.hi : item.en}</span>
+                <span className={cn("block text-[11px] font-semibold", on ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
+                  {isHi ? item.hintHi : item.hintEn}
+                </span>
+              </button>
+            );
+          })}
       </div>
 
       <SpeakButton

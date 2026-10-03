@@ -11,6 +11,7 @@ import CropWeedSection from "@/components/crops/sections/CropWeedSection";
 import CropCalendarSection from "@/components/crops/sections/CropCalendarSection";
 import CropHarvestSection from "@/components/crops/sections/CropHarvestSection";
 import CropVarietiesSection from "@/components/crops/sections/CropVarietiesSection";
+import CropMistakesSection from "@/components/crops/sections/CropMistakesSection";
 import CropFieldPrepSection from "@/components/crops/sections/CropFieldPrepSection";
 import CropMarketSection from "@/components/crops/sections/CropMarketSection";
 import CropFaqSection from "@/components/crops/sections/CropFaqSection";
@@ -36,6 +37,7 @@ const TAB_TITLE: Record<Exclude<CropTabId, "overview" | "harvest">, FarmerUiKey>
   weeds: "cropTabWeeds",
   calendar: "cropTabCalendar",
   varieties: "cropTabVarieties",
+  mistakes: "cropTabMistakes",
   market: "cropTabMarket",
   faq: "cropTabFaq",
   expert: "cropTabExpert",
@@ -87,6 +89,8 @@ export default function CropCarePageClient({ crop, tab }: Props) {
             kind={tab}
             hi={locale === "hi"}
           />
+        ) : tab === "varieties" ? (
+          <h1 className="sr-only">{title}</h1>
         ) : (
           <div className="mb-3">
             <h1 className="text-[22px] font-black leading-tight tracking-tight text-[#0B3D28]">
@@ -116,6 +120,7 @@ export default function CropCarePageClient({ crop, tab }: Props) {
           {tab === "weeds" && <CropWeedSection crop={crop} />}
           {tab === "calendar" && <CropCalendarSection crop={crop} detail={detail} />}
           {tab === "varieties" && <CropVarietiesSection crop={crop} />}
+          {tab === "mistakes" && <CropMistakesSection crop={crop} />}
           {tab === "harvest" && <CropHarvestSection crop={crop} />}
           {tab === "market" && <CropMarketSection crop={crop} />}
           {tab === "faq" && <CropFaqSection crop={crop} />}

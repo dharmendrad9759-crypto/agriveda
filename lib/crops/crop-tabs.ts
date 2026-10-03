@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Apple,
+  AlertTriangle,
   Bug,
   CalendarDays,
   Droplets,
@@ -28,6 +29,7 @@ export const CROP_TABS = [
   { id: "weeds", label: "Weed Mgmt", shortLabel: "Weed", icon: Trees, emoji: "🌿" },
   { id: "calendar", label: "Calendar", shortLabel: "Calendar", icon: CalendarDays, emoji: "📅" },
   { id: "varieties", label: "Varieties", shortLabel: "Varieties", icon: Leaf, emoji: "🌾" },
+  { id: "mistakes", label: "Common mistakes", shortLabel: "Mistakes", icon: AlertTriangle, emoji: "⚠️" },
   { id: "harvest", label: "Harvest", shortLabel: "Harvest", icon: Apple, emoji: "🌾" },
   { id: "market", label: "Market", shortLabel: "Market", icon: Store, emoji: "💰" },
   { id: "faq", label: "FAQ", shortLabel: "FAQ", icon: HelpCircle, emoji: "❓" },

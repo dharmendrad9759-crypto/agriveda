@@ -151,6 +151,7 @@ export function getCropTabPhoto(slug: string, tab: CropTabId): string {
 
   switch (tab) {
     case "varieties":
+    case "mistakes":
     case "overview":
     case "faq":
     case "expert":

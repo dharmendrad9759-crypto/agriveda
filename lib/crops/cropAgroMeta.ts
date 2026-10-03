@@ -47,6 +47,7 @@ function farmerStageHi(raw: string | undefined, fallback = "बीच की अ
   if (/[\u0900-\u097F]/.test(s)) return s.split(/[—(]/)[0]?.trim() || s;
   const map: [RegExp, string][] = [
     [/transplant|रोपाई|planting/i, "रोपाई"],
+    [/CRI|crown\s*root/i, "जड़ जमाना"],
     [/sowing|बुवाई|establishment/i, "बुवाई"],
     [/flower|फूल|bloom|silking|tassel/i, "फूल आना"],
     [/fruit|fruiting|pod|boll|tuber/i, "फल लगना"],
@@ -318,6 +319,141 @@ export function getCropAgroMeta(slug: string) {
       sowingWindow: "Follow your district sowing calendar for best timing",
     }
   );
+}
+
+export type CropTempStage = {
+  stage: string;
+  temp: string;
+};
+
+export type CropTempGuide = {
+  source: string;
+  stages: CropTempStage[];
+};
+
+const TNAU = "स्रोत: TNAU फसल गाइड";
+const FIELD = "स्रोत: Agroclimatology of field crops";
+
+/** Stage temperatures copied from published crop guides, not guessed. */
+const TEMP_GUIDE: Record<string, CropTempGuide> = {
+  paddy: {
+    source: TNAU + " — धान, 2020",
+    stages: [
+      { stage: "जमाव", temp: "कम से कम 10°C" },
+      { stage: "बढ़वार", temp: "21–36°C" },
+      { stage: "फूल", temp: "25–29°C" },
+      { stage: "दाना", temp: "20–25°C" },
+    ],
+  },
+  wheat: {
+    source: "स्रोत: गेहूँ की बौनी किस्मों की स्टेज तालिका",
+    stages: [
+      { stage: "जमाव", temp: "20–25°C" },
+      { stage: "कल्ले", temp: "16–20°C" },
+      { stage: "तेज़ बढ़वार", temp: "20–23°C" },
+      { stage: "दाना भरना", temp: "23–25°C" },
+    ],
+  },
+  maize: {
+    source: FIELD,
+    stages: [
+      { stage: "बढ़वार", temp: "औसत ~24°C" },
+      { stage: "रात", temp: "15°C से ऊपर" },
+      { stage: "फूल", temp: "35°C पर दाना कम" },
+    ],
+  },
+  cotton: {
+    source: "स्रोत: ICAR — Indian Journal of Agricultural Sciences, कपास",
+    stages: [
+      { stage: "जमाव", temp: "16°C से ऊपर" },
+      { stage: "बढ़वार", temp: "21–27°C" },
+      { stage: "फूल–टिंडा", temp: "27–32°C" },
+    ],
+  },
+  sugarcane: {
+    source: FIELD,
+    stages: [
+      { stage: "अंकुर", temp: "औसत ~22°C, अच्छा 30°C" },
+      { stage: "बढ़वार", temp: "मिट्टी 27–28°C" },
+      { stage: "गाभ", temp: "20–32°C" },
+    ],
+  },
+  chana: {
+    source: FIELD + " — चना",
+    stages: [
+      { stage: "जमाव", temp: "10–45°C में संभव" },
+      { stage: "बढ़वार", temp: "15–20°C" },
+      { stage: "जड़ ग्रंथि", temp: "मिट्टी 15–25°C" },
+    ],
+  },
+  pulses: {
+    source: FIELD + " — अरहर",
+    stages: [{ stage: "बढ़वार", temp: "लगभग 25°C" }],
+  },
+  soybean: {
+    source: FIELD,
+    stages: [
+      { stage: "जमाव", temp: "30°C अनुकूल" },
+      { stage: "फूल, दिन", temp: "25–29°C" },
+      { stage: "फूल, रात", temp: "19–22°C" },
+      { stage: "फली", temp: "16–26°C" },
+    ],
+  },
+  moongfali: {
+    source: FIELD,
+    stages: [
+      { stage: "बढ़वार", temp: "24–34°C" },
+      { stage: "फली", temp: "मिट्टी औसत 23°C" },
+    ],
+  },
+  potato: {
+    source: FIELD + "; ICAR आलू शोध",
+    stages: [
+      { stage: "लगाना", temp: "18–20°C" },
+      { stage: "कंद शुरू", temp: "मिट्टी 16–19°C" },
+      { stage: "कंद बढ़ना", temp: "लगभग 20°C" },
+    ],
+  },
+  onion: {
+    source: FIELD + "; ICAR प्याज, पश्चिम बंगाल",
+    stages: [
+      { stage: "बढ़वार", temp: "19–20°C" },
+      { stage: "गांठ", temp: "21–22°C" },
+    ],
+  },
+  tomato: {
+    source: "स्रोत: ICAR–IARI, Indian Horticulture",
+    stages: [
+      { stage: "फल बैठना", temp: "20–25°C" },
+      { stage: "नुकसान", temp: "16°C से कम या 35°C से ऊपर" },
+    ],
+  },
+  chilli: {
+    source: "स्रोत: TNAU मिर्च योजना",
+    stages: [
+      { stage: "फसल", temp: "20–25°C आदर्श" },
+      { stage: "फल", temp: "37°C पर फल खराब" },
+    ],
+  },
+  bhindi: {
+    source: TNAU + " — भिंडी जलवायु",
+    stages: [
+      { stage: "जमाव", temp: "25–35°C" },
+      { stage: "बढ़वार", temp: "24–28°C" },
+      { stage: "फूल", temp: "40°C के बाद झड़ते हैं" },
+    ],
+  },
+};
+
+export function getCropTempGuide(slug: string): CropTempGuide {
+  const key = slugKey(slug);
+  const found = TEMP_GUIDE[key];
+  if (found) return found;
+  const meta = getCropAgroMeta(slug);
+  return {
+    source: "स्रोत: इसी फसल कार्ड की लिखी सीमा। अलग स्टेज तालिका उस गाइड में नहीं मिली।",
+    stages: [{ stage: "पूरी फसल", temp: `${meta.tempMinC}–${meta.tempMaxC}°C` }],
+  };
 }
 
 export function formatClimateCard(slug: string, fallbackClimate: string): string {

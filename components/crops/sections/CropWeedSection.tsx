@@ -634,7 +634,7 @@ function FieldDoctorWeedCards({
         ) : (
           <p className="text-[12px] text-emerald-900/60">
             {hi
-              ? "इस फसल के लिए अलग pre-emergence विकल्प स्रोत में नहीं।"
+              ? "इस फसल के लिए और दवा यहाँ नहीं लिखी।"
               : "No separate pre-emergence option in source."}
           </p>
         )}
@@ -666,7 +666,7 @@ function FieldDoctorWeedCards({
         ) : (
           <p className="text-[12px] text-emerald-900/60">
             {hi
-              ? "इस फसल के लिए अलग post-emergence विकल्प स्रोत में नहीं।"
+              ? "इस फसल के लिए और दवा यहाँ नहीं लिखी।"
               : "No separate post-emergence option in source."}
           </p>
         )}
