@@ -11,8 +11,7 @@ export default function CropManagementMarketInformation({ profile }: Props) {
 
   return (
     <FuturisticPanel
-      title="Market Information"
-      subtitle="Price outlook · Demand analysis · MSP"
+      title="Market Information"
       icon={TrendingUp}
       glow
     >

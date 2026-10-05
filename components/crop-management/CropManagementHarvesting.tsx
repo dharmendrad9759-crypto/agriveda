@@ -11,8 +11,7 @@ export default function CropManagementHarvesting({ profile }: Props) {
   return (
     <div className="space-y-5">
       <FuturisticPanel
-        title="Harvesting Protocol"
-        subtitle="Maturity indices · Post-harvest handling"
+        title="Harvesting Protocol"
         icon={Tractor}
         glow
       >

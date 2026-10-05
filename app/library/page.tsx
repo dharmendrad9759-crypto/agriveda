@@ -19,8 +19,7 @@ export default function LibraryPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title={t("shellLibrary")}
-      subtitle="कृषि ज्ञान — फसल, कीट, रोग और पोषण"
+      title={t("shellLibrary")}
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("shellLibrary") }]}
     >
       <div className="grid gap-3 sm:grid-cols-2">

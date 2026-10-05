@@ -10,8 +10,7 @@ export default function PestSolverShell() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="कीट और रोग समाधान"
-      subtitle="लक्षण गाइड — संभावित कारण और उपचार योजना"
+      title="कीट और रोग समाधान"
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("toolPestSolver") }]}
     >
       <PestDiseaseSolver embedded />

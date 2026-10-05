@@ -44,7 +44,7 @@ const MODULES = [
     glow: "from-violet-500/20 to-indigo-500/10 border-violet-400/40",
   },
   {
-    href: "/crop-problem",
+    href: "/crop-problems",
     icon: Stethoscope,
     title: "समस्या → समाधान",
     desc: "Photo · लक्षण · Chat",

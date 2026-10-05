@@ -9,8 +9,7 @@ interface Props {
 export default function CropManagementSowingTime({ profile }: Props) {
   return (
     <FuturisticPanel
-      title="Sowing Guide"
-      subtitle={`${profile.scientificName} · Establishment protocol`}
+      title="Sowing Guide"
       icon={Sprout}
       glow
     >

@@ -339,8 +339,7 @@ export default function MixAdvisorClient() {
   return (
     <AppShell
       variant="hub"
-      title="दवा मिलाएँ"
-      subtitle="कीड़ों की दवा + फंगस की दवा — स्टिकर सहित"
+      title="दवा मिलाएँ"
       backHref="/dashboard"
     >
       <div className="mx-auto max-w-lg space-y-4 px-1 pb-8">

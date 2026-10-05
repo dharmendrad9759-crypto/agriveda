@@ -9,8 +9,7 @@ interface Props {
 export default function CropManagementYield({ profile }: Props) {
   return (
     <FuturisticPanel
-      title="Expected Yield"
-      subtitle="Benchmark under optimal management"
+      title="Expected Yield"
       icon={BarChart3}
     >
       <div className="flex items-center gap-4">

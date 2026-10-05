@@ -12,7 +12,6 @@ export default function DeficienciesPage() {
     <AppShell
       className="!bg-transparent"
       title={isHi ? "पत्ती समस्या" : "Leaf problem"}
-      subtitle={isHi ? "देखो → लगाओ → पूछो" : "See → fix → ask"}
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: isHi ? "पोषक तत्व" : "Nutrients" }]}
     >
       <DeficienciesPageClient />

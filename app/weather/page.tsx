@@ -142,8 +142,7 @@ export default function WeatherPage() {
 
   return (
     <AppShell
-      title={isHi ? "मौसम" : "Weather"}
-      subtitle={isHi ? "Weather" : "मौसम"}
+      title={isHi ? "मौसम" : "Weather"}
       className="overflow-x-hidden"
       actions={
         <AppLink

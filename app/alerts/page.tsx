@@ -24,8 +24,7 @@ export default function AlertsPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title={t("toolAlerts")}
-      subtitle={tab === "farm" ? t("alertsFarmSubtitle") : t("alertsPriceSubtitle")}
+      title={t("toolAlerts")}
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("toolAlerts") }]}
     >
       <div className="grid grid-cols-2 gap-2">

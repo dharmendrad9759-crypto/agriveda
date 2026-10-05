@@ -37,8 +37,7 @@ export default function CropManagementFertilizerSchedule({ profile }: Props) {
 
   return (
     <FuturisticPanel
-      title="Fertilizer Schedule"
-      subtitle="NPK ratios · Stage-wise top-dressing protocol"
+      title="Fertilizer Schedule"
       icon={FlaskConical}
       glow
     >

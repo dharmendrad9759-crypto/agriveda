@@ -122,12 +122,12 @@ export function buildStubCrop(catalogEntry: CatalogCrop): Crop {
       majorDiseases,
       weedManagement: pd.weeds.length
         ? pd.weeds.slice(0, 5).map((w) => w.name)
-        : ["समय पर निराई; रासायनिक weedicide stub में नहीं"],
+        : ["समय पर निराई करें; खरपतवारनाशी के लिए कृषि अधिकारी से पूछें"],
       symptoms: [],
       prevention: ["साफ बीज / बीजकंद, फसल चक्र, खेत की सफाई"],
       control: hasPdw
-        ? ["कीट-रोग हब / AI Doctor देखें — खुराक लेबल से"]
-        : ["खुराक नहीं दी गई — AI Doctor या कृषि सलाहकार से पूछें"],
+        ? ["फसल की समस्याएँ पेज देखें — दवा की मात्रा डिब्बे के लेबल से"]
+        : ["दवा की मात्रा यहाँ नहीं दी गई — कृषि अधिकारी या एक्सपर्ट से पूछें"],
     },
     nutrientDeficiencies: [],
     harvestAndYield: {

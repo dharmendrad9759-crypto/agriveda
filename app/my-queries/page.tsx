@@ -122,12 +122,7 @@ export default function MyQueriesPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title={isHi ? "मेरे सवाल" : "My queries"}
-      subtitle={
-        isHi
-          ? "जवाब आया तो WhatsApp पर भी भेज सकते हो"
-          : "Share expert answers on WhatsApp"
-      }
+      title={isHi ? "मेरे सवाल" : "My queries"}
       breadcrumbs={[
         { label: isHi ? "होम" : "Home", href: "/" },
         { label: isHi ? "मेरे सवाल" : "My queries" },

@@ -453,11 +453,11 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
                                 className="text-[11px] font-semibold leading-snug text-[var(--av-text-secondary)]"
                               >
                                 • {hi ? farmerIrrigationHi(p) : p}
-                              </li>
-                            ))}
-                          </ul>
+              </li>
+            ))}
+          </ul>
                         </div>
-                      ) : null}
+        ) : null}
 
                       <ul className="mt-2 space-y-1">
                         {(hi ? stage.pointsHi : stage.pointsEn).map((p) => (
@@ -472,7 +472,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
                       </ul>
                     </div>
                   </div>
-                </div>
+            </div>
               </li>
             );
           })}
@@ -507,9 +507,9 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
                       className="text-[11px] font-semibold leading-snug text-[var(--av-text-secondary)]"
                     >
                       • {hi ? farmerIrrigationHi(p) : p}
-                    </li>
-                  ))}
-                </ul>
+              </li>
+            ))}
+          </ul>
               </div>
             ))}
           </div>

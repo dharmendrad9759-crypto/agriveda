@@ -30,7 +30,6 @@ export default function GlobalSearchClient() {
     <AppShell
       className="!bg-transparent"
       title={t("searchTitle")}
-      subtitle="फसल, कीट, रोग, पोषक तत्व, टूल — सब कुछ एक जगह"
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("searchTitle") }]}
     >
       <Card>

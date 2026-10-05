@@ -14,8 +14,7 @@ function SowingInner() {
 export default function SowingWindowPage() {
   return (
     <Agriveda2Shell
-      title="बुआई का सही समय"
-      subtitle="मौसम नहीं, Science बताएगा कब बोएं"
+      title="बुआई का सही समय"
       backHref="/dashboard"
     >
       <Suspense fallback={null}>

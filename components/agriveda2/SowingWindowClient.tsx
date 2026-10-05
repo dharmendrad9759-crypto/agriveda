@@ -149,16 +149,16 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-              Aapki jagah
+              आपकी जगह
             </p>
             <p className="mt-1 flex items-center gap-1 text-sm font-black text-[var(--av-text-primary)]">
               <MapPin className="h-4 w-4 shrink-0 text-emerald-600" />
               {profile.district && profile.state
                 ? `${profile.district}, ${profile.state}`
-                : profile.state || "Location ON karein"}
+                : profile.state || "लोकेशन चालू करें"}
             </p>
             <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
-              Mitti (default): {soilType}
+              मिट्टी (अनुमान): {soilType}
             </p>
           </div>
           <button
@@ -181,14 +181,14 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
                 className={`${AV.btnSecondarySm} inline-flex items-center gap-1`}
               >
                 <Settings className="h-3.5 w-3.5" />
-                Location ON
+                लोकेशन चालू करें
               </button>
               <button
                 type="button"
                 onClick={() => void openAppLocationPermissionSettings()}
                 className={`${AV.btnSecondarySm} inline-flex items-center gap-1`}
               >
-                App permission
+                ऐप अनुमति
               </button>
             </div>
           </div>
@@ -198,10 +198,10 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
       {recommended.length > 0 && (
         <div>
           <p className="mb-1.5 px-0.5 text-xs font-bold text-[var(--av-text-primary)]">
-            Is time aapke ilake ke liye recommended
+            इस समय आपके इलाके के लिए सुझाई फसलें
           </p>
           <p className="mb-2 px-0.5 text-[10px] text-[var(--av-text-muted)]">
-            Location + mitti + mausam — kisi aur fasal pe tap karke suitability check karein
+            जगह + मिट्टी + मौसम देखकर — किसी फसल पर दबाकर उसकी उपयुक्तता देखें
           </p>
           <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {recommended.map((c) => (
@@ -221,7 +221,7 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
                   {c.name}
                 </p>
                 <p className="text-[9px] text-[var(--av-text-muted)]">
-                  #{c.rank} · mitti {c.soilMatch}
+                  #{c.rank} · मिट्टी {c.soilMatch}
                 </p>
               </button>
             ))}
@@ -231,7 +231,7 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
 
       <div>
         <label className="mb-1 block px-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-          Koi bhi fasal choose karein
+          कोई भी फसल चुनें
         </label>
         <select
           value={cropSlug}
@@ -255,21 +255,21 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
           )}
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">
-              {suitability.emoji} {suitability.cropName} — suitability
+              {suitability.emoji} {suitability.cropName} — उपयुक्तता
             </p>
             <p className="mt-1 text-sm font-black leading-snug">{suitability.verdictHi}</p>
             <ul className="mt-2 space-y-1 text-[11px] leading-relaxed opacity-90">
               <li>
-                · Jagah score: {suitability.locationScore}/100 — {suitability.locationReason}
+                · जगह अंक: {suitability.locationScore}/100 — {suitability.locationReason}
               </li>
               <li>· {suitability.soilNote}</li>
               <li>
-                · Buwai status:{" "}
+                · बुवाई स्थिति:{" "}
                 {suitability.timeStatus === "green"
-                  ? "Abhi accha window"
+                  ? "अभी सही समय"
                   : suitability.timeStatus === "yellow"
-                    ? "Soch-samajh ke"
-                    : "Abhi avoid / late"}
+                    ? "सोच-समझकर करें"
+                    : "अभी न करें / देर हो चुकी"}
               </li>
             </ul>
           </div>
@@ -292,12 +292,12 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
         {result.windowStart && (
           <p className="mt-3 flex items-center gap-2 text-xs font-bold">
             <Calendar className="h-4 w-4" />
-            Primary window: {result.windowStart} – {result.windowEnd}
+            मुख्य समय: {result.windowStart} – {result.windowEnd}
           </p>
         )}
         {result.alternateVariety && (
           <p className="mt-2 rounded-lg bg-white/60 p-2 text-xs font-semibold dark:bg-black/20">
-            Picheti variety: {result.alternateVariety}
+            पछेती किस्म: {result.alternateVariety}
           </p>
         )}
         <p className="mt-3 rounded-lg bg-white/50 p-2 text-xs font-medium dark:bg-black/20">
@@ -307,7 +307,7 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
 
       {result.windows.length > 0 && (
         <DarkCard className="p-4">
-          <p className="text-xs font-bold theme-text-primary">State-wise buwai windows</p>
+          <p className="text-xs font-bold theme-text-primary">राज्य के हिसाब से बुवाई समय</p>
           <ul className="mt-2 space-y-2">
             {result.windows.map((w) => (
               <li
@@ -327,15 +327,15 @@ export default function SowingWindowClient({ initialCrop }: { initialCrop?: stri
       )}
 
       <div className="grid grid-cols-3 gap-2">
-        <Metric icon={<Droplets className="h-4 w-4" />} label="Soil moisture" value={`${result.soilMoisturePercent ?? "—"}%`} />
+        <Metric icon={<Droplets className="h-4 w-4" />} label="मिट्टी नमी" value={`${result.soilMoisturePercent ?? "—"}%`} />
         <Metric
           icon={<Thermometer className="h-4 w-4" />}
-          label="Temp"
+          label="तापमान"
           value={weather.loading ? "…" : weather.tempC != null ? `${weather.tempC}°C` : "—"}
         />
         <Metric
           icon={<CloudRain className="h-4 w-4" />}
-          label="Rain 3h"
+          label="बारिश 3 घंटे"
           value={weather.loading ? "…" : weather.rain != null ? `${weather.rain}%` : "—"}
         />
       </div>

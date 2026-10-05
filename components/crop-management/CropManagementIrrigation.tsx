@@ -9,8 +9,7 @@ interface Props {
 export default function CropManagementIrrigation({ profile }: Props) {
   return (
     <FuturisticPanel
-      title="Irrigation Management"
-      subtitle="Critical moisture stages · Water budgeting"
+      title="Irrigation Management"
       icon={Droplets}
       glow
     >

@@ -216,7 +216,7 @@ export default function FarmDashboard({ compact = false }: { compact?: boolean }
         <QuickAppLink href="/services/seed-calculator" icon={<Sprout className="h-4 w-4" />} label="बीज कैलकुलेटर" />
         <QuickAppLink href="/sowing-window" icon={<Droplets className="h-4 w-4" />} label="बुआई समय" />
         <QuickAppLink href="/smart-crop" icon={<Sprout className="h-4 w-4" />} label="Smart crop" />
-        <QuickAppLink href="/crop-problem" icon={<AlertTriangle className="h-4 w-4" />} label="समस्या → समाधान" />
+        <QuickAppLink href="/crop-problems" icon={<AlertTriangle className="h-4 w-4" />} label="समस्या → समाधान" />
       </div>
     </div>
   );

@@ -10,8 +10,7 @@ export default function SprayAdvisoryShell() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="स्प्रे"
-      subtitle="आज करो या मत?"
+      title="स्प्रे"
       breadcrumbs={[
         { label: t("navHome"), href: "/" },
         { label: t("navWeather"), href: "/weather" },

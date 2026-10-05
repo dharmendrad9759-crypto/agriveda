@@ -35,7 +35,6 @@ export default function CropManagementNutrientDeficiencies({ profile }: Props) {
   return (
     <FuturisticPanel
       title="पोषक तत्व की कमी"
-      subtitle="सरल हिंदी — लक्षण और उपाय"
       icon={Microscope}
       glow
     >

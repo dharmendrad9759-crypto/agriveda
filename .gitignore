@@ -62,3 +62,10 @@ android/*.keystore
 
 .tmp/
 
+# Capacitor bundled web assets (keep index.html shell)
+/capacitor-www/*
+!/capacitor-www/index.html
+
+# Scratch/temp script dumps
+scripts/_*
+
