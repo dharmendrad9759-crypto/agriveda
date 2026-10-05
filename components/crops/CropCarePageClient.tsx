@@ -17,6 +17,7 @@ import CropMarketSection from "@/components/crops/sections/CropMarketSection";
 import CropFaqSection from "@/components/crops/sections/CropFaqSection";
 import CropExpertSection from "@/components/crops/sections/CropExpertSection";
 import CropThreatPageHero from "@/components/crops/CropThreatPageHero";
+import StubCropNotice from "@/components/crops/StubCropNotice";
 import { enrichCropDetail } from "@/lib/cropDetailEnrichment";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropHindiName } from "@/lib/crops/crop-display";
@@ -81,6 +82,7 @@ export default function CropCarePageClient({ crop, tab }: Props) {
           { label: title },
         ]}
       >
+        {crop.isStub ? <StubCropNotice hi={locale === "hi"} /> : null}
         {isThreatTab ? (
           <CropThreatPageHero
             crop={crop}

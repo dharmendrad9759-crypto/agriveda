@@ -9,7 +9,6 @@ import {
   Camera,
   ChevronRight,
   ExternalLink,
-  Eye,
   Shield,
   Stethoscope,
 } from "lucide-react";
@@ -154,9 +153,6 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
             <h2 className="text-lg font-extrabold text-[var(--av-text-primary)] sm:text-xl">
               आप क्या देख रहे हैं?
             </h2>
-            <p className="mt-1 text-sm font-medium text-[var(--av-text-secondary)]">
-              जो लक्षण खेत में दिखे, उसकी तस्वीर टैप करें — संभावित कारण और उपचार मिलेगा।
-            </p>
 
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
               {SYMPTOM_CATEGORIES.map((category) => {
@@ -177,12 +173,6 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
                         alt={category.labelHi ?? category.label}
                         className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
                       />
-                      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/35 to-transparent px-3 pb-2.5 pt-10">
-                        <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-emerald-200">
-                          <Eye className="h-3.5 w-3.5" aria-hidden />
-                          खेत में ऐसा दिखता है
-                        </span>
-                      </span>
                       <span className="absolute left-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 shadow-sm">
                         <Icon className="h-5 w-5 text-[var(--av-accent)]" strokeWidth={2.25} />
                       </span>
@@ -194,11 +184,11 @@ export default function PestDiseaseSolver({ embedded = false }: { embedded?: boo
                       <p className="mt-1 line-clamp-2 text-[12px] font-medium leading-snug text-[var(--av-text-secondary)]">
                         {category.descriptionHi ?? category.description}
                       </p>
-                      <p className="mt-2 text-[11px] font-bold text-[var(--av-accent)]">
-                        {matchCount > 0
-                          ? `${matchCount} संभावित कारण · टैप करें`
-                          : "देखें · टैप करें"}
-                      </p>
+                      {matchCount > 0 ? (
+                        <p className="mt-2 text-[11px] font-bold text-[var(--av-accent)]">
+                          {`${matchCount} संभावित कारण`}
+                        </p>
+                      ) : null}
                     </div>
                   </button>
                 );

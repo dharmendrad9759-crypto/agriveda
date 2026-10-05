@@ -141,14 +141,9 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
               <Shield className="h-4 w-4 text-violet-600" />
               <SectionHeader title={hi ? "बीज उपचार" : "Seed treatment"} />
             </div>
-            <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-              {hi
-                ? "बुवाई / रोपाई से पहले बीज या सेट का इलाज"
-                : "Treat seed or planting material before sowing"}
-            </p>
             <ListBlock items={seedTreatmentLines} />
             <p className="mt-2 text-[13px] font-black text-emerald-800">
-              {hi ? "कैसे करें — टैप करें" : "How to do it — tap"}
+              {hi ? "कैसे करें" : "How to do it"}
             </p>
           </button>
         </DarkCard>

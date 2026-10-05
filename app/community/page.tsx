@@ -33,11 +33,10 @@ export default function CommunityPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title={isHi ? "किसान समुदाय" : "Community"}
-      subtitle={isHi ? "आपके सवाल और विशेषज्ञ सलाह" : "Your questions and expert advice"}
+      title={isHi ? "मेरे सवाल" : "My questions"}
       breadcrumbs={[
         { label: isHi ? "होम" : "Home", href: "/" },
-        { label: isHi ? "समुदाय" : "Community" },
+        { label: isHi ? "मेरे सवाल" : "My questions" },
       ]}
     >
       <div className="relative mx-auto min-w-0 max-w-lg space-y-4 pb-6">

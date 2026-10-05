@@ -5,7 +5,7 @@ import DesktopDashboard from "@/components/dashboard/DesktopDashboard";
 
 export default function DashboardPage() {
   return (
-    <AppShell title="Dashboard" subtitle="All fields · all crops · at a glance">
+    <AppShell title="Dashboard">
       <DesktopDashboard embedded />
     </AppShell>
   );

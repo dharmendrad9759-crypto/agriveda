@@ -27,7 +27,6 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
   return (
     <ProblemFlowShell
       title="समस्या चुनें"
-      subtitle={`${crop.nameHi} की खेत वाली तस्वीर से मिलाएँ`}
       step={2}
       backHref="/crop-problems"
       rightSlot={
@@ -44,9 +43,6 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
       <div className="mb-4 rounded-[22px] border border-emerald-900/10 bg-white/80 px-3.5 py-3 shadow-[0_12px_30px_-24px_rgba(4,120,87,0.45)] backdrop-blur-sm">
         <p className="text-[12px] font-bold text-emerald-950">
           {crop.emoji} {crop.nameHi} · {crop.problems.length} समस्याएँ
-        </p>
-        <p className="mt-0.5 text-[11px] font-medium text-emerald-900/50">
-          जो फोटो आपके खेत जैसी लगे — उसी पर टैप करें
         </p>
       </div>
 

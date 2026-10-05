@@ -45,7 +45,14 @@ const SECTIONS = [
       "लॉगिन Google Sign-In (Firebase) से होता है। सेशन में device id और (जब उपलब्ध हो) Google नाम / ईमेल जुड़ सकता है। फोन OTP लॉगिन बंद है।",
       "आप Settings में लॉग आउट, डेटा डाउनलोड, या खाता स्थायी रूप से हटा सकते हैं (Google-only खाते पर भी — device id से server wipe)।",
       "Product analytics बंद रखकर आप चुपचाप इस्तेमाल कर सकते हैं।",
-      "हम डेटा नहीं बेचते। वैध कानूनी आदेश के बिना व्यक्तिगत डेटा नहीं बाँटते।",
+      "व्यक्तिगत प्रोफ़ाइल दलालों को नहीं बेचते। मुफ़्त सेवा के लिए विज्ञापन लग सकते हैं — विवरण Privacy Policy में।",
+    ],
+  },
+  {
+    title: "विज्ञापन",
+    body: [
+      "ऐप मुफ़्त रखने के लिए कभी-कभी विज्ञापन दिख सकते हैं (जैसे AdMob)।",
+      "विज्ञापन दवा खुराक / आपातकालीन सलाह के बीच में नहीं दबाने का लक्ष्य है — फिर भी लेबल और स्थानीय सलाह अंतिम रहें।",
     ],
   },
   {
@@ -69,12 +76,11 @@ export default function TermsPage() {
     <AppShell
       className="!bg-transparent"
       title="नियम और शर्तें"
-      subtitle="Terms of Service — साफ और सीधी बात"
       breadcrumbs={[{ label: "होम", href: "/" }, { label: "नियम" }]}
     >
       <DarkCard>
         <p className="text-sm text-[var(--av-text-secondary)]">
-          {BRAND} v{APP_VERSION} · Last updated: August 2026
+          {BRAND} v{APP_VERSION} · Last updated: October 2026
         </p>
         <p className="mt-3 text-sm leading-relaxed text-[var(--av-text-secondary)]">
           ये शर्तें Play Store और वास्तविक खेत उपयोग दोनों के लिए हैं। विवरण बदल सकते हैं — महत्वपूर्ण बदलाव

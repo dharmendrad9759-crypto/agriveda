@@ -14,7 +14,8 @@ interface CropMandiPriceStripProps {
 export default function CropMandiPriceStrip({ cropSlug, className }: CropMandiPriceStripProps) {
   const { locale } = useLocale();
   const hi = locale === "hi";
-  const { row, loading, locationLabel, hasMapping } = useCropMandiPrice(cropSlug);
+  const { row, loading, locationLabel, hasMapping, source } = useCropMandiPrice(cropSlug);
+  const isSample = source === "mock";
 
   if (!hasMapping) return null;
 
@@ -70,8 +71,19 @@ export default function CropMandiPriceStrip({ cropSlug, className }: CropMandiPr
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-            {hi ? "आज का मंडी भाव" : "Today's mandi rate"}
+          <p
+            className={cn(
+              "text-[10px] font-bold uppercase tracking-wide",
+              isSample ? "text-amber-700 dark:text-amber-300" : "text-emerald-700 dark:text-emerald-300"
+            )}
+          >
+            {isSample
+              ? hi
+                ? "⚠️ नमूना भाव — असली नहीं"
+                : "⚠️ Sample price — not real"
+              : hi
+                ? "आज का मंडी भाव"
+                : "Today's mandi rate"}
           </p>
           <p className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
             <span className="text-xl font-black leading-none text-[var(--av-text-primary)]">

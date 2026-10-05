@@ -192,11 +192,6 @@ export default function DeficienciesPageClient() {
         <h1 className="font-display text-[1.65rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
           {isHi ? "पत्ती में क्या दिख रहा है?" : "What do you see on the leaf?"}
         </h1>
-        <p className="mt-1.5 text-[13px] leading-snug text-[var(--av-text-muted)]">
-          {isHi
-            ? "जो मिलता-जुलता हो — उस पर टैप करें। पढ़ने की ज़रूरत नहीं।"
-            : "Tap what looks similar. No need to read long text."}
-        </p>
       </motion.header>
 
       <motion.section {...fade(1)} className="relative grid grid-cols-2 gap-2.5">

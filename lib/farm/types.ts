@@ -7,9 +7,13 @@ export interface FarmField {
   /** Crop catalog slug — used for alerts and my-crops sync */
   cropSlug?: string;
   status: string;
+  /** Display or ISO sowing date — prefer ISO yyyy-mm-dd */
   sowingDate: string;
+  /** Canonical ISO sowing date when known */
+  sowingDateIso?: string;
   emoji: string;
-  health: number;
+  /** Real measured health only — omit/undefined means unknown (never invent %) */
+  health?: number;
   stage: string;
 }
 

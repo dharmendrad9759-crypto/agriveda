@@ -45,14 +45,11 @@ export function buildFarmFieldFromInput(input: OnboardingFieldInput, index: numb
     crop: cropLabel,
     cropSlug: input.cropSlug,
     status: "Active",
-    sowingDate: new Date().toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
+    // Don't invent today's date as sowing — farmer must set real date
+    sowingDate: "",
+    sowingDateIso: undefined,
     emoji: catalog?.emoji ?? "🌾",
-    health: 75,
-    stage: "Active growth",
+    stage: "बुवाई तारीख डालें",
   };
 }
 

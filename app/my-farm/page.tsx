@@ -17,7 +17,6 @@ import {
   BookOpen,
   CalendarDays,
   CloudSun,
-  Heart,
   Leaf,
   MapPin,
   MessageCircle,
@@ -29,6 +28,12 @@ import {
 } from "lucide-react";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import {
+  fieldStageLabel,
+  formatSowingDisplay,
+  parseSowingISO,
+  todayISO,
+} from "@/lib/farm/fieldStatus";
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { track } from "@/lib/analytics";
@@ -61,25 +66,6 @@ function fieldStatusLabel(status: string) {
   return status;
 }
 
-function healthTone(score: number) {
-  if (score >= 75) {
-    return {
-      label: `स्वास्थ्य ${score}%`,
-      tone: "border-emerald-500/25 bg-emerald-50/90 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200",
-    };
-  }
-  if (score >= 50) {
-    return {
-      label: `स्वास्थ्य ${score}%`,
-      tone: "border-amber-500/30 bg-amber-50/90 text-amber-900 dark:bg-amber-950/30 dark:text-amber-200",
-    };
-  }
-  return {
-    label: `स्वास्थ्य ${score}%`,
-    tone: "border-rose-500/30 bg-rose-50/90 text-rose-800 dark:bg-rose-950/30 dark:text-rose-200",
-  };
-}
-
 const FARM_LINKS: {
   id: string;
   hi: string;
@@ -100,7 +86,7 @@ export default function MyFarmPage() {
   const { t, locale } = useLocale();
   const isHi = locale === "hi";
   const reduced = useReducedMotion();
-  const { profile } = useFarmerProfile();
+  const { profile, setSowingDate } = useFarmerProfile();
   const { data, stats, addField, addActivity, addNote } = useFarmData();
   const farmAlerts = useDashboardAlerts(3);
   const { weather, loading: weatherLoading } = useLiveWeather();
@@ -114,6 +100,7 @@ export default function MyFarmPage() {
   const [fieldCrop, setFieldCrop] = useState("");
   const [fieldCropSlug, setFieldCropSlug] = useState("");
   const [fieldOwnership, setFieldOwnership] = useState<"Owned" | "Leased">("Owned");
+  const [fieldSowing, setFieldSowing] = useState("");
   const [cropQuery, setCropQuery] = useState("");
   const [cropCategory, setCropCategory] = useState<(typeof categoryOrder)[number] | "all">("all");
   const [noteTitle, setNoteTitle] = useState("");
@@ -144,7 +131,6 @@ export default function MyFarmPage() {
 
   const place = [profile.village, profile.district].filter(Boolean).join(", ");
   const hasFields = data.fields.length > 0;
-  const health = healthTone(stats.healthScore);
   const topAlert = farmAlerts[0];
   const nextTask = data.activities[0];
 
@@ -177,6 +163,8 @@ export default function MyFarmPage() {
       showToast("फसल चुनें या लिखें", "error");
       return;
     }
+    const sowingIso = parseSowingISO(fieldSowing) || undefined;
+    const stage = fieldStageLabel(sowingIso, true);
     addField({
       name: fieldName.trim(),
       area: `${areaNum.toFixed(2)} Acre`,
@@ -184,24 +172,30 @@ export default function MyFarmPage() {
       crop: cropLabel,
       cropSlug: fieldCropSlug || undefined,
       status: "Active",
-      sowingDate: new Date().toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }),
+      sowingDate: sowingIso
+        ? formatSowingDisplay(sowingIso, true)
+        : "",
+      sowingDateIso: sowingIso,
       emoji: catalog?.emoji ?? "🌾",
-      health: 78,
-      stage: "Active growth",
+      stage,
     });
+    if (sowingIso && fieldCropSlug) {
+      setSowingDate(fieldCropSlug, sowingIso);
+    }
     setFieldName("");
     setFieldArea("");
     setFieldCrop("");
     setFieldCropSlug("");
+    setFieldSowing("");
     setFieldOwnership("Owned");
     setCropQuery("");
     setCropCategory("all");
     setShowAddField(false);
-    showToast("खेत सेव हो गया ✓");
+    showToast(
+      sowingIso
+        ? "खेत सेव · बुवाई तारीख जुड़ गई ✓"
+        : "खेत सेव · बाद में बुवाई तारीख डालना न भूलें"
+    );
   };
 
   const handleAddNote = () => {
@@ -261,9 +255,11 @@ export default function MyFarmPage() {
                   : "Add a field"}
             </span>
             {hasFields ? (
-              <span className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold", health.tone)}>
-                <Heart className="h-3 w-3 shrink-0" />
-                {health.label}
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-50/90 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
+                <Sprout className="h-3 w-3 shrink-0" />
+                {isHi
+                  ? `${stats.activeFields} सक्रिय`
+                  : `${stats.activeFields} active`}
               </span>
             ) : null}
             {place ? (
@@ -322,8 +318,8 @@ export default function MyFarmPage() {
                 </span>
                 <span className="text-[11px] font-medium leading-snug text-emerald-100/85">
                   {isHi
-                    ? `${stats.activeFields} सक्रिय खेत · स्वास्थ्य ${stats.healthScore}%`
-                    : `${stats.activeFields} active · health ${stats.healthScore}%`}
+                    ? `${stats.activeFields} सक्रिय खेत · बुवाई तारीख से अवस्था`
+                    : `${stats.activeFields} active · stage from sowing date`}
                 </span>
                 <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-200">
                   {isHi ? "सलाह देखें" : "See advice"}
@@ -476,6 +472,18 @@ export default function MyFarmPage() {
                       className="av-input text-sm"
                     />
                   </label>
+                  <label className="block sm:col-span-2">
+                    <span className="mb-1 block text-[10px] font-bold text-[var(--av-text-muted)]">
+                      {isHi ? "बुवाई की तारीख (अगर बोई है)" : "Sowing date (if sown)"}
+                    </span>
+                    <input
+                      type="date"
+                      max={todayISO()}
+                      value={fieldSowing}
+                      onChange={(e) => setFieldSowing(e.target.value)}
+                      className="av-input text-sm"
+                    />
+                  </label>
                 </div>
 
                 <div>
@@ -605,7 +613,14 @@ export default function MyFarmPage() {
                 const nutrientHref = f.cropSlug
                   ? `/crops/${f.cropSlug}/care/nutrients`
                   : "/deficiencies";
-                const healthPct = Math.max(0, Math.min(100, f.health ?? 75));
+                const sowingIso =
+                  f.sowingDateIso ||
+                  parseSowingISO(f.sowingDate) ||
+                  (f.cropSlug ? profile.sowingDates?.[f.cropSlug] : undefined);
+                const stageNow = fieldStageLabel(sowingIso, isHi);
+                const growthHref = f.cropSlug
+                  ? `/crops/${f.cropSlug}/care/growth`
+                  : "/crops";
                 return (
                   <motion.article
                     key={f.id}
@@ -638,9 +653,9 @@ export default function MyFarmPage() {
                           >
                             {fieldStatusLabel(f.status)}
                           </span>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
-                            <Heart className="h-3 w-3 text-rose-300" />
-                            {healthPct}%
+                          <span className="inline-flex max-w-[55%] items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-bold text-white backdrop-blur-sm">
+                            <CalendarDays className="h-3 w-3 shrink-0 text-emerald-200" />
+                            <span className="truncate">{stageNow}</span>
                           </span>
                         </div>
                         <div>
@@ -660,35 +675,23 @@ export default function MyFarmPage() {
 
                     <div className="space-y-2.5 p-3">
                       <div>
-                        <div className="mb-1 flex items-center justify-between text-[10px] font-bold text-[var(--av-text-muted)]">
-                          <span>{isHi ? "स्वास्थ्य" : "Health"}</span>
-                          <span className="text-[var(--av-text-primary)]">{healthPct}%</span>
-                        </div>
-                        <div className="h-1.5 overflow-hidden rounded-full bg-[var(--av-surface-inset)]">
-                          <div
-                            className={cn(
-                              "h-full rounded-full transition-all",
-                              healthPct >= 75
-                                ? "bg-emerald-500"
-                                : healthPct >= 50
-                                  ? "bg-amber-500"
-                                  : "bg-rose-500"
-                            )}
-                            style={{ width: `${healthPct}%` }}
-                          />
-                        </div>
-                        {f.stage || f.sowingDate ? (
-                          <p className="mt-1.5 text-[11px] text-[var(--av-text-muted)]">
-                            {[
-                              f.stage,
-                              f.sowingDate
-                                ? `${isHi ? "बुवाई" : "Sown"} ${f.sowingDate}`
-                                : "",
-                            ]
-                              .filter(Boolean)
-                              .join(" · ")}
+                        <p className="text-[12px] font-bold text-[var(--av-text-primary)]">
+                          {stageNow}
+                        </p>
+                        {sowingIso ? (
+                          <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
+                            {isHi ? "बुवाई" : "Sown"}: {formatSowingDisplay(sowingIso, isHi)}
                           </p>
-                        ) : null}
+                        ) : (
+                          <AppLink
+                            href={growthHref}
+                            className="mt-1 inline-block text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
+                          >
+                            {isHi
+                              ? "बुवाई तारीख डालो → आज का काम"
+                              : "Add sowing date → today’s work"}
+                          </AppLink>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-3 gap-1.5">

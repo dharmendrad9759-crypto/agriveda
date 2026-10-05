@@ -555,10 +555,13 @@ export const cropDashboardData: Record<string, CropDashboardData> = {
   },
 };
 
-export function getCropDashboard(slug: string): CropDashboardData {
+/** Prefer this when wrong-crop (paddy) fallback would mislead farmers. */
+export function tryGetCropDashboard(slug: string): CropDashboardData | null {
   if (importedDashboards[slug]) return importedDashboards[slug];
   if (cropDashboardData[slug]) return cropDashboardData[slug];
-  const built = buildDashboardFromCatalog(slug);
-  if (built) return built;
-  return cropDashboardData.paddy;
+  return buildDashboardFromCatalog(slug);
+}
+
+export function getCropDashboard(slug: string): CropDashboardData {
+  return tryGetCropDashboard(slug) ?? cropDashboardData.paddy;
 }

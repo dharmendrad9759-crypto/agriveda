@@ -23,13 +23,17 @@ export default function DashboardMandiWidget({ limit = 5, className = "", compac
   });
 
   const rows = (data?.rows ?? []).slice(0, limit);
-  const sourceLabel = "लाइव";
+  const isSample = data?.source === "mock";
+  const sourceLabel = isSample ? "नमूना भाव — असली नहीं" : "लाइव (data.gov.in)";
 
   return (
     <DarkCard hover delay={1} className={compact ? className : `xl:col-span-8 ${className}`}>
-      <SectionHeader title={compact ? "Market Prices" : "Mandi Prices (Today)"} action={{ label: "View All", href: "/mandi" }} />
+      <SectionHeader title={compact ? "मंडी भाव" : "आज के मंडी भाव"} action={{ label: "सब देखें", href: "/mandi" }} />
+      {isSample && compact && (
+        <p className="mt-1 text-[10px] font-bold text-amber-700 dark:text-amber-300">नमूना भाव — असली नहीं</p>
+      )}
       {!compact && (
-        <p className={`mt-1 ${AV.micro}`}>
+        <p className={`mt-1 ${AV.micro} ${isSample ? "font-bold text-amber-700 dark:text-amber-300" : ""}`}>
           {profile.district ? `${profile.district}, ` : ""}
           {profile.state || "Madhya Pradesh"} · {sourceLabel}
           {data?.lastUpdated ? ` · ${data.lastUpdated}` : ""}
@@ -63,10 +67,10 @@ export default function DashboardMandiWidget({ limit = 5, className = "", compac
           <table className="av-table">
             <thead>
               <tr>
-                <th>Commodity</th>
-                <th>Market</th>
-                <th>Modal</th>
-                <th className="text-right">Change</th>
+                <th>फसल</th>
+                <th>मंडी</th>
+                <th>भाव</th>
+                <th className="text-right">बदलाव</th>
               </tr>
             </thead>
             <tbody>
@@ -91,7 +95,7 @@ export default function DashboardMandiWidget({ limit = 5, className = "", compac
 
       {!loading && rows.length === 0 && (
         <p className={`mt-3 text-center ${AV.micro}`}>
-          No mandi data — <AppLink href="/mandi">open mandi page</AppLink>
+          भाव नहीं मिले — <AppLink href="/mandi">मंडी पेज खोलें</AppLink>
         </p>
       )}
     </DarkCard>

@@ -451,7 +451,7 @@ export default function MandiPricesTable({
                             : "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200"
                         )}
                       >
-                        {source === "live" ? "data.gov.in" : "demo"}
+                        {source === "live" ? "data.gov.in" : isHi ? "नमूना" : "sample"}
                       </span>
                     </td>
                     <td className="px-3 py-3 text-[var(--av-text-muted)]">

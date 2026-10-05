@@ -75,19 +75,12 @@ export default function CropProblemsClient() {
   return (
     <ProblemFlowShell
       title="फसल चुनें"
-      subtitle="फोटो वाली समस्या देखने के लिए फसल टैप करें"
       step={1}
       backHref="/"
     >
       <div className="mb-4 overflow-hidden rounded-[24px] border border-emerald-900/10 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 p-4 text-white shadow-[0_20px_50px_-30px_rgba(4,47,26,0.7)]">
-        <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-emerald-200/80">
-          समस्या → इलाज
-        </p>
-        <p className="mt-1 font-display text-[22px] font-bold leading-tight">
+        <p className="font-display text-[22px] font-bold leading-tight">
           खेत में क्या दिख रहा है?
-        </p>
-        <p className="mt-1.5 text-[12px] font-medium text-emerald-100/80">
-          फसल चुनें → फोटो मिलाएँ → दवा और घरेलू उपाय
         </p>
       </div>
 

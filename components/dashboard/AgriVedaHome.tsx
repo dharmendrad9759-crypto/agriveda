@@ -6,8 +6,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Camera,
+  ChevronRight,
   MessageCircle,
-  ShieldCheck,
+  Volume2,
   Sparkles,
   Sprout,
   TrendingUp,
@@ -30,7 +31,7 @@ import { track } from "@/lib/analytics";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import HomeWeatherWidget from "@/components/weather/HomeWeatherWidget";
-import SpeakButton from "@/components/ui/SpeakButton";
+import { speakFarmer } from "@/components/ui/SpeakButton";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 
 const QUICK_JOBS: {
@@ -89,8 +90,6 @@ const MORE_JOBS: {
   id: string;
   hi: string;
   en: string;
-  hintHi: string;
-  hintEn: string;
   href: string;
   imageSrc: string;
 }[] = [
@@ -98,8 +97,6 @@ const MORE_JOBS: {
     id: "farm",
     hi: "मेरा खेत",
     en: "My farm",
-    hintHi: "खेत जोड़ो / देखो",
-    hintEn: "Add or see fields",
     href: "/my-farm",
     imageSrc: "/images/jobs/job-my-farm.jpg",
   },
@@ -107,53 +104,27 @@ const MORE_JOBS: {
     id: "pest",
     hi: "कीट और रोग",
     en: "Pests & disease",
-    hintHi: "पत्ती / कीट टैप करो",
-    hintEn: "Tap leaf or pest",
-    href: "/pest-diseases",
+    href: "/crop-problems",
     imageSrc: "/images/threats/threat-insect.jpg",
   },
   {
     id: "mix",
     hi: "दवा मिलाएँ",
     en: "Mix medicines",
-    hintHi: "दो दवा — मिलाएँ या नहीं",
-    hintEn: "Safe tank mix?",
     href: "/mix-advisor",
     imageSrc: "/images/jobs/job-spray.jpg",
-  },
-  {
-    id: "disease",
-    hi: "बीमारी पहचानो",
-    en: "Spot the disease",
-    hintHi: "लक्षण से समाधान",
-    hintEn: "Solve by symptoms",
-    href: "/pest-solver",
-    imageSrc: "/images/threats/threat-disease.jpg",
   },
   {
     id: "weeds",
     hi: "खरपतवार",
     en: "Weeds",
-    hintHi: "घास देखो",
-    hintEn: "See weeds",
     href: "/pest-diseases?type=weed",
     imageSrc: "/images/threats/threat-weed.jpg",
-  },
-  {
-    id: "photo",
-    hi: "फोटो लेकर पहचानें",
-    en: "Identify by photo",
-    hintHi: "AI से बीमारी पहचानें",
-    hintEn: "AI finds the disease",
-    href: "/ai-doctor",
-    imageSrc: "/images/home/home-job-photo.jpg",
   },
   {
     id: "leaf",
     hi: "पत्ती पीली / खराब",
     en: "Yellow / sick leaf",
-    hintHi: "पोषक कमी देखें",
-    hintEn: "Check nutrient lack",
     href: "/deficiencies",
     imageSrc: "/images/home/home-job-yellow-leaf.jpg",
   },
@@ -161,8 +132,6 @@ const MORE_JOBS: {
     id: "plan",
     hi: "फसल तरीका",
     en: "Crop method",
-    hintHi: "कब क्या करूँ",
-    hintEn: "What to do when",
     href: "/crop-calendar",
     imageSrc: "/images/home/home-job-plan.jpg",
   },
@@ -170,26 +139,13 @@ const MORE_JOBS: {
     id: "advisor",
     hi: "खेत सलाह",
     en: "Field advice",
-    hintHi: "आज की मदद",
-    hintEn: "Help for today",
     href: "/field-advisor",
     imageSrc: "/images/home/home-job-advisor.jpg",
-  },
-  {
-    id: "ask",
-    hi: "विशेषज्ञ से पूछो",
-    en: "Ask an expert",
-    hintHi: "फोटो + सवाल",
-    hintEn: "Photo + question",
-    href: "/ask-query",
-    imageSrc: "/images/home/ask-expert-trust.jpg",
   },
   {
     id: "alerts",
     hi: "खेत अलर्ट",
     en: "Farm alerts",
-    hintHi: "पहले से सावधान",
-    hintEn: "Stay ahead",
     href: "/alerts",
     imageSrc: "/images/jobs/job-alerts.jpg",
   },
@@ -197,19 +153,8 @@ const MORE_JOBS: {
     id: "crops",
     hi: "फसल गाइड",
     en: "Crop guide",
-    hintHi: "फसल टैप करो",
-    hintEn: "Tap a crop",
     href: "/crops",
     imageSrc: "/images/home/home-job-guide.jpg",
-  },
-  {
-    id: "nutrients",
-    hi: "पत्ती की कमी",
-    en: "Leaf deficiency",
-    hintHi: "पोषक देखो",
-    hintEn: "Check nutrients",
-    href: "/deficiencies",
-    imageSrc: "/images/home/home-job-yellow-leaf.jpg",
   },
 ];
 
@@ -234,30 +179,6 @@ function cropChipLabel(slug: string | undefined, englishName: string): string {
     cropCatalog.find((c) => c.slug === key)?.name ||
     englishName
   );
-}
-
-function buildRisk(opts: {
-  isHi: boolean;
-  humidityPct: number;
-  rainChance: number;
-}): { label: string; tone: string } {
-  const { isHi, humidityPct, rainChance } = opts;
-  if (humidityPct >= 80 || rainChance >= 60) {
-    return {
-      label: isHi ? "रोग खतरा ↑" : "Disease risk ↑",
-      tone: "border-rose-400/40 bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300",
-    };
-  }
-  if (humidityPct >= 65) {
-    return {
-      label: isHi ? "नमी ज्यादा" : "High humidity",
-      tone: "border-amber-400/40 bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
-    };
-  }
-  return {
-    label: isHi ? "खतरा कम" : "Low risk",
-    tone: "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300",
-  };
 }
 
 function fieldCard(field: FarmField, index: number) {
@@ -285,26 +206,11 @@ export default function AgriVedaHome() {
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
 
   const weatherIsSample = Boolean(weather?.isDemo || weatherError);
-  const weatherLive = Boolean(weather && !weather.isDemo && !weatherError);
-  const rainChance = weatherLive ? (weather?.hourlyForecast[0]?.rainChancePercent ?? 0) : null;
-  const humidityPct = weatherLive ? Number.parseInt(weather!.humidity, 10) || 0 : 0;
 
   const sourceFields = farm.fields.slice(0, 2);
+  const extraFields = sourceFields.slice(1);
   const hasFields = sourceFields.length > 0;
   const primary = hasFields ? fieldCard(sourceFields[0], 0) : null;
-  const primaryCropChip = primary
-    ? cropChipLabel(primary.cropSlug, primary.crop)
-    : isHi
-      ? "फसल जोड़ें"
-      : "Add crop";
-
-  const risk =
-    weatherLive && rainChance != null
-      ? buildRisk({ isHi, humidityPct, rainChance })
-      : {
-          label: isHi ? "मौसम —" : "Weather —",
-          tone: "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]",
-        };
 
   const greetName = name.trim()
     ? name.trim().charAt(0).toUpperCase() + name.trim().slice(1)
@@ -343,73 +249,65 @@ export default function AgriVedaHome() {
               day: "numeric",
               month: "short",
             })}
-            {weatherLive && weather?.temp ? ` · ${weather.temp}` : ""}
           </p>
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-            <AppLink
-              href="/my-farm"
-              className="inline-flex max-w-full items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-50/90 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200"
-            >
-              <Sprout className="h-3 w-3 shrink-0" />
-              <span className="truncate">{primaryCropChip}</span>
-            </AppLink>
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold",
-                risk.tone
-              )}
-            >
-              <ShieldCheck className="h-3 w-3 shrink-0" />
-              {risk.label}
-            </span>
-          </div>
         </motion.section>
 
         <motion.section {...fade(0.015)}>
           {primary ? (
-            <AppLink
-              href={
-                primary.cropSlug
-                  ? `/crops/${primary.cropSlug}/fertilizer-schedule`
-                  : "/my-farm"
-              }
-              className="flex items-center gap-3 rounded-2xl border border-[#D0DDD7] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)] active:scale-[0.99]"
-            >
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
-                <Image src={primary.img} alt="" fill sizes="56px" quality={50} className="object-cover" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
-                  {isHi ? "मेरी फसल" : "My crop"}
-                </p>
-                <p className="truncate text-[16px] font-bold leading-snug text-[var(--av-text-primary)]">
-                  {cropChipLabel(primary.cropSlug, primary.crop)}
-                  {primary.days != null
-                    ? isHi
-                      ? ` · बुवाई के ${primary.days} दिन बाद`
-                      : ` · day ${primary.days}`
-                    : ""}
-                </p>
-                <p className="truncate text-[13px] font-medium text-[var(--av-text-secondary)]">
-                  {isHi ? farmerSpeak(primary.stage) : primary.stage}
-                </p>
-              </div>
-              <span className="flex shrink-0 flex-col items-end gap-1">
-                <span className="text-[12px] font-bold text-emerald-800">
-                  {isHi ? "खाद" : "Fertilizer"}
-                </span>
-                <SpeakButton
-                  hi={isHi}
-                  text={
-                    isHi
-                      ? `मेरी फसल ${cropChipLabel(primary.cropSlug, primary.crop)}. ${
-                          primary.days != null ? `बुवाई के ${primary.days} दिन बाद।` : ""
-                        } ${farmerSpeak(primary.stage)}`
-                      : `My crop ${primary.crop}. ${primary.days != null ? `Day ${primary.days}.` : ""} ${primary.stage}`
+            <div className="overflow-hidden rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)]">
+              <div className="flex items-center gap-3 p-3">
+                <AppLink
+                  href={primary.cropSlug ? `/crops/${primary.cropSlug}` : "/my-farm"}
+                  className="flex min-w-0 flex-1 items-center gap-3 active:opacity-80"
+                >
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl ring-1 ring-emerald-900/10">
+                    <Image src={primary.img} alt="" fill sizes="64px" quality={75} className="object-cover" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-[17px] font-bold leading-tight text-[var(--av-text-primary)]">
+                        {cropChipLabel(primary.cropSlug, primary.crop)}
+                      </p>
+                      {primary.days != null ? (
+                        <span className="shrink-0 rounded-full bg-emerald-600 px-2 py-0.5 text-[11px] font-bold text-white">
+                          {isHi ? `${primary.days} दिन` : `Day ${primary.days}`}
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="mt-1 line-clamp-2 text-[13px] font-medium leading-snug text-[var(--av-text-secondary)]">
+                      {isHi ? farmerSpeak(primary.stage) : primary.stage}
+                    </p>
+                  </div>
+                </AppLink>
+                <button
+                  type="button"
+                  onClick={() =>
+                    speakFarmer(
+                      isHi
+                        ? `मेरी फसल ${cropChipLabel(primary.cropSlug, primary.crop)}. ${
+                            primary.days != null ? `बुवाई के ${primary.days} दिन बाद।` : ""
+                          } ${farmerSpeak(primary.stage)}`
+                        : `My crop ${primary.crop}. ${primary.days != null ? `Day ${primary.days}.` : ""} ${primary.stage}`,
+                      isHi
+                    )
                   }
-                />
-              </span>
-            </AppLink>
+                  aria-label={isHi ? "सुनें" : "Listen"}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 active:scale-95 dark:bg-emerald-950/40 dark:text-emerald-300"
+                >
+                  <Volume2 className="h-5 w-5" />
+                </button>
+              </div>
+              {primary.cropSlug ? (
+                <AppLink
+                  href={`/crops/${primary.cropSlug}/fertilizer-schedule`}
+                  className="flex items-center gap-2 border-t border-emerald-900/8 bg-emerald-50/60 px-3.5 py-2.5 text-[13px] font-bold text-emerald-800 active:bg-emerald-100/70 dark:bg-emerald-950/25 dark:text-emerald-200"
+                >
+                  <Droplets className="h-4 w-4" />
+                  <span className="flex-1">{isHi ? "अभी कौन-सी खाद डालें" : "Fertilizer for now"}</span>
+                  <ChevronRight className="h-4 w-4" />
+                </AppLink>
+              ) : null}
+            </div>
           ) : (
             <AppLink
               href="/my-farm"
@@ -445,13 +343,6 @@ export default function AgriVedaHome() {
               </span>
               <span className="text-[16px] font-bold leading-snug text-white sm:text-[17px]">
                 {isHi ? "फसल में बीमारी है? फोटो खींचो" : "Crop looks sick? Take a photo"}
-              </span>
-              <span className="text-[13px] font-medium leading-snug text-emerald-100/85">
-                {isHi ? "तुरंत इलाज और मात्रा मिले" : "Get the treatment and dose"}
-              </span>
-              <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-200">
-                {isHi ? "शुरू करें" : "Start"}
-                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
               </span>
             </span>
             <span className="relative w-[48%] min-w-[140px] max-w-[240px] shrink-0 self-stretch sm:w-[52%] sm:max-w-[280px]">
@@ -516,73 +407,36 @@ export default function AgriVedaHome() {
           <CropProblemCard />
         </motion.section>
 
-        <motion.section {...fade(0.05)}>
-          <div className="grid grid-cols-2 gap-2">
-            <AppLink
-              href="/ask-query"
-              className="relative flex min-h-[52px] items-center justify-center overflow-hidden rounded-xl border border-emerald-600/25 active:scale-[0.98]"
-            >
-              <Image
-                src="/images/home/home-job-ask.jpg"
-                alt=""
-                fill
-                sizes="200px"
-                quality={45}
-                className="object-cover"
-              />
-              <span className="absolute inset-0 bg-emerald-950/65" />
-              <span className="relative z-10 flex items-center gap-1.5 text-[13px] font-bold text-white">
-                <MessageCircle className="h-4 w-4" />
-                {isHi ? "पूछो AI से" : "Ask AI"}
-              </span>
-            </AppLink>
-            <AppLink
-              href="/my-queries"
-              className="relative flex min-h-[52px] items-center justify-center overflow-hidden rounded-xl border border-[var(--av-border)] active:scale-[0.98]"
-            >
-              <Image
-                src="/images/home/home-job-photo.jpg"
-                alt=""
-                fill
-                sizes="200px"
-                quality={45}
-                className="object-cover object-[center_30%]"
-              />
-              <span className="absolute inset-0 bg-slate-950/70" />
-              <span className="relative z-10 text-[13px] font-bold text-white">
-                {isHi ? "मेरे जवाब" : "My answers"}
-              </span>
-            </AppLink>
-          </div>
-          {lastScan ? (
+        {lastScan ? (
+          <motion.section {...fade(0.05)}>
             <AppLink
               href="/ai-doctor"
-              className="mt-2 flex items-center gap-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2"
+              className="flex items-center gap-3 overflow-hidden rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] p-3 shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)]"
             >
               {lastScan.thumbnailUrl && !lastScan.thumbnailUrl.startsWith("blob:") ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={lastScan.thumbnailUrl}
                   alt=""
-                  className="h-10 w-10 rounded-lg object-cover"
+                  className="h-12 w-12 rounded-2xl object-cover"
                 />
               ) : (
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-700">
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-700">
                   <Sparkles className="h-4 w-4" />
                 </span>
               )}
               <span className="min-w-0 flex-1">
-                <span className="block text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                <span className="block text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
                   {isHi ? "पिछला स्कैन" : "Last scan"}
                 </span>
-                <span className="block truncate text-[13px] font-bold text-[var(--av-text-primary)]">
+                <span className="block truncate text-[15px] font-bold text-[var(--av-text-primary)]">
                   {lastScan.result.diseaseName}
                 </span>
               </span>
-              <ArrowRight className="h-4 w-4 text-[var(--av-text-muted)]" />
+              <ChevronRight className="h-4 w-4 text-[var(--av-text-muted)]" />
             </AppLink>
-          ) : null}
-        </motion.section>
+          </motion.section>
+        ) : null}
 
         {/* More tools — same photo-card look as quick jobs, smaller */}
         <motion.section {...fade(0.07)}>
@@ -590,9 +444,6 @@ export default function AgriVedaHome() {
             <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
               {isHi ? "और काम" : "More jobs"}
             </h2>
-            <p className="text-[10px] font-semibold text-[var(--av-text-muted)]">
-              {isHi ? "टैप करो" : "Tap"}
-            </p>
           </div>
           <div className="grid grid-cols-2 gap-2.5">
             {(showMoreTools ? MORE_JOBS : MORE_JOBS.slice(0, MORE_JOBS_FIRST)).map((job) => (
@@ -615,9 +466,6 @@ export default function AgriVedaHome() {
                   <p className="text-[13px] font-bold leading-snug text-white drop-shadow-sm">
                     {isHi ? job.hi : job.en}
                   </p>
-                  <p className="mt-0.5 text-[10px] font-medium text-white/85">
-                    {isHi ? job.hintHi : job.hintEn}
-                  </p>
                 </div>
               </AppLink>
             ))}
@@ -626,7 +474,7 @@ export default function AgriVedaHome() {
           <button
             type="button"
             onClick={() => setShowMoreTools((v) => !v)}
-            className="mt-2.5 flex w-full items-center justify-center gap-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 text-[12px] font-bold text-[var(--av-text-secondary)]"
+            className="mt-2.5 flex w-full items-center justify-center gap-1 rounded-[1.1rem] border border-emerald-900/10 bg-[var(--av-surface)] py-3 text-[13px] font-bold text-[var(--av-text-secondary)] shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)]"
           >
             {showMoreTools
               ? isHi
@@ -641,25 +489,24 @@ export default function AgriVedaHome() {
           </button>
         </motion.section>
 
-        {/* Fields */}
-        <motion.section {...fade(0.12)}>
-          <div className="mb-2 flex items-center justify-between px-0.5">
-            <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
-              {isHi ? "मेरा खेत" : "My field"}
-            </h2>
-            <AppLink href="/my-farm" className="text-[12px] font-bold text-[var(--av-accent)]">
-              {isHi ? "सभी →" : "All →"}
-            </AppLink>
-          </div>
-          {hasFields ? (
+        {extraFields.length > 0 ? (
+          <motion.section {...fade(0.12)}>
+            <div className="mb-2 flex items-center justify-between px-0.5">
+              <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
+                {isHi ? "और खेत" : "More fields"}
+              </h2>
+              <AppLink href="/my-farm" className="text-[12px] font-bold text-[var(--av-accent)]">
+                {isHi ? "सभी" : "All"}
+              </AppLink>
+            </div>
             <div className="space-y-2">
-              {sourceFields.map((field, index) => {
-                const card = fieldCard(field, index);
+              {extraFields.map((field, index) => {
+                const card = fieldCard(field, index + 1);
                 return (
                   <AppLink
                     key={card.key}
                     href="/my-farm"
-                    className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 active:bg-emerald-500/5"
+                    className="flex items-center gap-3 overflow-hidden rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] p-3 shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)]"
                   >
                     <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
                       <Image
@@ -675,7 +522,7 @@ export default function AgriVedaHome() {
                       <p className="truncate text-[14px] font-bold text-[var(--av-text-primary)]">
                         {cropChipLabel(card.cropSlug, card.crop)}
                       </p>
-                      <p className="truncate text-[11px] text-[var(--av-text-muted)]">
+                      <p className="truncate text-[12px] text-[var(--av-text-muted)]">
                         {isHi ? farmerSpeak(card.stage) : card.stage}
                         {card.days != null
                           ? isHi
@@ -684,23 +531,13 @@ export default function AgriVedaHome() {
                           : ""}
                       </p>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-[var(--av-text-muted)]" />
+                    <ChevronRight className="h-4 w-4 text-[var(--av-text-muted)]" />
                   </AppLink>
                 );
               })}
             </div>
-          ) : (
-            <AppLink
-              href="/my-farm"
-              className="flex min-h-[64px] items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-500/35 bg-emerald-50/50 px-4 dark:bg-emerald-950/20"
-            >
-              <Sprout className="h-5 w-5 text-emerald-600" />
-              <span className="text-[14px] font-bold text-emerald-800 dark:text-emerald-200">
-                {isHi ? "खेत जोड़ो" : "Add field"}
-              </span>
-            </AppLink>
-          )}
-        </motion.section>
+          </motion.section>
+        ) : null}
 
       </div>
     </div>

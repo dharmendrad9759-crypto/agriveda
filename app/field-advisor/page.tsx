@@ -27,12 +27,13 @@ export default function FieldAdvisorPage() {
   const recommendations = buildFieldRecommendations(alerts);
   const { stats, data: farmData } = useFarmData();
   const hasFields = farmData.fields.length > 0;
+  const hasRealHealth = stats.hasRealHealth && stats.healthScore != null;
   const healthLabel =
-    !hasFields
+    !hasRealHealth
       ? "—"
-      : stats.healthScore >= 80
+      : (stats.healthScore as number) >= 80
         ? "अच्छा"
-        : stats.healthScore >= 65
+        : (stats.healthScore as number) >= 65
           ? "औसत"
           : "ध्यान दें";
 
@@ -40,7 +41,6 @@ export default function FieldAdvisorPage() {
     <AppShell
       className="!bg-transparent"
       title="खेत सलाह"
-      subtitle="आज किस काम में मदद चाहिए?"
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("shellFieldAdvisor") }]}
     >
       <div className="relative mb-4 overflow-hidden rounded-[22px] border border-emerald-500/25 shadow-[var(--av-shadow-sm)]">
@@ -53,14 +53,10 @@ export default function FieldAdvisorPage() {
         <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
         <div className="absolute inset-x-0 bottom-0 p-4">
           <p className="text-[18px] font-extrabold text-white">आज क्या करना है?</p>
-          <p className="mt-0.5 text-[12px] font-medium text-white/85">
-            नीचे कार्ड टैप करो — एक काम, एक झटके में
-          </p>
         </div>
       </div>
 
-      <h3 className="text-sm font-bold text-[var(--av-text-primary)]">मदद चुनो</h3>
-      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {FIELD_ADVISOR_HELP.map((item) => (
           <AppLink
             key={item.title}
@@ -135,8 +131,8 @@ export default function FieldAdvisorPage() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <DarkCard hover delay={1} className="border-emerald-500/15 bg-gradient-to-br from-emerald-500/5 to-transparent">
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खेत स्वास्थ्य</h3>
-          {hasFields ? (
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खेत स्थिति</h3>
+          {hasRealHealth ? (
             <>
               <p className="mt-4 text-center text-4xl font-black tabular-nums text-emerald-400">
                 {stats.healthScore}%
@@ -145,11 +141,19 @@ export default function FieldAdvisorPage() {
                 {healthLabel}
               </p>
               <p className="mt-3 text-center text-xs text-emerald-400">
-                {stats.healthScore >= 75
+                {(stats.healthScore as number) >= 75
                   ? "बढ़िया — खेत ठीक चल रहे हैं।"
                   : "नीचे अलर्ट देखो और इस हफ्ते करो।"}
               </p>
             </>
+          ) : hasFields ? (
+            <p className="mt-4 text-center text-xs leading-relaxed text-[var(--av-text-muted)]">
+              झूठा स्वास्थ्य स्कोर नहीं दिखाते।{" "}
+              <AppLink href="/my-farm" className="font-bold text-[var(--av-accent)]">
+                मेरा खेत
+              </AppLink>{" "}
+              में बुवाई तारीख डालो — अवस्था और अलर्ट वहीं से चलेंगे। सक्रिय खेत: {stats.activeFields}
+            </p>
           ) : (
             <p className="mt-4 text-center text-xs text-[var(--av-text-muted)]">
               अभी कोई खेत नहीं —{" "}

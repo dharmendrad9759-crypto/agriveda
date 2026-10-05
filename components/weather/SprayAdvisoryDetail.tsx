@@ -508,9 +508,6 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
               <h2 className="mt-1.5 text-[18px] font-bold leading-tight text-white">
                 दो दवा मिलाऊँ?
               </h2>
-              <p className="mt-1 text-[12px] font-medium text-emerald-100/85">
-                किस्म चुनो · दो नाम टैप करो · जवाब तुरंत
-              </p>
               <Link
                 href="/mix-advisor"
                 className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-white px-3 py-2 text-[12px] font-bold text-emerald-950"
@@ -575,7 +572,7 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
                         {active ? " · अब चुनो" : ""}
                       </span>
                       <span className="mt-0.5 block line-clamp-2 text-[13px] font-bold leading-snug text-white">
-                        {selected ? formatMoleculeOption(selected) : "टैप करो"}
+                        {selected ? formatMoleculeOption(selected) : "चुनें"}
                       </span>
                     </button>
                     {selected ? (
@@ -695,7 +692,7 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
               </div>
             ) : (
               <p className="text-center text-[12px] font-semibold text-emerald-100/80">
-                {chem1 ? "अब दूसरी दवा टैप करो" : "ऊपर किस्म चुनो, फिर दवा टैप करो"}
+                {chem1 ? "दूसरी दवा चुनें" : "दो दवा चुनें"}
               </p>
             )}
 

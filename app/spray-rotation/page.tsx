@@ -69,7 +69,6 @@ export default function SprayRotationPage() {
   return (
     <AppShell
       title={t(locale, "title")}
-      subtitle={t(locale, "subtitle")}
       breadcrumbs={[{ label: uiT("navHome"), href: "/" }, { label: uiT("sprayRotation") }]}
     >
       <div className="flex justify-end">
@@ -99,6 +98,12 @@ export default function SprayRotationPage() {
           ))}
         </div>
       </DarkCard>
+
+      <p className="mt-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2 text-xs font-medium text-[var(--av-text-secondary)]">
+        {locale === "hi"
+          ? `अभी सिर्फ ${TRACKER_CROPS.map((c) => c.name).join(", ")} के लिए दवा सूची है। बाकी फसलों पर दवा के डिब्बे का लेबल देखें।`
+          : `Product list currently covers only ${TRACKER_CROPS.map((c) => c.name).join(", ")}. For other crops, follow the product label.`}
+      </p>
 
       {pendingCount > 0 && (
         <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-center text-xs font-bold text-amber-600">
@@ -189,7 +194,7 @@ export default function SprayRotationPage() {
           ))}
         </select>
         <p className={`mt-1 ${AV.micro}`}>
-          Crop: {TRACKER_CROPS.find((c) => c.slug === cropId)?.name ?? cropId}
+          {locale === "hi" ? "फसल" : "Crop"}: {TRACKER_CROPS.find((c) => c.slug === cropId)?.name ?? cropId}
         </p>
       </DarkCard>
 

@@ -83,7 +83,6 @@ export default function LogSprayPage() {
   return (
     <AppShell
       title={t(locale, "logSpray")}
-      subtitle="IRAC rotation ke liye spray record karein"
       breadcrumbs={[
         { label: uiT("navHome"), href: "/" },
         { label: uiT("sprayRotation"), href: "/spray-rotation" },
@@ -131,6 +130,11 @@ export default function LogSprayPage() {
               ))}
             </select>
           </label>
+          <p className="mt-2 text-[11px] text-[var(--av-text-muted)]">
+            {locale === "hi"
+              ? "अभी सिर्फ ये फसलें शामिल हैं — बाकी फसलों पर दवा का लेबल देखें।"
+              : "Only these crops are covered for now — for others, follow the product label."}
+          </p>
         </DarkCard>
 
         <DarkCard delay={2}>

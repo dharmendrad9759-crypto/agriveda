@@ -71,14 +71,9 @@ export default function PestDiseasesContent() {
 
   const cropInfo = pestDiseaseCropList.find((c) => c.slug === selectedSlug);
   const pageTitle = isWeedHub ? t("weeds") : t("pestDiseasesTitle");
-  const pageSubtitle = isWeedHub
-    ? "घास देखो — फोटो टैप करो"
-    : "पत्ती / कीट देखो — टैप करो";
-
   return (
     <AppShell
       title={pageTitle}
-      subtitle={pageSubtitle}
       breadcrumbs={[
         { label: t("navHome"), href: "/" },
         { label: isWeedHub ? t("weeds") : t("pestsDiseases") },
@@ -101,11 +96,8 @@ export default function PestDiseasesContent() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/15" />
         <div className="absolute inset-x-0 bottom-0 p-4">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-200/90">
+          <p className="text-[18px] font-extrabold text-white">
             {isWeedHub ? "खरपतवार" : "कीट-रोग"}
-          </p>
-          <p className="mt-0.5 text-[18px] font-extrabold text-white">
-            {isWeedHub ? "घास देखो — टैप करो" : "पत्ती / कीट देखो — टैप करो"}
           </p>
         </div>
       </div>
@@ -168,15 +160,12 @@ export default function PestDiseasesContent() {
           <span className="absolute inset-0 bg-emerald-950/70" />
           <div className="relative z-10 px-4 py-3.5">
             <p className="text-sm font-semibold text-white">लक्षण से पहचानो</p>
-            <p className="mt-0.5 text-[11px] font-medium text-white/85">
-              देखो → समाधान टैप करो
-            </p>
           </div>
         </AppLink>
       )}
 
       <DarkCard className={isWeedHub ? "mt-0" : "mt-1"} delay={0}>
-        <h3 className={AV.sectionTitle}>फसल टैप करो</h3>
+        <h3 className={AV.sectionTitle}>फसल</h3>
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {pestDiseaseCropList.map((crop) => {
             const hi = getCropHindiName(crop.slug);

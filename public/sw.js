@@ -100,7 +100,28 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
+async function warmPages(urls) {
+  const cache = await caches.open(CACHE);
+  for (const raw of urls.slice(0, 40)) {
+    try {
+      const url = new URL(raw, self.location.origin);
+      if (url.origin !== self.location.origin || isApi(url)) continue;
+      const req = new Request(url.href, { headers: { Accept: "text/html" }, credentials: "same-origin" });
+      if (await cache.match(req)) continue;
+      const res = await networkWithTimeout(req, 15000);
+      const type = res.headers.get("content-type") || "";
+      if (res.ok && type.includes("text/html")) await cache.put(req, res);
+    } catch {
+      /* skip this page; try again next time */
+    }
+  }
+}
+
 self.addEventListener("message", (event) => {
+  if (event.data?.type === "WARM_PAGES" && Array.isArray(event.data.urls)) {
+    event.waitUntil(warmPages(event.data.urls));
+    return;
+  }
   if (event.data?.type === "CACHE_MANDI") {
     const body = JSON.stringify(event.data.payload ?? {});
     caches.open(CACHE).then((c) =>

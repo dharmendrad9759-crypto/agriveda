@@ -129,8 +129,8 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
       <div className="flex items-end justify-between gap-3 px-0.5">
         <p className="text-[12px] font-semibold leading-snug text-[var(--av-text-muted)]">
           {hi
-            ? `${diseases.length} रोग · फोटो देखो, टैप करो`
-            : `${diseases.length} diseases · tap a card`}
+            ? `${diseases.length} रोग`
+            : `${diseases.length} diseases`}
         </p>
         <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700/80">
           {hi ? "रोग गाइड" : "Disease guide"}

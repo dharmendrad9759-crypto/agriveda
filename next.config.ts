@@ -57,6 +57,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: lanDevOrigins(),
   images: {
     formats: ["image/webp"],
+    qualities: [45, 50, 75],
     minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {

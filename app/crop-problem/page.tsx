@@ -1,14 +1,6 @@
-import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
-import CropProblemHub from "@/components/agriveda2/CropProblemHub";
+import { redirect } from "next/navigation";
 
-export default function CropProblemPage() {
-  return (
-    <Agriveda2Shell
-      title="समस्या → समाधान"
-      subtitle="Crop → Problem → Solution → Doctor"
-      backHref="/dashboard"
-    >
-      <CropProblemHub />
-    </Agriveda2Shell>
-  );
+/** Old Agriveda2 hub → single farmer entry for crop problems */
+export default function CropProblemRedirect() {
+  redirect("/crop-problems");
 }

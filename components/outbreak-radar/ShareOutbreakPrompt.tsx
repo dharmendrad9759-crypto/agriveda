@@ -117,9 +117,7 @@ export default function ShareOutbreakPrompt({
             आस-पास किसानों को बताएँ?
           </p>
           <p className="mt-1 text-[12px] leading-relaxed text-[var(--av-text-muted)]">
-            एक टैप से इलाके के outbreak मैप पर चेतावनी। नाम नहीं दिखेगा — सिर्फ फसल,
-            रोग/कीट और लगभग जगह। पास वालों को push तभी मिलेगा जब FCM + उनका लोकेशन
-            रजिस्टर हो।
+            आपका नाम नहीं दिखेगा — सिर्फ फसल, रोग/कीट और लगभग जगह।
           </p>
         </div>
       </div>
@@ -147,13 +145,13 @@ export default function ShareOutbreakPrompt({
         ) : (
           <MapPin className="h-4 w-4" />
         )}
-        {submitting ? "भेज रहे हैं…" : "एक टैप में साझा करें"}
+        {submitting ? "भेज रहे हैं…" : "साझा करें"}
       </button>
       <Link
         href="/pest-outbreak-radar/report"
         className="mt-2 block text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-300"
       >
-        पहले जगह ठीक करें →
+        जगह ठीक करें
       </Link>
     </div>
   );

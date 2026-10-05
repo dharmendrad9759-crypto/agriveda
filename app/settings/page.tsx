@@ -10,11 +10,10 @@ import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { shareAgriveda } from "@/lib/appEssentials";
-import { APP_VERSION, SUPPORT_MAILTO } from "@/lib/appMeta";
+import { SUPPORT_MAILTO } from "@/lib/appMeta";
 import { farmerPlaceLine } from "@/lib/farmerPlaceName";
 import { BRAND } from "@/lib/brand";
 import { deleteAccountAndReload, logoutAndReload } from "@/lib/appReset";
-import { downloadLocalDataExport } from "@/lib/exportFarmerData";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
 import {
@@ -23,14 +22,11 @@ import {
   Check,
   ChevronRight,
   CloudSun,
-  Download,
   HelpCircle,
-  Languages,
   LogOut,
   MapPin,
   MessageCircle,
   Moon,
-  Navigation,
   Share2,
   Shield,
   Sprout,
@@ -41,16 +37,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import {
-  clearLocationPermissionCache,
-  locationFlowErrorMessage,
-  resolveFarmerLocationFromGps,
-} from "@/lib/farmerLocation";
-import {
-  canOpenNativeLocationSettings,
-  openAppLocationPermissionSettings,
-  openDeviceLocationSettings,
-} from "@/lib/openLocationSettings";
 
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -80,19 +66,23 @@ function Section({
   children,
 }: {
   eyebrow?: string;
-  title: string;
+  title?: string;
   children: ReactNode;
 }) {
   return (
     <section className="space-y-2.5">
-      <div className="px-0.5">
-        {eyebrow ? (
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700/70 dark:text-emerald-300/70">
-            {eyebrow}
-          </p>
-        ) : null}
-        <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">{title}</h2>
-      </div>
+      {eyebrow || title ? (
+        <div className="px-0.5">
+          {eyebrow ? (
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700/70 dark:text-emerald-300/70">
+              {eyebrow}
+            </p>
+          ) : null}
+          {title ? (
+            <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">{title}</h2>
+          ) : null}
+        </div>
+      ) : null}
       <div className="overflow-hidden rounded-[1.35rem] border border-emerald-900/8 bg-[var(--av-surface)] shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)] dark:border-white/8">
         {children}
       </div>
@@ -170,7 +160,7 @@ function Stick({
 }
 
 export default function SettingsPage() {
-  const { profile, saveProfile } = useFarmerProfile();
+  const { profile } = useFarmerProfile();
   const { data: farm, stats: farmStats } = useFarmData();
   const { theme, setTheme } = useTheme();
   const { settings, update } = useAppSettings();
@@ -178,7 +168,6 @@ export default function SettingsPage() {
   const { locale, setLocale, t } = useLocale();
   const { showToast } = useToast();
   const [busy, setBusy] = useState<"logout" | "delete" | null>(null);
-  const [locBusy, setLocBusy] = useState(false);
   const isHi = locale === "hi";
 
   const greetName = profile.name.trim()
@@ -193,47 +182,6 @@ export default function SettingsPage() {
       : isHi
         ? "रकबा जोड़ें"
         : "Add area";
-
-  const handleDetectLocation = async () => {
-    setLocBusy(true);
-    try {
-      clearLocationPermissionCache();
-      const loc = await resolveFarmerLocationFromGps();
-      const patch: { state?: string; district?: string } = {};
-      if (loc.state) patch.state = loc.state;
-      if (loc.district) patch.district = loc.district;
-      if (Object.keys(patch).length) saveProfile(patch);
-      showToast(
-        loc.district || loc.state
-          ? `${isHi ? "स्थान सेट" : "Location set"} · ${[loc.district, loc.state].filter(Boolean).join(", ")}`
-          : isHi
-            ? "स्थान सेव हो गया"
-            : "Location saved",
-        "success"
-      );
-    } catch (err) {
-      locationFlowErrorMessage(err);
-      showToast(
-        err instanceof Error
-          ? err.message
-          : isHi
-            ? "स्थान नहीं मिला — फ़ोन से अनुमति दें"
-            : "Location not found — allow permission",
-        "error"
-      );
-    } finally {
-      setLocBusy(false);
-    }
-  };
-
-  const handleOpenLocationSettings = async () => {
-    if (canOpenNativeLocationSettings()) {
-      await openAppLocationPermissionSettings();
-    } else {
-      await openDeviceLocationSettings();
-    }
-    showToast(isHi ? "फ़ोन में स्थान अनुमति दें" : "Allow location on the phone", "success");
-  };
 
   const handleLogout = async () => {
     if (
@@ -250,12 +198,6 @@ export default function SettingsPage() {
     } finally {
       setBusy(null);
     }
-  };
-
-  const handleExport = () => {
-    const result = downloadLocalDataExport();
-    if (result.ok) showToast(isHi ? "डेटा फ़ाइल तैयार है" : "Data file ready", "success");
-    else showToast(result.error || (isHi ? "डाउनलोड नहीं हुआ" : "Download failed"), "error");
   };
 
   const handleDeleteAccount = async () => {
@@ -308,10 +250,7 @@ export default function SettingsPage() {
                 {initial}
               </span>
               <div className="min-w-0 flex-1 pt-0.5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-200/80">
-                  {isHi ? "मेरा खाता" : "My account"}
-                </p>
-                <h2 className="mt-0.5 truncate font-display text-[1.35rem] font-bold leading-tight">
+                <h2 className="truncate font-display text-[1.35rem] font-bold leading-tight">
                   {greetName}
                 </h2>
                 <p className="mt-1 truncate text-[12px] font-medium text-emerald-100/80">
@@ -339,33 +278,12 @@ export default function SettingsPage() {
                 </div>
               ))}
             </div>
-
-            <AppLink
-              href="/profile/edit"
-              className="mt-3.5 flex min-h-11 items-center justify-center rounded-2xl bg-white text-[13px] font-extrabold text-emerald-950 active:scale-[0.99]"
-            >
-              {t("settingsEditProfile")}
-            </AppLink>
           </div>
         </section>
 
         <div className="grid grid-cols-2 gap-2.5">
           {(
             [
-              {
-                href: "#look",
-                icon: Sun,
-                title: isHi ? "रंग" : "Theme",
-                hint: theme === "dark" ? t("settingsDark") : t("settingsLight"),
-                tone: "from-amber-400 to-orange-500",
-              },
-              {
-                href: "#look",
-                icon: Languages,
-                title: isHi ? "भाषा" : "Language",
-                hint: locale === "hi" ? "हिंदी" : "English",
-                tone: "from-sky-400 to-blue-600",
-              },
               {
                 href: "/my-farm",
                 icon: Sprout,
@@ -464,7 +382,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <Section eyebrow={isHi ? "सूचना" : "Alerts"} title={t("settingsAlerts")}>
+        <Section>
           <Stick
             icon={Sun}
             tone="bg-amber-500/15 text-amber-700 dark:text-amber-300"
@@ -522,7 +440,7 @@ export default function SettingsPage() {
           />
         </Section>
 
-        <Section eyebrow={isHi ? "खेत" : "Farm"} title={isHi ? "स्थान और खेत" : "Place & fields"}>
+        <Section title={isHi ? "स्थान और खेत" : "Place & fields"}>
           <Stick
             icon={MapPin}
             tone="bg-rose-500/15 text-rose-700 dark:text-rose-300"
@@ -530,24 +448,6 @@ export default function SettingsPage() {
             hint={place || (isHi ? "ज़िला जोड़ें — मौसम सही आएगा" : "Add district for weather")}
             href="/profile/edit"
           />
-          <div className="grid grid-cols-2 gap-2 px-3.5 py-3">
-            <button
-              type="button"
-              disabled={locBusy}
-              onClick={() => void handleDetectLocation()}
-              className="flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-emerald-700 text-[12px] font-extrabold text-white disabled:opacity-60"
-            >
-              <Navigation className="h-3.5 w-3.5" />
-              {locBusy ? "…" : isHi ? "जीपीएस" : "GPS"}
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleOpenLocationSettings()}
-              className="flex min-h-11 items-center justify-center gap-1.5 rounded-2xl border border-emerald-900/10 bg-[var(--av-surface-inset)] text-[12px] font-extrabold text-[var(--av-text-primary)] dark:border-white/10"
-            >
-              {isHi ? "अनुमति" : "Permission"}
-            </button>
-          </div>
           <Stick
             icon={Sprout}
             tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
@@ -565,7 +465,7 @@ export default function SettingsPage() {
           />
         </Section>
 
-        <Section eyebrow={isHi ? "सुरक्षा" : "Privacy"} title={isHi ? "निजता" : "Your data"}>
+        <Section title={isHi ? "निजता" : "Your data"}>
           <Stick
             icon={Shield}
             tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
@@ -577,13 +477,6 @@ export default function SettingsPage() {
             }}
           />
           <Stick
-            icon={Download}
-            tone="bg-sky-500/15 text-sky-700 dark:text-sky-300"
-            title={isHi ? "मेरा डेटा निकालें" : "Download my data"}
-            hint={isHi ? "फ़ोन पर फ़ाइल रह जाएगी" : "Saves a file on this phone"}
-            onClick={handleExport}
-          />
-          <Stick
             icon={Share2}
             tone="bg-amber-500/15 text-amber-800 dark:text-amber-300"
             title={t("shareAgriveda")}
@@ -592,7 +485,7 @@ export default function SettingsPage() {
           />
         </Section>
 
-        <Section eyebrow={isHi ? "खाता" : "Account"} title={isHi ? "लॉग आउट और हटाना" : "Sign out"}>
+        <Section>
           <Stick
             icon={LogOut}
             tone="bg-stone-500/15 text-stone-700 dark:text-stone-300"
@@ -621,9 +514,6 @@ export default function SettingsPage() {
               <p className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
                 {isHi ? "भारतीय किसानों का साथी" : "Companion for Indian farmers"}
               </p>
-              <p className="mt-0.5 text-[12px] text-[var(--av-text-muted)]">
-                {isHi ? `संस्करण ${APP_VERSION} · 18+` : `Version ${APP_VERSION} · 18+`}
-              </p>
             </div>
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
@@ -644,7 +534,6 @@ export default function SettingsPage() {
           <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
             <AppLink href="/privacy">{isHi ? "गोपनीयता" : "Privacy"}</AppLink>
             <AppLink href="/terms">{isHi ? "नियम" : "Terms"}</AppLink>
-            <AppLink href="/ask-query">{isHi ? "सवाल पूछें" : "Ask"}</AppLink>
           </div>
         </section>
       </div>

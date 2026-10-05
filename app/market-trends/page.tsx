@@ -75,10 +75,15 @@ export default function MarketTrendsPage() {
     <AppShell
       className="!bg-transparent"
       title={t("marketTrends")}
-      subtitle="Track price trends, insights & forecasts to sell at the right time"
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("marketTrends") }]}
     >
-      {data?.error && (
+      {data?.source === "mock" && (
+        <div role="alert" className="rounded-2xl border-2 border-amber-400 bg-amber-50 px-3.5 py-2.5 text-amber-950">
+          <p className="text-sm font-black">⚠️ ये असली भाव नहीं हैं</p>
+          <p className="mt-0.5 text-xs font-semibold">नमूना भाव पर बना अनुमान — बेचने का फैसला इससे न करें।</p>
+        </div>
+      )}
+      {data?.error && data.source !== "mock" && (
         <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-200">
           {data.error}
         </p>
@@ -265,7 +270,9 @@ export default function MarketTrendsPage() {
         <DarkCard hover delay={1}>
           <GaugeChart value={stats.trend === "Bullish" ? 75 : stats.trend === "Bearish" ? 35 : 55} label={`${stats.trend} Outlook`} />
           <p className="mt-2 text-center text-xs text-[var(--av-text-secondary)]">
-            Based on live mandi rates in {data?.state ?? "your state"}
+            {data?.source === "mock"
+              ? "Based on sample (not real) rates"
+              : `Based on live mandi rates in ${data?.state ?? "your state"}`}
           </p>
         </DarkCard>
         <DarkCard hover delay={2}>

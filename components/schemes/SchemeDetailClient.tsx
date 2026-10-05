@@ -124,9 +124,6 @@ export default function SchemeDetailClient({ id }: { id: string }) {
 
         {/* Tabs — big tap targets */}
         <section className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]">
-          <p className="mb-2 text-[12px] font-bold text-[var(--av-text-muted)]">
-            {hi ? "टैप करो · समझो" : "Tap · Read"}
-          </p>
           <div className="grid grid-cols-5 gap-1.5">
             {tabs.map((t) => {
               const active = tab === t.id;

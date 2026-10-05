@@ -111,12 +111,19 @@ export function useFarmData() {
       data.fields.filter((f) => f.status === "Active").map((f) => f.crop.split("(")[0].trim())
     ).size,
     upcomingTasks: data.activities.length,
-    healthScore:
-      data.fields.length === 0
-        ? 0
-        : Math.round(
-            data.fields.reduce((sum, f) => sum + (f.health ?? 75), 0) / data.fields.length
-          ),
+    /** Only average fields that have a real health value — never invent 75% */
+    healthScore: (() => {
+      const scored = data.fields.filter(
+        (f) => typeof f.health === "number" && Number.isFinite(f.health)
+      );
+      if (scored.length === 0) return null;
+      return Math.round(
+        scored.reduce((sum, f) => sum + (f.health as number), 0) / scored.length
+      );
+    })(),
+    hasRealHealth: data.fields.some(
+      (f) => typeof f.health === "number" && Number.isFinite(f.health)
+    ),
   };
 
   return {

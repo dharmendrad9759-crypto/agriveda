@@ -96,7 +96,6 @@ export default function ReportOutbreakPage() {
   return (
     <AppShell
       title="Report an Issue"
-      subtitle="Nearby farmers ko alert — GPS location zaroori"
       breadcrumbs={[
         { label: t("navHome"), href: "/" },
         { label: t("toolOutbreak"), href: "/pest-outbreak-radar" },
@@ -175,7 +174,7 @@ export default function ReportOutbreakPage() {
           ) : (
             <Camera className="h-8 w-8 text-[var(--av-accent)]" />
           )}
-          <span className="text-xs text-[var(--av-text-muted)]">Tap to add field photo</span>
+          <span className="text-xs text-[var(--av-text-muted)]">खेत की फोटो जोड़ें</span>
         </label>
       </DarkCard>
 

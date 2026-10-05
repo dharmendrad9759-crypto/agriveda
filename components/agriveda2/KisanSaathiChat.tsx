@@ -17,7 +17,7 @@ const STARTERS = [
   "पत्तियाँ पीली हो रही हैं — क्या करूँ?",
   "स्प्रे का सही समय कब है?",
   "बुआई अभी करूँ या रुकूँ?",
-  "Khud ka khad schedule batao",
+  "मेरी फसल का खाद कार्यक्रम बताओ",
 ];
 
 export default function KisanSaathiChat() {
@@ -38,7 +38,7 @@ export default function KisanSaathiChat() {
   const [messages, setMessages] = useState<ChatMsg[]>([
     {
       role: "assistant",
-      content: `नमस्ते${profile.name ? ` ${profile.name} जी` : ""}! मैं Kisan Saathi हूँ।\n\nनीचे फसल चुनें, सवाल लिखें या quick button dabayein — turant jawab milega.`,
+      content: `नमस्ते${profile.name ? ` ${profile.name} जी` : ""}! मैं किसान साथी हूँ।\n\nनीचे फसल चुनें, सवाल लिखें या कोई तैयार सवाल दबाएँ।`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -88,7 +88,13 @@ export default function KisanSaathiChat() {
         const data = (await res.json()) as { reply?: string; error?: string };
 
         if (!res.ok || !data.reply) {
-          throw new Error(data.error || "Server response nahi mila");
+          throw new Error(
+            res.status === 503
+              ? "किसान साथी अभी चालू नहीं है"
+              : res.status === 401
+                ? "पहले लॉगिन करें"
+                : "जवाब नहीं मिला — थोड़ी देर बाद फिर पूछें"
+          );
         }
 
         setMessages((prev) => [...prev, { role: "assistant", content: data.reply! }]);
@@ -101,7 +107,7 @@ export default function KisanSaathiChat() {
           ...prev,
           {
             role: "assistant",
-            content: `⚠️ ${msg}\n\nनोट: यह नकली AI जवाब नहीं है। लॉगिन/ GEMINI सेट होने पर फिर कोशिश करें।\n• AI Doctor → /ai-doctor\n• मौसम → /weather`,
+            content: `⚠️ ${msg}\n\nतब तक यहाँ देखें:\n• फसल की समस्याएँ → /crop-problems\n• एक्सपर्ट से पूछें → /ask-query\n• किसान कॉल सेंटर (मुफ़्त) → 1800-180-1551`,
           },
         ]);
         showToast(msg.slice(0, 60), "info");

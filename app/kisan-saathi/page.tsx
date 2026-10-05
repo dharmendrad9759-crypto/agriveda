@@ -4,9 +4,8 @@ import KisanSaathiChat from "@/components/agriveda2/KisanSaathiChat";
 export default function KisanSaathiPage() {
   return (
     <Agriveda2Shell
-      title="Kisan Saathi"
-      subtitle="मेरी फ़सल, मेरा डॉक्टर — 24/7 AI expert"
-      backHref="/crop-problem"
+      title="किसान साथी"
+      backHref="/crop-problems"
     >
       <KisanSaathiChat />
     </Agriveda2Shell>

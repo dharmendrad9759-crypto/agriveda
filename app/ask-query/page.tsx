@@ -241,18 +241,24 @@ export default function AskQueryPage() {
         createdTicketId = ticketData.query.id;
       } else {
         const detail =
-          ticketData.error ||
-          (isHi ? "एडमिन पैनल तक नहीं पहुँचा" : "Could not reach admin panel");
+          ticketRes.status === 503
+            ? isHi
+              ? "एक्सपर्ट सेवा अभी चालू नहीं है"
+              : "Expert service is not available yet"
+            : ticketRes.status === 401
+              ? isHi
+                ? "पहले लॉगिन करें, फिर भेजें"
+                : "Please log in, then send"
+              : ticketRes.status === 400 && ticketData.error
+                ? ticketData.error
+                : isHi
+                  ? "सवाल नहीं पहुँचा — थोड़ी देर बाद फिर भेजें"
+                  : "Could not send — try again later";
         setTicketError(detail);
         showToast(detail.slice(0, 120), "error");
       }
-    } catch (err) {
-      const detail =
-        err instanceof Error
-          ? err.message
-          : isHi
-            ? "नेटवर्क त्रुटि — फिर कोशिश करें"
-            : "Network error — try again";
+    } catch {
+      const detail = isHi ? "नेट नहीं मिला — नेट चालू करके फिर भेजें" : "No network — try again";
       setTicketError(detail);
       showToast(detail.slice(0, 120), "error");
     }
@@ -293,15 +299,6 @@ export default function AskQueryPage() {
       <AppShell
         className="!bg-transparent"
         title={ticketId ? (isHi ? "भेज दिया ✓" : "Sent ✓") : isHi ? "भेजने में दिक्कत" : "Could not send"}
-        subtitle={
-          ticketId
-            ? isHi
-              ? "जवाब आने पर ऐप + WhatsApp पर मिलेगा"
-              : "Reply will show in app + WhatsApp"
-            : isHi
-              ? "फिर से कोशिश करो"
-              : "Please try again"
-        }
         breadcrumbs={[
           { label: isHi ? "होम" : "Home", href: "/" },
           { label: isHi ? "पूछो" : "Ask", href: "/ask-query" },
@@ -411,15 +408,6 @@ export default function AskQueryPage() {
   return (
     <AppShell
       title={isHi ? "पूछो" : "Ask"}
-      subtitle={
-        fromAiDoctor
-          ? isHi
-            ? "एक्सपर्ट को भेजो — जवाब वही देगा"
-            : "Send to expert — they will reply"
-          : isHi
-            ? "फोटो + सवाल — एक्सपर्ट जवाब देगा"
-            : "Photo + question — expert replies"
-      }
       breadcrumbs={[
         { label: isHi ? "होम" : "Home", href: "/" },
         { label: isHi ? "पूछो" : "Ask" },
@@ -456,11 +444,18 @@ export default function AskQueryPage() {
             <p className="text-[11px] font-bold uppercase tracking-wide text-amber-800/80">
               {isHi ? "अभी नहीं पहुँचा" : "Could not reach expert"}
             </p>
-            <p className="mt-1 text-xs leading-relaxed font-medium opacity-95">
+            <p className="mt-1 text-xs leading-relaxed font-medium opacity-95">{ticketError}</p>
+            <p className="mt-2 text-xs leading-relaxed font-medium opacity-95">
               {isHi
-                ? "नेटवर्क या लॉगिन चेक करो — फिर भेजो"
-                : "Check network or login — then try again"}
+                ? "जल्दी सलाह चाहिए तो सरकारी किसान कॉल सेंटर पर मुफ़्त फोन करें:"
+                : "Need advice now? Call the free government Kisan Call Centre:"}
             </p>
+            <a
+              href="tel:18001801551"
+              className="mt-2 inline-flex min-h-11 items-center rounded-full bg-emerald-700 px-4 text-sm font-bold text-white"
+            >
+              📞 1800-180-1551
+            </a>
           </div>
         ) : null}
 

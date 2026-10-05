@@ -6,7 +6,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import { getCropDashboard } from "@/data/crop-dashboard";
+import { tryGetCropDashboard } from "@/data/crop-dashboard";
 import { applySowingToStages, daysAfterSowing } from "@/lib/cropGrowthStage";
 import { cropCatalog } from "@/data/crop-catalog";
 
@@ -21,7 +21,8 @@ export default function FieldHealthHero() {
 
     const sowing = profile.sowingDates[crop.slug];
     const das = sowing ? daysAfterSowing(sowing) : null;
-    const dashboard = getCropDashboard(crop.slug);
+    const dashboard = tryGetCropDashboard(crop.slug);
+    if (!dashboard) return null;
     const growthState = sowing
       ? applySowingToStages(dashboard.growthStages, sowing)
       : {
@@ -32,10 +33,11 @@ export default function FieldHealthHero() {
         };
     const growth = growthState.stages;
     const currentIdx = growth.findIndex((s) => s.status === "current");
+    // No invented progress — only show % when sowing date is known
     const progress =
       das != null && growth.length > 0
         ? Math.min(100, Math.round(((currentIdx >= 0 ? currentIdx + 1 : 1) / growth.length) * 100))
-        : 35;
+        : null;
 
     const suffix = t("fieldHealthFieldSuffix");
     const fieldName = profile.village
@@ -90,7 +92,7 @@ export default function FieldHealthHero() {
               stroke="url(#dasGreen)"
               strokeWidth="8"
               strokeLinecap="round"
-              strokeDasharray={`${progress * 2.64} 264`}
+              strokeDasharray={`${(progress ?? 0) * 2.64} 264`}
             />
             <defs>
               <linearGradient id="dasGreen" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -106,13 +108,26 @@ export default function FieldHealthHero() {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold text-emerald-600">{t("fieldHealthGoodGrowth")}</p>
-          <p className="text-[10px] theme-text-muted">
-            {t("fieldHealthOptimal").replace("{pct}", String(progress))} · {currentStage}
-          </p>
-          <p className="mt-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
-            {t("fieldHealthNext").replace("{stage}", nextStage)}
-          </p>
+          {progress != null ? (
+            <>
+              <p className="text-xs font-bold text-emerald-600">{t("fieldHealthGoodGrowth")}</p>
+              <p className="text-[10px] theme-text-muted">
+                {t("fieldHealthOptimal").replace("{pct}", String(progress))} · {currentStage}
+              </p>
+              <p className="mt-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                {t("fieldHealthNext").replace("{stage}", nextStage)}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-xs font-bold text-amber-700 dark:text-amber-300">
+                बुवाई तारीख डालो
+              </p>
+              <p className="text-[10px] theme-text-muted">
+                तारीख के बिना अवस्था % अनुमान नहीं दिखाते
+              </p>
+            </>
+          )}
         </div>
       </div>
 
@@ -144,12 +159,14 @@ export default function FieldHealthHero() {
           );
         })}
       </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-emerald-700 to-emerald-400 transition-all duration-500"
-          style={{ width: `${Math.max(8, progress)}%` }}
-        />
-      </div>
+      {progress != null ? (
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-emerald-700 to-emerald-400 transition-all duration-500"
+            style={{ width: `${Math.max(8, progress)}%` }}
+          />
+        </div>
+      ) : null}
     </GlassCard>
   );
 }

@@ -13,8 +13,9 @@ const SECTIONS = [
   {
     title: "हमारा वादा (साफ बात)",
     body: [
-      "आपका डेटा बेचा नहीं जाता — न Google Ads को, न दलालों को।",
-      "तीसरे पक्ष के crash / ads SDK (Firebase Crashlytics, Sentry, Meta Pixel आदी) अभी ऐप में नहीं हैं।",
+      "आपकी व्यक्तिगत प्रोफ़ाइल (नाम, फोन, फोटो, खेत) दलालों या डेटा-ब्रोकर्स को नहीं बेची जाती।",
+      "मुफ़्त ऐप चलाने के लिए भविष्य में विज्ञापन (जैसे Google AdMob) लग सकते हैं — तब सिर्फ विज्ञापन दिखाने के लिए ज़रूरी तकनीकी जानकारी (डिवाइस/ऐप पहचान) साझा हो सकती है; खेत फोटो और निजी प्रोफ़ाइल ads को नहीं दी जाती।",
+      "अभी ऐप में ads SDK चालू नहीं है। जब चालू होगा, यह नीति अपडेट होगी और ऐप में साफ सूचना दिखेगी।",
       "Product analytics डिफ़ॉल्ट बंद — Settings में आप चाहें तभी चालू करें; phone/name/photo कभी analytics में नहीं जाते।",
       "कानूनी माँग (court / lawful order) पर सिर्फ जितना जरूरी और जितना हमारे पास हो — बिना ज़रूरत के share नहीं।",
     ],
@@ -44,8 +45,8 @@ const SECTIONS = [
       "Google Gemini — AI सुझाव (photo/symptoms)।",
       "Supabase — farmers, expert queries, notifications (जब configured)।",
       "OpenWeather / Open-Meteo, data.gov.in — मौसम / मंडी।",
-      "विशेषज्ञ जवाब — WhatsApp/SMS सिर्फ जब आप query भेजें और टीम जवाब दे (अलग SMS OTP लॉगिन नहीं)।",
-    ],
+      "Google AdMob / विज्ञापन पार्टनर — सिर्फ जब ऐप में ads चालू हों (व्यक्तिगत खेत डेटा ads को नहीं)।",
+      "विशेषज्ञ जवाब — WhatsApp/SMS सिर्फ जब आप query भेजें और टीम जवाब दे (अलग SMS OTP लॉगिन नहीं)।",    ],
   },
   {
     title: "आपके अधिकार (Play + किसान)",
@@ -65,12 +66,11 @@ export default function PrivacyPage() {
     <AppShell
       className="!bg-transparent"
       title="गोपनीयता नीति"
-      subtitle="किसान पहले — कम डेटा, साफ नियंत्रण"
       breadcrumbs={[{ label: "होम", href: "/" }, { label: "गोपनीयता" }]}
     >
       <DarkCard>
         <p className="text-sm text-[var(--av-text-secondary)]">
-          {BRAND} v{APP_VERSION} · Last updated: August 2026
+          {BRAND} v{APP_VERSION} · Last updated: October 2026
         </p>
         <p className="mt-3 text-sm leading-relaxed text-[var(--av-text-secondary)]">
           यह नीति बताती है डेटा कैसे संभाला जाता है। नियम:{" "}

@@ -33,19 +33,19 @@ export default function SelectCropsPage() {
   return (
     <AppShell
       title={t("selectCrops")}
-      subtitle={`Maximum ${MAX_MY_CROPS} crops · Selected: ${crops.length}/${MAX_MY_CROPS}`}
+      subtitle={`ज्यादा से ज्यादा ${MAX_MY_CROPS} फसल · चुनी: ${crops.length}/${MAX_MY_CROPS}`}
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("selectCrops") }]}
     >
       {!canAddMore && (
         <DarkCard className="border-amber-500/30 bg-amber-500/10">
           <p className="text-sm font-medium text-amber-600">
-            Maximum {MAX_MY_CROPS} crops selected. Deselect one to add another.
+            पहले से {MAX_MY_CROPS} फसल चुनी हैं। नई जोड़ने के लिए एक हटाएँ।
           </p>
         </DarkCard>
       )}
 
       <DarkCard className="mb-4 border-emerald-500/20">
-        <p className="text-xs font-bold text-[var(--av-text-primary)]">Custom crop ({t("navHome")} के लिए)</p>
+        <p className="text-xs font-bold text-[var(--av-text-primary)]">अपनी फसल ({t("navHome")} के लिए)</p>
         <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
           सूची में नहीं है तो नाम लिखकर जोड़ें
         </p>
@@ -63,7 +63,7 @@ export default function SelectCropsPage() {
             className="inline-flex shrink-0 items-center gap-1 rounded-xl bg-[var(--av-accent)] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
           >
             <Plus className="h-3.5 w-3.5" />
-            Add
+            जोड़ो
           </button>
         </div>
         {crops.some((c) => c.custom) && (
@@ -112,7 +112,7 @@ export default function SelectCropsPage() {
         onClick={() => navigate("/")}
         className={`mt-4 w-full ${AV.btnPrimary}`}
       >
-        Save & Go to {t("navHome")} ({crops.length} selected)
+        सेव करो · {t("navHome")} पर जाएँ ({crops.length} चुनी)
       </button>
     </AppShell>
   );

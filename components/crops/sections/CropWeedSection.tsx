@@ -413,11 +413,6 @@ function FieldDoctorWeedCards({
             <p className="mt-1 text-[18px] font-black leading-tight tracking-tight">
               {hi ? `${cropLabel} — खरपतवार कैसे हटाएँ` : `${cropLabel} — weed control`}
             </p>
-            <p className="mt-1.5 text-[12px] font-medium leading-snug text-emerald-50/90">
-              {hi
-                ? "फोटो देखो → सही समय → सही दवा → सही खुराक"
-                : "See photo → right time → right medicine → right dose"}
-            </p>
             <div className="mt-3 grid grid-cols-3 gap-1.5">
               {[
                 {
@@ -479,11 +474,6 @@ function FieldDoctorWeedCards({
         id="weed-id"
         icon={<Leaf className="h-4 w-4" />}
         title={hi ? "1. मुख्य खरपतवार पहचानो" : "1. Major weed ID"}
-        subtitle={
-          hi
-            ? "टैप करो — फोटो और दो अवस्था दिखेगी"
-            : "Tap — photos + 2 growth stages"
-        }
         accent="bg-gradient-to-r from-emerald-800 to-lime-700 border-emerald-900/20"
       >
         <div className="mb-3 flex flex-wrap gap-1.5">
@@ -677,11 +667,6 @@ function FieldDoctorWeedCards({
         id="weed-tips"
         icon={<Lightbulb className="h-4 w-4" />}
         title={hi ? "5. खेत की ज़रूरी बातें" : "5. Field tips"}
-        subtitle={
-          hi
-            ? "आम गलतियाँ और बचाव — ध्यान से पढ़ो"
-            : "Common mistakes & safety"
-        }
         accent="bg-gradient-to-r from-violet-800 to-indigo-700 border-violet-900/15"
       >
         <div className="space-y-2.5">
@@ -756,7 +741,7 @@ function FieldDoctorWeedCards({
         href="/ai-doctor"
         className="inline-flex rounded-full bg-emerald-900 px-4 py-2 text-xs font-bold text-lime-100 shadow-md"
       >
-        {hi ? "फोटो से खरपतवार पहचानो → एआई डॉक्टर" : "Photo weed ID → AI Doctor"}
+        {hi ? "फोटो से पहचानो" : "Identify by photo"}
       </AppLink>
     </div>
   );
@@ -886,8 +871,8 @@ function LegacyWeedSection({ crop }: { crop: Crop }) {
         </h3>
         <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
           {hi
-            ? `${Math.max(weedNames.length, profileWeeds.length)} मुख्य खरपतवार · टैप कर तस्वीर व विवरण`
-            : `${Math.max(weedNames.length, profileWeeds.length)} key weeds · tap for photos & detail`}
+            ? `${Math.max(weedNames.length, profileWeeds.length)} मुख्य खरपतवार`
+            : `${Math.max(weedNames.length, profileWeeds.length)} key weeds`}
         </p>
       </div>
 

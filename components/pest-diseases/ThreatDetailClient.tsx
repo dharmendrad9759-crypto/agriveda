@@ -667,7 +667,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                 {stages ? (
                   <div>
                     <p className="mb-2 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">
-                      {hi ? "दो अवस्था — टैप करो, बड़ा देखो" : "2 stages — tap to enlarge"}
+                      {hi ? "दो अवस्था" : "2 stages"}
                     </p>
                     <div className="grid grid-cols-2 gap-2.5">
                       {(

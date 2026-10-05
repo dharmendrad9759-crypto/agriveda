@@ -126,8 +126,8 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
       <div className="flex items-end justify-between gap-3 px-0.5">
         <p className="text-[12px] font-semibold leading-snug text-[var(--av-text-muted)]">
           {hi
-            ? `${pests.length} मुख्य कीट · फोटो देखो, टैप करो`
-            : `${pests.length} main pests · tap a card`}
+            ? `${pests.length} मुख्य कीट`
+            : `${pests.length} main pests`}
         </p>
         <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.14em] text-rose-600/80">
           {hi ? "कीट गाइड" : "Pest guide"}

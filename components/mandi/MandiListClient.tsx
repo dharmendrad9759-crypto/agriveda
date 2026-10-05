@@ -32,11 +32,6 @@ export default function MandiListClient() {
     <AppShell
       className="!bg-transparent"
       title={isHi ? "मंडी भाव" : "Mandi Prices"}
-      subtitle={
-        isHi
-          ? "राज्य, जिला, मंडी और फसल से भाव देखें"
-          : "Filter by state, district, market and crop"
-      }
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("market") }]}
       actions={
         <button
@@ -52,11 +47,19 @@ export default function MandiListClient() {
     >
       <div className="space-y-3">
         {data?.source === "mock" && (
-          <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-900">
-            {isHi
-              ? "डेमो भाव दिख रहे हैं — लाइव API नहीं मिली। बेचने से पहले स्थानीय मंडी जाँचें।"
-              : "Demo prices — live API unavailable. Verify at your local mandi before trading."}
-          </p>
+          <div
+            role="alert"
+            className="rounded-2xl border-2 border-amber-400 bg-amber-50 px-3.5 py-3 text-amber-950"
+          >
+            <p className="text-sm font-black">
+              {isHi ? "⚠️ ये असली भाव नहीं हैं" : "⚠️ These are not real prices"}
+            </p>
+            <p className="mt-1 text-xs font-semibold leading-snug">
+              {isHi
+                ? "सरकारी मंडी भाव अभी नहीं मिल पाए, इसलिए नमूना भाव दिख रहे हैं। इन्हें देखकर फसल न बेचें — पहले अपनी मंडी या eNAM पर भाव पक्का करें।"
+                : "Live government prices are unavailable, so sample prices are shown. Do not sell based on these — confirm at your mandi or eNAM first."}
+            </p>
+          </div>
         )}
         {data?.error && data.source !== "mock" && (
           <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">

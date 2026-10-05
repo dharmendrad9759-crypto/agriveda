@@ -55,7 +55,6 @@ export default function PestOutbreakRadarPage() {
   return (
     <AppShell
       title={t("toolOutbreak")}
-      subtitle="नज़दीकी कीट/रोग चेतावनी — map ya list"
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("toolOutbreak") }]}
     >
       <div className="flex justify-end">
@@ -64,7 +63,7 @@ export default function PestOutbreakRadarPage() {
           onClick={() => refresh()}
           disabled={loading}
           className="rounded-lg p-1.5 text-[var(--av-accent)]"
-          aria-label="Refresh"
+          aria-label="ताज़ा करें"
         >
           <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
         </button>
@@ -72,7 +71,7 @@ export default function PestOutbreakRadarPage() {
 
       <AppLink href="/pest-outbreak-radar/report" className={`flex w-full justify-center gap-2 ${AV.btnPrimary}`}>
         <Plus className="h-5 w-5" />
-        Report an Issue
+        समस्या रिपोर्ट करें
       </AppLink>
 
       {clusters.length > 0 && (
@@ -84,10 +83,10 @@ export default function PestOutbreakRadarPage() {
               className="block rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3"
             >
               <p className="text-sm font-bold text-red-600 dark:text-red-300">
-                ⚠️ {c.threatName} outbreak nearby
+                ⚠️ पास में {c.threatName} का प्रकोप
               </p>
               <p className="text-xs text-red-600/90 dark:text-red-400">
-                {c.reportCount} reports within {c.radiusKm} km — check your {c.cropName} fields
+                {c.radiusKm} किमी में {c.reportCount} रिपोर्ट — अपनी {c.cropName} फसल जाँचें
               </p>
             </AppLink>
           ))}
@@ -96,7 +95,7 @@ export default function PestOutbreakRadarPage() {
 
       {!isSupabaseConfigured() && (
         <p className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-center text-[11px] font-semibold text-amber-900 dark:text-amber-200">
-          Nearby outbreak map empty jab tak live reports connected nahi. Aap apna field report still save/sync kar sakte hain jab backend ready ho.
+          नज़दीकी प्रकोप का नक्शा तब भरेगा जब लाइव रिपोर्ट जुड़ें। अपनी खेत रिपोर्ट अभी भी भेज सकते हैं — बैकएंड तैयार होने पर सिंक होगी।
         </p>
       )}
 
@@ -109,7 +108,7 @@ export default function PestOutbreakRadarPage() {
             className="mt-2 flex items-center gap-1 text-xs font-bold text-[var(--av-accent)]"
           >
             <Navigation className="h-3.5 w-3.5" />
-            Use GPS location
+            GPS लोकेशन इस्तेमाल करें
           </button>
         </DarkCard>
       )}
@@ -117,7 +116,7 @@ export default function PestOutbreakRadarPage() {
       {fromCache && (
         <p className="mt-3 flex items-center justify-center gap-1 text-[10px] font-bold text-amber-600">
           <WifiOff className="h-3 w-3" />
-          Showing cached reports (offline)
+          ऑफ़लाइन कैश रिपोर्ट दिख रही हैं
         </p>
       )}
 
@@ -134,7 +133,7 @@ export default function PestOutbreakRadarPage() {
             )}
           >
             <MapIcon className="h-3.5 w-3.5" />
-            Map
+            नक्शा
           </button>
           <button
             type="button"
@@ -146,7 +145,7 @@ export default function PestOutbreakRadarPage() {
                 : "border border-[var(--av-border)] text-[var(--av-text-muted)]"
             )}
           >
-            List
+            सूची
           </button>
         </div>
       </DarkCard>
@@ -160,7 +159,7 @@ export default function PestOutbreakRadarPage() {
       {lat != null && lon != null && view === "map" && (
         <DarkCard className="mt-4" delay={1}>
           <p className="mb-2 text-xs font-bold text-[var(--av-text-muted)]">
-            Reports within 10 km (last 14 days) — {reports.length} pin{reports.length !== 1 ? "s" : ""}
+            10 किमी में पिछले 14 दिन — {reports.length} पिन
           </p>
           <OutbreakMap lat={lat} lon={lon} reports={reports} />
         </DarkCard>
@@ -185,12 +184,12 @@ export default function PestOutbreakRadarPage() {
         {alertsEnabled ? (
           <>
             <Bell className="h-3.5 w-3.5" />
-            Outbreak alerts on
+            प्रकोप अलर्ट चालू
           </>
         ) : (
           <>
             <BellOff className="h-3.5 w-3.5" />
-            Enable outbreak push alerts
+            प्रकोप अलर्ट चालू करें
           </>
         )}
       </button>

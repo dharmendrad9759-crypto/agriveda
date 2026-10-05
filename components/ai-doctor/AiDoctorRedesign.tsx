@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import Image from "next/image";
+import AppLink from "@/components/ui/AppLink";
 import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
 import { AV } from "@/lib/design/tokens";
@@ -78,7 +79,7 @@ export function AiDoctorHero({
           </div>
           {aiConfigured === false ? (
             <span className="mt-2 inline-flex rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-200">
-              Setup
+              अभी बंद
             </span>
           ) : null}
         </div>
@@ -100,12 +101,21 @@ export function AiDoctorHero({
       </div>
 
       {aiConfigured === false && (
-        <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-800 dark:text-amber-200">
+        <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs font-semibold leading-snug text-amber-900 dark:text-amber-200">
+          <p>फोटो जांच अभी बंद है। तब तक फसल की समस्याएँ खुद देखें या एक्सपर्ट से पूछें।</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <AppLink href="/crop-problems" className="rounded-full bg-white/80 px-3 py-1.5 text-[11px] font-bold text-emerald-800 dark:bg-black/30 dark:text-emerald-200">
+              फसल की समस्याएँ
+            </AppLink>
+            <AppLink href="/ask-query" className="rounded-full bg-white/80 px-3 py-1.5 text-[11px] font-bold text-emerald-800 dark:bg-black/30 dark:text-emerald-200">
+              एक्सपर्ट से पूछें
+            </AppLink>
+          </div>
           {typeof window !== "undefined" &&
-          (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-            ? "GEMINI_API_KEY .env.local में add karein."
-            : "GEMINI_API_KEY enable karke Redeploy karein."}
-        </p>
+          (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? (
+            <p className="mt-2 text-[10px] opacity-70">Dev: GEMINI_API_KEY .env.local में जोड़ें।</p>
+          ) : null}
+        </div>
       )}
     </section>
   );
@@ -324,7 +334,6 @@ export function AiDoctorPhotoUpload({
         <SectionLabel
           title="फोटो लो"
           step={1}
-          hint="साफ पत्ती की फोटो — टैप करके चुने"
         />
         {hasPreview && onClear && (
           <button
@@ -337,7 +346,7 @@ export function AiDoctorPhotoUpload({
         )}
       </div>
       <p className="mb-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-semibold leading-snug text-emerald-800 dark:text-emerald-200">
-        कैमरा खोलो — पत्ती करीब से दिखाओ। अँधेरे में <strong>टॉर्च/फ्लैश</strong> चालू करें।
+        पत्ती करीब से लो। अँधेरे में <strong>फ्लैश</strong> चालू करें।
       </p>
       {cameraInput}
       {galleryInput}
@@ -396,9 +405,6 @@ export function AiDoctorPhotoUpload({
             </span>
             <p className="relative z-10 mt-3 text-sm font-bold text-white drop-shadow">
               पत्ती की फोटो लो
-            </p>
-            <p className="relative z-10 mt-1 max-w-[18ch] text-center text-[11px] font-medium text-white/90">
-              कैमरा या गैलरी टैप करो
             </p>
           </div>
         )}

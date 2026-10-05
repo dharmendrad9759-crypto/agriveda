@@ -25,8 +25,9 @@ function injectTranslate() {
     // eslint-disable-next-line no-new
     new window.google.translate.TranslateElement(
       {
-        pageLanguage: "en",
-        includedLanguages: "en,hi,pa,gu,mr,bn,ta,te,kn,ml,or,ur",
+        // App UI is Hindi-first — treating page as English makes Translate scramble copy
+        pageLanguage: "hi",
+        includedLanguages: "hi,en,pa,gu,mr,bn,ta,te,kn,ml,or,ur",
         autoDisplay: false,
       },
       "google_translate_element"
