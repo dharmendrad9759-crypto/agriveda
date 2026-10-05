@@ -49,14 +49,16 @@ const SECTIONS = [
       "विशेषज्ञ जवाब — WhatsApp/SMS सिर्फ जब आप query भेजें और टीम जवाब दे (अलग SMS OTP लॉगिन नहीं)।",    ],
   },
   {
-    title: "आपके अधिकार (Play + किसान)",
+    title: "आपके अधिकार (Play + किसान + DPDP Act 2023)",
     body: [
       "Settings → मेरा डेटा डाउनलोड — फोन पर जो है वो JSON में।",
       "Settings → खाता हटाएँ — server (farmer, queries, photos, notifications) + device wipe। Google-only खाते पर भी काम करता है।",
+      "वेब से खाता व डेटा हटाने का अनुरोध: /delete-account (Google Play Store नीति के अनुसार अनइंस्टॉल के बाद भी उपलब्ध)।",
+      "भारतीय डिजिटल पर्सनल डेटा संरक्षण अधिनियम (DPDP Act 2023) के तहत डेटा सुधार व डेटा मिटाने (Right to Erasure) का पूर्ण अधिकार।",
       "ऐप 18+ किसानों के लिए है — बच्चों के लिए डिज़ाइन नहीं।",
       "लॉग आउट — सिर्फ session; crop data फोन पर रहता है।",
       "Location phone settings से कभी भी बंद।",
-      "सहायता: " + SUPPORT_EMAIL,
+      "Grievance Redressal / सहायता: " + SUPPORT_EMAIL,
     ],
   },
 ];
@@ -95,12 +97,18 @@ export default function PrivacyPage() {
       </div>
 
       <DarkCard className="mt-4">
-        <h2 className="text-sm font-bold text-[var(--av-text-primary)]">संपर्क</h2>
+        <h2 className="text-sm font-bold text-[var(--av-text-primary)]">संपर्क व डेटा अनुरोध</h2>
         <p className="mt-2 text-sm text-[var(--av-text-secondary)]">
-          Privacy या डेटा हटाने के लिए:{" "}
+          Privacy या डेटा हटाने के लिए ईमेल:{" "}
           <a href={SUPPORT_MAILTO} className="font-semibold text-[var(--av-accent)] hover:underline">
             {SUPPORT_EMAIL}
           </a>
+        </p>
+        <p className="mt-2 text-xs text-[var(--av-text-muted)]">
+          वेब पोर्टल से खाता हटाने का अनुरोध करने के लिए:{" "}
+          <AppLink href="/delete-account" className="font-semibold text-[var(--av-accent)] hover:underline">
+            खाता व डेटा हटाएँ (Account Deletion Portal)
+          </AppLink>
         </p>
       </DarkCard>
     </AppShell>

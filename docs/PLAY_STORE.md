@@ -8,7 +8,8 @@ Use with production HTTPS URL (Vercel), e.g. `https://agriveda-theta.vercel.app`
 |-------|--------|
 | Privacy policy | `https://agriveda-theta.vercel.app/privacy` |
 | Terms (optional store field) | `https://agriveda-theta.vercel.app/terms` |
-| Account deletion | In-app: **Settings → खाता हटाएँ** (`DELETE /api/account`) — wipes **this device** + optional Firebase Auth user |
+| Account deletion URL (Play Console Web Link) | `https://agriveda-theta.vercel.app/delete-account` |
+| In-app Account deletion | In-app: **Settings → खाता हटाएँ** (`DELETE /api/account`) — wipes **this device** + optional Firebase Auth user |
 | Data export | In-app: **Settings → मेरा डेटा डाउनलोड** (on-device JSON; server photos/queries deleted with account) |
 | Support email | `support@agriveda.in` |
 

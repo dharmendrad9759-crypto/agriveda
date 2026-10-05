@@ -11,4 +11,5 @@ export const SUPPORT_EMAIL = "support@agriveda.in";
 export const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}`;
 export const PRIVACY_PATH = "/privacy";
 export const TERMS_PATH = "/terms";
+export const DELETE_ACCOUNT_PATH = "/delete-account";
 
