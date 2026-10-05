@@ -131,7 +131,7 @@ export const schemeGuides: Record<SchemeGuideId, SchemeGuide> = {
   "pm-kisan": {
     id: "pm-kisan",
     nameHi: "पीएम-किसान",
-    taglineHi: "आय सहायता DBT — पंजीकरण/e-KYC और सुधार यहीं तैयार करें",
+    taglineHi: "वार्षिक किसान सम्मान निधि — पात्रता, दस्तावेज़ व आवेदन जानकारी",
     portal: "https://pmkisan.gov.in",
     portalLabelHi: "PM-KISAN आधिकारिक पोर्टल पर जाएं",
     softFailHi: softFail,

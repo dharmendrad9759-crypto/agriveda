@@ -13,6 +13,7 @@ import {
 import AppShell from "@/components/shell/AppShell";
 import AppLink from "@/components/ui/AppLink";
 import OfficialLeaveConfirm, { useOfficialLeave } from "@/components/schemes/OfficialLeaveConfirm";
+import SchemeTrustAndSafety from "@/components/schemes/SchemeTrustAndSafety";
 import KccLimitCalculator from "@/components/schemes/KccLimitCalculator";
 import MachinerySubsidyCalculator from "@/components/schemes/MachinerySubsidyCalculator";
 import {
@@ -124,9 +125,6 @@ export default function SchemeGuideWizard({ guide }: { guide: SchemeGuide }) {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-[12px] leading-relaxed text-amber-950 dark:text-amber-50">
-          {SCHEMES_LEGAL_NOTE_HI}
-        </div>
 
         {/* Stepper */}
         <div className="flex gap-1">
@@ -334,6 +332,8 @@ export default function SchemeGuideWizard({ guide }: { guide: SchemeGuide }) {
             </AppLink>
           )}
         </div>
+
+        <SchemeTrustAndSafety hi={true} />
       </div>
       <OfficialLeaveConfirm
         open={Boolean(leave.pending)}

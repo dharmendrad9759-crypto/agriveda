@@ -117,7 +117,7 @@ const SCHEME_GROUPS: SchemeGroup[] = [
 ];
 
 function schemeHref(id: string) {
-  return GUIDED.has(id) ? `/schemes/${id}/guide` : `/schemes/${id}`;
+  return `/schemes/${id}`;
 }
 
 function matchesGroup(scheme: FarmerScheme, group: SchemeGroup) {
