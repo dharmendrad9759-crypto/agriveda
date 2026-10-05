@@ -1,7 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Check, Loader2, User } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  CloudSun,
+  Compass,
+  FileText,
+  Loader2,
+  Lock,
+  MapPin,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Sprout,
+  Tractor,
+  TrendingUp,
+  User,
+} from "lucide-react";
 import FarmSetupStep from "@/components/onboarding/FarmSetupStep";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -25,16 +43,22 @@ import { getDeviceId } from "@/lib/deviceId";
 import { signalForceUpdate, withNativeAppHeaders } from "@/lib/nativeAppInfo";
 import { markIntroDone } from "@/lib/launchFlags";
 import { lookupPincode } from "@/lib/pincodeLookup";
+import { cn } from "@/lib/cn";
 
 type Step = "auth" | "name" | "location" | "farm";
 
-const SETUP_STEPS: Step[] = ["name", "location", "farm"];
+const SETUP_STEPS: { id: Step; label: string; icon: typeof User }[] = [
+  { id: "name", label: "नाम", icon: User },
+  { id: "location", label: "स्थान", icon: MapPin },
+  { id: "farm", label: "खेत व फसल", icon: Sprout },
+];
 
 export default function FarmerOnboardingGate({ children }: { children: React.ReactNode }) {
   const { profile, hydrated, completeOnboarding, completeFarmSetup } = useFarmerProfile();
   const { showToast } = useToast();
   const useFirebase = isFirebaseConfigured();
-  const allowGuestContinue = !useFirebase || process.env.NODE_ENV === "development";
+  // Always allow demo/guest continue so users can explore the app freely
+  const allowGuestContinue = true;
 
   const needsFarmSetup = profile.onboardingComplete && !profile.farmSetupComplete;
   const needsFullOnboarding = !profile.onboardingComplete;
@@ -48,6 +72,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
   const [pinBusy, setPinBusy] = useState(false);
+  const [pinSuccess, setPinSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,7 +95,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       totalFarmAreaAcres: 5,
     });
     markIntroDone();
-    showToast("Home खुल गया — AgriVeda demo");
+    showToast("स्वागत है! AgriVeda डेमो मोड सक्रिय ✓", "success");
   };
 
   const establishSessionFromGoogleIdToken = async (
@@ -107,7 +132,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     const suggested = String(sessionBody.name || hint?.displayName || "").trim();
     if (suggested) setName(suggested);
     setStep("name");
-    showToast("Google लॉगिन सफल ✓");
+    showToast("Google लॉगिन सफल ✓", "success");
   };
 
   const establishSession = async (user: {
@@ -147,7 +172,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     const suggested = String(sessionBody.name || user.displayName || "").trim();
     if (suggested) setName(suggested);
     setStep("name");
-    showToast("Google लॉगिन सफल ✓");
+    showToast("Google लॉगिन सफल ✓", "success");
   };
 
   useEffect(() => {
@@ -202,7 +227,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
           "Firebase config missing — Vercel/.env में NEXT_PUBLIC_FIREBASE_* keys लगाएँ"
         );
       }
-      // Capacitor: never call Firebase JS Auth in WebView (network-request-failed).
       if (Capacitor.isNativePlatform()) {
         const native = await getNativeGoogleIdToken();
         await establishSessionFromGoogleIdToken(native.googleIdToken, native);
@@ -219,7 +243,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
   const finishName = () => {
     if (!name.trim()) {
-      setError("कृपया अपना नाम लिखें");
+      setError("कृपया अपना शुभ नाम लिखें");
       return;
     }
     setError(null);
@@ -229,15 +253,16 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const handlePincodeLookup = async () => {
     const pin = pincode.replace(/\D/g, "").slice(0, 6);
     if (pin.length !== 6) {
-      setError("6 अंकों का PIN डालें");
+      setError("6 अंकों का सही PIN कोड डालें");
       return;
     }
     setPinBusy(true);
+    setPinSuccess(false);
     setError(null);
     try {
       const result = await lookupPincode(pin);
       if (!result) {
-        setError("PIN नहीं मिला — ज़िला/राज्य हाथ से चुनें");
+        setError("PIN कोड नहीं मिला — कृपया ज़िला व राज्य नीचे सूची से चुनें");
         return;
       }
       setPincode(result.pincode);
@@ -248,9 +273,10 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
         options.find((d) => d.toLowerCase().includes(result.district.toLowerCase())) ??
         result.district;
       setDistrict(match);
+      setPinSuccess(true);
       showToast(`${result.district}, ${result.state} — PIN से भरा ✓`, "success");
     } catch {
-      setError("PIN lookup असफल — ज़िला/राज्य चुनें");
+      setError("PIN lookup असफल — कृपया राज्य व ज़िला नीचे चुनें");
     } finally {
       setPinBusy(false);
     }
@@ -258,15 +284,15 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
   const finishLocation = () => {
     if (!village.trim() || !district.trim() || !state.trim()) {
-      setError("गाँव, ज़िला और राज्य — तीनों भरें");
+      setError("गाँव/शहर, ज़िला और राज्य — सभी भरना आवश्यक है");
       return;
     }
     if (!isValidState(state.trim())) {
-      setError("राज्य सूची से चुनें — नाम लिखकर search करें");
+      setError("कृपया राज्य सूची में से चुनें");
       return;
     }
     if (!isValidDistrict(state.trim(), district.trim())) {
-      setError("ज़िला सूची से चुनें — नाम लिखकर search करें");
+      setError("कृपया ज़िला सूची में से चुनें");
       return;
     }
     setError(null);
@@ -291,238 +317,400 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
     completeFarmSetup(profileData);
     markIntroDone();
-    showToast("स्वागत है, किसान भाई!");
+    showToast("बधाई हो! आपका खेत सेटअप पूरा हुआ ✓", "success");
   };
 
-  const setupIndex = SETUP_STEPS.indexOf(step);
-  const showWelcomeChrome = setupIndex >= 0 || needsFarmSetup;
+  const setupIndex = SETUP_STEPS.findIndex((s) => s.id === step);
+  const showStepper = step !== "auth";
 
   return (
     <div className="fixed inset-0 z-[200] flex items-stretch justify-center overflow-hidden sm:items-center sm:p-4">
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Dynamic Animated Organic Background */}
+      <div className="absolute inset-0 overflow-hidden bg-gradient-to-br from-[#041a12] via-[#082b20] to-[#020e0a]">
+        {/* Ambient Glowing Orbs */}
+        <div className="absolute -left-12 -top-12 h-96 w-96 rounded-full bg-emerald-500/20 blur-[90px]" />
+        <div className="absolute -right-16 top-1/3 h-80 w-80 rounded-full bg-lime-400/15 blur-[100px]" />
+        <div className="absolute bottom-10 left-1/4 h-72 w-72 rounded-full bg-amber-400/10 blur-[80px]" />
+
+        {/* Delicate Botanical Leaf SVG Pattern */}
         <div
-          className="absolute inset-0 scale-110"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
-              "url(https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1600&q=60)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            filter: "blur(10px) saturate(1.15)",
-            transform: "scale(1.08)",
+              "url(\"data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 10c-8 14-8 30 0 44 8-14 8-30 0-44z' fill='%2322c55e'/%3E%3C/svg%3E\")",
+            backgroundSize: "80px 80px",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/70 via-emerald-900/55 to-slate-950/75" />
-        <div className="absolute -left-10 top-16 h-44 w-44 animate-pulse rounded-full bg-emerald-400/30 blur-3xl" />
-        <div className="absolute -right-8 bottom-24 h-52 w-52 animate-pulse rounded-full bg-lime-300/20 blur-3xl [animation-delay:1s]" />
       </div>
 
+      {/* Main Glassmorphic Onboarding Modal */}
       <div
         role="dialog"
         aria-modal
         aria-label="Farmer onboarding"
-        className="relative z-10 flex h-[100dvh] w-full max-w-md flex-col overflow-hidden border border-white/35 bg-white/55 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:h-auto sm:max-h-[min(90dvh,720px)] sm:rounded-[1.75rem]"
+        className="relative z-10 flex h-[100dvh] w-full max-w-lg flex-col overflow-hidden border border-white/20 bg-white/85 shadow-[0_25px_80px_-15px_rgba(0,0,0,0.65)] backdrop-blur-2xl transition-all sm:h-auto sm:max-h-[min(92dvh,740px)] sm:rounded-[2rem] dark:border-white/10 dark:bg-[#0c241b]/90"
         style={{
           paddingTop: "env(safe-area-inset-top)",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        {showWelcomeChrome ? (
-          <div className="shrink-0 px-5 pb-1 pt-4 text-center sm:px-6 sm:pt-5">
-            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/90 text-white shadow-lg shadow-emerald-500/30 ring-4 ring-white/40 sm:h-12 sm:w-12">
-              <Check className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={3} />
-            </div>
-            <h2
-              className="mt-2 text-lg font-bold tracking-tight text-[#0b1f16] sm:mt-3 sm:text-xl"
-              style={{ fontFamily: "var(--font-display), Georgia, serif" }}
-            >
-              AgriVeda में आपका स्वागत है!
-            </h2>
-            <p className="mt-1 text-xs leading-snug text-gray-700/90 sm:mt-1.5 sm:text-sm sm:leading-relaxed">
-              बस कुछ बातें बताइए — खेत सेट हो जाएगा।
-            </p>
-            <div className="mt-3 flex items-center justify-center gap-2">
-              {SETUP_STEPS.map((s, i) => {
-                const active = needsFarmSetup ? i === 2 : i === setupIndex;
-                const done = needsFarmSetup ? i < 2 : i < setupIndex;
-                return (
-                  <span
-                    key={s}
-                    className={`h-2 w-2 rounded-full transition-all duration-300 sm:h-2.5 sm:w-2.5 ${
-                      active
-                        ? "scale-110 bg-amber-500"
-                        : done
-                          ? "bg-emerald-500"
-                          : "bg-white/70 ring-1 ring-gray-300/80"
-                    }`}
-                  />
-                );
-              })}
-            </div>
-            <p className="mt-1 text-[11px] font-semibold text-gray-600">
-              चरण {needsFarmSetup ? 3 : Math.max(1, setupIndex + 1)}/3
-            </p>
-          </div>
-        ) : (
-          <div className="shrink-0 border-b border-white/25 bg-emerald-700/45 px-5 py-4 text-white backdrop-blur-md sm:px-6 sm:py-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-50/90">
-              AgriVeda
-            </p>
-            <h2 className="mt-1 text-lg font-black sm:text-xl">किसान पंजीकरण</h2>
-            <p className="mt-1 text-xs text-emerald-50/90 sm:text-sm">
-              Google से लॉगिन — 18+ किसानों के लिए
-            </p>
-          </div>
-        )}
-
-        <div
-          className={`min-h-0 flex-1 space-y-3 px-5 pb-5 pt-2 sm:space-y-4 sm:px-6 sm:pb-6 ${
-            step === "farm" || step === "location" ? "overflow-y-auto overscroll-contain" : "overflow-hidden"
-          }`}
-        >
-          {step === "auth" && (
-            <>
-              {!useFirebase && (
-                <p className="rounded-xl border border-amber-400/40 bg-amber-400/15 px-3 py-2 text-xs text-amber-900">
-                  Firebase keys नहीं मिलीं — Vercel में NEXT_PUBLIC_FIREBASE_* सेट करें।
-                </p>
-              )}
-              <button
-                type="button"
-                onClick={() => void loginWithGoogle()}
-                disabled={loading || !useFirebase}
-                className="flex w-full items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white py-3.5 text-sm font-black text-gray-800 shadow-md transition hover:bg-gray-50 disabled:opacity-50"
-              >
-                {loading ? (
-                  <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
-                ) : (
-                  <GoogleGlyph />
-                )}
-                Google से लॉगिन करें
-              </button>
-              <p className="text-center text-[11px] text-gray-600">
-                लॉगिन करके आप{" "}
-                <a href="/terms" className="font-bold text-emerald-700 underline">
-                  नियम
-                </a>{" "}
-                और{" "}
-                <a href="/privacy" className="font-bold text-emerald-700 underline">
-                  गोपनीयता
-                </a>{" "}
-                से सहमत हैं · ऐप 18+ के लिए
-              </p>
-            </>
-          )}
-
-          {step === "name" && (
-            <>
-              <p className="text-base font-bold text-gray-900">आपका नाम क्या है?</p>
-              {email ? (
-                <p className="text-xs font-medium text-gray-500">{email}</p>
-              ) : null}
-              <label className="block">
-                <span className="mb-1 flex items-center gap-2 text-xs font-bold text-gray-500">
-                  <User className="h-4 w-4" />
-                  नाम
+        {/* Header Bar */}
+        <div className="relative border-b border-emerald-950/10 bg-gradient-to-r from-emerald-800 via-emerald-700 to-green-700 px-5 py-4 text-white shadow-sm dark:border-emerald-500/20 sm:px-6 sm:py-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 shadow-inner backdrop-blur-md">
+                <Sprout className="h-5 w-5 text-emerald-200" strokeWidth={2.5} />
+              </div>
+              <div>
+                <span className="block text-[10px] font-black uppercase tracking-[0.25em] text-emerald-200/90">
+                  AgriVeda
                 </span>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="अपना नाम लिखें"
-                  autoFocus
-                  className="w-full rounded-2xl border-2 border-amber-400/80 bg-white px-4 py-3 text-base font-semibold text-gray-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20"
-                />
-              </label>
-              <div className="flex justify-end">
+                <h1 className="text-base font-black leading-tight tracking-tight sm:text-lg">
+                  {step === "auth"
+                    ? "किसान सारथी में स्वागत है"
+                    : needsFarmSetup
+                      ? "खेत व फसल सेटअप"
+                      : "खेत प्रोफ़ाइल सेटअप"}
+                </h1>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-bold text-emerald-100 backdrop-blur-xs">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
+              <span>100% मुफ़्त</span>
+            </div>
+          </div>
+
+          {/* Stepper (Steps 1, 2, 3) */}
+          {showStepper && (
+            <div className="mt-4 border-t border-white/15 pt-3">
+              <div className="flex items-center justify-between gap-1">
+                {SETUP_STEPS.map((s, idx) => {
+                  const Icon = s.icon;
+                  const isActive = needsFarmSetup ? idx === 2 : idx === setupIndex;
+                  const isDone = needsFarmSetup ? idx < 2 : idx < setupIndex;
+
+                  return (
+                    <div
+                      key={s.id}
+                      className={cn(
+                        "flex flex-1 items-center gap-1.5 rounded-xl px-2 py-1.5 transition-all",
+                        isActive
+                          ? "bg-white/25 text-white shadow-xs font-black ring-1 ring-white/40"
+                          : isDone
+                            ? "bg-emerald-900/30 text-emerald-200"
+                            : "text-white/50 opacity-60"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black",
+                          isDone
+                            ? "bg-emerald-400 text-emerald-950"
+                            : isActive
+                              ? "bg-white text-emerald-800"
+                              : "bg-white/20 text-white"
+                        )}
+                      >
+                        {isDone ? <Check className="h-3 w-3 stroke-[3]" /> : idx + 1}
+                      </div>
+                      <span className="truncate text-xs font-bold">{s.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Content Body */}
+        <div
+          className={cn(
+            "min-h-0 flex-1 space-y-4 px-5 pb-5 pt-3 sm:px-6 sm:pb-6",
+            step === "farm" || step === "location"
+              ? "overflow-y-auto overscroll-contain"
+              : "overflow-hidden"
+          )}
+        >
+          {/* STEP 1: AUTHENTICATION */}
+          {step === "auth" && (
+            <div className="space-y-4 pt-1">
+              {/* Feature Highlights Grid */}
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-50 to-green-50/50 p-3.5 transition dark:border-emerald-500/20 dark:bg-emerald-950/20">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
+                    <Sprout className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-gray-900 dark:text-white">
+                      एआई फसल डॉक्टर (AI Crop Doctor)
+                    </h3>
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-gray-600 dark:text-gray-300">
+                      पत्ते की फोटो खींचें — रोग व कीट का तुरंत पता और सही दवा की मात्रा पाएं।
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-50 to-sky-50/50 p-3.5 transition dark:border-blue-500/20 dark:bg-blue-950/20">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/30">
+                    <CloudSun className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-gray-900 dark:text-white">
+                      गाँव का मौसम व लाइव मंडी भाव
+                    </h3>
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-gray-600 dark:text-gray-300">
+                      बारिश व हवा की सटीक चेतावनी और नज़दीकी मंडियों के ताज़ा दैनिक भाव।
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-50 to-yellow-50/50 p-3.5 transition dark:border-amber-500/20 dark:bg-amber-950/20">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-600 text-white shadow-md shadow-amber-600/30">
+                    <Tractor className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-gray-900 dark:text-white">
+                      स्मार्ट खेत व फसल कैलेंडर
+                    </h3>
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-gray-600 dark:text-gray-300">
+                      खाद, स्प्रे रोटेशन, खरपतवार और सिंचाई की चरणबद्ध वैज्ञानिक सलाह।
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Login Buttons */}
+              <div className="space-y-2.5 pt-2">
                 <button
                   type="button"
-                  onClick={finishName}
-                  className="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white shadow-md shadow-amber-500/30 transition hover:bg-amber-600"
+                  onClick={() => void loginWithGoogle()}
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white py-3.5 text-sm font-black text-gray-800 shadow-md transition hover:bg-gray-50 hover:shadow-lg active:scale-[0.99] disabled:opacity-50 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
                 >
-                  आगे →
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
+                  ) : (
+                    <GoogleGlyph />
+                  )}
+                  <span>Google से सुरक्षित लॉगिन करें</span>
                 </button>
+
+                {allowGuestContinue && (
+                  <button
+                    type="button"
+                    onClick={continueAsGuest}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-600/40 bg-emerald-600/10 py-3 text-xs font-bold text-emerald-800 transition hover:bg-emerald-600/15 active:scale-[0.99] dark:text-emerald-300"
+                  >
+                    <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <span>सीधे ऐप देखें (Explore Demo Mode)</span>
+                  </button>
+                )}
               </div>
-            </>
+
+              {/* Privacy Trust Footer */}
+              <div className="border-t border-gray-200/60 pt-3 text-center text-[11px] text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                <p className="flex items-center justify-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-400">
+                  <Lock className="h-3.5 w-3.5" />
+                  <span>किसान डेटा पूरी तरह निजी व सुरक्षित रहता है</span>
+                </p>
+                <p className="mt-1">
+                  लॉगिन करके आप हमारे{" "}
+                  <a href="/terms" className="font-bold underline hover:text-emerald-600">
+                    नियम
+                  </a>{" "}
+                  और{" "}
+                  <a href="/privacy" className="font-bold underline hover:text-emerald-600">
+                    गोपनीयता नीति
+                  </a>{" "}
+                  से सहमत होते हैं।
+                </p>
+              </div>
+            </div>
           )}
 
-          {step === "location" && (
-            <>
-              <p className="text-base font-bold text-gray-900">आपका खेत कहाँ है?</p>
-              <label className="block">
-                <span className="mb-1 text-xs font-bold text-gray-500">PIN कोड (6 अंक)</span>
-                <div className="flex gap-2">
+          {/* STEP 2: NAME INPUT */}
+          {step === "name" && (
+            <div className="space-y-4 pt-1">
+              <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-3 dark:bg-emerald-950/30">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-500 text-white shadow-md">
+                  <User className="h-6 w-6" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-black text-gray-900 dark:text-white">
+                    नमस्ते किसान भाई! 🙏
+                  </h2>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">
+                    कृपया अपना शुभ नाम दर्ज करें ताकि हम आपकी प्रोफ़ाइल तैयार कर सकें।
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-gray-700 dark:text-gray-200">
+                  आपका नाम (Full Name) <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <User className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-emerald-600" />
                   <input
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="462001"
-                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="उदा. रमेश सिंह, धरमेन्द्र चौहान..."
+                    autoFocus
+                    className="w-full rounded-2xl border-2 border-emerald-500/40 bg-white py-3.5 pl-11 pr-4 text-base font-bold text-gray-900 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/15 dark:border-emerald-500/30 dark:bg-slate-800 dark:text-white"
                   />
+                </div>
+                {email && (
+                  <p className="mt-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+                    लॉगिन खाता: {email}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={finishName}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-green-600 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-700/25 transition hover:brightness-110 active:scale-[0.99]"
+              >
+                <span>स्थान चुनें (Next)</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+
+          {/* STEP 3: LOCATION INPUT */}
+          {step === "location" && (
+            <div className="space-y-3.5 pt-1">
+              <div className="flex items-center gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/10 p-3 dark:bg-blue-950/30">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white shadow-md">
+                  <Compass className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-xs font-black text-gray-900 dark:text-white">
+                    आपका खेत कहाँ स्थित है? 📍
+                  </h2>
+                  <p className="text-[11px] text-gray-600 dark:text-gray-300">
+                    सटीक मौसम और नज़दीकी मंडी भाव आपके ज़िले के अनुसार सेट होंगे।
+                  </p>
+                </div>
+              </div>
+
+              {/* PIN Code Lookup */}
+              <div>
+                <label className="mb-1 block text-xs font-bold text-gray-700 dark:text-gray-200">
+                  PIN कोड (त्वरित भरें — 6 अंक)
+                </label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={pincode}
+                      onChange={(e) => {
+                        setPincode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                        setPinSuccess(false);
+                      }}
+                      placeholder="उदा. 462001"
+                      className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm font-bold text-gray-900 outline-none transition focus:border-emerald-500 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+                    />
+                    {pinSuccess && (
+                      <CheckCircle2 className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-600" />
+                    )}
+                  </div>
                   <button
                     type="button"
                     disabled={pinBusy || pincode.length !== 6}
                     onClick={() => void handlePincodeLookup()}
-                    className="shrink-0 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-black text-white disabled:opacity-50"
+                    className="flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-black text-white shadow-sm transition hover:bg-emerald-800 active:scale-95 disabled:opacity-50"
                   >
-                    {pinBusy ? "…" : "खोजें"}
+                    {pinBusy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Search className="h-3.5 w-3.5" />
+                    )}
+                    <span>खोजें</span>
                   </button>
                 </div>
-              </label>
-              <SearchableSelect
-                label="राज्य"
-                placeholder="अपना राज्य चुनें"
-                value={state}
-                onChange={handleStateChange}
-                options={INDIAN_STATES}
-                emptyHint="राज्य नहीं मिला"
-              />
-              <SearchableSelect
-                key={`onboard-district-${state}`}
-                label="ज़िला"
-                placeholder={state ? "अपना ज़िला चुनें" : "पहले राज्य चुनें"}
-                value={district}
-                onChange={setDistrict}
-                options={districtOptions}
-                disabled={!isValidState(state)}
-                emptyHint="ज़िला नहीं मिला"
-              />
-              <label className="block">
-                <span className="mb-1 text-xs font-bold text-gray-500">शहर / गाँव</span>
-                <input
-                  value={village}
-                  onChange={(e) => setVillage(e.target.value)}
-                  placeholder="अपना शहर या गाँव टाइप करें"
-                  className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+                {pinSuccess && (
+                  <p className="mt-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                    राज्य व ज़िला ऑटो-फिल हो गए ✓
+                  </p>
+                )}
+              </div>
+
+              {/* State & District Searchable Selects */}
+              <div className="space-y-3">
+                <SearchableSelect
+                  label="राज्य (State)"
+                  placeholder="अपना राज्य चुनें"
+                  value={state}
+                  onChange={handleStateChange}
+                  options={INDIAN_STATES}
+                  emptyHint="राज्य नहीं मिला"
                 />
-              </label>
-              <div className="flex items-center justify-between gap-2 pt-1">
+
+                <SearchableSelect
+                  key={`onboard-district-${state}`}
+                  label="ज़िला (District)"
+                  placeholder={state ? "अपना ज़िला चुनें" : "पहले राज्य चुनें"}
+                  value={district}
+                  onChange={setDistrict}
+                  options={districtOptions}
+                  disabled={!isValidState(state)}
+                  emptyHint="ज़िला नहीं मिला"
+                />
+              </div>
+
+              {/* Village Input */}
+              <div>
+                <label className="mb-1 block text-xs font-bold text-gray-700 dark:text-gray-200">
+                  गाँव या शहर (Village / Town) <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <input
+                    value={village}
+                    onChange={(e) => setVillage(e.target.value)}
+                    placeholder="अपने गाँव या कस्बे का नाम लिखें"
+                    className="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-gray-900 outline-none transition focus:border-emerald-500 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Navigation */}
+              <div className="flex items-center justify-between gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setStep("name")}
-                  className="text-sm font-bold text-gray-500"
+                  className="flex items-center gap-1.5 rounded-xl border border-gray-300 px-4 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-slate-800"
                 >
-                  ← पीछे
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <span>पीछे</span>
                 </button>
                 <button
                   type="button"
                   onClick={finishLocation}
-                  className="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white shadow-md shadow-amber-500/30"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-green-600 py-3 text-xs font-black text-white shadow-md shadow-emerald-700/20 transition hover:brightness-110 active:scale-[0.99]"
                 >
-                  आगे →
+                  <span>खेत व फसल जोड़ें</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>
-            </>
+            </div>
           )}
 
+          {/* STEP 4: FARM & CROP SETUP */}
           {step === "farm" && (
-            <>
+            <div className="space-y-3 pt-1">
               {!needsFarmSetup && (
                 <button
                   type="button"
                   onClick={() => setStep("location")}
-                  className="text-sm font-bold text-gray-500"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-gray-500 transition hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
                 >
-                  ← पीछे
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <span>स्थान बदलें</span>
                 </button>
               )}
               <FarmSetupStep
@@ -530,23 +718,14 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                 onComplete={finishFarmSetup}
                 loading={loading}
               />
-            </>
+            </div>
           )}
 
+          {/* General Error Banner */}
           {error && step !== "farm" && (
-            <p className="rounded-xl border border-red-400/40 bg-red-50 px-3 py-2 text-center text-sm font-semibold text-red-600">
+            <div className="rounded-xl border border-rose-500/30 bg-rose-50 p-3 text-center text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
               {error}
-            </p>
-          )}
-
-          {allowGuestContinue && step === "auth" && !needsFarmSetup && (
-            <button
-              type="button"
-              onClick={continueAsGuest}
-              className="w-full rounded-2xl border border-dashed border-emerald-500/40 bg-white/40 py-3 text-sm font-bold text-emerald-800 backdrop-blur"
-            >
-              बिना लॉगिन Home देखें (demo)
-            </button>
+            </div>
           )}
         </div>
       </div>
