@@ -145,9 +145,9 @@ export default function AppShell({
               type="button"
               onClick={handleBack}
               aria-label="Back"
-              className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-primary)] active:scale-95"
+              className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 text-[var(--av-text-primary)] shadow-[var(--av-shadow-sm)] backdrop-blur transition hover:border-[var(--av-accent)] hover:text-[var(--av-accent)] active:scale-95"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-[18px] w-[18px]" />
             </button>
             {breadcrumbs && breadcrumbs.length > 0 ? (
               <nav className={`min-w-0 flex flex-wrap items-center gap-1 pt-1 ${AV.micro}`}>
@@ -170,9 +170,17 @@ export default function AppShell({
 
         {(title || subtitle || actions) && (
           <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between lg:mb-6">
-            <div className="min-w-0">
-              {title && <h1 className={AV.pageTitle}>{title}</h1>}
-              {subtitle && <p className={AV.pageSubtitle}>{subtitle}</p>}
+            <div className="flex min-w-0 items-start gap-2.5">
+              {title ? (
+                <span
+                  aria-hidden
+                  className="mt-1.5 h-6 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-emerald-500 to-teal-600 lg:h-7"
+                />
+              ) : null}
+              <div className="min-w-0">
+                {title && <h1 className={AV.pageTitle}>{title}</h1>}
+                {subtitle && <p className={AV.pageSubtitle}>{subtitle}</p>}
+              </div>
             </div>
             {actions && <div className="shrink-0">{actions}</div>}
           </header>
@@ -198,14 +206,16 @@ export function ShellCtaBanner({
   href: string;
 }) {
   return (
-    <div className="mt-4 rounded-xl border border-[#D4E8DB] bg-[#F8FAF8] px-3 py-2.5">
-      <p className="text-[14px] font-bold leading-snug text-[#0B3D28]">{title}</p>
-      <p className="mt-0.5 text-[13px] font-medium leading-relaxed text-[#3D5A4A]">{description}</p>
+    <div className="relative mt-4 overflow-hidden rounded-2xl border border-emerald-600/15 bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 py-3.5 shadow-[var(--av-shadow-sm)] dark:from-emerald-950/40 dark:via-slate-900 dark:to-teal-950/30">
+      <span aria-hidden className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-emerald-400/15 blur-2xl" />
+      <p className="relative text-[14px] font-bold leading-snug text-[var(--av-text-primary)]">{title}</p>
+      <p className="relative mt-0.5 text-[13px] font-medium leading-relaxed text-[var(--av-text-secondary)]">{description}</p>
       <AppLink
         href={href}
-        className="mt-2 inline-flex min-h-[44px] items-center text-[14px] font-bold text-[#0B6B45]"
+        className="relative mt-2.5 inline-flex min-h-[40px] items-center gap-1 rounded-xl bg-[var(--av-accent)] px-3.5 text-[13px] font-bold text-white shadow-sm transition hover:bg-[var(--av-accent-hover)] active:scale-95"
       >
-        {buttonLabel} →
+        {buttonLabel}
+        <ChevronRight className="h-4 w-4" />
       </AppLink>
     </div>
   );
@@ -221,22 +231,19 @@ export function ShellTabBar<T extends string>({
   onChange: (id: T) => void;
 }) {
   return (
-    <div className="mb-4 flex gap-1 overflow-x-auto border-b border-[var(--av-border)] pb-px scrollbar-hide">
+    <div className="mb-4 flex gap-1 overflow-x-auto rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-1 scrollbar-hide">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           type="button"
           onClick={() => onChange(tab.id)}
-          className={`relative shrink-0 px-3 py-2.5 text-xs font-semibold transition-colors duration-150 ${
+          className={`relative shrink-0 rounded-xl px-3.5 py-2 text-xs font-bold transition-all duration-200 ${
             active === tab.id
-              ? "text-[var(--av-accent)]"
+              ? "bg-[var(--av-surface)] text-[var(--av-accent)] shadow-[var(--av-shadow-md)] ring-1 ring-[var(--av-accent-ring)]"
               : "text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)]"
           }`}
         >
           {tab.label}
-          {active === tab.id && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-[var(--av-accent)]" />
-          )}
         </button>
       ))}
     </div>

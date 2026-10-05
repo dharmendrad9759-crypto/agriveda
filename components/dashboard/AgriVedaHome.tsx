@@ -30,7 +30,7 @@ import type { FarmField } from "@/lib/farm/types";
 import { track } from "@/lib/analytics";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
-import HomeWeatherWidget from "@/components/weather/HomeWeatherWidget";
+import { HomeSprayPill, HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import { speakFarmer } from "@/components/ui/SpeakButton";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 
@@ -235,21 +235,29 @@ export default function AgriVedaHome() {
       </div>
 
       <div className="relative z-10 space-y-4 px-0.5 pt-1">
-        {/* Welcome — short */}
+        {/* Welcome + compact weather button */}
         <motion.section {...fade(0)} className="px-0.5">
-          <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
-            {isHi ? `नमस्ते, ${greetName} जी` : `Namaste, ${greetName}`}
-          </p>
-          <h1 className="mt-0.5 font-display text-[1.45rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
-            {isHi ? "आज क्या करना है?" : "What do you need today?"}
-          </h1>
-          <p className="mt-1 text-[13px] font-semibold text-[var(--av-text-muted)]">
-            {new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
-              weekday: "short",
-              day: "numeric",
-              month: "short",
-            })}
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
+                {isHi ? `नमस्ते, ${greetName} जी 🙏` : `Namaste, ${greetName} 🙏`}
+              </p>
+              <h1 className="mt-0.5 font-display text-[1.45rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
+                {isHi ? "आज क्या करना है?" : "What do you need today?"}
+              </h1>
+              <p className="mt-0.5 text-[12px] font-semibold text-[var(--av-text-muted)]">
+                {new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "short",
+                })}
+              </p>
+            </div>
+            <HomeWeatherButton weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
+          </div>
+          <div className="mt-2.5">
+            <HomeSprayPill weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
+          </div>
         </motion.section>
 
         <motion.section {...fade(0.015)}>
@@ -319,14 +327,6 @@ export default function AgriVedaHome() {
               </span>
             </AppLink>
           )}
-        </motion.section>
-
-        <motion.section {...fade(0.02)}>
-          <HomeWeatherWidget
-            weather={weather}
-            loading={weatherLoading}
-            isSample={weatherIsSample}
-          />
         </motion.section>
 
         {/* AI photo CTA */}
@@ -438,32 +438,33 @@ export default function AgriVedaHome() {
           </motion.section>
         ) : null}
 
-        {/* More tools — same photo-card look as quick jobs, smaller */}
+        {/* More tools — compact 3-column photo tiles */}
         <motion.section {...fade(0.07)}>
-          <div className="mb-2 flex items-center justify-between px-0.5">
+          <div className="mb-2 flex items-center gap-2 px-0.5">
+            <span className="h-4 w-1 rounded-full bg-emerald-600" />
             <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
               {isHi ? "और काम" : "More jobs"}
             </h2>
           </div>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-3 gap-2">
             {(showMoreTools ? MORE_JOBS : MORE_JOBS.slice(0, MORE_JOBS_FIRST)).map((job) => (
               <AppLink
                 key={job.id}
                 href={job.href}
                 onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
-                className="group relative min-h-[112px] overflow-hidden rounded-2xl border border-white/15 shadow-[var(--av-shadow-sm)] transition active:scale-[0.98]"
+                className="group relative min-h-[96px] overflow-hidden rounded-2xl border border-white/15 shadow-[var(--av-shadow-sm)] transition active:scale-[0.97]"
               >
                 <Image
                   src={job.imageSrc}
                   alt=""
                   fill
-                  sizes="(max-width: 512px) 50vw, 220px"
-                  quality={50}
+                  sizes="(max-width: 512px) 33vw, 160px"
+                  quality={45}
                   className="object-cover transition duration-300 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/48 to-black/15" />
-                <div className="relative flex h-full min-h-[112px] flex-col justify-end p-3">
-                  <p className="text-[13px] font-bold leading-snug text-white drop-shadow-sm">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                <div className="relative flex h-full min-h-[96px] flex-col justify-end p-2">
+                  <p className="text-[12px] font-bold leading-tight text-white drop-shadow-sm">
                     {isHi ? job.hi : job.en}
                   </p>
                 </div>
