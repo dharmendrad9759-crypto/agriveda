@@ -437,4 +437,58 @@ export const CHEM_BOTTLE_CATALOG: ChemBottleEntry[] = [
       "2,4-डी",
     ],
   },
+  {
+    slug: "cymoxanil-mancozeb-wp",
+    name: "Cymoxanil + Mancozeb",
+    formulation: "8% + 64% WP",
+    category: "fungicide",
+    aliases: [
+      "cymoxanil",
+      "cymoxanil + mancozeb",
+      "cymoxanil 8% + mancozeb 64% wp",
+      "curzate",
+      "curzate m8",
+      "साइमोक्सानिल",
+      "कर्जेट",
+    ],
+  },
+  {
+    slug: "propiconazole-25-ec",
+    name: "Propiconazole",
+    formulation: "25% EC",
+    category: "fungicide",
+    aliases: [
+      "propiconazole",
+      "propiconazole 25 ec",
+      "propiconazole 25% ec",
+      "tilt",
+      "प्रोपिकोनाज़ोल",
+      "प्रोपिकोनाजोल",
+      "टिल्ट",
+    ],
+  },
+  {
+    slug: "isoprothiolane-40-ec",
+    name: "Isoprothiolane",
+    formulation: "40% EC",
+    category: "fungicide",
+    aliases: [
+      "isoprothiolane",
+      "fuji-one",
+      "fujione",
+      "आइसोप्रोथिओलेन",
+    ],
+  },
+  {
+    slug: "edifenphos-50-ec",
+    name: "Edifenphos",
+    formulation: "50% EC",
+    category: "fungicide",
+    aliases: [
+      "edifenphos",
+      "hinosan",
+      "हिनोसन",
+    ],
+  },
 ];
+

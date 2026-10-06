@@ -136,6 +136,11 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "मेरीवोन": "fluxapyroxad-250-sc",
   "प्रोपिकोनाज़ोल": "propiconazole-25-ec",
   "टिल्ट": "propiconazole-25-ec",
+  "साइमोक्सानिल": "cymoxanil-mancozeb-wp",
+  "कर्जेट": "cymoxanil-mancozeb-wp",
+  "आइसोप्रोथिओलेन": "isoprothiolane-40-ec",
+  "फुजिओन": "isoprothiolane-40-ec",
+  "हिनोसन": "edifenphos-50-ec",
 
   // Herbicides
   "एट्राजिन": "atrazine-50-wp",
@@ -357,6 +362,9 @@ export function toEnglishTechnical(raw: string): string {
     [/ट्राइसाइकलाज़ोल/gi, "TRICYCLAZOLE"],
     [/फ्लुक्सापायरोक्साड/gi, "FLUXAPYROXAD"],
     [/प्रोपिकोनाज़ोल/gi, "PROPICONAZOLE"],
+    [/साइमोक्सानिल|कर्जेट/gi, "CYMOXANIL + MANCOZEB"],
+    [/आइसोप्रोथिओलेन/gi, "ISOPROTHIOLANE"],
+    [/हिनोसन/gi, "EDIFENPHOS"],
     [/एट्राजिन|एट्राज़ीन/gi, "ATRAZINE"],
     [/पेंडिमेथालिन|पेंडीमेथलीन/gi, "PENDIMETHALIN"],
     [/ग्लाइफोसेट/gi, "GLYPHOSATE"],
