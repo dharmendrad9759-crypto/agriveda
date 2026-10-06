@@ -672,7 +672,7 @@ const STRINGS = {
     voiceDelete: "हटाएँ",
     querySent: "सवाल भेज दिया!",
     attachPhoto: "फोटो जोड़ें",
-    searchPestPlaceholder: "कीट, रोग, रोगजनक खोजें…",
+    searchPestPlaceholder: "कीट, रोग या बीमारी खोजें…",
     selectCropPrompt: "फसल चुनें",
     pestDiseasesTitle: "कीट और बीमारी",
     reset: "फिर से",

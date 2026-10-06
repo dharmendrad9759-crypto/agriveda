@@ -727,7 +727,7 @@ export const brinjalDossier: ResearchDossierOverlay = {
       ],
       favourableConditions: [
         "अत्यधिक सिंचाई / जलभराव",
-        "ठंडी-गीली या गर्म-गीली मिट्टी (रोगजनक अनुसार)",
+        "ठंडी-गीली या अधिक नमी वाली मिट्टी",
         "पुरानी/असाफ नर्सरी मिट्टी",
       ],
       integratedManagement: [

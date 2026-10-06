@@ -29,6 +29,16 @@ export const SCHEME_FARMER_NAME_HI: Record<string, string> = {
   ahidf: "डेयरी धंधा मदद",
   "pm-fme": "खाना प्रोसेस मदद",
   "rkvy-raftaar": "स्टार्टअप मदद",
+  "bihar-fasal-sahayata": "बिहार फ्री फसल भरपाई",
+  "bihar-diesel-anudan": "बिहार डीजल सिंचाई छूट",
+  "haryana-bhavantar": "हरियाणा भाव सुरक्षा (भावांतर)",
+  "haryana-mera-pani": "हरियाणा पानी बचाओ (धान छोड़ो)",
+  "mh-namo-shetkari": "महाराष्ट्र नमो शेतकरी (₹6,000)",
+  "mh-magel-tyala-shettale": "महाराष्ट्र खेत तालाब (शेततळे)",
+  "up-khet-talab": "यूपी खेत तालाब (50% छूट)",
+  "up-gopalak": "यूपी गाय-भैंस डेयरी लोन",
+  "rj-diggi-anudan": "राजस्थान खेत डिग्गी अनुदान",
+  "punjab-crm-machinery": "पंजाब पराली मशीनरी छूट",
 };
 
 export const SCHEME_FARMER_NAME_EN: Record<string, string> = {
@@ -61,6 +71,16 @@ export const SCHEME_FARMER_NAME_EN: Record<string, string> = {
   ahidf: "Dairy business help",
   "pm-fme": "Food processing help",
   "rkvy-raftaar": "Startup help",
+  "bihar-fasal-sahayata": "Bihar Crop Loss Help",
+  "bihar-diesel-anudan": "Bihar Diesel Subsidy",
+  "haryana-bhavantar": "Haryana Price Protection",
+  "haryana-mera-pani": "Haryana Water Saving Help",
+  "mh-namo-shetkari": "Maharashtra Namo Shetkari",
+  "mh-magel-tyala-shettale": "Maharashtra Farm Pond Help",
+  "up-khet-talab": "UP Farm Pond Subsidy",
+  "up-gopalak": "UP Dairy Loan Subsidy",
+  "rj-diggi-anudan": "Rajasthan Farm Diggi Help",
+  "punjab-crm-machinery": "Punjab Stubble Machine Help",
 };
 
 /** कार्ड पर छोटी आसान लाइन */
@@ -94,6 +114,16 @@ export const SCHEME_FARMER_HOOK_HI: Record<string, string> = {
   ahidf: "डेयरी प्लांट पर मदद",
   "pm-fme": "छोटा प्रोसेसिंग यूनिट",
   "rkvy-raftaar": "एग्री स्टार्टअप ग्रांट",
+  "bihar-fasal-sahayata": "बिना प्रीमियम नुकसान पर ₹10,000 तक",
+  "bihar-diesel-anudan": "डीजल पर ₹75/लीटर सीधी छूट",
+  "haryana-bhavantar": "मंडी भाव कम होने पर अंतर खाते में",
+  "haryana-mera-pani": "धान छोड़कर दूसरी फसल पर ₹7,000/एकड़",
+  "mh-namo-shetkari": "PM-KISAN के साथ ₹6,000 अतिरिक्त",
+  "mh-magel-tyala-shettale": "तालाब खुदवाने पर ₹75,000 तक छूट",
+  "up-khet-talab": "तालाब बनवाने पर ₹1.05 लाख तक छूट",
+  "up-gopalak": "डेयरी पर ₹9 लाख लोन व ₹2 लाख ब्याज छूट",
+  "rj-diggi-anudan": "पानी डिग्गी पर 85% तक (₹3 लाख) छूट",
+  "punjab-crm-machinery": "सुपर व हैप्पी सीडर पर 50% से 80% छूट",
 };
 
 export function farmerSchemeName(id: string, nameHi: string, nameEn: string, hi: boolean) {
