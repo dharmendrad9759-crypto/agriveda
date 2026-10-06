@@ -12,8 +12,9 @@ import {
 } from "@/lib/mandi/mandiIndex";
 import type { MandiRow } from "@/lib/mandi/types";
 import { getDistrictsForState, INDIAN_STATES } from "@/lib/india-locations";
-import { ChevronLeft, ChevronRight, Search, Filter, Download, MapPin, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Filter, Download, MapPin, CalendarDays, ArrowDownUp, Star } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useFavourites } from "@/hooks/useFavourites";
 
 export type MandiTableFilters = {
   state: string;
@@ -82,6 +83,9 @@ export default function MandiPricesTable({
   }));
   const [applied, setApplied] = useState<MandiTableFilters | null>(null);
   const [searchQ, setSearchQ] = useState("");
+  const [sortBy, setSortBy] = useState("date_desc");
+  const [showFavourites, setShowFavourites] = useState(false);
+  const { favourites, toggleFavourite } = useFavourites("agriveda_mandi_favs");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
@@ -118,9 +122,47 @@ export default function MandiPricesTable({
   }, [cascade.grades, draft.district, draft.market, draft.commodity]);
 
   const filtered = useMemo(() => {
-    if (!applied) return [];
-    return filterTableRows(rows, { ...applied, state: loadedState }, searchQ);
-  }, [rows, applied, loadedState, searchQ]);
+    if (!applied && !showFavourites) return [];
+    
+    let baseRows = rows;
+    if (showFavourites) {
+      baseRows = rows.filter(r => favourites.includes(r.id));
+    }
+    
+    // If we only want to show favourites and no other filters are applied:
+    if (!applied && showFavourites) {
+      if (searchQ) {
+         baseRows = filterTableRows(baseRows, { state: loadedState, district: "", market: ALL, commodity: ALL, grade: ALL }, searchQ);
+      }
+    } else if (applied) {
+      baseRows = filterTableRows(baseRows, { ...applied, state: loadedState }, searchQ);
+    }
+    
+    let result = baseRows;
+    
+    if (sortBy === "price_desc") {
+      result = [...result].sort((a, b) => b.modal - a.modal);
+    } else if (sortBy === "price_asc") {
+      result = [...result].sort((a, b) => a.modal - b.modal);
+    } else if (sortBy === "date_desc") {
+      result = [...result].sort((a, b) => {
+        if (!a.arrivalDate && !b.arrivalDate) return 0;
+        if (!a.arrivalDate) return 1;
+        if (!b.arrivalDate) return -1;
+        return new Date(b.arrivalDate).getTime() - new Date(a.arrivalDate).getTime();
+      });
+    }
+    
+    return result;
+  }, [rows, applied, loadedState, searchQ, sortBy, showFavourites, favourites]);
+
+  const summary = useMemo(() => {
+    if (!filtered.length) return null;
+    const markets = new Set(filtered.map(r => r.mandi)).size;
+    const commodities = new Set(filtered.map(r => r.crop)).size;
+    const avgPrice = Math.round(filtered.reduce((acc, r) => acc + r.modal, 0) / filtered.length);
+    return { markets, commodities, avgPrice, total: filtered.length };
+  }, [filtered]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -176,6 +218,28 @@ export default function MandiPricesTable({
 
   return (
     <div className="space-y-4" id="mandi-prices-table">
+      {/* Summary Dashboard */}
+      {summary && (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
+            <p className="text-[10px] font-bold text-[var(--av-text-muted)] uppercase tracking-wider">{isHi ? "कुल मंडियाँ" : "Total Markets"}</p>
+            <p className="mt-1 text-2xl font-black text-[var(--av-text-primary)]">{summary.markets}</p>
+          </div>
+          <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
+            <p className="text-[10px] font-bold text-[var(--av-text-muted)] uppercase tracking-wider">{isHi ? "कुल फसलें" : "Commodities"}</p>
+            <p className="mt-1 text-2xl font-black text-[var(--av-text-primary)]">{summary.commodities}</p>
+          </div>
+          <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
+            <p className="text-[10px] font-bold text-[var(--av-text-muted)] uppercase tracking-wider">{isHi ? "कुल रिकॉर्ड" : "Total Data"}</p>
+            <p className="mt-1 text-2xl font-black text-[var(--av-text-primary)]">{summary.total}</p>
+          </div>
+          <div className="rounded-[1.5rem] border border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/5 p-4 shadow-[var(--av-shadow-sm)]">
+            <p className="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider">{isHi ? "औसत भाव (₹/q)" : "Avg Price (₹/q)"}</p>
+            <p className="mt-1 text-2xl font-black text-emerald-700 dark:text-emerald-300">₹{summary.avgPrice.toLocaleString("en-IN")}</p>
+          </div>
+        </div>
+      )}
+
       {/* Filters Section */}
       <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)] sm:p-5 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
@@ -300,6 +364,22 @@ export default function MandiPricesTable({
           </button>
           <button
             type="button"
+            onClick={() => {
+              setShowFavourites(!showFavourites);
+              setPage(1);
+            }}
+            className={cn(
+              "flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-[1.1rem] border px-6 py-3 text-[13px] font-bold shadow-sm transition-all active:scale-[0.97]",
+              showFavourites 
+                ? "border-amber-400 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400" 
+                : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:bg-[var(--av-surface)]"
+            )}
+          >
+            <Star className={cn("h-4 w-4", showFavourites ? "fill-amber-500 text-amber-500" : "")} />
+            {isHi ? (showFavourites ? "पसंदीदा (ON)" : "पसंदीदा") : (showFavourites ? "Favourites (ON)" : "Favourites")}
+          </button>
+          <button
+            type="button"
             onClick={clearFilters}
             className="flex-1 sm:flex-none rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-6 py-3 text-[13px] font-bold text-[var(--av-text-secondary)] shadow-sm transition-all hover:bg-[var(--av-surface)] active:scale-[0.97]"
           >
@@ -314,8 +394,8 @@ export default function MandiPricesTable({
           {isHi ? `${filtered.length} मंडी भाव रिकॉर्ड` : `${filtered.length} market record(s)`}
         </p>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <div className="relative min-w-[150px] flex-1 sm:max-w-[200px]">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
             <input
               type="search"
               value={searchQ}
@@ -323,9 +403,21 @@ export default function MandiPricesTable({
                 setSearchQ(e.target.value);
                 setPage(1);
               }}
-              placeholder={isHi ? "खोजें (Search)…" : "Search…"}
-              className="w-full rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-10 pr-4 text-[13px] font-medium outline-none transition-all focus:border-emerald-500 focus:bg-[var(--av-surface)] focus:ring-4 focus:ring-emerald-500/10"
+              placeholder={isHi ? "खोजें…" : "Search…"}
+              className="w-full rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-9 pr-3 text-[13px] font-medium outline-none transition-all focus:border-emerald-500 focus:bg-[var(--av-surface)] focus:ring-4 focus:ring-emerald-500/10"
             />
+          </div>
+          <div className="relative flex-1 sm:max-w-[160px]">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full appearance-none rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-9 pr-8 text-[13px] font-bold text-[var(--av-text-secondary)] outline-none transition-all focus:border-emerald-500 focus:bg-[var(--av-surface)] focus:ring-4 focus:ring-emerald-500/10"
+            >
+              <option value="date_desc">{isHi ? "नवीनतम" : "Latest"}</option>
+              <option value="price_desc">{isHi ? "उच्चतम भाव" : "Highest Price"}</option>
+              <option value="price_asc">{isHi ? "न्यूनतम भाव" : "Lowest Price"}</option>
+            </select>
+            <ArrowDownUp className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--av-text-muted)]" />
           </div>
           <button
             type="button"
@@ -357,14 +449,15 @@ export default function MandiPricesTable({
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {pageRows.map((row) => (
-              <AppLink
+            {pageRows.map((row) => {
+              const isFav = favourites.includes(row.id);
+              return (
+              <div
                 key={row.id}
-                href={`/mandi/${encodeURIComponent(row.id)}`}
-                className="group flex flex-col justify-between overflow-hidden rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] transition-all hover:border-emerald-500/30 hover:shadow-md active:scale-[0.98]"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] transition-all hover:border-emerald-500/30 hover:shadow-md"
               >
                 <div className="flex items-start justify-between gap-4 p-4">
-                  <div className="flex flex-1 items-start gap-3 min-w-0">
+                  <AppLink href={`/mandi/${encodeURIComponent(row.id)}`} className="flex flex-1 items-start gap-3 min-w-0 outline-none">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-xl shadow-inner dark:from-emerald-950 dark:to-emerald-900">
                       🌾
                     </div>
@@ -383,9 +476,16 @@ export default function MandiPricesTable({
                         <span className="truncate">{row.mandi}, {row.district}</span>
                       </div>
                     </div>
-                  </div>
+                  </AppLink>
                   
-                  <div className="shrink-0 text-right">
+                  <div className="shrink-0 text-right flex flex-col items-end">
+                    <button 
+                      type="button"
+                      onClick={() => toggleFavourite(row.id)}
+                      className="mb-1 rounded-full p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <Star className={cn("h-4 w-4", isFav ? "fill-amber-400 text-amber-400" : "text-slate-300 dark:text-slate-600")} />
+                    </button>
                     <p className="text-xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
                       {formatInr(row.modal)}
                       <span className="text-[10px] font-bold text-[var(--av-text-muted)] ml-0.5">/q</span>
@@ -423,8 +523,9 @@ export default function MandiPricesTable({
                     </span>
                   </div>
                 </div>
-              </AppLink>
-            ))}
+              </div>
+            );
+            })}
           </div>
         )}
       </div>
