@@ -51,7 +51,7 @@ const config: CapacitorConfig = {
       launchShowDuration: 0,
       launchAutoHide: true,
       launchFadeOutDuration: 0,
-      backgroundColor: "#F8F9FA",
+      backgroundColor: "#020617",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP",
       showSpinner: false,
@@ -60,7 +60,7 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: "DARK",
-      backgroundColor: "#F8F9FA",
+      backgroundColor: "#020617",
     },
     // Native Google account picker (no Chrome). skipNativeAuth → JS SDK session.
     FirebaseAuthentication: {
