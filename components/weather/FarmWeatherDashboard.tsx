@@ -17,6 +17,7 @@ import { buildFarmDashboardData } from "@/lib/weatherDashboardData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import WeatherConditionIcon from "@/components/weather/WeatherConditionIcon";
 
 interface FarmWeatherDashboardProps {
   weather: WeatherViewModel;
@@ -154,34 +155,31 @@ export default function FarmWeatherDashboard({
         </div>
       </header>
 
-      {/* Hero Weather Card - Premium Redesign using HomeWeatherButton's style */}
+      {/* Hero Weather Card - Matching HomeWeatherWidget Premium Style */}
       <section className="px-3">
-        <div className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-sky-600 via-sky-700 to-emerald-800 p-6 text-white shadow-[0_12px_28px_-12px_rgba(8,47,73,0.7)] ring-1 ring-white/15">
-          {/* Decorative background glows */}
-          <span aria-hidden className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-amber-300/20 blur-3xl" />
-          <span aria-hidden className="pointer-events-none absolute -left-8 -bottom-8 h-24 w-24 rounded-full bg-emerald-300/20 blur-2xl" />
+        <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-gradient-to-br from-sky-700 via-sky-800 to-emerald-900 p-6 text-white shadow-[0_18px_40px_-20px_rgba(8,47,73,0.65)]">
+          <div aria-hidden className="pointer-events-none absolute -right-10 -top-12 h-44 w-44 rounded-full bg-amber-300/25 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-16 -left-10 h-44 w-44 rounded-full bg-emerald-400/20 blur-3xl" />
           
-          <div className="relative flex items-center justify-between gap-4">
+          <div className="relative z-10 flex items-center justify-between gap-4">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-sky-200/90 mb-1">
                 {isHi ? "अगले 6 घंटे" : data.next6hLabel}
               </p>
               <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-extrabold tracking-tight drop-shadow-sm">
+                <span className="font-[family-name:var(--font-display)] text-5xl font-extrabold tracking-tight drop-shadow-sm">
                   {data.heroTempHigh}°
                 </span>
                 <span className="text-xl font-medium text-sky-200/80">
                   / {data.heroTempLow}°
                 </span>
               </div>
-              <p className="mt-1 text-sm font-semibold tracking-wide text-white/90 capitalize drop-shadow-sm">
+              <p className="mt-1 text-sm font-semibold tracking-wide text-white/95 capitalize drop-shadow-sm">
                 {weather.condition}
               </p>
             </div>
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 shadow-inner backdrop-blur-sm">
-              <span className="text-5xl drop-shadow-lg" role="img" aria-label="Weather">
-                {data.heroIcon}
-              </span>
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15">
+              <WeatherConditionIcon condition={weather.condition} className="h-11 w-11 text-amber-200" />
             </div>
           </div>
         </div>
@@ -225,7 +223,7 @@ export default function FarmWeatherDashboard({
             <div className="flex items-center gap-2 mb-2 text-indigo-700">
               <SprayCan className="h-4 w-4" />
               <h3 className="text-xs font-bold uppercase tracking-wider">
-                {isHi ? "छिड़काव (Spray) सलाह" : "Spray Advisory"}
+                {isHi ? "छिड़काव सलाह" : "Spray Advisory"}
               </h3>
             </div>
             <p className="max-w-[85%] text-[13px] font-medium leading-relaxed text-indigo-950/80">
@@ -252,7 +250,7 @@ export default function FarmWeatherDashboard({
         />
         <MetricCard
           icon={<Droplets className="h-5 w-5 text-blue-500" />}
-          label={isHi ? "नमी (Humidity)" : "Humidity"}
+          label={isHi ? "नमी" : "Humidity"}
           value={`${data.metrics.humidity}%`}
         />
         <MetricCard
@@ -262,7 +260,7 @@ export default function FarmWeatherDashboard({
         />
         <MetricCard
           icon={<Wind className="h-5 w-5 text-teal-500" />}
-          label={isHi ? "हवा (Wind)" : "Wind"}
+          label={isHi ? "हवा" : "Wind"}
           value={`${data.metrics.windKmh} ${isHi ? 'किमी/घं' : 'km/h'}`}
           sub={data.metrics.windDirection}
         />
