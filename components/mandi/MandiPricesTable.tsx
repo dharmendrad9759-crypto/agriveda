@@ -12,7 +12,7 @@ import {
 } from "@/lib/mandi/mandiIndex";
 import type { MandiRow } from "@/lib/mandi/types";
 import { getDistrictsForState, INDIAN_STATES } from "@/lib/india-locations";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Filter, Download, MapPin, CalendarDays } from "lucide-react";
 import { useMemo, useState } from "react";
 
 export type MandiTableFilters = {

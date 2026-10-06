@@ -1021,8 +1021,6 @@ export default function CropPlannerClient() {
               </div>
             )}
           </div>
-
-          </div>
         </div>
       )}
     </div>

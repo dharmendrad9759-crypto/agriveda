@@ -344,8 +344,8 @@ export default function AIDoctorPage() {
           historyCount={history.length}
         />
 
-
-
+        <div className="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
+          <div className="lg:col-span-8 lg:space-y-5">
             {/* 1 — Photo first */}
             <AiDoctorPhotoUpload
               previewUrl={previewUrl}
