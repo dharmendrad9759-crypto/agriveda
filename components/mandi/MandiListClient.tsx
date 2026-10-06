@@ -22,7 +22,9 @@ export default function MandiListClient() {
   const profileDistrict = profile.district.trim() || "";
 
   const [fetchState, setFetchState] = useState(profileState);
-  const { data, loading, refresh, enrichDistrict } = useMandiPrices({ state: fetchState });
+  const { data, loading, refresh, enrichDistrict } = useMandiPrices({
+    state: fetchState,
+  });
   const { activeCount } = usePriceAlerts();
   const [tab, setTab] = useState<Tab>("prices");
 
@@ -52,7 +54,9 @@ export default function MandiListClient() {
             className="rounded-2xl border-2 border-amber-400 bg-amber-50 px-3.5 py-3 text-amber-950"
           >
             <p className="text-sm font-black">
-              {isHi ? "⚠️ ये असली भाव नहीं हैं" : "⚠️ These are not real prices"}
+              {isHi
+                ? "⚠️ ये असली भाव नहीं हैं"
+                : "⚠️ These are not real prices"}
             </p>
             <p className="mt-1 text-xs font-semibold leading-snug">
               {isHi
@@ -67,11 +71,19 @@ export default function MandiListClient() {
           </p>
         )}
 
-        <div className="relative flex gap-2 rounded-2xl bg-white p-1.5 shadow-sm border border-slate-100/60 ring-1 ring-slate-900/5">
+        <div className="relative flex gap-2 rounded-[1.5rem] bg-[var(--av-surface)] p-2 shadow-[var(--av-shadow-sm)] border border-[var(--av-border)]">
           {(
             [
-              { id: "prices" as const, label: isHi ? "भाव तालिका (Prices)" : "Price table" },
-              { id: "alerts" as const, label: isHi ? `अलर्ट (Alerts) · ${activeCount}` : `Alerts · ${activeCount}` },
+              {
+                id: "prices" as const,
+                label: isHi ? "भाव तालिका (Prices)" : "Price table",
+              },
+              {
+                id: "alerts" as const,
+                label: isHi
+                  ? `अलर्ट (Alerts) · ${activeCount}`
+                  : `Alerts · ${activeCount}`,
+              },
             ] as const
           ).map((item) => {
             const isActive = tab === item.id;
@@ -84,7 +96,7 @@ export default function MandiListClient() {
                   "relative flex-1 rounded-xl py-3 text-[13px] font-bold transition-all duration-300",
                   isActive
                     ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-900/20"
-                    : "bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    : "bg-transparent text-[var(--av-text-secondary)] hover:bg-[var(--av-surface-inset)] hover:text-[var(--av-text-primary)]",
                 )}
               >
                 <span className="relative z-10">{item.label}</span>
@@ -109,7 +121,7 @@ export default function MandiListClient() {
             />
             <AppLink
               href="/market-trends"
-              className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-3 text-xs font-bold text-[#2563eb]"
+              className="flex items-center justify-center rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] py-4 text-[13px] font-bold text-emerald-600 shadow-[var(--av-shadow-sm)] transition-all hover:bg-[var(--av-surface-inset)] active:scale-[0.98]"
             >
               {isHi ? "बाजार रुझान देखें →" : "Market trends →"}
             </AppLink>
@@ -117,12 +129,12 @@ export default function MandiListClient() {
         )}
 
         {tab === "alerts" && (
-          <div id="price-alerts" className="space-y-2">
-            <div className="flex items-center gap-1.5 px-0.5 text-xs font-bold text-slate-800">
-              <Bell className="h-3.5 w-3.5 text-[#2563eb]" />
+          <div id="price-alerts" className="space-y-3">
+            <div className="flex items-center gap-1.5 px-1 text-sm font-bold text-[var(--av-text-primary)]">
+              <Bell className="h-4 w-4 text-emerald-500" />
               {isHi ? "भाव अलर्ट" : "Price alerts"}
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
               <PriceAlertsPanel rows={rows} />
             </div>
           </div>

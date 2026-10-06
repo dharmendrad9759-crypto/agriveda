@@ -172,18 +172,18 @@ export default function MandiPricesTable({
   };
 
   const fieldClass =
-    "w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-[13px] font-bold text-slate-700 outline-none transition-all focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10";
+    "w-full rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3.5 py-3 text-[13px] font-bold text-[var(--av-text-primary)] outline-none transition-all focus:border-emerald-500 focus:bg-[var(--av-surface)] focus:ring-4 focus:ring-emerald-500/10 shadow-[var(--av-shadow-sm)] appearance-none";
 
   return (
     <div className="space-y-4" id="mandi-prices-table">
-      <div className="rounded-[1.5rem] border border-slate-100 bg-white p-4 shadow-sm ring-1 ring-slate-900/5 sm:p-5 relative overflow-hidden">
+      {/* Filters Section */}
+      <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)] sm:p-5 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-          <Search className="h-40 w-40" />
+          <Filter className="h-40 w-40" />
         </div>
-        <div className="relative">
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="relative z-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <label className="block">
-            <span className="mb-1 block text-[11px] font-bold text-[var(--av-text-muted)]">
+            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
               {isHi ? "राज्य" : "State"}
             </span>
             <select
@@ -200,7 +200,7 @@ export default function MandiPricesTable({
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-bold text-[var(--av-text-muted)]">
+            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
               {isHi ? "जिला" : "District"}
             </span>
             <select
@@ -219,7 +219,7 @@ export default function MandiPricesTable({
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-bold text-[var(--av-text-muted)]">
+            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
               {isHi ? "मंडी" : "Market"}
             </span>
             <select
@@ -245,7 +245,7 @@ export default function MandiPricesTable({
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-bold text-[var(--av-text-muted)]">
+            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
               {isHi ? "फसल" : "Commodity"}
             </span>
             <select
@@ -270,7 +270,7 @@ export default function MandiPricesTable({
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-bold text-[var(--av-text-muted)]">
+            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
               {isHi ? "ग्रेड" : "Grade"}
             </span>
             <select
@@ -289,196 +289,177 @@ export default function MandiPricesTable({
           </label>
         </div>
 
-        </div>
-
-        <div className="mt-5 flex flex-wrap gap-2 relative">
+        <div className="mt-5 flex flex-wrap gap-2 relative z-10">
           <button
             type="button"
             onClick={applyFilters}
             disabled={loading}
-            className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-[13px] font-bold text-white shadow-md shadow-emerald-900/20 transition-all active:scale-[0.97] disabled:opacity-60"
+            className="flex-1 sm:flex-none rounded-[1.1rem] bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-3 text-[13px] font-bold text-white shadow-md shadow-emerald-900/20 transition-all active:scale-[0.97] disabled:opacity-60"
           >
             {isHi ? "लागू करें (Apply)" : "Apply Filters"}
           </button>
           <button
             type="button"
             onClick={clearFilters}
-            className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-[13px] font-bold text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-[0.97]"
+            className="flex-1 sm:flex-none rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-6 py-3 text-[13px] font-bold text-[var(--av-text-secondary)] shadow-sm transition-all hover:bg-[var(--av-surface)] active:scale-[0.97]"
           >
             {isHi ? "साफ करें (Clear)" : "Clear"}
           </button>
         </div>
       </div>
 
-      </div>
-
-      <div className="rounded-[1.5rem] border border-slate-100 bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-slate-100 bg-slate-50/50 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[14px] font-bold text-slate-800">
-            {isHi ? `${filtered.length} मंडी भाव रिकॉर्ड` : `${filtered.length} market record(s)`}
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="search"
-                value={searchQ}
-                onChange={(e) => {
-                  setSearchQ(e.target.value);
-                  setPage(1);
-                }}
-                placeholder={isHi ? "टेबल में खोजें…" : "Search table…"}
-                className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-3 text-[13px] font-medium outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 shadow-sm"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => exportMandiCsv(filtered)}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-bold text-slate-600 shadow-sm transition hover:bg-slate-50 active:scale-95"
-            >
-              CSV
-            </button>
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-bold text-slate-600 shadow-sm transition hover:bg-slate-50 active:scale-95"
-            >
-              {isHi ? "प्रिंट (Print)" : "Print"}
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-white px-4 py-3 text-[12px] font-medium text-slate-500">
-          <label className="flex items-center gap-2">
-            {isHi ? "दिखाएँ" : "Show"}
-            <select
-              value={pageSize}
+      {/* Header & Search */}
+      <div className="flex flex-col gap-3 rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)] sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-[14px] font-bold text-[var(--av-text-primary)]">
+          {isHi ? `${filtered.length} मंडी भाव रिकॉर्ड` : `${filtered.length} market record(s)`}
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="search"
+              value={searchQ}
               onChange={(e) => {
-                setPageSize(Number(e.target.value));
+                setSearchQ(e.target.value);
                 setPage(1);
               }}
-              className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 font-bold text-slate-700 outline-none focus:border-emerald-500"
-            >
-              {[10, 25, 50, 100].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-            {isHi ? "रिकॉर्ड" : "entries"}
-          </label>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              disabled={safePage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-40 active:scale-95"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <span className="px-3 font-bold text-slate-700">
-              {safePage} <span className="text-slate-400 font-medium">/ {totalPages}</span>
-            </span>
-            <button
-              type="button"
-              disabled={safePage >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-40 active:scale-95"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
+              placeholder={isHi ? "खोजें (Search)…" : "Search…"}
+              className="w-full rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-10 pr-4 text-[13px] font-medium outline-none transition-all focus:border-emerald-500 focus:bg-[var(--av-surface)] focus:ring-4 focus:ring-emerald-500/10"
+            />
           </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="min-w-[720px] w-full text-left text-[13px] border-collapse">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/80 text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
-                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "फसल" : "Commodity"}</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "मंडी / स्थान" : "Mandi / Location"}</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "मॉडल भाव (Modal)" : "Modal Price"}</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "भाव सीमा (Range)" : "Price Range"}</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "ग्रेड" : "Grade"}</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "तारीख" : "Date"}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100/60 bg-white">
-              {loading && pageRows.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-emerald-600"></div>
-                    <p className="mt-2 text-sm font-semibold text-slate-500">{isHi ? "मंडी के भाव ला रहे हैं…" : "Loading prices…"}</p>
-                  </td>
-                </tr>
-              ) : pageRows.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-sm font-semibold text-slate-500">
-                    {isHi
-                      ? "कोई रिकॉर्ड नहीं मिला। फ़िल्टर बदल कर देखें।"
-                      : "No records found. Try changing filters."}
-                  </td>
-                </tr>
-              ) : (
-                pageRows.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="group transition-colors hover:bg-slate-50/80"
-                  >
-                    <td className="px-4 py-3.5">
-                      <AppLink
-                        href={`/mandi/${encodeURIComponent(row.id)}`}
-                        className="text-[14px] font-extrabold text-slate-800 transition-colors group-hover:text-emerald-700 block"
-                      >
-                        {isHi && row.cropHi ? row.cropHi : row.crop}
-                      </AppLink>
-                      {isHi && row.cropHi ? (
-                        <p className="text-[11px] font-semibold text-slate-400 mt-0.5">{row.crop}</p>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <p className="text-[14px] font-bold text-slate-700">{row.mandi}</p>
-                      <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
-                        {[row.district, row.state].filter(Boolean).join(", ")}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <div className="inline-flex items-baseline gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-emerald-700 ring-1 ring-emerald-600/10">
-                        <span className="text-[16px] font-black tracking-tight">
-                          {formatInr(row.modal)}
-                        </span>
-                        <span className="text-[10px] font-bold opacity-75">/q</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5 text-[13px] font-bold text-slate-500 whitespace-nowrap">
-                      {formatInr(row.min)} <span className="text-slate-300 px-0.5">–</span> {formatInr(row.max)}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <span className="rounded-md bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">
-                        {gradeLabel(row)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5 whitespace-nowrap">
-                      <p className="text-[12px] font-bold text-slate-600">
-                        {formatDate(row.arrivalDate, lastUpdated?.split(",")[0])}
-                      </p>
-                      <span
-                        className={cn(
-                          "inline-block mt-1 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wider uppercase",
-                          source === "live"
-                            ? "bg-sky-50 text-sky-600 ring-1 ring-sky-600/10"
-                            : "bg-amber-50 text-amber-600 ring-1 ring-amber-600/10"
-                        )}
-                      >
-                        {source === "live" ? "Govt. Data" : isHi ? "नमूना" : "Sample"}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          <button
+            type="button"
+            onClick={() => exportMandiCsv(filtered)}
+            className="flex h-[42px] items-center gap-1.5 rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 text-[12px] font-bold text-[var(--av-text-secondary)] shadow-[var(--av-shadow-sm)] transition active:scale-95"
+          >
+            <Download className="h-3.5 w-3.5" /> CSV
+          </button>
         </div>
       </div>
+
+      {/* Modern Card List instead of Table */}
+      <div className="space-y-3">
+        {loading && pageRows.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-12 shadow-[var(--av-shadow-sm)]">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500/20 border-t-emerald-500"></div>
+            <p className="mt-3 text-sm font-bold text-[var(--av-text-secondary)]">
+              {isHi ? "मंडी के भाव ला रहे हैं…" : "Loading prices…"}
+            </p>
+          </div>
+        ) : pageRows.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-12 text-center shadow-[var(--av-shadow-sm)]">
+            <Search className="mb-2 h-8 w-8 text-slate-300" />
+            <p className="text-sm font-bold text-[var(--av-text-secondary)]">
+              {isHi
+                ? "कोई रिकॉर्ड नहीं मिला। फ़िल्टर बदल कर देखें।"
+                : "No records found. Try changing filters."}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {pageRows.map((row) => (
+              <AppLink
+                key={row.id}
+                href={`/mandi/${encodeURIComponent(row.id)}`}
+                className="group flex flex-col justify-between overflow-hidden rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] transition-all hover:border-emerald-500/30 hover:shadow-md active:scale-[0.98]"
+              >
+                <div className="flex items-start justify-between gap-4 p-4">
+                  <div className="flex flex-1 items-start gap-3 min-w-0">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-xl shadow-inner dark:from-emerald-950 dark:to-emerald-900">
+                      🌾
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="truncate text-base font-extrabold tracking-tight text-[var(--av-text-primary)] group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                        {isHi && row.cropHi ? row.cropHi : row.crop}
+                      </h3>
+                      {isHi && row.cropHi ? (
+                        <p className="truncate text-[11px] font-bold text-[var(--av-text-muted)]">
+                          {row.crop}
+                        </p>
+                      ) : null}
+                      
+                      <div className="mt-1.5 flex items-center gap-1 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+                        <MapPin className="h-3 w-3 text-emerald-500 shrink-0" />
+                        <span className="truncate">{row.mandi}, {row.district}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="shrink-0 text-right">
+                    <p className="text-xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
+                      {formatInr(row.modal)}
+                      <span className="text-[10px] font-bold text-[var(--av-text-muted)] ml-0.5">/q</span>
+                    </p>
+                    <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-[var(--av-surface-inset)] px-2 py-0.5 border border-[var(--av-border)]">
+                      <CalendarDays className="h-3 w-3 text-[var(--av-text-muted)]" />
+                      <span className="text-[10px] font-bold text-[var(--av-text-secondary)]">
+                        {formatDate(row.arrivalDate, lastUpdated?.split(",")[0])}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-2.5">
+                  <div className="flex items-center gap-2 text-[11px] font-bold">
+                    <span className="text-[var(--av-text-muted)] uppercase tracking-wider">Min</span>
+                    <span className="text-[var(--av-text-primary)]">{formatInr(row.min)}</span>
+                    <span className="mx-1 text-[var(--av-border)]">|</span>
+                    <span className="text-[var(--av-text-muted)] uppercase tracking-wider">Max</span>
+                    <span className="text-[var(--av-text-primary)]">{formatInr(row.max)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        "rounded px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest",
+                        source === "live"
+                          ? "bg-sky-500/10 text-sky-700 dark:text-sky-300 ring-1 ring-sky-500/20"
+                          : "bg-amber-500/10 text-amber-700 dark:text-amber-300 ring-1 ring-amber-500/20"
+                      )}
+                    >
+                      {source === "live" ? "Live" : "Sample"}
+                    </span>
+                    <span className="rounded bg-[var(--av-surface)] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-[var(--av-text-secondary)] ring-1 ring-[var(--av-border)]">
+                      {gradeLabel(row)}
+                    </span>
+                  </div>
+                </div>
+              </AppLink>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-2 shadow-[var(--av-shadow-sm)]">
+          <button
+            type="button"
+            disabled={safePage <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--av-surface-inset)] text-[var(--av-text-primary)] transition hover:bg-emerald-500/10 hover:text-emerald-600 disabled:opacity-30 disabled:hover:bg-[var(--av-surface-inset)] disabled:hover:text-[var(--av-text-primary)]"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          
+          <div className="flex items-center gap-1.5">
+            <span className="text-[13px] font-bold text-[var(--av-text-primary)]">
+              {safePage}
+            </span>
+            <span className="text-[13px] font-semibold text-[var(--av-text-muted)]">
+              / {totalPages}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            disabled={safePage >= totalPages}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--av-surface-inset)] text-[var(--av-text-primary)] transition hover:bg-emerald-500/10 hover:text-emerald-600 disabled:opacity-30 disabled:hover:bg-[var(--av-surface-inset)] disabled:hover:text-[var(--av-text-primary)]"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
