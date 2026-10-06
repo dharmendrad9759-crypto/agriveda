@@ -31,9 +31,9 @@ async function fetchRawPage(
     limit: String(limit),
     offset: String(offset),
   });
-  if (filters.state?.trim()) params.set("filters[state]", filters.state.trim());
-  if (filters.district?.trim()) params.set("filters[district]", filters.district.trim());
-  if (filters.commodity?.trim()) params.set("filters[commodity]", filters.commodity.trim());
+  if (filters.state?.trim()) params.set("filters[state.keyword]", filters.state.trim());
+  if (filters.district?.trim()) params.set("filters[district.keyword]", filters.district.trim());
+  if (filters.commodity?.trim()) params.set("filters[commodity.keyword]", filters.commodity.trim());
 
   const url = `https://api.data.gov.in/resource/${DATA_GOV_RESOURCE_ID}?${params}`;
   const res = await fetch(url, { cache: "no-store" });
@@ -47,26 +47,39 @@ async function fetchRawPage(
   };
 }
 
-/** Parallel page fetch — one round-trip for all pages */
+/** Sequential page fetch to prevent API rate limiting / 502s */
 async function fetchPaginated(filters: PageFilters): Promise<MandiRow[]> {
-  const first = await fetchRawPage(filters, PAGE_SIZE, 0);
-  if (!first.rows.length) return [];
+  let offset = 0;
+  const limit = PAGE_SIZE; // 1000
+  const allRecords: MandiRow[] = [];
 
-  const total = Math.min(first.total, MAX_PER_QUERY);
-  const all = [...first.rows];
-  if (total <= PAGE_SIZE) return all;
+  while (true) {
+    if (offset >= MAX_PER_QUERY) break;
 
-  const offsets: number[] = [];
-  for (let offset = PAGE_SIZE; offset < total; offset += PAGE_SIZE) {
-    offsets.push(offset);
+    try {
+      const page = await fetchRawPage(filters, limit, offset);
+      if (!page.rows || page.rows.length === 0) {
+        break; // No more records
+      }
+
+      allRecords.push(...page.rows);
+
+      // If we received fewer records than the limit, we have reached the end.
+      if (page.rows.length < limit) {
+        break;
+      }
+
+      offset += limit;
+      
+      // Optional: Add a small delay between requests to respect rate limits
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    } catch (err) {
+      console.error("[AGMARKNET] Pagination error at offset", offset, err);
+      break; // Stop safely on error instead of infinite loop
+    }
   }
 
-  const pages = await Promise.all(
-    offsets.map((offset) => fetchRawPage(filters, PAGE_SIZE, offset))
-  );
-  for (const page of pages) all.push(...page.rows);
-
-  return all.slice(0, MAX_PER_QUERY);
+  return allRecords;
 }
 
 export function mandiRowKey(row: MandiRow): string {
