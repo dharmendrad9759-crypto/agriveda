@@ -344,60 +344,7 @@ export default function AIDoctorPage() {
           historyCount={history.length}
         />
 
-        <div
-          role="note"
-          className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-[12px] leading-snug text-amber-950 dark:text-amber-100"
-        >
-          <p className="font-bold">दवा लगाते समय</p>
-          <p className="mt-1 text-[11px] font-medium opacity-90">
-            दवा का लेबल पढ़ें।
-          </p>
-        </div>
 
-        <div className="grid gap-3.5 sm:gap-5 lg:grid-cols-3">
-          <div id="ai-doctor-scan" className="min-w-0 space-y-3.5 sm:space-y-5 lg:col-span-2">
-            {/* Step progress: Photo → Crop → Symptoms */}
-            <div className="flex items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5 text-[11px] font-bold">
-              {[
-                { n: 1, label: "फोटो", done: hasPhoto || symptomsOnlyMode },
-                { n: 2, label: "फसल", done: hasCrop },
-                { n: 3, label: "लक्षण", done: showSymptomStep && (hasSymptoms || hasPhoto) },
-              ].map((s, i) => (
-                <div key={s.n} className="flex min-w-0 flex-1 items-center gap-1.5">
-                  {i > 0 && (
-                    <span
-                      className={`h-0.5 w-3 shrink-0 rounded-full sm:w-5 ${
-                        s.done || (i === 1 && showCropStep) || (i === 2 && showSymptomStep)
-                          ? "bg-emerald-400"
-                          : "bg-[var(--av-border)]"
-                      }`}
-                    />
-                  )}
-                  <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] ${
-                      s.done
-                        ? "bg-emerald-600 text-white"
-                        : (i === 0 && !showCropStep) ||
-                            (i === 1 && showCropStep && !hasCrop) ||
-                            (i === 2 && showSymptomStep)
-                          ? "bg-emerald-100 text-emerald-800 ring-2 ring-emerald-500/40 dark:bg-emerald-950 dark:text-emerald-200"
-                          : "bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
-                    }`}
-                  >
-                    {s.n}
-                  </span>
-                  <span
-                    className={`truncate ${
-                      s.done || (i === 0 && !showCropStep) || (i === 1 && showCropStep && !hasCrop) || (i === 2 && showSymptomStep)
-                        ? "text-[var(--av-text-primary)]"
-                        : "text-[var(--av-text-muted)]"
-                    }`}
-                  >
-                    {s.label}
-                  </span>
-                </div>
-              ))}
-            </div>
 
             {/* 1 — Photo first */}
             <AiDoctorPhotoUpload
@@ -457,7 +404,6 @@ export default function AIDoctorPage() {
               </div>
             )}
 
-            {/* 3 — Symptoms after crop */}
             {showSymptomStep && (
               <div className="animate-fade-in space-y-3.5 sm:space-y-5">
                 <AiDoctorSymptoms
@@ -484,12 +430,6 @@ export default function AIDoctorPage() {
                   onReset={handleReset}
                 />
               </div>
-            )}
-
-            {showCropStep && !hasCrop && (
-              <p className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-center text-xs font-semibold text-amber-800 dark:text-amber-200">
-                अगला कदम: ऊपर से फसल चुनें
-              </p>
             )}
 
             <DarkCard className="!p-3.5 sm:!p-5">

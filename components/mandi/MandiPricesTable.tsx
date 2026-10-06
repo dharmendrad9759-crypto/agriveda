@@ -172,11 +172,15 @@ export default function MandiPricesTable({
   };
 
   const fieldClass =
-    "w-full rounded-lg border border-[var(--av-border)] bg-white px-3 py-2 text-[13px] font-medium text-[var(--av-text-primary)] outline-none focus:border-emerald-500 dark:bg-[var(--av-surface)]";
+    "w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-[13px] font-bold text-slate-700 outline-none transition-all focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10";
 
   return (
     <div className="space-y-4" id="mandi-prices-table">
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-[var(--av-shadow-sm)] sm:p-4">
+      <div className="rounded-[1.5rem] border border-slate-100 bg-white p-4 shadow-sm ring-1 ring-slate-900/5 sm:p-5 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+          <Search className="h-40 w-40" />
+        </div>
+        <div className="relative">
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           <label className="block">
             <span className="mb-1 block text-[11px] font-bold text-[var(--av-text-muted)]">
@@ -285,33 +289,37 @@ export default function MandiPricesTable({
           </label>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2 relative">
           <button
             type="button"
             onClick={applyFilters}
             disabled={loading}
-            className="rounded-lg bg-emerald-700 px-4 py-2 text-[13px] font-bold text-white active:scale-[0.98] disabled:opacity-60"
+            className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-[13px] font-bold text-white shadow-md shadow-emerald-900/20 transition-all active:scale-[0.97] disabled:opacity-60"
           >
-            {isHi ? "लागू करें" : "Apply"}
+            {isHi ? "लागू करें (Apply)" : "Apply Filters"}
           </button>
           <button
             type="button"
             onClick={clearFilters}
-            className="rounded-lg border border-emerald-700 px-4 py-2 text-[13px] font-bold text-emerald-800 active:scale-[0.98] dark:text-emerald-300"
+            className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-[13px] font-bold text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-[0.97]"
           >
-            {isHi ? "साफ करें" : "Clear"}
+            {isHi ? "साफ करें (Clear)" : "Clear"}
           </button>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]">
-        <div className="flex flex-col gap-3 border-b border-[var(--av-border)] p-3.5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[13px] font-semibold text-[var(--av-text-primary)]">
-            {isHi ? `${filtered.length} भाव रिकॉर्ड` : `${filtered.length} record(s)`}
+      </div>
+
+      <div className="rounded-[1.5rem] border border-slate-100 bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+        <div className="flex flex-col gap-3 border-b border-slate-100 bg-slate-50/50 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[14px] font-bold text-slate-800">
+            {isHi ? `${filtered.length} मंडी भाव रिकॉर्ड` : `${filtered.length} market record(s)`}
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="search"
                 value={searchQ}
@@ -320,27 +328,27 @@ export default function MandiPricesTable({
                   setPage(1);
                 }}
                 placeholder={isHi ? "टेबल में खोजें…" : "Search table…"}
-                className="w-full rounded-lg border border-[var(--av-border)] py-2 pl-10 pr-3 text-[13px] outline-none focus:border-emerald-500"
+                className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-3 text-[13px] font-medium outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 shadow-sm"
               />
             </div>
             <button
               type="button"
               onClick={() => exportMandiCsv(filtered)}
-              className="rounded-lg border border-[var(--av-border)] px-3 py-2 text-[12px] font-bold text-[var(--av-text-secondary)]"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-bold text-slate-600 shadow-sm transition hover:bg-slate-50 active:scale-95"
             >
               CSV
             </button>
             <button
               type="button"
               onClick={() => window.print()}
-              className="rounded-lg border border-[var(--av-border)] px-3 py-2 text-[12px] font-bold text-[var(--av-text-secondary)]"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-bold text-slate-600 shadow-sm transition hover:bg-slate-50 active:scale-95"
             >
-              {isHi ? "प्रिंट" : "Print"}
+              {isHi ? "प्रिंट (Print)" : "Print"}
             </button>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--av-border)] px-3.5 py-2 text-[12px] text-[var(--av-text-muted)]">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-white px-4 py-3 text-[12px] font-medium text-slate-500">
           <label className="flex items-center gap-2">
             {isHi ? "दिखाएँ" : "Show"}
             <select
@@ -349,7 +357,7 @@ export default function MandiPricesTable({
                 setPageSize(Number(e.target.value));
                 setPage(1);
               }}
-              className="rounded border border-[var(--av-border)] px-2 py-1"
+              className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 font-bold text-slate-700 outline-none focus:border-emerald-500"
             >
               {[10, 25, 50, 100].map((n) => (
                 <option key={n} value={n}>
@@ -364,18 +372,18 @@ export default function MandiPricesTable({
               type="button"
               disabled={safePage <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-[var(--av-border)] px-2 py-1 disabled:opacity-40"
+              className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-40 active:scale-95"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <span className="px-2 font-semibold text-[var(--av-text-primary)]">
-              {safePage} / {totalPages}
+            <span className="px-3 font-bold text-slate-700">
+              {safePage} <span className="text-slate-400 font-medium">/ {totalPages}</span>
             </span>
             <button
               type="button"
               disabled={safePage >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded border border-[var(--av-border)] px-2 py-1 disabled:opacity-40"
+              className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-40 active:scale-95"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -383,79 +391,86 @@ export default function MandiPricesTable({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-[720px] w-full text-left text-[13px]">
+          <table className="min-w-[720px] w-full text-left text-[13px] border-collapse">
             <thead>
-              <tr className="border-b border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[11px] font-bold uppercase tracking-wide text-[var(--av-text-muted)]">
-                <th className="px-3 py-2.5">{isHi ? "फसल" : "Commodity"}</th>
-                <th className="px-3 py-2.5">{isHi ? "मंडी / स्थान" : "Mandi / Location"}</th>
-                <th className="px-3 py-2.5">{isHi ? "मॉडल भाव" : "Modal Price"}</th>
-                <th className="px-3 py-2.5">{isHi ? "भाव सीमा" : "Price Range"}</th>
-                <th className="px-3 py-2.5">{isHi ? "ग्रेड" : "Grade"}</th>
-                <th className="px-3 py-2.5">{isHi ? "स्रोत" : "Source"}</th>
-                <th className="px-3 py-2.5">{isHi ? "तारीख" : "Date"}</th>
+              <tr className="border-b border-slate-100 bg-slate-50/80 text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
+                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "फसल" : "Commodity"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "मंडी / स्थान" : "Mandi / Location"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "मॉडल भाव (Modal)" : "Modal Price"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "भाव सीमा (Range)" : "Price Range"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "ग्रेड" : "Grade"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isHi ? "तारीख" : "Date"}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100/60 bg-white">
               {loading && pageRows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-3 py-10 text-center text-[var(--av-text-muted)]">
-                    {isHi ? "लोड हो रहा है…" : "Loading…"}
+                  <td colSpan={6} className="px-4 py-12 text-center">
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-emerald-600"></div>
+                    <p className="mt-2 text-sm font-semibold text-slate-500">{isHi ? "मंडी के भाव ला रहे हैं…" : "Loading prices…"}</p>
                   </td>
                 </tr>
               ) : pageRows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-3 py-10 text-center text-[var(--av-text-muted)]">
+                  <td colSpan={6} className="px-4 py-12 text-center text-sm font-semibold text-slate-500">
                     {isHi
-                      ? "फ़िल्टर चुनें और «लागू करें» दबाएँ"
-                      : "Choose filters and click Apply"}
+                      ? "कोई रिकॉर्ड नहीं मिला। फ़िल्टर बदल कर देखें।"
+                      : "No records found. Try changing filters."}
                   </td>
                 </tr>
               ) : (
                 pageRows.map((row) => (
                   <tr
                     key={row.id}
-                    className="border-b border-[var(--av-border-subtle)] transition hover:bg-[var(--av-surface-inset)]/50"
+                    className="group transition-colors hover:bg-slate-50/80"
                   >
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-3.5">
                       <AppLink
                         href={`/mandi/${encodeURIComponent(row.id)}`}
-                        className="font-bold text-[var(--av-text-primary)] hover:text-emerald-700"
+                        className="text-[14px] font-extrabold text-slate-800 transition-colors group-hover:text-emerald-700 block"
                       >
                         {isHi && row.cropHi ? row.cropHi : row.crop}
                       </AppLink>
                       {isHi && row.cropHi ? (
-                        <p className="text-[11px] text-[var(--av-text-muted)]">{row.crop}</p>
+                        <p className="text-[11px] font-semibold text-slate-400 mt-0.5">{row.crop}</p>
                       ) : null}
                     </td>
-                    <td className="px-3 py-3">
-                      <p className="font-bold text-[var(--av-text-primary)]">{row.mandi}</p>
-                      <p className="text-[11px] text-[var(--av-text-muted)]">
+                    <td className="px-4 py-3.5">
+                      <p className="text-[14px] font-bold text-slate-700">{row.mandi}</p>
+                      <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
                         {[row.district, row.state].filter(Boolean).join(", ")}
                       </p>
                     </td>
-                    <td className="px-3 py-3">
-                      <span className="text-[15px] font-black text-emerald-600">
-                        {formatInr(row.modal)}
+                    <td className="px-4 py-3.5">
+                      <div className="inline-flex items-baseline gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-emerald-700 ring-1 ring-emerald-600/10">
+                        <span className="text-[16px] font-black tracking-tight">
+                          {formatInr(row.modal)}
+                        </span>
+                        <span className="text-[10px] font-bold opacity-75">/q</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5 text-[13px] font-bold text-slate-500 whitespace-nowrap">
+                      {formatInr(row.min)} <span className="text-slate-300 px-0.5">–</span> {formatInr(row.max)}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="rounded-md bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">
+                        {gradeLabel(row)}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-[var(--av-text-secondary)]">
-                      {formatInr(row.min)} – {formatInr(row.max)}
-                    </td>
-                    <td className="px-3 py-3 text-[var(--av-text-secondary)]">{gradeLabel(row)}</td>
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-3.5 whitespace-nowrap">
+                      <p className="text-[12px] font-bold text-slate-600">
+                        {formatDate(row.arrivalDate, lastUpdated?.split(",")[0])}
+                      </p>
                       <span
                         className={cn(
-                          "rounded-md px-2 py-0.5 text-[10px] font-bold",
+                          "inline-block mt-1 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wider uppercase",
                           source === "live"
-                            ? "bg-sky-100 text-sky-800 dark:bg-sky-950/50 dark:text-sky-200"
-                            : "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200"
+                            ? "bg-sky-50 text-sky-600 ring-1 ring-sky-600/10"
+                            : "bg-amber-50 text-amber-600 ring-1 ring-amber-600/10"
                         )}
                       >
-                        {source === "live" ? "data.gov.in" : isHi ? "नमूना" : "sample"}
+                        {source === "live" ? "Govt. Data" : isHi ? "नमूना" : "Sample"}
                       </span>
-                    </td>
-                    <td className="px-3 py-3 text-[var(--av-text-muted)]">
-                      {formatDate(row.arrivalDate, lastUpdated?.split(",")[0])}
                     </td>
                   </tr>
                 ))

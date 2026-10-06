@@ -10,11 +10,13 @@ import {
   Droplets,
   Thermometer,
   Wind,
+  SprayCan,
 } from "lucide-react";
 import type { WeatherViewModel } from "@/lib/weatherApi";
 import { buildFarmDashboardData } from "@/lib/weatherDashboardData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 interface FarmWeatherDashboardProps {
   weather: WeatherViewModel;
@@ -57,20 +59,20 @@ function TemperatureChart({ hourly }: { hourly: { time: string; temp: number }[]
       >
         <defs>
           <linearGradient id="tempFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#fef3c7" stopOpacity="0.05" />
+            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.05" />
           </linearGradient>
         </defs>
         <path d={areaPath} fill="url(#tempFill)" />
-        <path d={linePath} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={linePath} fill="none" stroke="#0ea5e9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {points.map((p, i) => (
           <g key={i}>
-            <circle cx={p.x} cy={p.y} r="3.5" fill="#f59e0b" />
+            <circle cx={p.x} cy={p.y} r="3.5" fill="#0284c7" />
             <text
               x={p.x}
               y={p.y - 10}
               textAnchor="middle"
-              className="fill-gray-700 text-[10px] font-semibold"
+              className="fill-sky-900 text-[10px] font-semibold"
             >
               {p.temp}°
             </text>
@@ -78,7 +80,7 @@ function TemperatureChart({ hourly }: { hourly: { time: string; temp: number }[]
               x={p.x}
               y={height + 18}
               textAnchor="middle"
-              className="fill-gray-400 text-[9px]"
+              className="fill-sky-700/60 text-[9px]"
             >
               {p.time.replace(/\s/g, "")}
             </text>
@@ -95,97 +97,99 @@ export default function FarmWeatherDashboard({
 }: FarmWeatherDashboardProps) {
   const { profile } = useFarmerProfile();
   const { crops } = useMyCrops();
+  const { locale } = useLocale();
+  const isHi = locale === "hi";
+  
   const [activeDayId, setActiveDayId] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(true);
 
   const data = useMemo(() => buildFarmDashboardData(weather), [weather]);
 
   const fieldName = profile.village
-    ? `${profile.village} field`
+    ? (isHi ? `${profile.village} का खेत` : `${profile.village} field`)
     : profile.district
-      ? `${profile.district} field`
-      : "Dadri field";
+      ? (isHi ? `${profile.district} का खेत` : `${profile.district} field`)
+      : (isHi ? "मेरा खेत" : "My field");
 
-  const cropName = crops[0]?.name ?? "Paddy";
+  const cropName = crops[0]?.name ?? (isHi ? "धान" : "Paddy");
 
   const today = new Date();
-  const dateLabel = today.toLocaleDateString("en-IN", {
+  const dateLabel = today.toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
     weekday: "long",
     day: "numeric",
     month: "short",
   });
 
   const updatedLabel = lastUpdated
-    ? `Updated ${lastUpdated.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`
-    : "Updated just now";
+    ? `${isHi ? 'अपडेट:' : 'Updated'} ${lastUpdated.toLocaleTimeString(isHi ? "hi-IN" : "en-IN", { hour: "2-digit", minute: "2-digit" })}`
+    : (isHi ? "अभी अपडेट किया गया" : "Updated just now");
 
   const activeId = activeDayId ?? data.dayTabs.find((d) => d.isToday)?.id ?? data.dayTabs[0]?.id;
 
   const sprayAdvice =
     weather.recommendations.find((r) => r.title.includes("सामान्य") || r.title.includes("सलाह"))
       ?.advice ??
-    "Spray when wind is below 10 km/h and rain chance is under 30% in the next 6 hours.";
+    (isHi ? "हवा की गति 10 किमी/घंटा से कम और बारिश की संभावना 30% से कम होने पर स्प्रे करें।" : "Spray when wind is below 10 km/h and rain chance is under 30%.");
 
   return (
-    <div className="mx-auto max-w-lg space-y-4 pb-6 text-gray-900">
+    <div className="mx-auto max-w-lg space-y-5 pb-8 text-gray-900 bg-[#f8fafc] min-h-screen">
       {/* Header & Location */}
-      <header className="pt-1">
+      <header className="px-4 pt-4">
         <div className="flex items-start justify-between gap-3">
           <div>
             <button
               type="button"
-              className="flex items-center gap-1 text-left"
+              className="flex items-center gap-1 text-left active:scale-95 transition-transform"
               aria-label="Select field"
             >
-              <h2 className="text-xl font-bold tracking-tight text-gray-900">{fieldName}</h2>
-              <ChevronDown className="mt-0.5 h-5 w-5 text-gray-500" />
+              <h2 className="text-[1.35rem] font-bold tracking-tight text-slate-800">{fieldName}</h2>
+              <ChevronDown className="mt-0.5 h-5 w-5 text-slate-400" />
             </button>
-            <p className="mt-0.5 text-sm font-medium text-gray-500">{cropName}</p>
+            <p className="mt-0.5 text-[13px] font-semibold text-emerald-600">{cropName}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm font-semibold text-gray-800">{dateLabel}</p>
-            <p className="text-xs text-gray-400">{updatedLabel}</p>
+            <p className="text-[13px] font-bold text-slate-700">{dateLabel}</p>
+            <p className="text-[11px] font-medium text-slate-400">{updatedLabel}</p>
           </div>
         </div>
       </header>
 
-      {/* Hero Weather Card */}
-      <section
-        className="relative overflow-hidden rounded-2xl p-5 shadow-sm"
-        style={{
-          background:
-            "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 40%, #a5d6a7 100%)",
-        }}
-      >
-        <div
-          className="pointer-events-none absolute inset-0 opacity-30"
-          aria-hidden
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cpath fill='%232e7d32' fill-opacity='0.15' d='M0 120 Q50 80 100 120 T200 120 V200 H0Z'/%3E%3Ccircle cx='160' cy='40' r='24' fill='%23fff9c4' fill-opacity='0.5'/%3E%3C/svg%3E")`,
-            backgroundSize: "cover",
-            backgroundPosition: "bottom",
-          }}
-        />
-        <div className="relative flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800/80">
-              {data.next6hLabel}
-            </p>
-            <p className="mt-2 text-3xl font-bold text-gray-900">
-              {data.heroTempHigh}°{" "}
-              <span className="text-2xl font-semibold text-gray-600">| {data.heroTempLow}°</span>
-            </p>
-            <p className="mt-1 text-sm capitalize text-gray-600">{weather.condition}</p>
+      {/* Hero Weather Card - Premium Redesign using HomeWeatherButton's style */}
+      <section className="px-3">
+        <div className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-sky-600 via-sky-700 to-emerald-800 p-6 text-white shadow-[0_12px_28px_-12px_rgba(8,47,73,0.7)] ring-1 ring-white/15">
+          {/* Decorative background glows */}
+          <span aria-hidden className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-amber-300/20 blur-3xl" />
+          <span aria-hidden className="pointer-events-none absolute -left-8 -bottom-8 h-24 w-24 rounded-full bg-emerald-300/20 blur-2xl" />
+          
+          <div className="relative flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-sky-200/90 mb-1">
+                {isHi ? "अगले 6 घंटे" : data.next6hLabel}
+              </p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-5xl font-extrabold tracking-tight drop-shadow-sm">
+                  {data.heroTempHigh}°
+                </span>
+                <span className="text-xl font-medium text-sky-200/80">
+                  / {data.heroTempLow}°
+                </span>
+              </div>
+              <p className="mt-1 text-sm font-semibold tracking-wide text-white/90 capitalize drop-shadow-sm">
+                {weather.condition}
+              </p>
+            </div>
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 shadow-inner backdrop-blur-sm">
+              <span className="text-5xl drop-shadow-lg" role="img" aria-label="Weather">
+                {data.heroIcon}
+              </span>
+            </div>
           </div>
-          <span className="text-6xl drop-shadow-sm" role="img" aria-label="Weather">
-            {data.heroIcon}
-          </span>
         </div>
       </section>
 
-      {/* Daily Tabs */}
-      <section>
-        <div className="scrollbar-hide -mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
+      {/* Daily Tabs - Premium pill design */}
+      <section className="px-3">
+        <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
           {data.dayTabs.map((tab) => {
             const isActive = tab.id === activeId;
             return (
@@ -193,181 +197,180 @@ export default function FarmWeatherDashboard({
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveDayId(tab.id)}
-                className={`flex min-w-[4.5rem] shrink-0 flex-col items-center rounded-xl px-3 py-2 transition ${
-                  isActive ? "bg-white shadow-sm" : "bg-transparent"
+                className={`flex min-w-[5rem] shrink-0 flex-col items-center justify-center rounded-2xl py-3 px-2 transition-all active:scale-95 ${
+                  isActive 
+                    ? "bg-slate-800 text-white shadow-md ring-1 ring-slate-900/10" 
+                    : "bg-white text-slate-600 border border-slate-200/60 shadow-sm"
                 }`}
               >
-                <span
-                  className={`text-xs font-semibold ${isActive ? "text-gray-900" : "text-gray-500"}`}
-                >
+                <span className={`text-[11px] font-bold uppercase tracking-wide ${isActive ? "text-slate-300" : "text-slate-400"}`}>
                   {tab.label}
                 </span>
-                <span
-                  className={`mt-0.5 text-lg font-bold ${isActive ? "text-gray-900" : "text-gray-400"}`}
-                >
+                <span className={`mt-1 text-lg font-extrabold ${isActive ? "text-white" : "text-slate-800"}`}>
                   {tab.sublabel}
                 </span>
-                {isActive && (
-                  <span className="mt-1.5 h-0.5 w-8 rounded-full bg-emerald-600" />
-                )}
               </button>
             );
           })}
         </div>
       </section>
 
-      {/* Spray Advisory Banner */}
-      <section
-        className="relative overflow-hidden rounded-2xl shadow-sm"
-        style={{
-          backgroundImage:
-            "linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.1) 100%), url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="relative p-5">
-          <p className="text-xs font-bold uppercase tracking-wider text-white/80">
-            Spread and Spray advisory
-          </p>
-          <p className="mt-2 max-w-[85%] text-sm font-medium leading-relaxed text-white">
-            {sprayAdvice.length > 120 ? `${sprayAdvice.slice(0, 117)}…` : sprayAdvice}
-          </p>
-          <Link
-            href="/weather/spray-advisory"
-            className="mt-4 inline-block rounded-full bg-white px-5 py-2 text-sm font-semibold text-gray-900 shadow-md transition hover:bg-gray-50"
-          >
-            Learn more
-          </Link>
+      {/* Spray Advisory Banner - Modern Flat/Glass look */}
+      <section className="px-3">
+        <div className="relative overflow-hidden rounded-[1.35rem] bg-indigo-50 border border-indigo-100 shadow-sm">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <SprayCan className="h-24 w-24 text-indigo-900" />
+          </div>
+          <div className="relative p-5">
+            <div className="flex items-center gap-2 mb-2 text-indigo-700">
+              <SprayCan className="h-4 w-4" />
+              <h3 className="text-xs font-bold uppercase tracking-wider">
+                {isHi ? "छिड़काव (Spray) सलाह" : "Spray Advisory"}
+              </h3>
+            </div>
+            <p className="max-w-[85%] text-[13px] font-medium leading-relaxed text-indigo-950/80">
+              {sprayAdvice}
+            </p>
+            <Link
+              href="/weather/spray-advisory"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-[13px] font-bold text-white shadow-sm transition hover:bg-indigo-700 active:scale-95"
+            >
+              {isHi ? "अधिक जानें" : "Learn more"}
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Metrics Grid */}
-      <section className="grid grid-cols-2 gap-3">
+      <section className="px-3 grid grid-cols-2 gap-3">
         <MetricCard
           icon={<CloudRain className="h-5 w-5 text-sky-500" />}
-          label="Chance of rain"
+          label={isHi ? "बारिश" : "Chance of rain"}
           value={`${data.metrics.rainChance}%`}
           sub={`${data.metrics.rainMm.toFixed(1)} mm`}
         />
         <MetricCard
           icon={<Droplets className="h-5 w-5 text-blue-500" />}
-          label="Humidity"
+          label={isHi ? "नमी (Humidity)" : "Humidity"}
           value={`${data.metrics.humidity}%`}
         />
         <MetricCard
           icon={<Thermometer className="h-5 w-5 text-orange-500" />}
-          label="Max / Min"
+          label={isHi ? "तापमान" : "Max / Min"}
           value={`${data.metrics.tempHigh}° / ${data.metrics.tempLow}°`}
         />
         <MetricCard
           icon={<Wind className="h-5 w-5 text-teal-500" />}
-          label="Wind"
-          value={`${data.metrics.windKmh} km/h`}
+          label={isHi ? "हवा (Wind)" : "Wind"}
+          value={`${data.metrics.windKmh} ${isHi ? 'किमी/घं' : 'km/h'}`}
           sub={data.metrics.windDirection}
         />
       </section>
 
       {/* Hourly Forecast */}
-      <section className="rounded-2xl bg-white p-4 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-gray-900">Hourly Forecast</h3>
-          <ChevronRight className="h-5 w-5 text-gray-400" />
-        </div>
+      <section className="px-3">
+        <div className="rounded-[1.35rem] bg-white p-5 shadow-sm border border-slate-100">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[15px] font-bold text-slate-800">{isHi ? "हर घंटे का मौसम" : "Hourly Forecast"}</h3>
+          </div>
 
-        <div className="scrollbar-hide mt-4 flex gap-4 overflow-x-auto pb-2">
-          {data.hourly.slice(0, 12).map((slot, i) => (
-            <div key={i} className="flex min-w-[3.5rem] shrink-0 flex-col items-center gap-1.5">
-              <span className="text-xs font-medium text-gray-500">{slot.time}</span>
-              <span className="text-2xl">{slot.icon}</span>
-              <span
-                className={`text-xs font-semibold ${
-                  slot.rainPercent >= 40 ? "text-sky-600" : "text-gray-400"
-                }`}
-              >
-                {slot.rainPercent}%
-              </span>
+          <div className="scrollbar-hide mt-5 flex gap-5 overflow-x-auto pb-2">
+            {data.hourly.slice(0, 12).map((slot, i) => (
+              <div key={i} className="flex min-w-[3.5rem] shrink-0 flex-col items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500">{slot.time}</span>
+                <span className="text-[26px]">{slot.icon}</span>
+                <span
+                  className={`text-[11px] font-extrabold ${
+                    slot.rainPercent >= 40 ? "text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md" : "text-slate-400"
+                  }`}
+                >
+                  {slot.rainPercent}%
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {showDetails && (
+            <div className="mt-5 pt-5 border-t border-slate-100">
+              <h4 className="text-[13px] font-bold text-slate-700 mb-3">{isHi ? "तापमान का ग्राफ" : "Temperature Trend"}</h4>
+              <div className="rounded-[1rem] bg-sky-50/50 p-2">
+                <TemperatureChart hourly={data.hourly} />
+              </div>
             </div>
-          ))}
-        </div>
-
-        {showDetails && (
-          <>
-            <h4 className="mt-5 text-sm font-bold text-gray-800">Temperature</h4>
-            <div className="mt-2 rounded-xl bg-amber-50/60 p-2">
-              <TemperatureChart hourly={data.hourly} />
-            </div>
-          </>
-        )}
-
-        <button
-          type="button"
-          onClick={() => setShowDetails((v) => !v)}
-          className="mt-4 flex w-full items-center justify-center gap-1 text-sm font-semibold text-emerald-700"
-        >
-          {showDetails ? "Less Details" : "More Details"}
-          {showDetails ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
           )}
-        </button>
+
+          <button
+            type="button"
+            onClick={() => setShowDetails((v) => !v)}
+            className="mt-4 flex w-full items-center justify-center gap-1 rounded-xl bg-slate-50 py-2.5 text-[12px] font-bold text-slate-600 active:bg-slate-100 transition"
+          >
+            {showDetails ? (isHi ? "कम दिखाएं" : "Less Details") : (isHi ? "अधिक दिखाएं" : "More Details")}
+            {showDetails ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+        </div>
       </section>
 
       {/* 14-Day Calendar */}
-      <section className="rounded-2xl bg-white p-4 shadow-sm">
-        <h3 className="text-base font-bold text-gray-900">Next 14 days</h3>
-        <p className="mt-0.5 text-sm text-gray-500">
-          {data.calendarMonth} {data.calendarYear}
-        </p>
+      <section className="px-3">
+        <div className="rounded-[1.35rem] bg-white p-5 shadow-sm border border-slate-100">
+          <h3 className="text-[15px] font-bold text-slate-800">{isHi ? "अगले 14 दिन" : "Next 14 days"}</h3>
+          <p className="mt-0.5 text-[12px] font-medium text-slate-500">
+            {data.calendarMonth} {data.calendarYear}
+          </p>
 
-        <div className="mt-4 grid grid-cols-7 gap-1 text-center">
-          {WEEKDAYS.map((d) => (
-            <div key={d} className="py-1 text-[10px] font-bold text-gray-400">
-              {d}
-            </div>
-          ))}
-        </div>
+          <div className="mt-5 grid grid-cols-7 gap-1 text-center">
+            {WEEKDAYS.map((d) => (
+              <div key={d} className="py-1 text-[10px] font-bold text-slate-400">
+                {d}
+              </div>
+            ))}
+          </div>
 
-        <div className="space-y-1">
-          {data.calendarWeeks.map((week, wi) => (
-            <div key={wi} className="grid grid-cols-7 gap-1">
-              {week.map((cell, ci) => {
-                const isTodayCol = cell.isToday;
-                return (
-                  <div
-                    key={ci}
-                    className={`flex flex-col items-center rounded-lg py-2 ${
-                      isTodayCol ? "bg-emerald-50 ring-1 ring-emerald-200/60" : ""
-                    } ${!cell.isCurrentMonth ? "opacity-35" : ""}`}
-                  >
-                    <span
-                      className={`text-xs font-semibold ${
-                        isTodayCol ? "text-emerald-700" : "text-gray-700"
-                      }`}
+          <div className="space-y-1">
+            {data.calendarWeeks.map((week, wi) => (
+              <div key={wi} className="grid grid-cols-7 gap-1">
+                {week.map((cell, ci) => {
+                  const isTodayCol = cell.isToday;
+                  return (
+                    <div
+                      key={ci}
+                      className={`flex flex-col items-center justify-center rounded-xl py-2 transition-all ${
+                        isTodayCol ? "bg-emerald-50 ring-1 ring-emerald-500/20" : ""
+                      } ${!cell.isCurrentMonth ? "opacity-30 grayscale" : ""}`}
                     >
-                      {cell.date}
-                    </span>
-                    <span className="mt-0.5 text-base leading-none">{cell.icon}</span>
-                    <span className="mt-0.5 text-[9px] font-medium text-sky-600">
-                      {cell.isCurrentMonth ? `${cell.rainPercent}%` : ""}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                      <span
+                        className={`text-[12px] font-bold ${
+                          isTodayCol ? "text-emerald-700" : "text-slate-700"
+                        }`}
+                      >
+                        {cell.date}
+                      </span>
+                      <span className="mt-1 text-[18px] leading-none">{cell.icon}</span>
+                      <span className="mt-1 text-[9px] font-bold text-sky-600">
+                        {cell.isCurrentMonth ? `${cell.rainPercent}%` : ""}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Crop recommendations */}
       {weather.recommendations.length > 0 && (
-        <section className="space-y-3">
-          <h3 className="text-base font-bold text-gray-900">Crop advisory</h3>
+        <section className="px-3 space-y-3">
+          <h3 className="text-[15px] font-bold text-slate-800 ml-1">{isHi ? "फसल सलाह" : "Crop advisory"}</h3>
           {weather.recommendations.map((rec, i) => (
-            <div key={i} className="rounded-2xl bg-white p-4 shadow-sm">
-              <p className="text-sm font-bold text-emerald-700">{rec.title}</p>
-              <p className="mt-1 text-sm leading-relaxed text-gray-600">{rec.advice}</p>
+            <div key={i} className="rounded-[1.35rem] bg-emerald-50/50 p-4 border border-emerald-100/50">
+              <p className="text-[13px] font-bold text-emerald-800">{rec.title}</p>
+              <p className="mt-1.5 text-[13px] font-medium leading-relaxed text-slate-600">{rec.advice}</p>
             </div>
           ))}
         </section>
@@ -388,13 +391,17 @@ function MetricCard({
   sub?: string;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm">
+    <div className="flex flex-col justify-between rounded-[1.25rem] bg-white p-4 shadow-sm border border-slate-100">
       <div className="flex items-center gap-2">
-        {icon}
-        <span className="text-xs font-medium text-gray-500">{label}</span>
+        <div className="rounded-lg bg-slate-50 p-1.5">
+          {icon}
+        </div>
+        <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{label}</span>
       </div>
-      <p className="mt-2 text-lg font-bold text-gray-900">{value}</p>
-      {sub && <p className="text-xs text-gray-400">{sub}</p>}
+      <div className="mt-3">
+        <p className="text-[17px] font-extrabold text-slate-800">{value}</p>
+        {sub && <p className="mt-0.5 text-[11px] font-semibold text-slate-400">{sub}</p>}
+      </div>
     </div>
   );
 }

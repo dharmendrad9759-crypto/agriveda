@@ -38,7 +38,7 @@ export default function MandiListClient() {
           type="button"
           onClick={() => refresh()}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 shadow-sm active:scale-95 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-slate-800 to-slate-900 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-md shadow-slate-900/20 transition-all active:scale-95 disabled:opacity-60"
         >
           <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
           {isHi ? "ताज़ा करें" : "Refresh"}
@@ -67,25 +67,30 @@ export default function MandiListClient() {
           </p>
         )}
 
-        <div className="flex gap-1 rounded-2xl bg-slate-100 p-1">
+        <div className="relative flex gap-2 rounded-2xl bg-white p-1.5 shadow-sm border border-slate-100/60 ring-1 ring-slate-900/5">
           {(
             [
-              { id: "prices" as const, label: isHi ? "भाव तालिका" : "Price table" },
-              { id: "alerts" as const, label: isHi ? `अलर्ट (${activeCount})` : `Alerts (${activeCount})` },
+              { id: "prices" as const, label: isHi ? "भाव तालिका (Prices)" : "Price table" },
+              { id: "alerts" as const, label: isHi ? `अलर्ट (Alerts) · ${activeCount}` : `Alerts · ${activeCount}` },
             ] as const
-          ).map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setTab(item.id)}
-              className={cn(
-                "flex-1 rounded-xl py-2.5 text-xs font-bold transition",
-                tab === item.id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
+          ).map((item) => {
+            const isActive = tab === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setTab(item.id)}
+                className={cn(
+                  "relative flex-1 rounded-xl py-3 text-[13px] font-bold transition-all duration-300",
+                  isActive
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-900/20"
+                    : "bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                )}
+              >
+                <span className="relative z-10">{item.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {tab === "prices" && (

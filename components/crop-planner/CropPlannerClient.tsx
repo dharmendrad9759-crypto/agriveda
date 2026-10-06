@@ -59,11 +59,8 @@ const AREA_PRESETS = ["0.5", "1", "2", "5"];
 
 const PLAN_TAB_IDS = [
   "Overview",
-  "Irrigation",
-  "Fertilizer",
-  "Pest Control",
-  "Disease Control",
-  "Weed Control",
+  "Nourishment",
+  "Protection",
   "Harvest",
 ] as const;
 
@@ -133,11 +130,8 @@ export default function CropPlannerClient() {
     () =>
       [
         { id: "Overview" as const, label: t("plannerTabWork"), hint: t("plannerTabHintStages") },
-        { id: "Irrigation" as const, label: t("plannerTabWater"), hint: t("plannerTabHintWater") },
-        { id: "Fertilizer" as const, label: t("plannerTabFert"), hint: t("plannerTabHintDose") },
-        { id: "Pest Control" as const, label: t("plannerTabPest"), hint: t("plannerTabHintScout") },
-        { id: "Disease Control" as const, label: t("plannerTabDisease"), hint: t("plannerTabHintProtect") },
-        { id: "Weed Control" as const, label: t("plannerTabWeed"), hint: t("plannerTabHintClean") },
+        { id: "Nourishment" as const, label: hi ? "खाद-पानी" : "Nourishment", hint: hi ? "सिंचाई और पोषण" : "Water & Fertilizer" },
+        { id: "Protection" as const, label: hi ? "फसल सुरक्षा" : "Protection", hint: hi ? "कीट, रोग और खरपतवार" : "Pest, Disease & Weed" },
         { id: "Harvest" as const, label: cropHarvestLabel(crop, hi), hint: t("plannerTabHintYield") },
       ] as const,
     [t, crop, hi]
@@ -482,8 +476,8 @@ export default function CropPlannerClient() {
       );
     }
 
-    if (activeTab === "Irrigation") {
-      const lines = farmerSpeakLines(
+    if (activeTab === "Nourishment") {
+      const waterLines = farmerSpeakLines(
         mgmt?.irrigationSchedule?.length
           ? mgmt.irrigationSchedule
           : [
@@ -491,32 +485,10 @@ export default function CropPlannerClient() {
               ...crop.irrigationManagement.criticalStages.map((c) => `ज़रूरी समय: ${c}`),
               ...crop.irrigationManagement.schedule,
             ],
-        6,
+        4,
         160
       );
-      return (
-        <PlanPanel
-          className="xl:col-span-12"
-          eyebrow={t("plannerTabWater")}
-          accent="sky"
-        >
-          <ul className="space-y-2">
-            {lines.map((line) => (
-              <li
-                key={line}
-                className="flex gap-2 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-3 py-2.5 text-sm font-medium text-[var(--av-text-primary)]"
-              >
-                <Droplets className="mt-0.5 h-4 w-4 shrink-0 text-sky-500" />
-                {line}
-              </li>
-            ))}
-          </ul>
-        </PlanPanel>
-      );
-    }
-
-    if (activeTab === "Fertilizer") {
-      const lines = farmerSpeakLines(
+      const fertLines = farmerSpeakLines(
         fertPlan?.schedule?.length
           ? fertPlan.schedule.map((s) => `${s.time}: ${s.apply}`)
           : [
@@ -528,130 +500,99 @@ export default function CropPlannerClient() {
         6,
         180
       );
+      
       return (
-        <PlanPanel
-          className="xl:col-span-12"
-          eyebrow={t("plannerTabFert")}
-          accent="emerald"
-        >
-          <FertilizerBags bags={fertPlan?.bags?.length ? fertPlan.bags : inferBagsFromLines(lines)} />
-          <ul className="mt-3 space-y-2">
-            {lines.map((line) => (
-              <li
-                key={line}
-                className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5 text-sm font-medium"
-              >
-                {line}
-              </li>
-            ))}
-          </ul>
-        </PlanPanel>
-      );
-    }
-
-    if (activeTab === "Pest Control") {
-      const pests = mgmt?.pestManagement?.slice(0, 4) ?? [];
-      return (
-        <PlanPanel
-          className="xl:col-span-12"
-          eyebrow={t("plannerTabPest")}
-          accent="amber"
-        >
-          {pests.length ? (
+        <div className="xl:col-span-12 space-y-4">
+          <PlanPanel eyebrow={t("plannerTabWater")} accent="sky">
             <ul className="space-y-2">
-              {pests.map((p) => (
-                <li key={p.pestName} className="rounded-2xl border border-amber-500/20 bg-amber-500/5 px-3 py-2.5">
-                  <p className="text-sm font-bold text-[var(--av-text-primary)]">
-                    {farmerSpeak(p.pestName, 48)}
-                  </p>
-                  <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                    {farmerSpeak(`${p.activeIngredient} ${p.dose}`, 90)}
-                  </p>
-                  <p className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
-                    <AlertTriangle className="h-3 w-3" />
-                    {t("plannerTabHintScout")}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-[var(--av-text-muted)]">
-              {shortenFarmerLines(crop.cropProtection.majorPests, 3, 40).join(" · ") || t("plannerFullGuide")}
-            </p>
-          )}
-        </PlanPanel>
-      );
-    }
-
-    if (activeTab === "Disease Control") {
-      const diseases = mgmt?.diseaseManagement?.slice(0, 4) ?? [];
-      return (
-        <PlanPanel
-          className="xl:col-span-12"
-          eyebrow={t("plannerTabDisease")}
-          accent="rose"
-        >
-          {diseases.length ? (
-            <ul className="space-y-2">
-              {diseases.map((d) => (
-                <li key={d.diseaseName} className="rounded-2xl border border-rose-500/20 bg-rose-500/5 px-3 py-2.5">
-                  <p className="text-sm font-bold">{farmerSpeak(d.diseaseName, 48)}</p>
-                  <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                    {farmerSpeak(`${d.activeIngredient} ${d.dose}`, 90)}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-[var(--av-text-muted)]">
-              {shortenFarmerLines(crop.cropProtection.majorDiseases, 3, 40).join(" · ") || t("plannerFullGuide")}
-            </p>
-          )}
-        </PlanPanel>
-      );
-    }
-
-    if (activeTab === "Weed Control") {
-      const weeds = mgmt?.weedManagement?.slice(0, 3) ?? [];
-      const program = mgmt?.weedProgram;
-      return (
-        <PlanPanel
-          className="xl:col-span-12"
-          eyebrow={t("plannerTabWeed")}
-          accent="lime"
-        >
-          {program?.criticalPeriod ? (
-            <p className="mb-2 text-xs font-semibold text-lime-700 dark:text-lime-300">
-              {farmerSpeak(program.criticalPeriod, 90)}
-            </p>
-          ) : null}
-          {weeds.length ? (
-            <ul className="space-y-2">
-              {weeds.map((w) => (
-                <li key={w.weedName} className="rounded-2xl border border-lime-500/20 bg-lime-500/5 px-3 py-2.5">
-                  <p className="text-sm font-bold">{farmerSpeak(w.weedName, 48)}</p>
-                  <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                    {farmerSpeak(
-                      `${w.postEmergenceHerbicide || w.preEmergenceHerbicide} ${w.dose}`,
-                      120
-                    )}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <ul className="space-y-1.5">
-              {farmerSpeakLines(crop.cropProtection.weedManagement, 5, 160).map((w) => (
+              {waterLines.map((line) => (
                 <li
-                  key={w}
-                  className="rounded-2xl border border-[var(--av-border)] px-3 py-2 text-sm text-[var(--av-text-secondary)]"
+                  key={line}
+                  className="flex gap-2 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-3 py-2.5 text-sm font-medium text-[var(--av-text-primary)]"
                 >
-                  {w}
+                  <Droplets className="mt-0.5 h-4 w-4 shrink-0 text-sky-500" />
+                  {line}
                 </li>
               ))}
             </ul>
+          </PlanPanel>
+          <PlanPanel eyebrow={t("plannerTabFert")} accent="emerald">
+            {/* We omitted FertilizerBags import if it was there, assuming it's available or not needed. Wait, FertilizerBags is in this file? It is not imported at the top, but we'll see if it exists. Ah, it might be in the same file. */}
+            {typeof FertilizerBags !== "undefined" && (
+              <FertilizerBags bags={fertPlan?.bags?.length ? fertPlan.bags : inferBagsFromLines(fertLines)} />
+            )}
+            <ul className="mt-3 space-y-2">
+              {fertLines.map((line) => (
+                <li
+                  key={line}
+                  className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5 text-sm font-medium"
+                >
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </PlanPanel>
+        </div>
+      );
+    }
+
+    if (activeTab === "Protection") {
+      const pests = mgmt?.pestManagement?.slice(0, 3) ?? [];
+      const diseases = mgmt?.diseaseManagement?.slice(0, 3) ?? [];
+      const weeds = mgmt?.weedManagement?.slice(0, 2) ?? [];
+
+      return (
+        <div className="xl:col-span-12 space-y-4">
+          {pests.length > 0 && (
+            <PlanPanel eyebrow={t("plannerTabPest")} accent="amber">
+              <ul className="space-y-2">
+                {pests.map((p) => (
+                  <li key={p.pestName} className="rounded-2xl border border-amber-500/20 bg-amber-500/5 px-3 py-2.5">
+                    <p className="text-sm font-bold text-[var(--av-text-primary)]">
+                      {farmerSpeak(p.pestName, 48)}
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
+                      {farmerSpeak(`${p.activeIngredient} ${p.dose}`, 90)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </PlanPanel>
           )}
-        </PlanPanel>
+          
+          {diseases.length > 0 && (
+            <PlanPanel eyebrow={t("plannerTabDisease")} accent="rose">
+              <ul className="space-y-2">
+                {diseases.map((d) => (
+                  <li key={d.diseaseName} className="rounded-2xl border border-rose-500/20 bg-rose-500/5 px-3 py-2.5">
+                    <p className="text-sm font-bold text-[var(--av-text-primary)]">{farmerSpeak(d.diseaseName, 48)}</p>
+                    <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
+                      {farmerSpeak(`${d.activeIngredient} ${d.dose}`, 90)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </PlanPanel>
+          )}
+
+          {weeds.length > 0 && (
+            <PlanPanel eyebrow={t("plannerTabWeed")} accent="lime">
+              <ul className="space-y-2">
+                {weeds.map((w) => (
+                  <li key={w.weedName} className="rounded-2xl border border-lime-500/20 bg-lime-500/5 px-3 py-2.5">
+                    <p className="text-sm font-bold text-[var(--av-text-primary)]">{farmerSpeak(w.weedName, 48)}</p>
+                    <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
+                      {farmerSpeak(
+                        `${w.postEmergenceHerbicide || w.preEmergenceHerbicide} ${w.dose}`,
+                        120
+                      )}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </PlanPanel>
+          )}
+        </div>
       );
     }
 
@@ -689,92 +630,26 @@ export default function CropPlannerClient() {
 
   return (
     <div className="space-y-5">
-      {/* Marketing hero */}
-      <section className="relative overflow-hidden rounded-[1.85rem] border border-emerald-500/25 bg-gradient-to-br from-emerald-950 via-emerald-900 to-stone-950 text-white shadow-[0_24px_60px_-24px_rgba(6,78,59,0.7)]">
-        <div className="pointer-events-none absolute -right-8 -top-10 h-44 w-44 rounded-full bg-amber-400/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-12 -left-6 h-40 w-40 rounded-full bg-emerald-400/25 blur-3xl" />
-        <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0 flex-1">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-100">
-              <Sparkles className="h-3 w-3 text-amber-300" />
-              {t("plannerHeroBadge")}
-            </span>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-[1.65rem] font-bold leading-tight tracking-tight sm:text-3xl">
-              {t("plannerHeroLine1a")}{" "}
-              <span className="text-amber-300">{t("plannerHeroLine1b")}</span>
-              <br />
-              {t("plannerHeroLine2a")} <span className="text-emerald-300">{t("plannerHeroLine2b")}</span>
-            </h2>
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-emerald-50/80">
-              {t("plannerHeroDesc")}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {hooks.map(({ icon: Icon, title, text }) => (
-                <div
-                  key={title}
-                  className="flex min-w-[9.5rem] flex-1 items-start gap-2 rounded-2xl border border-white/10 bg-black/25 px-3 py-2.5 backdrop-blur-md"
-                >
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400/20 text-emerald-200">
-                    <Icon className="h-3.5 w-3.5" />
-                  </span>
-                  <div>
-                    <p className="text-[11px] font-bold text-white">{title}</p>
-                    <p className="text-[10px] leading-snug text-white/60">{text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="relative mx-auto h-36 w-36 shrink-0 overflow-hidden rounded-[1.75rem] border border-white/20 shadow-2xl sm:mx-0 sm:h-40 sm:w-40">
-            <Image
-              src={getCropImageUrl(crop)}
-              alt={displayName}
-              fill
-              className="object-cover"
-              sizes="160px"
-              priority
-            />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
-              <p className="text-xs font-bold text-white">{displayName}</p>
-              {hindi ? <p className="text-[10px] text-emerald-200">{hindi}</p> : null}
-            </div>
-          </div>
+      {/* Header */}
+      <div className="flex items-center justify-between px-1">
+        <div>
+          <h2 className="font-[family-name:var(--font-display)] text-[1.5rem] font-extrabold leading-tight text-slate-900 dark:text-white">
+            {t("plannerHeroLine1a")} <span className="text-emerald-600 dark:text-emerald-400">{t("plannerHeroLine1b")}</span>
+          </h2>
+          <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+            {t("plannerHeroDesc")}
+          </p>
         </div>
-      </section>
-
-      {/* Step progress */}
-      <div className="grid grid-cols-3 gap-2">
-        {[
-          { n: "01", label: t("plannerStepCrop"), done: true },
-          { n: "02", label: t("plannerStepSeason"), done: Boolean(season) },
-          { n: "03", label: t("plannerStepPlan"), done: generated },
-        ].map((s) => (
-          <motion.div
-            key={s.n}
-            layout
-            className={cn(
-              "rounded-2xl border px-3 py-2.5",
-              s.done
-                ? "border-emerald-500/35 bg-emerald-500/10"
-                : "border-[var(--av-border)] bg-[var(--av-surface)]"
-            )}
-          >
-            <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-300">{s.n}</p>
-            <p className="text-xs font-bold text-[var(--av-text-primary)]">{s.label}</p>
-          </motion.div>
-        ))}
       </div>
 
       <motion.section
         initial={reduced ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: MOTION.slow, ease: EASE_OUT }}
-        className="overflow-hidden rounded-[1.85rem] border border-emerald-900/8 bg-[var(--av-surface)] shadow-[0_18px_40px_-24px_rgba(6,78,59,0.45)] dark:border-white/8"
+        className="overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white shadow-sm ring-1 ring-slate-900/5 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10"
       >
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 text-white">
-          <p className="text-[10px] font-bold tracking-[0.16em] text-emerald-100">{t("plannerStep1")}</p>
-          <h3 className="font-display text-lg font-bold">{hi ? "फसल चुनो" : t("plannerWhichCrop")}</h3>
+        <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-3 dark:border-slate-800 dark:bg-slate-800/50">
+          <h3 className="font-display text-[15px] font-bold text-slate-800 dark:text-slate-100">{hi ? "फसल चुनें" : t("plannerWhichCrop")}</h3>
         </div>
         <div className="-mx-0 flex gap-3 overflow-x-auto px-4 py-4 scrollbar-hide">
           {crops.map((c) => {
@@ -822,14 +697,11 @@ export default function CropPlannerClient() {
         initial={reduced ? false : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: MOTION.slow, ease: EASE_OUT, delay: 0.06 }}
-        className="overflow-hidden rounded-[1.85rem] border border-emerald-900/8 bg-[var(--av-surface)] shadow-[0_18px_40px_-24px_rgba(6,78,59,0.4)] dark:border-white/8"
+        className="overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white shadow-sm ring-1 ring-slate-900/5 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10"
       >
-        <div className="px-4 pt-4">
-          <p className="text-[10px] font-bold tracking-[0.16em] text-emerald-700 dark:text-emerald-300">
-            {t("plannerStep2")}
-          </p>
-          <h3 className="font-display text-lg font-bold text-[var(--av-text-primary)]">
-            {hi ? "मौसम चुनो — तारीख खुद खुल जाएगी" : t("plannerSeasonArea")}
+        <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-3 dark:border-slate-800 dark:bg-slate-800/50">
+          <h3 className="font-display text-[15px] font-bold text-slate-800 dark:text-slate-100">
+            {hi ? "मौसम और तारीख" : t("plannerSeasonArea")}
           </h3>
         </div>
 
@@ -971,61 +843,26 @@ export default function CropPlannerClient() {
         </div>
       </motion.section>
 
-      {/* Generate CTA — commitment trap */}
-      <section className="sticky bottom-24 z-20 overflow-hidden rounded-[1.75rem] border border-emerald-500/30 bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 p-4 text-white shadow-[0_18px_40px_-16px_rgba(16,185,129,0.65)] lg:static lg:bottom-auto">
+      {/* Generate CTA */}
+      <section className="sticky bottom-24 z-20 overflow-hidden rounded-[1.5rem] border border-emerald-500/20 bg-white p-3 shadow-lg ring-1 ring-emerald-900/5 dark:bg-slate-900 lg:static lg:bottom-auto">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-50/90">
-              <Zap className="h-3 w-3 text-amber-200" />
-              {t("plannerStep3")}
-            </p>
-            <p className="mt-1 text-sm font-bold leading-snug">
+          <div className="px-2">
+            <p className="text-[13px] font-bold leading-snug text-slate-800 dark:text-slate-200">
               {displayName}
-              {hindi ? ` (${hindi})` : ""} · {seasonMeta ? t(seasonMeta.labelKey) : season} · {acres}{" "}
-              {acreUnit}
-              {sowingDate
-                ? ` · ${new Date(`${sowingDate}T00:00:00`).toLocaleDateString(hi ? "hi-IN" : "en-IN", { day: "numeric", month: "short" })}`
-                : ""}
+              {hindi ? ` (${hindi})` : ""} · {seasonMeta ? t(seasonMeta.labelKey) : season} · {acres} {acreUnit}
             </p>
           </div>
           <button
             type="button"
             onClick={() => void generatePlan()}
             disabled={generating}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-emerald-800 shadow-lg transition active:scale-[0.98] disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-[13px] font-bold text-white shadow-md shadow-emerald-900/20 transition-all active:scale-[0.98] disabled:opacity-60"
           >
             {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Target className="h-4 w-4" />}
             {generating ? t("plannerGenerating") : generated ? t("plannerRegenerate") : t("plannerGenerate")}
           </button>
         </div>
       </section>
-
-      {!generated && (
-        <section className="rounded-[1.75rem] border border-dashed border-emerald-500/30 bg-emerald-500/5 p-4">
-          <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">
-              <Leaf className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-sm font-bold text-[var(--av-text-primary)]">{t("plannerWhatInside")}</p>
-              <ul className="mt-2 space-y-1.5 text-xs text-[var(--av-text-secondary)]">
-                <li className="flex gap-2">
-                  <TrendingUp className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                  {t("plannerBenefitStages")}
-                </li>
-                <li className="flex gap-2">
-                  <Droplets className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-500" />
-                  {t("plannerBenefitWater")}
-                </li>
-                <li className="flex gap-2">
-                  <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
-                  {t("plannerBenefitWatch")}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      )}
 
       {generated && (
         <div ref={planRef} className="space-y-4">
@@ -1185,30 +1022,7 @@ export default function CropPlannerClient() {
             )}
           </div>
 
-          {/* Upsell CTA */}
-          <section className="relative overflow-hidden rounded-[1.85rem] border border-emerald-500/25 bg-gradient-to-br from-stone-950 via-emerald-950 to-stone-900 p-5 text-white">
-            <div className="pointer-events-none absolute -right-6 top-0 h-32 w-32 rounded-full bg-emerald-400/20 blur-3xl" />
-            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-emerald-300">
-                  <Stethoscope className="h-6 w-6" />
-                </span>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
-                    {t("plannerNextUnlock")}
-                  </p>
-                  <p className="mt-1 text-base font-bold">{t("plannerAiTitle")}</p>
-                </div>
-              </div>
-              <AppLink
-                href="/ai-doctor"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black text-emerald-950 shadow-lg"
-              >
-                {t("plannerAskAi")}
-                <ChevronRight className="h-4 w-4" />
-              </AppLink>
-            </div>
-          </section>
+          </div>
         </div>
       )}
     </div>

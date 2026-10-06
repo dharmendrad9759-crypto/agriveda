@@ -104,6 +104,13 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Fix Copy Link / Save Image popup bug on mobile long-press */
+a, img, button, [role="button"] {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 h1, h2, .font-display {
   font-family: var(--font-display), var(--font-sans);
 }

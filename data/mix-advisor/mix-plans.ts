@@ -125,9 +125,49 @@ export const METALAXYL_MZ: MixMedicine = {
   doseHi: "500 ग्राम/एकड़",
 };
 
+export const HEXACONAZOLE: MixMedicine = {
+  activeId: "hexaconazole",
+  nameHi: "हेक्साकोनाज़ोल",
+  formHi: "5% SC",
+  kindHi: "फंगस की दवा",
+  doseHi: "400 मिली/एकड़",
+};
+
+export const CHLORANTRANILIPROLE: MixMedicine = {
+  activeId: "chlorantraniliprole",
+  nameHi: "क्लोरेंट्रानिलिप्रोल",
+  formHi: "18.5% SC",
+  kindHi: "कीड़ों की दवा",
+  doseHi: "60 मिली/एकड़",
+};
+
+export const PYMETROZINE: MixMedicine = {
+  activeId: "pymetrozine",
+  nameHi: "पाइमेट्रोज़िन",
+  formHi: "50% WG",
+  kindHi: "कीड़ों की दवा",
+  doseHi: "120 ग्राम/एकड़",
+};
+
+export const FIPRONIL: MixMedicine = {
+  activeId: "fipronil",
+  nameHi: "फिप्रोनिल",
+  formHi: "5% SC",
+  kindHi: "कीड़ों की दवा",
+  doseHi: "400 मिली/एकड़",
+};
+
+export const COPPER_OXYCHLORIDE: MixMedicine = {
+  activeId: "copper oxychloride",
+  nameHi: "कॉपर ऑक्सीक्लोराइड",
+  formHi: "50% WP",
+  kindHi: "फंगस की दवा",
+  doseHi: "500 ग्राम/एकड़",
+};
+
 const DEFAULT_STEPS_WITH_STICKER = [
   "टैंक आधा साफ पानी से भरें",
-  "पहले पाउडर (WP) दवा घोलें — अच्छी तरह मिलाएँ",
+  "पहले पाउडर (WP/WG) दवा घोलें — अच्छी तरह मिलाएँ",
   "फिर तरल (EC/SC) दवा डालें",
   "अंत में सिलिकॉन स्टिकर डालें — फिर बाकी पानी भरें",
   "तुरंत छिड़काव करें — टैंकी में घोल न छोड़ें",
@@ -135,7 +175,7 @@ const DEFAULT_STEPS_WITH_STICKER = [
 
 const DEFAULT_STEPS_NO_STICKER = [
   "टैंक आधा साफ पानी से भरें",
-  "पहले पाउडर (WP) दवा घोलें — अच्छी तरह मिलाएँ",
+  "पहले पाउडर (WP/WG) दवा घोलें — अच्छी तरह मिलाएँ",
   "फिर तरल (EC/SC) दवा डालें",
   "बाकी पानी भरकर मिलाएँ — तुरंत छिड़काव करें",
 ];
@@ -158,6 +198,56 @@ const PROBLEM_MED: Record<string, MixMedicine> = {
   },
   aphid: IMIDACLOPRID,
   cutworm: EMAMECTIN,
+
+  // Additional problems mapped
+  blast: PROPICONAZOLE,
+  "stem-borer": CHLORANTRANILIPROLE,
+  bph: PYMETROZINE,
+  "sheath-blight": HEXACONAZOLE,
+  blb: COPPER_OXYCHLORIDE,
+  "brown-spot": MANCOZEB,
+  "leaf-folder": CHLORANTRANILIPROLE,
+  tungro: IMIDACLOPRID,
+  "yellow-rust": PROPICONAZOLE,
+  "brown-rust": PROPICONAZOLE,
+  "spot-blotch": PROPICONAZOLE,
+  "loose-smut": CARBENDAZIM,
+  "karnal-bunt": CARBENDAZIM,
+  termite: FIPRONIL,
+  powdery: HEXACONAZOLE,
+  "fall-army": EMAMECTIN,
+  turcicum: MANCOZEB,
+  maydis: MANCOZEB,
+  "common-rust": PROPICONAZOLE,
+  "shoot-fly": IMIDACLOPRID,
+  "tuber-moth": DELTAMETHRIN,
+  "black-scurf": CARBENDAZIM,
+  "common-scab": MANCOZEB,
+  mosaic: IMIDACLOPRID,
+  thrips: FIPRONIL,
+  "purple-blotch": MANCOZEB,
+  stemphylium: PROPICONAZOLE,
+  downy: METALAXYL_MZ,
+  "basal-rot": CARBENDAZIM,
+  "yellow-mite": {
+    activeId: "spiromesifen",
+    nameHi: "स्पिरोमेसिफेन",
+    formHi: "22.9% SC",
+    kindHi: "कीड़ों की दवा",
+    doseHi: "200 मिली/एकड़",
+  },
+  dieback: COPPER_OXYCHLORIDE,
+  "damping-off": METALAXYL_MZ,
+  "shoot-borer": CHLORANTRANILIPROLE,
+  "little-leaf": IMIDACLOPRID,
+  wilt: CARBENDAZIM,
+  epilachna: EMAMECTIN,
+  phomopsis: MANCOZEB,
+  jassid: IMIDACLOPRID,
+  diamondback: EMAMECTIN,
+  "black-rot": COPPER_OXYCHLORIDE,
+  "cabbage-butterfly": EMAMECTIN,
+  "pink-bollworm": CHLORANTRANILIPROLE,
 };
 
 function isPestTag(tagHi: string): boolean {
