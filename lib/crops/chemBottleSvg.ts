@@ -329,6 +329,7 @@ export function renderChemPouchSvg(technical: string, category?: ChemBottleCateg
 }
 
 export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
+  "atrazine-50-wp": "/images/chem/real/atrazine-50-wp.jpg",
   "azoxystrobin-250-sc": "/images/chem/real/azoxystrobin-250-sc.jpg",
   "azoxystrobin-difenoconazole": "/images/chem/real/azoxystrobin-difenoconazole.jpg",
   "azoxystrobin-difenoconazole-sc": "/images/chem/real/azoxystrobin-difenoconazole-sc.jpg",
@@ -342,7 +343,11 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "difenoconazole-25-ec": "/images/chem/real/difenoconazole-25-ec.jpg",
   "dimethomorph-50-wp": "/images/chem/real/dimethomorph-50-wp.jpg",
   "emamectin-benzoate-5-sg": "/images/chem/real/emamectin-benzoate-5-sg.jpg",
+  "fipronil-0-3-gr": "/images/chem/real/fipronil-0-3-gr.jpg",
+  "glyphosate-41-sl": "/images/chem/real/glyphosate-41-sl.jpg",
+  "hexaconazole-5-ec": "/images/chem/real/hexaconazole-5-ec.jpg",
   "imidacloprid-17-8-sl": "/images/chem/real/imidacloprid-17-8-sl.jpg",
+  "lambda-cyhalothrin-5-ec": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
   "mancozeb-75-wp": "/images/chem/real/mancozeb-75-wp.jpg",
   "metalaxyl-m-mancozeb-wp": "/images/chem/real/metalaxyl-m-mancozeb-wp.jpg",
   "pendimethalin-30-ec": "/images/chem/real/pendimethalin-30-ec.jpg",
@@ -351,6 +356,7 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "tebuconazole-trifloxystrobin": "/images/chem/real/tebuconazole-trifloxystrobin.jpg",
   "tebuconazole-trifloxystrobin-wg": "/images/chem/real/tebuconazole-trifloxystrobin-wg.jpg",
   "thiamethoxam-25-wg": "/images/chem/real/thiamethoxam-25-wg.jpg",
+  "tricyclazole-75-wp": "/images/chem/real/tricyclazole-75-wp.jpg",
 };
 
 export function hasRealBottlePhoto(technical: string): boolean {
