@@ -12,7 +12,7 @@ import {
 } from "@/lib/mandi/mandiIndex";
 import type { MandiRow } from "@/lib/mandi/types";
 import { getDistrictsForState, INDIAN_STATES } from "@/lib/india-locations";
-import { ChevronLeft, ChevronRight, Search, Filter, Download, MapPin, CalendarDays, ArrowDownUp, Star } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Search, Filter, Download, MapPin, CalendarDays, ArrowDownUp, Star } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useFavourites } from "@/hooks/useFavourites";
 
@@ -25,6 +25,18 @@ export type MandiTableFilters = {
 };
 
 const ALL = MANDI_FILTER_ALL;
+
+const QUICK_CROPS = [
+  { labelHi: "सभी", labelEn: "All", query: "" },
+  { labelHi: "गेहूँ", labelEn: "Wheat", query: "Wheat" },
+  { labelHi: "सरसों", labelEn: "Mustard", query: "Mustard" },
+  { labelHi: "चना", labelEn: "Gram", query: "Gram" },
+  { labelHi: "सोयाबीन", labelEn: "Soyabean", query: "Soyabean" },
+  { labelHi: "धान", labelEn: "Paddy", query: "Paddy" },
+  { labelHi: "मक्का", labelEn: "Maize", query: "Maize" },
+  { labelHi: "प्याज", labelEn: "Onion", query: "Onion" },
+  { labelHi: "आलू", labelEn: "Potato", query: "Potato" },
+];
 
 const EMPTY_FILTERS = (state: string): MandiTableFilters => ({
   state,
@@ -82,6 +94,7 @@ export default function MandiPricesTable({
     grade: ALL,
   }));
   const [applied, setApplied] = useState<MandiTableFilters | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
   const [searchQ, setSearchQ] = useState("");
   const [sortBy, setSortBy] = useState("date_desc");
   const [showFavourites, setShowFavourites] = useState(false);
@@ -122,24 +135,26 @@ export default function MandiPricesTable({
   }, [cascade.grades, draft.district, draft.market, draft.commodity]);
 
   const filtered = useMemo(() => {
-    if (!applied && !showFavourites) return [];
-    
     let baseRows = rows;
     if (showFavourites) {
-      baseRows = rows.filter(r => favourites.includes(r.id));
+      baseRows = baseRows.filter((r) => favourites.includes(r.id));
     }
-    
-    // If we only want to show favourites and no other filters are applied:
-    if (!applied && showFavourites) {
-      if (searchQ) {
-         baseRows = filterTableRows(baseRows, { state: loadedState, district: "", market: ALL, commodity: ALL, grade: ALL }, searchQ);
-      }
-    } else if (applied) {
-      baseRows = filterTableRows(baseRows, { ...applied, state: loadedState }, searchQ);
+
+    const effectiveFilters = applied ?? {
+      state: loadedState,
+      district: initialDistrict ?? "",
+      market: ALL,
+      commodity: ALL,
+      grade: ALL,
+    };
+
+    let result = filterTableRows(baseRows, effectiveFilters, searchQ);
+
+    // If initial district filter returned 0 records, fall back to showing all state records
+    if (result.length === 0 && !applied && !searchQ && !showFavourites && effectiveFilters.district) {
+      result = filterTableRows(baseRows, { ...effectiveFilters, district: "" }, searchQ);
     }
-    
-    let result = baseRows;
-    
+
     if (sortBy === "price_desc") {
       result = [...result].sort((a, b) => b.modal - a.modal);
     } else if (sortBy === "price_asc") {
@@ -152,9 +167,9 @@ export default function MandiPricesTable({
         return new Date(b.arrivalDate).getTime() - new Date(a.arrivalDate).getTime();
       });
     }
-    
+
     return result;
-  }, [rows, applied, loadedState, searchQ, sortBy, showFavourites, favourites]);
+  }, [rows, applied, loadedState, initialDistrict, searchQ, sortBy, showFavourites, favourites]);
 
   const summary = useMemo(() => {
     if (!filtered.length) return null;
@@ -240,152 +255,186 @@ export default function MandiPricesTable({
         </div>
       )}
 
-      {/* Filters Section */}
-      <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)] sm:p-5 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-          <Filter className="h-40 w-40" />
-        </div>
-        <div className="relative z-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-              {isHi ? "राज्य" : "State"}
-            </span>
-            <select
-              className={fieldClass}
-              value={draft.state}
-              onChange={(e) => handleStateChange(e.target.value)}
+      {/* Quick Commodity Chips */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {QUICK_CROPS.map((qc) => {
+          const isSelected = (!qc.query && !searchQ) || (qc.query && searchQ.toLowerCase() === qc.query.toLowerCase());
+          return (
+            <button
+              key={qc.labelEn}
+              type="button"
+              onClick={() => {
+                setSearchQ(qc.query);
+                setPage(1);
+              }}
+              className={cn(
+                "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition active:scale-95",
+                isSelected
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:border-emerald-500/40"
+              )}
             >
-              {INDIAN_STATES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </label>
+              {isHi ? qc.labelHi : qc.labelEn}
+            </button>
+          );
+        })}
+      </div>
 
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-              {isHi ? "जिला" : "District"}
+      {/* Collapsible Filters Section */}
+      <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 sm:p-5 shadow-[var(--av-shadow-sm)] relative overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex w-full items-center justify-between text-left"
+          aria-expanded={showFilters}
+        >
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+              <Filter className="h-4 w-4" />
             </span>
-            <select
-              className={fieldClass}
-              value={draft.district}
-              disabled={!draft.state}
-              onChange={(e) => handleDistrictChange(e.target.value)}
-            >
-              <option value="">{isHi ? "जिला चुनें" : "Select district"}</option>
-              {districtOptions.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </label>
+            <div>
+              <p className="text-[14px] font-bold text-[var(--av-text-primary)]">
+                {isHi ? "राज्य व मंडी फ़िल्टर" : "State & Market Filters"}
+              </p>
+              <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+                {draft.state}{draft.district ? ` · ${draft.district}` : ""}{applied ? ` · ${isHi ? "फ़िल्टर लागू" : "Applied"}` : ""}
+              </p>
+            </div>
+          </div>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]">
+            <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", showFilters && "rotate-180")} />
+          </span>
+        </button>
 
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-              {isHi ? "मंडी" : "Market"}
-            </span>
-            <select
-              className={fieldClass}
-              value={draft.market}
-              disabled={!draft.district || loading}
-              onChange={(e) =>
-                setDraft((d) => ({
-                  ...d,
-                  market: e.target.value,
-                  commodity: ALL,
-                  grade: ALL,
-                }))
-              }
-            >
-              <option value={ALL}>{isHi ? "मंडी चुनें" : "Select market"}</option>
-              {cascade.markets.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </label>
+        {showFilters && (
+          <div className="mt-4 pt-3.5 border-t border-[var(--av-border)]">
+            <div className="relative z-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                  {isHi ? "राज्य" : "State"}
+                </span>
+                <select
+                  className={fieldClass}
+                  value={draft.state}
+                  onChange={(e) => handleStateChange(e.target.value)}
+                >
+                  {INDIAN_STATES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-              {isHi ? "फसल" : "Commodity"}
-            </span>
-            <select
-              className={fieldClass}
-              value={draft.commodity}
-              disabled={!draft.district || draft.market === ALL || loading}
-              onChange={(e) =>
-                setDraft((d) => ({
-                  ...d,
-                  commodity: e.target.value,
-                  grade: ALL,
-                }))
-              }
-            >
-              <option value={ALL}>{isHi ? "फसल चुनें" : "Select commodity"}</option>
-              {commodities.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </label>
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                  {isHi ? "जिला" : "District"}
+                </span>
+                <select
+                  className={fieldClass}
+                  value={draft.district}
+                  disabled={!draft.state}
+                  onChange={(e) => handleDistrictChange(e.target.value)}
+                >
+                  <option value="">{isHi ? "जिला चुनें" : "Select district"}</option>
+                  {districtOptions.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-              {isHi ? "ग्रेड" : "Grade"}
-            </span>
-            <select
-              className={fieldClass}
-              value={draft.grade}
-              disabled={!draft.district || draft.market === ALL || draft.commodity === ALL || loading}
-              onChange={(e) => setDraft((d) => ({ ...d, grade: e.target.value }))}
-            >
-              <option value={ALL}>{isHi ? "ग्रेड चुनें" : "Select grade"}</option>
-              {grades.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                  {isHi ? "मंडी" : "Market"}
+                </span>
+                <select
+                  className={fieldClass}
+                  value={draft.market}
+                  disabled={!draft.district || loading}
+                  onChange={(e) =>
+                    setDraft((d) => ({
+                      ...d,
+                      market: e.target.value,
+                      commodity: ALL,
+                      grade: ALL,
+                    }))
+                  }
+                >
+                  <option value={ALL}>{isHi ? "मंडी चुनें" : "Select market"}</option>
+                  {cascade.markets.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-        <div className="mt-5 flex flex-wrap gap-2 relative z-10">
-          <button
-            type="button"
-            onClick={applyFilters}
-            disabled={loading}
-            className="flex-1 sm:flex-none rounded-[1.1rem] bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-3 text-[13px] font-bold text-white shadow-md shadow-emerald-900/20 transition-all active:scale-[0.97] disabled:opacity-60"
-          >
-            {isHi ? "लागू करें (Apply)" : "Apply Filters"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setShowFavourites(!showFavourites);
-              setPage(1);
-            }}
-            className={cn(
-              "flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-[1.1rem] border px-6 py-3 text-[13px] font-bold shadow-sm transition-all active:scale-[0.97]",
-              showFavourites 
-                ? "border-amber-400 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400" 
-                : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:bg-[var(--av-surface)]"
-            )}
-          >
-            <Star className={cn("h-4 w-4", showFavourites ? "fill-amber-500 text-amber-500" : "")} />
-            {isHi ? (showFavourites ? "पसंदीदा (ON)" : "पसंदीदा") : (showFavourites ? "Favourites (ON)" : "Favourites")}
-          </button>
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="flex-1 sm:flex-none rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-6 py-3 text-[13px] font-bold text-[var(--av-text-secondary)] shadow-sm transition-all hover:bg-[var(--av-surface)] active:scale-[0.97]"
-          >
-            {isHi ? "साफ करें (Clear)" : "Clear"}
-          </button>
-        </div>
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                  {isHi ? "फसल" : "Commodity"}
+                </span>
+                <select
+                  className={fieldClass}
+                  value={draft.commodity}
+                  disabled={!draft.district || draft.market === ALL || loading}
+                  onChange={(e) =>
+                    setDraft((d) => ({
+                      ...d,
+                      commodity: e.target.value,
+                      grade: ALL,
+                    }))
+                  }
+                >
+                  <option value={ALL}>{isHi ? "फसल चुनें" : "Select commodity"}</option>
+                  {commodities.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                  {isHi ? "ग्रेड" : "Grade"}
+                </span>
+                <select
+                  className={fieldClass}
+                  value={draft.grade}
+                  disabled={!draft.district || draft.market === ALL || draft.commodity === ALL || loading}
+                  onChange={(e) => setDraft((d) => ({ ...d, grade: e.target.value }))}
+                >
+                  <option value={ALL}>{isHi ? "ग्रेड चुनें" : "Select grade"}</option>
+                  {grades.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2 relative z-10">
+              <button
+                type="button"
+                onClick={applyFilters}
+                disabled={loading}
+                className="flex-1 sm:flex-none rounded-[1.1rem] bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-2.5 text-[13px] font-bold text-white shadow-md shadow-emerald-900/20 transition-all active:scale-[0.97] disabled:opacity-60"
+              >
+                {isHi ? "लागू करें (Apply)" : "Apply Filters"}
+              </button>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="flex-1 sm:flex-none rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-5 py-2.5 text-[13px] font-bold text-[var(--av-text-secondary)] shadow-sm transition-all hover:bg-[var(--av-surface)] active:scale-[0.97]"
+              >
+                {isHi ? "साफ करें (Clear)" : "Clear"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Header & Search */}

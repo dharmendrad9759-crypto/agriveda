@@ -142,9 +142,14 @@ const MORE_JOBS: {
     href: "/alerts",
     imageSrc: "/images/jobs/job-alerts.jpg",
   },
+  {
+    id: "spray-rotation",
+    hi: "स्प्रे चक्र व लॉग",
+    en: "Spray rotation log",
+    href: "/spray-rotation",
+    imageSrc: "/images/jobs/job-spray-avoid.jpg",
+  },
 ];
-
-const MORE_JOBS_FIRST = 6;
 
 
 function daysSince(dateStr: string): number | null {
@@ -187,7 +192,6 @@ export default function AgriVedaHome() {
   const { data: farm } = useFarmData();
   const { history: aiHistory } = useAIHistory();
   const lastScan = aiHistory[0];
-  const [showMoreTools, setShowMoreTools] = useState(false);
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
 
@@ -454,21 +458,24 @@ export default function AgriVedaHome() {
           </motion.section>
         ) : null}
 
-        {/* More tools — premium list view */}
+        {/* Farm tools & utilities — clean balanced grid */}
         <motion.section {...fade(0.07)}>
-          <div className="mb-3 flex items-center gap-2 px-1 mt-4">
-            <h2 className="text-[16px] font-bold tracking-tight text-[var(--av-text-primary)]">
-              {isHi ? "और काम (More Options)" : "More Options"}
+          <div className="mb-3 flex items-center justify-between px-1 mt-4">
+            <h2 className="text-[16px] font-extrabold tracking-tight text-[var(--av-text-primary)]">
+              {isHi ? "खेत के अन्य टूल्स (Farm Tools)" : "Farm Tools & Services"}
             </h2>
+            <span className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+              {isHi ? "8 सुविधाएँ" : "8 Tools"}
+            </span>
           </div>
           
           <div className="grid grid-cols-1 gap-2.5 px-0.5 sm:grid-cols-2">
-            {(showMoreTools ? MORE_JOBS : MORE_JOBS.slice(0, MORE_JOBS_FIRST)).map((job) => (
+            {MORE_JOBS.map((job) => (
               <AppLink
                 key={job.id}
                 href={job.href}
                 onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
-                className="group flex items-center gap-3 overflow-hidden rounded-2xl border border-emerald-900/5 bg-[var(--av-surface)] p-2.5 shadow-[0_6px_20px_-12px_rgba(11,61,40,0.15)] transition active:scale-[0.98] dark:border-emerald-800/20 dark:shadow-none"
+                className="group flex items-center gap-3 overflow-hidden rounded-2xl border border-emerald-900/10 bg-[var(--av-surface)] p-2.5 shadow-[0_4px_16px_-8px_rgba(11,61,40,0.12)] transition hover:border-emerald-500/30 active:scale-[0.98] dark:border-emerald-800/20 dark:shadow-none"
               >
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-black/5 dark:border-white/5">
                   <Image
@@ -481,36 +488,19 @@ export default function AgriVedaHome() {
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14px] font-bold text-[var(--av-text-primary)]">
+                  <p className="truncate text-[14px] font-bold text-[var(--av-text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
                     {isHi ? job.hi : job.en}
                   </p>
                   <p className="truncate text-[11px] font-semibold text-[var(--av-text-muted)]">
                     {isHi ? job.en : job.hi}
                   </p>
                 </div>
-                <div className="mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400">
-                  <ChevronRight className="h-3.5 w-3.5" />
+                <div className="mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  <ChevronRight className="h-4 w-4" />
                 </div>
               </AppLink>
             ))}
           </div>
-
-          <button
-            type="button"
-            onClick={() => setShowMoreTools((v) => !v)}
-            className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-[1.1rem] border border-emerald-900/10 bg-[var(--av-surface)] py-3 text-[13px] font-bold text-[var(--av-text-secondary)] shadow-[0_10px_28px_-18px_rgba(11,61,40,0.25)] transition active:bg-emerald-50 dark:border-emerald-800/20 dark:active:bg-emerald-900/20"
-          >
-            {showMoreTools
-              ? isHi
-                ? "कम दिखाओ (Show Less)"
-                : "Show less"
-              : isHi
-                ? "और काम देखो (See More)"
-                : "See more jobs"}
-            <ArrowRight
-              className={cn("h-4 w-4 transition-transform", showMoreTools && "rotate-90")}
-            />
-          </button>
         </motion.section>
 
         {extraFields.length > 0 ? (

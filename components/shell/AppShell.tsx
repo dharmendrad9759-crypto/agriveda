@@ -7,7 +7,7 @@ import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import AppLink from "@/components/ui/AppLink";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Breadcrumb {
   label: string;
@@ -127,6 +127,10 @@ export default function AppShell({
     );
   }
 
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const showBackOnMobile = !isHome || Boolean(backHref);
+
   return (
     <div className={cn("av-page min-w-0 font-sans", className)}>
       <Comp
@@ -139,52 +143,88 @@ export default function AppShell({
             })}
         className="mx-auto w-full min-w-0 max-w-lg overflow-x-hidden px-3 py-3 pb-28 sm:max-w-2xl sm:px-4 sm:py-4 md:max-w-4xl lg:max-w-7xl lg:px-6 lg:pb-8 lg:pt-5"
       >
-        {(backHref || (breadcrumbs && breadcrumbs.length > 0)) && (
-          <div className="mb-3 flex items-start gap-2 lg:mb-4">
-            <button
-              type="button"
-              onClick={handleBack}
-              aria-label="Back"
-              className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 text-[var(--av-text-primary)] shadow-[var(--av-shadow-sm)] backdrop-blur transition hover:border-[var(--av-accent)] hover:text-[var(--av-accent)] active:scale-95"
-            >
-              <ArrowLeft className="h-[18px] w-[18px]" />
-            </button>
-            {breadcrumbs && breadcrumbs.length > 0 ? (
-              <nav className={`min-w-0 flex flex-wrap items-center gap-1 pt-1 ${AV.micro}`}>
-                {breadcrumbs.map((crumb, i) => (
-                  <span key={`${crumb.label}-${i}`} className="flex items-center gap-1 text-[var(--av-text-muted)]">
-                    {i > 0 && <ChevronRight className="h-3 w-3" />}
-                    {crumb.href ? (
-                      <AppLink href={crumb.href} className="hover:text-[var(--av-accent)]">
-                        {crumb.label}
-                      </AppLink>
-                    ) : (
-                      <span className="text-[var(--av-text-secondary)]">{crumb.label}</span>
-                    )}
-                  </span>
-                ))}
-              </nav>
-            ) : null}
-          </div>
-        )}
-
-        {(title || subtitle || actions) && (
-          <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between lg:mb-6">
-            <div className="flex min-w-0 items-start gap-2.5">
-              {title ? (
-                <span
-                  aria-hidden
-                  className="mt-1.5 h-6 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-emerald-500 to-teal-600 lg:h-7"
-                />
-              ) : null}
-              <div className="min-w-0">
-                {title && <h1 className={AV.pageTitle}>{title}</h1>}
-                {subtitle && <p className={AV.pageSubtitle}>{subtitle}</p>}
+        {/* Mobile Unified Sticky App Bar (< lg) */}
+        {!isHome && (title || showBackOnMobile || actions) && (
+          <header className="sticky top-0 z-30 -mx-3 -mt-3 mb-3 border-b border-emerald-500/10 bg-[var(--av-surface)]/90 px-3 py-2.5 backdrop-blur-xl sm:-mx-4 sm:-mt-4 sm:px-4 lg:hidden">
+            <div className="flex items-center justify-between gap-2.5">
+              <div className="flex min-w-0 items-center gap-2">
+                {showBackOnMobile && (
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    aria-label="Back"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-primary)] shadow-sm active:scale-95"
+                  >
+                    <ArrowLeft className="h-[18px] w-[18px]" />
+                  </button>
+                )}
+                <div className="min-w-0">
+                  {title && (
+                    <h1 className="truncate text-[15px] font-extrabold leading-tight tracking-tight text-[var(--av-text-primary)]">
+                      {title}
+                    </h1>
+                  )}
+                  {subtitle && (
+                    <p className="truncate text-[11px] font-medium text-[var(--av-text-muted)]">
+                      {subtitle}
+                    </p>
+                  )}
+                </div>
               </div>
+              {actions && <div className="shrink-0">{actions}</div>}
             </div>
-            {actions && <div className="shrink-0">{actions}</div>}
           </header>
         )}
+
+        {/* Desktop Spacious Header (lg+) */}
+        <div className="hidden lg:block">
+          {(backHref || (breadcrumbs && breadcrumbs.length > 0)) && (
+            <div className="mb-4 flex items-start gap-2">
+              <button
+                type="button"
+                onClick={handleBack}
+                aria-label="Back"
+                className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 text-[var(--av-text-primary)] shadow-[var(--av-shadow-sm)] backdrop-blur transition hover:border-[var(--av-accent)] hover:text-[var(--av-accent)] active:scale-95"
+              >
+                <ArrowLeft className="h-[18px] w-[18px]" />
+              </button>
+              {breadcrumbs && breadcrumbs.length > 0 ? (
+                <nav className={`min-w-0 flex flex-wrap items-center gap-1 pt-1 ${AV.micro}`}>
+                  {breadcrumbs.map((crumb, i) => (
+                    <span key={`${crumb.label}-${i}`} className="flex items-center gap-1 text-[var(--av-text-muted)]">
+                      {i > 0 && <ChevronRight className="h-3 w-3" />}
+                      {crumb.href ? (
+                        <AppLink href={crumb.href} className="hover:text-[var(--av-accent)]">
+                          {crumb.label}
+                        </AppLink>
+                      ) : (
+                        <span className="text-[var(--av-text-secondary)]">{crumb.label}</span>
+                      )}
+                    </span>
+                  ))}
+                </nav>
+              ) : null}
+            </div>
+          )}
+
+          {(title || subtitle || actions) && (
+            <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex min-w-0 items-start gap-2.5">
+                {title ? (
+                  <span
+                    aria-hidden
+                    className="mt-1.5 h-6 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-emerald-500 to-teal-600 lg:h-7"
+                  />
+                ) : null}
+                <div className="min-w-0">
+                  {title && <h1 className={AV.pageTitle}>{title}</h1>}
+                  {subtitle && <p className={AV.pageSubtitle}>{subtitle}</p>}
+                </div>
+              </div>
+              {actions && <div className="shrink-0">{actions}</div>}
+            </header>
+          )}
+        </div>
 
         {hero}
 

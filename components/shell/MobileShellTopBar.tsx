@@ -2,7 +2,7 @@
 
 import AppLink from "@/components/ui/AppLink";
 import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
-import { Bell, MapPin, User } from "lucide-react";
+import { Bell, MapPin, Languages } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { farmerPlaceLine } from "@/lib/farmerPlaceName";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
@@ -10,10 +10,12 @@ import { BRAND } from "@/lib/brand";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { countInAppIrrigationAlerts, onIrrigationAlertsChanged } from "@/lib/irrigationReminders";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function MobileShellTopBar() {
+  const pathname = usePathname();
   const { profile } = useFarmerProfile();
-  const { t } = useLocale();
+  const { t, locale, setLocale } = useLocale();
   const [irrCount, setIrrCount] = useState(0);
 
   useEffect(() => {
@@ -22,17 +24,22 @@ export default function MobileShellTopBar() {
     return onIrrigationAlertsChanged(refresh);
   }, []);
 
+  // Only show the global brand header on the root home page.
+  // Subpages have their own unified, sticky back-navigation app bar inside AppShell.
+  if (pathname !== "/") {
+    return null;
+  }
+
   const place = farmerPlaceLine(profile);
   const hasLocation = place.ok;
   const shortPlace = place.short || "स्थान डालें";
-  const initials = (profile.name.trim() || "क")
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? "")
-    .join("");
+
+  const toggleLanguage = () => {
+    setLocale(locale === "hi" ? "en" : "hi");
+  };
 
   return (
-    <header className="av-topbar sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--av-surface)]/78 px-3 py-2.5 backdrop-blur-xl lg:hidden">
+    <header className="av-topbar sticky top-0 z-40 border-b border-emerald-500/10 bg-[var(--av-surface)]/85 px-3 py-2.5 backdrop-blur-xl lg:hidden">
       <div className="mx-auto flex max-w-lg items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <NavDrawerTrigger variant="menu" />
@@ -61,9 +68,22 @@ export default function MobileShellTopBar() {
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
+          {/* One-tap Language Toggle */}
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            className="flex h-9 items-center gap-1 rounded-xl border border-emerald-500/20 bg-[var(--av-surface)] px-2.5 text-[11px] font-extrabold text-[var(--av-text-primary)] shadow-sm active:scale-95 hover:border-emerald-500/40"
+            aria-label={locale === "hi" ? "Switch to English" : "हिंदी में बदलें"}
+            title={locale === "hi" ? "Switch to English" : "हिंदी में बदलें"}
+          >
+            <Languages className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>{locale === "hi" ? "EN" : "हिन्दी"}</span>
+          </button>
+
+          {/* Notifications / Alerts */}
           <AppLink
             href="/alerts"
-            className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-500/15 bg-[var(--av-surface)] text-[var(--av-text-secondary)] shadow-sm transition hover:border-emerald-500/35 hover:text-[var(--av-accent)]"
+            className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/15 bg-[var(--av-surface)] text-[var(--av-text-secondary)] shadow-sm transition hover:border-emerald-500/35 hover:text-[var(--av-accent)] active:scale-95"
             aria-label={t("shellNotifications")}
           >
             <Bell className="h-4 w-4" />
@@ -72,17 +92,6 @@ export default function MobileShellTopBar() {
                 {irrCount > 9 ? "9+" : irrCount}
               </span>
             ) : null}
-          </AppLink>
-          <AppLink
-            href="/profile"
-            className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-100 to-teal-50 text-[12px] font-extrabold text-emerald-800 shadow-sm dark:from-emerald-900/50 dark:to-teal-950/40 dark:text-emerald-200"
-            aria-label={t("navProfile")}
-          >
-            {initials ? (
-              <span>{initials}</span>
-            ) : (
-              <User className="h-4 w-4" />
-            )}
           </AppLink>
         </div>
       </div>

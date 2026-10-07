@@ -18,7 +18,6 @@ import OfflineBanner from "@/components/layout/OfflineBanner";
 import PullToRefresh from "@/components/layout/PullToRefresh";
 import LocationBootstrap from "@/components/location/LocationBootstrap";
 import PageReveal from "@/components/motion/PageReveal";
-import Navbar from "@/components/Navbar";
 import FarmerOnboardingGate from "@/components/onboarding/FarmerOnboardingGate";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import FieldModeBootstrap from "@/components/settings/FieldModeBootstrap";
@@ -77,7 +76,6 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
                       <AppSidebar />
                       <div className="relative z-10 flex min-h-screen min-w-0 flex-1 flex-col overflow-x-hidden">
                         <MobileShellTopBar />
-                        <Navbar />
                         <ShellTopBar />
                         <main className="min-w-0 flex-grow overflow-x-hidden bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">
                           <PageReveal>{children}</PageReveal>
