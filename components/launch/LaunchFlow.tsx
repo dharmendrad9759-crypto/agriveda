@@ -64,6 +64,12 @@ function prefersReducedMotion(): boolean {
 
 function resolvePhase(): Phase {
   if (typeof window === "undefined") return "checking";
+  if (
+    window.location.search.includes("intro=1") ||
+    window.location.search.includes("preview=intro")
+  ) {
+    return "intro";
+  }
   // Always show splash once per cold process
   if (!splashAlreadyShown()) return "splash";
   

@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   Leaf,
 } from "lucide-react";
+import CropGuideScreen from "@/components/crops/CropGuideFasalPustika";
 import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { isHindiLocale, tf, type FarmerUiKey } from "@/lib/i18n/farmer-ui";
@@ -59,6 +60,7 @@ const AREA_PRESETS = ["0.5", "1", "2", "5"];
 
 const PLAN_TAB_IDS = [
   "Overview",
+  "Guide",
   "Nourishment",
   "Protection",
   "Harvest",
@@ -130,6 +132,7 @@ export default function CropPlannerClient() {
     () =>
       [
         { id: "Overview" as const, label: t("plannerTabWork"), hint: t("plannerTabHintStages") },
+        { id: "Guide" as const, label: hi ? "📖 फसल पुस्तिका" : "📖 Crop Guide", hint: hi ? "4 मुख्य चरण गाइड" : "4-Stage Handbook" },
         { id: "Nourishment" as const, label: hi ? "खाद-पानी" : "Nourishment", hint: hi ? "सिंचाई और पोषण" : "Water & Fertilizer" },
         { id: "Protection" as const, label: hi ? "फसल सुरक्षा" : "Protection", hint: hi ? "कीट, रोग और खरपतवार" : "Pest, Disease & Weed" },
         { id: "Harvest" as const, label: cropHarvestLabel(crop, hi), hint: t("plannerTabHintYield") },
@@ -476,6 +479,14 @@ export default function CropPlannerClient() {
       );
     }
 
+    if (activeTab === "Guide") {
+      return (
+        <div className="xl:col-span-12 space-y-4">
+          <CropGuideScreen cropSlug={crop.slug} />
+        </div>
+      );
+    }
+
     if (activeTab === "Nourishment") {
       const waterLines = farmerSpeakLines(
         mgmt?.irrigationSchedule?.length
@@ -592,6 +603,17 @@ export default function CropPlannerClient() {
               </ul>
             </PlanPanel>
           )}
+
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={() => setActiveTab("Guide")}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-800 dark:text-emerald-200 transition hover:bg-emerald-500/20"
+            >
+              <span>📖 {hi ? "विस्तृत फसल पुस्तिका (4 चरण व FRAC/IRAC गाइड) खोलें" : "Open Full 4-Stage Crop Guide"}</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       );
     }
