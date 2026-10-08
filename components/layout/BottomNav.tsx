@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -138,42 +137,40 @@ export default function BottomNav() {
           <AppLink
             href="/ai-doctor"
             onClick={() => softTap(16)}
-            className="relative -mt-7 flex min-w-[72px] flex-col items-center gap-1"
+            className="group relative -mt-7 flex min-w-[76px] flex-col items-center"
             aria-label={t("toolAi")}
           >
             {!reduced && (
               <motion.span
                 aria-hidden
-                className="absolute top-0 h-14 w-14 rounded-full bg-emerald-400/35 blur-md"
-                animate={{ opacity: [0.35, 0.7, 0.35], scale: [1, 1.12, 1] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-1 h-16 w-16 rounded-full bg-emerald-500/40 blur-lg"
+                animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.15, 1] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
             <motion.span
               className={cn(
-                "relative h-14 w-14 overflow-hidden rounded-full shadow-[0_8px_28px_rgba(5,150,105,0.55)] ring-2 ring-white/90",
-                aiActive && "ring-4 ring-emerald-400/45"
+                "relative flex h-[58px] w-[58px] items-center justify-center rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 text-white shadow-[0_12px_30px_rgba(5,150,105,0.55),0_4px_10px_rgba(0,0,0,0.15)] ring-4 ring-white dark:ring-slate-900 transition-all duration-200",
+                aiActive
+                  ? "ring-4 ring-emerald-300 dark:ring-emerald-500 shadow-[0_12px_36px_rgba(5,150,105,0.7)] scale-105"
+                  : "group-hover:scale-105"
               )}
               whileTap={reduced ? undefined : { scale: 0.92 }}
-              whileHover={reduced ? undefined : { scale: 1.04 }}
+              whileHover={reduced ? undefined : { scale: 1.06 }}
             >
-              <Image
-                src="/images/home/home-cta-scan.jpg"
-                alt=""
-                fill
-                sizes="56px"
-                className="object-cover object-center"
-                priority
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-2 top-1 h-4 rounded-full bg-gradient-to-b from-white/35 to-transparent blur-[1px]"
               />
-              <span className="absolute inset-0 bg-emerald-950/35" />
-              <span className="absolute inset-0 flex items-center justify-center">
-                <Camera className="h-6 w-6 text-white drop-shadow-md" strokeWidth={2.5} />
-              </span>
+              <Camera
+                className="relative z-10 h-7 w-7 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] transition-transform group-hover:scale-110"
+                strokeWidth={2.4}
+              />
             </motion.span>
             <span
               className={cn(
-                "max-w-[76px] truncate text-center text-[10px] font-bold",
-                aiActive ? "text-emerald-600 dark:text-emerald-300" : "theme-text-muted"
+                "mt-1 max-w-[76px] truncate text-center text-[10.5px] font-extrabold tracking-tight transition-colors",
+                aiActive ? "text-emerald-600 dark:text-emerald-300 font-black" : "theme-text-muted group-hover:text-emerald-600"
               )}
             >
               {t("toolAi")}

@@ -50,6 +50,7 @@ import {
     ChevronUp,
     Leaf,
     Loader2,
+    Pill,
     ShieldCheck,
     Stethoscope,
 } from "lucide-react";
@@ -432,182 +433,217 @@ export default function AIDoctorPage() {
               </div>
             )}
 
-            <DarkCard className="!p-3.5 sm:!p-5">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
-                  <Stethoscope className="h-4 w-4" />
-                </span>
-                <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">नतीजा</h2>
-              </div>
-
-              {isScanning && (
-                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/50 py-10 text-center dark:bg-emerald-950/20 sm:py-12">
-                  <Loader2 className="mx-auto h-9 w-9 animate-spin text-emerald-500 sm:h-10 sm:w-10" />
-                  <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                    समाधान तैयार हो रहा है…
-                  </p>
+            {!result && (
+              <DarkCard className="!p-3.5 sm:!p-5">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                    <Stethoscope className="h-4 w-4" />
+                  </span>
+                  <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">नतीजा</h2>
                 </div>
-              )}
 
-              {!isScanning && !result && (
-                <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface-inset)] py-10 text-center sm:py-12">
-                  <Stethoscope className="mx-auto h-9 w-9 text-[var(--av-text-muted)] sm:h-10 sm:w-10" />
-                  <p className="mt-3 text-sm font-semibold text-[var(--av-text-muted)]">
-                    परिणाम यहाँ दिखेगा
-                  </p>
-                </div>
-              )}
-
-              {result && !isScanning && (() => {
-                const kind = guessDiagnosisKind(result, selectedCrop);
-                const speechText = buildDiagnosisSpeechText(result);
-                return (
-                <div className="space-y-3.5 animate-fade-in sm:space-y-4">
-                  <DiagnosisListenButton text={speechText} />
-
-                  {result.visualObservations && (
-                    <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3.5 py-3">
-                      <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
-                        {previewUrl ? "फोटो में क्या दिखा" : "समस्या क्या दिखी?"}
-                      </p>
-                      <p className="mt-1.5 text-[13px] leading-snug text-[var(--av-text-primary)]">
-                        {simpleObservation(result.visualObservations)}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-3.5 sm:p-4">
-                    <p className="text-[11px] font-bold text-red-600 dark:text-red-400">
-                      {likelyThreatLabel(kind)}
+                {isScanning ? (
+                  <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/50 py-10 text-center dark:bg-emerald-950/20 sm:py-12">
+                    <Loader2 className="mx-auto h-9 w-9 animate-spin text-emerald-500 sm:h-10 sm:w-10" />
+                    <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                      समाधान तैयार हो रहा है…
                     </p>
-                    <h3 className="mt-1 text-xl font-black text-[var(--av-text-primary)] sm:text-2xl">
-                      {result.diseaseName}
-                    </h3>
-                    {result.pathogen && result.pathogen !== "—" ? (
-                      <p className="mt-1 text-sm text-[var(--av-text-muted)]">
-                        कारण:{" "}
-                        <span className="font-semibold text-amber-700 dark:text-amber-400">
-                          {result.pathogen}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface-inset)] py-10 text-center sm:py-12">
+                    <Stethoscope className="mx-auto h-9 w-9 text-[var(--av-text-muted)] sm:h-10 sm:w-10" />
+                    <p className="mt-3 text-sm font-semibold text-[var(--av-text-muted)]">
+                      परिणाम यहाँ दिखेगा
+                    </p>
+                  </div>
+                )}
+              </DarkCard>
+            )}
+
+            {result && !isScanning && (() => {
+              const kind = guessDiagnosisKind(result, selectedCrop);
+              const speechText = buildDiagnosisSpeechText(result);
+              return (
+                <div className="rounded-3xl border border-slate-200/70 bg-[#F8F9FA] p-3 sm:p-4 dark:border-slate-800/80 dark:bg-slate-950/60 animate-fade-in">
+                  {/* Card 1: Primary Diagnosis & Observations */}
+                  <div className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                          <Stethoscope className="h-4 w-4" />
                         </span>
-                      </p>
-                    ) : null}
-                    {result.riskLevel && result.riskLevel !== "—" ? (
-                      <p className="mt-2 text-xs font-bold text-red-500">
-                        खतरा: {result.riskLevel}
-                      </p>
-                    ) : null}
+                        <div>
+                          <h2 className="text-[15px] font-extrabold text-slate-900 dark:text-white">रोग पहचान रिपोर्ट</h2>
+                          <p className="text-[11px] text-[var(--av-text-muted)]">एआई डॉक्टर विश्लेषण</p>
+                        </div>
+                      </div>
+                      <DiagnosisListenButton text={speechText} />
+                    </div>
+
+                    {result.visualObservations && (
+                      <div className="mt-3.5 rounded-xl border border-slate-200/70 bg-slate-50/80 px-3.5 py-3 dark:border-slate-800 dark:bg-slate-800/50">
+                        <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
+                          {previewUrl ? "फोटो में क्या दिखा:" : "समस्या क्या दिखी:"}
+                        </p>
+                        <p className="mt-1 text-[13px] leading-relaxed text-slate-800 dark:text-slate-200">
+                          {simpleObservation(result.visualObservations)}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="mt-3.5 rounded-2xl border border-rose-500/20 bg-rose-50/60 p-4 dark:bg-rose-950/20 sm:p-4.5">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-2.5 py-0.5 text-[11px] font-extrabold text-rose-800 dark:bg-rose-900/50 dark:text-rose-300">
+                        {likelyThreatLabel(kind)}
+                      </div>
+                      <h3 className="mt-2 text-xl font-black text-slate-900 dark:text-white sm:text-2xl">
+                        {result.diseaseName}
+                      </h3>
+                      {result.pathogen && result.pathogen !== "—" ? (
+                        <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                          कारण: <span className="font-semibold text-amber-700 dark:text-amber-300">{result.pathogen}</span>
+                        </p>
+                      ) : null}
+                      {result.riskLevel && result.riskLevel !== "—" ? (
+                        <p className="mt-2 text-xs font-bold text-rose-600 dark:text-rose-400">
+                          खतरा स्तर: {result.riskLevel}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="mt-3.5 grid grid-cols-2 gap-2.5 text-center">
+                      <div className="rounded-xl border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-800/50">
+                        <p className="text-[11px] font-medium text-[var(--av-text-muted)]">गंभीरता (Severity)</p>
+                        <p className="mt-0.5 font-black text-rose-600 dark:text-rose-400">{severityHi(result.severity)}</p>
+                      </div>
+                      <div className="rounded-xl border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-800/50">
+                        <p className="text-[11px] font-medium text-[var(--av-text-muted)]">फसल अवस्था (Stage)</p>
+                        <p className="mt-0.5 font-black text-slate-900 dark:text-white">{result.stage}</p>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-center">
-                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
-                      <p className="text-[10px] text-[var(--av-text-muted)]">गंभीरता</p>
-                      <p className="font-black text-red-500">{severityHi(result.severity)}</p>
-                    </div>
-                    <div className="rounded-xl bg-[var(--av-surface-inset)] p-2 sm:p-2.5">
-                      <p className="text-[10px] text-[var(--av-text-muted)]">अवस्था</p>
-                      <p className="font-black text-[var(--av-text-primary)]">{result.stage}</p>
-                    </div>
+                  {/* Card 2: "यह क्यों हुआ?" (Causes & Why It Happens) */}
+                  <div className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+                    <button
+                      type="button"
+                      onClick={() => setShowWhy(!showWhy)}
+                      className="flex w-full items-center justify-between text-left"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                          <ShieldCheck className="h-4.5 w-4.5" />
+                        </span>
+                        <div>
+                          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">यह क्यों हुआ?</h3>
+                          <p className="text-[11px] text-[var(--av-text-muted)]">रोग फैलने के कारण व अनुकूल मौसम</p>
+                        </div>
+                      </div>
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        {showWhy ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </span>
+                    </button>
+                    {showWhy && (
+                      <ul className="mt-3.5 space-y-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+                        {[
+                          ...result.whyItHappens,
+                          ...result.environmentalFactors,
+                        ]
+                          .map((w) => w.trim())
+                          .filter(Boolean)
+                          .map((w, i) => (
+                            <li key={i} className="rounded-xl bg-slate-50 p-2.5 text-xs font-medium leading-relaxed text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+                              • {w}
+                            </li>
+                          ))}
+                      </ul>
+                    )}
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setShowWhy(!showWhy)}
-                    className="flex w-full min-h-[48px] items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-left"
-                  >
-                    <span className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
-                      <ShieldCheck className="h-4 w-4" />
-                      यह क्यों हुआ?
-                    </span>
-                    {showWhy ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                  </button>
-                  {showWhy && (
-                    <ul className="space-y-2 text-sm text-[var(--av-text-muted)]">
-                      {[
-                        ...result.whyItHappens,
-                        ...result.environmentalFactors,
-                      ]
-                        .map((w) => w.trim())
-                        .filter(Boolean)
-                        .map((w, i) => (
-                          <li key={i} className="rounded-lg bg-[var(--av-surface-inset)] p-2">
-                            • {w}
+                  {/* Card 3: "समाधान" (Field Management & Cultural Actions) */}
+                  <div className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+                    <div className="flex items-center gap-2.5 pb-2.5">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                        <Leaf className="h-4.5 w-4.5" />
+                      </span>
+                      <div>
+                        <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">समाधान</h3>
+                        <p className="text-[11px] text-[var(--av-text-muted)]">खेत में करने योग्य प्राथमिक उपाय</p>
+                      </div>
+                    </div>
+                    {result.treatments.length > 0 ? (
+                      <ul className="mt-2 space-y-2">
+                        {result.treatments.map((t, i) => (
+                          <li key={i} className="rounded-xl border border-emerald-500/15 bg-emerald-50/40 p-2.5 text-xs font-medium leading-relaxed text-slate-800 dark:bg-emerald-950/20 dark:text-slate-200">
+                            • {formatFarmerDose(t)}
                           </li>
                         ))}
-                    </ul>
-                  )}
-
-                  <div className="space-y-3">
-                    <div className="rounded-xl border border-[var(--av-border)] p-3.5 sm:p-4">
-                      <p className="flex items-center gap-2 text-sm font-bold text-emerald-600">
-                        <Leaf className="h-4 w-4" />
-                        समाधान
+                      </ul>
+                    ) : (
+                      <p className="mt-2 text-xs text-[var(--av-text-muted)]">
+                        खेत के कदम नहीं मिले — नीचे दवा सेक्शन देखें।
                       </p>
-                      {result.treatments.length > 0 ? (
-                        <ul className="mt-2 space-y-1 text-sm text-[var(--av-text-muted)]">
-                          {result.treatments.map((t, i) => (
-                            <li key={i}>• {formatFarmerDose(t)}</li>
-                          ))}
-                        </ul>
+                    )}
+                  </div>
+
+                  {/* Card 4: "दवा व अनुशंसित मात्रा" (Medicines & Dosage) */}
+                  <div className="mb-4 rounded-2xl border border-emerald-500/20 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-emerald-500/30 dark:bg-slate-900 sm:p-5">
+                    <div className="flex items-center gap-2.5 pb-2.5">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white">
+                        <Pill className="h-4.5 w-4.5" />
+                      </span>
+                      <div>
+                        <h3 className="text-sm font-extrabold text-emerald-900 dark:text-emerald-300">दवा व अनुशंसित मात्रा</h3>
+                        <p className="text-[11px] text-[var(--av-text-muted)]">रासायनिक व जैविक उपचार खुराक</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-2.5 space-y-2.5">
+                      {result.activeIngredients.length > 0 ? (
+                        result.activeIngredients.map((ai, i) => (
+                          <div key={i} className="rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-3 dark:bg-emerald-950/30">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                                {ai.name}
+                              </p>
+                              <span className="shrink-0 rounded-md bg-emerald-600 px-2 py-0.5 text-[11px] font-extrabold text-white">
+                                {formatFarmerDose(ai.dose)}
+                              </span>
+                            </div>
+                            {ai.brands && ai.brands.length > 0 ? (
+                              <p className="mt-1.5 text-[11px] font-medium leading-snug text-slate-600 dark:text-slate-300">
+                                <span className="font-semibold text-amber-800 dark:text-amber-400">बाज़ार में: </span>
+                                {ai.brands.join(" · ")}
+                              </p>
+                            ) : null}
+                          </div>
+                        ))
                       ) : (
-                        <p className="mt-2 text-xs text-[var(--av-text-muted)]">
-                          खेत के कदम नहीं मिले — दवा सेक्शन देखें।
+                        <p className="text-xs text-[var(--av-text-muted)]">
+                          {kind === "virus"
+                            ? "वायरस की सीधी दवा नहीं — वेक्टर (सफेद मक्खी / थ्रिप्स) नियंत्रण करें व विशेषज्ञ से पूछें।"
+                            : "दवा का सुझाव नहीं मिला — विशेषज्ञ से पूछें।"}
                         </p>
                       )}
                     </div>
 
-                    <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
-                      <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
-                        दवा
-                      </p>
-                      <div className="mt-2 space-y-2">
-                        {result.activeIngredients.length > 0 ? (
-                          result.activeIngredients.map((ai, i) => (
-                            <div key={i} className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs">
-                              <p className="font-bold text-emerald-700 dark:text-emerald-300">
-                                {ai.name}
-                              </p>
-                              <p className="mt-0.5 text-[var(--av-text-muted)]">
-                                मात्रा: {formatFarmerDose(ai.dose)}
-                              </p>
-                              {ai.brands && ai.brands.length > 0 ? (
-                                <p className="mt-1 text-[11px] font-semibold leading-snug text-amber-800 dark:text-amber-200">
-                                  बाज़ार में: {ai.brands.join(" · ")}
-                                </p>
-                              ) : null}
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-xs text-[var(--av-text-muted)]">
-                            {kind === "virus"
-                              ? "वायरस की सीधी दवा नहीं — वेक्टर नियंत्रण / विशेषज्ञ से पूछें।"
-                              : "दवा का सुझाव नहीं मिला — विशेषज्ञ से पूछें।"}
-                          </p>
-                        )}
+                    {result.spraySticker ? (
+                      <div className="mt-3 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2.5 dark:bg-sky-950/20">
+                        <p className="text-[11px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
+                        <p className="mt-0.5 text-xs text-sky-900 dark:text-sky-200">
+                          {formatFarmerDose(result.spraySticker)}
+                        </p>
                       </div>
-
-                      {result.spraySticker ? (
-                        <div className="mt-3 rounded-lg border border-sky-500/20 bg-sky-500/10 px-3 py-2">
-                          <p className="text-[11px] font-bold text-sky-800 dark:text-sky-200">
-                            स्प्रे स्टिकर
-                          </p>
-                          <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                            {formatFarmerDose(result.spraySticker)}
-                          </p>
-                        </div>
-                      ) : null}
-                    </div>
+                    ) : null}
 
                     {result.recoveryTonics && result.recoveryTonics.length > 0 ? (
-                      <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3.5 sm:p-4">
-                        <p className="text-sm font-bold text-amber-900 dark:text-amber-200">
-                          रिकवरी टॉनिक
-                        </p>
-                        <p className="mt-1 text-[10px] text-[var(--av-text-muted)]">
+                      <div className="mt-3 rounded-xl border border-amber-500/25 bg-amber-50/60 p-3 dark:bg-amber-950/20">
+                        <p className="text-xs font-bold text-amber-900 dark:text-amber-200">रिकवरी टॉनिक</p>
+                        <p className="mt-0.5 text-[10.5px] text-[var(--av-text-muted)]">
                           {kind === "virus"
-                            ? "वायरस के बाद पौधा मज़बूत करने के लिए — वायरस की दवा नहीं"
+                            ? "वायरस के बाद पौधा मज़बूत करने के लिए (वायरस की दवा नहीं)"
                             : "रोग के बाद पौधा मज़बूत करने के लिए"}
                         </p>
-                        <ul className="mt-2 space-y-1 text-xs text-[var(--av-text-secondary)]">
+                        <ul className="mt-1.5 space-y-1 text-xs text-amber-900 dark:text-amber-300">
                           {result.recoveryTonics.map((tonic, i) => (
                             <li key={i}>• {formatFarmerDose(tonic)}</li>
                           ))}
@@ -615,60 +651,64 @@ export default function AIDoctorPage() {
                       </div>
                     ) : null}
 
-                    <p className="text-[10px] leading-snug text-[var(--av-text-muted)]">
-                      दवा लगाते समय लेबल पढ़ें।
+                    <p className="mt-3 text-[10.5px] leading-snug text-[var(--av-text-muted)]">
+                      ⚠️ दवा लगाते समय सुरक्षा किट पहनें व कंपनी का लेबल ध्यानपूर्वक पढ़ें।
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    disabled={referringExpert}
-                    onClick={async () => {
-                      if (!result || referringExpert) return;
-                      setReferringExpert(true);
-                      try {
-                        const slug = selectedCrop || OTHER_CROP.slug;
-                        const cropName = aiDoctorCropLabel(slug);
+                  {/* Card 5: Next Steps & Expert Referral */}
+                  <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+                    <button
+                      type="button"
+                      disabled={referringExpert}
+                      onClick={async () => {
+                        if (!result || referringExpert) return;
+                        setReferringExpert(true);
+                        try {
+                          const slug = selectedCrop || OTHER_CROP.slug;
+                          const cropName = aiDoctorCropLabel(slug);
 
-                        let photoRaw: string | null = null;
-                        if (previewUrl?.startsWith("data:")) {
-                          photoRaw = previewUrl;
-                        } else if (previewUrl) {
-                          photoRaw = await urlToDataUrl(previewUrl);
-                        } else if (selectedFile) {
-                          photoRaw = await new Promise((resolve) => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(String(reader.result));
-                            reader.onerror = () => resolve(null);
-                            reader.readAsDataURL(selectedFile);
+                          let photoRaw: string | null = null;
+                          if (previewUrl?.startsWith("data:")) {
+                            photoRaw = previewUrl;
+                          } else if (previewUrl) {
+                            photoRaw = await urlToDataUrl(previewUrl);
+                          } else if (selectedFile) {
+                            photoRaw = await new Promise((resolve) => {
+                              const reader = new FileReader();
+                              reader.onload = () => resolve(String(reader.result));
+                              reader.onerror = () => resolve(null);
+                              reader.readAsDataURL(selectedFile);
+                            });
+                          }
+                          const photoDataUrl = photoRaw
+                            ? await compressPhotoForReferral(photoRaw)
+                            : null;
+
+                          saveAiDoctorExpertReferral({
+                            cropSlug: slug,
+                            cropName,
+                            photoDataUrl,
+                            result,
+                            createdAt: new Date().toISOString(),
                           });
+                          router.push("/ask-query?from=ai-doctor");
+                        } finally {
+                          setReferringExpert(false);
                         }
-                        const photoDataUrl = photoRaw
-                          ? await compressPhotoForReferral(photoRaw)
-                          : null;
+                      }}
+                      className="flex w-full min-h-[50px] items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 py-3 text-center text-sm font-extrabold text-white shadow-md shadow-emerald-700/25 transition disabled:opacity-60"
+                    >
+                      {referringExpert ? "खोल रहे हैं…" : "विशेषज्ञ से और सलाह लें →"}
+                    </button>
 
-                        saveAiDoctorExpertReferral({
-                          cropSlug: slug,
-                          cropName,
-                          photoDataUrl,
-                          result,
-                          createdAt: new Date().toISOString(),
-                        });
-                        router.push("/ask-query?from=ai-doctor");
-                      } finally {
-                        setReferringExpert(false);
-                      }
-                    }}
-                    className="block w-full min-h-[48px] rounded-xl bg-emerald-700 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-emerald-700/20 disabled:opacity-60"
-                  >
-                    {referringExpert ? "खोल रहे हैं…" : "विशेषज्ञ से और सलाह लें →"}
-                  </button>
-
-                  <ShareOutbreakPrompt result={result} cropSlug={selectedCrop} photoUrl={previewUrl} />
+                    <div className="mt-3.5">
+                      <ShareOutbreakPrompt result={result} cropSlug={selectedCrop} photoUrl={previewUrl} />
+                    </div>
+                  </div>
                 </div>
-                );
-              })()}
-            </DarkCard>
+              );
+            })()}
 
             <AiDoctorRecentDiagnoses
               history={history}

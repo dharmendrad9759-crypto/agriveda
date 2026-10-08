@@ -140,22 +140,22 @@ function CropPickerButton({
       onClick={onClick}
       aria-pressed={active}
       aria-label={labelEn ? `${labelHi} (${labelEn})` : labelHi}
-      className={`flex w-[76px] shrink-0 flex-col items-center gap-1 rounded-2xl border-2 p-2 transition active:scale-[0.97] sm:w-[88px] sm:gap-1.5 sm:p-3 ${
+      className={`group flex w-[80px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border-2 p-2.5 transition-all duration-200 active:scale-[0.96] sm:w-[92px] ${
         active
-          ? "border-emerald-500 bg-emerald-50 shadow-[0_0_0_3px_rgba(16,185,129,0.2)] dark:bg-emerald-950/40"
-          : "border-[var(--av-border)] bg-[var(--av-surface)]"
+          ? "border-emerald-500 bg-emerald-50/90 shadow-md shadow-emerald-500/10 ring-2 ring-emerald-500/25 dark:bg-emerald-950/40"
+          : "border-slate-200/90 bg-white hover:border-emerald-300 dark:border-slate-800 dark:bg-[var(--av-surface)]"
       }`}
     >
       {children}
       <span
-        className={`w-full truncate text-center text-[10px] font-bold leading-tight sm:text-[11px] ${
+        className={`w-full truncate text-center text-[11px] font-extrabold leading-tight ${
           active ? "text-emerald-800 dark:text-emerald-200" : "text-[var(--av-text-primary)]"
         }`}
       >
         {labelHi}
       </span>
       {labelEn ? (
-        <span className="w-full truncate text-center text-[9px] font-medium leading-tight text-[var(--av-text-muted)]">
+        <span className="w-full truncate text-center text-[9.5px] font-medium leading-tight text-[var(--av-text-muted)]">
           {labelEn}
         </span>
       ) : null}
@@ -163,7 +163,7 @@ function CropPickerButton({
   );
 }
 
-/** Crop selection — Other Crops first, then horizontal scroll */
+/** Crop selection — Other Crops first, then horizontal scroll with standardized circular avatars */
 export function AiDoctorCropSelect({
   selectedCrop,
   onSelectCrop,
@@ -177,20 +177,27 @@ export function AiDoctorCropSelect({
   return (
     <DarkCard className="!p-3.5 sm:!p-5">
       <SectionLabel title="फसल चुनें" step={2} hint="फोटो वाली फसल चुनें" />
-      <div className="-mx-0.5 flex gap-2 overflow-x-auto px-0.5 pb-0.5 scrollbar-hide">
+      <div className="-mx-0.5 flex gap-2.5 overflow-x-auto px-0.5 pb-1 scrollbar-hide">
         <CropPickerButton
           active={otherActive}
           onClick={() => onSelectCrop(OTHER_CROP.slug)}
           labelHi={OTHER_CROP.nameHi}
           labelEn={OTHER_CROP.name}
         >
-          <span
-            className={`flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--av-surface-inset)] text-2xl sm:h-14 sm:w-14 sm:text-3xl ${
-              otherActive ? "ring-2 ring-emerald-500/40" : ""
+          <div
+            className={`relative flex h-13 w-13 items-center justify-center rounded-full p-0.5 transition-transform group-hover:scale-105 sm:h-14 sm:w-14 ${
+              otherActive
+                ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 bg-emerald-100/60 dark:bg-emerald-900/40"
+                : "ring-1 ring-slate-200 dark:ring-slate-700 bg-[var(--av-surface-inset)]"
             }`}
           >
-            {OTHER_CROP.emoji}
-          </span>
+            <span className="text-2xl sm:text-3xl">{OTHER_CROP.emoji}</span>
+            {otherActive && (
+              <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white ring-2 ring-white dark:ring-slate-900">
+                <CheckCircle2 className="h-3 w-3" strokeWidth={3} />
+              </span>
+            )}
+          </div>
         </CropPickerButton>
 
         {quickCrops.map((c) => {
@@ -205,33 +212,36 @@ export function AiDoctorCropSelect({
               labelEn={c.name}
             >
               <div
-                className={`relative h-12 w-12 overflow-hidden rounded-xl sm:h-14 sm:w-14 ${
-                  active ? "ring-2 ring-emerald-500/40" : ""
+                className={`relative h-13 w-13 rounded-full p-0.5 transition-transform group-hover:scale-105 sm:h-14 sm:w-14 ${
+                  active
+                    ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
+                    : "ring-1 ring-slate-200 dark:ring-slate-700"
                 }`}
               >
-                {full ? (
-                  <Image
-                    src={getCropImageUrl(full)}
-                    alt={`${c.nameHi} (${c.name})`}
-                    fill
-                    className="object-cover"
-                    sizes="56px"
-                  />
-                ) : (
-                  <span className="flex h-full w-full items-center justify-center bg-[var(--av-surface-inset)] text-2xl sm:text-3xl">
-                    {c.emoji}
-                  </span>
-                )}
+                <div className="relative h-full w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  {full ? (
+                    <Image
+                      src={getCropImageUrl(full)}
+                      alt={`${c.nameHi} (${c.name})`}
+                      fill
+                      className="object-cover object-center"
+                      sizes="56px"
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-2xl sm:text-3xl">
+                      {c.emoji}
+                    </span>
+                  )}
+                </div>
                 {active && (
-                  <span className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-emerald-600/80 to-transparent pb-0.5">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-white sm:h-4 sm:w-4" />
+                  <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white ring-2 ring-white dark:ring-slate-900">
+                    <CheckCircle2 className="h-3 w-3" strokeWidth={3} />
                   </span>
                 )}
               </div>
             </CropPickerButton>
           );
         })}
-
       </div>
     </DarkCard>
   );
@@ -409,22 +419,22 @@ export function AiDoctorPhotoUpload({
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2 border-t border-emerald-500/15 bg-emerald-50/80 p-2.5 dark:bg-black/25 sm:gap-2.5 sm:p-3">
+        <div className="grid grid-cols-2 gap-2.5 border-t border-slate-200/80 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-900/50 sm:gap-3 sm:p-3.5">
           <button
             type="button"
             onClick={onCamera}
-            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition active:scale-[0.98]"
+            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 px-3.5 text-sm font-black text-white shadow-md shadow-emerald-700/25 transition active:scale-[0.98]"
           >
-            <Camera className="h-5 w-5" />
-            {hasPreview ? "फोटो बदलो" : "कैमरा खोलो"}
+            <Camera className="h-5 w-5 text-white" strokeWidth={2.4} />
+            <span className="tracking-wide text-white">{hasPreview ? "फोटो बदलो" : "कैमरा खोलो"}</span>
           </button>
           <button
             type="button"
             onClick={onGallery}
-            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border-2 border-emerald-500/35 bg-white px-3 text-sm font-bold text-emerald-800 transition active:scale-[0.98] dark:bg-[var(--av-surface)] dark:text-emerald-200"
+            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border-2 border-emerald-600 bg-transparent hover:bg-emerald-50/60 active:bg-emerald-100/60 px-3.5 text-sm font-bold text-emerald-700 transition active:scale-[0.98] dark:border-emerald-500 dark:text-emerald-300 dark:hover:bg-emerald-950/30"
           >
-            <ImagePlus className="h-5 w-5" />
-            गैलरी
+            <ImagePlus className="h-5 w-5 text-emerald-700 dark:text-emerald-300" strokeWidth={2.2} />
+            <span>गैलरी</span>
           </button>
         </div>
 
