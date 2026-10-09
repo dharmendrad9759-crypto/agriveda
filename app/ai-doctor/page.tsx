@@ -92,6 +92,8 @@ export default function AIDoctorPage() {
   const [activeChips, setActiveChips] = useState<string[]>([]);
   /** Allow crop → symptoms without a photo (optional escape hatch) */
   const [symptomsOnlyMode, setSymptomsOnlyMode] = useState(false);
+  /** 3-Step Wizard: 1 (Photo) -> 2 (Crop) -> 3 (Symptoms & Diagnosis) */
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
 
   const hasPhoto = Boolean(selectedFile || previewUrl);
   const hasCrop = Boolean(selectedCrop);
@@ -152,6 +154,7 @@ export default function AIDoctorPage() {
             releasePendingScanLock();
           }
         } else {
+          setActiveStep(3);
           releasePendingScanLock();
         }
       } catch {
@@ -242,6 +245,7 @@ export default function AIDoctorPage() {
       setSelectedCrop("");
       setSymptomNotes("");
       setActiveChips([]);
+      setActiveStep(1);
     }
   };
 
@@ -301,6 +305,7 @@ export default function AIDoctorPage() {
     setActiveChips([]);
     setSelectedCrop("");
     setSymptomsOnlyMode(false);
+    setActiveStep(1);
   };
 
   const handleToggleChip = (id: string, label: string) => {
@@ -346,118 +351,241 @@ export default function AIDoctorPage() {
         />
 
         <div className="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
-          <div className="lg:col-span-8 lg:space-y-5">
-            {/* 1 — Photo first */}
-            <AiDoctorPhotoUpload
-              previewUrl={previewUrl}
-              previewUrl2={previewUrl2}
-              previewFailed={previewFailed}
-              fileName={fileName}
-              onCamera={() => cameraInputRef.current?.click()}
-              onGallery={() => galleryInputRef.current?.click()}
-              onClear={clearPhoto}
-              onAddSecond={() => secondInputRef.current?.click()}
-              onClearSecond={clearSecondPhoto}
-              cameraInput={
-                <input
-                  ref={cameraInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleFileSelect}
-                  className="sr-only"
-                />
-              }
-              galleryInput={
-                <input
-                  ref={galleryInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="sr-only"
-                />
-              }
-              secondInput={
-                <input
-                  ref={secondInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleSecondFileSelect}
-                  className="sr-only"
-                />
-              }
-            />
+          <div className="lg:col-span-8 lg:space-y-4">
+            {/* If no result and not scanning: Show 3-Step Wizard */}
+            {!result && !isScanning && (
+              <>
+                {/* 3-Step Stepper Navigation Bar */}
+                <nav aria-label="जाँच चरण" className="flex items-center justify-between gap-1 rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-sm dark:border-slate-800 dark:bg-[var(--av-surface)]">
+                  <button
+                    type="button"
+                    onClick={() => setActiveStep(1)}
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-extrabold transition ${
+                      activeStep === 1
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-4.5 w-4.5 items-center justify-center rounded-full text-[10px] font-black ${
+                        activeStep === 1
+                          ? "bg-white text-emerald-700"
+                          : hasPhoto
+                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200"
+                            : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200"
+                      }`}
+                    >
+                      {hasPhoto ? "✓" : "1"}
+                    </span>
+                    <span>1. फोटो</span>
+                  </button>
 
-            {!showCropStep && (
-              <button
-                type="button"
-                onClick={() => setSymptomsOnlyMode(true)}
-                className="w-full rounded-xl border border-dashed border-emerald-400/40 bg-emerald-500/5 px-3 py-2.5 text-center text-xs font-semibold text-emerald-800 dark:text-emerald-300"
-              >
-                फोटो नहीं है? लक्षणों के आधार पर आगे बढ़ें →
-              </button>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => (hasPhoto || symptomsOnlyMode) && setActiveStep(2)}
+                    disabled={!hasPhoto && !symptomsOnlyMode}
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-extrabold transition disabled:opacity-40 disabled:cursor-not-allowed ${
+                      activeStep === 2
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-4.5 w-4.5 items-center justify-center rounded-full text-[10px] font-black ${
+                        activeStep === 2
+                          ? "bg-white text-emerald-700"
+                          : hasCrop
+                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200"
+                            : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200"
+                      }`}
+                    >
+                      {hasCrop ? "✓" : "2"}
+                    </span>
+                    <span>2. फसल</span>
+                  </button>
 
-            {/* 2 — Crop after photo */}
-            {showCropStep && (
-              <div className="animate-fade-in">
-                <AiDoctorCropSelect selectedCrop={selectedCrop} onSelectCrop={handleSelectCrop} />
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => (hasPhoto || symptomsOnlyMode) && hasCrop && setActiveStep(3)}
+                    disabled={(!hasPhoto && !symptomsOnlyMode) || !hasCrop}
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-extrabold transition disabled:opacity-40 disabled:cursor-not-allowed ${
+                      activeStep === 3
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-4.5 w-4.5 items-center justify-center rounded-full text-[10px] font-black ${
+                        activeStep === 3
+                          ? "bg-white text-emerald-700"
+                          : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200"
+                      }`}
+                    >
+                      3
+                    </span>
+                    <span>3. लक्षण व जाँच</span>
+                  </button>
+                </nav>
 
-            {showSymptomStep && (
-              <div className="animate-fade-in space-y-3.5 sm:space-y-5">
-                <AiDoctorSymptoms
-                  cropSlug={selectedCrop}
-                  value={symptomNotes}
-                  onChange={setSymptomNotes}
-                  activeChips={activeChips}
-                  onToggleChip={handleToggleChip}
-                  voiceSlot={
-                    <VoiceInput
-                      compact
-                      onTranscript={(text) =>
-                        setSymptomNotes((n) => `${n}${n ? " " : ""}${text}`.slice(0, 300))
+                {/* STEP 1: Photo Upload Only */}
+                {activeStep === 1 && (
+                  <div className="animate-fade-in space-y-3">
+                    <AiDoctorPhotoUpload
+                      previewUrl={previewUrl}
+                      previewUrl2={previewUrl2}
+                      previewFailed={previewFailed}
+                      fileName={fileName}
+                      onCamera={() => cameraInputRef.current?.click()}
+                      onGallery={() => galleryInputRef.current?.click()}
+                      onClear={clearPhoto}
+                      onAddSecond={() => secondInputRef.current?.click()}
+                      onClearSecond={clearSecondPhoto}
+                      onNextStep={() => setActiveStep(2)}
+                      cameraInput={
+                        <input
+                          ref={cameraInputRef}
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          onChange={handleFileSelect}
+                          className="sr-only"
+                        />
+                      }
+                      galleryInput={
+                        <input
+                          ref={galleryInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileSelect}
+                          className="sr-only"
+                        />
+                      }
+                      secondInput={
+                        <input
+                          ref={secondInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleSecondFileSelect}
+                          className="sr-only"
+                        />
                       }
                     />
-                  }
-                />
 
-                <AiDoctorActions
-                  canScan={canScan}
-                  isScanning={isScanning}
-                  hasInput={hasInput}
-                  onScan={handleScan}
-                  onReset={handleReset}
-                />
-              </div>
-            )}
-
-            {!result && (
-              <DarkCard className="!p-3.5 sm:!p-5">
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
-                    <Stethoscope className="h-4 w-4" />
-                  </span>
-                  <h2 className="text-[15px] font-bold text-[var(--av-text-primary)]">नतीजा</h2>
-                </div>
-
-                {isScanning ? (
-                  <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/50 py-10 text-center dark:bg-emerald-950/20 sm:py-12">
-                    <Loader2 className="mx-auto h-9 w-9 animate-spin text-emerald-500 sm:h-10 sm:w-10" />
-                    <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                      समाधान तैयार हो रहा है…
-                    </p>
-                  </div>
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface-inset)] py-10 text-center sm:py-12">
-                    <Stethoscope className="mx-auto h-9 w-9 text-[var(--av-text-muted)] sm:h-10 sm:w-10" />
-                    <p className="mt-3 text-sm font-semibold text-[var(--av-text-muted)]">
-                      परिणाम यहाँ दिखेगा
-                    </p>
+                    {!hasPhoto && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSymptomsOnlyMode(true);
+                          setActiveStep(2);
+                        }}
+                        className="w-full rounded-xl border border-dashed border-emerald-400/40 bg-emerald-500/5 px-3 py-2 text-center text-xs font-semibold text-emerald-800 transition hover:bg-emerald-500/10 dark:text-emerald-300"
+                      >
+                        फोटो नहीं है? लक्षणों के आधार पर आगे बढ़ें →
+                      </button>
+                    )}
                   </div>
                 )}
-              </DarkCard>
+
+                {/* STEP 2: Crop Select Only */}
+                {activeStep === 2 && (
+                  <div className="animate-fade-in space-y-3">
+                    {/* Compact Step-1 Summary */}
+                    <div className="flex items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-50/70 px-3 py-2 text-xs dark:bg-emerald-950/30">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-black text-white">✓</span>
+                        <span className="truncate font-semibold text-emerald-900 dark:text-emerald-200">
+                          {previewUrl ? "फोटो चुनी गई" : "बिना फोटो (लक्षण आधारित)"}
+                        </span>
+                        {fileName && <span className="hidden truncate text-[11px] text-emerald-700/70 sm:inline">({fileName})</span>}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveStep(1)}
+                        className="shrink-0 text-xs font-bold text-emerald-700 underline hover:text-emerald-800 dark:text-emerald-300"
+                      >
+                        फोटो बदलें
+                      </button>
+                    </div>
+
+                    <AiDoctorCropSelect
+                      selectedCrop={selectedCrop}
+                      onSelectCrop={handleSelectCrop}
+                      onNextStep={() => setActiveStep(3)}
+                      onPrevStep={() => setActiveStep(1)}
+                    />
+                  </div>
+                )}
+
+                {/* STEP 3: Symptoms & Diagnosis Only */}
+                {activeStep === 3 && (
+                  <div className="animate-fade-in space-y-3">
+                    {/* Compact Step-1 & 2 Summary */}
+                    <div className="flex items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-50/70 px-3 py-2 text-xs dark:bg-emerald-950/30">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-black text-white">✓</span>
+                        <span className="truncate font-semibold text-emerald-900 dark:text-emerald-200">
+                          {previewUrl ? "📷 फोटो" : "📝 लक्षण"} · 🌾 {aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setActiveStep(1)}
+                          className="text-[11px] font-bold text-emerald-700 underline hover:text-emerald-800 dark:text-emerald-300"
+                        >
+                          फोटो
+                        </button>
+                        <span className="text-emerald-400">·</span>
+                        <button
+                          type="button"
+                          onClick={() => setActiveStep(2)}
+                          className="text-[11px] font-bold text-emerald-700 underline hover:text-emerald-800 dark:text-emerald-300"
+                        >
+                          फसल बदलें
+                        </button>
+                      </div>
+                    </div>
+
+                    <AiDoctorSymptoms
+                      cropSlug={selectedCrop}
+                      value={symptomNotes}
+                      onChange={setSymptomNotes}
+                      activeChips={activeChips}
+                      onToggleChip={handleToggleChip}
+                      voiceSlot={
+                        <VoiceInput
+                          compact
+                          onTranscript={(text) =>
+                            setSymptomNotes((n) => `${n}${n ? " " : ""}${text}`.slice(0, 300))
+                          }
+                        />
+                      }
+                    />
+
+                    <AiDoctorActions
+                      canScan={canScan}
+                      isScanning={isScanning}
+                      hasInput={hasInput}
+                      onScan={handleScan}
+                      onReset={handleReset}
+                      onPrevStep={() => setActiveStep(2)}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Scanning In Progress */}
+            {isScanning && (
+              <div className="rounded-2xl border border-emerald-500/20 bg-white p-6 text-center shadow-sm dark:bg-slate-900 animate-fade-in">
+                <Loader2 className="mx-auto h-9 w-9 animate-spin text-emerald-600" />
+                <p className="mt-3 text-sm font-bold text-emerald-800 dark:text-emerald-200">
+                  एआई डॉक्टर विश्लेषण कर रहा है…
+                </p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  रोग पहचान, दवा व सही मात्रा तैयार हो रही है
+                </p>
+              </div>
             )}
 
             {result && !isScanning && (() => {
@@ -465,6 +593,18 @@ export default function AIDoctorPage() {
               const speechText = buildDiagnosisSpeechText(result);
               return (
                 <div className="rounded-3xl border border-slate-200/70 bg-[#F8F9FA] p-3 sm:p-4 dark:border-slate-800/80 dark:bg-slate-950/60 animate-fade-in">
+                  <div className="mb-3 flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-white px-3 py-1.5 text-xs font-bold text-emerald-800 shadow-sm hover:bg-emerald-50 dark:border-emerald-700/50 dark:bg-slate-900 dark:text-emerald-200 transition"
+                    >
+                      ← नई फोटो / दूसरी जाँच करें
+                    </button>
+                    <span className="text-[11px] font-semibold text-slate-500">
+                      🌾 {aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}
+                    </span>
+                  </div>
                   {/* Card 1: Primary Diagnosis & Observations */}
                   <div className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">

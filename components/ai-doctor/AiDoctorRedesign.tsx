@@ -45,7 +45,7 @@ function SectionLabel({ title, step, hint }: { title: string; step?: number; hin
   );
 }
 
-/** AI Doctor hero — compact for phone */
+/** AI Doctor hero — compact and sleek */
 export function AiDoctorHero({
   aiConfigured,
   onHistoryClick,
@@ -56,46 +56,34 @@ export function AiDoctorHero({
   historyCount: number;
 }) {
   return (
-    <section className="ai-doctor-hero relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/40 px-4 py-4 shadow-[0_8px_30px_-12px_rgba(5,150,105,0.25)] dark:from-emerald-950/40 dark:via-[var(--av-surface)] dark:to-emerald-950/20 sm:p-5">
-      <div
-        className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-emerald-400/15 blur-2xl"
-        aria-hidden
-      />
-
-      <div className="relative flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/30">
-              <Camera className="h-5 w-5" />
-            </span>
-            <div className="min-w-0">
-              <h1 className="text-xl font-black tracking-tight text-[var(--av-text-primary)] sm:text-2xl">
-                पत्ती की फोटो लो
-              </h1>
-              <p className="mt-0.5 text-xs leading-snug text-[var(--av-text-secondary)] sm:text-sm">
-                फोटो दिखाओ — बीमारी का सुझाव मिलेगा
-              </p>
-            </div>
+    <section className="ai-doctor-hero relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/40 px-3.5 py-3 shadow-sm dark:from-emerald-950/40 dark:via-[var(--av-surface)] dark:to-emerald-950/20 sm:px-4 sm:py-3.5">
+      <div className="relative flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm shadow-emerald-600/30">
+            <Camera className="h-4.5 w-4.5" />
+          </span>
+          <div className="min-w-0">
+            <h1 className="text-base font-extrabold tracking-tight text-[var(--av-text-primary)] sm:text-lg">
+              फसल डॉक्टर
+            </h1>
+            <p className="truncate text-[11px] text-[var(--av-text-secondary)]">
+              फोटो या लक्षण से तुरंत रोग पहचान व उपाय
+            </p>
           </div>
-          {aiConfigured === false ? (
-            <span className="mt-2 inline-flex rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-200">
-              अभी बंद
-            </span>
-          ) : null}
         </div>
 
         <button
           type="button"
           onClick={onHistoryClick}
-          className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-emerald-500/25 bg-white/90 px-3 text-xs font-bold text-emerald-800 shadow-sm transition active:scale-[0.98] dark:bg-emerald-950/40 dark:text-emerald-200"
+          className="inline-flex h-8.5 shrink-0 items-center gap-1.5 rounded-lg border border-emerald-500/25 bg-white/90 px-2.5 text-[11px] font-bold text-emerald-800 shadow-sm transition active:scale-[0.98] dark:bg-emerald-950/40 dark:text-emerald-200"
         >
-          <History className="h-4 w-4" />
+          <History className="h-3.5 w-3.5" />
           {historyCount > 0 ? (
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 text-[10px] font-black text-white">
+            <span className="flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-emerald-600 px-1 text-[9.5px] font-black text-white">
               {historyCount > 9 ? "9+" : historyCount}
             </span>
           ) : (
-            <span>पिछली जांचें</span>
+            <span>इतिहास</span>
           )}
         </button>
       </div>
@@ -140,7 +128,7 @@ function CropPickerButton({
       onClick={onClick}
       aria-pressed={active}
       aria-label={labelEn ? `${labelHi} (${labelEn})` : labelHi}
-      className={`group flex w-[80px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border-2 p-2.5 transition-all duration-200 active:scale-[0.96] sm:w-[92px] ${
+      className={`group flex w-[70px] shrink-0 flex-col items-center gap-1 rounded-2xl border-2 p-1.5 transition-all duration-200 active:scale-[0.96] sm:w-[78px] sm:p-2 ${
         active
           ? "border-emerald-500 bg-emerald-50/90 shadow-md shadow-emerald-500/10 ring-2 ring-emerald-500/25 dark:bg-emerald-950/40"
           : "border-slate-200/90 bg-white hover:border-emerald-300 dark:border-slate-800 dark:bg-[var(--av-surface)]"
@@ -148,14 +136,14 @@ function CropPickerButton({
     >
       {children}
       <span
-        className={`w-full truncate text-center text-[11px] font-extrabold leading-tight ${
+        className={`w-full truncate text-center text-[10.5px] font-extrabold leading-tight ${
           active ? "text-emerald-800 dark:text-emerald-200" : "text-[var(--av-text-primary)]"
         }`}
       >
         {labelHi}
       </span>
       {labelEn ? (
-        <span className="w-full truncate text-center text-[9.5px] font-medium leading-tight text-[var(--av-text-muted)]">
+        <span className="w-full truncate text-center text-[9px] font-medium leading-tight text-[var(--av-text-muted)]">
           {labelEn}
         </span>
       ) : null}
@@ -167,17 +155,21 @@ function CropPickerButton({
 export function AiDoctorCropSelect({
   selectedCrop,
   onSelectCrop,
+  onNextStep,
+  onPrevStep,
 }: {
   selectedCrop: string;
   onSelectCrop: (slug: string) => void;
+  onNextStep?: () => void;
+  onPrevStep?: () => void;
 }) {
   const quickCrops = AI_DOCTOR_CROPS.slice(0, 9);
   const otherActive = selectedCrop === OTHER_CROP.slug;
 
   return (
-    <DarkCard className="!p-3.5 sm:!p-5">
+    <DarkCard className="!p-3 sm:!p-4">
       <SectionLabel title="फसल चुनें" step={2} hint="फोटो वाली फसल चुनें" />
-      <div className="-mx-0.5 flex gap-2.5 overflow-x-auto px-0.5 pb-1 scrollbar-hide">
+      <div className="-mx-0.5 flex gap-2 overflow-x-auto px-0.5 pb-1 scrollbar-hide">
         <CropPickerButton
           active={otherActive}
           onClick={() => onSelectCrop(OTHER_CROP.slug)}
@@ -185,16 +177,16 @@ export function AiDoctorCropSelect({
           labelEn={OTHER_CROP.name}
         >
           <div
-            className={`relative flex h-13 w-13 items-center justify-center rounded-full p-0.5 transition-transform group-hover:scale-105 sm:h-14 sm:w-14 ${
+            className={`relative flex h-11 w-11 items-center justify-center rounded-full p-0.5 transition-transform group-hover:scale-105 sm:h-12 sm:w-12 ${
               otherActive
                 ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 bg-emerald-100/60 dark:bg-emerald-900/40"
                 : "ring-1 ring-slate-200 dark:ring-slate-700 bg-[var(--av-surface-inset)]"
             }`}
           >
-            <span className="text-2xl sm:text-3xl">{OTHER_CROP.emoji}</span>
+            <span className="text-xl sm:text-2xl">{OTHER_CROP.emoji}</span>
             {otherActive && (
-              <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white ring-2 ring-white dark:ring-slate-900">
-                <CheckCircle2 className="h-3 w-3" strokeWidth={3} />
+              <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-600 text-white ring-2 ring-white dark:ring-slate-900">
+                <CheckCircle2 className="h-2.5 w-2.5" strokeWidth={3} />
               </span>
             )}
           </div>
@@ -212,7 +204,7 @@ export function AiDoctorCropSelect({
               labelEn={c.name}
             >
               <div
-                className={`relative h-13 w-13 rounded-full p-0.5 transition-transform group-hover:scale-105 sm:h-14 sm:w-14 ${
+                className={`relative h-11 w-11 rounded-full p-0.5 transition-transform group-hover:scale-105 sm:h-12 sm:w-12 ${
                   active
                     ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
                     : "ring-1 ring-slate-200 dark:ring-slate-700"
@@ -225,17 +217,17 @@ export function AiDoctorCropSelect({
                       alt={`${c.nameHi} (${c.name})`}
                       fill
                       className="object-cover object-center"
-                      sizes="56px"
+                      sizes="48px"
                     />
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center text-2xl sm:text-3xl">
+                    <span className="flex h-full w-full items-center justify-center text-xl sm:text-2xl">
                       {c.emoji}
                     </span>
                   )}
                 </div>
                 {active && (
-                  <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white ring-2 ring-white dark:ring-slate-900">
-                    <CheckCircle2 className="h-3 w-3" strokeWidth={3} />
+                  <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-600 text-white ring-2 ring-white dark:ring-slate-900">
+                    <CheckCircle2 className="h-2.5 w-2.5" strokeWidth={3} />
                   </span>
                 )}
               </div>
@@ -243,6 +235,31 @@ export function AiDoctorCropSelect({
           );
         })}
       </div>
+
+      {(onNextStep || onPrevStep) && (
+        <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+          {onPrevStep && (
+            <button
+              type="button"
+              onClick={onPrevStep}
+              className="flex min-h-[42px] items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+            >
+              ← वापस
+            </button>
+          )}
+          {onNextStep && (
+            <button
+              type="button"
+              onClick={onNextStep}
+              disabled={!selectedCrop}
+              className="flex flex-1 min-h-[42px] items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 px-4 text-xs font-black text-white shadow-md shadow-emerald-700/20 disabled:opacity-40 transition"
+            >
+              <span>आगे बढ़ें (लक्षण व जाँच)</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      )}
     </DarkCard>
   );
 }
@@ -266,20 +283,20 @@ export function AiDoctorSymptoms({
   const chips = getSymptomChipsForCrop(cropSlug);
 
   return (
-    <DarkCard className="!p-3.5 sm:!p-5">
+    <DarkCard className="!p-3 sm:!p-4">
       <SectionLabel
-        title="लक्षण"
+        title="लक्षण बताएं"
         step={3}
-        hint="वैकल्पिक — chips चुनें या लिखें"
+        hint="वैकल्पिक — लक्षण चिप्स चुनें या आवाज़ से बोलें"
       />
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value.slice(0, 300))}
         placeholder="जैसे: पत्ती पर पीले धब्बे, किनारे सूख रहे हैं..."
-        rows={3}
-        className="av-input min-h-[96px] w-full resize-none text-[15px] leading-relaxed sm:min-h-[110px]"
+        rows={2}
+        className="av-input min-h-[58px] sm:min-h-[66px] w-full resize-none text-xs leading-relaxed"
       />
-      <div className="mt-2.5 flex flex-wrap gap-1.5 sm:mt-3 sm:gap-2">
+      <div className="mt-2 flex flex-wrap gap-1.5 sm:gap-2">
         {chips.map((chip) => {
           const active = activeChips.includes(chip.id);
           return (
@@ -287,10 +304,10 @@ export function AiDoctorSymptoms({
               key={`${cropSlug}-${chip.id}`}
               type="button"
               onClick={() => onToggleChip(chip.id, chip.label)}
-              className={`min-h-[36px] rounded-full border px-2.5 py-1.5 text-[11px] font-semibold transition active:scale-[0.97] sm:px-3 ${
+              className={`min-h-[30px] rounded-full border px-2.5 py-1 text-[11px] font-semibold transition active:scale-[0.97] sm:px-3 ${
                 active
-                  ? "border-emerald-500 bg-emerald-500 text-white shadow-sm"
-                  : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]"
+                  ? "border-emerald-500 bg-emerald-600 text-white shadow-sm"
+                  : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-400"
               }`}
             >
               {chip.label}
@@ -301,8 +318,8 @@ export function AiDoctorSymptoms({
           );
         })}
       </div>
-      {voiceSlot && <div className="mt-2.5 sm:mt-3">{voiceSlot}</div>}
-      <p className="mt-1.5 text-right text-[10px] text-[var(--av-text-muted)]">{value.length}/300</p>
+      {voiceSlot && <div className="mt-2">{voiceSlot}</div>}
+      <p className="mt-1 text-right text-[10px] text-[var(--av-text-muted)]">{value.length}/300</p>
     </DarkCard>
   );
 }
@@ -321,6 +338,7 @@ export function AiDoctorPhotoUpload({
   cameraInput,
   galleryInput,
   secondInput,
+  onNextStep,
 }: {
   previewUrl: string | null;
   previewUrl2?: string | null;
@@ -334,30 +352,29 @@ export function AiDoctorPhotoUpload({
   cameraInput: ReactNode;
   galleryInput: ReactNode;
   secondInput?: ReactNode;
+  onNextStep?: () => void;
 }) {
   const hasPreview = Boolean(previewUrl);
   const hasSecond = Boolean(previewUrl2);
 
   return (
-    <DarkCard className="!p-3.5 sm:!p-5">
-      <div className="mb-2.5 flex items-center justify-between gap-2">
+    <DarkCard className="!p-3 sm:!p-4">
+      <div className="mb-2 flex items-center justify-between gap-2">
         <SectionLabel
           title="फोटो लो"
           step={1}
+          hint="रोगग्रस्त पत्ती या पौधे की साफ़ फोटो लें"
         />
         {hasPreview && onClear && (
           <button
             type="button"
             onClick={onClear}
-            className="shrink-0 text-[11px] font-semibold text-[var(--av-text-muted)] active:text-red-600"
+            className="shrink-0 text-[11px] font-bold text-rose-600 hover:underline"
           >
             हटाएँ
           </button>
         )}
       </div>
-      <p className="mb-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[11px] font-semibold leading-snug text-emerald-800 dark:text-emerald-200">
-        पत्ती करीब से लो। अँधेरे में <strong>फ्लैश</strong> चालू करें।
-      </p>
       {cameraInput}
       {galleryInput}
       {secondInput}
@@ -369,7 +386,7 @@ export function AiDoctorPhotoUpload({
             <img
               src={previewUrl}
               alt="Photo 1"
-              className={`mx-auto w-full object-cover ${hasSecond ? "max-h-44" : "max-h-52 sm:max-h-64"}`}
+              className={`mx-auto w-full object-cover ${hasSecond ? "max-h-36" : "max-h-44 sm:max-h-52"}`}
             />
             {hasSecond ? (
               <div className="relative">
@@ -377,7 +394,7 @@ export function AiDoctorPhotoUpload({
                 <img
                   src={previewUrl2!}
                   alt="Photo 2"
-                  className="mx-auto max-h-44 w-full object-cover"
+                  className="mx-auto max-h-36 w-full object-cover"
                 />
                 {onClearSecond ? (
                   <button
@@ -392,15 +409,15 @@ export function AiDoctorPhotoUpload({
             ) : null}
           </div>
         ) : previewUrl && previewFailed ? (
-          <div className="px-4 py-8 text-center sm:py-10">
-            <ImagePlus className="mx-auto h-10 w-10 text-emerald-600 sm:h-12 sm:w-12" />
-            <p className="mt-2 text-sm font-bold text-[var(--av-text-primary)]">फोटो चुनी गई</p>
-            <p className="mt-1 break-all px-2 text-xs text-[var(--av-text-secondary)]">
+          <div className="px-3 py-6 text-center">
+            <ImagePlus className="mx-auto h-8 w-8 text-emerald-600" />
+            <p className="mt-1.5 text-xs font-bold text-[var(--av-text-primary)]">फोटो चुनी गई</p>
+            <p className="mt-0.5 break-all px-2 text-[11px] text-[var(--av-text-secondary)]">
               {fileName || "photo"}
             </p>
           </div>
         ) : (
-          <div className="relative flex min-h-[160px] flex-col items-center justify-center overflow-hidden px-3 py-8 sm:min-h-[180px]">
+          <div className="relative flex min-h-[115px] sm:min-h-[125px] flex-col items-center justify-center overflow-hidden px-3 py-5">
             <Image
               src="/images/home/home-job-photo.jpg"
               alt=""
@@ -410,47 +427,60 @@ export function AiDoctorPhotoUpload({
               priority
             />
             <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/45 to-black/25" />
-            <span className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-white shadow-lg backdrop-blur-sm">
-              <Camera className="h-7 w-7" />
+            <span className="relative z-10 flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-white shadow-md backdrop-blur-sm">
+              <Camera className="h-5 w-5" />
             </span>
-            <p className="relative z-10 mt-3 text-sm font-bold text-white drop-shadow">
-              पत्ती की फोटो लो
+            <p className="relative z-10 mt-1.5 text-xs font-bold text-white drop-shadow">
+              कैमरा खोलें या गैलरी से चुनें
             </p>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2.5 border-t border-slate-200/80 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-900/50 sm:gap-3 sm:p-3.5">
+        <div className="grid grid-cols-2 gap-2 border-t border-slate-200/80 bg-slate-50/80 p-2.5 dark:border-slate-800 dark:bg-slate-900/50 sm:gap-2.5 sm:p-3">
           <button
             type="button"
             onClick={onCamera}
-            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 px-3.5 text-sm font-black text-white shadow-md shadow-emerald-700/25 transition active:scale-[0.98]"
+            className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 px-3 text-xs font-black text-white shadow-md shadow-emerald-700/25 transition active:scale-[0.98]"
           >
-            <Camera className="h-5 w-5 text-white" strokeWidth={2.4} />
-            <span className="tracking-wide text-white">{hasPreview ? "फोटो बदलो" : "कैमरा खोलो"}</span>
+            <Camera className="h-4 w-4 text-white" strokeWidth={2.4} />
+            <span className="tracking-wide text-white">{hasPreview ? "फोटो बदलें" : "कैमरा खोलो"}</span>
           </button>
           <button
             type="button"
             onClick={onGallery}
-            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border-2 border-emerald-600 bg-transparent hover:bg-emerald-50/60 active:bg-emerald-100/60 px-3.5 text-sm font-bold text-emerald-700 transition active:scale-[0.98] dark:border-emerald-500 dark:text-emerald-300 dark:hover:bg-emerald-950/30"
+            className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border-2 border-emerald-600 bg-transparent hover:bg-emerald-50/60 active:bg-emerald-100/60 px-3 text-xs font-bold text-emerald-700 transition active:scale-[0.98] dark:border-emerald-500 dark:text-emerald-300 dark:hover:bg-emerald-950/30"
           >
-            <ImagePlus className="h-5 w-5 text-emerald-700 dark:text-emerald-300" strokeWidth={2.2} />
+            <ImagePlus className="h-4 w-4 text-emerald-700 dark:text-emerald-300" strokeWidth={2.2} />
             <span>गैलरी</span>
           </button>
         </div>
 
         {hasPreview && !hasSecond && onAddSecond ? (
-          <div className="border-t border-emerald-500/15 p-2.5">
+          <div className="border-t border-slate-100 p-2 dark:border-slate-800">
             <button
               type="button"
               onClick={onAddSecond}
-              className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-dashed border-emerald-500/40 bg-white/80 px-3 text-sm font-bold text-emerald-800 dark:bg-transparent dark:text-emerald-200"
+              className="inline-flex min-h-[38px] w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-emerald-500/40 bg-white/80 px-3 text-xs font-bold text-emerald-800 dark:bg-transparent dark:text-emerald-200"
             >
-              <ImagePlus className="h-4 w-4" />
+              <ImagePlus className="h-3.5 w-3.5" />
               वैकल्पिक: एक और फोटो जोड़ें
             </button>
           </div>
         ) : null}
       </div>
+
+      {hasPreview && onNextStep && (
+        <div className="mt-3 border-t border-slate-100 pt-2.5 dark:border-slate-800">
+          <button
+            type="button"
+            onClick={onNextStep}
+            className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 px-4 text-xs font-black text-white shadow-md shadow-emerald-700/20 transition active:scale-[0.98]"
+          >
+            <span>आगे बढ़ें (फसल चुनें)</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </DarkCard>
   );
 }
@@ -462,42 +492,58 @@ export function AiDoctorActions({
   hasInput,
   onScan,
   onReset,
+  onPrevStep,
 }: {
   canScan: boolean;
   isScanning: boolean;
   hasInput: boolean;
   onScan: () => void;
   onReset: () => void;
+  onPrevStep?: () => void;
 }) {
   return (
-    <section className="space-y-2.5">
-      <button
-        type="button"
-        onClick={onScan}
-        disabled={!canScan}
-        className="flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-base font-bold text-white shadow-[0_10px_28px_-8px_rgba(5,150,105,0.55)] transition enabled:active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-45"
-      >
-        {isScanning ? (
-          <>
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            जाँच हो रही है…
-          </>
-        ) : (
-          <>
-            <Bot className="h-5 w-5" />
-            जांच शुरू करें
-            <ArrowRight className="h-4 w-4" />
-          </>
+    <section className="space-y-2">
+      <div className="flex items-center gap-2">
+        {onPrevStep && (
+          <button
+            type="button"
+            onClick={onPrevStep}
+            disabled={isScanning}
+            className="flex min-h-[46px] items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 disabled:opacity-40"
+          >
+            ← वापस
+          </button>
         )}
-      </button>
-      <button
-        type="button"
-        onClick={onReset}
-        disabled={!hasInput && !isScanning}
-        className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-sm font-semibold text-[var(--av-text-secondary)] transition enabled:active:scale-[0.99] disabled:opacity-40"
-      >
-        फिर से सेट करें
-      </button>
+        <button
+          type="button"
+          onClick={onScan}
+          disabled={!canScan}
+          className="flex flex-1 min-h-[46px] items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 px-4 text-sm font-black text-white shadow-md shadow-emerald-700/25 transition enabled:active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          {isScanning ? (
+            <>
+              <span className="h-4.5 w-4.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              <span>जाँच हो रही है…</span>
+            </>
+          ) : (
+            <>
+              <Bot className="h-5 w-5" />
+              <span>जांच शुरू करें</span>
+              <ArrowRight className="h-4 w-4" />
+            </>
+          )}
+        </button>
+      </div>
+      {hasInput && (
+        <button
+          type="button"
+          onClick={onReset}
+          disabled={isScanning}
+          className="w-full text-center text-[11px] font-semibold text-slate-500 hover:text-red-600 py-1"
+        >
+          नया स्कैन शुरू करें (Reset)
+        </button>
+      )}
     </section>
   );
 }
@@ -514,6 +560,7 @@ export function AiDoctorRecentDiagnoses({
   expanded?: boolean;
   onClear?: () => void;
 }) {
+  if (history.length === 0 && !expanded) return null;
   const items = history.slice(0, expanded ? 12 : 5);
 
   return (
