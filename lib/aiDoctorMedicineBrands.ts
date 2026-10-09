@@ -52,10 +52,10 @@ const TABLE: { match: RegExp; hint: MedBrandHint }[] = [
     },
   },
   {
-    match: /metalaxyl|mefenoxam/i,
+    match: /metalaxyl|mefenoxam|ridomil/i,
     hint: {
-      fullName: "Metalaxyl + Mancozeb",
-      brands: ["Ridomil Gold MZ (Syngenta)", "Master", "Krilaxyl"],
+      fullName: "Metalaxyl-M 4% + Mancozeb 64% WP",
+      brands: ["Ridomil Gold MZ 68 WP (Syngenta)", "Master (Indofil)", "Krilaxyl"],
     },
   },
   {
@@ -148,14 +148,26 @@ export function enrichMedicineDisplay(input: {
   const hit = TABLE.find((row) => row.match.test(rawName));
 
   const hasFormulation = /\d|\bSC\b|\bEC\b|\bWP\b|\bWG\b|\bSL\b|\bGR\b|\bSG\b|%/i.test(rawName);
-  const fullName = hit && !hasFormulation ? hit.hint.fullName : rawName;
+  let fullName = hit && !hasFormulation ? hit.hint.fullName : rawName;
 
-  const brands =
+  // Authoritative normalization for Ridomil Gold (Metalaxyl-M 4% + Mancozeb 64% WP @ 2 to 2.5 g/L)
+  let dose = input.dose?.trim() || "—";
+  let brands =
     existingBrands.length > 0 ? existingBrands.slice(0, 4) : hit?.hint.brands.slice(0, 3) ?? [];
+
+  if (/metalaxyl|mefenoxam|ridomil|मेटालैक्सिल/i.test(rawName) || /metalaxyl|ridomil/i.test(fullName)) {
+    fullName = "Metalaxyl-M 4% + Mancozeb 64% WP (Ridomil Gold MZ 68 WP)";
+    if (!dose || dose === "—" || /\b(3|3\.0|3\.5)\s*(g|ग्राम)/i.test(dose)) {
+      dose = "2 से 2.5 ग्राम / लीटर (500 ग्राम प्रति एकड़)";
+    }
+    if (!brands.some((b) => /ridomil/i.test(b))) {
+      brands = ["Ridomil Gold MZ 68 WP (Syngenta)", ...brands].slice(0, 3);
+    }
+  }
 
   return {
     name: fullName,
-    dose: input.dose || "—",
+    dose,
     fracIrac: input.fracIrac || "—",
     brands,
   };

@@ -30,8 +30,8 @@ interface VoiceInputProps {
   onTranscript: (text: string) => void;
   className?: string;
   compact?: boolean;
-  /** Inline mic for search bars (48dp touch target) */
-  variant?: "default" | "searchIcon";
+  /** Inline mic for search bars (48dp touch target) or WhatsApp-style input corners */
+  variant?: "default" | "searchIcon" | "inlineMic";
 }
 
 export default function VoiceInput({ onTranscript, className = "", compact, variant = "default" }: VoiceInputProps) {
@@ -83,13 +83,41 @@ export default function VoiceInput({ onTranscript, className = "", compact, vari
 
   useEffect(() => () => stop(), [stop]);
 
-  if (!supported && variant === "searchIcon") return null;
+  if (!supported && (variant === "searchIcon" || variant === "inlineMic")) return null;
 
   if (!supported) {
     return (
       <p className={`text-[10px] text-[var(--av-text-muted)] ${className}`}>
         Voice typing: Chrome / Edge mobile par best kaam karta hai.
       </p>
+    );
+  }
+
+  if (listening && variant === "inlineMic") {
+    return (
+      <button
+        type="button"
+        onClick={stop}
+        className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-600 text-white shadow-md shadow-red-500/30 animate-pulse active:scale-95 transition-all ${className}`}
+        aria-label={t("voiceStop")}
+        title={t("voiceStop")}
+      >
+        <Square className="h-4 w-4" fill="currentColor" />
+      </button>
+    );
+  }
+
+  if (variant === "inlineMic") {
+    return (
+      <button
+        type="button"
+        onClick={start}
+        className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white shadow-md shadow-emerald-600/30 transition-all ${className}`}
+        aria-label={t("voiceAddNote")}
+        title={t("voiceAddNote")}
+      >
+        <Mic className="h-4.5 w-4.5" />
+      </button>
     );
   }
 

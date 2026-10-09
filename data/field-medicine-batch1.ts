@@ -304,7 +304,7 @@ export const FIELD_MEDICINE_BATCH_1: FieldMedicine[] = [
       },
       {
         title: "मध्यम प्रकोप",
-        lines: ["मेटालैक्सिल 8% + मैंकोजेब 64% WP (Ridomil Gold) @ 2.5 ग्राम/लीटर।"],
+        lines: ["मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (Ridomil Gold MZ 68 WP) @ 2 से 2.5 ग्राम/लीटर।"],
       },
       {
         title: "तेज़ प्रकोप",

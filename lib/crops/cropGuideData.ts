@@ -263,8 +263,8 @@ export const TOMATO_CROP_GUIDE: CropGuideData = {
               safety_note: "अगेती व पछेती दोनों झुलसा पर उत्कृष्ट सिस्टमिक असर।"
             },
             {
-              chemical_name: "Metalaxyl 8% + Mancozeb 64% WP (Ridomil Gold)",
-              active_ingredient: "Metalaxyl + Mancozeb",
+              chemical_name: "Metalaxyl-M 4% + Mancozeb 64% WP (Ridomil Gold MZ 68 WP)",
+              active_ingredient: "Metalaxyl-M 4% + Mancozeb 64% WP",
               frac_irac_group: "FRAC 4 + FRAC M3 (PA-fungicide + Multi-site)",
               dosage: "2.5 ग्राम",
               volume: "1 लीटर पानी (500 ग्राम/एकड़)",

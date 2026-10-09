@@ -432,8 +432,8 @@ export const CEREAL_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "Foliar",
-            chemistry: "Metalaxyl + Mancozeb (Ridomil)",
-            dose: "400 g/acre",
+            chemistry: "Metalaxyl-M 4% + Mancozeb 64% WP (Ridomil Gold MZ 68 WP)",
+            dose: "2-2.5 g/L (500 g/acre)",
           },
         ],
       },

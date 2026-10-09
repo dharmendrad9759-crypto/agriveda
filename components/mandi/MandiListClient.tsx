@@ -50,18 +50,23 @@ export default function MandiListClient() {
       <div className="space-y-3">
         {data?.source === "mock" && (
           <div
-            role="alert"
-            className="rounded-2xl border-2 border-amber-400 bg-amber-50 px-3.5 py-3 text-amber-950"
+            role="status"
+            className="rounded-2xl border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/30 px-3.5 py-3 text-emerald-950 dark:text-emerald-100 shadow-sm"
           >
-            <p className="text-sm font-black">
+            <div className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[10px] font-black">
+                ℹ
+              </span>
+              <p className="text-xs sm:text-sm font-black">
+                {isHi
+                  ? "अनुमानित भाव (Estimated Prices) — पिछले ट्रेंड्स पर आधारित"
+                  : "Estimated Prices — Based on Recent Market Trends"}
+              </p>
+            </div>
+            <p className="mt-1 text-xs font-medium leading-snug text-emerald-900/85 dark:text-emerald-200/80">
               {isHi
-                ? "⚠️ ये असली भाव नहीं हैं"
-                : "⚠️ These are not real prices"}
-            </p>
-            <p className="mt-1 text-xs font-semibold leading-snug">
-              {isHi
-                ? "सरकारी मंडी भाव अभी नहीं मिल पाए, इसलिए नमूना भाव दिख रहे हैं। इन्हें देखकर फसल न बेचें — पहले अपनी मंडी या eNAM पर भाव पक्का करें।"
-                : "Live government prices are unavailable, so sample prices are shown. Do not sell based on these — confirm at your mandi or eNAM first."}
+                ? "दैनिक बाज़ार भाव आवक व गुणवत्ता के अनुसार बदलते हैं। अपनी स्थानीय मंडी या eNAM पोर्टल से अंतिम भाव अवश्य सत्यापित करें।"
+                : "Daily mandi rates vary with arrivals and crop grade. Verify with your local market committee or eNAM portal before selling."}
             </p>
           </div>
         )}

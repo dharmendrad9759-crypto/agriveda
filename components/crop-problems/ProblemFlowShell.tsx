@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 
 /** Premium problem-flow chrome — crop pick → problem → cure */
@@ -98,7 +99,15 @@ export default function ProblemFlowShell({
         </div>
       </header>
 
-      <div className="relative px-4 pt-5">{children}</div>
+      <motion.div
+        key={step}
+        initial={{ opacity: 0, x: 28 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        className="relative px-4 pt-5"
+      >
+        {children}
+      </motion.div>
 
       <div className="pointer-events-none fixed bottom-24 right-3 z-20 flex flex-col items-center sm:bottom-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -527,19 +527,24 @@ export default function AskQueryPage() {
               placeholder={t("queryPlaceholder")}
               rows={fromAiDoctor ? 3 : 4}
               disabled={submitting}
-              className="av-input w-full resize-none disabled:opacity-60"
+              className="av-input w-full resize-none disabled:opacity-60 pb-11 pr-12 text-sm leading-relaxed"
             />
-            <span className="absolute bottom-3 right-3 text-[11px] text-[var(--av-text-muted)] tabular-nums">
-              {query.length}/{maxChars}
-            </span>
+            {/* WhatsApp-style inline microphone button placed right inside the input field */}
+            <div className="absolute bottom-2.5 right-2.5 flex items-center gap-2">
+              <span className="text-[10.5px] font-medium text-[var(--av-text-muted)] tabular-nums">
+                {query.length}/{maxChars}
+              </span>
+              <VoiceInput
+                variant="inlineMic"
+                onTranscript={(text) =>
+                  setQuery((q) => `${q}${q ? " " : ""}${text}`.slice(0, maxChars))
+                }
+              />
+            </div>
           </div>
-          <div className="mt-3">
-            <VoiceInput
-              compact
-              onTranscript={(text) =>
-                setQuery((q) => `${q}${q ? " " : ""}${text}`.slice(0, maxChars))
-              }
-            />
+          <div className="mt-1.5 flex items-center justify-between px-1 text-[11px] text-[var(--av-text-muted)]">
+            <span>🎙️ बोलकर लिखने के लिए माइक दबाएँ</span>
+            <span>हिंदी / English</span>
           </div>
         </DarkCard>
 

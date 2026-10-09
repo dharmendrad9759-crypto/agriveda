@@ -14,5 +14,13 @@
   ],
   "terminal.integrated.env.windows": {
     "JAVA_HOME": "C:\\Program Files\\Android\\Android Studio\\jbr"
+  },
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "files.watcherExclude": {
+    "**/.git/**": true,
+    "**/.next/**": true,
+    "**/node_modules/**": true,
+    "**/android/**": true
   }
 }

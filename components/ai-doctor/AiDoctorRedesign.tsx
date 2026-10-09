@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import AppLink from "@/components/ui/AppLink";
 import DarkCard from "@/components/shell/DarkCard";
 import RiskBadge from "@/components/shell/RiskBadge";
@@ -379,34 +380,61 @@ export function AiDoctorPhotoUpload({
       {galleryInput}
       {secondInput}
 
-      <div className="overflow-hidden rounded-2xl border border-dashed border-emerald-500/40 bg-gradient-to-b from-emerald-50/80 to-white dark:from-emerald-950/30 dark:to-[var(--av-surface-inset)]">
+      <div className="relative overflow-hidden rounded-2xl border border-dashed border-emerald-500/40 bg-gradient-to-b from-emerald-50/80 to-white dark:from-emerald-950/30 dark:to-[var(--av-surface-inset)]">
         {previewUrl && !previewFailed ? (
-          <div className={hasSecond ? "grid grid-cols-2 gap-px bg-emerald-500/15" : ""}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={previewUrl}
-              alt="Photo 1"
-              className={`mx-auto w-full object-cover ${hasSecond ? "max-h-36" : "max-h-44 sm:max-h-52"}`}
-            />
-            {hasSecond ? (
-              <div className="relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={previewUrl2!}
-                  alt="Photo 2"
-                  className="mx-auto max-h-36 w-full object-cover"
-                />
-                {onClearSecond ? (
-                  <button
-                    type="button"
-                    onClick={onClearSecond}
-                    className="absolute right-1.5 top-1.5 rounded-lg bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white"
-                  >
-                    2 हटाएँ
-                  </button>
-                ) : null}
-              </div>
-            ) : null}
+          <div className="relative overflow-hidden">
+            {/* Google Lens 4 Corner Brackets */}
+            <span className="pointer-events-none absolute top-3 left-3 z-20 h-6 w-6 rounded-tl-lg border-t-[3px] border-l-[3px] border-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+            <span className="pointer-events-none absolute top-3 right-3 z-20 h-6 w-6 rounded-tr-lg border-t-[3px] border-r-[3px] border-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+            <span className="pointer-events-none absolute bottom-3 left-3 z-20 h-6 w-6 rounded-bl-lg border-b-[3px] border-l-[3px] border-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+            <span className="pointer-events-none absolute bottom-3 right-3 z-20 h-6 w-6 rounded-br-lg border-b-[3px] border-r-[3px] border-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+
+            {/* Sweeping Green Laser Line (Google Lens / Smart AI Scanner) */}
+            <motion.div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 z-20"
+              animate={{ top: ["6%", "88%", "6%"] }}
+              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <div className="h-[2.5px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_#10b981,0_0_24px_#34d399]" />
+              <div className="h-6 w-full bg-gradient-to-b from-emerald-500/25 to-transparent" />
+            </motion.div>
+
+            {/* Floating Scanner Badge */}
+            <div className="pointer-events-none absolute top-2.5 inset-x-0 z-20 flex justify-center">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1 text-[10.5px] font-bold text-emerald-300 backdrop-blur-md border border-emerald-500/40 shadow-sm">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                <span>AI लेंस सक्रिय · स्कैनिंग चालू</span>
+              </span>
+            </div>
+
+            <div className={hasSecond ? "grid grid-cols-2 gap-px bg-emerald-500/15" : ""}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewUrl}
+                alt="Photo 1"
+                className={`mx-auto w-full object-cover ${hasSecond ? "max-h-36" : "max-h-48 sm:max-h-56"}`}
+              />
+              {hasSecond ? (
+                <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previewUrl2!}
+                    alt="Photo 2"
+                    className="mx-auto max-h-36 w-full object-cover"
+                  />
+                  {onClearSecond ? (
+                    <button
+                      type="button"
+                      onClick={onClearSecond}
+                      className="absolute right-1.5 top-1.5 rounded-lg bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white z-30"
+                    >
+                      2 हटाएँ
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
           </div>
         ) : previewUrl && previewFailed ? (
           <div className="px-3 py-6 text-center">
@@ -417,7 +445,7 @@ export function AiDoctorPhotoUpload({
             </p>
           </div>
         ) : (
-          <div className="relative flex min-h-[115px] sm:min-h-[125px] flex-col items-center justify-center overflow-hidden px-3 py-5">
+          <div className="relative flex min-h-[120px] sm:min-h-[135px] flex-col items-center justify-center overflow-hidden px-3 py-5">
             <Image
               src="/images/home/home-job-photo.jpg"
               alt=""
@@ -426,12 +454,19 @@ export function AiDoctorPhotoUpload({
               className="object-cover object-center"
               priority
             />
-            <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/45 to-black/25" />
-            <span className="relative z-10 flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-white shadow-md backdrop-blur-sm">
-              <Camera className="h-5 w-5" />
+            <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+
+            {/* Viewfinder corner brackets on camera placeholder */}
+            <span className="pointer-events-none absolute top-3 left-3 h-5 w-5 rounded-tl border-t-2 border-l-2 border-emerald-400/80 z-10" />
+            <span className="pointer-events-none absolute top-3 right-3 h-5 w-5 rounded-tr border-t-2 border-r-2 border-emerald-400/80 z-10" />
+            <span className="pointer-events-none absolute bottom-3 left-3 h-5 w-5 rounded-bl border-b-2 border-l-2 border-emerald-400/80 z-10" />
+            <span className="pointer-events-none absolute bottom-3 right-3 h-5 w-5 rounded-br border-b-2 border-r-2 border-emerald-400/80 z-10" />
+
+            <span className="relative z-10 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 text-white shadow-md backdrop-blur-sm border border-white/30">
+              <Camera className="h-5.5 w-5.5 text-white" />
             </span>
-            <p className="relative z-10 mt-1.5 text-xs font-bold text-white drop-shadow">
-              कैमरा खोलें या गैलरी से चुनें
+            <p className="relative z-10 mt-2 text-xs font-black text-white drop-shadow">
+              कैमरा खोलें या गैलरी से फोटो चुनें
             </p>
           </div>
         )}
@@ -548,7 +583,7 @@ export function AiDoctorActions({
   );
 }
 
-/** Recent diagnoses */
+/** Recent diagnoses — Crop Health Report style */
 export function AiDoctorRecentDiagnoses({
   history,
   onOpenEntry,
@@ -566,8 +601,11 @@ export function AiDoctorRecentDiagnoses({
   return (
     <div id="ai-doctor-history" className="scroll-mt-24">
       <DarkCard className="!p-3.5 sm:!p-5">
-        <div className="mb-2.5 flex items-start justify-between gap-2">
-          <SectionLabel title="पिछली जांचें" />
+        <div className="mb-3 flex items-start justify-between gap-2">
+          <SectionLabel
+            title="पिछली जांचें"
+            hint="क्रॉप हेल्थ रिपोर्ट (Crop Health Report) व पुराना इतिहास"
+          />
           {onClear && history.length > 0 && (
             <button
               type="button"
@@ -587,13 +625,14 @@ export function AiDoctorRecentDiagnoses({
             </p>
           </div>
         ) : (
-          <ul className="space-y-2">
+          <div className="space-y-2.5">
             {items.map((h) => {
-              const severity = h.result.severity?.toLowerCase().includes("high")
-                ? "high"
-                : h.result.severity?.toLowerCase().includes("low")
-                  ? "low"
-                  : "medium";
+              const sev = h.result.severity?.toLowerCase() || "";
+              const risk = h.result.riskLevel?.toLowerCase() || "";
+              const isHigh = sev.includes("high") || risk.includes("high") || sev.includes("गंभीर");
+              const isLow = sev.includes("low") || risk.includes("low") || sev.includes("कम");
+              const severityLevel = isHigh ? "high" : isLow ? "low" : "medium";
+
               const date = new Date(h.timestamp).toLocaleDateString("hi-IN", {
                 day: "numeric",
                 month: "short",
@@ -604,52 +643,92 @@ export function AiDoctorRecentDiagnoses({
                   ? h.thumbnailUrl
                   : "";
               const hasThumb = Boolean(thumb);
+
               return (
-                <li key={h.id}>
-                  <button
-                    type="button"
-                    onClick={() => onOpenEntry(h)}
-                    className="flex w-full items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2.5 text-left transition active:scale-[0.99]"
-                  >
-                    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--av-surface-inset)] sm:h-14 sm:w-14">
+                <div
+                  key={h.id}
+                  onClick={() => onOpenEntry(h)}
+                  className="group relative cursor-pointer rounded-[14px] border border-slate-200/90 bg-white p-3 shadow-xs transition-all hover:border-emerald-400 hover:shadow-md active:scale-[0.99] dark:border-slate-800 dark:bg-[var(--av-surface)]"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") onOpenEntry(h);
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Thumbnail with overlay date tag & 12px rounded corner */}
+                    <div className="relative h-16 w-16 sm:h-18 sm:w-18 shrink-0 overflow-hidden rounded-[12px] border border-slate-200/80 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
                       {hasThumb ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={thumb}
                           alt=""
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover transition-transform group-hover:scale-105"
                           onError={(e) => {
                             (e.currentTarget as HTMLImageElement).style.display = "none";
                           }}
                         />
                       ) : (
-                        <Leaf className="h-5 w-5 text-emerald-600" />
+                        <div className="flex h-full w-full items-center justify-center bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40">
+                          <Leaf className="h-6 w-6" />
+                        </div>
                       )}
+                      {/* Date tag overlaid on thumbnail */}
+                      <span className="absolute bottom-0 inset-x-0 bg-black/75 backdrop-blur-[2px] py-0.5 text-center text-[9px] font-bold text-white tracking-tight">
+                        {date}
+                      </span>
                     </div>
+
+                    {/* Report details */}
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="truncate text-sm font-bold text-[var(--av-text-primary)]">
-                          {h.result.diseaseName}
-                        </p>
-                        <RiskBadge level={severity} />
-                      </div>
-                      <p className="mt-0.5 truncate text-[11px] text-[var(--av-text-secondary)]">
-                        {h.result.cropContext || h.result.pathogen || "जांच"}
-                      </p>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-[var(--av-text-muted)]">
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {date}
+                      <div className="flex items-center justify-between gap-1.5">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                          हेल्थ रिपोर्ट
                         </span>
-                        <span>·</span>
-                        <span>{h.result.severity}</span>
+
+                        {/* Color-coded severity badge */}
+                        {severityLevel === "high" ? (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-rose-300 bg-rose-50 px-2 py-0.5 text-[10px] font-black text-rose-700 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-600 animate-pulse" />
+                            गंभीर (High)
+                          </span>
+                        ) : severityLevel === "medium" ? (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-800 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                            मध्यम (Medium)
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            सुरक्षित (Low)
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 className="mt-0.5 truncate text-[14px] font-extrabold text-[var(--av-text-primary)]">
+                        {h.result.diseaseName}
+                      </h4>
+
+                      <p className="mt-0.5 truncate text-[11px] font-medium text-[var(--av-text-secondary)]">
+                        {h.result.cropContext || h.result.pathogen || "जांच रिपोर्ट"}
+                      </p>
+
+                      <div className="mt-1 flex items-center justify-between text-[11px]">
+                        <span className="font-bold text-emerald-700 hover:underline dark:text-emerald-400">
+                          पूरी रिपोर्ट व दवा देखें →
+                        </span>
+                        {h.result.confidence ? (
+                          <span className="text-[10px] text-[var(--av-text-muted)]">
+                            {Math.round(h.result.confidence * 100)}% भरोसा
+                          </span>
+                        ) : null}
                       </div>
                     </div>
-                  </button>
-                </li>
+                  </div>
+                </div>
               );
             })}
-          </ul>
+          </div>
         )}
       </DarkCard>
     </div>

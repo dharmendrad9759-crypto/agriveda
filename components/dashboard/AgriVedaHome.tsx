@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Camera,
@@ -14,6 +14,8 @@ import {
   TrendingUp,
   Droplets,
   Landmark,
+  Check,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 import CropProblemCard from "@/components/home/CropProblemCard";
@@ -28,11 +30,253 @@ import { cropCatalog } from "@/data/crop-catalog";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { FarmField } from "@/lib/farm/types";
 import { track } from "@/lib/analytics";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { HomeSprayPill, HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import { speakFarmer } from "@/components/ui/SpeakButton";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
+
+/** Interactive Checklist card for Today's Task with Confetti celebration */
+function TodayTaskChecklistCard({
+  isHi,
+  weather,
+  weatherLoading,
+  weatherIsSample,
+}: {
+  isHi: boolean;
+  weather: any;
+  weatherLoading: boolean;
+  weatherIsSample: boolean;
+}) {
+  const [taskDone, setTaskDone] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  useEffect(() => {
+    try {
+      const todayKey = `agriveda_task_${new Date().toISOString().slice(0, 10)}`;
+      setTaskDone(localStorage.getItem(todayKey) === "done");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const toggleTask = () => {
+    const next = !taskDone;
+    setTaskDone(next);
+    try {
+      const todayKey = `agriveda_task_${new Date().toISOString().slice(0, 10)}`;
+      if (next) {
+        localStorage.setItem(todayKey, "done");
+        setShowCelebration(true);
+        setTimeout(() => setShowCelebration(false), 2400);
+      } else {
+        localStorage.removeItem(todayKey);
+      }
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const rain = weather?.hourlyForecast?.[0]?.rainChancePercent ?? 0;
+  const wind = Number.parseInt(weather?.windSpeed || "0", 10) || 0;
+  const isRain = rain >= 40;
+  const isWind = wind >= 15;
+
+  const taskTitle = isRain
+    ? isHi
+      ? "बारिश की संभावना — आज छिड़काव टालें"
+      : "Rain expected — delay spraying today"
+    : isWind
+      ? isHi
+        ? "तेज़ हवा चल रही है — दवा का छिड़काव रोकें"
+        : "High wind — hold chemical spray"
+      : isHi
+        ? "आज छिड़काव व सिंचाई के लिए अनुकूल मौसम"
+        : "Good weather for field spray & irrigation";
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-2xl border transition-all p-3 sm:p-3.5 shadow-[var(--av-shadow-sm)]",
+        taskDone
+          ? "border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-950/30"
+          : "border-[var(--av-border)] bg-[var(--av-surface)]"
+      )}
+    >
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-emerald-600 to-teal-600 text-white z-20 font-black text-xs sm:text-sm gap-2 shadow-lg"
+          >
+            <Sparkles className="h-4 w-4 animate-spin text-amber-300" />
+            <span>{isHi ? "🎉 शाबाश! आज का काम पूरा हुआ ✓" : "🎉 Great! Task completed ✓"}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={toggleTask}
+          aria-label={isHi ? "कार्य पूरा करें" : "Complete task"}
+          className={cn(
+            "flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border-2 transition-all active:scale-90",
+            taskDone
+              ? "border-emerald-600 bg-emerald-600 text-white shadow-sm shadow-emerald-900/30"
+              : "border-slate-300 dark:border-slate-600 bg-[var(--av-surface-inset)] hover:border-emerald-500"
+          )}
+        >
+          {taskDone && <Check className="h-4 w-4 stroke-[3]" />}
+        </button>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span
+              className={cn(
+                "text-[10px] font-extrabold uppercase tracking-wider rounded-md px-1.5 py-0.5",
+                taskDone
+                  ? "bg-emerald-600/20 text-emerald-800 dark:text-emerald-200"
+                  : "bg-slate-200 dark:bg-slate-800 text-[var(--av-text-muted)]"
+              )}
+            >
+              {isHi ? "आज का कार्य" : "Today's Task"}
+            </span>
+            {taskDone && (
+              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                {isHi ? "पूरा हुआ ✓" : "Done ✓"}
+              </span>
+            )}
+          </div>
+          <p
+            className={cn(
+              "mt-1 text-xs sm:text-[13px] font-bold leading-tight transition-all",
+              taskDone
+                ? "line-through text-[var(--av-text-muted)] opacity-70"
+                : "text-[var(--av-text-primary)]"
+            )}
+          >
+            {taskTitle}
+          </p>
+        </div>
+
+        <HomeSprayPill weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
+      </div>
+    </div>
+  );
+}
+
+/** Unified Crop Disease & Doctor Hero Card — AI Scan vs Manual Problem Catalog with Photo Imagery */
+function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
+  return (
+    <div className="relative overflow-hidden rounded-[24px] border border-emerald-500/25 bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-950 p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-18px_rgba(6,78,59,0.6)]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl"
+      />
+
+      <div className="relative z-10 flex items-start justify-between gap-3">
+        <div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300">
+            <Sparkles className="h-3 w-3" />
+            {isHi ? "बीमारी व कीट पहचान (Crop Doctor)" : "Identify Disease & Pests"}
+          </span>
+          <h2 className="mt-1.5 text-lg sm:text-xl font-black leading-tight text-white">
+            {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop Disease or Pest Issue?"}
+          </h2>
+          <p className="mt-1 text-xs font-medium text-emerald-100/80 leading-snug">
+            {isHi
+              ? "पत्ती की फोटो खींचकर AI से पहचानें या फसल व लक्षण अनुसार सही दवा जानें"
+              : "Scan leaf photo with AI or find verified remedies by crop symptoms"}
+          </p>
+        </div>
+      </div>
+
+      {/* Dual action cards with VISIBLE REAL PHOTOGRAPHY */}
+      <div className="relative z-10 mt-3.5 grid grid-cols-2 gap-2.5 sm:gap-3">
+        {/* Card 1: AI Photo Scan with visible scan photo background */}
+        <AppLink
+          href="/ai-doctor"
+          onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_unified_ai" })}
+          className="group relative flex min-h-[130px] sm:min-h-[140px] flex-col justify-between overflow-hidden rounded-2xl border border-white/25 bg-emerald-950 shadow-md transition active:scale-[0.97] hover:border-emerald-400/50"
+        >
+          {/* Visible Photo Background */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/home/home-cta-scan.jpg"
+              alt=""
+              fill
+              sizes="240px"
+              quality={65}
+              className="object-cover object-[center_35%] transition-transform duration-500 group-hover:scale-105"
+            />
+            {/* Rich gradient overlay so text is super clear while photo remains visible */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/35" />
+          </div>
+
+          <div className="relative z-10 flex items-center justify-between p-2.5 sm:p-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/90 text-white shadow-lg backdrop-blur-xs ring-1 ring-white/30 group-hover:scale-105 transition-transform">
+              <Camera className="h-5 w-5" strokeWidth={2.4} />
+            </span>
+            <span className="rounded-md bg-emerald-500/30 border border-emerald-400/40 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-200 backdrop-blur-xs">
+              {isHi ? "AI कैमरा" : "AI"}
+            </span>
+          </div>
+
+          <div className="relative z-10 p-2.5 sm:p-3 pt-0">
+            <p className="text-xs sm:text-sm font-black text-white leading-tight drop-shadow-sm">
+              {isHi ? "फोटो खींचें (AI)" : "Photo Scan (AI)"}
+            </p>
+            <p className="mt-0.5 text-[10px] text-emerald-100 font-medium line-clamp-1 leading-snug drop-shadow-xs">
+              {isHi ? "2 सेकंड में तुरंत जाँच" : "2-second diagnosis"}
+            </p>
+          </div>
+        </AppLink>
+
+        {/* Card 2: Manual Browse by Crop — replaced "लिस्ट से चुनें" with "फसल देखकर पहचानें" & punchline */}
+        <AppLink
+          href="/crop-problems"
+          onClick={() => track("tool_open", { href: "/crop-problems", label: "home_unified_manual" })}
+          className="group relative flex min-h-[130px] sm:min-h-[140px] flex-col justify-between overflow-hidden rounded-2xl border border-white/25 bg-teal-950 shadow-md transition active:scale-[0.97] hover:border-teal-400/50"
+        >
+          {/* Visible Photo Background */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/home/home-job-crop-problems.jpg"
+              alt=""
+              fill
+              sizes="240px"
+              quality={65}
+              className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+            />
+            {/* Rich gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/35" />
+          </div>
+
+          <div className="relative z-10 flex items-center justify-between p-2.5 sm:p-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/90 text-white shadow-lg backdrop-blur-xs ring-1 ring-white/30 group-hover:scale-105 transition-transform">
+              <ClipboardList className="h-5 w-5" strokeWidth={2.4} />
+            </span>
+            <span className="rounded-md bg-teal-500/30 border border-teal-400/40 px-1.5 py-0.5 text-[9px] font-extrabold text-teal-200 backdrop-blur-xs">
+              {isHi ? "फसल अनुसार" : "By Crop"}
+            </span>
+          </div>
+
+          <div className="relative z-10 p-2.5 sm:p-3 pt-0">
+            <p className="text-xs sm:text-sm font-black text-white leading-tight drop-shadow-sm">
+              {isHi ? "फसल देखकर पहचानें" : "Identify by Crop"}
+            </p>
+            <p className="mt-0.5 text-[10px] text-teal-100 font-medium line-clamp-1 leading-snug drop-shadow-xs">
+              {isHi ? "फसल व कीट लक्षण अनुसार सही दवा" : "Remedies by symptoms"}
+            </p>
+          </div>
+        </AppLink>
+      </div>
+    </div>
+  );
+}
 
 const QUICK_JOBS: {
   id: string;
@@ -225,7 +469,7 @@ export default function AgriVedaHome() {
       </div>
 
       <div className="relative z-10 space-y-4 px-0.5 pt-1">
-        {/* Welcome + compact weather button */}
+        {/* Welcome + compact weather button + interactive Today's Task checklist */}
         <motion.section {...fade(0)} className="px-0.5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -245,8 +489,13 @@ export default function AgriVedaHome() {
             </div>
             <HomeWeatherButton weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
           </div>
-          <div className="mt-2.5">
-            <HomeSprayPill weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
+          <div className="mt-3">
+            <TodayTaskChecklistCard
+              isHi={isHi}
+              weather={weather}
+              weatherLoading={weatherLoading}
+              weatherIsSample={weatherIsSample}
+            />
           </div>
         </motion.section>
 
@@ -319,41 +568,9 @@ export default function AgriVedaHome() {
           )}
         </motion.section>
 
-        {/* AI photo CTA */}
+        {/* Unified Disease & Crop Doctor Module (AI photo + manual list in one place) */}
         <motion.section {...fade(0.02)}>
-          <AppLink
-            href="/ai-doctor"
-            onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_scan_cta" })}
-            className="group relative flex min-h-[96px] w-full overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 shadow-lg shadow-emerald-900/25 active:scale-[0.99]"
-          >
-            <span className="relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-1.5 bg-emerald-950 px-3.5 py-4 sm:px-5">
-              <span className="inline-flex w-fit items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-100/90">
-                <Camera className="h-3 w-3" />
-                {isHi ? "AI जाँच" : "AI check"}
-              </span>
-              <span className="text-[16px] font-bold leading-snug text-white sm:text-[17px]">
-                {isHi ? "फसल में बीमारी है? फोटो खींचो" : "Crop looks sick? Take a photo"}
-              </span>
-            </span>
-            <span className="relative w-[48%] min-w-[140px] max-w-[240px] shrink-0 self-stretch sm:w-[52%] sm:max-w-[280px]">
-              <Image
-                src="/images/home/home-cta-scan.jpg"
-                alt=""
-                fill
-                sizes="280px"
-                quality={50}
-                className="object-cover object-[center_28%] transition duration-300 group-hover:scale-105"
-                priority
-              />
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-emerald-950 via-emerald-950/50 to-transparent sm:w-16"
-              />
-              <span className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-emerald-900 shadow-md">
-                <Camera className="h-5 w-5" strokeWidth={2.4} />
-              </span>
-            </span>
-          </AppLink>
+          <UnifiedDiseaseDoctorCard isHi={isHi} />
         </motion.section>
 
         {/* Look & tap jobs — photo backgrounds */}
@@ -390,11 +607,6 @@ export default function AgriVedaHome() {
               </AppLink>
             );
           })}
-        </motion.section>
-
-        {/* फसल समस्या पहचानें — only new home insert under the 4 cards */}
-        <motion.section {...fade(0.04)} className="mt-0">
-          <CropProblemCard />
         </motion.section>
 
         {/* Premium Field Advisory Banner */}

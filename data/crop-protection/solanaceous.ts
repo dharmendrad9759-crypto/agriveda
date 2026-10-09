@@ -31,8 +31,8 @@ export const SOLANACEOUS_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "STAGE 2 — Early infection",
-            chemistry: "Cymoxanil 8% + Mancozeb 64% WP या Metalaxyl-M + Mancozeb (Ridomil Gold)",
-            dose: "600 g/acre या 500 g/acre (2.5 g/L)",
+            chemistry: "Cymoxanil 8% + Mancozeb 64% WP या Metalaxyl-M 4% + Mancozeb 64% WP (Ridomil Gold MZ 68 WP)",
+            dose: "600 g/acre या 2 से 2.5 g/L (500 g/acre)",
           },
           {
             stage: "advanced",
@@ -193,8 +193,8 @@ export const SOLANACEOUS_PROFILES: CropProtectionProfile[] = [
           {
             stage: "early",
             label: "STAGE 2 — First appearance",
-            chemistry: "Cymoxanil + Mancozeb या Metalaxyl-M + Mancozeb (Ridomil Gold)",
-            dose: "600 g/acre या 500 g/acre",
+            chemistry: "Cymoxanil + Mancozeb या Metalaxyl-M 4% + Mancozeb 64% WP (Ridomil Gold MZ 68 WP)",
+            dose: "600 g/acre या 2 से 2.5 g/L (500 g/acre)",
           },
           {
             stage: "advanced",
