@@ -58,7 +58,15 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
     () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
     [crop.slug]
   );
-  const useRichPests = Boolean(profile?.pestManagement?.length);
+  const useRichPests = Boolean(
+    profile?.pestManagement?.length &&
+      profile.pestManagement.some(
+        (p) =>
+          p.scientificName &&
+          p.scientificName !== "Local pest" &&
+          p.pestName !== "Major pest"
+      )
+  );
 
   const ipmPests = useMemo(() => getIpmPestListForCrop(crop.slug), [crop.slug]);
   const fieldGuidePests = useMemo(() => getCropFieldGuidePestListForCrop(crop.slug), [crop.slug]);

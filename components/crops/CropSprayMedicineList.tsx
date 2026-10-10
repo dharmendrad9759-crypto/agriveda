@@ -83,26 +83,41 @@ export default function CropSprayMedicineList({
                       {i + 1}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-extrabold leading-snug text-[var(--av-text-primary)]">
-                        {title}
-                        {p.formulation && !title.includes(p.formulation)
+                      {/* English Technical Name in bold clear text */}
+                      <p className="text-[14px] sm:text-[15px] font-black leading-snug text-[var(--av-text-primary)]">
+                        {p.technical}
+                        {p.formulation && !p.technical.includes(p.formulation)
                           ? ` · ${p.formulation}`
                           : ""}
                       </p>
+                      {hi && (
+                        <p className="text-[11.5px] font-semibold text-emerald-800 dark:text-emerald-300 mt-0.5">
+                          {bilingualAgriName(p.technical).replace(/^[^(]+/, "").replace(/^\(|\)$/g, "").trim()
+                            ? `(${bilingualAgriName(p.technical).replace(/^[^(]+/, "").replace(/^\(|\)$/g, "").trim()})`
+                            : ""}
+                        </p>
+                      )}
                       {p.brands?.length ? (
-                        <p className="mt-0.5 text-[11px] font-medium leading-snug text-[var(--av-text-muted)]">
-                          {shopBrandLine(p.brands, hi)}
+                        <p className="mt-1 text-[11.5px] font-medium leading-snug text-[var(--av-text-muted)]">
+                          <span className="font-bold text-[var(--av-text-secondary)]">{hi ? "प्रसिद्ध ब्रांड: " : "Brands: "}</span>
+                          {p.brands.join(" · ")}
                         </p>
                       ) : null}
-                      <p className="mt-1.5 text-[14px] font-bold leading-snug text-emerald-800 dark:text-emerald-300">
-                        {hi ? "मात्रा · " : "Dose · "}
-                        {p.doseAcre}
-                      </p>
-                      {tank ? (
-                        <p className="mt-0.5 text-[13px] font-semibold leading-snug text-[var(--av-text-secondary)]">
-                          {tank}
-                        </p>
-                      ) : null}
+
+                      {/* Prominent Dose Badges */}
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[12px] font-black text-amber-950 dark:text-amber-200">
+                          <span>🌾</span>
+                          <span>{hi ? "मात्रा: " : "Dose: "}</span>
+                          <span>{p.doseAcre}</span>
+                        </span>
+                        {tank ? (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-sky-500/15 border border-sky-500/30 px-2 py-0.5 text-[11.5px] font-bold text-sky-950 dark:text-sky-200">
+                            <span>🚰</span>
+                            <span>{tank}</span>
+                          </span>
+                        ) : null}
+                      </div>
                       {p.bestStage ? (
                         <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
                           {hi ? "कब · " : "When · "}

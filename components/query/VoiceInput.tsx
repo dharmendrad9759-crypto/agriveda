@@ -15,7 +15,7 @@ interface SpeechRecognitionLike {
   continuous: boolean;
   interimResults: boolean;
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event?: any) => void) | null;
   onend: (() => void) | null;
   start: () => void;
   stop: () => void;
@@ -51,34 +51,64 @@ export default function VoiceInput({ onTranscript, className = "", compact, vari
     setListening(false);
   }, []);
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     const w = window as SpeechWindow;
     const SpeechRecognitionCtor = w.SpeechRecognition || w.webkitSpeechRecognition;
     if (!SpeechRecognitionCtor) {
-      showToast("Voice input is not supported in this browser", "error");
+      showToast("इस ब्राउज़र में आवाज़ पहचान (Voice Input) उपलब्ध नहीं है — Chrome प्रयोग करें", "error");
       return;
     }
 
-    const recognition = new SpeechRecognitionCtor();
-    recognition.lang = "hi-IN";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.onresult = (event) => {
-      const text = event.results[0]?.[0]?.transcript?.trim();
-      if (text) {
-        onTranscript(text);
-        showToast("Voice note added ✓");
+    // 1. Explicitly prompt the browser/OS for microphone permission
+    if (typeof navigator !== "undefined" && navigator.mediaDevices?.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Immediately stop tracks so recognition can acquire audio cleanly
+        stream.getTracks().forEach((track) => track.stop());
+      } catch (err: any) {
+        if (err?.name === "NotAllowedError" || err?.name === "PermissionDeniedError") {
+          showToast("माइक की अनुमति नहीं मिली। कृपया ब्राउज़र/फोन में Microphone Allow करें", "error");
+          setListening(false);
+          return;
+        }
       }
-    };
-    recognition.onerror = () => {
-      showToast("Mic / voice error — try again", "error");
-      setListening(false);
-    };
-    recognition.onend = () => setListening(false);
+    }
 
-    recognitionRef.current = recognition;
-    recognition.start();
-    setListening(true);
+    try {
+      const recognition = new SpeechRecognitionCtor();
+      recognition.lang = "hi-IN";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      
+      recognition.onresult = (event: any) => {
+        const text = event.results?.[0]?.[0]?.transcript?.trim();
+        if (text) {
+          onTranscript(text);
+          showToast("आवाज़ से लिखा गया ✓");
+        }
+      };
+      
+      recognition.onerror = (event: any) => {
+        const errType = event?.error;
+        if (errType === "not-allowed") {
+          showToast("माइक की अनुमति नहीं मिली — ब्राउज़र सेटिंग्स में माइक Allow करें", "error");
+        } else if (errType === "no-speech") {
+          showToast("कोई आवाज़ नहीं सुनाई दी — दोबारा बोलें", "info");
+        } else {
+          showToast("माइक में दिक्कत आई — कृपया पुनः प्रयास करें", "error");
+        }
+        setListening(false);
+      };
+      
+      recognition.onend = () => setListening(false);
+
+      recognitionRef.current = recognition;
+      recognition.start();
+      setListening(true);
+    } catch (err: any) {
+      showToast("माइक चालू नहीं हो सका — कृपया पुनः प्रयास करें", "error");
+      setListening(false);
+    }
   }, [onTranscript, showToast]);
 
   useEffect(() => () => stop(), [stop]);

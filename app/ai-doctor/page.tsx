@@ -766,6 +766,11 @@ export default function AIDoctorPage() {
                       )}
                     </div>
 
+                    {/* Water and per-acre guidance banner */}
+                    <div className="mt-3 rounded-xl bg-amber-500/10 border border-amber-500/25 p-2.5 text-[11px] font-bold text-amber-900 dark:text-amber-200">
+                      💧 1 एकड़ खेत के लिए पानी: अमूमन 150 से 200 लीटर साफ़ पानी में घोल बनाएँ (15 लीटर वाले नैपसैक पंप में 8–10 टंकी प्रति एकड़)। तेज धूप में छिड़काव न करें।
+                    </div>
+
                     {result.spraySticker ? (
                       <div className="mt-3 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2.5 dark:bg-sky-950/20">
                         <p className="text-[11px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>

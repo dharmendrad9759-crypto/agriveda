@@ -112,10 +112,16 @@ function bagFractionHint(kg: number): string | null {
 export type FoliarCard = {
   title: string;
   medicine: string;
-  dose: string;
+  dosePerL: string;
+  dosePerAcre: string;
+  waterVolume: string;
+  timing: string;
+  isSoilBasal?: boolean;
+  caution?: string;
+  dose?: string; // backwards compatibility
 };
 
-/** Map raw foliar/micro lines into problem → medicine → dose cards. */
+/** Map raw foliar/micro lines into structured scientific ICAR cards */
 export function toFoliarCards(
   rows: { name: string; detail: string }[],
   hi: boolean
@@ -124,62 +130,206 @@ export function toFoliarCards(
   const seen = new Set<string>();
 
   for (const r of rows) {
-    const detail = r.detail.trim();
-    if (!detail) continue;
-    const key = detail.toLowerCase();
+    const raw = r.detail.trim();
+    if (!raw) continue;
+    // Skip warnings or non-product lines
+    if (/^⚠️|चेतावनी|warning|सावधानी/i.test(raw)) continue;
+
+    const key = raw.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
 
-    const title = foliarPurpose(detail, r.name, hi);
-    const { medicine, dose } = splitMedicineDose(detail, hi);
-    cards.push({ title, medicine, dose });
+    const card = parseScientificFoliarCard(raw, r.name, hi);
+    if (card) {
+      cards.push(card);
+    }
   }
 
-  return cards.slice(0, 6);
+  // If no cards were built, provide default ICAR foliar spray kit
+  if (!cards.length) {
+    cards.push({
+      title: hi ? "पत्ती पीलापन / जिंक की कमी" : "Zinc Deficiency (Yellowing)",
+      medicine: hi ? "चिलेटेड जिंक (Zn EDTA 12%)" : "Chelated Zinc (Zn EDTA 12%)",
+      dosePerL: hi ? "1 ग्राम / लीटर पानी" : "1 g / L water",
+      dosePerAcre: hi ? "150–200 ग्राम प्रति एकड़" : "150–200 g / acre",
+      waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+      timing: hi ? "पीलापन दिखते ही या कल्ले फूटते समय" : "At tillering or visible yellowing",
+      caution: hi ? "सबसे सुरक्षित फोलियर स्प्रे — पत्तियां नहीं जलतीं" : "Safest foliar form — no burn risk",
+      dose: hi ? "1 ग्राम/लीटर (150–200 g/एकड़)" : "1 g/L (150-200 g/acre)",
+    });
+    cards.push({
+      title: hi ? "दाना भराव व परागण सुधार" : "Grain Fill & Pollination",
+      medicine: hi ? "बोरॉन 20% (Solubor)" : "Boron 20% (Solubor)",
+      dosePerL: hi ? "1 से 1.25 ग्राम / लीटर पानी" : "1–1.25 g / L water",
+      dosePerAcre: hi ? "200–250 ग्राम प्रति एकड़" : "200–250 g / acre",
+      waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+      timing: hi ? "गभोट अवस्था (बाली/फूल निकलने से पूर्व)" : "Booting / pre-flowering",
+      caution: hi ? "दाने का खोखलापन रोकता है और वजन बढ़ाता है" : "Prevents empty grains and adds weight",
+      dose: hi ? "1.25 ग्राम/लीटर (200–250 g/एकड़)" : "1.25 g/L (200-250 g/acre)",
+    });
+  }
+
+  return cards.slice(0, 8);
 }
 
-function foliarPurpose(detail: string, name: string, hi: boolean): string {
-  const t = `${name} ${detail}`;
-  if (/zinc|जिंक|znso|Zn\b/i.test(t)) {
-    return hi ? "पत्ती पीलापन / सफ़ेद कलिका रोकने के लिए" : "To prevent yellowing (zinc)";
-  }
-  if (/boron|बोरॉन|बोरेक्स|Borax/i.test(t)) {
-    return hi ? "दाने भरने व फूल–परागण के लिए" : "For grain fill & pollination";
-  }
-  if (/19\s*:\s*19\s*:\s*19|20\s*:\s*20\s*:\s*20|घुलनशील/i.test(t)) {
-    return hi ? "सामान्य हरियाली और ग्रोथ के लिए" : "For general greenery & growth";
-  }
-  if (/iron|आयरन|feso/i.test(t)) {
-    return hi ? "नई पत्ती पीली हो तो" : "If new leaves turn yellow";
-  }
-  if (/calcium|कैल्शियम/i.test(t)) {
-    return hi ? "फल सड़न / झड़ना रोकने के लिए" : "To reduce fruit rot / drop";
-  }
-  return hi ? "पत्ती पर छिड़काव" : "Leaf spray";
-}
+function parseScientificFoliarCard(
+  detail: string,
+  categoryName: string,
+  hi: boolean
+): FoliarCard | null {
+  const t = `${categoryName} ${detail}`.toLowerCase();
 
-function splitMedicineDose(detail: string, hi: boolean): { medicine: string; dose: string } {
+  // 1. Zinc
+  if (/zinc|जिंक|znso|zn\b/i.test(t)) {
+    if (/चिलेटेड|chelated|edta/i.test(t)) {
+      return {
+        title: hi ? "पत्ती पीलापन / जिंक की कमी" : "Zinc Deficiency (Yellowing)",
+        medicine: hi ? "चिलेटेड जिंक (Zn EDTA 12%)" : "Chelated Zinc (Zn EDTA 12%)",
+        dosePerL: hi ? "1 ग्राम / लीटर पानी" : "1 g / L water",
+        dosePerAcre: hi ? "150–200 ग्राम प्रति एकड़" : "150–200 g / acre",
+        waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+        timing: hi ? "पीलापन दिखते ही या कल्ले फूटने पर" : "At tillering or visible yellowing",
+        caution: hi ? "सबसे सुरक्षित फोलियर स्प्रे — चूना मिलाने की आवश्यकता नहीं" : "Safest foliar form — no lime needed",
+        dose: hi ? "1 ग्राम/L (150–200 g/एकड़)" : "1 g/L (150-200 g/acre)",
+      };
+    }
+    if (/0\.5%|घोल|फोलियर|spray|छिड़काव/i.test(t) && !/10\s*kg.*बेसल/i.test(t)) {
+      return {
+        title: hi ? "सफेद कलिका व पीलापन (जिंक सल्फेट स्प्रे)" : "Zinc Sulphate Foliar Spray",
+        medicine: hi ? "जिंक सल्फेट 21% + बुझा चूना" : "Zinc Sulphate 21% + Slaked Lime",
+        dosePerL: hi ? "5 ग्राम जिंक + 2.5 ग्राम चूना / लीटर पानी" : "5 g Zn + 2.5 g lime / L water",
+        dosePerAcre: hi ? "1 किग्रा जिंक सल्फेट + 500 ग्राम चूना प्रति एकड़" : "1 kg ZnSO4 + 500 g lime / acre",
+        waterVolume: hi ? "200 लीटर पानी प्रति एकड़" : "200 L water / acre",
+        timing: hi ? "CRI या कल्ले फूटते समय (पीलापन दिखने पर)" : "CRI or tillering stage",
+        caution: hi ? "⚠️ चूना मिलाना अनिवार्य है ताकि पत्तियां न झुलसें" : "Must mix lime to prevent scorching",
+        dose: hi ? "5 g/L जिंक + 2.5 g/L चूना (1 kg Zn/एकड़)" : "5 g/L Zn + lime (1 kg/acre)",
+      };
+    }
+    // Basal soil zinc
+    return {
+      title: hi ? "मिट्टी में जिंक बेसल (DAP से अलग)" : "Soil Zinc Basal Application",
+      medicine: hi ? "जिंक सल्फेट 21% या 33%" : "Zinc Sulphate 21% or 33%",
+      dosePerL: hi ? "— (मिट्टी में बुरकाव)" : "— (Soil broadcast)",
+      dosePerAcre: hi ? "21% जिंक 10 kg/एकड़ या 33% जिंक 6 kg/एकड़" : "21% Zn 10 kg/acre or 33% Zn 6 kg/acre",
+      waterVolume: hi ? "लागू नहीं (मिट्टी में छिड़काव)" : "N/A (Soil broadcast)",
+      timing: hi ? "खेत की अंतिम जुताई या पहली सिंचाई पर" : "Field prep or CRI irrigation",
+      isSoilBasal: true,
+      caution: hi ? "⚠️ ICAR नियम: DAP/SSP के साथ कभी मिलाकर न डालें" : "Never mix with DAP/SSP",
+      dose: hi ? "10 किग्रा/एकड़ (21% Zn)" : "10 kg/acre (21% Zn)",
+    };
+  }
+
+  // 2. Sulphur
+  if (/sulphur|सल्फर|sulfur|gypsum|जिप्सम|बेंटोनाइट|गंधक/i.test(t)) {
+    if (/gypsum|बेंटोनाइट|बेसल|धान-गेहूँ/i.test(t)) {
+      return {
+        title: hi ? "मिट्टी में गंधक (सल्फर) सुधार" : "Soil Sulphur Basal",
+        medicine: hi ? "बेंटोनाइट सल्फर 90% दानेदार या जिप्सम" : "Bentonite Sulphur 90% or Gypsum",
+        dosePerL: hi ? "— (मिट्टी में बुरकाव)" : "— (Soil broadcast)",
+        dosePerAcre: hi ? "10 किग्रा बेंटोनाइट सल्फर या 100 किग्रा जिप्सम प्रति एकड़" : "10 kg bentonite or 100 kg gypsum / acre",
+        waterVolume: hi ? "लागू नहीं (मिट्टी में डालें)" : "N/A (Soil broadcast)",
+        timing: hi ? "बुवाई के समय या पहली सिंचाई पर" : "At sowing or 1st irrigation",
+        isSoilBasal: true,
+        caution: hi ? "तेल, चमक व प्रोटीन की मात्रा बढ़ाता है" : "Increases oil, shine & protein",
+        dose: hi ? "10 kg/एकड़ (बेंटोनाइट)" : "10 kg/acre (bentonite)",
+      };
+    }
+    return {
+      title: hi ? "सल्फर (गंधक) फोलियर स्प्रे" : "Sulphur Foliar Spray",
+      medicine: hi ? "घुलनशील सल्फर 80% WDG" : "Soluble Sulphur 80% WDG",
+      dosePerL: hi ? "2 से 2.5 ग्राम / लीटर पानी" : "2–2.5 g / L water",
+      dosePerAcre: hi ? "400–500 ग्राम प्रति एकड़" : "400–500 g / acre",
+      waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+      timing: hi ? "वानस्पतिक बढ़वार या पत्तियों पर पीलापन दिखने पर" : "Vegetative stage or visible chlorosis",
+      caution: hi ? "फफूंद से सुरक्षा और पत्तों में हरियाली लाता है" : "Protects against fungi and boosts greening",
+      dose: hi ? "2.5 g/L (500 g/एकड़)" : "2.5 g/L (500 g/acre)",
+    };
+  }
+
+  // 3. Boron
+  if (/boron|बोरॉन|बोरेक्स|borax/i.test(t)) {
+    return {
+      title: hi ? "दाना भराव व परागण सुधार" : "Grain Fill & Pollination",
+      medicine: hi ? "बोरॉन 20% (Solubor / बोरेक्स)" : "Boron 20% (Solubor / Borax)",
+      dosePerL: hi ? "1 से 1.25 ग्राम / लीटर पानी" : "1–1.25 g / L water",
+      dosePerAcre: hi ? "200–250 ग्राम प्रति एकड़" : "200–250 g / acre",
+      waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+      timing: hi ? "गभोट अवस्था व बाली/फूल निकलने से पूर्व" : "Booting / pre-flowering stage",
+      caution: hi ? "दाने का सिकुड़ना रोकता है और बाली में पूरा भराव करता है" : "Ensures complete grain filling",
+      dose: hi ? "1.25 g/L (200–250 g/एकड़)" : "1.25 g/L (200-250 g/acre)",
+    };
+  }
+
+  // 4. Manganese / Iron
+  if (/mn|मैंगनीज|iron|आयरन|feso|लोहा/i.test(t)) {
+    return {
+      title: hi ? "मैंगनीज व लौह तत्व (पीलापन निवारण)" : "Manganese & Iron Correction",
+      medicine: hi ? "मैंगनीज सल्फेट (MnSO₄ 0.5%) या फेरस सल्फेट 0.5%" : "Manganese Sulphate 0.5% or Ferrous Sulphate 0.5%",
+      dosePerL: hi ? "5 ग्राम / लीटर पानी (0.5% घोल)" : "5 g / L water (0.5% solution)",
+      dosePerAcre: hi ? "1 किग्रा प्रति एकड़" : "1 kg / acre",
+      waterVolume: hi ? "200 लीटर पानी प्रति एकड़" : "200 L water / acre",
+      timing: hi ? "CRI पहली सिंचाई व कल्ले फूटते समय" : "CRI and tillering stage",
+      caution: hi ? "उच्च pH या रेतीली मिट्टी में पीली धारियां दिखने पर तुरंत स्प्रे करें" : "Spray immediately on sandy/high-pH soils",
+      dose: hi ? "5 g/L (1 kg/एकड़)" : "5 g/L (1 kg/acre)",
+    };
+  }
+
+  // 5. NPK 0:0:50 / Potash / Grain filling
+  if (/0:0:50|दाना भर|पोटाश|दूधिया/i.test(t)) {
+    return {
+      title: hi ? "दाना भराव व वजन बढ़ाने हेतु" : "For Grain Fill & Weight",
+      medicine: hi ? "घुलनशील पोटाश NPK 0:0:50 (पोटेशियम सल्फेट)" : "Soluble Potash NPK 0:0:50",
+      dosePerL: hi ? "5 ग्राम / लीटर पानी" : "5 g / L water",
+      dosePerAcre: hi ? "1 किग्रा प्रति एकड़" : "1 kg / acre",
+      waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+      timing: hi ? "दूधिया अवस्था व दाना भरने के समय" : "Milky / grain fill stage",
+      caution: hi ? "दाने का आकार, वजन और चमक बढ़ाता है" : "Boosts grain size, weight and shine",
+      dose: hi ? "5 g/L (1 kg/एकड़)" : "5 g/L (1 kg/acre)",
+    };
+  }
+
+  // 6. NPK 0:52:34 / Booting
+  if (/0:52:34|बाली|गभोट/i.test(t)) {
+    return {
+      title: hi ? "बाली विकास व मजबूत दाना हेतु" : "Earhead Development",
+      medicine: hi ? "घुलनशील NPK 0:52:34 (MKP)" : "Soluble NPK 0:52:34 (MKP)",
+      dosePerL: hi ? "5 ग्राम / लीटर पानी" : "5 g / L water",
+      dosePerAcre: hi ? "1 किग्रा प्रति एकड़" : "1 kg / acre",
+      waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+      timing: hi ? "गभोट अवस्था (बाली निकलने से 7–10 दिन पहले)" : "Booting stage",
+      caution: hi ? "तने को मजबूत बनाता है और बाली लंबी निकालता है" : "Strengthens stem and elongates earhead",
+      dose: hi ? "5 g/L (1 kg/एकड़)" : "5 g/L (1 kg/acre)",
+    };
+  }
+
+  // 7. General NPK 19:19:19 / Growth
+  if (/19:19:19|20:20:20|हरियाली|ग्रोथ|growth|वानस्पतिक/i.test(t)) {
+    return {
+      title: hi ? "हरियाली व वनस्पति बढ़वार हेतु" : "Vegetative Growth & Greening",
+      medicine: hi ? "घुलनशील NPK 19:19:19" : "Soluble NPK 19:19:19",
+      dosePerL: hi ? "5 ग्राम / लीटर पानी" : "5 g / L water",
+      dosePerAcre: hi ? "1 किग्रा प्रति एकड़" : "1 kg / acre",
+      waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+      timing: hi ? "बुवाई के 30–35 दिन बाद (कल्ले फूटते समय)" : "30–35 days after sowing",
+      caution: hi ? "पौधे का संपूर्ण विकास करता है" : "Supports overall balanced growth",
+      dose: hi ? "5 g/L (1 kg/एकड़)" : "5 g/L (1 kg/acre)",
+    };
+  }
+
+  // Fallback with realistic doses instead of "डिब्बे पर लिखी मात्रा"
   const doseMatch = detail.match(
     /(\d+(?:\.\d+)?\s*(?:[-–]\s*\d+(?:\.\d+)?)?\s*(?:g|ग्राम|किग्रा|kg|ml|मि\.?ली|%)[^\s,]*)/i
   );
-  const dose = doseMatch
-    ? doseMatch[0]
-    : hi
-      ? "डिब्बे पर लिखी मात्रा में मिलाएँ"
-      : "Follow product label dose";
-
-  let medicine = detail;
-  if (doseMatch) {
-    medicine = detail.replace(doseMatch[0], "").replace(/[·\-–—,]\s*$/, "").trim();
-  }
-  medicine = medicine
-    .replace(/\bZnSO4\b/gi, "जिंक सल्फेट")
-    .replace(/\bZnSO₄\b/gi, "जिंक सल्फेट")
-    .replace(/\bmicronutrient(s)?\b/gi, hi ? "सूक्ष्म खाद" : "Micronutrient")
-    .trim();
-
-  if (!medicine) medicine = hi ? "सूक्ष्म खाद" : "Spray product";
-  return { medicine, dose };
+  return {
+    title: hi ? "पत्ती पर सूक्ष्म पोषक छिड़काव" : "Foliar Micronutrient Spray",
+    medicine: detail.replace(doseMatch ? doseMatch[0] : "", "").trim() || (hi ? "सूक्ष्म पोषक मिश्रण" : "Micronutrient mixture"),
+    dosePerL: doseMatch ? `${doseMatch[0]} / लीटर पानी` : (hi ? "1 से 2 ग्राम / लीटर पानी" : "1–2 g / L water"),
+    dosePerAcre: hi ? "200 से 400 ग्राम प्रति एकड़" : "200–400 g / acre",
+    waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
+    timing: hi ? "सुबह 9 बजे से पहले या शाम 4 बजे के बाद" : "Early morning or late afternoon",
+    caution: hi ? "साफ़ पानी का प्रयोग करें" : "Use clean water",
+    dose: doseMatch ? doseMatch[0] : (hi ? "2 g/L (300 g/एकड़)" : "2 g/L (300 g/acre)"),
+  };
 }
 
 export type TipBucket = "do" | "dont" | "extra";

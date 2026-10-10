@@ -1,16 +1,10 @@
-"use client";
-
 import { Volume2 } from "lucide-react";
+import { speakFarmerText, stopFarmerSpeech } from "@/lib/speech/farmerVoice";
 
 export function speakFarmer(text: string, hi: boolean) {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
   const line = text.replace(/\s+/g, " ").trim();
   if (!line) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(line);
-  utter.lang = hi ? "hi-IN" : "en-IN";
-  utter.rate = 0.92;
-  window.speechSynthesis.speak(utter);
+  speakFarmerText(line, hi);
 }
 
 export default function SpeakButton({

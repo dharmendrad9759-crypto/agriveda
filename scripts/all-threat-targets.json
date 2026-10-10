@@ -1,0 +1,812 @@
+[
+  {
+    "base": "disease-magnaporthe-oryzae",
+    "dir": "diseases",
+    "nameHi": "धान झुलसा",
+    "nameEn": "Blast",
+    "tag": "फफूंद",
+    "scientific": "magnaporthe oryzae",
+    "crops": []
+  },
+  {
+    "base": "pest-scirpophaga-incertulas",
+    "dir": "pests",
+    "nameHi": "तना छेदक",
+    "nameEn": "Stem borer",
+    "tag": "कीट",
+    "scientific": "scirpophaga incertulas",
+    "crops": []
+  },
+  {
+    "base": "pest-nilaparvata-lugens",
+    "dir": "pests",
+    "nameHi": "भूरा फुदका",
+    "nameEn": "Brown plant hopper",
+    "tag": "कीट",
+    "scientific": "nilaparvata lugens",
+    "crops": []
+  },
+  {
+    "base": "disease-rhizoctonia-solani",
+    "dir": "diseases",
+    "nameHi": "पर्ण आवरण झुलसा",
+    "nameEn": "Sheath blight",
+    "tag": "फफूंद",
+    "scientific": "rhizoctonia solani",
+    "crops": []
+  },
+  {
+    "base": "disease-xanthomonas-oryzae",
+    "dir": "diseases",
+    "nameHi": "जीवाणु पत्ती झुलसा",
+    "nameEn": "Bacterial leaf blight",
+    "tag": "जीवाणु",
+    "scientific": "xanthomonas oryzae",
+    "crops": []
+  },
+  {
+    "base": "disease-bipolaris-oryzae",
+    "dir": "diseases",
+    "nameHi": "भूरा धब्बा",
+    "nameEn": "Brown spot",
+    "tag": "फफूंद",
+    "scientific": "bipolaris oryzae",
+    "crops": []
+  },
+  {
+    "base": "pest-cnaphalocrocis-medinalis",
+    "dir": "pests",
+    "nameHi": "पत्ती मोड़क",
+    "nameEn": "Leaf folder",
+    "tag": "कीट",
+    "scientific": "cnaphalocrocis medinalis",
+    "crops": []
+  },
+  {
+    "base": "disease-rice-tungro-virus",
+    "dir": "diseases",
+    "nameHi": "धान पीला बौना रोग",
+    "nameEn": "Tungro",
+    "tag": "वायरस",
+    "scientific": "rice tungro virus",
+    "crops": []
+  },
+  {
+    "base": "disease-puccinia-striiformis",
+    "dir": "diseases",
+    "nameHi": "पीला रतुआ",
+    "nameEn": "Yellow rust",
+    "tag": "फफूंद",
+    "scientific": "puccinia striiformis",
+    "crops": []
+  },
+  {
+    "base": "disease-puccinia-triticina",
+    "dir": "diseases",
+    "nameHi": "भूरा रतुआ",
+    "nameEn": "Brown rust",
+    "tag": "फफूंद",
+    "scientific": "puccinia triticina",
+    "crops": []
+  },
+  {
+    "base": "disease-bipolaris-sorokiniana",
+    "dir": "diseases",
+    "nameHi": "पत्ती धब्बा रोग",
+    "nameEn": "Spot blotch",
+    "tag": "फफूंद",
+    "scientific": "bipolaris sorokiniana",
+    "crops": []
+  },
+  {
+    "base": "disease-ustilago-tritici",
+    "dir": "diseases",
+    "nameHi": "ढीला कंड",
+    "nameEn": "Loose smut",
+    "tag": "फफूंद",
+    "scientific": "ustilago tritici",
+    "crops": []
+  },
+  {
+    "base": "disease-tilletia-indica",
+    "dir": "diseases",
+    "nameHi": "करनाल कंड",
+    "nameEn": "Karnal bunt",
+    "tag": "फफूंद",
+    "scientific": "tilletia indica",
+    "crops": []
+  },
+  {
+    "base": "pest-sitobion-avenae",
+    "dir": "pests",
+    "nameHi": "माहू",
+    "nameEn": "Aphid",
+    "tag": "कीट",
+    "scientific": "sitobion avenae",
+    "crops": []
+  },
+  {
+    "base": "pest-odontotermes-obesus",
+    "dir": "pests",
+    "nameHi": "दीमक",
+    "nameEn": "Termite",
+    "tag": "कीट",
+    "scientific": "odontotermes obesus",
+    "crops": []
+  },
+  {
+    "base": "disease-blumeria-graminis",
+    "dir": "diseases",
+    "nameHi": "चूर्णिल फफूंद",
+    "nameEn": "Powdery mildew",
+    "tag": "फफूंद",
+    "scientific": "blumeria graminis",
+    "crops": []
+  },
+  {
+    "base": "pest-spodoptera-frugiperda",
+    "dir": "pests",
+    "nameHi": "फॉल आर्मीवॉर्म",
+    "nameEn": "Fall armyworm",
+    "tag": "कीट",
+    "scientific": "spodoptera frugiperda",
+    "crops": []
+  },
+  {
+    "base": "pest-chilo-partellus",
+    "dir": "pests",
+    "nameHi": "तना छेदक",
+    "nameEn": "Stem borer",
+    "tag": "कीट",
+    "scientific": "chilo partellus",
+    "crops": []
+  },
+  {
+    "base": "disease-exserohilum-turcicum",
+    "dir": "diseases",
+    "nameHi": "मक्का पत्ती झुलसा",
+    "nameEn": "Turcicum blight",
+    "tag": "फफूंद",
+    "scientific": "exserohilum turcicum",
+    "crops": []
+  },
+  {
+    "base": "disease-bipolaris-maydis",
+    "dir": "diseases",
+    "nameHi": "मक्का पत्ती धब्बा",
+    "nameEn": "Maydis leaf blight",
+    "tag": "फफूंद",
+    "scientific": "bipolaris maydis",
+    "crops": []
+  },
+  {
+    "base": "disease-puccinia-sorghi",
+    "dir": "diseases",
+    "nameHi": "सामान्य रतुआ",
+    "nameEn": "Common rust",
+    "tag": "फफूंद",
+    "scientific": "puccinia sorghi",
+    "crops": []
+  },
+  {
+    "base": "pest-atherigona-soccata",
+    "dir": "pests",
+    "nameHi": "अंकुर मक्खी",
+    "nameEn": "Shoot fly",
+    "tag": "कीट",
+    "scientific": "atherigona soccata",
+    "crops": []
+  },
+  {
+    "base": "disease-alternaria-solani",
+    "dir": "diseases",
+    "nameHi": "अगेती झुलसा",
+    "nameEn": "Early blight",
+    "tag": "फफूंद",
+    "scientific": "alternaria solani",
+    "crops": []
+  },
+  {
+    "base": "disease-phytophthora-infestans",
+    "dir": "diseases",
+    "nameHi": "पछेती झुलसा",
+    "nameEn": "Late blight",
+    "tag": "फफूंद",
+    "scientific": "phytophthora infestans",
+    "crops": []
+  },
+  {
+    "base": "disease-begomovirus-leaf-curl",
+    "dir": "diseases",
+    "nameHi": "पत्ती मुड़ना",
+    "nameEn": "Leaf curl virus",
+    "tag": "वायरस",
+    "scientific": "begomovirus leaf curl",
+    "crops": []
+  },
+  {
+    "base": "pest-helicoverpa-armigera",
+    "dir": "pests",
+    "nameHi": "फल छेदक",
+    "nameEn": "Fruit borer",
+    "tag": "कीट",
+    "scientific": "helicoverpa armigera",
+    "crops": []
+  },
+  {
+    "base": "pest-bemisia-tabaci",
+    "dir": "pests",
+    "nameHi": "सफेद मक्खी",
+    "nameEn": "Whitefly",
+    "tag": "कीट",
+    "scientific": "bemisia tabaci",
+    "crops": []
+  },
+  {
+    "base": "disease-ralstonia-solanacearum",
+    "dir": "diseases",
+    "nameHi": "जीवाणु मुरझान",
+    "nameEn": "Bacterial wilt",
+    "tag": "जीवाणु",
+    "scientific": "ralstonia solanacearum",
+    "crops": []
+  },
+  {
+    "base": "pest-liriomyza-trifolii",
+    "dir": "pests",
+    "nameHi": "पत्ती खनक",
+    "nameEn": "Leaf miner",
+    "tag": "कीट",
+    "scientific": "liriomyza trifolii",
+    "crops": []
+  },
+  {
+    "base": "disease-fusarium-lycopersici",
+    "dir": "diseases",
+    "nameHi": "जड़ मुरझान",
+    "nameEn": "Fusarium wilt",
+    "tag": "फफूंद",
+    "scientific": "fusarium lycopersici",
+    "crops": []
+  },
+  {
+    "base": "pest-myzus-persicae",
+    "dir": "pests",
+    "nameHi": "माहू",
+    "nameEn": "Aphid",
+    "tag": "कीट",
+    "scientific": "myzus persicae",
+    "crops": []
+  },
+  {
+    "base": "pest-phthorimaea-operculella",
+    "dir": "pests",
+    "nameHi": "आलू कंद कीड़ा",
+    "nameEn": "Potato tuber moth",
+    "tag": "कीट",
+    "scientific": "phthorimaea operculella",
+    "crops": []
+  },
+  {
+    "base": "pest-agrotis-ipsilon",
+    "dir": "pests",
+    "nameHi": "तना काटने वाला कीड़ा",
+    "nameEn": "Cutworm",
+    "tag": "कीट",
+    "scientific": "agrotis ipsilon",
+    "crops": []
+  },
+  {
+    "base": "disease-potato-black-scurf",
+    "dir": "diseases",
+    "nameHi": "काली पपड़ी",
+    "nameEn": "Black scurf",
+    "tag": "फफूंद",
+    "scientific": "potato black scurf",
+    "crops": []
+  },
+  {
+    "base": "disease-streptomyces-scabies",
+    "dir": "diseases",
+    "nameHi": "कंद खुजली",
+    "nameEn": "Common scab",
+    "tag": "जीवाणु",
+    "scientific": "streptomyces scabies",
+    "crops": []
+  },
+  {
+    "base": "disease-potato-virus-y",
+    "dir": "diseases",
+    "nameHi": "पच्चीकारी रोग",
+    "nameEn": "Potato mosaic",
+    "tag": "वायरस",
+    "scientific": "potato virus y",
+    "crops": []
+  },
+  {
+    "base": "pest-thrips-tabaci",
+    "dir": "pests",
+    "nameHi": "रस चूसक कीड़ा",
+    "nameEn": "Thrips",
+    "tag": "कीट",
+    "scientific": "thrips tabaci",
+    "crops": []
+  },
+  {
+    "base": "disease-alternaria-porri",
+    "dir": "diseases",
+    "nameHi": "बैंगनी धब्बा",
+    "nameEn": "Purple blotch",
+    "tag": "फफूंद",
+    "scientific": "alternaria porri",
+    "crops": []
+  },
+  {
+    "base": "disease-stemphylium-vesicarium",
+    "dir": "diseases",
+    "nameHi": "पत्ती सिर झुलसा",
+    "nameEn": "Stemphylium blight",
+    "tag": "फफूंद",
+    "scientific": "stemphylium vesicarium",
+    "crops": []
+  },
+  {
+    "base": "disease-peronospora-destructor",
+    "dir": "diseases",
+    "nameHi": "रोमिल फफूंद",
+    "nameEn": "Downy mildew",
+    "tag": "फफूंद",
+    "scientific": "peronospora destructor",
+    "crops": []
+  },
+  {
+    "base": "disease-fusarium-oxysporum",
+    "dir": "diseases",
+    "nameHi": "आधार सड़न",
+    "nameEn": "Basal rot",
+    "tag": "फफूंद",
+    "scientific": "fusarium oxysporum",
+    "crops": []
+  },
+  {
+    "base": "pest-agrotis-spp",
+    "dir": "pests",
+    "nameHi": "तना काटने वाला कीड़ा",
+    "nameEn": "Cutworm",
+    "tag": "कीट",
+    "scientific": "agrotis spp",
+    "crops": []
+  },
+  {
+    "base": "pest-scirtothrips-dorsalis",
+    "dir": "pests",
+    "nameHi": "चाँदी पत्ती कीड़ा",
+    "nameEn": "Thrips",
+    "tag": "कीट",
+    "scientific": "scirtothrips dorsalis",
+    "crops": []
+  },
+  {
+    "base": "disease-colletotrichum-capsici",
+    "dir": "diseases",
+    "nameHi": "फल धब्बा रोग",
+    "nameEn": "Anthracnose",
+    "tag": "फफूंद",
+    "scientific": "colletotrichum capsici",
+    "crops": []
+  },
+  {
+    "base": "disease-leveillula-taurica",
+    "dir": "diseases",
+    "nameHi": "सफेद चूर्ण रोग",
+    "nameEn": "Powdery mildew",
+    "tag": "फफूंद",
+    "scientific": "leveillula taurica",
+    "crops": []
+  },
+  {
+    "base": "pest-polyphagotarsonemus-latus",
+    "dir": "pests",
+    "nameHi": "पीला मकड़ी कीड़ा",
+    "nameEn": "Yellow mite",
+    "tag": "कीट",
+    "scientific": "polyphagotarsonemus latus",
+    "crops": []
+  },
+  {
+    "base": "disease-colletotrichum-gloeosporioides",
+    "dir": "diseases",
+    "nameHi": "टहनी सूखना",
+    "nameEn": "Die-back",
+    "tag": "फफूंद",
+    "scientific": "colletotrichum gloeosporioides",
+    "crops": []
+  },
+  {
+    "base": "disease-damping-off",
+    "dir": "diseases",
+    "nameHi": "पौध गिरना",
+    "nameEn": "Damping-off",
+    "tag": "फफूंद",
+    "scientific": "damping off",
+    "crops": []
+  },
+  {
+    "base": "pest-leucinodes-orbonalis",
+    "dir": "pests",
+    "nameHi": "तना / फल छेदक",
+    "nameEn": "Shoot & fruit borer",
+    "tag": "कीट",
+    "scientific": "leucinodes orbonalis",
+    "crops": []
+  },
+  {
+    "base": "disease-phytoplasma-leafhopper-vector",
+    "dir": "diseases",
+    "nameHi": "छोटी पत्ती",
+    "nameEn": "Little leaf",
+    "tag": "माइकोप्लाज्मा",
+    "scientific": "phytoplasma leafhopper vector",
+    "crops": []
+  },
+  {
+    "base": "pest-henosepilachna",
+    "dir": "pests",
+    "nameHi": "कुतरने वाला भृंग",
+    "nameEn": "Epilachna beetle",
+    "tag": "कीट",
+    "scientific": "henosepilachna",
+    "crops": []
+  },
+  {
+    "base": "disease-phomopsis-vexans",
+    "dir": "diseases",
+    "nameHi": "बैंगन फल झुलसा",
+    "nameEn": "Phomopsis blight",
+    "tag": "फफूंद",
+    "scientific": "phomopsis vexans",
+    "crops": []
+  },
+  {
+    "base": "pest-amrasca-biguttula",
+    "dir": "pests",
+    "nameHi": "तेला",
+    "nameEn": "Jassid",
+    "tag": "कीट",
+    "scientific": "amrasca biguttula",
+    "crops": []
+  },
+  {
+    "base": "pest-plutella-xylostella",
+    "dir": "pests",
+    "nameHi": "हीरा पीठ इल्ली",
+    "nameEn": "Diamondback moth",
+    "tag": "कीट",
+    "scientific": "plutella xylostella",
+    "crops": []
+  },
+  {
+    "base": "disease-xanthomonas-campestris",
+    "dir": "diseases",
+    "nameHi": "काला गलन",
+    "nameEn": "Black rot",
+    "tag": "जीवाणु",
+    "scientific": "xanthomonas campestris",
+    "crops": []
+  },
+  {
+    "base": "disease-hyaloperonospora-brassicae",
+    "dir": "diseases",
+    "nameHi": "रोमिल फफूंद",
+    "nameEn": "Downy mildew",
+    "tag": "फफूंद",
+    "scientific": "hyaloperonospora brassicae",
+    "crops": []
+  },
+  {
+    "base": "pest-pieris-brassicae",
+    "dir": "pests",
+    "nameHi": "गोभी तितली",
+    "nameEn": "Cabbage butterfly",
+    "tag": "कीट",
+    "scientific": "pieris brassicae",
+    "crops": []
+  },
+  {
+    "base": "pest-lipaphis-erysimi",
+    "dir": "pests",
+    "nameHi": "माहू",
+    "nameEn": "Aphid",
+    "tag": "कीट",
+    "scientific": "lipaphis erysimi",
+    "crops": []
+  },
+  {
+    "base": "pest-pectinophora-gossypiella",
+    "dir": "pests",
+    "nameHi": "गुलाबी सुंडी",
+    "nameEn": "Pink bollworm",
+    "tag": "कीट",
+    "scientific": "pectinophora gossypiella",
+    "crops": []
+  },
+  {
+    "base": "disease-xanthomonas-citri-malvacearum",
+    "dir": "diseases",
+    "nameHi": "जीवाणु झुलसा",
+    "nameEn": "Bacterial blight",
+    "tag": "जीवाणु",
+    "scientific": "xanthomonas citri malvacearum",
+    "crops": []
+  },
+  {
+    "base": "disease-alternaria-macrospora",
+    "dir": "diseases",
+    "nameHi": "पत्ती धब्बा",
+    "nameEn": "Alternaria leaf spot",
+    "tag": "फफूंद",
+    "scientific": "alternaria macrospora",
+    "crops": []
+  },
+  {
+    "base": "pest-maconellicoccus-hirsutus",
+    "dir": "pests",
+    "nameHi": "रूई जैसा कीड़ा",
+    "nameEn": "Mealybug",
+    "tag": "कीट",
+    "scientific": "maconellicoccus hirsutus",
+    "crops": []
+  },
+  {
+    "base": "pest-scirpophaga-excerptalis",
+    "dir": "pests",
+    "nameHi": "शीर्ष छेदक",
+    "nameEn": "Top borer",
+    "tag": "कीट",
+    "scientific": "scirpophaga excerptalis",
+    "crops": []
+  },
+  {
+    "base": "pest-pyrilla-perpusilla",
+    "dir": "pests",
+    "nameHi": "गन्ना पत्ता चूसक",
+    "nameEn": "Pyrilla",
+    "tag": "कीट",
+    "scientific": "pyrilla perpusilla",
+    "crops": []
+  },
+  {
+    "base": "pest-odontotermes-spp",
+    "dir": "pests",
+    "nameHi": "दीमक",
+    "nameEn": "Termite",
+    "tag": "कीट",
+    "scientific": "odontotermes spp",
+    "crops": []
+  },
+  {
+    "base": "disease-colletotrichum-falcatum",
+    "dir": "diseases",
+    "nameHi": "लाल सड़न",
+    "nameEn": "Red rot",
+    "tag": "फफूंद",
+    "scientific": "colletotrichum falcatum",
+    "crops": []
+  },
+  {
+    "base": "disease-sporisorium-scitamineum",
+    "dir": "diseases",
+    "nameHi": "काला कंड",
+    "nameEn": "Smut",
+    "tag": "फफूंद",
+    "scientific": "sporisorium scitamineum",
+    "crops": []
+  },
+  {
+    "base": "disease-phytoplasma-grassy-shoot",
+    "dir": "diseases",
+    "nameHi": "घास जैसी कली",
+    "nameEn": "Grassy shoot",
+    "tag": "माइकोप्लाज्मा",
+    "scientific": "phytoplasma grassy shoot",
+    "crops": []
+  },
+  {
+    "base": "disease-puccinia-melanocephala",
+    "dir": "diseases",
+    "nameHi": "रतुआ",
+    "nameEn": "Rust",
+    "tag": "फफूंद",
+    "scientific": "puccinia melanocephala",
+    "crops": []
+  },
+  {
+    "base": "disease-albugo-candida",
+    "dir": "diseases",
+    "nameHi": "सफेद रतुआ",
+    "nameEn": "White rust",
+    "tag": "फफूंद",
+    "scientific": "albugo candida",
+    "crops": []
+  },
+  {
+    "base": "disease-alternaria-brassicae",
+    "dir": "diseases",
+    "nameHi": "सरसों पत्ती झुलसा",
+    "nameEn": "Alternaria blight",
+    "tag": "फफूंद",
+    "scientific": "alternaria brassicae",
+    "crops": []
+  },
+  {
+    "base": "pest-bagrada-hilaris",
+    "dir": "pests",
+    "nameHi": "फलिया का रंगीन कीड़ा",
+    "nameEn": "Painted bug",
+    "tag": "कीट",
+    "scientific": "bagrada hilaris",
+    "crops": []
+  },
+  {
+    "base": "pest-athalia-proxima",
+    "dir": "pests",
+    "nameHi": "पत्ती कुतरने वाली मक्खी",
+    "nameEn": "Sawfly",
+    "tag": "कीट",
+    "scientific": "athalia proxima",
+    "crops": []
+  },
+  {
+    "base": "disease-phakopsora-pachyrhizi",
+    "dir": "diseases",
+    "nameHi": "सोयाबीन रतुआ",
+    "nameEn": "Soybean rust",
+    "tag": "फफूंद",
+    "scientific": "phakopsora pachyrhizi",
+    "crops": []
+  },
+  {
+    "base": "disease-cercospora-sojina",
+    "dir": "diseases",
+    "nameHi": "बीज बैंगनी दाग",
+    "nameEn": "Cercospora",
+    "tag": "फफूंद",
+    "scientific": "cercospora sojina",
+    "crops": []
+  },
+  {
+    "base": "disease-sclerotium-rolfsii",
+    "dir": "diseases",
+    "nameHi": "तना आधार सड़ना",
+    "nameEn": "Collar rot",
+    "tag": "फफूंद",
+    "scientific": "sclerotium rolfsii",
+    "crops": []
+  },
+  {
+    "base": "pest-spodoptera-litura",
+    "dir": "pests",
+    "nameHi": "पत्ती कुतरने वाली इल्ली",
+    "nameEn": "Tobacco caterpillar",
+    "tag": "कीट",
+    "scientific": "spodoptera litura",
+    "crops": []
+  },
+  {
+    "base": "pest-oberea-brevis",
+    "dir": "pests",
+    "nameHi": "गर्डल बीटल",
+    "nameEn": "Girdle beetle",
+    "tag": "कीट",
+    "scientific": "oberea brevis",
+    "crops": []
+  },
+  {
+    "base": "disease-mungbean-yellow-mosaic-virus",
+    "dir": "diseases",
+    "nameHi": "पीली पच्चीकारी",
+    "nameEn": "Yellow mosaic",
+    "tag": "वायरस",
+    "scientific": "mungbean yellow mosaic virus",
+    "crops": []
+  },
+  {
+    "base": "disease-bhendi-yvmv",
+    "dir": "diseases",
+    "nameHi": "पीली नस रोग",
+    "nameEn": "YVMV",
+    "tag": "वायरस",
+    "scientific": "bhendi yvmv",
+    "crops": []
+  },
+  {
+    "base": "pest-earias-vittella",
+    "dir": "pests",
+    "nameHi": "फल छेदक",
+    "nameEn": "Fruit borer",
+    "tag": "कीट",
+    "scientific": "earias vittella",
+    "crops": []
+  },
+  {
+    "base": "disease-podosphaera-xanthii",
+    "dir": "diseases",
+    "nameHi": "सफेद चूर्ण रोग",
+    "nameEn": "Powdery mildew",
+    "tag": "फफूंद",
+    "scientific": "podosphaera xanthii",
+    "crops": []
+  },
+  {
+    "base": "disease-pseudoperonospora-cubensis",
+    "dir": "diseases",
+    "nameHi": "रोमिल फफूंद",
+    "nameEn": "Downy mildew",
+    "tag": "फफूंद",
+    "scientific": "pseudoperonospora cubensis",
+    "crops": []
+  },
+  {
+    "base": "pest-bactrocera-cucurbitae",
+    "dir": "pests",
+    "nameHi": "फल मक्खी",
+    "nameEn": "Fruit fly",
+    "tag": "कीट",
+    "scientific": "bactrocera cucurbitae",
+    "crops": []
+  },
+  {
+    "base": "pest-aulacophora-foveicollis",
+    "dir": "pests",
+    "nameHi": "लाल कद्दू भृंग",
+    "nameEn": "Red pumpkin beetle",
+    "tag": "कीट",
+    "scientific": "aulacophora foveicollis",
+    "crops": []
+  },
+  {
+    "base": "pest-aphis-gossypii",
+    "dir": "pests",
+    "nameHi": "माहू",
+    "nameEn": "Aphid",
+    "tag": "कीट",
+    "scientific": "aphis gossypii",
+    "crops": []
+  },
+  {
+    "base": "disease-cercospora-canescens",
+    "dir": "diseases",
+    "nameHi": "पत्ती धब्बा",
+    "nameEn": "Leaf spot",
+    "tag": "फफूंद",
+    "scientific": "cercospora canescens",
+    "crops": []
+  },
+  {
+    "base": "disease-rhizoctonia-bataticola",
+    "dir": "diseases",
+    "nameHi": "जड़/कॉलर सड़न",
+    "nameEn": "Rhizoctonia",
+    "tag": "फफूंद",
+    "scientific": "rhizoctonia bataticola",
+    "crops": []
+  },
+  {
+    "base": "disease-macrophomina-phaseolina",
+    "dir": "diseases",
+    "nameHi": "जड़ कमजोरी / सड़न",
+    "nameEn": "Root / rhizome weakness",
+    "tag": "मिट्टी",
+    "scientific": "macrophomina phaseolina",
+    "crops": []
+  },
+  {
+    "base": "pest-delia-antiqua",
+    "dir": "pests",
+    "nameHi": "लहसुन/प्याज मक्खी",
+    "nameEn": "Onion maggot",
+    "tag": "कीट",
+    "scientific": "delia antiqua",
+    "crops": []
+  }
+]

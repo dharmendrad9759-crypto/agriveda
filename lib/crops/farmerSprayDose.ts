@@ -31,20 +31,44 @@ function fmtQty(n: number): string {
 function perLLabel(amount: number, unit: "ml" | "g", hi: boolean): string {
   const q = fmtQty(amount / FARMER_SPRAY_L_PER_ACRE);
   if (!q) return "";
-  return hi ? `${q} ${unit}/लीटर पानी` : `${q} ${unit}/L water`;
+  const acreAmt = fmtQty(amount);
+  return hi
+    ? `${q} ${unit}/लीटर पानी (${acreAmt} ${unit}/एकड़ — 150–200 L पानी)`
+    : `${q} ${unit}/L water (${acreAmt} ${unit}/acre — 150–200 L water)`;
 }
 
 function perLRange(a: number, b: number, unit: "ml" | "g", hi: boolean): string {
   const qa = fmtQty(a / FARMER_SPRAY_L_PER_ACRE);
   const qb = fmtQty(b / FARMER_SPRAY_L_PER_ACRE);
   if (!qa || !qb) return "";
-  return hi ? `${qa}–${qb} ${unit}/लीटर पानी` : `${qa}–${qb} ${unit}/L water`;
+  const acreA = fmtQty(a);
+  const acreB = fmtQty(b);
+  return hi
+    ? `${qa}–${qb} ${unit}/लीटर पानी (${acreA}–${acreB} ${unit}/एकड़ — 150–200 L पानी)`
+    : `${qa}–${qb} ${unit}/L water (${acreA}–${acreB} ${unit}/acre — 150–200 L water)`;
 }
 
-/** Find dose token in a line and convert acre/bare ml|g → per litre. */
+/** Find dose token in a line and convert acre/bare ml|g → per litre with water requirement. */
 function replaceDoseWithPerL(text: string, hi: boolean): string {
-  // Already per litre / percent spray
-  if (/(?:\/\s*l\b|\/\s*लीटर|प्रति\s*लीटर|ml\/l|g\/l)/i.test(text)) return text;
+  // If already has per-litre and acre/water, leave it
+  if (/(?:\/\s*l\b|\/\s*लीटर|प्रति\s*लीटर|ml\/l|g\/l)/i.test(text) && /(?:एकड़|acre|लीटर\s*पानी)/i.test(text)) {
+    return text;
+  }
+
+  // If already per litre but missing acre/water, append standard acre volume
+  if (/(?:\/\s*l\b|\/\s*लीटर|प्रति\s*लीटर|ml\/l|g\/l)/i.test(text) && !/(?:एकड़|acre)/i.test(text)) {
+    const m = text.match(/(\d+(?:\.\d+)?)\s*(ml|g|मिली|ग्राम)/i);
+    if (m) {
+      const perL = Number(m[1]);
+      const perAcreMin = fmtQty(perL * 150);
+      const perAcreMax = fmtQty(perL * 200);
+      const u = m[2];
+      return hi
+        ? `${text} (${perAcreMin}–${perAcreMax} ${u}/एकड़ — 150–200 लीटर पानी)`
+        : `${text} (${perAcreMin}–${perAcreMax} ${u}/acre — 150–200 L water)`;
+    }
+    return hi ? `${text} (150–200 लीटर पानी प्रति एकड़)` : `${text} (150–200 L water/acre)`;
+  }
 
   // Range: 60–80 ml/acre | 60-80 ml | 60 to 80 g/acre
   const rangeRe =

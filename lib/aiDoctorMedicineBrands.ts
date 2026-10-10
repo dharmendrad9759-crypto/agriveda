@@ -108,10 +108,17 @@ const TABLE: { match: RegExp; hint: MedBrandHint }[] = [
     },
   },
   {
-    match: /spinosad|spinetoram/i,
+    match: /spinosad/i,
     hint: {
-      fullName: "Spinosad / Spinetoram",
-      brands: ["Tracer (Corteva)", "Delegate (Corteva)"],
+      fullName: "Spinosad 45% SC",
+      brands: ["Tracer (Corteva)"],
+    },
+  },
+  {
+    match: /spinetoram/i,
+    hint: {
+      fullName: "Spinetoram 11.7% SC",
+      brands: ["Delegate (Corteva)"],
     },
   },
   {
@@ -125,7 +132,77 @@ const TABLE: { match: RegExp; hint: MedBrandHint }[] = [
     match: /pyriproxyfen/i,
     hint: {
       fullName: "Pyriproxyfen 10% EC",
-      brands: ["Admiral", "Lano"],
+      brands: ["Lano (Sumitomo)", "Admiral"],
+    },
+  },
+  {
+    match: /flonicamid/i,
+    hint: {
+      fullName: "Flonicamid 50% WG",
+      brands: ["Ulala (UPL)"],
+    },
+  },
+  {
+    match: /spiromesifen/i,
+    hint: {
+      fullName: "Spiromesifen 22.9% SC",
+      brands: ["Oberon (Bayer)"],
+    },
+  },
+  {
+    match: /tricyclazole/i,
+    hint: {
+      fullName: "Tricyclazole 75% WP",
+      brands: ["Beam (Corteva)", "Baan (Dhanuka)", "Sivic"],
+    },
+  },
+  {
+    match: /validamycin/i,
+    hint: {
+      fullName: "Validamycin 3% L",
+      brands: ["Sheathmar (Dhanuka)", "Rhizocin"],
+    },
+  },
+  {
+    match: /pymetrozine/i,
+    hint: {
+      fullName: "Pymetrozine 50% WDG",
+      brands: ["Chess (Syngenta)", "Fulstop"],
+    },
+  },
+  {
+    match: /dinotefuran/i,
+    hint: {
+      fullName: "Dinotefuran 20% SG",
+      brands: ["Token (Indofil)", "Oshin"],
+    },
+  },
+  {
+    match: /flubendiamide/i,
+    hint: {
+      fullName: "Flubendiamide 39.35% SC",
+      brands: ["Fame (Bayer)"],
+    },
+  },
+  {
+    match: /cartap/i,
+    hint: {
+      fullName: "Cartap hydrochloride 50% SP",
+      brands: ["Caldan 50 SP (Dhanuka)", "Padan"],
+    },
+  },
+  {
+    match: /chlorpyrifos/i,
+    hint: {
+      fullName: "Chlorpyrifos 20% EC",
+      brands: ["Dursban (Corteva)", "Radar"],
+    },
+  },
+  {
+    match: /abamectin/i,
+    hint: {
+      fullName: "Abamectin 1.9% EC",
+      brands: ["Vertimec (Syngenta)"],
     },
   },
   {

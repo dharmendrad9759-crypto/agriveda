@@ -47,6 +47,32 @@ const PEST_ALIASES: Record<string, string> = {
   "sitobion avenae": "sitobion-avenae",
   "rhopalosiphum maidis": "rhopalosiphum-maidis",
   "aphis gossypii": "aphis-gossypii",
+  "scirtothrips dorsalis / thrips parvispinus": "scirtothrips-dorsalis",
+  "scirtothrips dorsalis thrips parvispinus": "scirtothrips-dorsalis",
+  "nephotettix spp.": "nephotettix-virescens",
+  "nephotettix spp": "nephotettix-virescens",
+  "liriomyza spp.": "liriomyza-trifolii",
+  "liriomyza spp": "liriomyza-trifolii",
+  "holotrichia spp.": "holotrichia-spp",
+  "holotrichia spp": "holotrichia-spp",
+  "myllocerus spp.": "myllocerus-spp",
+  "myllocerus spp": "myllocerus-spp",
+  "chilo infuscatellus": "chilo-infuscatellus",
+  "chilo sacchariphagus indicus": "chilo-sacchariphagus-indicus",
+  "ceratovacuna lanigera": "ceratovacuna-lanigera",
+  "sogatella furcifera": "sogatella-furcifera",
+  "orseolia oryzae": "orseolia-oryzae",
+  "dicladispa armigera": "dicladispa-armigera",
+  "phenacoccus solenopsis": "phenacoccus-solenopsis",
+  "spodoptera exigua": "spodoptera-exigua",
+  "aceria": "aceria",
+  "aceria tulipae": "aceria",
+  "melanagromyza sojae": "melanagromyza-sojae",
+  "aphis glycines": "aphis-glycines",
+  "melanagromyza obtusa": "melanagromyza-obtusa",
+  "exelastis atomosa": "exelastis-atomosa",
+  "clavigralla": "clavigralla",
+  "thrips palmi": "thrips-palmi",
 };
 
 const DISEASE_ALIASES: Record<string, string> = {
@@ -61,6 +87,44 @@ const DISEASE_ALIASES: Record<string, string> = {
   begomovirus: "begomovirus-leaf-curl",
   "pythium / fusarium / rhizoctonia": "damping-off",
   "pythium fusarium rhizoctonia": "damping-off",
+  "pythium spp.": "damping-off",
+  "pythium spp": "damping-off",
+  "pythium aphanidermatum": "damping-off",
+  "bipolaris oryzae / cochliobolus miyabeanus": "bipolaris-oryzae",
+  "bipolaris oryzae cochliobolus miyabeanus": "bipolaris-oryzae",
+  "tilletia indica / neovossia indica": "tilletia-indica",
+  "tilletia indica neovossia indica": "tilletia-indica",
+  "bipolaris sorokiniana / cochliobolus sativus": "bipolaris-sorokiniana",
+  "bipolaris sorokiniana cochliobolus sativus": "bipolaris-sorokiniana",
+  "bipolaris maydis / cochliobolus heterostrophus": "bipolaris-maydis",
+  "bipolaris maydis cochliobolus heterostrophus": "bipolaris-maydis",
+  "rhizoctonia solani f.sp. sasakii": "rhizoctonia-solani",
+  "rhizoctonia solani f sp sasakii": "rhizoctonia-solani",
+  "fusarium oxysporum f.sp. cepae": "fusarium-oxysporum",
+  "fusarium oxysporum f.sp cepae": "fusarium-oxysporum",
+  "fusarium oxysporum f sp cepae": "fusarium-oxysporum",
+  "fusarium oxysporum f.sp. ciceris": "fusarium-oxysporum",
+  "ralstonia solanacearum race 1": "ralstonia-solanacearum",
+  "pectobacterium carotovorum": "pectobacterium",
+  "pectobacterium": "pectobacterium",
+  "erwinia carotovora": "erwinia",
+  "erwinia": "erwinia",
+  "colletotrichum coccodes": "colletotrichum-coccodes",
+  "phytophthora capsici": "phytophthora-capsici",
+  "fusarium udum": "fusarium-udum",
+  "pigeonpea sterility mosaic virus": "pigeonpea-sterility-mosaic-virus",
+  "pigeonpea sterility mosaic virus (eriophyid mite-vectored)": "pigeonpea-sterility-mosaic-virus",
+  "phytophthora drechsleri f.sp. cajani": "phytophthora-drechsleri",
+  "colletotrichum orbiculare": "colletotrichum-orbiculare",
+  "pseudomonas syringae pv. lachrymans": "pseudomonas-syringae-pv-lachrymans",
+  "cucumber mosaic virus": "cucumber-mosaic-virus",
+  "peronosclerospora sorghi": "peronosclerospora-sorghi",
+  "puccinia substriata": "puccinia-substriata",
+  "moesziomyces penicillariae": "moesziomyces-penicillariae",
+  "fusarium moniliforme / f. verticillioides": "fusarium-moniliforme",
+  "fusarium moniliforme f verticillioides": "fusarium-moniliforme",
+  "puccinia kuehnii": "puccinia-kuehnii",
+  "xanthomonas axonopodis pv. glycines": "xanthomonas-axonopodis-pv-glycines",
   "fusarium oxysporum f.sp. cubense": "fusarium-cubense",
   "fusarium oxysporum f.sp cubense": "fusarium-cubense",
   "fusarium oxysporum f sp cubense": "fusarium-cubense",
@@ -115,6 +179,13 @@ export function getPestSpeciesImage(scientificName?: string | null): string | un
   const key = norm(scientificName);
   const alias = PEST_ALIASES[key] ?? PEST_ALIASES[scientificName.toLowerCase().trim()];
   if (alias) return pestPath(alias);
+  if (key.includes("scirtothrips")) return pestPath("scirtothrips-dorsalis");
+  if (key.includes("maruca")) return pestPath("maruca-vitrata");
+  if (key.includes("conogethes")) return pestPath("conogethes-punctiferalis");
+  if (key.includes("mimegralla")) return pestPath("delia-antiqua");
+  if (key.includes("meloidogyne")) return pestPath("meloidogyne-incognita");
+  if (key.includes("aspidiella")) return pestPath("thrips-tabaci");
+  if (key.includes("megalurothrips")) return pestPath("thrips-palmi");
 
   // Combo strings: "Earias vittella / Earias insulana"
   if (scientificName.includes("/")) {
@@ -175,6 +246,20 @@ export function getDiseaseSpeciesImage(pathogen?: string | null): string | undef
   if (key.includes("pyricularia") || key.includes("magnaporthe")) {
     return diseasePath("magnaporthe-oryzae");
   }
+  if (key.includes("rhizoctonia solani")) return diseasePath("rhizoctonia-solani");
+  if (key.includes("fusarium oxysporum")) return diseasePath("fusarium-oxysporum");
+  if (key.includes("fusarium moniliforme") || key.includes("verticillioides") || key.includes("pokkah boeng")) {
+    return diseasePath("fusarium-moniliforme");
+  }
+  if (key.includes("sterility mosaic")) return diseasePath("pigeonpea-sterility-mosaic-virus");
+  if (key.includes("ascochyta")) return diseasePath("ascochyta-rabiei");
+  if (key.includes("uromyces")) return diseasePath("uromyces-viciae-fabae");
+  if (key.includes("sclerotium cepivorum") || key.includes("stromatinia")) {
+    return diseasePath("sclerotium-cepivorum");
+  }
+  if (key.includes("erysiphe polygoni")) return diseasePath("erysiphe-polygoni");
+  if (key.includes("colletotrichum lindemuthianum")) return diseasePath("colletotrichum-capsici");
+  if (key.includes("phyllosticta")) return diseasePath("cercospora-canescens");
 
   if (pathogen.includes("/")) {
     const first = firstSpeciesChunk(pathogen);

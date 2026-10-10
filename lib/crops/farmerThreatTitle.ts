@@ -143,7 +143,7 @@ const TITLE_MAP: TitleMap[] = [
   {
     match: /fall\s*army|फॉल\s*आर्मी|फौजी|frugiperda/i,
     primary: "Fall Armyworm",
-    secondary: "फौजी कीड़ा",
+    secondary: "फॉल आर्मीवॉर्म",
   },
   {
     match: /shoot\s*fly|अंकुर\s*मक्खी|atherigona/i,

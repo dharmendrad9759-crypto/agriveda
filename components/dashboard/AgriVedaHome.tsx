@@ -14,7 +14,6 @@ import {
   TrendingUp,
   Droplets,
   Landmark,
-  Check,
   ClipboardList,
   type LucideIcon,
 } from "lucide-react";
@@ -32,245 +31,131 @@ import type { FarmField } from "@/lib/farm/types";
 import { track } from "@/lib/analytics";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/cn";
-import { HomeSprayPill, HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
+import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import { speakFarmer } from "@/components/ui/SpeakButton";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 
-/** Interactive Checklist card for Today's Task with Confetti celebration */
-function TodayTaskChecklistCard({
-  isHi,
-  weather,
-  weatherLoading,
-  weatherIsSample,
-}: {
-  isHi: boolean;
-  weather: any;
-  weatherLoading: boolean;
-  weatherIsSample: boolean;
-}) {
-  const [taskDone, setTaskDone] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
 
-  useEffect(() => {
-    try {
-      const todayKey = `agriveda_task_${new Date().toISOString().slice(0, 10)}`;
-      setTaskDone(localStorage.getItem(todayKey) === "done");
-    } catch {
-      /* ignore */
-    }
-  }, []);
 
-  const toggleTask = () => {
-    const next = !taskDone;
-    setTaskDone(next);
-    try {
-      const todayKey = `agriveda_task_${new Date().toISOString().slice(0, 10)}`;
-      if (next) {
-        localStorage.setItem(todayKey, "done");
-        setShowCelebration(true);
-        setTimeout(() => setShowCelebration(false), 2400);
-      } else {
-        localStorage.removeItem(todayKey);
-      }
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const rain = weather?.hourlyForecast?.[0]?.rainChancePercent ?? 0;
-  const wind = Number.parseInt(weather?.windSpeed || "0", 10) || 0;
-  const isRain = rain >= 40;
-  const isWind = wind >= 15;
-
-  const taskTitle = isRain
-    ? isHi
-      ? "बारिश की संभावना — आज छिड़काव टालें"
-      : "Rain expected — delay spraying today"
-    : isWind
-      ? isHi
-        ? "तेज़ हवा चल रही है — दवा का छिड़काव रोकें"
-        : "High wind — hold chemical spray"
-      : isHi
-        ? "आज छिड़काव व सिंचाई के लिए अनुकूल मौसम"
-        : "Good weather for field spray & irrigation";
-
-  return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-2xl border transition-all p-3 sm:p-3.5 shadow-[var(--av-shadow-sm)]",
-        taskDone
-          ? "border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-950/30"
-          : "border-[var(--av-border)] bg-[var(--av-surface)]"
-      )}
-    >
-      <AnimatePresence>
-        {showCelebration && (
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-emerald-600 to-teal-600 text-white z-20 font-black text-xs sm:text-sm gap-2 shadow-lg"
-          >
-            <Sparkles className="h-4 w-4 animate-spin text-amber-300" />
-            <span>{isHi ? "🎉 शाबाश! आज का काम पूरा हुआ ✓" : "🎉 Great! Task completed ✓"}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={toggleTask}
-          aria-label={isHi ? "कार्य पूरा करें" : "Complete task"}
-          className={cn(
-            "flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border-2 transition-all active:scale-90",
-            taskDone
-              ? "border-emerald-600 bg-emerald-600 text-white shadow-sm shadow-emerald-900/30"
-              : "border-slate-300 dark:border-slate-600 bg-[var(--av-surface-inset)] hover:border-emerald-500"
-          )}
-        >
-          {taskDone && <Check className="h-4 w-4 stroke-[3]" />}
-        </button>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <span
-              className={cn(
-                "text-[10px] font-extrabold uppercase tracking-wider rounded-md px-1.5 py-0.5",
-                taskDone
-                  ? "bg-emerald-600/20 text-emerald-800 dark:text-emerald-200"
-                  : "bg-slate-200 dark:bg-slate-800 text-[var(--av-text-muted)]"
-              )}
-            >
-              {isHi ? "आज का कार्य" : "Today's Task"}
-            </span>
-            {taskDone && (
-              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                {isHi ? "पूरा हुआ ✓" : "Done ✓"}
-              </span>
-            )}
-          </div>
-          <p
-            className={cn(
-              "mt-1 text-xs sm:text-[13px] font-bold leading-tight transition-all",
-              taskDone
-                ? "line-through text-[var(--av-text-muted)] opacity-70"
-                : "text-[var(--av-text-primary)]"
-            )}
-          >
-            {taskTitle}
-          </p>
-        </div>
-
-        <HomeSprayPill weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
-      </div>
-    </div>
-  );
-}
-
-/** Unified Crop Disease & Doctor Hero Card — AI Scan vs Manual Problem Catalog with Photo Imagery */
+/** Unified Crop Disease & Doctor Hero Card — Photo-first, farmer-friendly, zero AI jargon */
 function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-[24px] border border-emerald-500/25 bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-950 p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-18px_rgba(6,78,59,0.6)]">
+    <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/30 bg-gradient-to-br from-[#063321] via-[#042618] to-[#021810] p-3.5 sm:p-4 text-white shadow-[0_20px_45px_-16px_rgba(4,45,28,0.7)]">
+      {/* Background ambient light */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl"
+        className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-emerald-400/15 blur-3xl"
       />
 
-      <div className="relative z-10 flex items-start justify-between gap-3">
-        <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300">
-            <Sparkles className="h-3 w-3" />
-            {isHi ? "बीमारी व कीट पहचान (Crop Doctor)" : "Identify Disease & Pests"}
-          </span>
-          <h2 className="mt-1.5 text-lg sm:text-xl font-black leading-tight text-white">
-            {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop Disease or Pest Issue?"}
-          </h2>
-          <p className="mt-1 text-xs font-medium text-emerald-100/80 leading-snug">
-            {isHi
-              ? "पत्ती की फोटो खींचकर AI से पहचानें या फसल व लक्षण अनुसार सही दवा जानें"
-              : "Scan leaf photo with AI or find verified remedies by crop symptoms"}
-          </p>
-        </div>
+      {/* Header section — zero AI jargon */}
+      <div className="relative z-10">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-0.5 text-[10.5px] font-black uppercase tracking-wider text-emerald-300">
+          <Sparkles className="h-3 w-3" />
+          {isHi ? "रोग व कीट डॉक्टर (Crop Doctor)" : "Crop Disease & Pest Doctor"}
+        </span>
+        <h2 className="mt-1.5 text-[18px] sm:text-xl font-black leading-tight text-white tracking-tight">
+          {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop Disease or Pest Issue?"}
+        </h2>
+        <p className="mt-1 text-xs font-medium text-emerald-100/85 leading-snug">
+          {isHi
+            ? "पत्ती की फोटो खींचकर तुरंत पहचानें या फसल अनुसार सही दवा व इलाज जानें"
+            : "Take a leaf photo for instant remedy or browse solutions by crop"}
+        </p>
       </div>
 
-      {/* Dual action cards with VISIBLE REAL PHOTOGRAPHY */}
+      {/* Dual action cards with 100% VISIBLE BRIGHT AGRICULTURAL PHOTOGRAPHY */}
       <div className="relative z-10 mt-3.5 grid grid-cols-2 gap-2.5 sm:gap-3">
-        {/* Card 1: AI Photo Scan with visible scan photo background */}
+        {/* Card 1: Camera Photo Inspection */}
         <AppLink
           href="/ai-doctor"
-          onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_unified_ai" })}
-          className="group relative flex min-h-[130px] sm:min-h-[140px] flex-col justify-between overflow-hidden rounded-2xl border border-white/25 bg-emerald-950 shadow-md transition active:scale-[0.97] hover:border-emerald-400/50"
+          onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_unified_photo_doctor" })}
+          className="group flex flex-col overflow-hidden rounded-2xl border border-emerald-500/35 bg-[#052b1b] shadow-md transition-all duration-300 hover:border-emerald-400 hover:shadow-lg active:scale-[0.97]"
         >
-          {/* Visible Photo Background */}
-          <div className="absolute inset-0 z-0">
+          {/* Dedicated 100% UNTOUCHED BRIGHT Photo Window */}
+          <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-900">
             <Image
               src="/images/home/home-cta-scan.jpg"
-              alt=""
+              alt="Farmer taking leaf photo"
               fill
-              sizes="240px"
-              quality={65}
-              className="object-cover object-[center_35%] transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 50vw, 240px"
+              quality={85}
+              priority
+              className="object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105"
             />
-            {/* Rich gradient overlay so text is super clear while photo remains visible */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/35" />
+            {/* Top floating glass badge */}
+            <div className="absolute left-2 top-2 z-10">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/65 px-2 py-0.5 text-[9.5px] font-black text-white backdrop-blur-md border border-white/25 shadow-xs">
+                <Camera className="h-3 w-3 text-emerald-300" />
+                {isHi ? "कैमरा जाँच" : "Camera"}
+              </span>
+            </div>
+            {/* Bottom subtle edge transition */}
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#052b1b] to-transparent" />
           </div>
 
-          <div className="relative z-10 flex items-center justify-between p-2.5 sm:p-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/90 text-white shadow-lg backdrop-blur-xs ring-1 ring-white/30 group-hover:scale-105 transition-transform">
-              <Camera className="h-5 w-5" strokeWidth={2.4} />
-            </span>
-            <span className="rounded-md bg-emerald-500/30 border border-emerald-400/40 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-200 backdrop-blur-xs">
-              {isHi ? "AI कैमरा" : "AI"}
-            </span>
-          </div>
+          {/* Lower Content & CTA Box */}
+          <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1">
+            <div>
+              <h3 className="text-[14px] sm:text-[15px] font-black leading-tight text-white group-hover:text-emerald-300 transition-colors">
+                {isHi ? "पत्ती की फोटो लें" : "Take Leaf Photo"}
+              </h3>
+              <p className="mt-0.5 text-[10.5px] font-medium leading-tight text-emerald-100/80 line-clamp-2">
+                {isHi ? "2 सेकंड में तुरंत रोग पहचान व सही दवा" : "Instant disease detection & remedies"}
+              </p>
+            </div>
 
-          <div className="relative z-10 p-2.5 sm:p-3 pt-0">
-            <p className="text-xs sm:text-sm font-black text-white leading-tight drop-shadow-sm">
-              {isHi ? "फोटो खींचें (AI)" : "Photo Scan (AI)"}
-            </p>
-            <p className="mt-0.5 text-[10px] text-emerald-100 font-medium line-clamp-1 leading-snug drop-shadow-xs">
-              {isHi ? "2 सेकंड में तुरंत जाँच" : "2-second diagnosis"}
-            </p>
+            {/* Tap Action Pill Button */}
+            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-emerald-500 px-2.5 py-1.5 text-[11.5px] font-black text-slate-950 shadow-sm transition-all group-hover:bg-emerald-400">
+              <span>{isHi ? "फोटो खींचें" : "Take Photo"}</span>
+              <Camera className="h-3.5 w-3.5 stroke-[2.5]" />
+            </div>
           </div>
         </AppLink>
 
-        {/* Card 2: Manual Browse by Crop — replaced "लिस्ट से चुनें" with "फसल देखकर पहचानें" & punchline */}
+        {/* Card 2: Browse by Crop Symptoms Catalog */}
         <AppLink
           href="/crop-problems"
-          onClick={() => track("tool_open", { href: "/crop-problems", label: "home_unified_manual" })}
-          className="group relative flex min-h-[130px] sm:min-h-[140px] flex-col justify-between overflow-hidden rounded-2xl border border-white/25 bg-teal-950 shadow-md transition active:scale-[0.97] hover:border-teal-400/50"
+          onClick={() => track("tool_open", { href: "/crop-problems", label: "home_unified_crop_catalog" })}
+          className="group flex flex-col overflow-hidden rounded-2xl border border-teal-500/35 bg-[#052c28] shadow-md transition-all duration-300 hover:border-teal-400 hover:shadow-lg active:scale-[0.97]"
         >
-          {/* Visible Photo Background */}
-          <div className="absolute inset-0 z-0">
+          {/* Dedicated 100% UNTOUCHED BRIGHT Photo Window */}
+          <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-900">
             <Image
               src="/images/home/home-job-crop-problems.jpg"
-              alt=""
+              alt="Farmer inspecting damaged leaf"
               fill
-              sizes="240px"
-              quality={65}
-              className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 50vw, 240px"
+              quality={85}
+              priority
+              className="object-cover object-[center_32%] transition-transform duration-500 group-hover:scale-105"
             />
-            {/* Rich gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/35" />
+            {/* Top floating glass badge */}
+            <div className="absolute left-2 top-2 z-10">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/65 px-2 py-0.5 text-[9.5px] font-black text-white backdrop-blur-md border border-white/25 shadow-xs">
+                <ClipboardList className="h-3 w-3 text-teal-300" />
+                {isHi ? "फसल अनुसार" : "By Crop"}
+              </span>
+            </div>
+            {/* Bottom subtle edge transition */}
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#052c28] to-transparent" />
           </div>
 
-          <div className="relative z-10 flex items-center justify-between p-2.5 sm:p-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/90 text-white shadow-lg backdrop-blur-xs ring-1 ring-white/30 group-hover:scale-105 transition-transform">
-              <ClipboardList className="h-5 w-5" strokeWidth={2.4} />
-            </span>
-            <span className="rounded-md bg-teal-500/30 border border-teal-400/40 px-1.5 py-0.5 text-[9px] font-extrabold text-teal-200 backdrop-blur-xs">
-              {isHi ? "फसल अनुसार" : "By Crop"}
-            </span>
-          </div>
+          {/* Lower Content & CTA Box */}
+          <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1">
+            <div>
+              <h3 className="text-[14px] sm:text-[15px] font-black leading-tight text-white group-hover:text-teal-300 transition-colors">
+                {isHi ? "फसल देखकर पहचानें" : "Identify by Crop"}
+              </h3>
+              <p className="mt-0.5 text-[10.5px] font-medium leading-tight text-teal-100/80 line-clamp-2">
+                {isHi ? "गेहूं, धान आदि के लक्षण अनुसार सही दवा" : "Remedies & spray by crop symptoms"}
+              </p>
+            </div>
 
-          <div className="relative z-10 p-2.5 sm:p-3 pt-0">
-            <p className="text-xs sm:text-sm font-black text-white leading-tight drop-shadow-sm">
-              {isHi ? "फसल देखकर पहचानें" : "Identify by Crop"}
-            </p>
-            <p className="mt-0.5 text-[10px] text-teal-100 font-medium line-clamp-1 leading-snug drop-shadow-xs">
-              {isHi ? "फसल व कीट लक्षण अनुसार सही दवा" : "Remedies by symptoms"}
-            </p>
+            {/* Tap Action Pill Button */}
+            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-teal-500 px-2.5 py-1.5 text-[11.5px] font-black text-slate-950 shadow-sm transition-all group-hover:bg-teal-400">
+              <span>{isHi ? "रोग सूची देखें" : "View Catalog"}</span>
+              <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
+            </div>
           </div>
         </AppLink>
       </div>
@@ -488,14 +373,6 @@ export default function AgriVedaHome() {
               </p>
             </div>
             <HomeWeatherButton weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
-          </div>
-          <div className="mt-3">
-            <TodayTaskChecklistCard
-              isHi={isHi}
-              weather={weather}
-              weatherLoading={weatherLoading}
-              weatherIsSample={weatherIsSample}
-            />
           </div>
         </motion.section>
 

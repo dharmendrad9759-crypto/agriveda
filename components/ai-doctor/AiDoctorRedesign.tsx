@@ -404,7 +404,7 @@ export function AiDoctorPhotoUpload({
             <div className="pointer-events-none absolute top-2.5 inset-x-0 z-20 flex justify-center">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1 text-[10.5px] font-bold text-emerald-300 backdrop-blur-md border border-emerald-500/40 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-                <span>AI लेंस सक्रिय · स्कैनिंग चालू</span>
+                <span>कैमरा जाँच सक्रिय · पत्ती स्कैन हो रही है</span>
               </span>
             </div>
 
@@ -764,7 +764,7 @@ export function AiDoctorDesktopHero({
   return (
     <DarkCard className="overflow-hidden !p-0">
       <div className="bg-gradient-to-br from-emerald-50 to-white p-5 dark:from-emerald-950/30 dark:to-transparent">
-        <span className="av-badge av-badge-low">AI Powered</span>
+        <span className="av-badge av-badge-low">रोग पहचान</span>
         <h2 className="mt-3 text-lg font-bold text-[var(--av-text-primary)]">
           How can I help your crop today?
         </h2>

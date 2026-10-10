@@ -13,38 +13,49 @@ import {
   ChevronDown,
   CloudRain,
   Flower2,
+  Info,
   Leaf,
-  Play,
+  Plus,
+  RotateCcw,
   Share2,
   ShieldAlert,
   ShieldCheck,
+  Sparkles,
+  Trash2,
   X,
 } from "lucide-react";
 import AppShell from "@/components/shell/AppShell";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
-import { CROP_PROBLEM_CROPS } from "@/data/crop-curative-problems";
+import { CROP_PROBLEM_CROPS, type CropProblemItem } from "@/data/crop-curative-problems";
 import {
   GROWTH_STAGES,
   buildMixPlanFromProblems,
   planWithStickerToggle,
+  evaluateTankMix,
+  generateDynamicMixSteps,
+  getProblemSpecificAlternatives,
+  POPULAR_INSECTICIDES,
+  POPULAR_FUNGICIDES,
+  POPULAR_TONICS,
+  SILICONE_STICKER,
   tankItems,
   type GrowthStageId,
   type MixMedicine,
   type MixPlan,
+  type TankMixVerdict,
 } from "@/data/mix-advisor/mix-plans";
-import { checkTankMixByActives } from "@/lib/tankMixCompatibility";
 import { fetchSprayWeatherFromSaved } from "@/lib/sprayWeatherApi";
 import { buildSprayWindowAnalysis } from "@/lib/sprayWindow";
 import { EASE_OUT } from "@/lib/motion/variants";
 
 type StepId = "problem" | "weather" | "mix" | "guide";
 
-const STEPS: { id: StepId; label: string }[] = [
-  { id: "problem", label: "समस्या" },
-  { id: "weather", label: "मौसम" },
-  { id: "mix", label: "मिक्स" },
-  { id: "guide", label: "गाइड" },
+const STEPS: { id: StepId; label: string; sub: string }[] = [
+  { id: "problem", label: "फसल व समस्या", sub: "1. चयन" },
+  { id: "weather", label: "मौसम सलाह", sub: "2. जाँच" },
+  { id: "mix", label: "स्मार्ट टैंक-मिक्स", sub: "3. दवाएँ" },
+  { id: "guide", label: "घोल बनाने की विधि", sub: "4. गाइड" },
 ];
 
 const STAGE_ICON = {
@@ -58,27 +69,33 @@ const MAX_PROBLEMS = 3;
 function Stepper({ step }: { step: StepId }) {
   const idx = STEPS.findIndex((s) => s.id === step);
   return (
-    <div className="mb-4 flex items-center justify-between gap-1 px-0.5">
+    <div className="mb-4 flex items-center justify-between gap-1 px-1">
       {STEPS.map((s, i) => {
         const done = i < idx;
         const active = i === idx;
         return (
           <div key={s.id} className="flex min-w-0 flex-1 items-center gap-1">
-            <div className="flex min-w-0 flex-col items-center gap-1">
+            <div className="flex min-w-0 flex-col items-center gap-0.5">
               <span
                 className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold",
-                  done || active
-                    ? "bg-emerald-600 text-white"
-                    : "bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
+                  "flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-black transition-all",
+                  done
+                    ? "bg-emerald-600 text-white shadow-sm"
+                    : active
+                      ? "bg-emerald-600 text-white ring-4 ring-emerald-500/20 shadow-md"
+                      : "bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
                 )}
               >
                 {done ? <Check className="h-3.5 w-3.5" /> : i + 1}
               </span>
               <span
                 className={cn(
-                  "truncate text-[10px] font-semibold",
-                  active ? "text-emerald-700" : "text-[var(--av-text-muted)]"
+                  "truncate text-[10px] font-bold",
+                  active
+                    ? "text-emerald-700 dark:text-emerald-400 font-extrabold"
+                    : done
+                      ? "text-[var(--av-text-primary)]"
+                      : "text-[var(--av-text-muted)]"
                 )}
               >
                 {s.label}
@@ -87,7 +104,7 @@ function Stepper({ step }: { step: StepId }) {
             {i < STEPS.length - 1 && (
               <div
                 className={cn(
-                  "mb-4 h-0.5 flex-1 rounded-full",
+                  "mb-3.5 h-0.5 flex-1 rounded-full transition-colors",
                   i < idx ? "bg-emerald-500" : "bg-[var(--av-border)]"
                 )}
               />
@@ -99,91 +116,21 @@ function Stepper({ step }: { step: StepId }) {
   );
 }
 
-function MedCard({
-  med,
-  onChoose,
-}: {
-  med: MixMedicine;
-  onChoose?: () => void;
-}) {
-  const sticker = Boolean(med.isAdjuvant);
-  const inner = (
-    <>
-      <div className="flex items-start justify-between gap-1">
-        <p
-          className={cn(
-            "text-[11px] font-bold",
-            sticker
-              ? "text-sky-700 dark:text-sky-300"
-              : "text-emerald-700 dark:text-emerald-300"
-          )}
-        >
-          {sticker ? "स्टिकर" : "दवा"}
-        </p>
-        {!sticker && onChoose ? (
-          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-600/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:text-emerald-200">
-            चुनें
-            <ChevronDown className="h-3 w-3" />
-          </span>
-        ) : null}
-      </div>
-      <p className="mt-1 text-[14px] font-extrabold leading-snug text-[var(--av-text-primary)]">
-        {med.nameHi}
-      </p>
-      <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">{med.formHi}</p>
-      <p
-        className={cn(
-          "mt-2 text-[13px] font-black",
-          sticker
-            ? "text-sky-800 dark:text-sky-200"
-            : "text-emerald-800 dark:text-emerald-200"
-        )}
-      >
-        {med.doseHi}
-      </p>
-    </>
-  );
-
-  const className = cn(
-    "relative w-full overflow-hidden rounded-2xl border p-3 text-left transition",
-    sticker
-      ? "border-sky-500/30 bg-gradient-to-b from-sky-50 to-white dark:from-sky-950/40 dark:to-[var(--av-surface)]"
-      : "border-emerald-500/20 bg-gradient-to-b from-emerald-50 to-white dark:from-emerald-950/40 dark:to-[var(--av-surface)]",
-    onChoose && !sticker && "active:scale-[0.98]"
-  );
-
-  if (onChoose && !sticker) {
-    return (
-      <button type="button" onClick={onChoose} className={className}>
-        {inner}
-      </button>
-    );
-  }
-
-  return <div className={className}>{inner}</div>;
-}
-
-function evaluateMixSafe(meds: MixMedicine[]): boolean {
-  const chems = meds.filter((m) => !m.isAdjuvant);
-  if (chems.length < 2) return true;
-  return (
-    checkTankMixByActives(chems[0].activeId, chems[1].activeId, "insecticide+fungicide")
-      .status === "safe"
-  );
-}
-
 export default function MixAdvisorClient() {
   const router = useRouter();
   const [step, setStep] = useState<StepId>("problem");
   const [cropSlug, setCropSlug] = useState("tomato");
   const [stage, setStage] = useState<GrowthStageId>("fruiting");
-  /** Multi-select — कीट + फफूंद एक साथ */
   const [problemIds, setProblemIds] = useState<string[]>(["early-blight", "fruit-borer"]);
   const [meds, setMeds] = useState<MixMedicine[]>([]);
   const [plan, setPlan] = useState<MixPlan | null>(null);
-  const [showUnsafe, setShowUnsafe] = useState(false);
-  /** Which medicine slot is being chosen (index into meds) */
+
+  // Modal / drawer states
   const [pickSlot, setPickSlot] = useState<number | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addCategoryTab, setAddCategoryTab] = useState<"fungicide" | "insecticide" | "tonic">("insecticide");
+
+  // Weather state
   const [weatherLine, setWeatherLine] = useState("मौसम लोड हो रहा है…");
   const [weatherBad, setWeatherBad] = useState(false);
   const [weatherBits, setWeatherBits] = useState<{
@@ -221,19 +168,15 @@ export default function MixAdvisorClient() {
         if (!cancelled) {
           setWeatherBits({
             place: bundle.location || "आपका इलाका",
-            temp:
-              cur?.temperatureC != null ? `${Math.round(cur.temperatureC)}°C` : "—",
-            humidity:
-              cur?.humidityPercent != null
-                ? `${Math.round(cur.humidityPercent)}%`
-                : "—",
+            temp: cur?.temperatureC != null ? `${Math.round(cur.temperatureC)}°C` : "—",
+            humidity: cur?.humidityPercent != null ? `${Math.round(cur.humidityPercent)}%` : "—",
           });
           const avoid = analysis.current.status === "AVOID";
           setWeatherBad(avoid);
           setWeatherLine(
             avoid
-              ? analysis.current.reasonHi || "अभी छिड़काव न करें"
-              : analysis.current.reasonHi || "छिड़काव का समय ठीक लग रहा है"
+              ? analysis.current.reasonHi || "अभी तेज हवा/बारिश के कारण छिड़काव टालें"
+              : analysis.current.reasonHi || "छिड़काव का मौसम अनुकूल है (हवा व नमी सामान्य)"
           );
         }
       } catch {
@@ -245,17 +188,18 @@ export default function MixAdvisorClient() {
     };
   }, []);
 
+  // Update default selected problems when crop changes
   useEffect(() => {
     const valid = problemIds.filter((id) => problems.some((p) => p.id === id));
     if (valid.length === problemIds.length && valid.length > 0) return;
     const first = problems[0];
-    const second = problems.find((p) => p.tagHi.includes("कीट")) ?? problems[1];
+    const second = problems.find((p) => p.tagHi.includes("कीट") || p.tagHi.includes("कीड़ा")) ?? problems[1];
     if (first && second && first.id !== second.id) {
       setProblemIds([first.id, second.id]);
     } else if (first) {
       setProblemIds([first.id]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-seed when crop's problem list changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cropSlug, problems]);
 
   const toggleProblem = (id: string) => {
@@ -282,48 +226,80 @@ export default function MixAdvisorClient() {
 
   const goToMix = () => {
     if (!meds.length) return;
-    const safe = evaluateMixSafe(meds);
-    setShowUnsafe(!safe);
     setStep("mix");
   };
 
-  const applySafeFallback = () => {
-    if (!plan?.safeFallback?.length) {
-      setShowUnsafe(false);
-      return;
-    }
-    setMeds(plan.safeFallback);
-    setShowUnsafe(false);
-  };
+  // Evaluate current compatibility
+  const mixVerdict: TankMixVerdict = useMemo(() => {
+    return evaluateTankMix(meds);
+  }, [meds]);
 
-  const chooseForSlot = (slotIndex: number, alt: MixMedicine) => {
+  const isSafe = mixVerdict.status === "safe";
+  const isCaution = mixVerdict.status === "caution";
+  const isIncompatible = mixVerdict.status === "incompatible";
+
+  // Change medicine in a slot
+  const chooseForSlot = (slotIndex: number, newMed: MixMedicine) => {
     setMeds((prev) => {
       const next = [...prev];
       if (slotIndex < 0 || slotIndex >= next.length) return prev;
-      next[slotIndex] = alt;
-      setShowUnsafe(!evaluateMixSafe(next));
+      next[slotIndex] = {
+        ...newMed,
+        targetProblemId: prev[slotIndex].targetProblemId,
+        targetProblemHi: prev[slotIndex].targetProblemHi,
+      };
       return next;
     });
     setPickSlot(null);
   };
 
-  const optionsForSlot = (slotIndex: number): MixMedicine[] => {
-    if (!plan) return [];
-    const current = meds[slotIndex];
-    if (!current) return plan.alternatives;
-    const sameKind = plan.alternatives.filter(
-      (a) =>
-        a.kindHi === current.kindHi ||
-        (current.kindHi.includes("फंगस") && a.kindHi.includes("फंगस")) ||
-        (current.kindHi.includes("फफूंद") && a.kindHi.includes("फफूंद")) ||
-        (current.kindHi.includes("कीड़") && a.kindHi.includes("कीड़")) ||
-        (current.kindHi.includes("कीट") && a.kindHi.includes("कीट"))
-    );
-    const pool = sameKind.length ? sameKind : plan.alternatives;
-    const ids = new Set(pool.map((a) => a.activeId));
-    // Always include current so farmer sees what's selected
-    const list = ids.has(current.activeId) ? pool : [current, ...pool];
-    return list;
+  // Remove a medicine from the tank
+  const removeMedicine = (index: number) => {
+    if (meds.length <= 1) return;
+    setMeds((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Add an additional medicine to the tank
+  const addMedicine = (med: MixMedicine) => {
+    if (meds.some((m) => m.activeId === med.activeId)) {
+      setShowAddModal(false);
+      return;
+    }
+    setMeds((prev) => [...prev, med]);
+    setShowAddModal(false);
+  };
+
+  // Selected slot medicine for alternative modal
+  const activeSlotMed = pickSlot != null ? meds[pickSlot] : null;
+
+  // Problem-specific alternatives strictly filtered to the problem assigned to this slot!
+  const slotAlternatives = useMemo(() => {
+    if (!activeSlotMed) return [];
+    return getProblemSpecificAlternatives(cropSlug, activeSlotMed);
+  }, [cropSlug, activeSlotMed]);
+
+  // Replace incompatible pair with safe fallback
+  const fixIncompatiblePair = () => {
+    if (!mixVerdict.badPair) return;
+    const [badA, badB] = mixVerdict.badPair;
+    // If one is copper, swap copper for Mancozeb or Azoxystrobin
+    setMeds((prev) => {
+      return prev.map((m) => {
+        if (m.activeId === badA.activeId && /copper/i.test(m.technical)) {
+          return POPULAR_FUNGICIDES[0]; // Mancozeb
+        }
+        if (m.activeId === badB.activeId && /copper/i.test(m.technical)) {
+          return POPULAR_FUNGICIDES[0]; // Mancozeb
+        }
+        if (m.activeId === badA.activeId && /sulphur/i.test(m.technical)) {
+          return POPULAR_FUNGICIDES[4]; // Hexaconazole
+        }
+        if (m.activeId === badB.activeId && /sulphur/i.test(m.technical)) {
+          return POPULAR_FUNGICIDES[4]; // Hexaconazole
+        }
+        return m;
+      });
+    });
   };
 
   const toggleSticker = () => {
@@ -332,20 +308,22 @@ export default function MixAdvisorClient() {
     setPlan(next);
   };
 
-  const mixSafe = evaluateMixSafe(meds);
+  // Dynamic W-A-L-E steps based on current medicines
+  const dynamicMixSteps = useMemo(() => {
+    return generateDynamicMixSteps(meds, plan?.includeSticker ?? true);
+  }, [meds, plan?.includeSticker]);
+
   const displayItems = plan ? tankItems(plan, meds) : meds;
-  const chemSlots = meds.filter((m) => !m.isAdjuvant);
 
   return (
-    <AppShell
-      variant="hub"
-      title="दवा मिलाएँ"
-      backHref="/dashboard"
-    >
-      <div className="mx-auto max-w-lg space-y-4 px-1 pb-8">
+    <AppShell variant="hub" title="दवा मिलाएँ (Tank Mix Advisor)" backHref="/dashboard">
+      <div className="mx-auto max-w-xl space-y-4 px-2 pb-12">
         <Stepper step={step} />
 
         <AnimatePresence mode="wait">
+          {/* ============================================================= */}
+          {/* STEP 1: PROBLEM & CROP SELECTION */}
+          {/* ============================================================= */}
           {step === "problem" && (
             <motion.div
               key="problem"
@@ -355,15 +333,16 @@ export default function MixAdvisorClient() {
               transition={{ duration: 0.28, ease: EASE_OUT }}
               className="space-y-4"
             >
+              {/* Weather hint banner */}
               <div
                 className={cn(
-                  "rounded-2xl border p-3",
+                  "rounded-2xl border p-3.5 shadow-sm",
                   weatherBad
-                    ? "border-rose-500/35 bg-rose-500/10"
-                    : "border-sky-500/25 bg-sky-500/8"
+                    ? "border-rose-500/35 bg-rose-500/10 text-rose-950 dark:text-rose-100"
+                    : "border-sky-500/25 bg-gradient-to-r from-sky-50 to-emerald-50 dark:from-sky-950/40 dark:to-emerald-950/30"
                 )}
               >
-                <div className="flex items-start gap-2">
+                <div className="flex items-start gap-2.5">
                   <CloudRain
                     className={cn(
                       "mt-0.5 h-5 w-5 shrink-0",
@@ -374,15 +353,15 @@ export default function MixAdvisorClient() {
                     <p className="text-[11px] font-bold text-[var(--av-text-muted)]">
                       खेत का मौसम · {weatherBits.place}
                     </p>
-                    <p className="mt-0.5 text-[13px] font-bold text-[var(--av-text-primary)]">
-                      {weatherBits.temp} · नमी {weatherBits.humidity}
+                    <p className="mt-0.5 text-[14px] font-extrabold text-[var(--av-text-primary)]">
+                      {weatherBits.temp} · हवा में नमी {weatherBits.humidity}
                     </p>
                     <p
                       className={cn(
                         "mt-1 text-[12px] font-semibold leading-snug",
                         weatherBad
                           ? "text-rose-800 dark:text-rose-200"
-                          : "text-[var(--av-text-secondary)]"
+                          : "text-emerald-900 dark:text-emerald-200"
                       )}
                     >
                       {weatherLine}
@@ -391,9 +370,20 @@ export default function MixAdvisorClient() {
                 </div>
               </div>
 
+              {/* Crop Selection Section - ALL CROPS VISIBLE IN OPEN GRID */}
               <div>
-                <p className={AV.sectionTitle}>फसल चुनें</p>
-                <div className="-mx-1 mt-2 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex items-center justify-between">
+                  <p className={AV.sectionTitle}>1. फसल चुनें (Crop)</p>
+                  <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                    {CROP_PROBLEM_CROPS.length} प्रमुख फसलें
+                  </span>
+                </div>
+                <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
+                  अपनी फसल पर टैप करें — सभी प्रमुख फसलें यहाँ उपलब्ध हैं:
+                </p>
+
+                {/* Open Grid of all crops without horizontal cut-off scrolling */}
+                <div className="mt-2.5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-2.5">
                   {CROP_PROBLEM_CROPS.map((c) => {
                     const active = c.slug === cropSlug;
                     return (
@@ -402,30 +392,43 @@ export default function MixAdvisorClient() {
                         type="button"
                         onClick={() => setCropSlug(c.slug)}
                         className={cn(
-                          "relative flex w-[76px] shrink-0 flex-col items-center gap-1 rounded-2xl border p-1.5 transition",
+                          "relative flex flex-col items-center gap-1.5 rounded-2xl border p-2 text-center transition-all active:scale-[0.97]",
                           active
-                            ? "border-emerald-500/55 bg-emerald-500/12"
-                            : "border-[var(--av-border)] bg-[var(--av-surface)]"
+                            ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-500/40 shadow-sm"
+                            : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-emerald-500/30"
                         )}
                       >
                         {active && (
-                          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white">
-                            <Check className="h-3 w-3" />
+                          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md">
+                            <Check className="h-3.5 w-3.5 stroke-[3]" />
                           </span>
                         )}
-                        <span className="relative h-14 w-14 overflow-hidden rounded-xl">
+                        <span className="relative h-14 w-14 overflow-hidden rounded-xl bg-black/5">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={c.image} alt="" className="h-full w-full object-cover" />
+                          <img src={c.image} alt={c.nameHi} className="h-full w-full object-cover" />
                         </span>
-                        <span className="line-clamp-1 text-[10px] font-bold">{c.nameHi}</span>
+                        <div className="min-w-0">
+                          <span
+                            className={cn(
+                              "block text-[13px] font-black leading-tight",
+                              active ? "text-emerald-900 dark:text-emerald-200" : "text-[var(--av-text-primary)]"
+                            )}
+                          >
+                            {c.nameHi}
+                          </span>
+                          <span className="text-[10px] font-semibold text-[var(--av-text-muted)]">
+                            {c.nameEn}
+                          </span>
+                        </div>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
+              {/* Growth Stage Selection */}
               <div>
-                <p className={AV.sectionTitle}>फसल का चरण चुनें</p>
+                <p className={AV.sectionTitle}>2. फसल का चरण (Growth Stage)</p>
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   {GROWTH_STAGES.map((s) => {
                     const Icon = STAGE_ICON[s.id];
@@ -436,20 +439,22 @@ export default function MixAdvisorClient() {
                         type="button"
                         onClick={() => setStage(s.id)}
                         className={cn(
-                          "flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-3 transition",
+                          "flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-center transition active:scale-[0.98]",
                           active
-                            ? "border-emerald-500/50 bg-emerald-500/12"
-                            : "border-[var(--av-border)] bg-[var(--av-surface)]"
+                            ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-500/30"
+                            : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-emerald-500/30"
                         )}
                       >
                         <Icon
                           className={cn(
                             "h-5 w-5",
-                            active ? "text-emerald-700" : "text-[var(--av-text-muted)]"
+                            active ? "text-emerald-700 dark:text-emerald-300" : "text-[var(--av-text-muted)]"
                           )}
                         />
-                        <span className="text-[12px] font-bold">{s.labelHi}</span>
-                        <span className="text-center text-[9px] font-medium text-[var(--av-text-muted)]">
+                        <span className="text-[12px] font-bold text-[var(--av-text-primary)]">
+                          {s.labelHi.split(" ")[0]}
+                        </span>
+                        <span className="text-[9px] font-medium text-[var(--av-text-muted)] leading-tight">
                           {s.hintHi}
                         </span>
                       </button>
@@ -458,58 +463,86 @@ export default function MixAdvisorClient() {
                 </div>
               </div>
 
+              {/* Problems Selection Grid */}
               <div>
                 <div className="flex items-end justify-between gap-2">
                   <div>
-                    <p className={AV.sectionTitle}>समस्याएँ चुनें</p>
+                    <p className={AV.sectionTitle}>3. समस्याएँ चुनें (कीट व बीमारियाँ)</p>
                     <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                      एक साथ कई हो सकती हैं — कीड़ों और फंगस दोनों चुनो (अधिकतम {MAX_PROBLEMS})
+                      कीट, फफूंद व रोग एक साथ चुनें (अधिकतम {MAX_PROBLEMS})
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                    {problemIds.length}/{MAX_PROBLEMS}
+                  <span className="shrink-0 rounded-full bg-emerald-600/15 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
+                    {problemIds.length}/{MAX_PROBLEMS} चुनी
                   </span>
                 </div>
-                <div className="mt-2 grid grid-cols-2 gap-2.5">
+
+                <div className="mt-2.5 grid grid-cols-2 gap-2.5">
                   {problems.map((p) => {
                     const active = problemIds.includes(p.id);
+                    const isFungus = p.tagHi.includes("फफूंद") || p.tagHi.includes("फंगस");
+                    const isPest = p.tagHi.includes("कीट") || p.tagHi.includes("कीड़ा");
+
                     return (
                       <button
                         key={p.id}
                         type="button"
                         onClick={() => toggleProblem(p.id)}
                         className={cn(
-                          "overflow-hidden rounded-2xl border text-left transition",
+                          "relative overflow-hidden rounded-2xl border text-left transition-all active:scale-[0.98]",
                           active
-                            ? "border-emerald-500/55 ring-2 ring-emerald-500/25"
-                            : "border-[var(--av-border)]"
+                            ? "border-emerald-600 ring-2 ring-emerald-500/30 bg-emerald-500/5 shadow-md"
+                            : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-emerald-500/30"
                         )}
                       >
-                        <span className="relative block h-24 w-full">
+                        <span className="relative block h-24 w-full bg-black/5">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={p.image} alt="" className="h-full w-full object-cover" />
+                          <img src={p.image} alt={p.nameHi} className="h-full w-full object-cover" />
                           {active && (
-                            <span className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-white shadow">
-                              <Check className="h-3.5 w-3.5" />
+                            <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md">
+                              <Check className="h-4 w-4 stroke-[3]" />
                             </span>
                           )}
+                          <span
+                            className={cn(
+                              "absolute bottom-1.5 left-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm",
+                              isFungus ? "bg-amber-700/90" : isPest ? "bg-sky-700/90" : "bg-purple-700/90"
+                            )}
+                          >
+                            {p.tagHi}
+                          </span>
                         </span>
-                        <span className="block bg-[var(--av-surface)] px-2.5 py-2">
-                          <span className="line-clamp-2 text-[12px] font-extrabold leading-snug">
+                        <span className="block px-3 py-2.5">
+                          <span className="line-clamp-1 text-[13px] font-black text-[var(--av-text-primary)]">
                             {p.nameHi}
                           </span>
-                          <span className="mt-0.5 block text-[10px] font-medium text-[var(--av-text-muted)]">
-                            {p.tagHi}
+                          <span className="line-clamp-1 text-[10px] font-medium text-[var(--av-text-muted)]">
+                            {p.nameEn}
                           </span>
                         </span>
                       </button>
                     );
                   })}
                 </div>
-                {selectedProblems.length > 1 && (
-                  <p className="mt-2 rounded-xl bg-emerald-500/10 px-3 py-2 text-[11px] font-semibold text-emerald-900 dark:text-emerald-100">
-                    चुना: {selectedProblems.map((p) => p.nameHi).join(" + ")} — एक टैंक में दोनों की दवा + स्टिकर
-                  </p>
+
+                {/* Selected Summary Pill */}
+                {selectedProblems.length > 0 && (
+                  <div className="mt-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/30 p-3">
+                    <div className="flex items-start gap-2">
+                      <Sparkles className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
+                      <div className="text-[12px] leading-snug">
+                        <span className="font-bold text-emerald-950 dark:text-emerald-100">
+                          चुनी गई समस्याएँ:{" "}
+                        </span>
+                        <span className="font-semibold text-emerald-800 dark:text-emerald-200">
+                          {selectedProblems.map((p) => p.nameHi).join(" + ")}
+                        </span>
+                        <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
+                          💡 ICAR/CIBRC रिसर्च ट्रायल अनुसार हर समस्या के लिए श्रेष्ठ टेक्निकल दवाएँ अपने आप सुझाई जाएँगी।
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -517,14 +550,17 @@ export default function MixAdvisorClient() {
                 type="button"
                 disabled={!problemIds.length}
                 onClick={runCheck}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-bold text-white shadow-lg shadow-emerald-600/25 disabled:opacity-40"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-black text-white shadow-lg shadow-emerald-600/25 transition active:scale-[0.98] disabled:opacity-40"
               >
-                चेक करें
-                <ArrowRight className="h-4 w-4" />
+                आगे बढ़ें: स्मार्ट मिक्स जाँच
+                <ArrowRight className="h-5 w-5" />
               </button>
             </motion.div>
           )}
 
+          {/* ============================================================= */}
+          {/* STEP 2: WEATHER CHECK */}
+          {/* ============================================================= */}
           {step === "weather" && (
             <motion.div
               key="weather"
@@ -536,262 +572,75 @@ export default function MixAdvisorClient() {
             >
               <div
                 className={cn(
-                  "rounded-2xl border p-4",
+                  "rounded-2xl border p-4 shadow-sm",
                   weatherBad
-                    ? "border-rose-500/35 bg-rose-500/10"
+                    ? "border-rose-500/35 bg-rose-500/10 text-rose-950 dark:text-rose-100"
                     : "border-emerald-500/30 bg-emerald-500/10"
                 )}
               >
-                <p className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
-                  {weatherBad ? "आज छिड़काव टालें" : "मौसम ठीक है — आगे बढ़ें"}
-                </p>
-                <p className="mt-1 text-[13px] font-medium text-[var(--av-text-secondary)]">
-                  {weatherBits.place} · {weatherBits.temp} · नमी {weatherBits.humidity}
-                </p>
-                <p className="mt-2 text-[12px] font-semibold leading-snug text-[var(--av-text-muted)]">
-                  {weatherLine}
-                </p>
+                <div className="flex items-start gap-3">
+                  <div
+                    className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                      weatherBad ? "bg-rose-500/20 text-rose-600" : "bg-emerald-500/20 text-emerald-600"
+                    )}
+                  >
+                    <CloudRain className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[16px] font-black text-[var(--av-text-primary)]">
+                      {weatherBad ? "सावधानी: आज छिड़काव टालें" : "मौसम अनुकूल है — स्प्रे कर सकते हैं"}
+                    </p>
+                    <p className="mt-1 text-[13px] font-semibold text-[var(--av-text-secondary)]">
+                      {weatherBits.place} · {weatherBits.temp} · नमी {weatherBits.humidity}
+                    </p>
+                    <p className="mt-1.5 text-[12px] font-medium leading-relaxed text-[var(--av-text-muted)]">
+                      {weatherLine}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {selectedProblems.length > 0 && (
-                <p className="text-[12px] font-semibold text-[var(--av-text-secondary)]">
-                  समस्या: {selectedProblems.map((p) => p.nameHi).join(" · ")}
-                </p>
-              )}
-
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { t: "सुबह", d: "7–11 बजे", best: !weatherBad },
-                  { t: "दोपहर", d: "12–3 बजे", best: false },
-                  { t: "शाम", d: "4–7 बजे", best: !weatherBad },
-                ].map((w) => (
-                  <div
-                    key={w.t}
-                    className={cn(
-                      "rounded-xl border p-2.5 text-center",
-                      w.best
-                        ? "border-emerald-500/40 bg-emerald-500/10"
-                        : "border-[var(--av-border)] bg-[var(--av-surface)]"
-                    )}
-                  >
-                    <p className="text-[12px] font-bold">{w.t}</p>
-                    <p className="text-[10px] text-[var(--av-text-muted)]">{w.d}</p>
-                    <p
-                      className={cn(
-                        "mt-1 text-[10px] font-bold",
-                        w.best ? "text-emerald-700" : "text-[var(--av-text-muted)]"
-                      )}
-                    >
-                      {w.best ? "अच्छा" : "सावधानी"}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setStep("problem")}
-                  className="flex flex-1 items-center justify-center gap-1 rounded-2xl border border-[var(--av-border)] py-3 text-[13px] font-bold"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  वापस
-                </button>
-                <button
-                  type="button"
-                  onClick={goToMix}
-                  className="flex flex-[1.4] items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-[14px] font-bold text-white"
-                >
-                  आगे: मिक्स
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {step === "mix" && meds.length > 0 && plan && (
-            <motion.div
-              key="mix"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.28, ease: EASE_OUT }}
-              className="relative space-y-4"
-            >
-              <div
-                className={cn(
-                  "grid gap-2.5",
-                  displayItems.length >= 3 ? "grid-cols-2" : "grid-cols-2"
-                )}
-              >
-                {displayItems.map((m, i) => {
-                  const isSticker = Boolean(m.isAdjuvant);
-                  // Sticker is appended after chem meds — chem slot index matches meds index
-                  const chemIndex = isSticker ? -1 : i;
-                  return (
-                    <MedCard
-                      key={`${m.activeId}-${i}`}
-                      med={m}
-                      onChoose={
-                        isSticker
-                          ? undefined
-                          : () => setPickSlot(chemIndex)
-                      }
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Choose medicine sheet */}
-              <AnimatePresence>
-                {pickSlot != null && plan && meds[pickSlot] && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-3 sm:items-center"
-                    onClick={() => setPickSlot(null)}
-                  >
-                    <motion.div
-                      initial={{ y: 40, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: 24, opacity: 0 }}
-                      transition={{ duration: 0.22, ease: EASE_OUT }}
-                      className="max-h-[70vh] w-full max-w-md overflow-hidden rounded-2xl bg-[var(--av-surface)] shadow-xl"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="flex items-center justify-between border-b border-[var(--av-border)] px-4 py-3">
-                        <p className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
-                          दवा चुनें
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => setPickSlot(null)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--av-surface-inset)]"
-                          aria-label="बंद करें"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <ul className="max-h-[55vh] space-y-1 overflow-y-auto p-3">
-                        {optionsForSlot(pickSlot).map((opt) => {
-                          const selected = meds[pickSlot]?.activeId === opt.activeId;
-                          return (
-                            <li key={opt.activeId + opt.formHi}>
-                              <button
-                                type="button"
-                                onClick={() => chooseForSlot(pickSlot, opt)}
-                                className={cn(
-                                  "flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition",
-                                  selected
-                                    ? "border-emerald-500/50 bg-emerald-500/12"
-                                    : "border-[var(--av-border)] bg-[var(--av-surface)]"
-                                )}
-                              >
-                                <span className="min-w-0 flex-1">
-                                  <span className="block text-[14px] font-extrabold text-[var(--av-text-primary)]">
-                                    {opt.nameHi}
-                                  </span>
-                                  <span className="mt-0.5 block text-[11px] font-medium text-[var(--av-text-muted)]">
-                                    {opt.formHi} · {opt.doseHi}
-                                  </span>
-                                </span>
-                                {selected ? (
-                                  <Check className="h-5 w-5 shrink-0 text-emerald-600" />
-                                ) : null}
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {chemSlots.length >= 2 && (
-                <div className="flex justify-center">
-                  <div
-                    className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-full shadow-lg",
-                      mixSafe ? "bg-emerald-600 text-white" : "bg-rose-600 text-white"
-                    )}
-                  >
-                    {mixSafe ? (
-                      <ShieldCheck className="h-5 w-5" />
-                    ) : (
-                      <ShieldAlert className="h-5 w-5" />
-                    )}
-                  </div>
+                <div className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3">
+                  <p className="text-[11px] font-bold text-[var(--av-text-muted)]">
+                    आपकी फसल व चुनी गई समस्याएँ:
+                  </p>
+                  <p className="mt-1 text-[13px] font-extrabold text-[var(--av-text-primary)]">
+                    {crop.nameHi} ({crop.nameEn}) — {selectedProblems.map((p) => p.nameHi).join(" · ")}
+                  </p>
                 </div>
               )}
 
-              <p
-                className={cn(
-                  "text-center text-[14px] font-extrabold",
-                  mixSafe ? "text-emerald-700" : "text-rose-700"
-                )}
-              >
-                {mixSafe
-                  ? plan.includeSticker
-                    ? "सुरक्षित मिक्स — दवाएँ + स्टिकर"
-                    : "सुरक्षित और असरदार!"
-                  : "यह जोड़ी असुरक्षित है"}
-              </p>
-
-              <button
-                type="button"
-                onClick={toggleSticker}
-                className={cn(
-                  "flex w-full items-center justify-between rounded-2xl border px-3 py-3 text-left transition",
-                  plan.includeSticker
-                    ? "border-sky-500/40 bg-sky-500/10"
-                    : "border-[var(--av-border)] bg-[var(--av-surface)]"
-                )}
-              >
-                <span>
-                  <span className="block text-[13px] font-extrabold text-[var(--av-text-primary)]">
-                    सिलिकॉन स्टिकर साथ डालें
-                  </span>
-                  <span className="mt-0.5 block text-[11px] font-medium text-[var(--av-text-muted)]">
-                    पत्ते पर दवा चिपकती है — किसान अक्सर दोनों दवाओं के साथ डालते हैं
-                  </span>
-                </span>
-                <span
-                  className={cn(
-                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
-                    plan.includeSticker
-                      ? "bg-sky-600 text-white"
-                      : "bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
-                  )}
-                >
-                  {plan.includeSticker ? <Check className="h-4 w-4" /> : null}
-                </span>
-              </button>
-
               <div>
-                <p className={AV.sectionTitle}>छिड़काव का समय</p>
-                <div className="mt-2 flex overflow-hidden rounded-xl border border-[var(--av-border)]">
+                <p className={AV.sectionTitle}>छिड़काव का सबसे अच्छा समय</p>
+                <div className="mt-2 grid grid-cols-3 gap-2">
                   {[
-                    { t: "सुबह", best: true },
-                    { t: "दोपहर", best: false },
-                    { t: "शाम", best: true, top: true },
-                  ].map((slot) => (
+                    { t: "सुबह (Morning)", d: "7–11 बजे", best: !weatherBad, note: "उत्तम समय" },
+                    { t: "दोपहर (Noon)", d: "12–3 बजे", best: false, note: "धूप में न करें" },
+                    { t: "शाम (Evening)", d: "4–7 बजे", best: !weatherBad, note: "सर्वोत्तम समय" },
+                  ].map((w) => (
                     <div
-                      key={slot.t}
+                      key={w.t}
                       className={cn(
-                        "flex-1 px-2 py-2.5 text-center",
-                        slot.top
-                          ? "bg-emerald-600 text-white"
-                          : slot.best
-                            ? "bg-emerald-500/15 text-emerald-900"
-                            : "bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
+                        "rounded-2xl border p-3 text-center transition",
+                        w.best
+                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-950 dark:text-emerald-100"
+                          : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-muted)]"
                       )}
                     >
-                      <p className="text-[12px] font-bold">{slot.t}</p>
-                      <p className="text-[9px] font-semibold opacity-90">
-                        {slot.top ? "सबसे अच्छा" : slot.best ? "ठीक" : "न करें"}
-                      </p>
+                      <p className="text-[12px] font-black">{w.t}</p>
+                      <p className="text-[10px] font-medium text-[var(--av-text-muted)]">{w.d}</p>
+                      <span
+                        className={cn(
+                          "mt-1.5 inline-block rounded-md px-1.5 py-0.5 text-[9px] font-extrabold",
+                          w.best
+                            ? "bg-emerald-600 text-white"
+                            : "bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
+                        )}
+                      >
+                        {w.note}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -800,64 +649,556 @@ export default function MixAdvisorClient() {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setStep("weather")}
-                  className="flex flex-1 items-center justify-center gap-1 rounded-2xl border border-[var(--av-border)] py-3 text-[13px] font-bold"
+                  onClick={() => setStep("problem")}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] py-3 text-[14px] font-bold active:scale-[0.98]"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   वापस
                 </button>
                 <button
                   type="button"
-                  disabled={!mixSafe}
-                  onClick={() => setStep("guide")}
-                  className="flex flex-[1.6] items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-[14px] font-bold text-white disabled:opacity-40"
+                  onClick={goToMix}
+                  className="flex flex-[1.6] items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-[15px] font-black text-white shadow-md shadow-emerald-600/25 active:scale-[0.98]"
                 >
-                  अगला: गाइड
+                  आगे: दवाएँ देखें
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ============================================================= */}
+          {/* STEP 3: SMART TANK MIX SCREEN (ICAR AUTO-RECOMMENDATION) */}
+          {/* ============================================================= */}
+          {step === "mix" && meds.length > 0 && plan && (
+            <motion.div
+              key="mix"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.28, ease: EASE_OUT }}
+              className="space-y-4"
+            >
+              {/* Traffic Light Compatibility Alert System */}
+              <div
+                className={cn(
+                  "rounded-2xl border p-4 shadow-sm transition-all",
+                  isSafe &&
+                    "border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 to-teal-500/10 text-emerald-950 dark:text-emerald-100",
+                  isCaution &&
+                    "border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-yellow-500/10 text-amber-950 dark:text-amber-100",
+                  isIncompatible &&
+                    "border-rose-500/60 bg-gradient-to-r from-rose-500/20 to-red-600/15 text-rose-950 dark:text-rose-100 animate-pulse-subtle"
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className={cn(
+                      "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-sm",
+                      isSafe && "bg-emerald-600 text-white",
+                      isCaution && "bg-amber-500 text-white",
+                      isIncompatible && "bg-rose-600 text-white"
+                    )}
+                  >
+                    {isSafe && <ShieldCheck className="h-6 w-6 stroke-[2.5]" />}
+                    {isCaution && <AlertTriangle className="h-6 w-6 stroke-[2.5]" />}
+                    {isIncompatible && <ShieldAlert className="h-6 w-6 stroke-[2.5]" />}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          "rounded-md px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white",
+                          isSafe && "bg-emerald-700",
+                          isCaution && "bg-amber-600",
+                          isIncompatible && "bg-rose-700"
+                        )}
+                      >
+                        {isSafe ? "GREEN TICK" : isCaution ? "YELLOW ALERT" : "RED DANGER"}
+                      </span>
+                      <span className="text-[11px] font-bold opacity-80">
+                        {mixVerdict.badgeHi}
+                      </span>
+                    </div>
+
+                    <p className="mt-1 text-[15px] font-black leading-snug">
+                      {mixVerdict.title}
+                    </p>
+
+                    <p className="mt-1 text-[12px] font-semibold leading-relaxed opacity-95">
+                      {mixVerdict.messageHi}
+                    </p>
+
+                    {/* Conflict remedy action if incompatible */}
+                    {isIncompatible && (
+                      <div className="mt-3 rounded-xl bg-white/40 dark:bg-black/30 p-2.5">
+                        <p className="text-[11px] font-extrabold text-rose-900 dark:text-rose-200">
+                          💡 समाधान: {mixVerdict.remedyHi || "असंगत रसायनों को अलग-अलग छिड़कें।"}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={fixIncompatiblePair}
+                          className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-[11px] font-bold text-white shadow transition hover:bg-rose-700 active:scale-[0.98]"
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                          सुरक्षित विकल्प से स्वतः बदलें
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Medicine Tank Slot Cards */}
+              <div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={AV.sectionTitle}>टैंक में दवाएँ (Tank Mix Items)</p>
+                    <p className="text-[11px] text-[var(--av-text-muted)]">
+                      ICAR द्वारा अनुशंसित सक्रिय रसायन (Technicals) व खुराक:
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
+                    {meds.length} दवाएँ + 1 स्टिकर
+                  </span>
+                </div>
+
+                <div className="mt-2.5 space-y-3">
+                  {meds.map((m, idx) => {
+                    return (
+                      <div
+                        key={`${m.activeId}-${idx}`}
+                        className="relative rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm transition hover:border-emerald-500/40"
+                      >
+                        {/* Header Badge */}
+                        <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border)]/60 pb-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-black text-emerald-900 dark:text-emerald-200">
+                              दवा {idx + 1}: {m.kindHi}
+                            </span>
+                            {m.targetProblemHi && (
+                              <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-900 dark:text-amber-200">
+                                🎯 {m.targetProblemHi} हेतु
+                              </span>
+                            )}
+                            {m.fracIracCode && (
+                              <span className="rounded-md bg-purple-600/15 px-2 py-0.5 text-[10px] font-black text-purple-900 dark:text-purple-200">
+                                🔬 {m.fracIracCode} {m.fracIracGroupHi ? `· ${m.fracIracGroupHi}` : ""}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Delete Slot Button if > 1 med */}
+                          {meds.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeMedicine(idx)}
+                              className="rounded-lg p-1 text-[var(--av-text-muted)] hover:bg-rose-500/10 hover:text-rose-600 transition"
+                              title="यह दवा हटाएँ"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Technical Name Prominent Heading */}
+                        <div className="mt-2">
+                          <p className="text-[15px] font-black text-emerald-950 dark:text-emerald-100 tracking-tight">
+                            {m.technical}
+                          </p>
+                          <p className="text-[12px] font-bold text-[var(--av-text-secondary)]">
+                            {m.nameHi}
+                          </p>
+                          {m.brands && m.brands.length > 0 && (
+                            <p className="text-[10px] font-medium text-[var(--av-text-muted)]">
+                              बाजार के लोकप्रिय ब्रांड: {m.brands.slice(0, 3).join(", ")}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Doses Grid */}
+                        <div className="mt-2.5 grid grid-cols-2 gap-2 rounded-xl bg-[var(--av-surface-inset)] p-2">
+                          <div>
+                            <span className="block text-[10px] font-semibold text-[var(--av-text-muted)]">
+                              💧 1 लीटर पानी में खुराक:
+                            </span>
+                            <span className="text-[12px] font-black text-emerald-800 dark:text-emerald-300">
+                              {m.dosePerLiter || m.doseHi.split("(")[0]}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="block text-[10px] font-semibold text-[var(--av-text-muted)]">
+                              🌾 1 एकड़ हेतु कुल दवा:
+                            </span>
+                            <span className="text-[12px] font-black text-emerald-800 dark:text-emerald-300">
+                              {m.dosePerAcre || "200 L पानी में स्प्रे"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Formulation and Action Bar */}
+                        <div className="mt-3 flex items-center justify-between gap-2 pt-1 border-t border-[var(--av-border)]/40">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-muted)]">
+                            फॉर्मूलेशन:{" "}
+                            <span className="font-extrabold text-[var(--av-text-primary)]">
+                              {m.formCode} ({m.formHi})
+                            </span>
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() => setPickSlot(idx)}
+                            className="inline-flex items-center gap-1 rounded-xl bg-emerald-600/10 px-2.5 py-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-200 hover:bg-emerald-600/20 transition active:scale-[0.98]"
+                          >
+                            दवा बदलें (Change)
+                            <ChevronDown className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Add Extra Medicine Button (Tank Mix) */}
+                  {meds.length < 3 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(true)}
+                      className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-emerald-500/40 bg-emerald-500/5 py-3 text-[13px] font-extrabold text-emerald-800 dark:text-emerald-200 hover:bg-emerald-500/10 transition active:scale-[0.98]"
+                    >
+                      <Plus className="h-4 w-4 stroke-[3]" />
+                      + एक और दवा जोड़ें (कीटनाशक / फफूंदनाशक / टॉनिक)
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Silicone Sticker Section */}
+              <button
+                type="button"
+                onClick={toggleSticker}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all active:scale-[0.98]",
+                  plan.includeSticker
+                    ? "border-sky-500/40 bg-gradient-to-r from-sky-50 to-blue-50 dark:from-sky-950/40 dark:to-blue-950/30"
+                    : "border-[var(--av-border)] bg-[var(--av-surface)]"
+                )}
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-md bg-sky-600/20 px-2 py-0.5 text-[10px] font-black text-sky-800 dark:text-sky-200">
+                      एडजुवेंट (चिपको)
+                    </span>
+                    <span className="text-[13px] font-extrabold text-[var(--av-text-primary)]">
+                      सिलिकॉन सुपर स्प्रेडर स्टिकर
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[11px] font-medium text-[var(--av-text-muted)]">
+                    दवा को पत्तों पर तुरंत फैलाता है और बारिश में धुलने से रोकता है (5–10 मिली/पंप)।
+                  </p>
+                </div>
+                <span
+                  className={cn(
+                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all",
+                    plan.includeSticker
+                      ? "bg-sky-600 text-white shadow"
+                      : "bg-[var(--av-surface-inset)] text-[var(--av-text-muted)]"
+                  )}
+                >
+                  {plan.includeSticker ? <Check className="h-4 w-4 stroke-[3]" /> : null}
+                </span>
+              </button>
+
+              {/* Water Volume & Nozzle Hint */}
+              <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3">
+                <div>
+                  <span className="block text-[10px] font-semibold text-[var(--av-text-muted)]">
+                    पानी की मात्रा प्रति एकड़:
+                  </span>
+                  <span className="text-[12px] font-black text-[var(--av-text-primary)]">
+                    {plan.waterHi}
+                  </span>
+                </div>
+                <div>
+                  <span className="block text-[10px] font-semibold text-[var(--av-text-muted)]">
+                    नोजल की सिफारिश:
+                  </span>
+                  <span className="text-[12px] font-black text-[var(--av-text-primary)]">
+                    {plan.nozzleHi}
+                  </span>
+                </div>
+              </div>
+
+              {/* Bottom Nav Buttons */}
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep("weather")}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] py-3 text-[14px] font-bold active:scale-[0.98]"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  वापस
+                </button>
+                <button
+                  type="button"
+                  disabled={isIncompatible}
+                  onClick={() => setStep("guide")}
+                  className="flex flex-[1.6] items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-[15px] font-black text-white shadow-md shadow-emerald-600/25 active:scale-[0.98] disabled:opacity-40"
+                >
+                  अगला: घोल विधि (Guide)
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
 
+              {/* ============================================================= */}
+              {/* MODAL 1: PICK ALTERNATIVE FOR SLOT */}
+              {/* ============================================================= */}
               <AnimatePresence>
-                {showUnsafe && (
+                {pickSlot != null && meds[pickSlot] && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-rose-950/75 p-4 backdrop-blur-[2px]"
+                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-2 sm:items-center"
+                    onClick={() => setPickSlot(null)}
                   >
-                    <div className="w-full max-w-sm rounded-2xl border border-rose-400/40 bg-rose-950 p-4 text-white shadow-xl">
-                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-500/30">
-                        <AlertTriangle className="h-7 w-7 text-rose-200" />
-                      </div>
-                      <p className="mt-3 text-center text-[15px] font-extrabold">
-                        चेतावनी: यह मिश्रण असुरक्षित है!
-                      </p>
-                      <p className="mt-2 text-center text-[12px] leading-snug text-rose-100/90">
-                        ये दवाएँ मिलाएँ तो फसल खराब हो सकती है और असर भी कम हो सकता है।
-                      </p>
-                      {plan.safeFallback && plan.safeFallback.length >= 2 && (
-                        <div className="mt-3 rounded-xl bg-white/10 px-3 py-2 text-[12px]">
-                          <p className="font-bold text-emerald-200">सुरक्षित जोड़ी</p>
-                          <p className="mt-0.5 font-medium">
-                            {plan.safeFallback.map((m) => `${m.nameHi} ${m.formHi}`).join(" + ")}
+                    <motion.div
+                      initial={{ y: 40, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: 24, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: EASE_OUT }}
+                      className="max-h-[80vh] w-full max-w-lg overflow-hidden rounded-3xl bg-[var(--av-surface)] shadow-2xl"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex items-center justify-between border-b border-[var(--av-border)] px-4 py-3.5">
+                        <div className="min-w-0 pr-2">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-black text-emerald-900 dark:text-emerald-200">
+                              {activeSlotMed?.kindHi || "दवा"}
+                            </span>
+                            {activeSlotMed?.targetProblemHi && (
+                              <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200">
+                                🎯 {activeSlotMed.targetProblemHi}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[15px] font-black text-[var(--av-text-primary)] leading-tight">
+                            {activeSlotMed?.targetProblemHi
+                              ? `${activeSlotMed.targetProblemHi} हेतु स्वीकृत दवाएँ`
+                              : "वैकल्पिक दवा चुनें"}
+                          </p>
+                          <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
+                            {activeSlotMed?.targetProblemHi
+                              ? `ICAR व CIBRC सिफारिश: केवल "${activeSlotMed.targetProblemHi}" के लिए अनुमोदित टेक्निकल:`
+                              : "ICAR व CIBRC द्वारा अनुमोदित अन्य दवाएँ:"}
                           </p>
                         </div>
-                      )}
-                      <button
-                        type="button"
-                        onClick={applySafeFallback}
-                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-[13px] font-bold text-white"
-                      >
-                        असुरक्षित जोड़ी बदलें
-                        <ArrowRight className="h-4 w-4" />
-                      </button>
-                    </div>
+                        <button
+                          type="button"
+                          onClick={() => setPickSlot(null)}
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--av-surface-inset)]"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <div className="max-h-[60vh] space-y-2 overflow-y-auto p-3">
+                        {slotAlternatives.map((opt) => {
+                          const selected = activeSlotMed?.technical === opt.technical;
+                          return (
+                            <button
+                              key={opt.technical}
+                              type="button"
+                              onClick={() => chooseForSlot(pickSlot, opt)}
+                              className={cn(
+                                "flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left transition active:scale-[0.98]",
+                                selected
+                                  ? "border-emerald-600 bg-emerald-500/10 ring-2 ring-emerald-500/25 shadow-sm"
+                                  : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-emerald-500/30"
+                              )}
+                            >
+                              <div className="min-w-0 flex-1">
+                                {/* FRAC / IRAC Group Badge + Formulation Code */}
+                                <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                                  {opt.fracIracCode && (
+                                    <span className="rounded-md bg-purple-600/15 px-2 py-0.5 text-[10px] font-black text-purple-900 dark:text-purple-200">
+                                      🔬 {opt.fracIracCode}
+                                    </span>
+                                  )}
+                                  {opt.fracIracGroupHi && (
+                                    <span className="rounded-md bg-[var(--av-surface-inset)] px-2 py-0.5 text-[10px] font-bold text-[var(--av-text-muted)]">
+                                      {opt.fracIracGroupHi}
+                                    </span>
+                                  )}
+                                  <span className="rounded-md bg-emerald-600/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:text-emerald-200">
+                                    {opt.formCode}
+                                  </span>
+                                </div>
+
+                                {/* English Technical Formulation Name */}
+                                <p className="text-[14px] font-black text-[var(--av-text-primary)] leading-snug">
+                                  {opt.technical}
+                                </p>
+
+                                {/* Hindi Name & Brands */}
+                                <p className="mt-0.5 text-[12px] font-bold text-[var(--av-text-secondary)]">
+                                  {opt.nameHi}
+                                </p>
+                                {opt.brands && opt.brands.length > 0 && (
+                                  <p className="text-[10px] font-medium text-[var(--av-text-muted)]">
+                                    बाजार के ब्रांड: {opt.brands.slice(0, 3).join(", ")}
+                                  </p>
+                                )}
+
+                                {/* Doses */}
+                                <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-black text-emerald-800 dark:text-emerald-300">
+                                  <span>💧 1L पानी: {opt.dosePerLiter || opt.doseHi.split("(")[0]}</span>
+                                  <span>•</span>
+                                  <span>🌾 1 एकड़: {opt.dosePerAcre || "200L पानी"}</span>
+                                </div>
+
+                                {opt.safetyHi && (
+                                  <p className="mt-1.5 text-[10px] text-[var(--av-text-muted)] italic leading-tight">
+                                    {opt.safetyHi}
+                                  </p>
+                                )}
+                              </div>
+
+                              {selected ? (
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm mt-1">
+                                  <Check className="h-4 w-4 stroke-[3]" />
+                                </span>
+                              ) : (
+                                <span className="rounded-lg bg-emerald-600/10 px-2 py-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-200 mt-1">
+                                  चुनें
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* ============================================================= */}
+              {/* MODAL 2: ADD EXTRA MEDICINE MODAL */}
+              {/* ============================================================= */}
+              <AnimatePresence>
+                {showAddModal && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-2 sm:items-center"
+                    onClick={() => setShowAddModal(false)}
+                  >
+                    <motion.div
+                      initial={{ y: 40, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: 24, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: EASE_OUT }}
+                      className="max-h-[82vh] w-full max-w-lg overflow-hidden rounded-3xl bg-[var(--av-surface)] shadow-2xl"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex items-center justify-between border-b border-[var(--av-border)] px-4 py-3.5">
+                        <div>
+                          <p className="text-[15px] font-black text-[var(--av-text-primary)]">
+                            टैंक में नई दवा जोड़ें
+                          </p>
+                          <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+                            कीटनाशक, फफूंदनाशक या टॉनिक चुनें:
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowAddModal(false)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--av-surface-inset)]"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      {/* Category Switcher Tabs */}
+                      <div className="flex border-b border-[var(--av-border)] px-2 pt-2 bg-[var(--av-surface-inset)]/50">
+                        {[
+                          { id: "insecticide", label: "कीटनाशक (Insecticides)" },
+                          { id: "fungicide", label: "फफूंदनाशक (Fungicides)" },
+                          { id: "tonic", label: "टॉनिक/NPK (Tonics)" },
+                        ].map((t) => (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => setAddCategoryTab(t.id as any)}
+                            className={cn(
+                              "flex-1 py-2 text-[12px] font-black border-b-2 transition-all",
+                              addCategoryTab === t.id
+                                ? "border-emerald-600 text-emerald-700 dark:text-emerald-300"
+                                : "border-transparent text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)]"
+                            )}
+                          >
+                            {t.label.split(" ")[0]}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Medicine List for Selected Category */}
+                      <div className="max-h-[55vh] space-y-2 overflow-y-auto p-3">
+                        {(addCategoryTab === "insecticide"
+                          ? POPULAR_INSECTICIDES
+                          : addCategoryTab === "fungicide"
+                            ? POPULAR_FUNGICIDES
+                            : POPULAR_TONICS
+                        ).map((med) => {
+                          const alreadyInTank = meds.some((m) => m.activeId === med.activeId);
+                          return (
+                            <button
+                              key={med.technical}
+                              type="button"
+                              disabled={alreadyInTank}
+                              onClick={() => addMedicine(med)}
+                              className={cn(
+                                "flex w-full items-start justify-between rounded-2xl border p-3 text-left transition active:scale-[0.98]",
+                                alreadyInTank
+                                  ? "border-[var(--av-border)] opacity-40 cursor-not-allowed"
+                                  : "border-[var(--av-border)] hover:border-emerald-500/40 bg-[var(--av-surface)]"
+                              )}
+                            >
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="rounded-md bg-emerald-600/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:text-emerald-200">
+                                    {med.formCode}
+                                  </span>
+                                  <span className="text-[13px] font-black text-[var(--av-text-primary)]">
+                                    {med.technical}
+                                  </span>
+                                </div>
+                                <p className="mt-0.5 text-[12px] font-bold text-[var(--av-text-secondary)]">
+                                  {med.nameHi}
+                                </p>
+                                <p className="mt-1 text-[11px] font-black text-emerald-800 dark:text-emerald-300">
+                                  {med.doseHi}
+                                </p>
+                              </div>
+
+                              <span className="rounded-xl bg-emerald-600 px-2.5 py-1 text-[11px] font-black text-white shadow-sm">
+                                + जोड़ें
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
           )}
 
+          {/* ============================================================= */}
+          {/* STEP 4: DYNAMIC W-A-L-E MIXING ORDER GUIDE */}
+          {/* ============================================================= */}
           {step === "guide" && meds.length > 0 && plan && (
             <motion.div
               key="guide"
@@ -867,127 +1208,195 @@ export default function MixAdvisorClient() {
               transition={{ duration: 0.28, ease: EASE_OUT }}
               className="space-y-4"
             >
-              <div className="relative overflow-hidden rounded-2xl">
+              {/* Header Visual Banner */}
+              <div className="relative overflow-hidden rounded-2xl shadow-sm">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/images/jobs/job-spray.jpg"
-                  alt=""
-                  className="h-40 w-full object-cover"
+                  alt="Spray Method"
+                  className="h-36 w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
-                    <Play className="h-5 w-5 fill-current" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3 text-white">
+                  <span className="rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide">
+                    W-A-L-E वैज्ञानिक विधि
                   </span>
+                  <p className="mt-1 text-[16px] font-black leading-tight">
+                    टैंक में सही क्रम से घोल बनाने की विधि
+                  </p>
+                  <p className="text-[11px] text-white/90">
+                    क्रम से मिलाने पर दवा कभी नहीं फटती और 100% असर देती है
+                  </p>
                 </div>
-                <p className="absolute bottom-3 left-3 right-3 text-[15px] font-extrabold text-white">
-                  मिश्रण कैसे तैयार करें?
-                </p>
               </div>
 
-              <ol className="space-y-2">
-                {plan.mixStepsHi.map((line, i) => (
-                  <li
-                    key={line}
-                    className="flex gap-2.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2.5"
+              {/* Dynamic W-A-L-E Step Cards */}
+              <div className="space-y-2.5">
+                {dynamicMixSteps.map((s) => (
+                  <div
+                    key={s.stepNo}
+                    className="flex gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm"
                   >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[11px] font-bold text-white">
-                      {i + 1}
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-[13px] font-black text-white shadow-sm">
+                      {s.stepNo}
                     </span>
-                    <span className="text-[13px] font-semibold leading-snug text-[var(--av-text-primary)]">
-                      {line}
-                    </span>
-                  </li>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 dark:text-emerald-200">
+                          {s.badgeHi}
+                        </span>
+                        <p className="text-[13px] font-black text-[var(--av-text-primary)]">
+                          {s.titleHi}
+                        </p>
+                      </div>
+                      <p className="mt-1 text-[12px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                        {s.descHi}
+                      </p>
+                      {s.items && s.items.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {s.items.map((it, idx) => (
+                            <span
+                              key={idx}
+                              className="inline-flex items-center rounded-lg bg-[var(--av-surface-inset)] border border-[var(--av-border)] px-2 py-0.5 text-[11px] font-bold text-[var(--av-text-primary)]"
+                            >
+                              🧪 {it}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 ))}
-              </ol>
-
-              <div className="overflow-hidden rounded-2xl border border-[var(--av-border)]">
-                <table className="w-full text-left text-[12px]">
-                  <thead className="bg-emerald-600 text-white">
-                    <tr>
-                      <th className="px-3 py-2 font-bold">दवा / स्टिकर</th>
-                      <th className="px-3 py-2 font-bold">खुराक</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-[var(--av-surface)]">
-                    {displayItems.map((m) => (
-                      <tr key={m.activeId + m.formHi} className="border-t border-[var(--av-border)]">
-                        <td className="px-3 py-2 font-semibold">
-                          {m.nameHi} {m.formHi}
-                        </td>
-                        <td className="px-3 py-2 font-bold text-emerald-800">{m.doseHi}</td>
-                      </tr>
-                    ))}
-                    <tr className="border-t border-[var(--av-border)] bg-emerald-500/8">
-                      <td className="px-3 py-2 font-semibold">पानी</td>
-                      <td className="px-3 py-2 font-bold">{plan.waterHi}</td>
-                    </tr>
-                    <tr className="border-t border-[var(--av-border)]">
-                      <td className="px-3 py-2 font-semibold">नोजल</td>
-                      <td className="px-3 py-2 font-bold">{plan.nozzleHi}</td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
-                  <p className="text-[11px] font-bold text-amber-900 dark:text-amber-100">
-                    सुरक्षा
+              {/* Complete Spray & Dose Summary Table */}
+              <div className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-sm">
+                <div className="bg-emerald-600 px-3.5 py-2.5 text-white">
+                  <p className="text-[13px] font-black">
+                    खुराक व स्प्रे सारणी (Dosage Table)
                   </p>
-                  <p className="mt-1 text-[11px] font-medium text-amber-950/80 dark:text-amber-50/80">
-                    मास्क · दस्ताने · पूरी बाँह कपड़े
+                  <p className="text-[10px] text-emerald-100 font-semibold">
+                    1 एकड़ खेत के लिए गणना:
                   </p>
                 </div>
-                <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3">
-                  <p className="text-[11px] font-bold text-sky-900 dark:text-sky-100">
-                    कटाई का इंतज़ार
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-[12px]">
+                    <thead className="border-b border-[var(--av-border)] bg-[var(--av-surface-inset)]">
+                      <tr>
+                        <th className="px-3 py-2 font-bold text-[var(--av-text-secondary)]">दवा</th>
+                        <th className="px-3 py-2 font-bold text-[var(--av-text-secondary)]">1L पानी</th>
+                        <th className="px-3 py-2 font-bold text-[var(--av-text-secondary)]">1 एकड़ खुराक</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--av-border)]">
+                      {displayItems.map((m) => {
+                        const brand = !m.isAdjuvant
+                          ? m.brandHi || (m.brands && m.brands.length > 0 ? m.brands[0].split("(")[0].trim() : null)
+                          : null;
+                        return (
+                          <tr key={m.technical}>
+                            <td className="px-3 py-2.5">
+                              <span className="block font-black text-[var(--av-text-primary)]">
+                                {m.isAdjuvant ? m.nameHi : m.technical}
+                              </span>
+                              {brand && (
+                                <span className="inline-block mt-0.5 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                                  प्रसिद्ध ब्रांड: {brand}
+                                </span>
+                              )}
+                              {!brand && !m.isAdjuvant && m.targetProblemHi && (
+                                <span className="text-[10px] font-semibold text-[var(--av-text-muted)]">
+                                  {m.targetProblemHi}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-2.5 font-bold text-emerald-800 dark:text-emerald-300">
+                              {m.dosePerLiter || "—"}
+                            </td>
+                            <td className="px-3 py-2.5 font-black text-emerald-800 dark:text-emerald-300">
+                              {m.dosePerAcre || m.doseHi}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      <tr className="bg-emerald-500/8 font-bold">
+                        <td className="px-3 py-2 text-emerald-950 dark:text-emerald-200">
+                          🚰 कुल पानी की मात्रा
+                        </td>
+                        <td colSpan={2} className="px-3 py-2 text-emerald-900 dark:text-emerald-300 font-black">
+                          {plan.waterHi}
+                        </td>
+                      </tr>
+                      <tr className="bg-[var(--av-surface-inset)] font-bold">
+                        <td className="px-3 py-2 text-[var(--av-text-secondary)]">
+                          🎯 नोजल प्रकार
+                        </td>
+                        <td colSpan={2} className="px-3 py-2 text-[var(--av-text-primary)] font-black">
+                          {plan.nozzleHi}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Safety Badges & PHI Interval */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3">
+                  <p className="text-[11px] font-extrabold text-amber-900 dark:text-amber-100">
+                    सुरक्षा निर्देश
                   </p>
-                  <p className="mt-1 text-[18px] font-black text-sky-800 dark:text-sky-100">
+                  <p className="mt-1 text-[11px] font-semibold text-amber-950/80 dark:text-amber-50/80 leading-snug">
+                    मास्क · रबर दस्ताने · हवा की दिशा में स्प्रे · खाली डिब्बा नष्ट करें
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-3">
+                  <p className="text-[11px] font-extrabold text-sky-900 dark:text-sky-100">
+                    तुड़ाई पूर्व प्रतीक्षा काल (PHI)
+                  </p>
+                  <p className="mt-1 text-[18px] font-black text-sky-800 dark:text-sky-200">
                     {plan.phiDays} दिन
                   </p>
+                  <p className="text-[9px] font-medium text-sky-900/80 dark:text-sky-300">
+                    स्प्रे के इतने दिन बाद ही फल/सब्जी तोड़ें
+                  </p>
                 </div>
               </div>
 
-              <ul className="space-y-1 text-[11px] font-medium text-[var(--av-text-muted)]">
-                <li>· दवा और स्टिकर का लेबल हमेशा पढ़ें — लेबल अंतिम है</li>
-                <li>· बच्चे और जानवर दूर रखें</li>
-                <li>· बची दवा नाले में न डालें</li>
-              </ul>
-
+              {/* Action Buttons */}
               <button
                 type="button"
                 onClick={() => router.push("/spray-rotation/log")}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-bold text-white"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-black text-white shadow-lg shadow-emerald-600/25 active:scale-[0.98]"
               >
-                <CheckCircle2 className="h-4 w-4" />
-                छिड़काव रिकॉर्ड करें
+                <CheckCircle2 className="h-5 w-5" />
+                छिड़काव डायरी में रिकॉर्ड करें
               </button>
 
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setStep("mix")}
-                  className="flex flex-1 items-center justify-center gap-1 rounded-2xl border border-[var(--av-border)] py-2.5 text-[12px] font-bold"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] py-2.5 text-[13px] font-bold active:scale-[0.98]"
                 >
-                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <ArrowLeft className="h-4 w-4" />
                   वापस
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     if (typeof navigator !== "undefined" && navigator.share) {
-                      const names = displayItems.map((m) => m.nameHi).join(" + ");
+                      const names = displayItems.map((m) => m.technical).join(" + ");
                       void navigator.share({
-                        title: "दवा मिलाएँ — AgriVeda",
-                        text: names,
+                        title: `${crop.nameHi} टैंक-मिक्स गाइड — AgriVeda`,
+                        text: `AgriVeda वैज्ञानिक टैंक-मिक्स:\nफसल: ${crop.nameHi}\nदवाएँ: ${names}\nपानी: ${plan.waterHi}`,
                       });
                     }
                   }}
-                  className="flex flex-1 items-center justify-center gap-1 rounded-2xl border border-[var(--av-border)] py-2.5 text-[12px] font-bold"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] py-2.5 text-[13px] font-bold active:scale-[0.98]"
                 >
-                  <Share2 className="h-3.5 w-3.5" />
-                  बाँटें
+                  <Share2 className="h-4 w-4" />
+                  किसान मित्रों को शेयर करें
                 </button>
               </div>
             </motion.div>

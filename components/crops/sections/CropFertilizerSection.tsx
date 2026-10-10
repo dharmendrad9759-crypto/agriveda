@@ -624,8 +624,27 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </p>
           )}
 
-          <div className="mt-1 rounded-xl border border-amber-500/25 bg-amber-500/8 px-3 py-2.5">
-            <p className="text-[11px] font-semibold leading-snug text-amber-950 dark:text-amber-100">
+          {/* ICAR DAP + Zinc Alert in Schedule */}
+          <div className="mt-3 rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3.5 dark:bg-amber-950/20">
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-white font-black text-xs shadow-xs">
+                ⚠️
+              </span>
+              <div>
+                <h4 className="text-[12.5px] font-black text-amber-950 dark:text-amber-100">
+                  {hi ? "ICAR नियम: DAP/SSP के साथ जिंक कभी न मिलाएँ!" : "ICAR Rule: Never mix DAP with Zinc!"}
+                </h4>
+                <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-amber-900/90 dark:text-amber-200/90">
+                  {hi
+                    ? "डीएपी (फॉस्फोरस) और जिंक सल्फेट मिलकर अघुलनशील जिंक फॉस्फेट बनाते हैं जिससे दोनों बेकार हो जाते हैं। बुवाई पर DAP दें, और जिंक सल्फेट या तो खेत तैयारी में अलग से दें या CRI पहली सिंचाई पर यूरिया के साथ दें।"
+                    : "Mixing DAP and Zinc causes insoluble zinc phosphate, wasting both. Apply DAP at sowing, and Zinc separately during land prep or at 1st irrigation."}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-2 rounded-xl border border-emerald-500/25 bg-emerald-500/8 px-3 py-2.5">
+            <p className="text-[11px] font-semibold leading-snug text-emerald-950 dark:text-emerald-100">
               {hi ? "खेत टिप: " : "Field tip: "}
               {scheduleTip}
             </p>
@@ -635,29 +654,62 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
 
       {activeSubTab === "foliar" && (
         <DarkCard>
-          <h3 className="text-sm font-black text-[var(--av-text-primary)]">
-            {hi ? "पत्ती पर छिड़काव" : "Leaf spray"}
-          </h3>
-          <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
-            {hi
-              ? "सुबह या शाम · अमूमन 150 लीटर पानी प्रति एकड़"
-              : "Morning or evening · usually 150 L water / acre"}
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-black text-[var(--av-text-primary)]">
+                {hi ? "पत्ती पर छिड़काव व सूक्ष्म पोषक" : "Leaf Spray & Micronutrients"}
+              </h3>
+              <p className="mt-0.5 text-[10.5px] font-medium text-[var(--av-text-muted)]">
+                {hi
+                  ? "सुबह या शाम · साफ़ पानी (अमूमन 150–200 लीटर प्रति एकड़)"
+                  : "Morning or evening · Clean water (150–200 L / acre)"}
+              </p>
+            </div>
+          </div>
+
+          {/* ICAR DAP + Zinc Alert in Foliar Tab */}
+          <div className="mt-3 rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3.5 dark:bg-amber-950/20">
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-white font-black text-xs shadow-xs">
+                ⚠️
+              </span>
+              <div>
+                <h4 className="text-[12px] font-black text-amber-950 dark:text-amber-100">
+                  {hi ? "ICAR वैज्ञानिक सलाह: फोलियर स्प्रे व जिंक सावधानी" : "ICAR Foliar & Zinc Advice"}
+                </h4>
+                <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-amber-900/90 dark:text-amber-200/90">
+                  {hi
+                    ? "पत्तियों पर छिड़काव हेतु चिलेटेड जिंक (Zn EDTA 12%) सबसे सुरक्षित है (चूने की जरूरत नहीं)। यदि जिंक सल्फेट 21% छिड़कें तो 1 किग्रा दवा के साथ 500 ग्राम बुझा चूना अवश्य मिलाएँ ताकि पत्ती न जले।"
+                    : "Chelated Zinc (Zn EDTA 12%) is safest for foliar spray. If spraying ZnSO4 21%, always add 500g slaked lime per 1kg ZnSO4 to prevent leaf burning."}
+                </p>
+              </div>
+            </div>
+          </div>
 
           {mixinFoliar.length ? (
-            <ul className="mt-3 space-y-2.5">
+            <ul className="mt-3.5 space-y-3">
               {mixinFoliar.map((card, i) => (
                 <li
                   key={`${card.stageHi}-${card.name}-${i}`}
-                  className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-2.5"
+                  className="rounded-2xl border border-cyan-500/25 bg-[var(--av-surface)] p-3.5 shadow-xs space-y-2.5"
                 >
-                  <p className="text-[10px] font-bold text-cyan-800 dark:text-cyan-200">
-                    {simplifyMixinFarmerHi(
-                      `${card.stageHi}${card.timingHi ? ` · ${card.timingHi}` : ""}`
-                    )}
-                  </p>
-                  <div className="mt-1.5 flex gap-3">
-                    <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-cyan-500/15 bg-white">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <span className="inline-block rounded-md bg-cyan-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-cyan-900 dark:bg-cyan-950/60 dark:text-cyan-200 border border-cyan-300 dark:border-cyan-700">
+                        {simplifyMixinFarmerHi(
+                          `${card.stageHi}${card.timingHi ? ` · ${card.timingHi}` : ""}`
+                        )}
+                      </span>
+                      <h4 className="mt-1 text-[13.5px] font-black leading-tight text-[var(--av-text-primary)]">
+                        {simplifyMixinFarmerHi(card.name)}
+                      </h4>
+                      {card.purposeHi ? (
+                        <p className="mt-0.5 text-[11px] font-bold text-cyan-800 dark:text-cyan-300">
+                          🎯 {simplifyMixinFarmerHi(card.purposeHi)}
+                        </p>
+                      ) : null}
+                    </div>
+                    <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-cyan-500/20 bg-white">
                       <Image
                         src={foliarCardImage(card.name, card.name)}
                         alt=""
@@ -666,61 +718,129 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                         sizes="56px"
                       />
                     </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-extrabold text-[var(--av-text-primary)]">
-                        {simplifyMixinFarmerHi(card.name)}
-                      </p>
-                      <p className="mt-0.5 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+                  </div>
+
+                  {/* 3 Metrics */}
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/8 p-2">
+                      <span className="block text-[9.5px] font-extrabold uppercase text-cyan-800 dark:text-cyan-300">
+                        {hi ? "खुराक" : "Dose"}
+                      </span>
+                      <span className="mt-0.5 block text-[11.5px] font-black leading-tight text-cyan-950 dark:text-cyan-100">
                         {simplifyMixinFarmerHi(card.doseHi)}
-                      </p>
-                      {card.waterHi ? (
-                        <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
-                          पानी: {simplifyMixinFarmerHi(card.waterHi)}
-                        </p>
-                      ) : null}
-                      {card.purposeHi ? (
-                        <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
-                          {simplifyMixinFarmerHi(card.purposeHi)}
-                        </p>
-                      ) : null}
-                      {card.brands?.length ? (
-                        <p className="mt-0.5 text-[10px] text-[var(--av-text-muted)]">
-                          बाज़ार / दुकान में इस नाम से: {card.brands.join(" / ")}
-                        </p>
-                      ) : null}
+                      </span>
+                    </div>
+                    <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/8 p-2">
+                      <span className="block text-[9.5px] font-extrabold uppercase text-cyan-800 dark:text-cyan-300">
+                        {hi ? "पानी की मात्रा" : "Water"}
+                      </span>
+                      <span className="mt-0.5 block text-[11.5px] font-black leading-tight text-cyan-950 dark:text-cyan-100">
+                        {card.waterHi ? simplifyMixinFarmerHi(card.waterHi) : (hi ? "150–200 L" : "150–200 L")}
+                      </span>
+                    </div>
+                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/8 p-2">
+                      <span className="block text-[9.5px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300">
+                        {hi ? "क्षेत्रफल" : "Area"}
+                      </span>
+                      <span className="mt-0.5 block text-[11.5px] font-black leading-tight text-emerald-950 dark:text-emerald-100">
+                        {hi ? "1 एकड़" : "1 Acre"}
+                      </span>
                     </div>
                   </div>
+
+                  {card.brands?.length ? (
+                    <p className="text-[10.5px] font-semibold text-[var(--av-text-muted)]">
+                      बाज़ार में इस नाम से: <span className="text-[var(--av-text-secondary)]">{card.brands.join(" · ")}</span>
+                    </p>
+                  ) : null}
                 </li>
               ))}
             </ul>
           ) : (
-            <ul className="mt-3 space-y-2.5">
+            <ul className="mt-3.5 space-y-3">
               {foliarCards.map((card, i) => (
                 <li
-                  key={`${card.title}-${i}`}
-                  className="flex gap-3 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-2.5"
+                  key={`${card.title}-${card.medicine}-${i}`}
+                  className={cn(
+                    "rounded-2xl border p-3.5 shadow-xs transition-all space-y-2.5",
+                    card.isSoilBasal
+                      ? "border-amber-500/30 bg-amber-500/5 dark:bg-amber-950/20"
+                      : "border-emerald-600/20 bg-[var(--av-surface)] hover:border-emerald-500/40"
+                  )}
                 >
-                  <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-cyan-500/15 bg-white sm:h-[72px] sm:w-[72px]">
-                    <Image
-                      src={foliarCardImage(card.title, card.medicine)}
-                      alt={card.title}
-                      fill
-                      className="object-cover"
-                      sizes="72px"
-                    />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-extrabold text-[var(--av-text-primary)]">
-                      {card.title}
-                    </p>
-                    <p className="mt-1 text-[12px] text-[var(--av-text-secondary)]">
-                      <span className="font-bold">{hi ? "दवा: " : "Product: "}</span>
-                      {card.medicine}
-                    </p>
-                    <p className="mt-0.5 text-[12px] text-[var(--av-text-secondary)]">
-                      <span className="font-bold">{hi ? "मात्रा: " : "Dose: "}</span>
-                      {card.dose}
-                    </p>
+                  <div className="flex items-start justify-between gap-2.5">
+                    <div className="min-w-0 flex-1">
+                      <span
+                        className={cn(
+                          "inline-block rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider",
+                          card.isSoilBasal
+                            ? "bg-amber-100 text-amber-900 dark:bg-amber-900/50 dark:text-amber-200 border border-amber-300"
+                            : "bg-emerald-100 text-emerald-900 dark:bg-emerald-900/50 dark:text-emerald-200 border border-emerald-300"
+                        )}
+                      >
+                        {card.isSoilBasal
+                          ? (hi ? "🌾 मिट्टी में बेसल (छिड़काव न करें)" : "🌾 Soil Basal")
+                          : (hi ? "💧 पत्ती पर फोलियर स्प्रे" : "💧 Foliar Leaf Spray")}
+                      </span>
+                      <h4 className="mt-1 text-[13.5px] font-black leading-tight text-[var(--av-text-primary)]">
+                        {card.title}
+                      </h4>
+                      <p className="mt-0.5 text-[12px] font-black text-emerald-800 dark:text-emerald-300">
+                        {hi ? "दवा: " : "Product: "}{card.medicine}
+                      </p>
+                    </div>
+                    <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-emerald-600/15 bg-white sm:h-16 sm:w-16">
+                      <Image
+                        src={foliarCardImage(card.title, card.medicine)}
+                        alt={card.title}
+                        fill
+                        className="object-cover"
+                        sizes="64px"
+                      />
+                    </span>
+                  </div>
+
+                  {/* 3 Metric Badges */}
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/8 p-2">
+                      <span className="block text-[9px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300">
+                        {hi ? "लीटर खुराक" : "Per Litre"}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] font-black leading-tight text-emerald-950 dark:text-emerald-100">
+                        {card.dosePerL || (hi ? "1–2 g/L" : "1–2 g/L")}
+                      </span>
+                    </div>
+                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/8 p-2">
+                      <span className="block text-[9px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300">
+                        {hi ? "प्रति एकड़ दवा" : "Per Acre Dose"}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] font-black leading-tight text-emerald-950 dark:text-emerald-100">
+                        {card.dosePerAcre || card.dose}
+                      </span>
+                    </div>
+                    <div className="rounded-xl border border-sky-500/20 bg-sky-500/8 p-2">
+                      <span className="block text-[9px] font-extrabold uppercase text-sky-800 dark:text-sky-300">
+                        {hi ? "पानी की मात्रा" : "Water Req."}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] font-black leading-tight text-sky-950 dark:text-sky-100">
+                        {card.waterVolume || (hi ? "150–200 L" : "150–200 L")}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Timing & Caution */}
+                  <div className="space-y-1 text-[11px] font-medium leading-relaxed">
+                    {card.timing && (
+                      <p className="text-[var(--av-text-secondary)]">
+                        <span className="font-bold text-[var(--av-text-primary)]">⏰ {hi ? "सही समय: " : "Timing: "}</span>
+                        {card.timing}
+                      </p>
+                    )}
+                    {card.caution && (
+                      <p className={cn("text-[10.5px] font-semibold", card.isSoilBasal ? "text-amber-800 dark:text-amber-300" : "text-emerald-700 dark:text-emerald-400")}>
+                        💡 {card.caution}
+                      </p>
+                    )}
                   </div>
                 </li>
               ))}

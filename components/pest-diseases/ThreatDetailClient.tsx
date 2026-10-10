@@ -40,6 +40,7 @@ import { findFieldMedicine } from "@/lib/crops/fieldMedicine";
 import { ALL_FIELD_MEDICINE } from "@/data/field-medicine-all";
 import FieldMedicinePanel from "@/components/crops/FieldMedicinePanel";
 import ImageLightbox from "@/components/ui/ImageLightbox";
+import ThreatPhotoGallery from "@/components/crops/ThreatPhotoGallery";
 
 type PestTab = "identify" | "spray" | "control";
 
@@ -368,48 +369,15 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
       {/* ─── PEST / DISEASE — field dossier ─── */}
       {!isWeed ? (
         <div className="mx-auto w-full max-w-2xl space-y-5">
-          {/* Photo plane — chips only, title lives below */}
-          <button
-            type="button"
-            onClick={() => setLightbox(threat.image)}
-            className="group relative block w-full overflow-hidden rounded-[1.5rem] text-left ring-1 ring-black/[0.06] active:scale-[0.997]"
-          >
-            <div className="relative aspect-[5/3] w-full sm:aspect-[2/1]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={threat.image}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.02]"
-              />
-              <span className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_100%,rgba(6,40,24,0.55)_0%,transparent_55%)]" />
-              <span className="absolute left-0 top-0 h-full w-[3px] bg-emerald-500" />
-              <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
-                <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-950 shadow-sm">
-                  <TypeIcon className="h-3 w-3" />
-                  {isPest ? (hi ? "कीट" : "Pest") : hi ? "रोग" : "Disease"}
-                </span>
-                <span
-                  className={
-                    riskHigh
-                      ? "inline-flex items-center gap-1 rounded-full bg-rose-600 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm"
-                      : "inline-flex items-center gap-1 rounded-full bg-amber-400 px-2.5 py-1 text-[10px] font-bold text-amber-950 shadow-sm"
-                  }
-                >
-                  <AlertTriangle className="h-3 w-3" />
-                    {hi
-                    ? riskHigh
-                      ? "ज्यादा खतरा (High)"
-                      : "मध्यम (Medium)"
-                    : riskHigh
-                      ? "High"
-                      : "Medium"}
-                </span>
-              </div>
-              <span className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-emerald-950 shadow-md backdrop-blur-sm transition group-hover:bg-white">
-                <ZoomIn className="h-4 w-4" />
-              </span>
-            </div>
-          </button>
+          {/* Authentic Multi-Photo Field Gallery */}
+          <ThreatPhotoGallery
+            primaryImage={threat.image}
+            title={names.primary}
+            subtitle={names.secondary || threat.scientificName || undefined}
+            cropLabel={cropHi || threat.cropName}
+            tagLabel={isPest ? (hi ? "कीट" : "Pest") : (hi ? "रोग" : "Disease")}
+            hi={hi}
+          />
 
           {/* Title block — name + scientific only */}
           <header className="space-y-2 px-0.5">

@@ -41,7 +41,7 @@ export default function ChemBottleThumb({
     <>
       <div
         onClick={() => allowExpand && setExpanded(true)}
-        className={`group relative shrink-0 overflow-hidden rounded-xl border border-black/10 bg-[#eef5e8] shadow-sm transition hover:shadow-md ${
+        className={`group relative shrink-0 overflow-hidden rounded-xl border border-stone-200/90 bg-stone-50/90 dark:border-stone-700 dark:bg-stone-800/80 shadow-xs transition hover:shadow-md ${
           allowExpand ? "cursor-pointer" : ""
         } ${className}`}
         style={{ width: dims.w, height: dims.h }}
@@ -86,33 +86,33 @@ export default function ChemBottleThumb({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in"
           onClick={() => setExpanded(false)}
         >
           <div
-            className="relative flex max-w-sm flex-col items-center rounded-2xl bg-white p-4 shadow-2xl dark:bg-stone-900"
+            className="relative flex w-full max-w-[340px] sm:max-w-[380px] flex-col items-center rounded-3xl bg-white p-5 shadow-2xl border border-stone-200 dark:bg-stone-900 dark:border-stone-800"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setExpanded(false)}
-              className="absolute right-3 top-3 rounded-full bg-black/10 p-1.5 text-stone-700 transition hover:bg-black/20 dark:text-stone-300"
+              className="absolute right-3.5 top-3.5 rounded-full bg-stone-100 p-2 text-stone-700 transition hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-200"
               aria-label="Close"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <div className="w-[220px] overflow-hidden rounded-xl border border-stone-200 bg-[#eef5e8] shadow-inner dark:border-stone-700">
+            <div className="relative flex w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-stone-50 to-stone-100/80 p-3 border border-stone-200/80 dark:border-stone-700/80 dark:from-stone-800/80 dark:to-stone-900 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={src}
                 alt={displayName}
-                className="h-[360px] w-full object-contain"
+                className="h-[340px] sm:h-[380px] w-auto max-w-full object-contain drop-shadow-xl transition duration-300 hover:scale-105"
               />
             </div>
 
-            <div className="mt-3 text-center">
-              <span className="inline-block rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+            <div className="mt-3.5 text-center w-full">
+              <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                 {isReal
                   ? isPouch
                     ? "असली टेक्निकल पैकेट (Product Photo)"
@@ -121,10 +121,10 @@ export default function ChemBottleThumb({
                   ? "तकनीकी पैकेट (Agro Foil Sachet)"
                   : "तकनीकी बोतल (Technical Bottle)"}
               </span>
-              <p className="mt-1 text-base font-black text-stone-900 dark:text-stone-100">
+              <p className="mt-1.5 text-base font-black text-stone-900 dark:text-stone-100">
                 {displayName}
               </p>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
+              <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-0.5">
                 खाद-बीज की दुकान पर यह टेक्निकल नाम बताकर {isPouch ? "पैकेट" : "दवाई"} लें
               </p>
             </div>

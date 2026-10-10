@@ -18,7 +18,7 @@ export function farmerThreatHi(raw: string | undefined): string {
     [/pink\s*bollworm|गुलाबी\s*सुंडी/i, "गुलाबी सुंडी"],
     [/bollworm|सुंडी/i, "सुंडी"],
     [/stem\s*borer|तना\s*छेदक/i, "तना छेदक"],
-    [/fall\s*army|फौजी\s*कीड़ा|FAW/i, "फौजी कीड़ा"],
+    [/fall\s*army|फौजी\s*कीड़ा|FAW/i, "फॉल आर्मीवॉर्म"],
     [/caterpillar|इल्ली|leaf\s*eating/i, "इल्ली"],
     [/stem\s*fly|तना\s*मक्खी/i, "तना मक्खी"],
     [/fruit\s*fly|फल\s*मक्खी/i, "फल मक्खी"],

@@ -9,8 +9,9 @@ import { getCropProblem } from "@/data/crop-curative-problems";
 import { getCurativeMedicines } from "@/lib/crops/cropProblemMedicines";
 import { useToast } from "@/components/ui/Toast";
 import { readStorage, writeStorage } from "@/lib/storage";
-import { Check, Share2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { notFound } from "next/navigation";
+import ThreatPhotoGallery from "@/components/crops/ThreatPhotoGallery";
 
 type InfoTab = "symptoms" | "cause" | "damage" | "prevention";
 type CureTab = "chemical" | "organic" | "prevention";
@@ -107,6 +108,29 @@ function parseChemLines(lines: string[]) {
       (i === 0 ? "Imidacloprid" : i === 1 ? "Spinosad" : "Mancozeb");
     return { name, technical, note: "बोतल के लेबल के अनुसार डालें" };
   });
+}
+
+function parseDosePills(doseText: string) {
+  const perLMatch = doseText.match(/([\d.]+(?:\s*से\s*[\d.]+)?\s*(?:मिली|ग्राम|ml|g)\s*(?:\/|प्रति)\s*लीटर(?:\s*पानी)?)/i);
+  const perAcreMatch = doseText.match(/([\d.]+(?:\s*[-–से]\s*[\d.]+)?\s*(?:मिली|ग्राम|किग्रा|ml|g|kg)\s*(?:प्रति|\/)\s*एकड़)/i);
+  const waterMatch = doseText.match(/(\d+(?:\s*[-–से]\s*\d+)?\s*लीटर\s*पानी)/i);
+
+  let derivedAcre = perAcreMatch ? perAcreMatch[0] : "";
+  if (!derivedAcre && perLMatch) {
+    const numMatch = perLMatch[0].match(/[\d.]+/);
+    const unitMatch = perLMatch[0].match(/मिली|ग्राम|ml|g/i);
+    if (numMatch && unitMatch) {
+      const val = parseFloat(numMatch[0]);
+      derivedAcre = `${Math.round(val * 150)}–${Math.round(val * 200)} ${unitMatch[0]}/एकड़`;
+    }
+  }
+
+  return {
+    perL: perLMatch ? perLMatch[0] : (doseText.split("(")[0].trim() || "1–2 मिली/लीटर"),
+    perAcre: derivedAcre || "200–250 मिली/एकड़",
+    water: waterMatch ? waterMatch[0] : "150–200 लीटर पानी",
+    raw: doseText,
+  };
 }
 
 function MiniPoints({ items }: { items: string[] }) {
@@ -248,19 +272,15 @@ export default function CropProblemDetailClient({
   return (
     <ProblemFlowShell title={shortName} step={saved ? 5 : 4} backHref={`/crop-problems/${crop.slug}`}>
       <div className="space-y-3.5 pb-6">
-        {/* Photo Header */}
-        <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-[#D8E8DE] bg-white shadow-sm">
-          <Image src={p.image} alt={shortName} fill className="object-cover" sizes="100vw" priority />
-          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-3.5 pb-3 pt-10">
-            <div>
-              <p className="text-[17px] font-black text-white leading-tight drop-shadow-sm">{shortName}</p>
-              <p className="text-[11px] font-semibold text-white/80">{p.nameEn}</p>
-            </div>
-            <span className="rounded-lg bg-emerald-700/90 px-2.5 py-1 text-[10px] font-extrabold text-white shadow-sm backdrop-blur-xs">
-              {crop.nameHi} · {p.tagHi}
-            </span>
-          </div>
-        </div>
+        {/* Authentic Multi-Photo Field Gallery */}
+        <ThreatPhotoGallery
+          primaryImage={p.image}
+          title={shortName}
+          subtitle={p.nameEn}
+          cropLabel={crop.nameHi}
+          tagLabel={p.tagHi}
+          hi={true}
+        />
 
         {/* 1. लक्षण व पहचान */}
         <MockCard className="!p-4 shadow-sm">
@@ -309,51 +329,91 @@ export default function CropProblemDetailClient({
             नीचे दी गई प्रमाणित दवाओं में से किसी एक का प्रयोग करें:
           </p>
 
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {chemItems.map((c, i) => (
               <div
                 key={`${c.technical}-${i}`}
-                className="rounded-2xl border border-[#D8E8DE] bg-white p-3.5 shadow-xs space-y-2.5"
+                className="rounded-2xl border border-emerald-500/25 bg-white dark:bg-slate-900/90 p-4 shadow-xs space-y-3"
               >
                 <div className="flex items-start gap-3">
-                  <ChemBottleThumb technical={c.technical} size="sm" className="rounded-xl shrink-0 mt-0.5" />
+                  <ChemBottleThumb technical={c.technical} size="md" className="rounded-xl shrink-0 mt-0.5 shadow-xs" />
                   <div className="min-w-0 flex-1">
-                    <span className="inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-[9.5px] font-black text-emerald-800 border border-emerald-200">
-                      विकल्प {i + 1} · अनुशंसित
-                    </span>
-                    <h3 className="text-[14px] font-black text-[#0B3D28] leading-tight mt-1">{c.nameHi}</h3>
-                    {/* English Technical Name in bold clear badge */}
-                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-slate-500">टेक्निकल नाम:</span>
-                      <span className="rounded-md bg-emerald-100/90 dark:bg-emerald-950/60 px-2 py-0.5 text-[11px] font-black text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
-                        {c.technical}
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block rounded-md bg-emerald-700 px-2 py-0.5 text-[9.5px] font-black text-white shadow-2xs">
+                        विकल्प {i + 1}
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                        टेक्निकल सॉल्ट
                       </span>
                     </div>
+
+                    {/* Prominent English Technical Name as Primary Heading */}
+                    <h3 className="text-[16px] sm:text-[17px] font-black tracking-tight text-slate-950 dark:text-white leading-snug mt-1 font-mono sm:font-sans">
+                      {c.technical}
+                    </h3>
+
+                    {/* Hindi Common Name / Pronunciation */}
+                    {c.nameHi && (
+                      <p className="text-[12.5px] font-bold text-emerald-800 dark:text-emerald-300 mt-0.5">
+                        {c.nameHi.replace(/\s*\((?!.*(?:उपचार|समय|गोभ|डालें))[^)]*\)\s*/g, " ").trim()}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* Accurate Dosage Box */}
-                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-2.5">
-                  <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                    <span>⚡ अनुशंसित डोज़ (मात्रा):</span>
-                  </div>
-                  <div className="mt-0.5 text-[12.5px] font-extrabold text-amber-950 dark:text-amber-100 leading-snug">
-                    {c.dose}
-                  </div>
-                </div>
+                {/* Accurate Dosage Box with 3 clear pills */}
+                {(() => {
+                  const pills = parseDosePills(c.dose);
+                  return (
+                    <div className="rounded-2xl bg-amber-500/15 border border-amber-500/35 p-3 space-y-2">
+                      <div className="flex items-center justify-between text-[10.5px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                        <span className="flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-amber-600 animate-pulse" />
+                          <span>सटीक डोज़ (दवा व पानी की मात्रा):</span>
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 text-center">
+                        <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/30 p-2 shadow-2xs">
+                          <span className="block text-[9.5px] font-black uppercase text-amber-800 dark:text-amber-300">
+                            💧 1 लीटर पानी
+                          </span>
+                          <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
+                            {pills.perL}
+                          </span>
+                        </div>
+                        <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/30 p-2 shadow-2xs">
+                          <span className="block text-[9.5px] font-black uppercase text-amber-800 dark:text-amber-300">
+                            🌾 1 एकड़ दवा
+                          </span>
+                          <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
+                            {pills.perAcre}
+                          </span>
+                        </div>
+                        <div className="rounded-xl bg-white dark:bg-slate-900 border border-sky-500/35 p-2 shadow-2xs">
+                          <span className="block text-[9.5px] font-black uppercase text-sky-800 dark:text-sky-300">
+                            🚰 1 एकड़ पानी
+                          </span>
+                          <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
+                            {pills.water}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Market Brands */}
                 {c.brands && c.brands.length > 0 && (
-                  <p className="text-[11px] text-[#3D6B54] font-medium leading-tight">
-                    <span className="font-extrabold text-[#0B3D28]">बाज़ार में प्रसिद्ध ब्रांड: </span>
-                    {c.brands.join(" · ")}
-                  </p>
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-[11.5px]">
+                    <span className="font-black text-emerald-900 dark:text-emerald-100">दुकान पर प्रसिद्ध ब्रांड (Market Brands): </span>
+                    <span className="font-bold text-emerald-800 dark:text-emerald-200">{c.brands.join(" · ")}</span>
+                  </div>
                 )}
 
                 {/* Safety / Note */}
                 {c.safety && (
-                  <p className="text-[10.5px] text-slate-600 dark:text-slate-400 font-medium">
-                    💡 {c.safety}
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                    💡 <span className="font-semibold text-slate-800 dark:text-slate-200">{c.safety}</span>
                   </p>
                 )}
               </div>

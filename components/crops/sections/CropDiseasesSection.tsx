@@ -58,7 +58,15 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
     () => getCropManagementProfile(crop.slug) as CropManagementWithDossier | null,
     [crop.slug]
   );
-  const useRichDiseases = Boolean(profile?.diseaseManagement?.length);
+  const useRichDiseases = Boolean(
+    profile?.diseaseManagement?.length &&
+      profile.diseaseManagement.some(
+        (d) =>
+          d.pathogen &&
+          d.pathogen !== "Follow diagnosis" &&
+          d.diseaseName !== "Major disease"
+      )
+  );
 
   const ipmDiseases = useMemo(() => getIpmDiseaseListForCrop(crop.slug), [crop.slug]);
   const fieldGuideDiseases = useMemo(
