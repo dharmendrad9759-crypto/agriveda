@@ -413,7 +413,7 @@ export const SYMPTOM_CATEGORIES: SymptomCategory[] = [
         id: "early-blight-holes",
         name: "शुरुआती झुलसा (मृत छेद)",
         severity: "medium",
-        image: "/images/diseases/disease-alternaria-solani.jpg",
+        image: "/images/diseases/disease-alternaria-solani-tomato.jpg",
         cropSlugs: ["tomato", "potato"],
         diagnosis:
           "Alternaria solani brown concentric ring spots पैदा करता है, जो गिरकर tomato/potato foliage पर shot-hole जैसा दिख सकता है।",

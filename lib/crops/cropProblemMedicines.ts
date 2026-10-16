@@ -119,17 +119,22 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "termite": [
       {
-        nameHi: "फिप्रोनिल 5% SC (रीजेंट)",
-        technical: "Fipronil 5% SC",
-        dose: "2 मिली / लीटर पानी (सिंचाई के साथ या 4-5 मिली/किग्रा बीज उपचार)",
-        brands: ["Regent (Bayer)", "Fax"],
-        safety: "बुवाई के समय बीज उपचार करें अथवा पहली सिंचाई में पानी के साथ बहाएँ।",
-      },
-      {
         nameHi: "क्लोरपाइरीफॉस 20% EC (डरमेट)",
         technical: "Chlorpyrifos 20% EC",
-        dose: "1 लीटर प्रति एकड़ (20-25 किग्रा बालू में मिलाकर सिंचाई से पहले खेत में बखेरें)",
-        brands: ["Durmet", "Dursban", "Trishul"],
+        dose: "1 से 1.25 लीटर प्रति एकड़ (20-25 किग्रा सूखी बालू या रेत में मिलाकर पहली सिंचाई से पूर्व खेत में बिखेरें)",
+        brands: ["Durmet (Dhanuka)", "Dursban", "Trishul"],
+      },
+      {
+        nameHi: "फिप्रोनिल 0.3% GR दानेदार (रीजेंट अल्ट्रा)",
+        technical: "Fipronil 0.3% GR",
+        dose: "8 से 10 किग्रा प्रति एकड़ (खेत में बुरकाव करें और तुरंत हल्की सिंचाई करें)",
+        brands: ["Regent Ultra (Bayer)", "Mortar (Dhanuka)"],
+      },
+      {
+        nameHi: "फिप्रोनिल 5% SC (रीजेंट)",
+        technical: "Fipronil 5% SC",
+        dose: "बीज उपचार: 4-5 मिली प्रति किग्रा बीज (बुवाई पूर्व) या 800 मिली प्रति एकड़ सिंचाई के पानी के साथ बहाएँ",
+        brands: ["Regent (Bayer)", "Fax"],
       },
     ],
     "powdery": [

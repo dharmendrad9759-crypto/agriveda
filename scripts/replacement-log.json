@@ -1,0 +1,296 @@
+[
+  {
+    "item": "disease-alternaria-porri",
+    "slot": 1,
+    "fileName": "disease-alternaria-porri.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/20771875",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/32032561/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by wallacechen via iNaturalist observation #20771875",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-alternaria-porri",
+    "slot": 2,
+    "fileName": "disease-alternaria-porri-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/20771875",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/32032553/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by wallacechen via iNaturalist observation #20771875",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-alternaria-porri",
+    "slot": 3,
+    "fileName": "disease-alternaria-porri-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/20771875",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/32032562/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by wallacechen via iNaturalist observation #20771875",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-alternaria-macrospora",
+    "status": "NO_CANDIDATE"
+  },
+  {
+    "item": "pest-pyrilla-perpusilla",
+    "slot": 1,
+    "fileName": "pest-pyrilla-perpusilla.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/399869272",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/733692830/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by ashmit3 via iNaturalist observation #399869272",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "pest-pyrilla-perpusilla",
+    "slot": 2,
+    "fileName": "pest-pyrilla-perpusilla-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/399869272",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/733692917/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by ashmit3 via iNaturalist observation #399869272",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "pest-pyrilla-perpusilla",
+    "slot": 3,
+    "fileName": "pest-pyrilla-perpusilla-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/397371320",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/728819167/large.jpg",
+    "licence": "cc-by",
+    "attribution": "Photo by mitvij via iNaturalist observation #397371320",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-fusarium-oxysporum",
+    "slot": 2,
+    "fileName": "disease-fusarium-oxysporum-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/334502778",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/607470176/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by perevalls via iNaturalist observation #334502778",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-fusarium-oxysporum",
+    "slot": 3,
+    "fileName": "disease-fusarium-oxysporum-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/154005551",
+    "originalUrl": "https://static.inaturalist.org/photos/266056313/large.jpg",
+    "licence": "CC-BY-NC",
+    "attribution": "Photo by annamission via iNaturalist observation #154005551",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-fusarium-ciceri",
+    "slot": 2,
+    "fileName": "disease-fusarium-ciceri-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/334502778",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/607470176/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by perevalls via iNaturalist observation #334502778",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-fusarium-ciceri",
+    "slot": 3,
+    "fileName": "disease-fusarium-ciceri-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/154005551",
+    "originalUrl": "https://static.inaturalist.org/photos/266056313/large.jpg",
+    "licence": "CC-BY-NC",
+    "attribution": "Photo by annamission via iNaturalist observation #154005551",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-fusarium-cubense",
+    "slot": 2,
+    "fileName": "disease-fusarium-cubense-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/334502778",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/607470176/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by perevalls via iNaturalist observation #334502778",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-fusarium-cubense",
+    "slot": 3,
+    "fileName": "disease-fusarium-cubense-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/154005551",
+    "originalUrl": "https://static.inaturalist.org/photos/266056313/large.jpg",
+    "licence": "CC-BY-NC",
+    "attribution": "Photo by annamission via iNaturalist observation #154005551",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-fusarium-lycopersici",
+    "slot": 2,
+    "fileName": "disease-fusarium-lycopersici-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/334502778",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/607470176/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by perevalls via iNaturalist observation #334502778",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-fusarium-lycopersici",
+    "slot": 3,
+    "fileName": "disease-fusarium-lycopersici-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/154005551",
+    "originalUrl": "https://static.inaturalist.org/photos/266056313/large.jpg",
+    "licence": "CC-BY-NC",
+    "attribution": "Photo by annamission via iNaturalist observation #154005551",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-mungbean-yellow-mosaic-virus",
+    "slot": 2,
+    "fileName": "disease-mungbean-yellow-mosaic-virus-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/401838557",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/737590701/large.jpg",
+    "licence": "cc-by",
+    "attribution": "Photo by nschwab via iNaturalist observation #401838557",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-mungbean-yellow-mosaic-virus",
+    "slot": 3,
+    "fileName": "disease-mungbean-yellow-mosaic-virus-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/395562925",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/725316323/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by dirkm via iNaturalist observation #395562925",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-bhendi-yvmv",
+    "slot": 2,
+    "fileName": "disease-bhendi-yvmv-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/401838557",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/737590701/large.jpg",
+    "licence": "cc-by",
+    "attribution": "Photo by nschwab via iNaturalist observation #401838557",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-bhendi-yvmv",
+    "slot": 3,
+    "fileName": "disease-bhendi-yvmv-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/395562925",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/725316323/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by dirkm via iNaturalist observation #395562925",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-ascochyta-rabiei",
+    "status": "NO_CANDIDATE"
+  },
+  {
+    "item": "disease-ralstonia-solanacearum",
+    "slot": 3,
+    "fileName": "disease-ralstonia-solanacearum-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/382083981",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/699190168/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by maryet29 via iNaturalist observation #382083981",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-xanthomonas-oryzae",
+    "slot": 3,
+    "fileName": "disease-xanthomonas-oryzae-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/308811996",
+    "originalUrl": "https://static.inaturalist.org/photos/557180114/large.jpg",
+    "licence": "CC-BY-NC",
+    "attribution": "Photo by pycnoderiella_virginiana via iNaturalist observation #308811996",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "pest-scirpophaga-incertulas",
+    "slot": 3,
+    "fileName": "pest-scirpophaga-incertulas-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/406472782",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/746801862/large.jpg",
+    "licence": "cc-by-nc-sa",
+    "attribution": "Photo by lannamountainscharlie via iNaturalist observation #406472782",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-xanthomonas-axonopodis-pv-glycines",
+    "slot": 1,
+    "fileName": "disease-xanthomonas-axonopodis-pv-glycines.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/326329823",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/591000494/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by fernando_luque via iNaturalist observation #326329823",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "pest-melanagromyza-obtusa",
+    "slot": 1,
+    "fileName": "pest-melanagromyza-obtusa.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/396013249",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/726195383/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by rezvi via iNaturalist observation #396013249",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-puccinia-melanocephala",
+    "slot": 1,
+    "fileName": "disease-puccinia-melanocephala.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/369321286",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/674608003/large.jpg",
+    "licence": "cc-by-nc",
+    "attribution": "Photo by ryan_yokoama via iNaturalist observation #369321286",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-puccinia-melanocephala",
+    "slot": 2,
+    "fileName": "disease-puccinia-melanocephala-2.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/338883130",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/616363589/large.jpg",
+    "licence": "cc-by",
+    "attribution": "Photo by gabrielfernandes_ via iNaturalist observation #338883130",
+    "status": "SUCCESS"
+  },
+  {
+    "item": "disease-puccinia-melanocephala",
+    "slot": 3,
+    "fileName": "disease-puccinia-melanocephala-3.jpg",
+    "sourceOrg": "iNaturalist",
+    "sourcePageUrl": "https://www.inaturalist.org/observations/338883130",
+    "originalUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/616363616/large.jpg",
+    "licence": "cc-by",
+    "attribution": "Photo by gabrielfernandes_ via iNaturalist observation #338883130",
+    "status": "SUCCESS"
+  }
+]

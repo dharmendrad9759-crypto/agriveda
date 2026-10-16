@@ -73,7 +73,6 @@ export default function LocationBootstrap() {
         );
         window.setTimeout(() => setHint(null), 4500);
       } catch (err) {
-        locationFlowErrorMessage(err);
         const servicesOff = isLocationServicesOff(err);
         setError(
           servicesOff
@@ -84,7 +83,13 @@ export default function LocationBootstrap() {
               ? "लोकेशन अनुमति नहीं मिली। «Settings खोलें» दबाकर Location → Allow करें।"
               : "Location permission denied. Tap Settings and Allow Location."
         );
-        setShowDenied(true);
+        const isDismissed =
+          typeof window !== "undefined" &&
+          sessionStorage.getItem("agriveda_loc_dismissed") === "1";
+        // If profile already has location or user dismissed, don't show intrusive banner
+        if (!isDismissed && (!profile.district || !profile.state)) {
+          setShowDenied(true);
+        }
         if (openSettingsOnDeny) {
           window.setTimeout(() => {
             void (servicesOff
@@ -176,16 +181,21 @@ export default function LocationBootstrap() {
                 {!nativeReady ? (
                   <p className="mt-2 text-[11px] font-semibold leading-relaxed text-amber-700 dark:text-amber-400">
                     {isHi
-                      ? "अगर बटन से Settings न खुले: Phone Settings → Apps → Agriveda → Permissions → Location → Allow"
-                      : "If buttons don’t open Settings: Phone Settings → Apps → Agriveda → Permissions → Location → Allow"}
+                      ? "ब्राउज़र में Location अनुमति दें या ऊपर हेडर से अपना ज़िला चुनें।"
+                      : "Allow Location in browser or select your district from the header above."}
                   </p>
                 ) : null}
               </div>
               <button
                 type="button"
                 aria-label="Close"
-                onClick={() => setShowDenied(false)}
-                className="rounded-lg p-1 text-[var(--av-text-muted)]"
+                onClick={() => {
+                  setShowDenied(false);
+                  try {
+                    sessionStorage.setItem("agriveda_loc_dismissed", "1");
+                  } catch {}
+                }}
+                className="rounded-lg p-1 text-[var(--av-text-muted)] hover:bg-black/5 dark:hover:bg-white/5"
               >
                 <X className="h-4 w-4" />
               </button>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import androidx.core.splashscreen.SplashScreen;
 import com.getcapacitor.Bridge;
@@ -12,6 +13,12 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    // Hardware & OS-level protection: block screenshots and screen recording (renders black screen)
+    getWindow().setFlags(
+        WindowManager.LayoutParams.FLAG_SECURE,
+        WindowManager.LayoutParams.FLAG_SECURE
+    );
+
     // Cream blank system splash — exit ASAP so WebView branded splash is the only UI
     final SplashScreen splash = SplashScreen.installSplashScreen(this);
     splash.setKeepOnScreenCondition(() -> false);
@@ -51,6 +58,20 @@ public class MainActivity extends BridgeActivity {
     @JavascriptInterface
     public void openLocationSource() {
       runOnUiThread(MainActivity.this::launchLocationSource);
+    }
+
+    @JavascriptInterface
+    public void setScreenProtection(boolean enable) {
+      runOnUiThread(() -> {
+        if (enable) {
+          getWindow().setFlags(
+              WindowManager.LayoutParams.FLAG_SECURE,
+              WindowManager.LayoutParams.FLAG_SECURE
+          );
+        } else {
+          getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
+      });
     }
   }
 }

@@ -51,6 +51,8 @@ import {
     Leaf,
     Loader2,
     Pill,
+    Printer,
+    Share2,
     ShieldCheck,
     Stethoscope,
 } from "lucide-react";
@@ -89,6 +91,8 @@ export default function AIDoctorPage() {
   const [showWhy, setShowWhy] = useState(true);
   const [historyExpanded, setHistoryExpanded] = useState(false);
   const [symptomNotes, setSymptomNotes] = useState("");
+  const [affectedPart, setAffectedPart] = useState("");
+  const [severityChoice, setSeverityChoice] = useState("");
   const [activeChips, setActiveChips] = useState<string[]>([]);
   /** Allow crop → symptoms without a photo (optional escape hatch) */
   const [symptomsOnlyMode, setSymptomsOnlyMode] = useState(false);
@@ -261,11 +265,17 @@ export default function AIDoctorPage() {
     setIsScanning(true);
 
     try {
+      const combinedSymptoms = [
+        affectedPart ? `प्रभावित हिस्सा: ${affectedPart}` : "",
+        severityChoice ? `गंभीरता: ${severityChoice}` : "",
+        symptomNotes.trim(),
+      ].filter(Boolean).join(" · ");
+
       const diagnosis = await analyzeDiagnosis({
         imageFile: selectedFile,
         imageFile2: selectedFile2,
         cropSlug: selectedCrop || OTHER_CROP.slug,
-        symptoms: symptomNotes,
+        symptoms: combinedSymptoms,
       });
       setResult(diagnosis);
       const thumb =
@@ -302,6 +312,8 @@ export default function AIDoctorPage() {
     clearPhoto();
     setResult(null);
     setSymptomNotes("");
+    setAffectedPart("");
+    setSeverityChoice("");
     setActiveChips([]);
     setSelectedCrop("");
     setSymptomsOnlyMode(false);
@@ -552,6 +564,10 @@ export default function AIDoctorPage() {
                       onChange={setSymptomNotes}
                       activeChips={activeChips}
                       onToggleChip={handleToggleChip}
+                      affectedPart={affectedPart}
+                      onSelectPart={setAffectedPart}
+                      severityChoice={severityChoice}
+                      onSelectSeverity={setSeverityChoice}
                       voiceSlot={
                         <VoiceInput
                           compact
@@ -617,7 +633,45 @@ export default function AIDoctorPage() {
                           <p className="text-[11px] text-[var(--av-text-muted)]">एआई डॉक्टर विश्लेषण</p>
                         </div>
                       </div>
-                      <DiagnosisListenButton text={speechText} />
+                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                        <DiagnosisListenButton text={speechText} />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!result) return;
+                            const meds = result.activeIngredients
+                              .map((a) => `• ${a.name} (${formatFarmerDose(a.dose)})`)
+                              .join("\n");
+                            const msg =
+                              `🌾 *AgriVeda AI फसल डॉक्टर रिपोर्ट*\n\n` +
+                              `*फसल:* ${aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}\n` +
+                              `*पहचाना गया रोग:* ${result.diseaseName}\n` +
+                              (result.pathogen && result.pathogen !== "—" ? `*रोग कारक:* ${result.pathogen}\n` : "") +
+                              `*गंभीरता:* ${severityHi(result.severity)}\n\n` +
+                              `💊 *अनुशंसित दवा व खुराक:*\n${meds || "विशेषज्ञ सलाह लें"}\n\n` +
+                              `💧 *स्प्रे पानी:* 150–200 लीटर/एकड़ साफ़ पानी\n\n` +
+                              `_AgriVeda किसान सहायता ऐप_`;
+                            const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+                            if (typeof window !== "undefined") window.open(url, "_blank");
+                          }}
+                          className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 px-2.5 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700/50 dark:bg-emerald-950/60 dark:text-emerald-200 transition"
+                          title="WhatsApp पर शेयर करें"
+                        >
+                          <Share2 className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">शेयर</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (typeof window !== "undefined") window.print();
+                          }}
+                          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
+                          title="PDF / प्रिंट करें"
+                        >
+                          <Printer className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">PDF</span>
+                        </button>
+                      </div>
                     </div>
 
                     {result.visualObservations && (

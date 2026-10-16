@@ -391,9 +391,17 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
             ) : null}
             <SpeakButton
               hi={hi}
-              text={hi
-                ? `${names.primary}. ${names.secondary ?? ""}. पहचान टैब में निशान देखें, दवा टैब में पहली पसंद से शुरू करें।`
-                : `${names.primary}. Open the medicine tab and start with the first choice.`}
+              text={
+                hi
+                  ? `राम-राम किसान भाई! ${cropHi || threat.cropName} में ${names.primary} के लिए डॉक्टर की सलाह: ${
+                      sprayProducts[0]
+                        ? `सबसे पहले ${sprayProducts[0].brands?.[0] ? `${sprayProducts[0].brands[0]} यानी ` : ""}${sprayProducts[0].technical} का स्प्रे करें। ${sprayProducts[0].doseAcre ? `मात्रा ${sprayProducts[0].doseAcre} रखें।` : ""}`
+                        : farmerAiDose
+                          ? `अनुशंसित दवा ${farmerAiDose} का प्रयोग करें।`
+                          : "दवा टैब में दिए गए पहले विकल्प का छिड़काव करें।"
+                    } साथ में 5 मिली सिलिकॉन स्टीकर चिपको ज़रूर मिलाएँ। 3 से 4 दिन में इसका असर दिखेगा और कीट व रोग पर नियंत्रण होगा। तेज धूप में छिड़काव न करें।`
+                  : `${names.primary}. Doctor's advice for ${threat.cropName}: start with the first recommended spray, use sticker and spray during cool morning or evening hours.`
+              }
             />
           </header>
 

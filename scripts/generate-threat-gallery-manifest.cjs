@@ -31,6 +31,72 @@ for (const f of pFiles) {
   }
 }
 
+// Special / Custom Overlays for specific threat collections
+const CUSTOM_OVERLAYS = {
+  "/images/diseases/disease-karnal-bunt-ear.jpg": [
+    "/images/diseases/disease-karnal-bunt-ear.jpg",
+    "/images/diseases/disease-karnal-bunt-grains.jpg",
+    "/images/diseases/disease-karnal-bunt-spike.jpg"
+  ],
+  "/images/diseases/disease-tomato-early-blight-photoreal.jpg": [
+    "/images/diseases/disease-tomato-early-blight-photoreal.jpg",
+    "/images/diseases/disease-tomato-early-blight-1.jpg",
+    "/images/diseases/disease-tomato-early-blight-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-late-blight-photoreal.jpg": [
+    "/images/diseases/disease-tomato-late-blight-photoreal.jpg",
+    "/images/diseases/disease-tomato-late-blight-1.jpg",
+    "/images/diseases/disease-tomato-late-blight-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-bacterial-wilt-photoreal.jpg": [
+    "/images/diseases/disease-tomato-bacterial-wilt-photoreal.jpg",
+    "/images/diseases/disease-tomato-bacterial-canker-1.jpg",
+    "/images/diseases/disease-ralstonia-solanacearum.jpg"
+  ],
+  "/images/diseases/disease-tomato-leaf-curl-photoreal.jpg": [
+    "/images/diseases/disease-tomato-leaf-curl-photoreal.jpg",
+    "/images/diseases/disease-begomovirus-leaf-curl.jpg",
+    "/images/diseases/disease-begomovirus-leaf-curl-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-fusarium-wilt-photoreal.jpg": [
+    "/images/diseases/disease-tomato-fusarium-wilt-photoreal.jpg",
+    "/images/diseases/disease-tomato-fusarium-wilt-1.jpg",
+    "/images/diseases/disease-fusarium-lycopersici-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-septoria-photoreal.jpg": [
+    "/images/diseases/disease-tomato-septoria-photoreal.jpg",
+    "/images/diseases/disease-tomato-septoria-1.jpg",
+    "/images/diseases/disease-septoria-lycopersici.jpg"
+  ],
+  "/images/diseases/disease-tomato-blossom-end-rot-photoreal.jpg": [
+    "/images/diseases/disease-tomato-blossom-end-rot-photoreal.jpg",
+    "/images/diseases/disease-tomato-blossom-end-rot-1.jpg",
+    "/images/diseases/disease-tomato-blossom-end-rot-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-anthracnose-photoreal.jpg": [
+    "/images/diseases/disease-tomato-anthracnose-photoreal.jpg",
+    "/images/diseases/disease-tomato-anthracnose-1.jpg",
+    "/images/diseases/disease-tomato-anthracnose-2.jpg"
+  ],
+  "/images/pests/pest-tomato-fruit-borer-photoreal.jpg": [
+    "/images/pests/pest-tomato-fruit-borer-photoreal.jpg",
+    "/images/pests/pest-helicoverpa-armigera.jpg",
+    "/images/pests/pest-helicoverpa-armigera-2.jpg"
+  ],
+  "/images/pests/pest-tomato-whitefly-photoreal.jpg": [
+    "/images/pests/pest-tomato-whitefly-photoreal.jpg",
+    "/images/pests/pest-bemisia-tabaci.jpg",
+    "/images/pests/pest-bemisia-tabaci-2.jpg"
+  ],
+  "/images/pests/pest-tomato-leaf-miner-photoreal.jpg": [
+    "/images/pests/pest-tomato-leaf-miner-photoreal.jpg",
+    "/images/pests/pest-liriomyza-trifolii.jpg",
+    "/images/pests/pest-liriomyza-trifolii-2.jpg"
+  ],
+};
+
+Object.assign(manifest, CUSTOM_OVERLAYS);
+
 const outTs = `/**
  * Auto-generated manifest of multi-photo authentic field images for all crop threats.
  * Generated: ${new Date().toISOString()}

@@ -368,28 +368,48 @@ export default function MandiPricesTable({
     "w-full rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3.5 py-3 text-[13px] font-bold text-[var(--av-text-primary)] outline-none transition-all focus:border-emerald-500 focus:bg-[var(--av-surface)] focus:ring-4 focus:ring-emerald-500/10 shadow-[var(--av-shadow-sm)] appearance-none";
 
   return (
-    <div className="space-y-4" id="mandi-prices-table">
-      {/* Summary Dashboard */}
-      {summary && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-            <p className="text-[10px] font-bold text-[var(--av-text-muted)] uppercase tracking-wider">{isHi ? "कुल मंडियाँ" : "Total Markets"}</p>
-            <p className="mt-1 text-2xl font-black text-[var(--av-text-primary)]">{summary.markets}</p>
-          </div>
-          <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-            <p className="text-[10px] font-bold text-[var(--av-text-muted)] uppercase tracking-wider">{isHi ? "कुल फसलें" : "Commodities"}</p>
-            <p className="mt-1 text-2xl font-black text-[var(--av-text-primary)]">{summary.commodities}</p>
-          </div>
-          <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-            <p className="text-[10px] font-bold text-[var(--av-text-muted)] uppercase tracking-wider">{isHi ? "कुल रिकॉर्ड" : "Total Data"}</p>
-            <p className="mt-1 text-2xl font-black text-[var(--av-text-primary)]">{summary.total}</p>
-          </div>
-          <div className="rounded-[1.5rem] border border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/5 p-4 shadow-[var(--av-shadow-sm)]">
-            <p className="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider">{isHi ? "औसत भाव (₹/q)" : "Avg Price (₹/q)"}</p>
-            <p className="mt-1 text-2xl font-black text-emerald-700 dark:text-emerald-300">₹{summary.avgPrice.toLocaleString("en-IN")}</p>
-          </div>
+    <div className="space-y-3" id="mandi-prices-table">
+      {/* Above-the-fold Clean Control Bar */}
+      <div className="flex items-center gap-2">
+        {/* State / District Filter Button */}
+        <button
+          type="button"
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex min-h-[42px] items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2 text-xs font-bold text-[var(--av-text-primary)] shadow-sm transition active:scale-95 hover:border-emerald-500/40"
+        >
+          <MapPin className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+          <span className="truncate max-w-[130px] sm:max-w-[200px]">
+            {draft.district ? `${draft.district}, ${draft.state}` : draft.state}
+          </span>
+          <ChevronDown className={cn("h-3.5 w-3.5 text-[var(--av-text-muted)] transition-transform", showFilters && "rotate-180")} />
+        </button>
+
+        {/* Search Input */}
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--av-text-muted)]" />
+          <input
+            type="search"
+            value={searchQ}
+            onChange={(e) => {
+              setSearchQ(e.target.value);
+              setPage(1);
+            }}
+            placeholder={isHi ? "फसल या मंडी खोजें…" : "Search crop or mandi…"}
+            className="w-full rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-8 pr-3 text-xs font-semibold outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+          />
         </div>
-      )}
+
+        {/* GPS Button */}
+        <button
+          type="button"
+          onClick={handleDetectGps}
+          disabled={gpsLoading}
+          title="नज़दीकी मंडी (GPS)"
+          className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 shadow-sm transition active:scale-95 disabled:opacity-50"
+        >
+          <Navigation className={cn("h-4 w-4", gpsLoading && "animate-spin")} />
+        </button>
+      </div>
 
       {/* Quick Commodity Chips */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -575,43 +595,30 @@ export default function MandiPricesTable({
         )}
       </div>
 
-      {/* Header & Search */}
-      <div className="flex flex-col gap-3 rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)] sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-[14px] font-bold text-[var(--av-text-primary)]">
-          {isHi ? `${filtered.length} मंडी भाव रिकॉर्ड` : `${filtered.length} market record(s)`}
+      {/* Records Count & Sort Bar */}
+      <div className="flex items-center justify-between text-xs px-1 pt-1">
+        <p className="font-black text-[var(--av-text-primary)]">
+          {isHi ? `${filtered.length} मंडी भाव` : `${filtered.length} Mandi Rates`}
         </p>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[150px] flex-1 sm:max-w-[200px]">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
-            <input
-              type="search"
-              value={searchQ}
-              onChange={(e) => {
-                setSearchQ(e.target.value);
-                setPage(1);
-              }}
-              placeholder={isHi ? "खोजें…" : "Search…"}
-              className="w-full rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-9 pr-3 text-[13px] font-medium outline-none transition-all focus:border-emerald-500 focus:bg-[var(--av-surface)] focus:ring-4 focus:ring-emerald-500/10"
-            />
-          </div>
-          <div className="relative flex-1 sm:max-w-[160px]">
+        <div className="flex items-center gap-2">
+          <div className="relative">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full appearance-none rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-9 pr-8 text-[13px] font-bold text-[var(--av-text-secondary)] outline-none transition-all focus:border-emerald-500 focus:bg-[var(--av-surface)] focus:ring-4 focus:ring-emerald-500/10"
+              className="appearance-none rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-1.5 pl-7 pr-6 text-[11px] font-bold text-[var(--av-text-secondary)] outline-none"
             >
               <option value="date_desc">{isHi ? "नवीनतम" : "Latest"}</option>
               <option value="price_desc">{isHi ? "उच्चतम भाव" : "Highest Price"}</option>
               <option value="price_asc">{isHi ? "न्यूनतम भाव" : "Lowest Price"}</option>
             </select>
-            <ArrowDownUp className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--av-text-muted)]" />
+            <ArrowDownUp className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-[var(--av-text-muted)]" />
           </div>
           <button
             type="button"
             onClick={() => exportMandiCsv(filtered)}
-            className="flex h-[42px] items-center gap-1.5 rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 text-[12px] font-bold text-[var(--av-text-secondary)] shadow-[var(--av-shadow-sm)] transition active:scale-95"
+            className="flex items-center gap-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2.5 py-1.5 text-[11px] font-bold text-[var(--av-text-secondary)] shadow-sm active:scale-95"
           >
-            <Download className="h-3.5 w-3.5" /> CSV
+            <Download className="h-3 w-3" /> CSV
           </button>
         </div>
       </div>

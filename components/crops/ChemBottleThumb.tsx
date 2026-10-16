@@ -53,7 +53,8 @@ export default function ChemBottleThumb({
           alt={displayName}
           className="h-full w-full object-cover object-center transition duration-300 group-hover:scale-105"
           data-chem-kind={kind}
-          loading="lazy"
+          loading="eager"
+          decoding="async"
         />
 
         <span

@@ -1,607 +1,420 @@
-﻿AgriVeda — सभी फसलें, रोग, कीट और खरपतवार
-Copy-paste list (app data inventory)
+AgriVeda — फसल / रोग / कीट / खरपतवार पूरी लिस्ट
+(source: data/pest-disease.ts)
 
 ========================================
-फसल: अंगूर (Grapes) [grapes]
-----------------------------------------
-रोग (4):
-  1. एन्थ्रेक्नोज (Anthracnose)
-  2. ग्रे मोल्ड / बोट्राइटिस (Grey Mold)
-  3. चूर्णिल फफूंद (Powdery Mildew)
-  4. बलूत फफूंद (Downy Mildew)
-कीट (3):
-  1. थ्रिप्स (Thrips) — Scirtothrips dorsalis
-  2. फुदका भृंग (Flea Beetle) — Altica spp.
-  3. मिलीबग (Mealybug) — Maconellicoccus hirsutus
-खरपतवार (3):
-  1. गाजर घास (Parthenium) — Parthenium hysterophorus
-  2. दूब घास (Cynodon) — Cynodon dactylon
-  3. मोठा (Cyperus) — Cyperus rotundus
-
-========================================
-फसल: अरहर (Pulses) [pulses]
-----------------------------------------
-रोग (7):
-  1. चूर्णिल फफूंद (Powdery Mildew)
-  2. पीला मोज़ेक (Yellow Mosaic)
-  3. फफूंद झुलसा (Phytophthora Blight)
-  4. फ्यूज़ेरियम मुरझान (Fusarium Wilt)
-  5. बंझयता मोज़ेक रोग (SMD)
-  6. सर्कोस्पोरा पत्ती धब्बा (Cercospora Leaf Spot)
-  7. सूखी जड़ सड़न (Dry Root Rot)
-कीट (6):
-  1. अरहर फली छेदक (Gram Pod Borer) — Helicoverpa armigera
-  2. एफिड (Aphids) — Aphis craccivora
-  3. दाल की कीड़ा (Bruchids) — Callosobruchus chinensis
-  4. पंख वाली मोथ (Plume Moth) — Exelastis atomosa
-  5. फली चूसने वाले कीड़े — Clavigralla / Riptortus spp.
-  6. फली मक्खी (Pod Fly) — Melanagromyza obtusa
-खरपतवार (5):
-  1. Amaranthus, Celosia, Commelina, Trianthema (चौड़ी पत्ती)
-  2. Echinochloa, Digitaria (घास)
-  3. गुल्ली-डंडा (Phalaris minor) — Phalaris minor
-  4. बथुआ (Chenopodium) — Chenopodium album
-  5. मोठा (Cyperus) — Cyperus rotundus
-
-========================================
-फसल: आम (Mango) [mango]
-----------------------------------------
-रोग (5):
-  1. एन्थ्रेक्नोज (Anthracnose)
-  2. चूर्णिल फफूंद (Powdery Mildew)
-  3. जीवाणु कैंकर (Bacterial Canker)
-  4. मालफॉर्मेशन (Malformation)
-  5. सूखना-पीछे हटना (Die-back)
-कीट (3):
-  1. आम फुदका (Mango Hopper) — Idioscopus clypealis
-  2. आम मिलीबग (Mango Mealybug) — Drosicha mangiferae
-  3. फल मक्खी (Fruit Fly) — Bactrocera dorsalis
-खरपतवार (3):
-  1. गाजर घास (Parthenium) — Parthenium hysterophorus
-  2. दूब घास (Cynodon) — Cynodon dactylon
-  3. मोठा (Cyperus) — Cyperus rotundus
-
-========================================
-फसल: आलू (Potato) [potato]
+फसल: धान (Paddy) [paddy]
 ----------------------------------------
 रोग (8):
-  1. Early Blight
-  2. Late Blight
-  3. आम स्कैब (Common Scab)
-  4. आलू वायरस (PVY / PLRV आदि)
-  5. काला कवच (Black Scurf)
-  6. जीवाणु मुरझान (Bacterial Wilt)
-  7. पत्ती मोज़ेक वायरस (Potato Mosaic)
-  8. ब्लैकलेग / सॉफ्ट रॉट
-कीट (6):
-  1. आलू कंद मोथ (Potato Tuber Moth) — Phthorimaea operculella
-  2. एफिड (Aphids) — Myzus persicae
-  3. कटवर्म (Cut Worm) — Agrotis ipsilon
-  4. पत्ती सुरंगक / माइट (जहाँ समस्या हो) — Liriomyza spp. / Tetranychus urticae
-  5. सफेद गिडार / कटवर्म — Holotrichia spp. / Agrotis ipsilon
-  6. हैड्डा बीटल (एपिलैकना) — Henosepilachna vigintioctopunctata
-खरपतवार (5):
-  1. घास (Phalaris / अन्य वार्षिक घास) — Phalaris minor / Cynodon आदि
-  2. जंगली आलू / काला मकोय (Solanum nigrum) — Solanum nigrum
-  3. जंगली सरसों (Wild Mustard) — Brassica campestris
-  4. बथुआ (Bathua) — Chenopodium album
-  5. मोठा (Cyperus) — Cyperus esculentus
-
-========================================
-फसल: कपास (Cotton) [cotton]
-----------------------------------------
-रोग (7):
-  1. अल्टरनेरिया पत्ती धब्बा (Alternaria Leaf Spot)
-  2. कपास पर्ण कुंचन वायरस (CLCuV)
-  3. जड़ सड़न (Root Rot)
-  4. जीवाणु झुलसा (Bacterial Blight)
-  5. धूसर फफूंद / ग्रे मिल्ड्यू (Grey Mildew)
-  6. पत्ती मोड़ वायरस (Cotton Leaf Curl)
-  7. मुरझान (Fusarium Wilt)
-कीट (7):
-  1. गुलाबी सुंडी (Pink Bollworm / PBW) — Pectinophora gossypiella
-  2. तेला / जैसिड (Jassid / Leafhopper) — Amrasca biguttula biguttula
-  3. थ्रिप्स (Thrips) — Thrips tabaci
-  4. माहू (Aphid) — Aphis gossypii
-  5. मैलीबग (Mealybug) — Phenacoccus solenopsis
-  6. सफ़ेद मक्खी (Whitefly) — CLCuV वेक्टर — Bemisia tabaci
-  7. हरा तैलक (Jassids) — Amrasca biguttula
-खरपतवार (5):
-  1. Digera arvensis — Digera arvensis
-  2. काकरा घास (Digitaria) — Digitaria spp.
-  3. दूब घास (Bermuda grass, बहुवर्षीय) — Cynodon dactylon
-  4. पत्थरचट्टा / कुल्फा (Horse purslane) — Trianthema portulacastrum
-  5. मोथा (Nutsedge) — Cyperus rotundus
-
-========================================
-फसल: केला (Banana) [banana]
-----------------------------------------
-रोग (4):
-  1. गुच्छेदार शीर्ष (Bunchy Top)
-  2. जीवाणु मुलायम सड़न (Soft Rot)
-  3. पनामा मुरझान (Panama Wilt)
-  4. सिगाटोका पत्ती धब्बा (Sigatoka Leaf Spot)
-कीट (3):
-  1. कंद घुंवा (Rhizome Weevil) — Cosmopolites sordidus
-  2. केले का एफिड (Banana Aphid) — Pentalonia nigronervosa
-  3. थ्रिप्स (Thrips) — Chaetanaphothrips signipennis
+  1. धान ब्लास्ट (Rice Blast) — Magnaporthe oryzae
+  2. पर्ण आवरण सड़न (Sheath Blight) — Rhizoctonia solani
+  3. जीवाणु पत्ती झुलसा (Bacterial Leaf Blight) — Xanthomonas oryzae pv. oryzae
+  4. भूरा धब्बा (Brown Spot) — Bipolaris oryzae
+  5. झूठा कंड (False Smut) — Ustilaginoidea virens
+  6. पर्ण आवरण सड़न / शीथ रॉट (Sheath Rot) — Sarocladium oryzae
+  7. टंग्रो वायरस (Rice Tungro) — Rice tungro virus (leafhopper vector)
+  8. बकाने / फुट रॉट (Bakanae) — Fusarium fujikuroi
+कीट (9):
+  1. भूरा फुदका (Brown Planthopper)
+  2. पीला तना छेदक (Yellow Stem Borer)
+  3. धान सेना इल्ली (Rice Armyworm)
+  4. पत्ती मोड़क (Leaf Folder)
+  5. हरा पत्ती फुदका (Green Leafhopper)
+  6. सफेद पीठ फुदका (Whitebacked Planthopper)
+  7. गंधी बग (Gundhi Bug)
+  8. राइस हिस्पा (Rice Hispa)
+  9. गॉल मिज (Gall Midge)
 खरपतवार (3):
-  1. काकरा घास (Digitaria) — Digitaria spp.
-  2. गाजर घास (Parthenium) — Parthenium hysterophorus
-  3. मोठा (Cyperus) — Cyperus rotundus
-
-========================================
-फसल: खीरा (Cucumber) [cucumber]
-----------------------------------------
-रोग (7):
-  1. Downy Mildew
-  2. एंगुलर लीफ स्पॉट (जीवाणु)
-  3. एन्थ्रेक्नोज (Anthracnose)
-  4. खीरा / पीला मोज़ेक वायरस
-  5. खीरा मोज़ेक वायरस (CMV आदि)
-  6. चूर्णिल फफूंद (Powdery Mildew)
-  7. मुरझान / जड़ सड़न (फ्यूजेरियम / पाइथियम)
-कीट (6):
-  1. एफिड / सफेद मक्खी / थ्रिप्स — वायरस वाहक — Aphis gossypii / Bemisia tabaci / Thrips palmi
-  2. थ्रिप्स — Thrips palmi / Scirtothrips spp.
-  3. फल मक्खी (Fruit Fly) — Bactrocera cucurbitae
-  4. लाल कद्दू भृंग (Red Pumpkin Beetle) — Aulacophora foveicollis
-  5. लाल मकड़ी माइट (Red Spider Mite) — Tetranychus urticae
-  6. सफ़ेद मक्खी — Bemisia tabaci
-खरपतवार (5):
-  1. Amaranthus, Trianthema, Commelina (चौड़ी पत्ती)
-  2. Echinochloa, Digitaria (घास)
-  3. चौड़ी पत्ती (चौलाई आदि) — Amaranthus spp.
-  4. नरस (Cyperus) — Cyperus
-  5. सांवा / वार्षिक घास — Echinochloa colona / Digitaria
-
-========================================
-फसल: गन्ना (Sugarcane) [sugarcane]
-----------------------------------------
-रोग (7):
-  1. कंडुआ / स्मट (Smut)
-  2. घास जैसी कली (Grassy Shoot)
-  3. घास जैसी कली रोग (GSD)
-  4. पोक्का बोएंग (Pokkah Boeng)
-  5. मुरझान (Wilt)
-  6. रस्ट / पत्ती धब्बा (Rust / Leaf Spot)
-  7. लाल सड़न (Red Rot)
-कीट (8):
-  1. ऊनी माहूँ / स्केल (Woolly Aphid / Scale) — Ceratovacuna lanigera / Melanaspis glomerata
-  2. दीमक (Termites) — Odontotermes spp.
-  3. पायरिला — पत्ती फुदका (Pyrilla) — Pyrilla perpusilla
-  4. पैमाना कीड़ा / मिलीबग — Melanaspis glomerata / Saccharicoccus sacchari
-  5. पोर छेदक (Internode Borer) — Chilo sacchariphagus indicus
-  6. शीर्ष छेदक (Top Borer) — Scirpophaga excerptalis
-  7. शुरुआती अंकुर छेदक (Early Shoot Borer) — Chilo infuscatellus
-  8. सफेद गिडार (White Grub) — Holotrichia spp. / Phyllognathus spp.
-खरपतवार (7):
-  1. Echinochloa, Dactyloctenium, Cynodon (घास)
-  2. Trianthema, Amaranthus, Convolvulus, Parthenium (चौड़ी पत्ती)
-  3. गाजर घास (Parthenium) — Parthenium hysterophorus
-  4. चौड़ी पत्ती (Amaranthus आदि) — Amaranthus / Digera / Chenopodium
-  5. मोथा (Nutsedge) — Cyperus rotundus
-  6. सांवा / अन्य घास — Echinochloa spp. / Cynodon dactylon
-  7. हरियाली घास (Hariali Grass) — Cynodon dactylon
+  1. सांवा घास (Barnyard Grass)
+  2. चपटा नागरमोथा (Flat Sedge)
+  3. मोनोकोरिया — चौड़ी पत्ती (Monochoria)
 
 ========================================
 फसल: गेहूँ (Wheat) [wheat]
 ----------------------------------------
 रोग (7):
-  1. Brown / Leaf Rust
-  2. Loose Smut
-  3. Powdery Mildew
-  4. Yellow / Stripe Rust
-  5. करनाल बंट (Karnal Bunt)
-  6. पत्ती धब्बा / स्पॉट ब्लॉच (Spot Blotch)
-  7. सिर झुलसा / स्कैब (Head Blight)
+  1. पीला रतुआ (Yellow Rust) — Puccinia striiformis
+  2. करनाल कंड (Karnal Bunt) — Tilletia indica
+  3. ढीला कंड (Loose Smut) — Ustilago tritici
+  4. पत्ती धब्बा / स्पॉट ब्लॉच (Spot Blotch) — Bipolaris sorokiniana
+  5. चूर्णिल फफूंद (Powdery Mildew) — Blumeria graminis
+  6. भूरा रतुआ (Brown / Leaf Rust) — Puccinia triticina
+  7. सिर झुलसा / स्कैब (Head Blight) — Fusarium graminearum
+कीट (4):
+  1. एफिड (Aphids)
+  2. दीमक (Termites)
+  3. गुलाबी तना छेदक (Pink Stem Borer)
+  4. आर्मीवर्म (Armyworm)
+खरपतवार (3):
+  1. गुल्ली-डंडा (Phalaris minor)
+  2. जंगली जई (Wild Oat)
+  3. बथुआ (Chenopodium)
+
+========================================
+फसल: मक्का (Maize) [maize]
+----------------------------------------
+रोग (6):
+  1. टर्सिकम पत्ती झुलसा (Turcicum Leaf Blight) — Exserohilum turcicum
+  2. मेडिस पत्ती झुलसा (Maydis Leaf Blight) — Bipolaris maydis
+  3. पट्टेदार पत्ती-आवरण सड़न (Banded Leaf Sheath Blight) — Rhizoctonia solani
+  4. सामान्य रतुआ (Common Rust) — Puccinia sorghi
+  5. तना सड़न / चारकोल रॉट (Charcoal Rot) — Macrophomina phaseolina
+  6. डाउनी मिल्ड्यू (Downy Mildew) — Peronosclerospora sorghi
 कीट (5):
-  1. आर्मीवर्म / कटवर्म — Mythimna separata / Agrotis ipsilon
-  2. एफिड (Aphids) — Sitobion avenae
-  3. गुलाबी तना छेदक (Pink Stem Borer) — Sesamia inferens
-  4. दीमक (Termites) — Odontotermes obesus
-  5. माहू (एफिड) — Rhopalosiphum maidis / Sitobion avenae
-खरपतवार (4):
-  1. Melilotus alba — Melilotus alba
-  2. गुल्ली-डंडा (Phalaris minor) — Phalaris minor
-  3. जंगली जई (Wild Oat) — Avena ludoviciana
-  4. बथुआ (Chenopodium) — Chenopodium album
+  1. फॉल आर्मीवर्म (Fall Armyworm)
+  2. तना छेदक (Stem Borer)
+  3. अंकुर मक्खी (Shoot Fly)
+  4. दीमक व सफेद गिडार (Termite & White Grub)
+  5. मक्का का माहू (Corn Aphid)
+खरपतवार (3):
+  1. सांवा घास (Barnyard Grass)
+  2. इटसा घास (Trianthema)
+  3. मोठा (Cyperus)
+
+========================================
+फसल: बाजरा (Bajra) [bajra]
+----------------------------------------
+रोग (5):
+  1. बलूत फफूंद (Downy Mildew) — Sclerospora graminicola
+  2. अर्गोट (Ergot) — Claviceps fusiformis
+  3. रतुआ (Rust) — Puccinia penniseti
+  4. कंड (Grain Smut) — Tolyposporium penicillariae
+  5. ब्लास्ट (Blast) — Pyricularia grisea
+कीट (6):
+  1. अंकुर मक्खी (Shoot Fly)
+  2. तना छेदक (Stem Borer)
+  3. बाली इल्ली (Earhead Caterpillar)
+  4. सफेद ग्रब (White Grub)
+  5. माहूँ (Aphid)
+  6. ग्रे वीविल (Grey Weevil)
+खरपतवार (3):
+  1. जंगली ज्वार (Wild Sorghum)
+  2. काकरा घास (Digitaria)
+  3. गाजर घास (Parthenium)
+
+========================================
+फसल: आलू (Potato) [potato]
+----------------------------------------
+रोग (8):
+  1. देर से झुलसा (Late Blight) — Phytophthora infestans
+  2. शुरुआती झुलसा (Early Blight) — Alternaria solani
+  3. काला कवच (Black Scurf) — Rhizoctonia solani
+  4. जीवाणु मुरझान (Bacterial Wilt) — Ralstonia solanacearum
+  5. पत्ती मोज़ेक वायरस (Potato Mosaic) — Potato virus Y (aphid vector)
+  6. आम स्कैब (Common Scab) — Streptomyces scabies
+  7. ब्लैकलेग / सॉफ्ट रॉट (Blackleg) — Pectobacterium carotovorum
+  8. पत्ती मोज़ेक PVX (Potato virus X) — Potato virus X
+कीट (6):
+  1. एफिड (Aphids)
+  2. कटवर्म (Cut Worm)
+  3. आलू कंद मोथ (Potato Tuber Moth)
+  4. पत्ती सुरंगक / माइट (Leaf Miner)
+  5. सफेद गिडार (White Grub)
+  6. हैड्डा बीटल (Hadda Beetle)
+खरपतवार (3):
+  1. बथुआ (Bathua)
+  2. जंगली सरसों (Wild Mustard)
+  3. मोठा (Cyperus)
 
 ========================================
 फसल: टमाटर (Tomato) [tomato]
 ----------------------------------------
-रोग (10):
-  1. Blossom-End Rot (BER)
-  2. Early Blight
-  3. Late Blight
-  4. एन्थ्रेक्नोज़ / फल सड़न (Anthracnose Fruit Rot)
-  5. जीवाणु मुरझान (Bacterial Wilt)
-  6. डैम्पिंग ऑफ (नर्सरी सड़न)
-  7. पत्ती मोड़ वायरस (Tomato Leaf Curl)
-  8. पत्ती मोड़क वायरस (ToLCV / Tomato Leaf Curl Virus)
-  9. फ्यूजेरियम मुरझान (Fusarium Wilt)
-  10. सेप्टोरिया पत्ती धब्बा (Septoria Leaf Spot)
+रोग (9):
+  1. शुरुआती झुलसा (Early Blight) — Alternaria solani
+  2. देर से झुलसा (Late Blight) — Phytophthora infestans
+  3. जीवाणु मुरझान (Bacterial Wilt) — Ralstonia solanacearum
+  4. पत्ती मोड़ वायरस (Tomato Leaf Curl) — Begomovirus (whitefly vector)
+  5. फ्यूजेरियम मुरझान (Fusarium Wilt) — Fusarium oxysporum f.sp. lycopersici
+  6. सेप्टोरिया पत्ती धब्बा (Septoria Leaf Spot) — Septoria lycopersici
+  7. ब्लॉसम-एंड रॉट (Blossom-End Rot) — Calcium disorder
+  8. एन्थ्रेक्नोज / फल सड़न (Anthracnose) — Colletotrichum coccodes
+  9. आर्द्र गलन (Damping-off) — Pythium aphanidermatum
 कीट (7):
-  1. Pinworm / Tuta absoluta
-  2. एफिड / माहू (Aphid) — Myzus persicae / Aphis gossypii
-  3. तंबाकू की इल्ली (Tobacco Caterpillar) — Spodoptera litura
-  4. थ्रिप्स (Thrips) — Thrips tabaci / Scirtothrips dorsalis
-  5. फल छेदक (Fruit Borer) — Helicoverpa armigera
-  6. लीफ माइनर (Leaf Miner) — Liriomyza trifolii
-  7. सफ़ेद मक्खी (Whitefly) — Bemisia tabaci
-खरपतवार (7):
-  1. Amaranthus viridis — Amaranthus viridis
-  2. Echinochloa colona — Echinochloa colona
-  3. काकरा घास (Digitaria) — Digitaria spp.
-  4. गाजर घास (Parthenium) — Parthenium hysterophorus
-  5. घास खरपतवार (Grasses) — Echinochloa colona, Digitaria sanguinalis, Eleusine indica, Dactyloctenium aegyptium
-  6. चौड़ी पत्ती खरपतवार — Trianthema portulacastrum, Amaranthus viridis, Digera arvensis, Portulaca oleracea, Parthenium hysterophorus
-  7. मोठा (Cyperus) — Cyperus rotundus
-
-========================================
-फसल: धान (Paddy) [paddy]
-----------------------------------------
-रोग (10):
-  1. False Smut
-  2. Sheath Blight
-  3. चावल टंग्रो (Tungro)
-  4. जीवाणु पत्ती झुलसा (Bacterial Leaf Blight)
-  5. टंग्रो वायरस (Rice Tungro)
-  6. धान ब्लास्ट (Rice Blast)
-  7. पर्ण आवरण सड़न / शीथ रॉट (Sheath Rot)
-  8. बकाने / फुट रॉट (Bakanae)
-  9. ब्राउन स्पॉट (Brown Spot)
-  10. ब्लास्ट — पत्ती और गर्दन (Blast)
-कीट (9):
-  1. गंधी बग (Gundhi Bug) — Leptocorisa spp.
-  2. गॉल मिज (Gall Midge) — Orseolia oryzae
-  3. धान सेना इल्ली (Rice Armyworm) — Spodoptera mauritia
-  4. पत्ती मोड़क (Leaf Folder) — Cnaphalocrocis medinalis
-  5. पीला तना छेदक (Yellow Stem Borer) — Scirpophaga incertulas
-  6. भूरा फुदका (Brown Planthopper) — Nilaparvata lugens
-  7. राइस हिस्पा (Rice Hispa) — Dicladispa armigera
-  8. सफेद पीठ फुदका / WBPH — Sogatella furcifera
-  9. हरा पत्ती फुदका (Green Leafhopper) — Nephotettix virescens
-खरपतवार (9):
-  1. Ammania, Monochoria, Ludwigia (चौड़ी पत्ती)
-  2. Leptochloa, Ischaemum
-  3. फिम्ब्रिस्टाइलिस / झाड़ू सेज — Fimbristylis miliacea
-  4. मोथा / स्वच्छ सेज (Rice flatsedge) — Cyperus iria
-  5. मोथा, नरस (Cyperus rotundus/difformis) — Cyperus rotundus
-  6. मोनोकोरिया — चौड़ी पत्ती (Monochoria) — Monochoria vaginalis
-  7. लुडविजिया / जल-जामुनी — Ludwigia spp.
-  8. सांवा / जंगली धान (Barnyard grass) — Echinochloa spp.
-  9. सांवा, घास (Echinochloa crus-galli/colona) — Echinochloa crus-galli
+  1. फल छेदक (Fruit Borer)
+  2. सफेद मक्खी (Whitefly)
+  3. पत्ती खनक (Leaf Miner)
+  4. तंबाकू की इल्ली (Tobacco Caterpillar)
+  5. पिनवर्म (Tomato Pinworm)
+  6. एफिड (Aphids)
+  7. थ्रिप्स (Thrips)
+खरपतवार (3):
+  1. गाजर घास (Parthenium)
+  2. मोठा (Cyperus)
+  3. काकरा घास (Digitaria)
 
 ========================================
 फसल: प्याज (Onion) [onion]
 ----------------------------------------
 रोग (5):
-  1. Purple Blotch
-  2. आधार सड़न (Basal Rot / Fusarium)
-  3. मृदुरोमिल आसिता (Downy Mildew)
-  4. सॉफ्ट रॉट / जीवाणु सड़न (Soft Rot / Bacterial — भंडारण)
-  5. स्टेम्फीलियम ब्लाइट (Stemphylium Blight)
-कीट (6):
-  1. आर्मीवर्म / स्पोडोप्टेरा (Armyworm) — Spodoptera exigua / Spodoptera litura
-  2. कटवर्म (Cut Worm) — Agrotis spp.
-  3. कटवर्म (Cutworm) — Agrotis ipsilon / Agrotis spp.
-  4. थ्रिप्स (Onion Thrips) — Thrips tabaci
-  5. प्याज की मक्खी (Onion Maggot) — Delia antiqua
-  6. माइट (Onion / Bulb Mite) — Aceria / Rhizoglyphus / Tetranychus spp. (क्षेत्र अनुसार)
-खरपतवार (5):
-  1. गुल्ली-डंडा (Phalaris) — Phalaris minor
-  2. घास खरपतवार — Echinochloa / Digitaria / Eleusine
-  3. चौड़ी पत्ती + मोथा — Amaranthus / Chenopodium / Cyperus rotundus
-  4. बथुआ (Chenopodium) — Chenopodium album
-  5. मोठा (Cyperus) — Cyperus rotundus
-
-========================================
-फसल: फूलगोभी (Cauliflower) [cauliflower]
-----------------------------------------
-रोग (6):
-  1. अंकुर मरण और स्क्लेरोटिनिया तना सड़न (Sclerotinia)
-  2. अल्टरनेरिया पत्ती धब्बा (Alternaria Leaf Spot)
-  3. काला सड़न (Black Rot)
-  4. क्लबरूट (Clubroot)
-  5. मृदुरोमिल आसिता (Downy Mildew)
-  6. सॉफ्ट रॉट / डंठल सड़न (Soft / Stalk Rot)
+  1. बैंगनी धब्बा (Purple Blotch) — Alternaria porri
+  2. स्टेम्फिलियम झुलसा (Stemphylium Blight) — Stemphylium vesicarium
+  3. आधार सड़न (Basal Rot) — Fusarium oxysporum
+  4. बलूत फफूंद (Downy Mildew) — Peronospora destructor
+  5. सॉफ्ट रॉट (Soft Rot) — Pectobacterium carotovorum
 कीट (5):
-  1. कटवर्म (Cutworm) — Agrotis ipsilon / Agrotis spp.
-  2. गोभी तितली / सेमीलूपर — Pieris brassicae / Trichoplusia ni
-  3. गोभी माहू (Aphid) — Brevicoryne brassicae / Lipaphis erysimi
-  4. तम्बाकू इल्ली (Tobacco Caterpillar) — Spodoptera litura
-  5. हीरक पृष्ठ पतंगा (DBM / Diamondback Moth) — Plutella xylostella
-खरपतवार (7):
-  1. Amaranthus — Amaranthus
-  2. bathua), Anagallis, Melilotus (broadleaf, रबी (Chenopodium) — Chenopodium
-  3. Chenopodium album — Chenopodium album
-  4. Digitaria — Digitaria
-  5. Poa, Phalaris (घास)
-  6. घास खरपतवार — Echinochloa / Digitaria / Poa
-  7. नरस (Cyperus) — Cyperus
-
-========================================
-फसल: बाजरा (Bajra) [bajra]
-----------------------------------------
-रोग (6):
-  1. Downy Mildew / Green Ear
-  2. Ergot
-  3. कंड (Grain Smut)
-  4. ब्लास्ट (Pearl millet blast)
-  5. रस्ट (Pearl millet rust)
-  6. स्मट (Grain smut)
-कीट (7):
-  1. अंकुर मक्खी (Shoot Fly) — Atherigona approximata
-  2. ग्रे वीविल / पत्ती कतरन (Grey weevil — जहाँ लागु) — Myllocerus spp.
-  3. तना छेदक (Stem Borer) — Coniesta ignefusalis
-  4. तना छेदक (Stem Borer) — Chilo partellus
-  5. बाली की इल्ली / Earhead worm (Helicoverpa) — Helicoverpa armigera
-  6. माहूँ / एफिड (ब्लास्ट वेक्टर दबाव भी) — Rhopalosiphum maidis / Sitobion spp.
-  7. सफेद ग्रब (White Grub) — Holotrichia consanguinea
-खरपतवार (8):
-  1. Amaranthus — Amaranthus
-  2. BLW, major in kharif (Trianthema portulacastrum) — Trianthema portulacastrum
-  3. Commelina — Commelina
-  4. Digitaria, Echinochloa, Cenchrus, Eleusine (घास) — Echinochloa
-  5. काकरा घास (Digitaria) — Digitaria sanguinalis
-  6. गाजर घास (Parthenium) — Parthenium hysterophorus
-  7. जंगली ज्वार (Wild Sorghum) — Sorghum halepense
-  8. मोथा / दूब — Cyperus / Cynodon
-
-========================================
-फसल: बैंगन (Brinjal) [brinjal]
-----------------------------------------
-रोग (6):
-  1. Phomopsis Blight & Fruit Rot
-  2. अंकुर मरण — नर्सरी (Damping-off)
-  3. अल्टरनेरिया पर्ण धब्बा
-  4. छोटी पत्ती (Little Leaf)
-  5. जीवाणु मुरझान (Bacterial Wilt)
-  6. लिटिल लीफ (फाइटोप्लाज्मा)
-कीट (7):
-  1. एपिलाचना भृंग — हड्डा (Epilachna) — Henosepilachna vigintioctopunctata
-  2. तेला / जस्सिड (Jassid / Leafhopper) — Amrasca biguttula biguttula
-  3. प्ररोह एवं फल छेदक (BSFB / Shoot & Fruit Borer) — Leucinodes orbonalis
-  4. माहूँ (Aphid) — Aphis gossypii / Myzus persicae
-  5. लाल मकड़ी माइट (Red Spider Mite) — Tetranychus urticae
-  6. सफ़ेद मक्खी (Whitefly) — Bemisia tabaci
-  7. हादा / एपिलाच्ना बीटल — Epilachna vigintioctopunctata (Hadda beetle)
-खरपतवार (5):
-  1. Amaranthus, Portulaca, Trianthema, Commelina (चौड़ी पत्ती) — Amaranthus
-  2. Digitaria — Digitaria
-  3. Parthenium — Parthenium
-  4. घास खरपतवार — Echinochloa / Digitaria / Eleusine
-  5. नरस (Cyperus) — Cyperus
-
-========================================
-फसल: भिंडी (Bhindi) [bhindi]
-----------------------------------------
-रोग (6):
-  1. Yellow Vein Mosaic Virus
-  2. एनेशन पत्ती मोड़ वायरस (OELCV)
-  3. चूर्णिल फफूंद (Powdery Mildew)
-  4. पीली शिरा मोज़ेक वायरस (YVMV)
-  5. फ्यूज़ेरियम मुरझान (Fusarium Wilt)
-  6. सर्कोस्पोरा / अल्टरनेरिया पत्ती धब्बा
-कीट (6):
-  1. Whitefly (YVMV vector)
-  2. अंकुर और फल छेदक (Shoot & Fruit Borer) — Earias vittella / Earias insulana
-  3. एफिड (Aphids) — Aphis gossypii
-  4. लाल मकड़ी माइट (Red Spider Mite) — Tetranychus urticae
-  5. सफेद मक्खी — पीली शिरा मोज़ेक वाहक — Bemisia tabaci
-  6. हरा तैलक / पत्ती फुदका (Jassids) — Amrasca biguttula biguttula
+  1. थ्रिप्स (Thrips)
+  2. प्याज की मक्खी (Onion Maggot)
+  3. कटवर्म (Cut Worm)
+  4. आर्मीवर्म (Spodoptera)
+  5. कंद माइट (Bulb Mite)
 खरपतवार (3):
-  1. Amaranthus, Trianthema, Commelina (चौड़ी पत्ती)
-  2. Echinochloa, Digitaria, Dactyloctenium (घास)
-  3. नरस (Cyperus) — Cyperus
-
-========================================
-फसल: मक्का (Maize) [maize]
-----------------------------------------
-रोग (8):
-  1. Banded Leaf & Sheath Blight
-  2. Turcicum Leaf Blight
-  3. डाउनी मिल्ड्यू (Sorghum Downy Mildew)
-  4. तना सड़न / चारकोल रॉट (Charcoal Rot)
-  5. बैंडेड लीफ एंड शीथ ब्लाइट (BLSB)
-  6. मेडिस पत्ती झुलसा (Maydis Leaf Blight)
-  7. रस्ट (Common / Polysora Rust)
-  8. सामान्य रतुआ (Common Rust)
-कीट (6):
-  1. अंकुर मक्खी (Shoot Fly) — Atherigona soccata
-  2. गुलाबी तना छेदक / अंकुर मक्खी — Sesamia inferens / Atherigona spp.
-  3. तना छेदक (Stem Borer) — Chilo partellus / Sesamia inferens
-  4. दीमक व सफेद गिडार (Termite & White Grub) — Odontotermes obesus / Holotrichia spp.
-  5. फॉल आर्मीवर्म (Fall Armyworm) — Spodoptera frugiperda
-  6. माहूँ (Corn Leaf Aphid) — Rhopalosiphum maidis
-खरपतवार (8):
-  1. Amaranthus, Commelina, Celosia, Trianthema (चौड़ी पत्ती)
-  2. Echinochloa, Digitaria, Eleusine (घास)
-  3. इटसा घास (Trianthema) — Trianthema portulacastrum
-  4. तांदला (False Amaranth) — Digera arvensis
-  5. नरस (Cyperus) — Cyperus
-  6. मकरा घास (Crowfoot Grass) — Dactyloctenium aegyptium
-  7. मोथा (Purple Nutsedge) — Cyperus rotundus
-  8. सांवा घास (Barnyard Grass) — Echinochloa colona
+  1. बथुआ (Chenopodium)
+  2. गुल्ली-डंडा (Phalaris)
+  3. मोठा (Cyperus)
 
 ========================================
 फसल: मिर्च (Chilli) [chilli]
 ----------------------------------------
-रोग (9):
-  1. Leaf Curl Complex (Murda/Chur-chura)
-  2. अंकुर मरण / मुरझान (Damping-off)
-  3. एन्थ्रेक्नोज़ / फल सड़न / डाईबैक (Anthracnose)
-  4. चूर्णिल फफूंद (Powdery Mildew)
-  5. पत्ती मोड़ समूह — मुर्दा
-  6. फाइटोफ्थोरा ब्लाइट (कॉलर/जड़ सड़न)
-  7. बैक्टीरियल विल्ट (Bacterial Wilt)
-  8. लीफ कर्ल / मोज़ेक वायरस (Leaf Curl Virus)
-  9. सूखना-पीछे हटना (Die-back)
-कीट (8):
-  1. Yellow / Broad Mite
-  2. एफिड — वायरस वाहक (Aphids) — Aphis gossypii / Myzus persicae
-  3. तम्बाकू इल्ली (Tobacco Caterpillar) — Spodoptera litura
-  4. फल छेदक (Fruit Borer) — Helicoverpa armigera / Spodoptera litura
-  5. माइट (ब्रॉड माइट + मकड़ी माइट) — Polyphagotarsonemus latus (ब्रॉड/येलो माइट) / Tetranychus urticae (स्पाइडर माइट)
-  6. माहूँ (Aphid) — Myzus persicae / Aphis gossypii
-  7. मिर्च थ्रिप्स (Chilli Thrips) — Scirtothrips dorsalis (कभी-कभी Thrips parvispinus/tabaci)
-  8. सफ़ेद मक्खी (Whitefly) — Bemisia tabaci
-खरपतवार (9):
-  1. Amaranthus viridis — Amaranthus viridis
-  2. Amaranthus, Parthenium, Trianthema, Commelina (चौड़ी पत्ती)
-  3. Echinochloa colona — Echinochloa colona
-  4. Echinochloa, Digitaria (घास)
-  5. इटसा घास (Trianthema) — Trianthema portulacastrum
-  6. काकरा घास — घास (Digitaria) — Digitaria sanguinalis
-  7. गाजर घास (Parthenium) — Parthenium hysterophorus
-  8. घास खरपतवार (Grasses) — Digitaria sanguinalis / Echinochloa colona / Eleusine indica
-  9. नरस (Cyperus) — Cyperus
-
-========================================
-फसल: मूंग (Moong) [moong]
-----------------------------------------
-रोग (4):
-  1. चूर्णिल फफूंद (Powdery Mildew)
-  2. पीला मोज़ेक वायरस (YMV)
-  3. सर्कोस्पोरा पत्ती धब्बा (Cercospora Leaf Spot)
-  4. सूखी जड़ सड़न (Dry Root Rot)
-कीट (3):
-  1. थ्रिप्स — फूल पर (Thrips) — Megalurothrips distalis
-  2. फली छेदक समूह — Helicoverpa armigera / Maruca vitrata
-  3. सफेद मक्खी — पीला मोज़ेक वायरस वाहक — Bemisia tabaci
+रोग (6):
+  1. एन्थ्रेक्नोज / फल सड़न (Anthracnose) — Colletotrichum capsici
+  2. सूखना-पीछे हटना (Die-back) — Colletotrichum gloeosporioides
+  3. पत्ती मोड़ वायरस (Leaf Curl Virus) — Begomovirus (whitefly vector)
+  4. चूर्णिल फफूंद (Powdery Mildew) — Leveillula taurica
+  5. अंकुर मरण / मुरझान (Damping-off) — Pythium / Fusarium / Rhizoctonia
+  6. जीवाणु मुरझान (Bacterial Wilt) — Ralstonia solanacearum
+कीट (5):
+  1. मिर्च थ्रिप्स (Chilli Thrips)
+  2. सफेद मक्खी (Whitefly)
+  3. फल छेदक (Fruit Borer)
+  4. पीला माइट (Yellow Mite)
+  5. एफिड (Aphids)
 खरपतवार (3):
-  1. Echinochloa, Digitaria (घास)
-  2. Trianthema, Amaranthus, Commelina (चौड़ी पत्ती)
-  3. नरस (Cyperus) — Cyperus
+  1. गाजर घास (Parthenium)
+  2. इटसा घास (Trianthema)
+  3. काकरा घास — घास (Digitaria)
 
 ========================================
-फसल: मूंगफली (Moongfali) [moongfali]
+फसल: कपास (Cotton) [cotton]
 ----------------------------------------
-रोग (9):
-  1. Tikka Leaf Spot (Early & Late)
-  2. अल्टरनेरिया पत्ती धब्बा (Alternaria leaf blight)
-  3. जड़ सड़न + भंडारण aflatoxin सावधानी
-  4. टिक्का — Early / Late leaf spot
-  5. तना सड़न / कॉलर रॉट (Stem / Collar rot)
-  6. तना सड़न / गर्दन सड़न
-  7. पीनट बड नेक्रोसिस (Peanut bud necrosis — वायरस)
-  8. रतुआ (Rust)
-  9. शुरुआती और देर से पत्ती धब्बा — टिक्का
-कीट (6):
-  1. जैसिड / लीफहॉपर — Empoasca kerri / Empoasca spp.
-  2. तम्बाकू इल्ली / फल छेदक (Spodoptera / Helicoverpa) — Spodoptera litura / Helicoverpa armigera
-  3. थ्रिप्स — कली सड़न वायरस वाहक — Scirtothrips dorsalis / Frankliniella schultzei
-  4. पत्ती खनक (Leaf Miner) — Aproaerema modicella
-  5. माहूँ / एफिड — Aphis craccivora
-  6. सफ़ेद गिडार (White grub) — Holotrichia consanguinea / Holotrichia spp.
-खरपतवार (6):
-  1. Amaranthus / Digera — Amaranthus / Digera
-  2. Digitaria spp. — Digitaria spp.
-  3. Digitaria, Dactyloctenium, Echinochloa (घास)
-  4. Trianthema, Amaranthus, Commelina (चौड़ी पत्ती)
-  5. नरस (Cyperus) — Cyperus
-  6. सांवा / चौड़ी पत्ती मिश्रित (प्रारंभिक) — Echinochloa / Digitaria / Amaranthus / Digera
-
-========================================
-फसल: सरसों (Mustard) [mustard]
-----------------------------------------
-रोग (5):
-  1. Alternaria Leaf Spot
-  2. White Rust
-  3. अल्टरनेरिया झुलसा (Alternaria Blight)
-  4. बलूत फफूंद (Downy Mildew)
-  5. स्क्लेरोटिनिया तना सड़न (Sclerotinia Stem Rot)
-कीट (4):
-  1. Diamondback Moth — Plutella xylostella
-  2. एफिड (Aphids) — Lipaphis erysimi
-  3. रंगीन बग (Painted Bug) — Bagrada hilaris
-  4. सरसों की आरी मक्खी (Mustard Sawfly) — Athalia proxima
+रोग (6):
+  1. जीवाणु झुलसा (Bacterial Blight) — Xanthomonas citri pv. malvacearum
+  2. अल्टरनेरिया पत्ती धब्बा (Alternaria Leaf Spot) — Alternaria macrospora
+  3. जड़ सड़न (Root Rot) — Rhizoctonia bataticola
+  4. धूसर फफूंद / ग्रे मिल्ड्यू (Grey Mildew) — Ramularia areola
+  5. मुरझान (Fusarium Wilt) — Fusarium oxysporum f.sp. vasinfectum
+  6. पत्ती मोड़ वायरस (Cotton Leaf Curl) — Cotton leaf curl virus (whitefly vector)
+कीट (7):
+  1. गुलाबी रुई इल्ली (Pink Bollworm)
+  2. सफेद मक्खी (Whitefly)
+  3. हरा तैलक (Jassids)
+  4. थ्रिप्स (Thrips)
+  5. माहू (Aphid)
+  6. मिलीबग (Mealybug)
+  7. चित्तीदार सुंडी (American Bollworm)
 खरपतवार (3):
-  1. गुल्ली-डंडा (Phalaris) — Phalaris minor
-  2. जंगली जई (Wild Oat) — Avena fatua
-  3. बथुआ (Chenopodium) — Chenopodium album
+  1. इटसा घास (Trianthema)
+  2. काकरा घास (Digitaria)
+  3. मोठा (Cyperus)
+
+========================================
+फसल: गन्ना (Sugarcane) [sugarcane]
+----------------------------------------
+रोग (6):
+  1. लाल सड़न (Red Rot) — Colletotrichum falcatum
+  2. कंड रोग (Smut) — Sporisorium scitamineum
+  3. घास जैसी कली (Grassy Shoot) — Phytoplasma (leafhopper vector)
+  4. मुरझान (Wilt) — Fusarium sacchari
+  5. रतुआ (Rust) — Puccinia melanocephala
+  6. पोक्का बोएंग (Pokkah Boeng) — Fusarium moniliforme
+कीट (7):
+  1. ऊपरी छेदक (Top Borer)
+  2. पायरिला (Pyrilla)
+  3. दीमक (Termites)
+  4. शुरुआती अंकुर छेदक (Early Shoot Borer)
+  5. पोर छेदक (Internode Borer)
+  6. सफेद गिडार (White Grub)
+  7. ऊनी माहूँ (Woolly Aphid)
+खरपतवार (3):
+  1. मोठा (Cyperus)
+  2. हरियाली घास (Hariali Grass)
+  3. गाजर घास (Parthenium)
 
 ========================================
 फसल: सोयाबीन (Soybean) [soybean]
 ----------------------------------------
-रोग (10):
-  1. Rust
-  2. एन्थ्रेक्नोज़ / पॉड ब्लाइट (Anthracnose)
-  3. कॉलर रॉट / सीडलिंग ब्लाइट (Collar Rot)
-  4. चारकोल रॉट / जड़ सड़न (Charcoal Rot)
-  5. जड़ सड़न (Rhizoctonia Root Rot)
-  6. पीला मोज़ेक (Yellow Mosaic)
-  7. पीला मोज़ेक वायरस (YMV)
-  8. बैक्टीरियल पुस्ट्यूल (Bacterial Pustule)
-  9. मेंढक-आँख पत्ती धब्बा (Frog-eye Leaf Spot)
-  10. रतुआ (Rust)
-कीट (8):
-  1. अर्ध-लूपर इल्ली (Semilooper) — Chrysodeixis acuta
-  2. एफिड / माहू (Aphid) — Aphis glycines / Aphis craccivora
-  3. कमर बंद भृंग (Girdle Beetle) — Oberea brevis
-  4. कमर बंद भृंग (Girdle Beetle) — Obereopsis brevis
-  5. तना मक्खी (Stem Fly) — Melanagromyza sojae
-  6. पत्ती खाने वाले — तम्बाकू इल्ली, अर्ध-लूपर, बिहार रोएँदार — Spodoptera litura / Chrysodeixis acuta / Spilosoma obliqua
-  7. पत्ती खाने वाले Complex
-  8. सफ़ेद मक्खी (Whitefly) — YMV वेक्टर — Bemisia tabaci
-खरपतवार (11):
-  1. Amaranthus, Commelina, Celosia, Euphorbia (चौड़ी पत्ती)
-  2. Commelina / broadleaf complex — Commelina / broadleaf complex
-  3. Commelina benghalensis — Commelina benghalensis
-  4. Echinochloa, Digitaria, Eleusine (घास)
-  5. काकरा घास (Digitaria) — Digitaria sanguinalis
-  6. गुल्ली-डंडा (Phalaris minor) — Phalaris minor
-  7. डिगेरा / गोरखबूटी — Digera arvensis
-  8. पत्थरचट्टा / कुल्फा (Horse purslane) — Trianthema portulacastrum
-  9. मोठा (Cyperus) — Cyperus rotundus
-  10. मोथा (Nutsedge) — Cyperus spp.
-  11. सांवा / जंगली घास (Barnyard/love grass) — Echinochloa spp.
+रोग (6):
+  1. रतुआ (Rust) — Phakopsora pachyrhizi
+  2. पीला मोज़ेक (Yellow Mosaic) — Mungbean Yellow Mosaic Virus
+  3. जड़ सड़न (Rhizoctonia Root Rot) — Rhizoctonia solani
+  4. एन्थ्रेक्नोज (Anthracnose) — Colletotrichum truncatum
+  5. चारकोल रॉट (Charcoal Rot) — Macrophomina phaseolina
+  6. मेंढक-आँख पत्ती धब्बा (Frog-eye Leaf Spot) — Cercospora sojina
+कीट (3):
+  1. कमर बंद भृंग (Girdle Beetle)
+  2. अर्ध-लूपर इल्ली (Semilooper)
+  3. सफेद मक्खी (Whitefly)
+खरपतवार (3):
+  1. गुल्ली-डंडा (Phalaris minor)
+  2. मोठा (Cyperus)
+  3. काकरा घास (Digitaria)
 
 ========================================
-फसल:  (cabbage) [cabbage]
+फसल: सरसों (Mustard) [mustard]
 ----------------------------------------
 रोग (4):
-  1. अल्टरनेरिया पत्ती धब्बा (Alternaria Leaf Spot)
-  2. काला सड़न (Black Rot)
-  3. बलूत फफूंद (Downy Mildew)
-  4. स्क्लेरोटिनिया / निचला सड़न
-कीट (4):
-  1. एफिड और रंगीन बग (Aphids & Painted Bug) — Brevicoryne brassicae / Bagrada hilaris
-  2. गोभी तितली (Cabbage Butterfly) — Pieris brassicae
-  3. गोभी सिर छेदक (Cabbage Head Borer) — Hellula undalis
-  4. हीरा पीठ मोथ (Diamondback Moth) — Plutella xylostella
+  1. सफेद रतुआ (White Rust) — Albugo candida
+  2. अल्टरनेरिया झुलसा (Alternaria Blight) — Alternaria brassicae
+  3. स्क्लेरोटिनिया तना सड़न (Sclerotinia Stem Rot) — Sclerotinia sclerotiorum
+  4. बलूत फफूंद (Downy Mildew) — Hyaloperonospora brassicae
+कीट (3):
+  1. एफिड (Aphids)
+  2. रंगीन बग (Painted Bug)
+  3. सरसों की आरी मक्खी (Mustard Sawfly)
 खरपतवार (3):
-  1. Chenopodium, Melilotus, Anagallis (चौड़ी पत्ती, रबी)
-  2. Poa, Phalaris (घास)
-  3. नरस (Cyperus) — Cyperus
+  1. बथुआ (Chenopodium)
+  2. जंगली जई (Wild Oat)
+  3. गुल्ली-डंडा (Phalaris)
 
 ========================================
-फसल:  (capsicum) [capsicum]
+फसल: अरहर (Pulses) [pulses]
+----------------------------------------
+रोग (7):
+  1. फ्यूज़ेरियम मुरझान (Fusarium Wilt) — Fusarium udum
+  2. चूर्णिल फफूंद (Powdery Mildew) — Erysiphe pisi
+  3. सर्कोस्पोरा पत्ती धब्बा (Cercospora Leaf Spot) — Cercospora canescens
+  4. पीला मोज़ेक (Yellow Mosaic) — Mungbean Yellow Mosaic Virus
+  5. फफूंद झुलसा (Phytophthora Blight) — Phytophthora cajani
+  6. बांझपन मोज़ेक (Sterility Mosaic) — Aceria cajani
+  7. सूखी जड़ सड़न (Dry Root Rot) — Rhizoctonia bataticola
+कीट (6):
+  1. फली छेदक (Pod Borer)
+  2. एफिड (Aphids)
+  3. दाल की कीड़ा (Bruchids)
+  4. पंख वाली मोथ (Plume Moth)
+  5. फली चूसने वाले कीड़े (Pod Sucking Bugs)
+  6. फली मक्खी (Pod Fly)
+खरपतवार (3):
+  1. गुल्ली-डंडा (Phalaris minor)
+  2. बथुआ (Chenopodium)
+  3. मोठा (Cyperus)
+
+========================================
+फसल: आम (Mango) [mango]
 ----------------------------------------
 रोग (5):
-  1. अंकुर मरण और जड़ सड़न
-  2. एन्थ्रेक्नोज / फल सड़न (Anthracnose)
-  3. चूर्णिल फफूंद (Powdery Mildew)
-  4. जीवाणु धब्बा (Bacterial Spot)
-  5. मोज़ेक / पत्ती मोड़ वायरस
-कीट (4):
-  1. एफिड और सफेद मक्खी — वायरस वाहक — Aphis gossypii / Bemisia tabaci
-  2. थ्रिप्स (Thrips) — Scirtothrips dorsalis / Thrips parvispinus
-  3. फल छेदक (Fruit Borer) — Helicoverpa armigera
-  4. माइट — चौड़ा और दो-धब्बा — Polyphagotarsonemus latus / Tetranychus urticae
-खरपतवार (4):
-  1. Echinochloa (open field grassy) — Echinochloa
-  2. Cyperus (open field sedge) — Cyperus
-  3. Amaranthus (open field broadleaf) — Amaranthus
-  4. Commelina (open field broadleaf) — Commelina
+  1. एन्थ्रेक्नोज (Anthracnose) — Colletotrichum gloeosporioides
+  2. चूर्णिल फफूंद (Powdery Mildew) — Oidium mangiferae
+  3. सूखना-पीछे हटना (Die-back) — Lasiodiplodia theobromae
+  4. जीवाणु कैंकर (Bacterial Canker) — Xanthomonas citri pv. mangiferaeindicae
+  5. मालफॉर्मेशन (Malformation) — Fusarium mangiferae
+कीट (3):
+  1. आम फुदका (Mango Hopper)
+  2. फल मक्खी (Fruit Fly)
+  3. आम मिलीबग (Mango Mealybug)
+खरपतवार (3):
+  1. गाजर घास (Parthenium)
+  2. दूब घास (Cynodon)
+  3. मोठा (Cyperus)
 
 ========================================
-कुल: फसल 24 | रोग 159 | कीट 137 | खरपतवार 131
+फसल: केला (Banana) [banana]
+----------------------------------------
+रोग (4):
+  1. सिगाटोका पत्ती धब्बा (Sigatoka Leaf Spot) — Mycosphaerella musicola
+  2. पनामा मुरझान (Panama Wilt) — Fusarium oxysporum f.sp. cubense
+  3. गुच्छेदार शीर्ष (Bunchy Top) — Banana Bunchy Top Virus
+  4. जीवाणु मुलायम सड़न (Soft Rot) — Erwinia chrysanthemi
+कीट (3):
+  1. केले का एफिड (Banana Aphid)
+  2. कंद घुंवा (Rhizome Weevil)
+  3. थ्रिप्स (Thrips)
+खरपतवार (3):
+  1. मोठा (Cyperus)
+  2. गाजर घास (Parthenium)
+  3. काकरा घास (Digitaria)
 
-कैटलॉग फसलें जिन पर अलग PDW डेटा कम/नहीं:
-  - chana
-  - masoor
-  - urad
-  - ginger
-  - garlic
+========================================
+फसल: अंगूर (Grapes) [grapes]
+----------------------------------------
+रोग (4):
+  1. बलूत फफूंद (Downy Mildew) — Plasmopara viticola
+  2. चूर्णिल फफूंद (Powdery Mildew) — Erysiphe necator
+  3. एन्थ्रेक्नोज (Anthracnose) — Elsinoe ampelina
+  4. ग्रे मोल्ड / बोट्राइटिस (Grey Mold) — Botrytis cinerea
+कीट (3):
+  1. थ्रिप्स (Thrips)
+  2. फुदका भृंग (Flea Beetle)
+  3. मिलीबग (Mealybug)
+खरपतवार (3):
+  1. दूब घास (Cynodon)
+  2. मोठा (Cyperus)
+  3. गाजर घास (Parthenium)
+
+========================================
+फसल: खीरा (Cucumber) [cucumber]
+----------------------------------------
+रोग (6):
+  1. डाउनी मिल्ड्यू (Downy Mildew) — Pseudoperonospora cubensis
+  2. जीवाणु कोणीय धब्बा (Angular Leaf Spot) — Pseudomonas syringae pv. lachrymans
+  3. एन्थ्रेक्नोज (Anthracnose) — Colletotrichum orbiculare
+  4. खीरा मोज़ेक वायरस (CMV / CGMMV) — Cucumber green mottle mosaic virus
+  5. चूर्णिल फफूंद (Powdery Mildew) — Podosphaera xanthii
+  6. मुरझान एवं जड़ सड़न (Fusarium / Pythium) — Pythium aphanidermatum
+कीट (5):
+  1. थ्रिप्स (Thrips)
+  2. फल मक्खी (Fruit Fly)
+  3. लाल कद्दू भृंग (Red Pumpkin Beetle)
+  4. लाल मकड़ी माइट (Red Spider Mite)
+  5. सफ़ेद मक्खी (Whitefly)
+खरपतवार (0):
+
+========================================
+फसल: चना (Chana) [chana]
+----------------------------------------
+रोग (2):
+  1. मुरझान (Fusarium Wilt) — Fusarium oxysporum f.sp. ciceris
+  2. एस्कोकाइटा झुलसा — Ascochyta rabiei
+कीट (2):
+  1. फली छेदक (Pod Borer)
+  2. कटवर्म (Cutworm)
+खरपतवार (1):
+  1. बथुआ (Chenopodium)
+
+========================================
+फसल: मसूर (Masoor) [masoor]
+----------------------------------------
+रोग (2):
+  1. रतुआ (Rust) — Uromyces viciae-fabae
+  2. मुरझान (Wilt) — Fusarium oxysporum
+कीट (2):
+  1. एफिड (Aphids)
+  2. फली छेदक
+खरपतवार (1):
+  1. बथुआ
+
+========================================
+फसल: उड़द (Urad) [urad]
+----------------------------------------
+रोग (2):
+  1. पीला मोज़ेक (YMV) — Mungbean yellow mosaic virus
+  2. पाउडरी मिलड्यू — Erysiphe polygoni
+कीट (2):
+  1. सफेद मक्खी
+  2. फली छेदक
+खरपतवार (1):
+  1. मोठा
+
+========================================
+फसल: अदरक (Ginger) [ginger]
+----------------------------------------
+रोग (2):
+  1. सॉफ्ट रॉट / राइजोम रॉट — Pythium spp.
+  2. पत्ती धब्बा — Phyllosticta zingiberi
+कीट (2):
+  1. तना छेदक
+  2. सफेद गिडार
+खरपतवार (1):
+  1. चौड़ी पत्ती खरपतवार
+
+========================================
+फसल: लहसुन (Garlic) [garlic]
+----------------------------------------
+रोग (2):
+  1. बैंगनी धब्बा (Purple Blotch) — Alternaria porri
+  2. बेसल रॉट — Fusarium oxysporum
+कीट (1):
+  1. थ्रिप्स
+खरपतवार (1):
+  1. बथुआ / चौड़ी पत्ती
+
+========================================
+कुल: फसल 22 | रोग 112 | कीट 96 | खरपतवार 53

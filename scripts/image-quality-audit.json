@@ -1,0 +1,82 @@
+{
+  "totalImages": 673,
+  "counts": {
+    "diseases": 235,
+    "pests": 172,
+    "weeds": 31,
+    "crops": 41,
+    "deficiencies": 194
+  },
+  "duplicates": [
+    {
+      "hash": "bbe9f1e471",
+      "count": 2,
+      "files": [
+        "/images/diseases/disease-begomovirus-leaf-curl-2.jpg",
+        "/images/diseases/disease-begomovirus-leaf-curl-3.jpg"
+      ]
+    },
+    {
+      "hash": "9e48c81448",
+      "count": 2,
+      "files": [
+        "/images/diseases/disease-potato-black-scurf-2.jpg",
+        "/images/diseases/disease-potato-black-scurf.jpg"
+      ]
+    },
+    {
+      "hash": "2edc69ee7e",
+      "count": 2,
+      "files": [
+        "/images/diseases/disease-potato-black-scurf-3.jpg",
+        "/images/diseases/disease-rhizoctonia-bataticola-3.jpg"
+      ]
+    },
+    {
+      "hash": "9f3fc72426",
+      "count": 2,
+      "files": [
+        "/images/pests/pest-atherigona-approximata-3.jpg",
+        "/images/pests/pest-atherigona-soccata-3.jpg"
+      ]
+    },
+    {
+      "hash": "e14bd30a2d",
+      "count": 2,
+      "files": [
+        "/images/pests/pest-odontotermes-obesus-2.jpg",
+        "/images/pests/pest-odontotermes-spp-2.jpg"
+      ]
+    },
+    {
+      "hash": "e87ba5b407",
+      "count": 2,
+      "files": [
+        "/images/pests/pest-odontotermes-obesus-3.jpg",
+        "/images/pests/pest-odontotermes-spp-3.jpg"
+      ]
+    },
+    {
+      "hash": "8869274776",
+      "count": 2,
+      "files": [
+        "/images/crops/groundnut.png",
+        "/images/crops/moongfali.png"
+      ]
+    }
+  ],
+  "lowRes": [
+    {
+      "file": "/images/diseases/disease-fusarium-ciceri-2.jpg",
+      "width": 333,
+      "height": 485,
+      "size": 32765
+    },
+    {
+      "file": "/images/pests/pest-myzus-persicae-3.jpg",
+      "width": 310,
+      "height": 331,
+      "size": 15516
+    }
+  ]
+}

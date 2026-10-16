@@ -1,0 +1,194 @@
+{
+  "timestamp": "2026-10-11T03:32:23.007Z",
+  "crops": {
+    "total": 28,
+    "missing": 0
+  },
+  "curativeProblems": {
+    "total": 119,
+    "missing": 0,
+    "missingSlot2": [],
+    "missingSlot3": []
+  },
+  "weeds": {
+    "total": 0,
+    "missingEarly": 0,
+    "missingLate": 0
+  },
+  "nutrients": {
+    "total": 16,
+    "missingShared": 4
+  },
+  "duplicates": [
+    {
+      "hash": "8869274776",
+      "files": [
+        "/images/crops/groundnut.png",
+        "/images/crops/moongfali.png"
+      ]
+    },
+    {
+      "hash": "041b2002f4",
+      "files": [
+        "/images/diseases/disease-alternaria-brassicae-2.jpg",
+        "/images/diseases/disease-alternaria-macrospora-2.jpg",
+        "/images/diseases/disease-alternaria-porri-2.jpg"
+      ]
+    },
+    {
+      "hash": "4943d0bef4",
+      "files": [
+        "/images/diseases/disease-alternaria-brassicae-3.jpg",
+        "/images/diseases/disease-alternaria-macrospora-3.jpg",
+        "/images/diseases/disease-alternaria-porri-3.jpg"
+      ]
+    },
+    {
+      "hash": "a99a924a3c",
+      "files": [
+        "/images/diseases/disease-ascochyta-rabiei-2.jpg",
+        "/images/diseases/disease-ascochyta-rabiei.jpg"
+      ]
+    },
+    {
+      "hash": "bbe9f1e471",
+      "files": [
+        "/images/diseases/disease-begomovirus-leaf-curl-2.jpg",
+        "/images/diseases/disease-begomovirus-leaf-curl-3.jpg"
+      ]
+    },
+    {
+      "hash": "e4cf71b466",
+      "files": [
+        "/images/diseases/disease-bhendi-yvmv-2.jpg",
+        "/images/diseases/disease-mungbean-yellow-mosaic-virus-2.jpg"
+      ]
+    },
+    {
+      "hash": "a9cdace7dc",
+      "files": [
+        "/images/diseases/disease-bhendi-yvmv-3.jpg",
+        "/images/diseases/disease-mungbean-yellow-mosaic-virus-3.jpg"
+      ]
+    },
+    {
+      "hash": "4375fb077d",
+      "files": [
+        "/images/diseases/disease-fusarium-ciceri-2.jpg",
+        "/images/diseases/disease-fusarium-cubense-2.jpg",
+        "/images/diseases/disease-fusarium-lycopersici-2.jpg",
+        "/images/diseases/disease-fusarium-oxysporum-2.jpg"
+      ]
+    },
+    {
+      "hash": "4e99eacb5f",
+      "files": [
+        "/images/diseases/disease-fusarium-ciceri-3.jpg",
+        "/images/diseases/disease-fusarium-cubense-3.jpg",
+        "/images/diseases/disease-fusarium-oxysporum-3.jpg"
+      ]
+    },
+    {
+      "hash": "ab4db9becb",
+      "files": [
+        "/images/diseases/disease-fusarium-cubense.jpg",
+        "/images/diseases/disease-fusarium-oxysporum-f-sp-cubense.jpg"
+      ]
+    },
+    {
+      "hash": "2edc69ee7e",
+      "files": [
+        "/images/diseases/disease-macrophomina-phaseolina-2.jpg",
+        "/images/diseases/disease-potato-black-scurf-3.jpg",
+        "/images/diseases/disease-rhizoctonia-bataticola-3.jpg"
+      ]
+    },
+    {
+      "hash": "f16dadbe8f",
+      "files": [
+        "/images/diseases/disease-macrophomina-phaseolina-3.jpg",
+        "/images/diseases/disease-potato-black-scurf-2.jpg",
+        "/images/diseases/disease-rhizoctonia-bataticola-2.jpg"
+      ]
+    },
+    {
+      "hash": "b4da6eaa85",
+      "files": [
+        "/images/diseases/disease-puccinia-arachidis-2.jpg",
+        "/images/diseases/disease-puccinia-melanocephala-2.jpg"
+      ]
+    },
+    {
+      "hash": "79281b4c46",
+      "files": [
+        "/images/diseases/disease-puccinia-arachidis-3.jpg",
+        "/images/diseases/disease-puccinia-melanocephala-3.jpg"
+      ]
+    },
+    {
+      "hash": "7e79dc0a9c",
+      "files": [
+        "/images/diseases/disease-ralstonia-solanacearum-2.jpg",
+        "/images/diseases/disease-ralstonia-solanacearum-3.jpg"
+      ]
+    },
+    {
+      "hash": "7978695cea",
+      "files": [
+        "/images/diseases/disease-xanthomonas-oryzae-2.jpg",
+        "/images/diseases/disease-xanthomonas-oryzae-3.jpg"
+      ]
+    },
+    {
+      "hash": "9f3fc72426",
+      "files": [
+        "/images/pests/pest-atherigona-approximata-3.jpg",
+        "/images/pests/pest-atherigona-soccata-3.jpg"
+      ]
+    },
+    {
+      "hash": "e14bd30a2d",
+      "files": [
+        "/images/pests/pest-odontotermes-obesus-2.jpg",
+        "/images/pests/pest-odontotermes-spp-2.jpg"
+      ]
+    },
+    {
+      "hash": "e87ba5b407",
+      "files": [
+        "/images/pests/pest-odontotermes-obesus-3.jpg",
+        "/images/pests/pest-odontotermes-spp-3.jpg"
+      ]
+    },
+    {
+      "hash": "8cd32de6a7",
+      "files": [
+        "/images/pests/pest-scirpophaga-incertulas-2.jpg",
+        "/images/pests/pest-scirpophaga-incertulas-3.jpg"
+      ]
+    }
+  ],
+  "suspiciousSources": [
+    {
+      "base": "disease-alternaria-macrospora",
+      "ok": true,
+      "query": "Alternaria leaf spot cotton",
+      "title": "File:The cotton plant - its history, botany, chemistry, culture, enemies, and uses (1896) (20514695589).jpg",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/b/b7/The_cotton_plant_-_its_history%2C_botany%2C_chemistry%2C_culture%2C_enemies%2C_and_uses_%281896%29_%2820514695589%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+    },
+    {
+      "base": "disease-tilletia-indica",
+      "ok": true,
+      "query": "Karnal bunt Tilletia indica",
+      "title": "File:Karnal bunt spore.jpg",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/3/32/Karnal_bunt_spore.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+    },
+    {
+      "base": "pest-pyrilla-perpusilla",
+      "ok": true,
+      "query": "sugarcane leafhopper",
+      "title": "File:The Sugar-Cane Insects of Hawaii (1911) (14778286585).jpg",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/3/39/The_Sugar-Cane_Insects_of_Hawaii_%281911%29_%2814778286585%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+    }
+  ]
+}

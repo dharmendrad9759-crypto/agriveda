@@ -273,6 +273,10 @@ export function AiDoctorSymptoms({
   activeChips,
   onToggleChip,
   voiceSlot,
+  affectedPart,
+  onSelectPart,
+  severityChoice,
+  onSelectSeverity,
 }: {
   cropSlug: string;
   value: string;
@@ -280,47 +284,127 @@ export function AiDoctorSymptoms({
   activeChips: string[];
   onToggleChip: (id: string, label: string) => void;
   voiceSlot?: ReactNode;
+  affectedPart?: string;
+  onSelectPart?: (part: string) => void;
+  severityChoice?: string;
+  onSelectSeverity?: (sev: string) => void;
 }) {
   const chips = getSymptomChipsForCrop(cropSlug);
 
+  const PARTS = [
+    { id: "leaf", labelHi: "पत्ती (Leaf)" },
+    { id: "stem", labelHi: "तना (Stem)" },
+    { id: "root", labelHi: "जड़ (Root)" },
+    { id: "fruit", labelHi: "फल/फूल (Fruit/Flower)" },
+    { id: "whole", labelHi: "पूरा पौधा (Whole Plant)" },
+  ];
+
+  const SEVERITIES = [
+    { id: "low", labelHi: "कम (Low)" },
+    { id: "medium", labelHi: "मध्यम (Medium)" },
+    { id: "high", labelHi: "अधिक (High)" },
+  ];
+
   return (
-    <DarkCard className="!p-3 sm:!p-4">
+    <DarkCard className="!p-3 sm:!p-4 space-y-3">
       <SectionLabel
-        title="लक्षण बताएं"
+        title="लक्षण व खेत की स्थिति"
         step={3}
-        hint="वैकल्पिक — लक्षण चिप्स चुनें या आवाज़ से बोलें"
+        hint="सटीक पहचान के लिए हिस्सा व गंभीरता चुनें (वैकल्पिक)"
       />
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value.slice(0, 300))}
-        placeholder="जैसे: पत्ती पर पीले धब्बे, किनारे सूख रहे हैं..."
-        rows={2}
-        className="av-input min-h-[58px] sm:min-h-[66px] w-full resize-none text-xs leading-relaxed"
-      />
-      <div className="mt-2 flex flex-wrap gap-1.5 sm:gap-2">
-        {chips.map((chip) => {
-          const active = activeChips.includes(chip.id);
-          return (
-            <button
-              key={`${cropSlug}-${chip.id}`}
-              type="button"
-              onClick={() => onToggleChip(chip.id, chip.label)}
-              className={`min-h-[30px] rounded-full border px-2.5 py-1 text-[11px] font-semibold transition active:scale-[0.97] sm:px-3 ${
-                active
-                  ? "border-emerald-500 bg-emerald-600 text-white shadow-sm"
-                  : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-400"
-              }`}
-            >
-              {chip.label}
-              <span className={`ml-1 ${active ? "text-emerald-100" : "text-[var(--av-text-muted)]"}`}>
-                · {chip.hi}
-              </span>
-            </button>
-          );
-        })}
+
+      {/* 1. प्रभावित हिस्सा (Affected Part) */}
+      <div>
+        <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
+          1. प्रभावित हिस्सा (Affected Part):
+        </p>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {PARTS.map((p) => {
+            const isSel = affectedPart === p.labelHi;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => onSelectPart?.(isSel ? "" : p.labelHi)}
+                className={`min-h-[30px] rounded-full border px-3 py-1 text-[11px] font-bold transition active:scale-[0.97] ${
+                  isSel
+                    ? "border-emerald-600 bg-emerald-600 text-white shadow-sm"
+                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-400"
+                }`}
+              >
+                {p.labelHi}
+              </button>
+            );
+          })}
+        </div>
       </div>
-      {voiceSlot && <div className="mt-2">{voiceSlot}</div>}
-      <p className="mt-1 text-right text-[10px] text-[var(--av-text-muted)]">{value.length}/300</p>
+
+      {/* 2. समस्या की गंभीरता (Severity) */}
+      <div>
+        <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
+          2. समस्या की गंभीरता (Severity):
+        </p>
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {SEVERITIES.map((s) => {
+            const isSel = severityChoice === s.labelHi;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => onSelectSeverity?.(isSel ? "" : s.labelHi)}
+                className={`min-h-[30px] rounded-full border px-3 py-1 text-[11px] font-bold transition active:scale-[0.97] ${
+                  isSel
+                    ? "border-amber-600 bg-amber-600 text-white shadow-sm"
+                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-amber-400"
+                }`}
+              >
+                {s.labelHi}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. सामान्य लक्षण चिप्स */}
+      <div>
+        <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
+          3. फसल अनुसार लक्षण:
+        </p>
+        <div className="mt-1.5 flex flex-wrap gap-1.5 sm:gap-2">
+          {chips.map((chip) => {
+            const active = activeChips.includes(chip.id);
+            return (
+              <button
+                key={`${cropSlug}-${chip.id}`}
+                type="button"
+                onClick={() => onToggleChip(chip.id, chip.label)}
+                className={`min-h-[30px] rounded-full border px-2.5 py-1 text-[11px] font-semibold transition active:scale-[0.97] sm:px-3 ${
+                  active
+                    ? "border-emerald-500 bg-emerald-600 text-white shadow-sm"
+                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-400"
+                }`}
+              >
+                {chip.label}
+                <span className={`ml-1 ${active ? "text-emerald-100" : "text-[var(--av-text-muted)]"}`}>
+                  · {chip.hi}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value.slice(0, 300))}
+          placeholder="अन्य कोई लक्षण (जैसे: पत्ते पर काले धब्बे, पीलापन, कीड़ा दिखा)..."
+          rows={2}
+          className="av-input min-h-[58px] sm:min-h-[66px] w-full resize-none text-xs leading-relaxed"
+        />
+        {voiceSlot && <div className="mt-2">{voiceSlot}</div>}
+        <p className="mt-1 text-right text-[10px] text-[var(--av-text-muted)]">{value.length}/300</p>
+      </div>
     </DarkCard>
   );
 }
@@ -719,7 +803,11 @@ export function AiDoctorRecentDiagnoses({
                         </span>
                         {h.result.confidence ? (
                           <span className="text-[10px] text-[var(--av-text-muted)]">
-                            {Math.round(h.result.confidence * 100)}% भरोसा
+                            {(() => {
+                              const c = Number(h.result.confidence);
+                              const pct = Math.min(99, Math.max(1, Math.round(c <= 1 ? c * 100 : c)));
+                              return `${pct}% अनुमान`;
+                            })()}
                           </span>
                         ) : null}
                       </div>

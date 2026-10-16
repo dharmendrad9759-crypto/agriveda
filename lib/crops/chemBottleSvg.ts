@@ -329,6 +329,7 @@ export function renderChemPouchSvg(technical: string, category?: ChemBottleCateg
 }
 
 export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
+  // Existing photoreal catalog
   "acephate-75-sp": "/images/chem/real/acephate-75-sp.jpg",
   "atrazine-50-wp": "/images/chem/real/atrazine-50-wp.jpg",
   "azoxystrobin-250-sc": "/images/chem/real/azoxystrobin-250-sc.jpg",
@@ -357,17 +358,49 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "pendimethalin-30-ec": "/images/chem/real/pendimethalin-30-ec.jpg",
   "pretilachlor-50-ec": "/images/chem/real/pretilachlor-50-ec.jpg",
   "propineb-70-wp": "/images/chem/real/propineb-70-wp.jpg",
+  "pyraclostrobin-20-wg": "/images/chem/real/pyraclostrobin-20-wg.jpg",
   "spinosad-45-sc": "/images/chem/real/spinosad-45-sc.jpg",
   "tebuconazole-25-9-ec": "/images/chem/real/tebuconazole-25-9-ec.jpg",
   "tebuconazole-trifloxystrobin": "/images/chem/real/tebuconazole-trifloxystrobin.jpg",
   "tebuconazole-trifloxystrobin-wg": "/images/chem/real/tebuconazole-trifloxystrobin-wg.jpg",
   "thiamethoxam-25-wg": "/images/chem/real/thiamethoxam-25-wg.jpg",
   "tricyclazole-75-wp": "/images/chem/real/tricyclazole-75-wp.jpg",
+
+  // Curative Fungicide Mappings (Triazoles, Combinations, Systemics)
+  "propiconazole-25-ec": "/images/chem/real/tebuconazole-25-9-ec.jpg",
+  "propiconazole": "/images/chem/real/tebuconazole-25-9-ec.jpg",
+  "tebuconazole-2-ds": "/images/chem/real/tebuconazole-25-9-ec.jpg",
+  "cymoxanil-mancozeb-wp": "/images/chem/real/carbendazim-mancozeb-wp.jpg",
+  "carboxin-thiram-ds": "/images/chem/real/carbendazim-50-wp.jpg",
+  "validamycin-3-l": "/images/chem/real/hexaconazole-5-ec.jpg",
+  "streptocycline-sp": "/images/chem/real/copper-oxychloride-50-wp.jpg",
+  "isoprothiolane-40-ec": "/images/chem/real/difenoconazole-25-ec.jpg",
+  "edifenphos-50-ec": "/images/chem/real/hexaconazole-5-ec.jpg",
+
+  // Curative Insecticide Mappings (Diamides, Sucking Pest Regulators, Soil)
+  "spinetoram-11-7-sc": "/images/chem/real/spinosad-45-sc.jpg",
+  "flubendiamide-39-sc": "/images/chem/real/chlorantraniliprole-18-5-sc.jpg",
+  "dinotefuran-20-sg": "/images/chem/real/thiamethoxam-25-wg.jpg",
+  "flonicamid-50-wg": "/images/chem/real/thiamethoxam-25-wg.jpg",
+  "pymetrozine-50-wg": "/images/chem/real/thiamethoxam-25-wg.jpg",
+  "diafenthiuron-50-wp": "/images/chem/real/propineb-70-wp.jpg",
+  "cartap-50-sp": "/images/chem/real/cartap-4-gr.jpg",
+  "fipronil-5-sc": "/images/chem/real/fipronil-0-3-gr.jpg",
+  "chlorpyrifos-20-ec": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
+  "triflumezopyrim-10-sc": "/images/chem/real/buprofezin-25-sc.jpg",
 };
 
 export function hasRealBottlePhoto(technical: string): boolean {
   const hit = lookupChemBottle(technical);
-  return Boolean(hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]);
+  if (hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]) return true;
+
+  // Key-word search fallback
+  const norm = (technical || "").toLowerCase();
+  for (const [slug, url] of Object.entries(REAL_BOTTLE_PHOTOS)) {
+    const root = slug.split("-")[0];
+    if (root.length >= 4 && norm.includes(root)) return true;
+  }
+  return false;
 }
 
 export function chemBottleImageSrc(technical: string): string {
@@ -375,6 +408,16 @@ export function chemBottleImageSrc(technical: string): string {
   if (hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]) {
     return REAL_BOTTLE_PHOTOS[hit.slug];
   }
+
+  // Key-word fallback across chemical families
+  const norm = (technical || "").toLowerCase();
+  for (const [slug, url] of Object.entries(REAL_BOTTLE_PHOTOS)) {
+    const root = slug.split("-")[0];
+    if (root.length >= 4 && norm.includes(root)) {
+      return url;
+    }
+  }
+
   const pkgType = getChemPackageType(technical, hit?.formulation);
   if (pkgType === "pouch") {
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(

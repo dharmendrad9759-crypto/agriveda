@@ -13,8 +13,27 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 const GENERIC_NURSERY = /स्थानीय सलाह के अनुसार नर्सरी तैयार करें/;
+const DIRECT_SOWING_OR_NA = /प्रत्यक्ष|सीधी\s*बुवाई|सीधी\s*बोवाई|लागू\s*नहीं|आवश्यकता\s*नहीं|नर्सरी\s*नहीं|not\s*applicable|direct\s*sow/i;
+
+const DIRECT_SOWN_CROPS = new Set([
+  "moongfali",
+  "groundnut",
+  "wheat",
+  "soybean",
+  "maize",
+  "cotton",
+  "bajra",
+  "mustard",
+  "chana",
+  "gram",
+  "moong",
+  "urad",
+  "potato",
+  "sugarcane",
+]);
 
 function cropUsesNursery(crop: Crop): boolean {
+  if (DIRECT_SOWN_CROPS.has(crop.slug.toLowerCase())) return false;
   const text = [
     crop.sowingGuide.bestSowingTime,
     crop.sowingGuide.sowingMethod,
@@ -108,17 +127,24 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
   const nursery =
     guide?.nurseryNotes?.length
       ? guide.nurseryNotes
-      : (profile?.nursery ?? []).filter((line) => !GENERIC_NURSERY.test(line.trim()));
+      : (profile?.nursery ?? []).filter(
+          (line) => !GENERIC_NURSERY.test(line.trim()) && !DIRECT_SOWING_OR_NA.test(line.trim())
+        );
 
   const transplanting =
     guide?.transplanting?.length
       ? guide.transplanting
-      : (profile?.transplanting ?? []).filter(Boolean);
+      : (profile?.transplanting ?? []).filter(
+          (line) => Boolean(line) && !DIRECT_SOWING_OR_NA.test(line.trim())
+        );
+
+  const isDirectSown =
+    guide?.usesNursery === false ||
+    DIRECT_SOWN_CROPS.has(crop.slug.toLowerCase());
 
   const hasNursery =
-    Boolean(guide?.usesNursery) ||
-    nursery.length > 0 ||
-    cropUsesNursery(crop);
+    !isDirectSown &&
+    (Boolean(guide?.usesNursery) || nursery.length > 0 || cropUsesNursery(crop));
 
   const mulchingDrip = [
     ...(profile?.interculturalOperations?.filter((line) =>
@@ -197,9 +223,28 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
       <DarkCard>
         <div className="flex items-center gap-2">
           <LayoutGrid className="h-4 w-4 text-sky-600" />
-          <SectionHeader title={hi ? "खेत में दूरी और बुवाई" : "Field spacing & sowing"} />
+          <SectionHeader
+            title={
+              hasNursery
+                ? (hi ? "खेत में दूरी और रोपाई" : "Field spacing & transplanting")
+                : (hi ? "बीज दर व सीधी बुवाई" : "Seed rate & direct sowing")
+            }
+          />
         </div>
         <dl className="mt-3 space-y-2 text-xs">
+          {!hasNursery && seedRate ? (
+            <div className="crop-premium-inset border-l-2 border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20">
+              <dt className="font-extrabold text-emerald-900 dark:text-emerald-300">
+                {hi ? "बीज की मात्रा (प्रति एकड़)" : "Seed rate (per acre)"}
+              </dt>
+              <dd className="mt-0.5 text-[13px] font-black text-[var(--av-text-primary)]">{seedRate}</dd>
+              {seedRateNote ? (
+                <dd className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
+                  {seedRateNote}
+                </dd>
+              ) : null}
+            </div>
+          ) : null}
           {spacing ? (
             <div className="crop-premium-inset">
               <dt className="font-bold text-[var(--av-text-muted)]">
@@ -208,23 +253,10 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
               <dd className="mt-0.5 text-[var(--av-text-primary)]">{spacing}</dd>
             </div>
           ) : null}
-          {!hasNursery && seedRate ? (
-            <div className="crop-premium-inset">
-              <dt className="font-bold text-[var(--av-text-muted)]">
-                {hi ? "बीज की मात्रा" : "Seed rate"}
-              </dt>
-              <dd className="mt-0.5 text-[var(--av-text-primary)]">{seedRate}</dd>
-              {seedRateNote ? (
-                <dd className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
-                  {seedRateNote}
-                </dd>
-              ) : null}
-            </div>
-          ) : null}
           {sowingTimeLines.length > 0 ? (
             <div className="crop-premium-inset">
               <dt className="font-bold text-[var(--av-text-muted)]">
-                {hi ? "बुवाई / रोपाई का समय" : "Sowing / transplant time"}
+                {hi ? (hasNursery ? "रोपाई का समय" : "बुवाई का समय") : "Sowing time"}
               </dt>
               <dd className="mt-1 space-y-1.5 text-[var(--av-text-primary)]">
                 {sowingTimeLines.map((line) => (

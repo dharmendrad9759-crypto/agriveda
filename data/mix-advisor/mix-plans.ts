@@ -257,7 +257,7 @@ export function getChemicalGroup(
     return { fracIracCode: "MICRONUTRIENT", fracIracGroupHi: "सूक्ष्म पोषक तत्व (बोरॉन)" };
   }
 
-  return { fracIracCode: "ICAR-REC", fracIracGroupHi: "अनुमोदित सक्रिय रसायन" };
+  return { fracIracCode: "AGRIVEDA-REC", fracIracGroupHi: "अनुमोदित सक्रिय रसायन" };
 }
 
 // --------------------------------------------------------------------------
@@ -827,7 +827,7 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
   return {
     status: "safe",
     title: "बिल्कुल सुरक्षित टैंक-मिक्स (Safe to Tank Mix)",
-    badgeHi: "🟢 CIBRC व वैज्ञानिक रूप से सुरक्षित",
+    badgeHi: "🟢 वैज्ञानिक रूप से सुरक्षित",
     messageHi: "यह संयोजन भौतिक व रासायनिक रूप से पूरी तरह संगत है। आप बेझिझक एक ही टैंकी में मिलाकर छिड़काव कर सकते हैं।",
   };
 }
@@ -897,18 +897,30 @@ export function generateDynamicMixSteps(
     steps.push({
       stepNo: currentStep++,
       letter: "L",
-      badgeHi: `चरण ${currentStep - 1} · L (तरल सस्पेंशन)`,
+      badgeHi: `चरण ${currentStep - 1} · L (गाढ़ा सस्पेंशन SC)`,
       titleHi: "गाढ़ी तरल (SC) दवा मिलाएँ",
       descHi: "गाढ़ी सस्पेंशन दवा को टंकी में धीरे-धीरे डालते हुए लगातार हिलाते रहें।",
       items: suspensions.map(getShortLabel),
     });
   }
 
-  // STEP 4: Solutions (SL)
+  // STEP 4: E - Emulsifiable Concentrates (EC)
+  if (emulsions.length > 0) {
+    steps.push({
+      stepNo: currentStep++,
+      letter: "E",
+      badgeHi: `चरण ${currentStep - 1} · E (इमल्शन तरल EC)`,
+      titleHi: "तेल आधारित (EC) दवा मिलाएँ",
+      descHi: "तेल आधारित इमल्शन दवा टंकी में डालें और डंडे से अच्छी तरह घोलें।",
+      items: emulsions.map(getShortLabel),
+    });
+  }
+
+  // STEP 5: S - Solutions (SL)
   if (liquids.length > 0) {
     steps.push({
       stepNo: currentStep++,
-      letter: "L",
+      letter: "S",
       badgeHi: `चरण ${currentStep - 1} · SL (घुलनशील तरल)`,
       titleHi: "घुलनशील तरल (SL) दवा मिलाएँ",
       descHi: "पानी में घुलनशील तरल दवा टंकी में डालकर 1 मिनट तक अच्छी तरह मिलाएँ।",
@@ -916,23 +928,11 @@ export function generateDynamicMixSteps(
     });
   }
 
-  // STEP 5: E - Emulsifiable Concentrates (EC)
-  if (emulsions.length > 0) {
-    steps.push({
-      stepNo: currentStep++,
-      letter: "E",
-      badgeHi: `चरण ${currentStep - 1} · E (इमल्शन तरल)`,
-      titleHi: "तेल आधारित (EC) दवा मिलाएँ",
-      descHi: "तेल आधारित इमल्शन दवा टंकी में डालें और डंडे से अच्छी तरह घोलें।",
-      items: emulsions.map(getShortLabel),
-    });
-  }
-
   // STEP 6: Tonics / Foliar nutrition (if not already handled)
   if (tonics.length > 0) {
     steps.push({
       stepNo: currentStep++,
-      letter: "E",
+      letter: "S",
       badgeHi: `चरण ${currentStep - 1} · पोषण/टॉनिक`,
       titleHi: "घुलनशील खाद / टॉनिक मिलाएँ",
       descHi: "पोषक टॉनिक या स्प्रे खाद टंकी में डालकर मिलाएँ।",
@@ -945,7 +945,7 @@ export function generateDynamicMixSteps(
     steps.push({
       stepNo: currentStep++,
       letter: "S",
-      badgeHi: `अंतिम चरण · स्टिकर (चिपको)`,
+      badgeHi: `अंतिम चरण · S (सिलिकॉन स्टिकर/चिपको)`,
       titleHi: "सबसे अंत में सिलिकॉन स्टिकर डालें",
       descHi: "सिलिकॉन स्टिकर डालकर टंकी में पूरा पानी भरें और तुरंत छिड़काव करें (घोल 2–3 घंटे से ज्यादा न रखें)।",
       items: [`सिलिकॉन सुपर स्प्रेडर स्टिकर (${SILICONE_STICKER.doseHi})`],

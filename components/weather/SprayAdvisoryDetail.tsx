@@ -697,7 +697,7 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
             )}
 
             <p className="text-[10px] leading-relaxed text-emerald-100/65">
-              शक या शर्त = न मिलाएँ। लेबल / CIBRC अंतिम। कॉपर+सल्फर, Ca+फॉस्फेट, ट्राइकोडर्मा+फफूंदनाशक — न मिलाएँ।
+              शक या शर्त = न मिलाएँ। उत्पाद लेबल निर्देश अंतिम हैं। कॉपर+सल्फर, Ca+फॉस्फेट, ट्राइकोडर्मा+फफूंदनाशक — न मिलाएँ।
             </p>
           </div>
         </section>

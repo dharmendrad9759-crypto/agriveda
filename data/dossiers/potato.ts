@@ -134,8 +134,8 @@ export const potatoDossier: ResearchDossierOverlay = {
         },
       ],
       iracGroup: "4A → 9C → 23",
-      activeIngredient: "Flonicamid",
-      dose: "लेबल अनुसार",
+      activeIngredient: "Imidacloprid 17.8% SL (कॉन्फिडोर) @ 60–80 ml या Thiamethoxam 25% WG (एक्टारा) @ 40g",
+      dose: "प्रति एकड़ (150 लीटर पानी में)",
     },
     {
       pestName: "आलू कंद मोथ (PTM)",
@@ -194,8 +194,8 @@ export const potatoDossier: ResearchDossierOverlay = {
         },
       ],
       iracGroup: "5 → 28 → 6",
-      activeIngredient: "Spinosad",
-      dose: "लेबल अनुसार",
+      activeIngredient: "Chlorantraniliprole 18.5% SC (कोराजन) @ 60 ml या Emamectin Benzoate 5% SG @ 80g",
+      dose: "प्रति एकड़ (150 लीटर पानी में)",
     },
     {
       pestName: "सफेद गिडार / कटवर्म",

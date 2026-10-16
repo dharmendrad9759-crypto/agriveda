@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
@@ -34,6 +34,20 @@ export default function ReportOutbreakPage() {
   const [lat, setLat] = useState<number | null>(null);
   const [lon, setLon] = useState<number | null>(null);
   const [locLoading, setLocLoading] = useState(false);
+
+  // Auto-fill from previously saved farmer location if available
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("agriveda-last-location");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed?.lat === "number" && typeof parsed?.lon === "number") {
+          setLat(parsed.lat);
+          setLon(parsed.lon);
+        }
+      }
+    } catch {}
+  }, []);
 
   const pd = getCropPestDisease(cropId);
 

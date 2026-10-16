@@ -49,7 +49,8 @@ export default function SprayRotationPage() {
   }, [isOnline]);
 
   const activeField = fields.find((f) => f.id === selectedFieldId) ?? fields[0];
-  const cropId = activeField?.cropSlug ?? "paddy";
+  const rawCropSlug = activeField?.cropSlug ?? "paddy";
+  const cropId = rawCropSlug === "groundnut" ? "moongfali" : rawCropSlug;
   const cropThreats = getCropPestDisease(cropId);
 
   const fieldLogs = useMemo(() => {

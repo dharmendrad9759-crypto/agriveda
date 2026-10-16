@@ -230,13 +230,6 @@ const MORE_JOBS: {
     imageSrc: "/images/jobs/job-my-farm.jpg",
   },
   {
-    id: "pest",
-    hi: "कीट और रोग",
-    en: "Pests & disease",
-    href: "/crop-problems",
-    imageSrc: "/images/threats/threat-insect.jpg",
-  },
-  {
     id: "mix",
     hi: "दवा मिलाएँ",
     en: "Mix medicines",
@@ -259,8 +252,8 @@ const MORE_JOBS: {
   },
   {
     id: "plan",
-    hi: "फसल तरीका",
-    en: "Crop method",
+    hi: "फसल प्लानर",
+    en: "Crop Planner",
     href: "/crop-calendar",
     imageSrc: "/images/home/home-job-plan.jpg",
   },
@@ -368,7 +361,7 @@ export default function AgriVedaHome() {
                 {new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
                   weekday: "long",
                   day: "numeric",
-                  month: "short",
+                  month: "long",
                 })}
               </p>
             </div>
@@ -572,7 +565,7 @@ export default function AgriVedaHome() {
                     alt=""
                     fill
                     sizes="48px"
-                    quality={40}
+                    quality={50}
                     className="object-cover transition duration-300 group-hover:scale-105"
                   />
                 </div>

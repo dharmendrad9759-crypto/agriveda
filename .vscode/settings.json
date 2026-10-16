@@ -15,12 +15,18 @@
   "terminal.integrated.env.windows": {
     "JAVA_HOME": "C:\\Program Files\\Android\\Android Studio\\jbr"
   },
+  "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.tsserver.maxTsServerMemory": 4096,
   "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.watcherExclude": {
     "**/.git/**": true,
     "**/.next/**": true,
+    "**/.tmp*/**": true,
     "**/node_modules/**": true,
-    "**/android/**": true
+    "**/android/**": true,
+    "**/public/**": true,
+    "**/scripts/**": true
   }
 }

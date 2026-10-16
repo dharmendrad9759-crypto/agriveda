@@ -108,7 +108,7 @@ const SLIDES: Slide[] = [
       {
         icon: <ShieldCheck className="h-4.5 w-4.5" strokeWidth={2.4} />,
         title: "सही दवा व डोज़",
-        sub: "FRAC/IRAC प्रमाणित सलाह",
+        sub: "वैज्ञानिक रूप से सुरक्षित सलाह",
         accent: "amber",
       },
     ],

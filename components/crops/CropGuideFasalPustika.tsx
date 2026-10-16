@@ -34,9 +34,10 @@ import { cn } from "@/lib/cn";
 // ============================================================================
 interface PestCardProps {
   pest: PestAndDiseaseItem;
+  index?: number;
 }
 
-export function PestCard({ pest }: PestCardProps) {
+export function PestCard({ pest, index }: PestCardProps) {
   const isDisease = pest.category === "disease";
 
   return (
@@ -44,6 +45,11 @@ export function PestCard({ pest }: PestCardProps) {
       {/* Header Badge */}
       <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/75 px-4 py-3 dark:border-slate-800/80 dark:bg-slate-800/40">
         <div className="flex items-center gap-2">
+          {index != null ? (
+            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-lg bg-emerald-950 px-1.5 text-[10px] font-black text-emerald-100">
+              {String(index).padStart(2, "0")}
+            </span>
+          ) : null}
           <span
             className={cn(
               "flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold",
@@ -152,7 +158,7 @@ export function PestCard({ pest }: PestCardProps) {
                 </span>
               </div>
               <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-                FRAC/IRAC रोटेशन
+                दवा चक्र (Rotation)
               </span>
             </div>
 
@@ -166,11 +172,6 @@ export function PestCard({ pest }: PestCardProps) {
                     <p className="text-xs font-black text-slate-900 dark:text-slate-100">
                       {chem.chemical_name}
                     </p>
-                    {chem.frac_irac_group ? (
-                      <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300">
-                        {chem.frac_irac_group}
-                      </span>
-                    ) : null}
                   </div>
 
                   <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600 dark:text-slate-300">
@@ -346,8 +347,8 @@ export function StageAccordion({ stage, defaultExpanded = false }: StageAccordio
                 </span>
               </div>
               <div className="space-y-3">
-                {stage.pests_and_diseases.map((pest) => (
-                  <PestCard key={pest.pest_id} pest={pest} />
+                {stage.pests_and_diseases.map((pest, idx) => (
+                  <PestCard key={pest.pest_id} pest={pest} index={idx + 1} />
                 ))}
               </div>
             </div>
@@ -450,7 +451,7 @@ export default function CropGuideScreen({ cropSlug = "tomato" }: CropGuideScreen
               {guideData.crop_name} ({guideData.crop_name_hi}) संपूर्ण फसल गाइड
             </h2>
             <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-300">
-              4 मुख्य चरण: शुरुआत, लगाना, देखभाल, और सुरक्षा (FRAC/IRAC तकनीकी नियंत्रण सहित)
+              4 मुख्य चरण: शुरुआत, लगाना, देखभाल, और सुरक्षा (प्रमाणित तकनीकी नियंत्रण सहित)
             </p>
           </div>
           <span className="text-3xl">🍅</span>

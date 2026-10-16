@@ -20,6 +20,7 @@ import LocationBootstrap from "@/components/location/LocationBootstrap";
 import PageReveal from "@/components/motion/PageReveal";
 import FarmerOnboardingGate from "@/components/onboarding/FarmerOnboardingGate";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
+import SecurityProtectionBootstrap from "@/components/security/SecurityProtectionBootstrap";
 import FieldModeBootstrap from "@/components/settings/FieldModeBootstrap";
 import AppSidebar from "@/components/shell/AppSidebar";
 import MobileShellTopBar from "@/components/shell/MobileShellTopBar";
@@ -51,6 +52,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
             reducedMotion={native ? "always" : "user"}
             transition={{ duration: MOTION.normal, ease: EASE_OUT }}
           >
+            <SecurityProtectionBootstrap />
             <AnalyticsBootstrap />
             <CapacitorBootstrap />
             <FarmCloudSyncBootstrap />

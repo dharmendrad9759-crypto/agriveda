@@ -125,7 +125,7 @@ const LEGAL_NO_MIX: TankMixCheckResult = {
   status: "incompatible",
   title: "न मिलाएँ",
   message:
-    "न मिलाएँ।\n\nबिना उत्पाद-लेबल की साफ़ अनुमति टैंक-मिक्स न करें। अलग स्प्रे करें।\n\nनोट: उत्पाद लेबल / CIBRC निर्देश अंतिम हैं।",
+    "न मिलाएँ।\n\nबिना उत्पाद-लेबल की साफ़ अनुमति टैंक-मिक्स न करें। अलग स्प्रे करें।\n\nनोट: उत्पाद लेबल निर्देश अंतिम हैं।",
 };
 
 /** Farmer-facing: only YES (safe) or NO (everything else). No jar-test hedge. */
@@ -151,7 +151,7 @@ function toBinaryVerdict(result: TankMixCheckResult): TankMixCheckResult {
       "न मिलाएँ।",
       reason && !reason.startsWith("न मिलाएँ") ? reason : "",
       "ऐप शर्त वाली / अधूरी जोड़ी पर मिक्स की सलाह नहीं देता। लेबल पर साफ़ अनुमति हो तभी।",
-      "नोट: उत्पाद लेबल / CIBRC निर्देश अंतिम हैं।",
+      "नोट: उत्पाद लेबल निर्देश अंतिम हैं।",
     ]
       .filter(Boolean)
       .join("\n\n"),
@@ -410,7 +410,7 @@ function formatSourcedMessage(opts: {
         "न मिलाएँ।",
         stripJarLanguage(shorten(opts.reason, 200)),
         "शर्त / अधूरा स्रोत होने पर ऐप मिक्स की सलाह नहीं देता।",
-        "नोट: उत्पाद लेबल / CIBRC निर्देश अंतिम हैं।",
+        "नोट: उत्पाद लेबल निर्देश अंतिम हैं।",
       ]
         .filter(Boolean)
         .join("\n\n"),
@@ -427,7 +427,7 @@ function formatSourcedMessage(opts: {
         "न मिलाएँ।",
         stripJarLanguage(shorten(opts.reason, 220)),
         "अलग स्प्रे / अलग दिन।",
-        "नोट: उत्पाद लेबल / CIBRC निर्देश अंतिम हैं।",
+        "नोट: उत्पाद लेबल निर्देश अंतिम हैं।",
       ]
         .filter(Boolean)
         .join("\n\n"),
@@ -445,7 +445,7 @@ function formatSourcedMessage(opts: {
       "मिला सकते हो।",
       stripJarLanguage(shorten(opts.reason, 220)),
       opts.mixOrder ? `मिलाने का क्रम: ${stripJarLanguage(shorten(opts.mixOrder, 140))}` : "",
-      "नोट: उत्पाद लेबल / CIBRC निर्देश अंतिम हैं।",
+      "नोट: उत्पाद लेबल निर्देश अंतिम हैं।",
     ]
       .filter(Boolean)
       .join("\n\n"),
@@ -558,7 +558,7 @@ export function checkTankMixByActives(
         result = {
           status: "incompatible",
           title: STATUS_HI.incompatible.title,
-          message: `${shorten(classHit.reason)}\n\nनोट: उत्पाद लेबल / CIBRC निर्देश अंतिम हैं।`,
+          message: `${shorten(classHit.reason)}\n\nनोट: उत्पाद लेबल निर्देश अंतिम हैं।`,
           category: classHit.category,
           confidence: classHit.evidence,
         };

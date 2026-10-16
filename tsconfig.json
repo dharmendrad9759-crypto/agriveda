@@ -38,6 +38,18 @@
   ],
   "exclude": [
     "node_modules",
-    "scripts"
+    ".next/build",
+    ".next/server",
+    ".next/static",
+    ".next/cache",
+    ".next/dev/build",
+    ".next/dev/server",
+    ".next/dev/static",
+    ".tmp",
+    ".tmp-*",
+    "capacitor-www",
+    "scripts",
+    "android",
+    "public"
   ]
 }

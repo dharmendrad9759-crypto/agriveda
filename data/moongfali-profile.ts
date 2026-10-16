@@ -191,16 +191,16 @@ export const moongfaliProfile: CropManagementProfile = {
     "फलियाँ 2-3 दिन धूप में सुखाएँ।",
     "नमी सुरक्षित हो तब फली तोड़ें या combine करें।",
   ],
-  yield: "15-25 quintals pod/ha irrigated; 10-15 q/ha rainfed",
+  yield: "12–18 क्विंटल/एकड़ (शुद्ध मुनाफा: ₹35,000–₹60,000 प्रति एकड़)",
   storage: [
     "तेल के लिए दाने 8% तक; बीज के लिए 6% तक सुखाएँ।",
     "Bruchids और aflatoxin से बचाएँ।",
   ],
   marketInformation: {
-    majorMarkets: ["Guntur", "Rajkot", "Kadiri", "Oil mills"],
-    demand: "खाद्य तेल और मिठाई",
-    msp: "Groundnut के लिए मौसमी MSP",
-    priceTrend: "त्योहार से पहले मजबूत; खरीफ आगमन पर गिरावट",
+    majorMarkets: ["राजकोट", "गुंटूर", "कादिरी", "तेल मिलें"],
+    demand: "खाद्य तेल, दाना और मूंगफली पट्टी",
+    msp: "मूंगफली के लिए सरकारी समर्थन मूल्य (MSP) ~₹6,783/क्विंटल",
+    priceTrend: "अनुमानित शुद्ध मुनाफा: ₹35,000 से ₹60,000 प्रति एकड़ (लागत घटाकर)",
   },
   faqs: [
     {

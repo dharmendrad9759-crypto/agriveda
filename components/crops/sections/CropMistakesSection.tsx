@@ -125,7 +125,7 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
           </div>
           <div className="rounded-xl bg-white/5 p-2 text-center border border-white/5">
             <p className="text-[10px] text-teal-200 font-bold uppercase">{hi ? "वैज्ञानिक विधि" : "Method"}</p>
-            <p className="mt-0.5 text-xs sm:text-sm font-black text-white">{hi ? "ICAR प्रमाणित" : "ICAR Verified"}</p>
+            <p className="mt-0.5 text-xs sm:text-sm font-black text-white">{hi ? "वैज्ञानिक रूप से सुरक्षित" : "Scientifically Verified"}</p>
           </div>
         </div>
       </div>

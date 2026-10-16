@@ -538,7 +538,7 @@ export default function MixAdvisorClient() {
                           {selectedProblems.map((p) => p.nameHi).join(" + ")}
                         </span>
                         <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-                          💡 ICAR/CIBRC रिसर्च ट्रायल अनुसार हर समस्या के लिए श्रेष्ठ टेक्निकल दवाएँ अपने आप सुझाई जाएँगी।
+                          💡 चुनी गई समस्याओं के लिए सबसे असरदार व सुरक्षित दवाएँ अपने आप सुझाई जाएँगी।
                         </p>
                       </div>
                     </div>
@@ -756,7 +756,7 @@ export default function MixAdvisorClient() {
                   <div>
                     <p className={AV.sectionTitle}>टैंक में दवाएँ (Tank Mix Items)</p>
                     <p className="text-[11px] text-[var(--av-text-muted)]">
-                      ICAR द्वारा अनुशंसित सक्रिय रसायन (Technicals) व खुराक:
+                      अनुशंसित सक्रिय रसायन (Technicals) व सटीक खुराक:
                     </p>
                   </div>
                   <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
@@ -775,16 +775,11 @@ export default function MixAdvisorClient() {
                         <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border)]/60 pb-2">
                           <div className="flex flex-wrap items-center gap-1.5">
                             <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-black text-emerald-900 dark:text-emerald-200">
-                              दवा {idx + 1}: {m.kindHi}
+                              दवा {idx + 1}
                             </span>
                             {m.targetProblemHi && (
                               <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-900 dark:text-amber-200">
                                 🎯 {m.targetProblemHi} हेतु
-                              </span>
-                            )}
-                            {m.fracIracCode && (
-                              <span className="rounded-md bg-purple-600/15 px-2 py-0.5 text-[10px] font-black text-purple-900 dark:text-purple-200">
-                                🔬 {m.fracIracCode} {m.fracIracGroupHi ? `· ${m.fracIracGroupHi}` : ""}
                               </span>
                             )}
                           </div>
@@ -974,7 +969,7 @@ export default function MixAdvisorClient() {
                         <div className="min-w-0 pr-2">
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-black text-emerald-900 dark:text-emerald-200">
-                              {activeSlotMed?.kindHi || "दवा"}
+                              दवा {pickSlot !== null ? pickSlot + 1 : ""}
                             </span>
                             {activeSlotMed?.targetProblemHi && (
                               <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200">
@@ -989,8 +984,8 @@ export default function MixAdvisorClient() {
                           </p>
                           <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
                             {activeSlotMed?.targetProblemHi
-                              ? `ICAR व CIBRC सिफारिश: केवल "${activeSlotMed.targetProblemHi}" के लिए अनुमोदित टेक्निकल:`
-                              : "ICAR व CIBRC द्वारा अनुमोदित अन्य दवाएँ:"}
+                              ? `केवल "${activeSlotMed.targetProblemHi}" हेतु अनुशंसित दवाएँ:`
+                              : "अन्य अनुशंसित सुरक्षित दवाएँ:"}
                           </p>
                         </div>
                         <button
@@ -1018,20 +1013,9 @@ export default function MixAdvisorClient() {
                               )}
                             >
                               <div className="min-w-0 flex-1">
-                                {/* FRAC / IRAC Group Badge + Formulation Code */}
                                 <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
-                                  {opt.fracIracCode && (
-                                    <span className="rounded-md bg-purple-600/15 px-2 py-0.5 text-[10px] font-black text-purple-900 dark:text-purple-200">
-                                      🔬 {opt.fracIracCode}
-                                    </span>
-                                  )}
-                                  {opt.fracIracGroupHi && (
-                                    <span className="rounded-md bg-[var(--av-surface-inset)] px-2 py-0.5 text-[10px] font-bold text-[var(--av-text-muted)]">
-                                      {opt.fracIracGroupHi}
-                                    </span>
-                                  )}
-                                  <span className="rounded-md bg-emerald-600/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:text-emerald-200">
-                                    {opt.formCode}
+                                  <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-200">
+                                    {opt.formCode} {opt.formHi ? `(${opt.formHi})` : ""}
                                   </span>
                                 </div>
 

@@ -1,6 +1,6 @@
 /**
  * Auto-generated manifest of multi-photo authentic field images for all crop threats.
- * Generated: 2026-10-10T16:58:46.934Z
+ * Generated: 2026-10-11T09:18:05.556Z
  */
 
 export interface ThreatPhotoItem {
@@ -37,9 +37,15 @@ const GALLERY_MAP: Record<string, string[]> = {
     "/images/diseases/disease-alternaria-solani-2.jpg",
     "/images/diseases/disease-alternaria-solani-3.jpg"
   ],
+  "/images/diseases/disease-alternaria-solani-tomato.jpg": [
+    "/images/diseases/disease-alternaria-solani-tomato.jpg",
+    "/images/diseases/disease-alternaria-solani-tomato-2.jpg",
+    "/images/diseases/disease-alternaria-solani-tomato-3.jpg"
+  ],
   "/images/diseases/disease-ascochyta-rabiei.jpg": [
     "/images/diseases/disease-ascochyta-rabiei.jpg",
-    "/images/diseases/disease-ascochyta-rabiei-2.jpg"
+    "/images/diseases/disease-ascochyta-rabiei-2.jpg",
+    "/images/diseases/disease-ascochyta-rabiei-3.jpg"
   ],
   "/images/diseases/disease-banana-bunchy-top-virus.jpg": [
     "/images/diseases/disease-banana-bunchy-top-virus.jpg",
@@ -207,6 +213,17 @@ const GALLERY_MAP: Record<string, string[]> = {
     "/images/diseases/disease-hyaloperonospora-brassicae.jpg",
     "/images/diseases/disease-hyaloperonospora-brassicae-2.jpg",
     "/images/diseases/disease-hyaloperonospora-brassicae-3.jpg"
+  ],
+  "/images/diseases/disease-karnal-bunt-ear.jpg": [
+    "/images/diseases/disease-karnal-bunt-ear.jpg",
+    "/images/diseases/disease-karnal-bunt-grains.jpg",
+    "/images/diseases/disease-karnal-bunt-spike.jpg"
+  ],
+  "/images/diseases/disease-karnal-bunt-grains.jpg": [
+    "/images/diseases/disease-karnal-bunt-grains.jpg"
+  ],
+  "/images/diseases/disease-karnal-bunt-spike.jpg": [
+    "/images/diseases/disease-karnal-bunt-spike.jpg"
   ],
   "/images/diseases/disease-lasiodiplodia-theobromae.jpg": [
     "/images/diseases/disease-lasiodiplodia-theobromae.jpg"
@@ -417,6 +434,94 @@ const GALLERY_MAP: Record<string, string[]> = {
   ],
   "/images/diseases/disease-tolyposporium-penicillariae.jpg": [
     "/images/diseases/disease-tolyposporium-penicillariae.jpg"
+  ],
+  "/images/diseases/disease-tomato-anthracnose-1.jpg": [
+    "/images/diseases/disease-tomato-anthracnose-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-anthracnose.jpg": [
+    "/images/diseases/disease-tomato-anthracnose.jpg",
+    "/images/diseases/disease-tomato-anthracnose-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-anthracnose-photoreal.jpg": [
+    "/images/diseases/disease-tomato-anthracnose-photoreal.jpg",
+    "/images/diseases/disease-tomato-anthracnose-1.jpg",
+    "/images/diseases/disease-tomato-anthracnose-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-bacterial-canker-1.jpg": [
+    "/images/diseases/disease-tomato-bacterial-canker-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-bacterial-speck-1.jpg": [
+    "/images/diseases/disease-tomato-bacterial-speck-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-bacterial-spot-1.jpg": [
+    "/images/diseases/disease-tomato-bacterial-spot-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-bacterial-wilt-photoreal.jpg": [
+    "/images/diseases/disease-tomato-bacterial-wilt-photoreal.jpg",
+    "/images/diseases/disease-tomato-bacterial-canker-1.jpg",
+    "/images/diseases/disease-ralstonia-solanacearum.jpg"
+  ],
+  "/images/diseases/disease-tomato-blossom-end-rot-1.jpg": [
+    "/images/diseases/disease-tomato-blossom-end-rot-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-blossom-end-rot.jpg": [
+    "/images/diseases/disease-tomato-blossom-end-rot.jpg",
+    "/images/diseases/disease-tomato-blossom-end-rot-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-blossom-end-rot-photoreal.jpg": [
+    "/images/diseases/disease-tomato-blossom-end-rot-photoreal.jpg",
+    "/images/diseases/disease-tomato-blossom-end-rot-1.jpg",
+    "/images/diseases/disease-tomato-blossom-end-rot-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-early-blight-1.jpg": [
+    "/images/diseases/disease-tomato-early-blight-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-early-blight.jpg": [
+    "/images/diseases/disease-tomato-early-blight.jpg",
+    "/images/diseases/disease-tomato-early-blight-2.jpg",
+    "/images/diseases/disease-tomato-early-blight-3.jpg"
+  ],
+  "/images/diseases/disease-tomato-early-blight-photoreal.jpg": [
+    "/images/diseases/disease-tomato-early-blight-photoreal.jpg",
+    "/images/diseases/disease-tomato-early-blight-1.jpg",
+    "/images/diseases/disease-tomato-early-blight-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-fusarium-wilt-1.jpg": [
+    "/images/diseases/disease-tomato-fusarium-wilt-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-fusarium-wilt-photoreal.jpg": [
+    "/images/diseases/disease-tomato-fusarium-wilt-photoreal.jpg",
+    "/images/diseases/disease-tomato-fusarium-wilt-1.jpg",
+    "/images/diseases/disease-fusarium-lycopersici-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-late-blight-1.jpg": [
+    "/images/diseases/disease-tomato-late-blight-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-late-blight.jpg": [
+    "/images/diseases/disease-tomato-late-blight.jpg",
+    "/images/diseases/disease-tomato-late-blight-2.jpg",
+    "/images/diseases/disease-tomato-late-blight-3.jpg"
+  ],
+  "/images/diseases/disease-tomato-late-blight-photoreal.jpg": [
+    "/images/diseases/disease-tomato-late-blight-photoreal.jpg",
+    "/images/diseases/disease-tomato-late-blight-1.jpg",
+    "/images/diseases/disease-tomato-late-blight-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-leaf-curl-photoreal.jpg": [
+    "/images/diseases/disease-tomato-leaf-curl-photoreal.jpg",
+    "/images/diseases/disease-begomovirus-leaf-curl.jpg",
+    "/images/diseases/disease-begomovirus-leaf-curl-2.jpg"
+  ],
+  "/images/diseases/disease-tomato-leaf-mold-1.jpg": [
+    "/images/diseases/disease-tomato-leaf-mold-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-septoria-1.jpg": [
+    "/images/diseases/disease-tomato-septoria-1.jpg"
+  ],
+  "/images/diseases/disease-tomato-septoria-photoreal.jpg": [
+    "/images/diseases/disease-tomato-septoria-photoreal.jpg",
+    "/images/diseases/disease-tomato-septoria-1.jpg",
+    "/images/diseases/disease-septoria-lycopersici.jpg"
   ],
   "/images/diseases/disease-uncinula-necator.jpg": [
     "/images/diseases/disease-uncinula-necator.jpg",
@@ -792,6 +897,24 @@ const GALLERY_MAP: Record<string, string[]> = {
     "/images/pests/pest-thrips-tabaci.jpg",
     "/images/pests/pest-thrips-tabaci-2.jpg",
     "/images/pests/pest-thrips-tabaci-3.jpg"
+  ],
+  "/images/pests/pest-tomato-fruit-borer-photoreal.jpg": [
+    "/images/pests/pest-tomato-fruit-borer-photoreal.jpg",
+    "/images/pests/pest-helicoverpa-armigera.jpg",
+    "/images/pests/pest-helicoverpa-armigera-2.jpg"
+  ],
+  "/images/pests/pest-tomato-leaf-miner-photoreal.jpg": [
+    "/images/pests/pest-tomato-leaf-miner-photoreal.jpg",
+    "/images/pests/pest-liriomyza-trifolii.jpg",
+    "/images/pests/pest-liriomyza-trifolii-2.jpg"
+  ],
+  "/images/pests/pest-tomato-tuta-absoluta-photoreal.jpg": [
+    "/images/pests/pest-tomato-tuta-absoluta-photoreal.jpg"
+  ],
+  "/images/pests/pest-tomato-whitefly-photoreal.jpg": [
+    "/images/pests/pest-tomato-whitefly-photoreal.jpg",
+    "/images/pests/pest-bemisia-tabaci.jpg",
+    "/images/pests/pest-bemisia-tabaci-2.jpg"
   ]
 };
 

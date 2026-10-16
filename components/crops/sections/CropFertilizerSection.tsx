@@ -632,7 +632,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               </span>
               <div>
                 <h4 className="text-[12.5px] font-black text-amber-950 dark:text-amber-100">
-                  {hi ? "ICAR नियम: DAP/SSP के साथ जिंक कभी न मिलाएँ!" : "ICAR Rule: Never mix DAP with Zinc!"}
+                  {hi ? "सुनहरा नियम: DAP/SSP के साथ जिंक कभी न मिलाएँ!" : "Golden Rule: Never mix DAP with Zinc!"}
                 </h4>
                 <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-amber-900/90 dark:text-amber-200/90">
                   {hi
@@ -675,7 +675,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               </span>
               <div>
                 <h4 className="text-[12px] font-black text-amber-950 dark:text-amber-100">
-                  {hi ? "ICAR वैज्ञानिक सलाह: फोलियर स्प्रे व जिंक सावधानी" : "ICAR Foliar & Zinc Advice"}
+                  {hi ? "विशेषज्ञ सलाह: फोलियर स्प्रे व जिंक सावधानी" : "Expert Foliar & Zinc Advice"}
                 </h4>
                 <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-amber-900/90 dark:text-amber-200/90">
                   {hi

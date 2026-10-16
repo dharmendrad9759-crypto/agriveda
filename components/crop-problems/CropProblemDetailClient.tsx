@@ -1,20 +1,30 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AppLink from "@/components/ui/AppLink";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
-import ProblemFlowShell, { MockCard, MockTab } from "@/components/crop-problems/ProblemFlowShell";
+import ProblemFlowShell, { MockCard } from "@/components/crop-problems/ProblemFlowShell";
 import { getCropProblem } from "@/data/crop-curative-problems";
 import { getCurativeMedicines } from "@/lib/crops/cropProblemMedicines";
+import { parseFarmerDose } from "@/lib/crops/tankDose";
+import { speakFarmerText, stopFarmerSpeech } from "@/lib/speech/farmerVoice";
 import { useToast } from "@/components/ui/Toast";
 import { readStorage, writeStorage } from "@/lib/storage";
-import { Check } from "lucide-react";
+import {
+  Check,
+  Volume2,
+  VolumeX,
+  Share2,
+  FlaskConical,
+  Sparkles,
+  ShieldAlert,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+} from "lucide-react";
 import { notFound } from "next/navigation";
 import ThreatPhotoGallery from "@/components/crops/ThreatPhotoGallery";
-
-type InfoTab = "symptoms" | "cause" | "damage" | "prevention";
-type CureTab = "chemical" | "organic" | "prevention";
 
 const SAVED_KEY = "agriveda-saved-crop-solutions";
 
@@ -23,51 +33,49 @@ function toFarmerLine(raw: string, kind: "see" | "do" | "warn" = "do"): string {
   let s = raw.replace(/[.]+$/g, "").replace(/\s+/g, " ").trim();
   if (!s) return "";
 
-  // Known short phrases → full clear lines
   const exact: [RegExp, string][] = [
-    [/^(साफ|स्वस्थ|प्रमाणित)\s*बीज$/i, "साफ बीज का प्रयोग करें"],
-    [/^संतुलित\s*खाद$/i, "संतुलित खाद का प्रयोग करें"],
-    [/^ज्यादा\s*(यूरिया|N|नाइट्रोजन)\s*न\s*दें$/i, "ज़्यादा यूरिया एक साथ न डालें"],
-    [/^ज्यादा\s*(यूरिया|N|नाइट्रोजन)$/i, "ज़्यादा यूरिया डालने से बढ़ता है"],
-    [/^हवा\s*दें$/i, "पौधों में हवा आने दें"],
+    [/^(साफ|स्वस्थ|प्रमाणित)\s*बीज$/i, "साफ और प्रमाणित बीज का प्रयोग करें"],
+    [/^संतुलित\s*खाद$/i, "संतुलित खाद (NPK) का प्रयोग करें"],
+    [/^ज्यादा\s*(यूरिया|N|नाइट्रोजन)\s*न\s*दें$/i, "ज़्यादा यूरिया एक साथ न डालें, इससे बीमारी बढ़ती है"],
+    [/^ज्यादा\s*(यूरिया|N|नाइट्रोजन)$/i, "ज़्यादा यूरिया डालने से पौधों में बीमारी बढ़ती है"],
+    [/^हवा\s*दें$/i, "पौधों में धूप और हवा आने दें"],
     [/^घनत्व\s*नियंत्रण$/i, "पौधे बहुत पास-पास न लगाएँ"],
     [/^भीड़\s*कम$/i, "पौधे बहुत पास-पास न लगाएँ"],
-    [/^खेत\s*साफ$/i, "खेत साफ रखें"],
-    [/^खरपतवार\s*साफ$/i, "खरपतवार साफ रखें"],
+    [/^खेत\s*साफ$/i, "खेत को खरपतवार मुक्त और साफ रखें"],
+    [/^खरपतवार\s*साफ$/i, "खेत में खरपतवार साफ रखें"],
     [/^निगरानी$/i, "खेत में नियमित जाँच करें"],
     [/^देखभाल$/i, "खेत में नियमित जाँच करें"],
-    [/छोटे?\s*फल\s*छेद/i, "छोटे फलों में छेद होना"],
-    [/फूल\s*पर\s*अंडे/i, "फूल पर अंडे दिखना"],
-    [/पहले\s*धब्बे/i, "पहले धब्बे दिखते ही इलाज शुरू करें"],
-    [/धब्बे\s*(फैलते|दिखते)/i, "धब्बे फैलने लगे तो तुरंत स्प्रे करें"],
-    [/संख्या\s*बढ़ते/i, "कीड़े बढ़ जाएँ तो तुरंत इलाज करें"],
-    [/देर\s*से\s*(इलाज|स्प्रे)/i, "देर से स्प्रे करोगे तो ज़्यादा नुकसान होगा"],
-    [/फल\s*में\s*छेद/i, "फल में छेद होना"],
-    [/अंदर\s*इल्ली/i, "अंदर कीड़ा होना"],
+    [/छोटे?\s*फल\s*छेद/i, "छोटे फलों में छेद दिखना"],
+    [/फूल\s*पर\s*अंडे/i, "फूलों और पत्तियों पर कीट के अंडे दिखना"],
+    [/पहले\s*धब्बे/i, "पहले धब्बे दिखते ही तुरंत स्प्रे करें"],
+    [/धब्बे\s*(फैलते|दिखते)/i, "धब्बे फैलने लगें तो तुरंत दवा का छिड़काव करें"],
+    [/संख्या\s*बढ़ते/i, "कीड़ों की संख्या बढ़ते ही तुरंत उपचार करें"],
+    [/देर\s*से\s*(इलाज|स्प्रे)/i, "देर से स्प्रे करने पर फसल को भारी नुकसान हो सकता है"],
+    [/फल\s*में\s*छेद/i, "फलों में सुंडी के छेद होना"],
+    [/अंदर\s*इल्ली/i, "तने या फल के अंदर इल्ली होना"],
     [/फल\s*सड़/i, "फल सड़ना शुरू होना"],
-    [/^हाथ\s*से(\s*इल्ली)?$/i, "हाथ से कीड़े निकालें"],
-    [/^संक्रमित\s*उखाड़ें$/i, "बीमार पौधे उखाड़कर अलग करें"],
-    [/^संक्रमित\s*फल.*/i, "बीमार फल तोड़कर हटाएँ"],
-    [/^संक्रमित\s*पत्ती.*/i, "बीमार पत्तियाँ हटाएँ"],
-    [/^संक्रमित\s*तना.*/i, "बीमार हिस्सा काटकर हटाएँ"],
-    [/^प्रतिरोधी\s*किस्म$/i, "मज़बूत / सही किस्म का बीज लगाएँ"],
+    [/^हाथ\s*से(\s*इल्ली)?$/i, "हाथ से कीड़े या इल्ली बीनकर नष्ट करें"],
+    [/^संक्रमित\s*उखाड़ें$/i, "बीमार पौधे उखाड़कर खेत से दूर नष्ट करें"],
+    [/^संक्रमित\s*फल.*/i, "बीमार फल तोड़कर खेत से दूर फेंकें"],
+    [/^संक्रमित\s*पत्ती.*/i, "बीमार पत्तियाँ तोड़कर हटाएँ"],
+    [/^संक्रमित\s*तना.*/i, "बीमार हिस्सा काटकर अलग करें"],
+    [/^प्रतिरोधी\s*किस्म$/i, "रोग-रोधी मज़बूत किस्म का बीज लगाएँ"],
     [/^फसल\s*चक्र$/i, "फसल चक्र अपनाएँ (Crop Rotation)"],
-    [/^जल\s*निकासी$/i, "खेत में पानी न ठहराएँ (Drainage)"],
-    [/^बीज\s*उपचार$/i, "बुवाई से पहले बीज उपचार करें (Seed Treatment)"],
-    [/^ट्राइकोडर्मा.*/i, "ट्राइकोडर्मा का प्रयोग करें (Trichoderma) — स्थानीय सलाह से"],
-    [/^नीम.*/i, "नीम आधारित छिड़काव करें (Neem Oil) — बोतल देखकर"],
-    [/^Bt\s*—.*/i, "Bt दवा का प्रयोग करें (Bacillus thuringiensis)"],
-    [/^पीला\s*जाल$/i, "पीला चिपचिपा जाल लगाएँ (Yellow Sticky Trap)"],
-    [/^नीला\s*जाल$/i, "नीला जाल लगाएँ (Blue Sticky Trap)"],
-    [/^फेरोमोन.*/i, "फेरोमोन ट्रैप लगाएँ (Pheromone Trap)"],
-    [/^लेबल\s*अनुसार$/i, "बोतल के लेबल के अनुसार डालें"],
+    [/^जल\s*निकासी$/i, "खेत में जल-निकासी की अच्छी व्यवस्था रखें"],
+    [/^बीज\s*उपचार$/i, "बुवाई से पहले बीज उपचार (Seed Treatment) ज़रूर करें"],
+    [/^ट्राइकोडर्मा.*/i, "ट्राइकोडर्मा 5–10 ग्राम प्रति किलो बीज उपचार या गोबर खाद में मिलाकर डालें"],
+    [/^नीम.*/i, "नीम तेल (Neem Oil 10,000 PPM) 2–3 मिली प्रति लीटर पानी में मिलाकर स्प्रे करें"],
+    [/^Bt\s*—.*/i, "Bt जैव कीटनाशक (Bacillus thuringiensis) 2 ग्राम प्रति लीटर पानी का प्रयोग करें"],
+    [/^पीला\s*जाल$/i, "पीला चिपचिपा जाल लगाएँ (Yellow Sticky Trap - 6–8 प्रति एकड़)"],
+    [/^नीला\s*जाल$/i, "नीला चिपचिपा जाल लगाएँ (Blue Sticky Trap - थ्रिप्स हेतु)"],
+    [/^फेरोमोन.*/i, "फेरोमोन ट्रैप लगाएँ (Pheromone Trap - 4–5 प्रति एकड़)"],
+    [/^लेबल\s*अनुसार$/i, "बोतल पर लिखे लेबल के अनुसार सही नाप डालें"],
   ];
 
   for (const [re, out] of exact) {
     if (re.test(s)) return out;
   }
 
-  // Soft word swaps (keep full meaning)
   s = s
     .replace(/संक्रमित/g, "बीमार")
     .replace(/प्रतिरोधी किस्म/g, "मज़बूत किस्म")
@@ -77,16 +85,11 @@ function toFarmerLine(raw: string, kind: "see" | "do" | "warn" = "do"): string {
     .replace(/\s+होते ही$/u, "")
     .trim();
 
-  // If still a bare noun-ish tip, make it an action sentence
-  if (kind === "do" && s.length <= 22 && !/[।.!]|करें|करो|दें|न |है|होना|लग|डाल|लगाएँ|रखें/.test(s)) {
+  if (kind === "do" && s.length <= 25 && !/[।.!]|करें|करो|दें|न |है|होना|लग|डाल|लगाएँ|रखें/.test(s)) {
     if (/बीज/.test(s)) return `${s} का प्रयोग करें`;
-    if (/खाद|उर्वरक|यूरिया/.test(s)) return `${s} का प्रयोग सही मात्रा में करें`;
+    if (/खाद|उर्वरक|यूरिया/.test(s)) return `${s} का प्रयोग संतुलित मात्रा में करें`;
     if (/पानी|सिंचाई/.test(s)) return `${s} नियंत्रित रखें`;
-    return `${s} — ध्यान रखें`;
-  }
-
-  if (kind === "warn" && !/नुकसान|कम|बढ़/.test(s)) {
-    return `${s} — देर से स्प्रे करोगे तो ज़्यादा नुकसान होगा`;
+    return `${s} — इस बात का पूरा ध्यान रखें`;
   }
 
   return s;
@@ -100,48 +103,15 @@ function splitLines(text: string, max = 3, kind: "see" | "do" | "warn" = "do"): 
     .slice(0, max);
 }
 
-function parseChemLines(lines: string[]) {
-  return lines.slice(0, 3).map((line, i) => {
-    const name = line.split("—")[0]?.split("/")[0]?.trim() || line;
-    const technical =
-      name.match(/[A-Za-z][A-Za-z\s-]{2,}/)?.[0]?.trim() ||
-      (i === 0 ? "Imidacloprid" : i === 1 ? "Spinosad" : "Mancozeb");
-    return { name, technical, note: "बोतल के लेबल के अनुसार डालें" };
-  });
-}
-
-function parseDosePills(doseText: string) {
-  const perLMatch = doseText.match(/([\d.]+(?:\s*से\s*[\d.]+)?\s*(?:मिली|ग्राम|ml|g)\s*(?:\/|प्रति)\s*लीटर(?:\s*पानी)?)/i);
-  const perAcreMatch = doseText.match(/([\d.]+(?:\s*[-–से]\s*[\d.]+)?\s*(?:मिली|ग्राम|किग्रा|ml|g|kg)\s*(?:प्रति|\/)\s*एकड़)/i);
-  const waterMatch = doseText.match(/(\d+(?:\s*[-–से]\s*\d+)?\s*लीटर\s*पानी)/i);
-
-  let derivedAcre = perAcreMatch ? perAcreMatch[0] : "";
-  if (!derivedAcre && perLMatch) {
-    const numMatch = perLMatch[0].match(/[\d.]+/);
-    const unitMatch = perLMatch[0].match(/मिली|ग्राम|ml|g/i);
-    if (numMatch && unitMatch) {
-      const val = parseFloat(numMatch[0]);
-      derivedAcre = `${Math.round(val * 150)}–${Math.round(val * 200)} ${unitMatch[0]}/एकड़`;
-    }
-  }
-
-  return {
-    perL: perLMatch ? perLMatch[0] : (doseText.split("(")[0].trim() || "1–2 मिली/लीटर"),
-    perAcre: derivedAcre || "200–250 मिली/एकड़",
-    water: waterMatch ? waterMatch[0] : "150–200 लीटर पानी",
-    raw: doseText,
-  };
-}
-
 function MiniPoints({ items }: { items: string[] }) {
   return (
-    <ul className="mt-3 space-y-2">
-      {items.map((item) => (
+    <ul className="mt-2.5 space-y-2">
+      {items.map((item, idx) => (
         <li
-          key={item}
-          className="flex items-start gap-2.5 rounded-xl bg-[#F3FBF6] px-3 py-2.5 text-[13px] font-semibold leading-snug text-[#1A3326]"
+          key={`${item}-${idx}`}
+          className="flex items-start gap-2.5 rounded-xl bg-emerald-500/10 px-3 py-2 text-[13px] font-semibold leading-snug text-emerald-950 dark:text-emerald-100"
         >
-          <span aria-hidden className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#16A34A]" />
+          <span aria-hidden className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
           <span>{item}</span>
         </li>
       ))}
@@ -161,54 +131,76 @@ export default function CropProblemDetailClient({
   const { crop, problem: p } = found;
   const { showToast } = useToast();
 
-  const [infoTab, setInfoTab] = useState<InfoTab>("symptoms");
-  const [cureTab, setCureTab] = useState<CureTab>("chemical");
   const [saved, setSaved] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  // Stop voice when unmounting
+  useEffect(() => {
+    return () => {
+      stopFarmerSpeech();
+    };
+  }, []);
+
   const chemItems = useMemo(
     () => getCurativeMedicines(cropSlug, problemId, p.cureChemicalHi),
     [cropSlug, problemId, p.cureChemicalHi]
   );
   const shortName = p.nameHi.split("(")[0].trim();
 
-  const infoPoints = useMemo(() => {
-    if (infoTab === "symptoms") {
-      return [
-        ...splitLines(p.whatHi, 3, "see"),
-        `अवस्था: ${p.stageHi}`,
-      ].slice(0, 4);
-    }
-    if (infoTab === "cause") {
-      return p.whyHi.map((w) => toFarmerLine(w, "see")).filter(Boolean).slice(0, 3);
-    }
-    if (infoTab === "damage") {
-      return [
-        ...splitLines(p.whenToActHi, 1, "do").map((x) =>
-          x.includes("इलाज") || x.includes("स्प्रे") ? x : `${x} — तुरंत ध्यान दें`
-        ),
-        ...splitLines(p.tipHi, 1, "do"),
-        "देर से स्प्रे करोगे तो ज़्यादा नुकसान होगा",
-      ].slice(0, 3);
-    }
-    // रोकथाम
-    return [...p.cureOrganicHi.slice(0, 2), p.tipHi]
-      .map((x) => toFarmerLine(x, "do"))
-      .filter(Boolean)
-      .slice(0, 3);
-  }, [infoTab, p]);
-
-  const organicPoints = useMemo(
-    () => p.cureOrganicHi.map((x) => toFarmerLine(x, "do")).filter(Boolean).slice(0, 4),
-    [p.cureOrganicHi]
+  // Primary doctor medicine info
+  const primaryChem = chemItems[0];
+  const primaryDose = useMemo(
+    () => (primaryChem ? parseFarmerDose(primaryChem.dose) : null),
+    [primaryChem]
   );
 
-  const preventPoints = useMemo(
-    () =>
-      [p.tipHi, ...p.cureOrganicHi.slice(0, 2), "देर से स्प्रे करोगे तो ज़्यादा नुकसान होगा"]
-        .map((x) => toFarmerLine(x, "do"))
-        .filter(Boolean)
-        .slice(0, 4),
-    [p.tipHi, p.cureOrganicHi]
-  );
+  // Spoken voice script in warm, authentic human agronomist Hindi
+  const doctorVoiceScript = useMemo(() => {
+    const chemName = primaryChem ? primaryChem.technical : "अनुशंसित दवा";
+    const action = primaryDose ? primaryDose.voiceActionLine : "दवा को सही मात्रा में डालें।";
+
+    return `राम-राम किसान भाई! ${crop.nameHi} में ${shortName} की समस्या के लिए डॉक्टर की मुख्य सलाह सुनें। इसके लिए सबसे असरदार दवा ${chemName} है। ${action} तीन से चार दिन में इसका पूरा असर दिखेगा और समस्या पर पूरा नियंत्रण हो जाएगा।`;
+  }, [crop.nameHi, shortName, primaryChem, primaryDose]);
+
+  const toggleDoctorAudio = () => {
+    if (isPlayingAudio) {
+      stopFarmerSpeech();
+      setIsPlayingAudio(false);
+    } else {
+      const ok = speakFarmerText(doctorVoiceScript, true, () => {
+        setIsPlayingAudio(false);
+      });
+      if (ok) {
+        setIsPlayingAudio(true);
+      } else {
+        showToast("ऑडियो लोड नहीं हो सका", "info");
+      }
+    }
+  };
+
+  const symptomsList = useMemo(() => {
+    return [
+      ...splitLines(p.whatHi, 3, "see"),
+      `फसल अवस्था: ${p.stageHi}`,
+    ].filter(Boolean);
+  }, [p.whatHi, p.stageHi]);
+
+  const causesList = useMemo(() => {
+    const lines = p.whyHi.map((w) => toFarmerLine(w, "see")).filter(Boolean);
+    return lines.length > 0 ? lines.slice(0, 3) : ["मौसम में अधिक नमी और तापमान में बदलाव", "खेत में हवा व धूप का कम पहुँचना"];
+  }, [p.whyHi]);
+
+  const timingList = useMemo(() => {
+    return [
+      ...splitLines(p.whenToActHi, 2, "do").map((x) =>
+        x.includes("इलाज") || x.includes("स्प्रे") ? x : `${x} — तुरंत ध्यान दें`
+      ),
+      p.tipHi ? toFarmerLine(p.tipHi, "do") : "",
+      "देर से स्प्रे करने पर फसल को नुकसान कई गुना बढ़ सकता है",
+    ].filter(Boolean).slice(0, 3);
+  }, [p.whenToActHi, p.tipHi]);
+
+  const organicPoints = useMemo(() => p.cureOrganicHi.map((x) => toFarmerLine(x, "do")).filter(Boolean).slice(0, 3), [p.cureOrganicHi]);
 
   const saveSolution = () => {
     const prev = readStorage<{ id: string; title: string; at: string }[]>(SAVED_KEY, []);
@@ -221,57 +213,30 @@ export default function CropProblemDetailClient({
       ].slice(0, 30)
     );
     setSaved(true);
-    showToast("समाधान सेव हो गया", "success");
+    showToast("समाधान सुरक्षित हो गया ✓", "success");
   };
-
-  const shareSolution = async () => {
-    const text = `${crop.nameHi} — ${shortName}\n${infoPoints.slice(0, 2).join("\n")}\n\nAgriveda`;
-    try {
-      if (navigator.share) await navigator.share({ title: shortName, text });
-      else {
-        await navigator.clipboard.writeText(text);
-        showToast("कॉपी हो गया", "success");
-      }
-    } catch {
-      /* cancel */
-    }
-  };
-
-  const symptomsList = useMemo(() => {
-    return [
-      ...splitLines(p.whatHi, 4, "see"),
-      `अवस्था: ${p.stageHi}`,
-    ].filter(Boolean);
-  }, [p.whatHi, p.stageHi]);
-
-  const causesList = useMemo(() => {
-    return p.whyHi.map((w) => toFarmerLine(w, "see")).filter(Boolean);
-  }, [p.whyHi]);
-
-  const timingList = useMemo(() => {
-    return [
-      ...splitLines(p.whenToActHi, 2, "do").map((x) =>
-        x.includes("इलाज") || x.includes("स्प्रे") ? x : `${x} — तुरंत ध्यान दें`
-      ),
-      ...splitLines(p.tipHi, 1, "do"),
-      "देर से स्प्रे करने पर नुकसान कई गुना बढ़ सकता है",
-    ].filter(Boolean);
-  }, [p.whenToActHi, p.tipHi]);
 
   const shareToWhatsApp = () => {
-    const chemText = chemItems
-      .map(
-        (c, i) =>
-          `• विकल्प ${i + 1}: ${c.nameHi}\n  - टेक्निकल: ${c.technical}\n  - डोज़: ${c.dose}${c.brands?.length ? `\n  - बाज़ार ब्रांड: ${c.brands.join(", ")}` : ""}`
-      )
+    const chemListText = chemItems
+      .map((c, i) => {
+        const d = parseFarmerDose(c.dose);
+        return `*विकल्प ${i + 1}: ${c.technical}*\n  • ${d.pill1.label}: ${d.pill1.value}\n  • ${d.pill2.label}: ${d.pill2.value}\n  • ${d.pill3.label}: ${d.pill3.value}${
+          c.brands?.length ? `\n  • प्रसिद्ध ब्रांड्स: ${c.brands.join(", ")}` : ""
+        }`;
+      })
       .join("\n\n");
-    const text = `🌾 *फसल समस्या समाधान — AgriVeda*\n\n*फसल:* ${crop.nameHi}\n*रोग/कीट:* ${shortName}\n\n*लक्षण:*\n${symptomsList.slice(0, 2).map((s) => `• ${s}`).join("\n")}\n\n*दुकानदार पर्ची (अनुशंसित दवा व सही डोज़):*\n${chemText}\n\n_AgriVeda किसान ऐप से प्राप्त_`;
+
+    const specialInstructions = primaryDose?.useSticker
+      ? "• 5 मिली सिलिकॉन स्टीकर (चिपको) प्रति टंकी ज़रूर मिलाएँ।\n• साफ़ पानी (150–200L/एकड़) का प्रयोग करें।"
+      : `• ${primaryDose?.doctorTip || "दवा को बताई गई विधि अनुसार खेत में डालें।"}`;
+
+    const text = `🌾 *AgriVeda — फसल डॉक्टर पर्ची (Prescription)*\n\n*फसल:* ${crop.nameHi}\n*रोग/कीट:* ${shortName}\n\n*अनुशंसित दवा व सही मात्रा (दुकानदार को दिखाएं):*\n${chemListText}\n\n*विशेष डॉक्टर निर्देश:*\n${specialInstructions}\n• 3–4 दिन में पूरा असर दिखेगा।\n\n_AgriVeda किसान सहायता ऐप से सत्यापित_`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   return (
     <ProblemFlowShell title={shortName} step={saved ? 5 : 4} backHref={`/crop-problems/${crop.slug}`}>
-      <div className="space-y-3.5 pb-6">
+      <div className="space-y-4 pb-8">
         {/* Authentic Multi-Photo Field Gallery */}
         <ThreatPhotoGallery
           primaryImage={p.image}
@@ -282,34 +247,249 @@ export default function CropProblemDetailClient({
           hi={true}
         />
 
-        {/* 1. लक्षण व पहचान */}
+        {/* 🔊 Top Doctor Audio Note (Authentic Human Agronomist Voice) */}
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 p-3.5 text-white shadow-md">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-400/30">
+                <Sparkles className="h-5 w-5" />
+              </span>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[12px] font-black uppercase tracking-wider text-emerald-400">
+                    👨‍⚕️ डॉ. कृषि विशेषज्ञ वॉइस नोट
+                  </span>
+                  <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.2 text-[9px] font-bold text-emerald-300">
+                    सरल हिंदी
+                  </span>
+                </div>
+                <p className="text-[11px] font-medium text-slate-300">
+                  सुने: सही दवा, 15L टंकी डोज़ और सटीक छिड़काव विधि
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={toggleDoctorAudio}
+              className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs font-black transition active:scale-95 shadow-md ${
+                isPlayingAudio
+                  ? "bg-rose-600 text-white animate-pulse"
+                  : "bg-emerald-600 text-white hover:bg-emerald-500"
+              }`}
+            >
+              {isPlayingAudio ? (
+                <>
+                  <VolumeX className="h-4 w-4" />
+                  <span>रोकें</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 className="h-4 w-4" />
+                  <span>सुनो 🔊</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Soundwave animation when playing */}
+          {isPlayingAudio && (
+            <div className="mt-2.5 flex items-center gap-1 border-t border-emerald-500/20 pt-2 text-[10.5px] font-bold text-emerald-300">
+              <span className="inline-block h-2 w-1 animate-bounce rounded bg-emerald-400" />
+              <span className="inline-block h-3.5 w-1 animate-bounce rounded bg-emerald-400 [animation-delay:0.15s]" />
+              <span className="inline-block h-2 w-1 animate-bounce rounded bg-emerald-400 [animation-delay:0.3s]" />
+              <span className="ml-1.5">डॉक्टर बोल रहे हैं... ध्यान से सुनें</span>
+            </div>
+          )}
+        </div>
+
+        {/* 🌟 1. PRIORITY #1: डॉक्टर की अनुशंसित दवा व सही डोज़ (Chemical & Tank Dose First) */}
+        <MockCard className="!border-emerald-500/35 !bg-gradient-to-b !from-emerald-50/60 !to-white dark:!from-slate-900 dark:!to-slate-900/95 !p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-700 text-white text-xs font-black shadow-xs">
+                1
+              </span>
+              <div>
+                <h2 className="text-sm font-black text-emerald-950 dark:text-emerald-100">
+                  डॉक्टर की अनुशंसित दवा व सही डोज़ (Treatment)
+                </h2>
+                <p className="text-[10.5px] font-bold text-emerald-800 dark:text-emerald-300">
+                  खेत में तुरंत असर करने वाली प्रमाणित दवाएँ
+                </p>
+              </div>
+            </div>
+            <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 text-[9.5px] font-black text-emerald-800 dark:text-emerald-300">
+              सटीक नाप
+            </span>
+          </div>
+
+          <div className="space-y-3.5 mt-3">
+            {chemItems.map((c, i) => {
+              const parsed = parseFarmerDose(c.dose);
+              return (
+                <div
+                  key={`${c.technical}-${i}`}
+                  className="rounded-2xl border border-emerald-500/25 bg-white dark:bg-slate-900/90 p-3.5 shadow-xs space-y-3"
+                >
+                  <div className="flex items-start gap-3">
+                    <ChemBottleThumb technical={c.technical} size="md" className="rounded-xl shrink-0 mt-0.5 shadow-xs" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block rounded-md bg-emerald-700 px-2 py-0.5 text-[9.5px] font-black text-white shadow-2xs">
+                          {i === 0 ? "🌟 पहली पसंद (Best Choice)" : `विकल्प ${i + 1}`}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                          टेक्निकल सॉल्ट
+                        </span>
+                      </div>
+
+                      {/* Prominent Technical Name */}
+                      <h3 className="text-[16px] sm:text-[17px] font-black tracking-tight text-slate-950 dark:text-white leading-snug mt-1 font-mono sm:font-sans">
+                        {c.technical}
+                      </h3>
+
+                      {/* Hindi Name */}
+                      {c.nameHi && (
+                        <p className="text-[12.5px] font-bold text-emerald-800 dark:text-emerald-300 mt-0.5">
+                          {c.nameHi.replace(/\s*\((?!.*(?:उपचार|समय|गोभ|डालें))[^)]*\)\s*/g, " ").trim()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 3 Prominent Stat Pills tailored to application method */}
+                  <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-2.5 space-y-2">
+                    <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                      <span className="flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-amber-600 animate-pulse" />
+                        <span>सटीक डोज़ — {parsed.methodLabel}:</span>
+                      </span>
+                      <span>3-4 दिन में असर</span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-1.5 text-center">
+                      {/* Pill 1 */}
+                      <div
+                        className={`rounded-xl bg-white dark:bg-slate-900 border-2 p-2 shadow-xs ${
+                          parsed.isSpray ? "border-emerald-600/40" : "border-amber-600/40"
+                        }`}
+                      >
+                        <span className="block text-[9px] font-black uppercase text-emerald-800 dark:text-emerald-300">
+                          {parsed.pill1.icon} {parsed.pill1.label}
+                        </span>
+                        <span className="block text-[12px] sm:text-[13px] font-black text-emerald-950 dark:text-emerald-100 mt-0.5 leading-tight">
+                          {parsed.pill1.value}
+                        </span>
+                        <span className="block text-[8.5px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                          {parsed.pill1.subtext}
+                        </span>
+                      </div>
+
+                      {/* Pill 2 */}
+                      <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/30 p-2 shadow-2xs">
+                        <span className="block text-[9px] font-black uppercase text-amber-800 dark:text-amber-300">
+                          {parsed.pill2.icon} {parsed.pill2.label}
+                        </span>
+                        <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
+                          {parsed.pill2.value}
+                        </span>
+                        <span className="block text-[8.5px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                          {parsed.pill2.subtext}
+                        </span>
+                      </div>
+
+                      {/* Pill 3 */}
+                      <div className="rounded-xl bg-white dark:bg-slate-900 border border-sky-500/35 p-2 shadow-2xs">
+                        <span className="block text-[9px] font-black uppercase text-sky-800 dark:text-sky-300">
+                          {parsed.pill3.icon} {parsed.pill3.label}
+                        </span>
+                        <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
+                          {parsed.pill3.value}
+                        </span>
+                        <span className="block text-[8.5px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                          {parsed.pill3.subtext}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Market Brands */}
+                  {c.brands && c.brands.length > 0 && (
+                    <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-[11.5px]">
+                      <span className="font-black text-emerald-950 dark:text-emerald-100">🏷️ बाज़ार में प्रसिद्ध ब्रांड्स: </span>
+                      <span className="font-bold text-emerald-800 dark:text-emerald-200">{c.brands.join(" · ")}</span>
+                    </div>
+                  )}
+
+                  {/* Practical Agronomist Doctor Advice */}
+                  <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5 text-[11.5px] space-y-1">
+                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                      💡 <span className="font-semibold">{parsed.doctorTip}</span>
+                    </p>
+                    {c.safety &&
+                      !parsed.doctorTip.includes(c.safety) &&
+                      !/(?:स्प्रे\s*(?:नहीं|न\s*करें)|बालू|रेत|टंकी\s*की\s*ज़रूरत\s*नहीं)/i.test(c.safety) && (
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                          सुरक्षा निर्देश: {c.safety}
+                        </p>
+                      )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Tank-Mix Safety Advisor Link */}
+            <AppLink
+              href="/mix-advisor"
+              className="flex items-center justify-between rounded-xl border border-teal-500/30 bg-teal-500/10 p-3 text-xs font-black text-teal-950 dark:text-teal-100 hover:bg-teal-500/15 transition active:scale-[0.99]"
+            >
+              <div className="flex items-center gap-2">
+                <FlaskConical className="h-4 w-4 text-teal-700 dark:text-teal-300 shrink-0" />
+                <span>🧪 क्या आप इस दवा के साथ कोई अन्य दवा या टॉनिक मिला रहे हैं?</span>
+              </div>
+              <span className="flex items-center gap-1 text-[11px] text-teal-800 dark:text-teal-300 shrink-0">
+                सुरक्षा चेक करें <ArrowRight className="h-3.5 w-3.5" />
+              </span>
+            </AppLink>
+          </div>
+        </MockCard>
+
+        {/* 2. खेत में कैसे पहचानें (लक्षण — 150-Word UPSC Precision) */}
         <MockCard className="!p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
-              1
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-800 dark:text-emerald-300 text-xs font-black">
+              2
             </span>
-            <h2 className="text-sm font-black text-[#0B3D28]">खेत में कैसे पहचानें (लक्षण)</h2>
+            <h2 className="text-sm font-black text-[#0B3D28] dark:text-emerald-200">
+              खेत में लक्षण व पहचान (लक्षण)
+            </h2>
           </div>
+          <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+            खेत में पौधे को ध्यान से देखें — ये प्रमुख संकेत दिखाई देंगे:
+          </p>
           <MiniPoints items={symptomsList} />
         </MockCard>
 
-        {/* 2. कारण व कब दवा डालें */}
+        {/* 3. यह क्यों फैला और नुकसान का समय (कारण) */}
         <MockCard className="!p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-600/10 text-amber-800 dark:text-amber-300 text-xs font-bold">
-              2
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-600/10 text-amber-800 dark:text-amber-300 text-xs font-black">
+              3
             </span>
-            <h2 className="text-sm font-black text-[#0B3D28]">कारण व नुकसान का समय</h2>
+            <h2 className="text-sm font-black text-[#0B3D28] dark:text-emerald-200">
+              यह क्यों हुआ और नुकसान का समय (कारण)
+            </h2>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <div>
-              <p className="text-[11px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                रोग फैलने का कारण:
+              <p className="text-[11px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                फैलाव के मुख्य कारण:
               </p>
               <MiniPoints items={causesList} />
             </div>
-            <div className="pt-2 border-t border-[#D8E8DE]">
-              <p className="text-[11px] font-extrabold uppercase tracking-wider text-rose-800 dark:text-rose-300">
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+              <p className="text-[11px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-300">
                 तुरंत कदम उठाएँ:
               </p>
               <MiniPoints items={timingList} />
@@ -317,179 +497,95 @@ export default function CropProblemDetailClient({
           </div>
         </MockCard>
 
-        {/* 3. रासायनिक दवा व सही खुराक */}
-        <MockCard className="!border-[#A7D8B8] !bg-[#F3FBF6] !p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-600 text-white text-xs font-bold shadow-xs">
-              3
-            </span>
-            <h2 className="text-sm font-black text-[#0B5C3B]">रासायनिक दवा व सही मात्रा (Chemical)</h2>
-          </div>
-          <p className="text-[11px] font-medium text-[#3D6B54] mb-3">
-            नीचे दी गई प्रमाणित दवाओं में से किसी एक का प्रयोग करें:
-          </p>
-
-          <div className="space-y-3.5">
-            {chemItems.map((c, i) => (
-              <div
-                key={`${c.technical}-${i}`}
-                className="rounded-2xl border border-emerald-500/25 bg-white dark:bg-slate-900/90 p-4 shadow-xs space-y-3"
-              >
-                <div className="flex items-start gap-3">
-                  <ChemBottleThumb technical={c.technical} size="md" className="rounded-xl shrink-0 mt-0.5 shadow-xs" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-block rounded-md bg-emerald-700 px-2 py-0.5 text-[9.5px] font-black text-white shadow-2xs">
-                        विकल्प {i + 1}
-                      </span>
-                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                        टेक्निकल सॉल्ट
-                      </span>
-                    </div>
-
-                    {/* Prominent English Technical Name as Primary Heading */}
-                    <h3 className="text-[16px] sm:text-[17px] font-black tracking-tight text-slate-950 dark:text-white leading-snug mt-1 font-mono sm:font-sans">
-                      {c.technical}
-                    </h3>
-
-                    {/* Hindi Common Name / Pronunciation */}
-                    {c.nameHi && (
-                      <p className="text-[12.5px] font-bold text-emerald-800 dark:text-emerald-300 mt-0.5">
-                        {c.nameHi.replace(/\s*\((?!.*(?:उपचार|समय|गोभ|डालें))[^)]*\)\s*/g, " ").trim()}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Accurate Dosage Box with 3 clear pills */}
-                {(() => {
-                  const pills = parseDosePills(c.dose);
-                  return (
-                    <div className="rounded-2xl bg-amber-500/15 border border-amber-500/35 p-3 space-y-2">
-                      <div className="flex items-center justify-between text-[10.5px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
-                        <span className="flex items-center gap-1.5">
-                          <span className="h-2 w-2 rounded-full bg-amber-600 animate-pulse" />
-                          <span>सटीक डोज़ (दवा व पानी की मात्रा):</span>
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-1.5 text-center">
-                        <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/30 p-2 shadow-2xs">
-                          <span className="block text-[9.5px] font-black uppercase text-amber-800 dark:text-amber-300">
-                            💧 1 लीटर पानी
-                          </span>
-                          <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
-                            {pills.perL}
-                          </span>
-                        </div>
-                        <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/30 p-2 shadow-2xs">
-                          <span className="block text-[9.5px] font-black uppercase text-amber-800 dark:text-amber-300">
-                            🌾 1 एकड़ दवा
-                          </span>
-                          <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
-                            {pills.perAcre}
-                          </span>
-                        </div>
-                        <div className="rounded-xl bg-white dark:bg-slate-900 border border-sky-500/35 p-2 shadow-2xs">
-                          <span className="block text-[9.5px] font-black uppercase text-sky-800 dark:text-sky-300">
-                            🚰 1 एकड़ पानी
-                          </span>
-                          <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
-                            {pills.water}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* Market Brands */}
-                {c.brands && c.brands.length > 0 && (
-                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-[11.5px]">
-                    <span className="font-black text-emerald-900 dark:text-emerald-100">दुकान पर प्रसिद्ध ब्रांड (Market Brands): </span>
-                    <span className="font-bold text-emerald-800 dark:text-emerald-200">{c.brands.join(" · ")}</span>
-                  </div>
-                )}
-
-                {/* Safety / Note */}
-                {c.safety && (
-                  <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">
-                    💡 <span className="font-semibold text-slate-800 dark:text-slate-200">{c.safety}</span>
-                  </p>
-                )}
-              </div>
-            ))}
-            <div className="rounded-xl bg-amber-500/10 border border-amber-500/25 p-2.5 text-[11px] font-bold text-amber-900 dark:text-amber-200">
-              ⚠️ हमेशा साफ़ पानी (150–200 लीटर/एकड़) का प्रयोग करें। तेज धूप में छिड़काव न करें।
-            </div>
-          </div>
-        </MockCard>
-
-        {/* 4. जैविक व देसी उपाय */}
+        {/* 4. जैविक व देसी उपाय (Organic) */}
         {organicPoints.length > 0 && (
           <MockCard className="!p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-600/10 text-teal-800 dark:text-teal-300 text-xs font-bold">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-600/10 text-teal-800 dark:text-teal-300 text-xs font-black">
                 4
               </span>
-              <h2 className="text-sm font-black text-[#0B3D28]">जैविक व देसी उपाय (Organic)</h2>
+              <h2 className="text-sm font-black text-[#0B3D28] dark:text-emerald-200">
+                जैविक व देसी उपाय (Organic Alternative)
+              </h2>
             </div>
+            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+              शुरुआती रोकथाम या बिना केमिकल के बचाव के लिए:
+            </p>
             <MiniPoints items={organicPoints} />
           </MockCard>
         )}
 
-        {/* 5. आगे के लिए बचाव */}
-        {preventPoints.length > 0 && (
-          <MockCard className="!p-4 shadow-sm">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-600/10 text-sky-800 dark:text-sky-300 text-xs font-bold">
-                5
-              </span>
-              <h2 className="text-sm font-black text-[#0B3D28]">आगे के लिए रोकथाम व सुझाव</h2>
-            </div>
-            <MiniPoints items={preventPoints} />
-          </MockCard>
-        )}
+        {/* 5. आगे के लिए रोकथाम व सुझाव */}
+        <MockCard className="!p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-600/10 text-sky-800 dark:text-sky-300 text-xs font-black">
+              5
+            </span>
+            <h2 className="text-sm font-black text-[#0B3D28] dark:text-emerald-200">
+              सावधानियां व आगे के लिए बचाव (Precautions)
+            </h2>
+          </div>
+          <ul className="mt-2.5 space-y-2 text-[12.5px] font-medium text-slate-700 dark:text-slate-300">
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-600 font-black">✓</span>
+              <span><strong>छिड़काव का सही समय:</strong> सुबह 10 बजे से पहले या शाम 4 बजे के बाद ही स्प्रे करें, तेज धूप में दवा उड़ जाती है।</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-600 font-black">✓</span>
+              <span><strong>साफ़ पानी:</strong> हमेशा कुएं या ट्यूबवेल के साफ़ पानी का इस्तेमाल करें; गंदे तालाब के पानी से दवा का असर खत्म हो जाता है।</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-600 font-black">✓</span>
+              <span><strong>कटाई से पूर्व अंतर (PHI):</strong> कटाई से कम से कम 15–20 दिन पहले छिड़काव बंद कर दें।</span>
+            </li>
+          </ul>
+        </MockCard>
 
-        {/* Action Card */}
+        {/* 📋 Doctor Prescription Action Card (WhatsApp & Save) */}
         <MockCard className="!p-4 text-center shadow-md">
           {saved ? (
             <div className="mb-3 flex items-center justify-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#16A34A] text-white shadow-xs">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white shadow-xs">
                 <Check className="h-5 w-5" strokeWidth={3} />
               </span>
-              <p className="text-[14px] font-black text-[#0B5C3B]">समाधान सुरक्षित हो गया ✓</p>
+              <p className="text-[14px] font-black text-emerald-900 dark:text-emerald-200">
+                डॉक्टर पर्ची सुरक्षित हो गई ✓
+              </p>
             </div>
           ) : (
-            <p className="mb-3 text-xs font-extrabold text-[#3D6B54]">दवा दुकानदार को भेजें या सहेजें</p>
+            <p className="mb-3 text-xs font-black text-emerald-950 dark:text-emerald-100">
+              यह पर्ची खाद-बीज दुकानदार को WhatsApp करें या सुरक्षित रखें
+            </p>
           )}
 
           <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={shareToWhatsApp}
-              className="flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-xs sm:text-[13px] font-black text-white shadow-md active:scale-95"
+              className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-xs sm:text-[13px] font-black text-white shadow-md active:scale-95"
             >
+              <Share2 className="h-4 w-4" />
               <span>दुकानदार को भेजें (WhatsApp)</span>
             </button>
             <button
               type="button"
               onClick={saveSolution}
-              className="flex min-h-[46px] items-center justify-center rounded-xl border-2 border-[#0B5C3B] bg-white text-xs sm:text-[13px] font-black text-[#0B5C3B] active:scale-95"
+              className="flex min-h-[48px] items-center justify-center rounded-xl border-2 border-emerald-700 bg-white dark:bg-slate-900 text-xs sm:text-[13px] font-black text-emerald-800 dark:text-emerald-300 active:scale-95"
             >
-              {saved ? "सहेजा गया ✓" : "सहेजें (Save)"}
+              {saved ? "सहेजा गया ✓" : "पर्ची सहेजें (Save)"}
             </button>
           </div>
 
           <div className="mt-2.5 grid grid-cols-2 gap-2.5">
             <AppLink
               href="/ai-doctor"
-              className="flex min-h-[42px] items-center justify-center rounded-xl bg-[#E8F5EE] text-xs font-black text-[#0B5C3B] active:scale-95"
+              className="flex min-h-[42px] items-center justify-center rounded-xl bg-emerald-500/10 text-xs font-black text-emerald-900 dark:text-emerald-200 active:scale-95"
             >
               📷 AI फोटो से जाँच
             </AppLink>
             <AppLink
               href={`/crop-problems/${crop.slug}`}
-              className="flex min-h-[42px] items-center justify-center rounded-xl border border-[#C5DDD0] text-xs font-black text-[#0B3D28] active:scale-95"
+              className="flex min-h-[42px] items-center justify-center rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-black text-slate-800 dark:text-slate-200 active:scale-95"
             >
               ← और समस्याएँ देखें
             </AppLink>

@@ -363,7 +363,7 @@ const TEMP_GUIDE: Record<string, CropTempGuide> = {
     ],
   },
   cotton: {
-    source: "स्रोत: ICAR — Indian Journal of Agricultural Sciences, कपास",
+    source: "स्रोत: AgriVeda विशेषज्ञ टीम, कपास शोध",
     stages: [
       { stage: "जमाव", temp: "16°C से ऊपर" },
       { stage: "बढ़वार", temp: "21–27°C" },
@@ -407,7 +407,7 @@ const TEMP_GUIDE: Record<string, CropTempGuide> = {
     ],
   },
   potato: {
-    source: FIELD + "; ICAR आलू शोध",
+    source: FIELD + "; AgriVeda आलू शोध",
     stages: [
       { stage: "लगाना", temp: "18–20°C" },
       { stage: "कंद शुरू", temp: "मिट्टी 16–19°C" },
@@ -415,14 +415,14 @@ const TEMP_GUIDE: Record<string, CropTempGuide> = {
     ],
   },
   onion: {
-    source: FIELD + "; ICAR प्याज, पश्चिम बंगाल",
+    source: FIELD + "; AgriVeda प्याज शोध",
     stages: [
       { stage: "बढ़वार", temp: "19–20°C" },
       { stage: "गांठ", temp: "21–22°C" },
     ],
   },
   tomato: {
-    source: "स्रोत: ICAR–IARI, Indian Horticulture",
+    source: "स्रोत: AgriVeda वैज्ञानिक टीम",
     stages: [
       { stage: "फल बैठना", temp: "20–25°C" },
       { stage: "नुकसान", temp: "16°C से कम या 35°C से ऊपर" },

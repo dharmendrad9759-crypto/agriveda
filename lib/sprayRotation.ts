@@ -131,7 +131,8 @@ export function searchProducts(query: string, cropSlug?: string): SprayProduct[]
   const q = query.trim().toLowerCase();
   let list = sprayProducts;
   if (cropSlug) {
-    list = list.filter((p) => p.cropRecommended.includes(cropSlug));
+    const slug = cropSlug === "groundnut" ? "moongfali" : cropSlug;
+    list = list.filter((p) => p.cropRecommended.includes(slug) || p.cropRecommended.includes(cropSlug));
   }
   if (!q) return list.slice(0, 20);
   return list

@@ -40,7 +40,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     },
     Zn: {
       total: 10,
-      source: "जिंक सल्फेट 21% — बुवाई के समय (~10 किग्रा/एकड़)",
+      source: "जिंक सल्फेट 21% — पहली सिंचाई पर यूरिया के साथ (~10 किग्रा/एकड़), डीएपी के साथ कभी नहीं",
       note: "कमी वाली मिट्टी में; हर 2–3 साल में दें",
     },
     Fe: {
@@ -58,10 +58,10 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "बुवाई के समय",
-        apply: "डीएपी 55 किग्रा + एमओपी 20 किग्रा + जिप्सम 40 किग्रा + जिंक सल्फेट 10 किग्रा",
+        apply: "डीएपी 55 किग्रा + एमओपी (पोटाश) 20 किग्रा + जिप्सम 40 किग्रा",
       },
-      { time: "21 दिन बाद (पहली सिंचाई के बाद)", apply: "यूरिया 38 किग्रा" },
-      { time: "45 दिन बाद (कल्ले)", apply: "यूरिया 37 किग्रा" },
+      { time: "21–25 दिन (पहली सिंचाई पर)", apply: "यूरिया 38 किग्रा + जिंक सल्फेट 21% 10 किग्रा" },
+      { time: "40–45 दिन (दूसरी सिंचाई पर)", apply: "यूरिया 37 किग्रा" },
     ],
     farmerTipHi: "नई पत्तियाँ पीली हों तो आयरन सल्फेट 5 ग्राम/लीटर पानी में छिड़कें — ज़रूरत हो तो",
   },
@@ -97,9 +97,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       {
         time: "बुवाई के समय",
         apply:
-          "डीएपी 44 किग्रा (पूरी) · एमओपी 17 किग्रा (आधी) · यूरिया 19 किग्रा · जिंक 10 किग्रा (पूरी)",
+          "डीएपी 44 किग्रा (पूरी) + एमओपी 17 किग्रा (आधी) + यूरिया 19 किग्रा",
       },
-      { time: "20–25 दिन बाद", apply: "यूरिया 32 किग्रा" },
+      { time: "20–25 दिन बाद (कल्ले)", apply: "यूरिया 32 किग्रा + जिंक सल्फेट 21% 10 किग्रा" },
       {
         time: "45 दिन बाद",
         apply: "यूरिया 29 किग्रा · एमओपी 16 किग्रा (बची हुई)",
@@ -117,7 +117,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     P: { total: 25, basal: 25 },
     K: { total: 20, basal: 20 },
     S: { total: 10, source: "जिप्सम 50 किग्रा/एकड़ — बुवाई के समय" },
-    Zn: { total: 10, source: "जिंक सल्फेट 21% — बुवाई के समय" },
+    Zn: { total: 10, source: "जिंक सल्फेट 21% — 30 दिन पर यूरिया के साथ (डीएपी के साथ नहीं)" },
     Mg: {
       dose: "मैग्नीशियम सल्फेट 5 किग्रा/एकड़ — पत्ती पीली हो तो 0.5% छिड़काव",
     },
@@ -131,9 +131,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "बुवाई के समय",
-        apply: "डीएपी 55 किग्रा + एमओपी 33 किग्रा + जिप्सम 50 किग्रा + जिंक 10 किग्रा + यूरिया 32 किग्रा",
+        apply: "डीएपी 55 किग्रा + एमओपी 33 किग्रा + जिप्सम 50 किग्रा + यूरिया 32 किग्रा",
       },
-      { time: "30 दिन बाद", apply: "यूरिया 32 किग्रा" },
+      { time: "30 दिन बाद (घुटने तक)", apply: "यूरिया 32 किग्रा + जिंक सल्फेट 21% 10 किग्रा" },
       { time: "50 दिन बाद", apply: "यूरिया 31 किग्रा" },
     ],
     farmerTipHi: "पत्ती पीली हो तो जिंक या आयरन 5 ग्राम/लीटर पानी में छिड़कें",
@@ -179,21 +179,24 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     },
     P: { total: 20, basal: 20 },
     K: { total: 8, basal: 8 },
-    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ अगर पहले कमी रही हो" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ पहली निराई-गुड़ाई पर, अगर पहले कमी रही हो" },
     Rhizobium: {
       essential: true,
       note: "राइजोबियम कल्चर 200 ग्राम/10 किग्रा बीज — ज़रूर लगाएँ",
     },
     fertilizer_bags: {
       DAP: "44 किग्रा",
-      Urea: "22 किग्रा",
       MOP: "13 किग्रा",
-      ZnSO4_21: "10 किग्रा",
+      ZnSO4_21: "10 किग्रा (ज़रूरत हो तो)",
     },
     schedule: [
       {
         time: "बुवाई के समय",
-        apply: "डीएपी 44 किग्रा + एमओपी 13 किग्रा + यूरिया 22 किग्रा + जिंक 10 किग्रा (ज़रूरत हो तो)",
+        apply: "डीएपी 44 किग्रा + एमओपी 13 किग्रा (डीएपी से ही शुरुआती नाइट्रोजन मिल जाती है)",
+      },
+      {
+        time: "20–25 दिन (पहली निराई-गुड़ाई)",
+        apply: "जिंक सल्फेट 21% 10 किग्रा — नमी में मिट्टी में मिलाएँ (ज़रूरत हो तो)",
       },
     ],
     farmerTipHi: "बीज पर राइजोबियम लगाएँ — अरहर में ज़्यादा यूरिया न डालें",
@@ -239,7 +242,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       total: 10,
       source: "जिप्सम 50 किग्रा/एकड़ — दाने में प्रोटीन अच्छा रखने के लिए ज़रूरी",
     },
-    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ पहली गुड़ाई पर (डीएपी के साथ नहीं)" },
     Mo: {
       dose: "अमोनियम मॉलिब्डेट 200 ग्राम/एकड़ — बीज उपचार में मिलाएँ",
       note: "गांठ बनना बेहतर होता है",
@@ -247,7 +250,6 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     Rhizobium_PSB: { essential: true },
     fertilizer_bags: {
       DAP: "65 किग्रा",
-      Urea: "18 किग्रा (सिर्फ बुवाई)",
       MOP: "33 किग्रा",
       Gypsum: "50 किग्रा",
       ZnSO4_21: "10 किग्रा",
@@ -255,7 +257,11 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "बुवाई के समय",
-        apply: "डीएपी 65 किग्रा + एमओपी 33 किग्रा + यूरिया 18 किग्रा + जिप्सम 50 किग्रा + जिंक 10 किग्रा",
+        apply: "डीएपी 65 किग्रा + एमओपी 33 किग्रा + जिप्सम 50 किग्रा (अलग से यूरिया की ज़रूरत नहीं)",
+      },
+      {
+        time: "20–25 दिन (पहली निराई-गुड़ाई)",
+        apply: "जिंक सल्फेट 21% 10 किग्रा — नमी में मिट्टी में मिलाएँ",
       },
     ],
     farmerTipHi: "बीज पर राइजोबियम + पीएसबी लगाएँ — सोयाबीन में ज़्यादा यूरिया न दें",
@@ -279,12 +285,12 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     },
     Mg: {
       total: 10,
-      source: "मैग्नीशियम सल्फेट 50 किग्रा/एकड़ बुवाई पर",
+      source: "मैग्नीशियम सल्फेट 50 किग्रा/एकड़ मिट्टी चढ़ाते समय (डीएपी के साथ नहीं)",
       note: "पत्ती हरी रखने के लिए ज़रूरी",
     },
     S: { total: 12, source: "जिप्सम से मिल जाता है — अलग से न दें" },
-    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
-    Fe: { dose: "आयरन सल्फेट 0.5% पत्ती छिड़काव अगर नसों के बीच पीलापन हो" },
+    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ मिट्टी चढ़ाते समय यूरिया के साथ" },
+    Fe: { dose: "फेरस सल्फेट 5 ग्राम/लीटर पानी छिड़काव, अगर नई पत्ती पीली और नसें हरी हों" },
     B: { total: 0.5, source: "बोरेक्स 1 किग्रा/एकड़", note: "कंद का आकार एक जैसा रखता है" },
     fertilizer_bags: {
       DAP: "88 किग्रा",
@@ -299,11 +305,11 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       {
         time: "बुवाई के समय",
         apply:
-          "डीएपी 88 किग्रा + एमओपी 42 किग्रा + जिप्सम 100 किग्रा + मैग्नीशियम सल्फेट 50 किग्रा + जिंक 10 किग्रा + बोरेक्स 1 किग्रा + यूरिया 48 किग्रा",
+          "डीएपी 88 किग्रा + एमओपी 42 किग्रा + जिप्सम 100 किग्रा + बोरेक्स 1 किग्रा + यूरिया 48 किग्रा",
       },
       {
         time: "30 दिन बाद (मिट्टी चढ़ाते समय)",
-        apply: "यूरिया 47 किग्रा + एमओपी 42 किग्रा (बची हुई)",
+        apply: "यूरिया 47 किग्रा + एमओपी 42 किग्रा (बची हुई) + जिंक सल्फेट 10 किग्रा + मैग्नीशियम सल्फेट 50 किग्रा",
       },
     ],
     farmerTipHi: "पत्ती पीली हो तो आयरन सल्फेट 5 ग्राम/लीटर पानी में छिड़कें",
@@ -332,7 +338,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     S: { total: 10, source: "जिप्सम 50 किग्रा/एकड़ बुवाई पर" },
     Zn: {
       total: 10,
-      source: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर या 0.5% छिड़काव",
+      source: "जिंक सल्फेट 10 किग्रा/एकड़ 30 दिन पर यूरिया के साथ, या 0.5% छिड़काव",
     },
     Fe: { dose: "आयरन (EDTA) 0.2% पत्ती छिड़काव अगर पीलापन हो" },
     B: {
@@ -350,9 +356,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "रोपाई के समय",
-        apply: "डीएपी 77 किग्रा + एमओपी 25 किग्रा + जिप्सम 50 किग्रा + मैग्नीशियम सल्फेट 20 किग्रा + जिंक 10 किग्रा + यूरिया 27 किग्रा",
+        apply: "डीएपी 77 किग्रा + एमओपी 25 किग्रा + जिप्सम 50 किग्रा + यूरिया 27 किग्रा",
       },
-      { time: "30 दिन बाद", apply: "यूरिया 27 किग्रा" },
+      { time: "30 दिन बाद", apply: "यूरिया 27 किग्रा + जिंक सल्फेट 10 किग्रा + मैग्नीशियम सल्फेट 20 किग्रा" },
       {
         time: "फल लगते समय",
         apply: "यूरिया 26 किग्रा + एमओपी 50 किग्रा (बची) + कैल्शियम नाइट्रेट 25 किग्रा (पत्ती पर)",
@@ -370,7 +376,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     K: { total: 30, split: "बुवाई: 15 किग्रा | फल लगते समय: 15 किग्रा" },
     Ca: { dose: "कैल्शियम नाइट्रेट 0.5% पत्ती छिड़काव — फल लगते समय 2 बार" },
     Mg: { dose: "मैग्नीशियम सल्फेट 0.5% छिड़काव — पत्ती पीली हो तो" },
-    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ 30 दिन पर यूरिया के साथ" },
     B: { dose: "बोरेक्स 0.1% छिड़काव — फूल आने पर" },
     fertilizer_bags: {
       DAP: "65 किग्रा",
@@ -381,9 +387,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "रोपाई के समय",
-        apply: "डीएपी 65 किग्रा + एमओपी 25 किग्रा + जिंक 10 किग्रा + यूरिया 22 किग्रा",
+        apply: "डीएपी 65 किग्रा + एमओपी 25 किग्रा + यूरिया 22 किग्रा",
       },
-      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा" },
+      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा + जिंक सल्फेट 10 किग्रा" },
       { time: "फल लगते समय", apply: "यूरिया 21 किग्रा + एमओपी 25 किग्रा (बची)" },
     ],
     farmerTipHi: "फूल आने पर बोरॉन 2 ग्राम/लीटर पानी में छिड़कें",
@@ -405,7 +411,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     },
     Mg: { dose: "मैग्नीशियम सल्फेट 0.5% छिड़काव 2–3 बार" },
     S: { dose: "जिप्सम 40 किग्रा/एकड़ बुवाई पर" },
-    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ 30 दिन पर यूरिया के साथ" },
     B: { dose: "बोरेक्स 0.1% छिड़काव — फूल आने पर" },
     fertilizer_bags: {
       DAP: "65 किग्रा",
@@ -417,9 +423,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "रोपाई के समय",
-        apply: "डीएपी 65 किग्रा + एमओपी 15 किग्रा + जिप्सम 40 किग्रा + जिंक 10 किग्रा + यूरिया 22 किग्रा",
+        apply: "डीएपी 65 किग्रा + एमओपी 15 किग्रा + जिप्सम 40 किग्रा + यूरिया 22 किग्रा",
       },
-      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा" },
+      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा + जिंक सल्फेट 10 किग्रा" },
       { time: "फल लगते समय", apply: "यूरिया 21 किग्रा + एमओपी 43 किग्रा (बची)" },
     ],
     farmerTipHi: "मिर्च तीखी रखनी हो तो फल लगते समय एमओपी पूरा दें",
@@ -469,7 +475,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     P: { total: 20, basal: 20 },
     K: { total: 15, basal: 15 },
     S: { dose: "जिप्सम 30 किग्रा/एकड़ — बुवाई पर" },
-    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ 30 दिन पर यूरिया के साथ" },
     fertilizer_bags: {
       DAP: "44 किग्रा",
       Urea: "22 किग्रा (दो भागों में)",
@@ -480,9 +486,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "बुवाई के समय",
-        apply: "डीएपी 44 किग्रा + एमओपी 25 किग्रा + जिप्सम 30 किग्रा + जिंक 10 किग्रा + यूरिया 11 किग्रा",
+        apply: "डीएपी 44 किग्रा + एमओपी 25 किग्रा + जिप्सम 30 किग्रा + यूरिया 11 किग्रा",
       },
-      { time: "30 दिन बाद", apply: "यूरिया 11 किग्रा" },
+      { time: "30 दिन बाद", apply: "यूरिया 11 किग्रा + जिंक सल्फेट 10 किग्रा" },
     ],
     farmerTipHi: "फल तोड़ते रहें — भिंडी लगातार देती है",
   },
@@ -497,7 +503,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     Ca: { dose: "चूना 200 किग्रा/एकड़ अगर मिट्टी अम्लीय हो (पीएच 6.5 से कम)" },
     Mg: { dose: "मैग्नीशियम सल्फेट 25 किग्रा/एकड़ अगर कमी हो" },
     S: { dose: "जिप्सम 80 किग्रा/एकड़ — बुवाई पर" },
-    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ — उपज के लिए बहुत ज़रूरी" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ पहली गुड़ाई (30–45 दिन) पर — उपज के लिए बहुत ज़रूरी" },
     Fe: {
       dose: "आयरन सल्फेट 10 किग्रा/एकड़ बुवाई पर या छिड़काव अगर पीलापन हो",
     },
@@ -514,8 +520,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "बुवाई / रोपाई",
-        apply: "डीएपी 76 किग्रा + एमओपी 33 किग्रा + जिप्सम 80 किग्रा + जिंक 10 किग्रा + यूरिया 43 किग्रा",
+        apply: "डीएपी 76 किग्रा + एमओपी 33 किग्रा + जिप्सम 80 किग्रा + यूरिया 43 किग्रा",
       },
+      { time: "30–45 दिन (पहली गुड़ाई)", apply: "जिंक सल्फेट 10 किग्रा — नमी में मिट्टी में मिलाएँ" },
       { time: "3 महीने बाद", apply: "यूरिया 65 किग्रा + एमओपी 34 किग्रा (बची)" },
       { time: "5–6 महीने बाद", apply: "यूरिया 22 किग्रा" },
     ],
@@ -526,7 +533,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     N: { total: 40, split: "बुवाई: 20 किग्रा | 30 दिन: 20 किग्रा" },
     P: { total: 16, basal: 16 },
     K: { total: 8, basal: 8 },
-    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ बुवाई पर" },
+    Zn: { total: 10, source: "जिंक सल्फेट 10 किग्रा/एकड़ 30 दिन पर यूरिया के साथ" },
     fertilizer_bags: {
       DAP: "35 किग्रा",
       Urea: "44 किग्रा (2 भागों में)",
@@ -536,9 +543,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "बुवाई के समय",
-        apply: "डीएपी 35 किग्रा + एमओपी 13 किग्रा + जिंक 10 किग्रा + यूरिया 22 किग्रा",
+        apply: "डीएपी 35 किग्रा + एमओपी 13 किग्रा + यूरिया 22 किग्रा",
       },
-      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा" },
+      { time: "30 दिन बाद", apply: "यूरिया 22 किग्रा + जिंक सल्फेट 10 किग्रा" },
     ],
     farmerTipHi: "सूखे में भी जिंक देना न भूलें — पीलापन रुकता है",
   },
@@ -599,8 +606,8 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     N: { total: 8, basal: 8, note: "सिर्फ शुरू — बाकी जड़ गांठ से" },
     P: { total: 16, basal: 16 },
     K: { total: 20, basal: 20 },
-    S: { total: 10, source: "जिप्सम 200 किग्रा/एकड़ — फूल आने पर" },
-    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ अगर कमी हो" },
+    S: { total: 10, source: "जिप्सम 200 किग्रा/एकड़ — फूल/सुई बनते समय (35–45 दिन)" },
+    Zn: { dose: "जिंक सल्फेट 10 किग्रा/एकड़ पहली गुड़ाई पर, अगर कमी हो (एसएसपी के साथ नहीं)" },
     Rhizobium_PSB: { essential: true },
     fertilizer_bags: {
       SSP: "125 किग्रा",
@@ -612,9 +619,10 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "बुवाई के समय",
-        apply: "एसएसपी 125 किग्रा + एमओपी 33 किग्रा + यूरिया 18 किग्रा + जिंक 10 किग्रा (ज़रूरत हो तो)",
+        apply: "एसएसपी 125 किग्रा + एमओपी 33 किग्रा + यूरिया 18 किग्रा",
       },
-      { time: "फूल आने पर", apply: "जिप्सम 200 किग्रा" },
+      { time: "20–25 दिन (पहली गुड़ाई)", apply: "जिंक सल्फेट 10 किग्रा (ज़रूरत हो तो) — मिट्टी में मिलाएँ" },
+      { time: "35–45 दिन (फूल/सुई बनते समय)", apply: "जिप्सम 200 किग्रा — पौधों की कतार के पास" },
     ],
     farmerTipHi: "बीज पर राइजोबियम लगाएँ — फूल पर जिप्सम ज़रूर दें, दाने भरेंगे",
   },
@@ -673,9 +681,9 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
     schedule: [
       {
         time: "बुवाई के समय",
-        apply: "डीएपी 52 किग्रा + एमओपी 20 किग्रा + यूरिया 22 किग्रा + जिंक 5 किग्रा",
+        apply: "डीएपी 52 किग्रा + एमओपी 20 किग्रा + यूरिया 22 किग्रा",
       },
-      { time: "कली निकलने पर (30–40 दिन)", apply: "यूरिया 32 किग्रा" },
+      { time: "कली निकलने पर (30–40 दिन)", apply: "यूरिया 32 किग्रा + जिंक सल्फेट 5 किग्रा" },
       { time: "फूल आने पर", apply: "यूरिया 33 किग्रा + एमओपी 20 किग्रा (बची)" },
     ],
     farmerTipHi: "फूल पर पत्ती पीली हो तो यूरिया या डीएपी 2% घोल छिड़कें — ज़रूरत हो तो",
@@ -863,4 +871,33 @@ export function scaleBagKg(kgStr: string, acres: number): string {
   if (!m) return kgStr;
   const scaled = Math.round(parseFloat(m[1]) * acres);
   return kgStr.replace(m[0], `${scaled} किग्रा`);
+}
+
+/** Standard Indian retail pack size (kg) per product — urea 45, DAP/MOP/SSP 50, zinc 10 … */
+export function fertilizerPackKg(name: string): { kg: number; unitHi: "बोरी" | "थैली" | "पैकेट" } {
+  const n = name.toLowerCase();
+  if (n.includes("urea") || n.includes("यूरिया")) return { kg: 45, unitHi: "बोरी" };
+  if (n.includes("zinc") || n.includes("जिंक") || n.includes("znso")) return { kg: 10, unitHi: "थैली" };
+  if (n.includes("borax") || n.includes("बोरेक्स")) return { kg: 1, unitHi: "पैकेट" };
+  if (n.includes("magnesium") || n.includes("मैग्नीशियम")) return { kg: 25, unitHi: "बोरी" };
+  if (n.includes("calcium nitrate") || n.includes("कैल्शियम")) return { kg: 25, unitHi: "बोरी" };
+  if (n.includes("ferrous") || n.includes("आयरन")) return { kg: 10, unitHi: "थैली" };
+  return { kg: 50, unitHi: "बोरी" };
+}
+
+/** "75 किग्रा" + Urea → "1 बोरी (45 किग्रा) + 30 किग्रा" — simple farmer wording. */
+export function fertilizerPackHi(name: string, kg: number): string {
+  if (!Number.isFinite(kg) || kg <= 0) return "";
+  const { kg: pack, unitHi } = fertilizerPackKg(name);
+  if (pack <= 1) return `${Math.ceil(kg)} ${unitHi} (1 किग्रा वाले)`;
+  const whole = Math.floor(kg / pack);
+  const rem = Math.round(kg - whole * pack);
+  const packLabel = `${pack} किग्रा वाली`;
+  if (whole === 0) {
+    if (kg / pack >= 0.45 && kg / pack <= 0.55) return `लगभग आधी ${unitHi} (${packLabel})`;
+    return `${unitHi} से कम — ${Math.round(kg)} किग्रा खुला लें`;
+  }
+  if (rem <= 2) return `${whole} ${unitHi} (${packLabel})`;
+  if (pack - rem <= 2) return `${whole + 1} ${unitHi} (${packLabel})`;
+  return `${whole} ${unitHi} + ${rem} किग्रा (${packLabel})`;
 }

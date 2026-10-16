@@ -1,9 +1,7 @@
 import { MANDI_PRICES } from "@/data/mock/mandi";
 import { CROP_CATEGORY, CROP_HI } from "@/lib/mandi/constants";
-import {
-  EXTRA_CROP_OPTIONS,
-  EXTRA_MARKET_OPTIONS,
-} from "@/lib/mandi/marketAnalytics";
+import { EXTRA_CROP_OPTIONS } from "@/lib/mandi/marketAnalytics";
+import { getDistrictsForState } from "@/lib/india-locations";
 import type { MandiRow } from "@/lib/mandi/types";
 
 const GRADES = ["FAQ", "Local", "Hybrid", "Grade A"];
@@ -13,17 +11,26 @@ function sparkline(modal: number): number[] {
   return Array.from({ length: 7 }, (_, i) => Math.round(base + ((modal - base) * i) / 6));
 }
 
-/** Rich demo dataset so filter dropdowns look like Finnid when live API is off */
+/** Rich demo dataset aligned strictly with real districts of the selected state */
 export function expandMockMandi(state: string, district?: string): MandiRow[] {
-  const base = MANDI_PRICES.map((r) => ({ ...r, state, district: district || r.district }));
-  const rows: MandiRow[] = [...base];
-  const markets = EXTRA_MARKET_OPTIONS.slice(0, 24);
+  const base = MANDI_PRICES
+    .filter((r) => !r.state || r.state.toLowerCase() === state.toLowerCase())
+    .map((r) => ({ ...r, state, district: district || r.district || r.mandi }));
+
+  const stateDistricts = getDistrictsForState(state);
+  const markets = district
+    ? [district]
+    : stateDistricts.length > 0
+      ? stateDistricts.slice(0, 15)
+      : ["स्थानीय मंडी"];
+
   const crops = EXTRA_CROP_OPTIONS.slice(0, 18);
+  const rows: MandiRow[] = [...base];
   let i = 0;
 
   for (const mandi of markets) {
     for (const crop of crops) {
-      if (rows.some((r) => r.mandi === mandi && r.crop === crop)) continue;
+      if (rows.some((r) => r.mandi.toLowerCase().includes(mandi.toLowerCase()) && r.crop === crop)) continue;
       const seed = (mandi.length + crop.length + i) * 137;
       const modal = 1200 + (seed % 6200);
       const spread = 80 + (seed % 200);
@@ -33,7 +40,7 @@ export function expandMockMandi(state: string, district?: string): MandiRow[] {
         crop,
         cropHi: CROP_HI[crop] ?? crop,
         variety: grade,
-        mandi,
+        mandi: `${mandi} Mandi`,
         state,
         district: district || mandi,
         min: modal - spread,

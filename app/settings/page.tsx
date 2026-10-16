@@ -235,51 +235,27 @@ export default function SettingsPage() {
   return (
     <AppShell className="!bg-transparent" backHref="/" title={t("settingsTitle")}>
       <div className="mx-auto max-w-lg space-y-5">
-        <section className="relative overflow-hidden rounded-[1.75rem] border border-white/15 bg-emerald-950 text-white shadow-[0_18px_40px_-20px_rgba(6,78,59,0.7)]">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-emerald-400/25 blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -bottom-16 left-8 h-36 w-36 rounded-full bg-amber-300/15 blur-3xl"
-          />
-          <div className="relative p-4 pb-3.5">
-            <div className="flex items-start gap-3.5">
-              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-emerald-300 via-emerald-500 to-teal-700 text-[1.65rem] font-black text-emerald-950 shadow-lg shadow-emerald-950/30 ring-2 ring-white/25">
-                {initial}
-              </span>
-              <div className="min-w-0 flex-1 pt-0.5">
-                <h2 className="truncate font-display text-[1.35rem] font-bold leading-tight">
-                  {greetName}
-                </h2>
-                <p className="mt-1 truncate text-[12px] font-medium text-emerald-100/80">
-                  {profile.phone ? `+91 ${profile.phone}` : t("settingsAddPhone")}
-                  {place ? ` · ${place}` : ""}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {[
-                { k: isHi ? "खेत" : "Fields", v: String(fieldCount) },
-                { k: isHi ? "रकबा" : "Area", v: areaLabel },
-                {
-                  k: isHi ? "भाषा" : "Lang",
-                  v: locale === "hi" ? "हिंदी" : "EN",
-                },
-              ].map((s) => (
-                <div
-                  key={s.k}
-                  className="rounded-2xl bg-white/8 px-2 py-2 text-center ring-1 ring-white/10"
-                >
-                  <p className="text-[15px] font-extrabold leading-none">{s.v}</p>
-                  <p className="mt-1 text-[10px] font-semibold text-emerald-100/70">{s.k}</p>
-                </div>
-              ))}
+        <div className="flex items-center justify-between rounded-2xl border border-emerald-900/10 bg-[var(--av-surface)] p-3.5 shadow-sm dark:border-white/10">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-lg font-black text-white shadow-md shadow-emerald-950/20">
+              {initial}
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="truncate text-base font-extrabold text-[var(--av-text-primary)]">
+                {greetName}
+              </h2>
+              <p className="truncate text-xs font-medium text-[var(--av-text-muted)]">
+                {profile.phone ? `+91 ${profile.phone}` : place || (isHi ? "किसान खाता" : "Farmer account")}
+              </p>
             </div>
           </div>
-        </section>
+          <AppLink
+            href="/profile"
+            className="shrink-0 rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 transition active:scale-95 dark:bg-emerald-950/60 dark:text-emerald-300"
+          >
+            {isHi ? "प्रोफ़ाइल देखें" : "View profile"}
+          </AppLink>
+        </div>
 
         <div className="grid grid-cols-2 gap-2.5">
           {(

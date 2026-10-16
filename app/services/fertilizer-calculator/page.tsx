@@ -29,6 +29,7 @@ import {
 import {
   fertilizerAmountParts,
   fertilizerBagPurposeHi,
+  fertilizerPackHi,
 } from "@/data/agriveda2/fertilizer-data";
 import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
 import { EASE_OUT } from "@/lib/motion/variants";
@@ -134,7 +135,13 @@ function FertilizerCalculatorInner() {
 
   const handleShareWhatsApp = () => {
     if (!plan) return;
-    const bagLines = plan.bags.map((b) => `• ${b.name}: ${b.amount}`).join("\n");
+    const bagLines = plan.bags
+      .map((b) => {
+        const { num } = fertilizerAmountParts(b.amount);
+        const packInfo = fertilizerPackHi(b.name, parseFloat(num) || 0);
+        return `• ${b.name}: ${b.amount}${packInfo ? ` (${packInfo})` : ""}`;
+      })
+      .join("\n");
     const scheduleLines = plan.schedule
       .map((s, i) => `${i + 1}. *${s.time}*: ${s.apply}`)
       .join("\n");
@@ -320,16 +327,16 @@ function FertilizerCalculatorInner() {
                   </button>
                 </div>
 
-                {/* Big Metric Banner */}
+                {/* Top Metric Banner */}
                 <div className="relative z-10 mt-4 flex items-center justify-between rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-md">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-200">
-                      कुल अनुमानित बैग
+                      संतुलित खाद संस्तुति
                     </p>
-                    <p className="mt-0.5 text-2xl font-black tracking-tight text-white">
-                      लगभग {totalBagsEstimate}{" "}
+                    <p className="mt-0.5 text-xl font-black tracking-tight text-white sm:text-2xl">
+                      {plan?.bags.length ?? 0}{" "}
                       <span className="text-sm font-semibold text-emerald-100">
-                        बोरी खाद
+                        प्रकार की खाद · नीचे बोरी/थैली का विवरण
                       </span>
                     </p>
                   </div>
@@ -377,6 +384,7 @@ function FertilizerCalculatorInner() {
                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                       {plan.bags.map((b) => {
                         const { num, rest } = fertilizerAmountParts(b.amount);
+                        const packInfo = fertilizerPackHi(b.name, parseFloat(num) || 0);
                         return (
                           <div
                             key={b.name}
@@ -403,8 +411,13 @@ function FertilizerCalculatorInner() {
                                   किग्रा
                                 </span>
                               </p>
+                              {packInfo ? (
+                                <p className="mt-1 text-[11px] font-black text-emerald-700 dark:text-emerald-300 line-clamp-1">
+                                  {packInfo}
+                                </p>
+                              ) : null}
                               {rest && !/^किग्रा/i.test(rest) ? (
-                                <p className="mt-1 line-clamp-1 text-[10px] font-semibold text-[var(--av-text-muted)]">
+                                <p className="mt-0.5 line-clamp-1 text-[10px] font-semibold text-[var(--av-text-muted)]">
                                   {rest.replace(/^किग्रा\s*·?\s*/, "")}
                                 </p>
                               ) : null}
