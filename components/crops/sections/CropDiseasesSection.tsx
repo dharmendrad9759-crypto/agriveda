@@ -186,7 +186,7 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
                     </span>
                   ) : null
                 }
-                openHint={hi ? "क्या करें — पूरा पेज" : "What to do — open"}
+                openHint={hi ? "लक्षण व सही दवा देखें" : "Symptoms & Medicine"}
               />
             </li>
           );

@@ -91,7 +91,7 @@ export default function CropCarePageClient({ crop, tab }: Props) {
             kind={tab}
             hi={locale === "hi"}
           />
-        ) : tab === "varieties" ? (
+        ) : tab === "varieties" || tab === "fertilizer" ? (
           <h1 className="sr-only">{title}</h1>
         ) : (
           <div className="mb-3">

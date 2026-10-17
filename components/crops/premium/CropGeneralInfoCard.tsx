@@ -169,7 +169,7 @@ export default function CropGeneralInfoCard({ crop }: Props) {
       id: "yield",
       icon: Wheat,
       label: hi ? "औसत उत्पादन / एकड़" : "Avg yield / acre",
-      value: crop.estimatedYield,
+      value: (crop.estimatedYield || "").replace(/\s*\(शुद्ध[^)]+\)/gi, "").trim(),
       wide: true,
     },
     {
@@ -195,16 +195,16 @@ export default function CropGeneralInfoCard({ crop }: Props) {
     {
       id: "profit",
       icon: Coins,
-      label: hi ? "लागत और मुनाफ़ा / एकड़" : "Cost & profit / acre",
+      label: hi ? "लागत और मुनाफ़ा (अनुमानित) / एकड़" : "Approx. Cost & Profit / acre",
       value: "",
       lines: hi
         ? [
-            `लागत: ${formatInrRange(band.costMin, band.costMax)}`,
-            `मुनाफ़ा: ${formatInrRange(band.profitMin, band.profitMax)}`,
+            `लगभग लागत: ${formatInrRange(band.costMin, band.costMax)}`,
+            `अनुमानित मुनाफ़ा: ${formatInrRange(band.profitMin, band.profitMax)}`,
           ]
         : [
-            `Cost: ${formatInrRange(band.costMin, band.costMax)}`,
-            `Profit: ${formatInrRange(band.profitMin, band.profitMax)}`,
+            `Approx. Cost: ${formatInrRange(band.costMin, band.costMax)}`,
+            `Estimated Profit: ${formatInrRange(band.profitMin, band.profitMax)}`,
           ],
       note: hi
         ? "जिला, मौसम और मंडी भाव से आंकड़ा बदल सकता है"

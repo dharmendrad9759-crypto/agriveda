@@ -176,40 +176,83 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
       ) : null}
 
       {hasNursery ? (
-        <DarkCard>
-          <div className="flex items-center gap-2">
-            <Shovel className="h-4 w-4 text-amber-600" />
-            <SectionHeader title={hi ? "नर्सरी" : "Nursery"} />
+        <section className="overflow-hidden rounded-2xl border border-amber-600/30 bg-gradient-to-br from-amber-500/10 via-[var(--av-surface)] to-[var(--av-surface)] p-4 shadow-sm dark:border-amber-400/20">
+          <div className="flex items-center justify-between gap-2 border-b border-amber-500/15 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-800 dark:text-amber-300">
+                <Sprout className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="text-[15px] font-black text-[var(--av-text-primary)]">
+                  {hi ? "पौधशाला (नर्सरी) प्रबंधन" : "Nursery Management"}
+                </h3>
+                <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                  {hi ? "स्वस्थ पौध से अधिक पैदावार की शुरुआत" : "From seedbed to transplant"}
+                </p>
+              </div>
+            </div>
             {nurseryProcess ? (
-              <button
-                type="button"
-                onClick={() => setNurseryOpen(true)}
-                className="ml-auto min-h-9 rounded-full bg-amber-100 px-3 text-[13px] font-black text-amber-950"
-              >
-                {hi ? "प्रक्रिया" : "Steps"}
-              </button>
+              <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-[11px] font-black text-amber-800 dark:text-amber-200">
+                {hi ? "विशेषज्ञ गाइड" : "Expert Guide"}
+              </span>
             ) : null}
           </div>
-          <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-            {hi
-              ? "नर्सरी में बीज से रोपाई तक"
-              : "From nursery sowing to transplant"}
-          </p>
-          {seedRate ? (
-            <div className="mt-2 crop-premium-inset text-xs">
-              <p className="font-bold text-[var(--av-text-muted)]">
-                {hi ? "बीज की मात्रा" : "Seed rate"}
-              </p>
-              <p className="mt-0.5 text-[var(--av-text-primary)]">{seedRate}</p>
-              {seedRateNote ? (
-                <p className="mt-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
-                  {seedRateNote}
+
+          {/* Quick Metrics Grid */}
+          <div className="mt-3.5 grid grid-cols-2 gap-2 text-xs">
+            {nurseryProcess?.areaHi ? (
+              <div className="rounded-xl border border-amber-500/20 bg-amber-50/60 p-2.5 dark:bg-amber-950/20">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                  {hi ? "नर्सरी क्षेत्रफल" : "Nursery Area"}
                 </p>
-              ) : null}
-            </div>
+                <p className="mt-0.5 text-[12px] font-black text-[var(--av-text-primary)]">
+                  {nurseryProcess.areaHi}
+                </p>
+              </div>
+            ) : null}
+
+            {seedRate ? (
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-50/60 p-2.5 dark:bg-emerald-950/20">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                  {hi ? "बीज की मात्रा" : "Seed Rate"}
+                </p>
+                <p className="mt-0.5 text-[12px] font-black text-[var(--av-text-primary)]">
+                  {seedRate}
+                </p>
+              </div>
+            ) : null}
+          </div>
+
+          {seedRateNote ? (
+            <p className="mt-2.5 rounded-xl border border-amber-500/20 bg-white/70 px-3 py-2 text-[11.5px] font-semibold leading-relaxed text-amber-950 dark:bg-black/25 dark:text-amber-200">
+              💡 {seedRateNote}
+            </p>
           ) : null}
-          <ListBlock items={nursery} />
-        </DarkCard>
+
+          {/* Step-by-Step Nursery Preparation */}
+          {nurseryProcess?.stepsHi?.length ? (
+            <div className="mt-3.5 space-y-2">
+              <p className="text-[12px] font-black text-[var(--av-text-primary)]">
+                {hi ? "नर्सरी तैयार करने के मुख्य चरण:" : "Key Steps for Seedbed:"}
+              </p>
+              <ol className="space-y-1.5">
+                {nurseryProcess.stepsHi.map((step, idx) => (
+                  <li
+                    key={step}
+                    className="flex items-start gap-2.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-2.5 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]"
+                  >
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-600 text-[10.5px] font-black text-white">
+                      {idx + 1}
+                    </span>
+                    <span className="min-w-0 flex-1">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : (
+            <ListBlock items={nursery} />
+          )}
+        </section>
       ) : null}
 
       <DarkCard>

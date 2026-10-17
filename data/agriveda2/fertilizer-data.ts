@@ -825,7 +825,7 @@ export function fertilizerBagPurposeHi(name: string): string {
     return "जड़ की ताकत के लिए";
   }
   if (n.includes("ssp") || n.includes("एसएसपी")) {
-    return "जड़ और गंधक के लिए";
+    return "जड़ों के विकास व सल्फर पोषण के लिए";
   }
   if (n.includes("urea") || n.includes("यूरिया")) {
     return "हरियाली और बढ़वार";

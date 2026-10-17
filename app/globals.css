@@ -115,6 +115,29 @@ h1, h2, .font-display {
   font-family: var(--font-display), var(--font-sans);
 }
 
+/* Accessibility & Large Font Protection for Hindi / Devanagari */
+html, body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Ensure Hindi matras (ऊपरी व निचली मात्राएं) are never clipped when system fonts are scaled */
+:lang(hi), [lang="hi"], [data-locale="hi"] {
+  line-height: 1.45;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Allow buttons, chips, and pills to naturally wrap when large system fonts are active */
+.av-btn-flexible {
+  height: auto !important;
+  min-height: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  white-space: normal !important;
+}
+
 /* Futuristic utility accents */
 @keyframes av-shimmer {
   0% { background-position: 0% 50%; }

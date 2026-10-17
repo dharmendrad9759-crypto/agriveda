@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
 import { BRAND } from "@/lib/brand";
 
-const SPLASH_MS = 5200;
-const EXIT_MS = 800;
+const SPLASH_MS = 1800;
+const EXIT_MS = 300;
 
 type Props = {
   onComplete: () => void;
@@ -45,6 +45,15 @@ export default function AgriVedaSplashScreen({ onComplete, reducedMotion = false
         exiting ? "agriveda-splash--exit" : "agriveda-splash"
       }`}
     >
+      {/* Quick Skip for Farmers */}
+      <button
+        type="button"
+        onClick={onComplete}
+        className="absolute top-4 right-4 z-50 rounded-full border border-emerald-500/30 bg-slate-900/80 px-3.5 py-1.5 text-xs font-bold text-emerald-400 backdrop-blur-md transition hover:bg-slate-800 active:scale-95"
+      >
+        स्किप करें (Skip) ›
+      </button>
+
       {/* Futuristic Atmosphere Glows */}
       <div
         aria-hidden

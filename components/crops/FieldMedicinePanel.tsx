@@ -5,7 +5,7 @@ import type { FieldMedicine } from "@/lib/crops/fieldMedicine";
 import { splitMedicineLine, parseMedicineItem, type ParsedMedicineItem } from "@/lib/crops/medicineParser";
 import { getChemPackageType } from "@/lib/crops/chemBottle";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
-import { Check, Copy, Droplets, Info, Share2, Sparkles } from "lucide-react";
+import { Check, ChevronDown, Copy, Droplets, Info, Share2, Sparkles } from "lucide-react";
 
 const TIER_THEME = [
   {
@@ -42,6 +42,7 @@ export default function FieldMedicinePanel({
   hi: boolean;
 }) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [openTierIdx, setOpenTierIdx] = useState<number | null>(0);
 
   const copyForShop = (item: ParsedMedicineItem) => {
     const text = `दवाई पर्ची (Agriveda Farm Advisory):\n• असली टेक्निकल नाम: ${item.technicalEn || item.technicalHi}\n${
@@ -72,6 +73,7 @@ export default function FieldMedicinePanel({
       {/* Medicine Tiers */}
       {guide.tiers.map((tier, tIdx) => {
         const theme = TIER_THEME[tIdx % TIER_THEME.length];
+        const isOpen = openTierIdx === tIdx;
 
         // Process all lines in this tier into items
         const parsedItems: ParsedMedicineItem[] = [];
@@ -89,28 +91,40 @@ export default function FieldMedicinePanel({
         return (
           <section
             key={tier.title}
-            className={`overflow-hidden rounded-2xl border ${theme.border} ${theme.bg} p-3.5 shadow-sm`}
+            className={`overflow-hidden rounded-2xl border ${theme.border} ${theme.bg} p-3.5 shadow-sm transition-all`}
           >
-            {/* Tier Title */}
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            {/* Tier Title Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setOpenTierIdx(isOpen ? null : tIdx)}
+              className="flex w-full items-center justify-between text-left transition"
+            >
+              <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-black ${theme.badge}`}
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-black ${theme.badge}`}
                 >
                   {tIdx + 1}
                 </span>
-                <h3 className={`text-[15px] font-black tracking-tight ${theme.header}`}>
+                <h3 className={`text-[15px] font-black tracking-tight ${theme.header} truncate`}>
                   {tier.title}
                 </h3>
               </div>
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400">
-                {parsedItems.filter((i) => i.isChemical).length}{" "}
-                {hi ? "दवा विकल्प" : "options"}
-              </span>
-            </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400">
+                  {parsedItems.filter((i) => i.isChemical).length}{" "}
+                  {hi ? "दवा विकल्प" : "options"}
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 text-stone-500 transition-transform duration-200 ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </div>
+            </button>
 
-            {/* Medicine Option Cards */}
-            <div className="space-y-3">
+            {/* Medicine Option Cards (Rendered when accordion is open) */}
+            {isOpen && (
+              <div className="mt-3.5 space-y-3">
               {parsedItems.map((item, oIdx) => {
                 if (!item.isChemical) {
                   return (
@@ -257,6 +271,7 @@ export default function FieldMedicinePanel({
                 );
               })}
             </div>
+            )}
           </section>
         );
       })}

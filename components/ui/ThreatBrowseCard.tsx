@@ -54,13 +54,12 @@ export default function ThreatBrowseCard({
       <span aria-hidden className={cn("absolute inset-y-0 left-0 w-[3px]", rail)} />
 
       <span className="relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-1 px-3.5 py-3.5 pl-4">
-        <span className="flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-lg bg-emerald-950 px-1.5 text-[10px] font-black text-emerald-100">
-            {String(index).padStart(2, "0")}
+        {(riskChip || typeChip) && (
+          <span className="flex flex-wrap items-center gap-1.5">
+            {riskChip}
+            {typeChip}
           </span>
-          {riskChip}
-          {typeChip}
-        </span>
+        )}
 
         <span className="font-display line-clamp-2 text-[1.05rem] font-bold leading-[1.15] tracking-tight text-[var(--av-text-primary)]">
           {names.primary}

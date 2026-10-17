@@ -27,7 +27,7 @@ export default function OfflineBanner() {
     <div className="sticky top-0 z-[60] flex items-center gap-2 border-b border-amber-500/30 bg-amber-500/15 px-4 py-2 text-xs font-semibold text-amber-900 dark:text-amber-200">
       <WifiOff className="h-4 w-4 shrink-0" />
       <p className="flex-1">
-        इंटरनेट नहीं है — मौसम, AI और mandi के लिए net ज़रूरी। सेव की हुई जानकारी दिख सकती है।
+        कमजोर या बंद इंटरनेट — आप ऑफ़लाइन हैं। सहेजी गई फसल, खाद व दवा की जानकारी बिना इंटरनेट के भी उपलब्ध है।
       </p>
       <button
         type="button"

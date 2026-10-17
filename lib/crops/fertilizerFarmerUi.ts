@@ -305,13 +305,13 @@ function parseScientificFoliarCard(
   // 7. General NPK 19:19:19 / Growth
   if (/19:19:19|20:20:20|हरियाली|ग्रोथ|growth|वानस्पतिक/i.test(t)) {
     return {
-      title: hi ? "हरियाली व वनस्पति बढ़वार हेतु" : "Vegetative Growth & Greening",
+      title: hi ? "NPK 19-19-19 (वानस्पतिक बढ़वार)" : "NPK 19-19-19 (Vegetative Growth)",
       medicine: hi ? "घुलनशील NPK 19:19:19" : "Soluble NPK 19:19:19",
       dosePerL: hi ? "5 ग्राम / लीटर पानी" : "5 g / L water",
       dosePerAcre: hi ? "1 किग्रा प्रति एकड़" : "1 kg / acre",
       waterVolume: hi ? "150–200 लीटर पानी प्रति एकड़" : "150–200 L water / acre",
-      timing: hi ? "बुवाई के 30–35 दिन बाद (कल्ले फूटते समय)" : "30–35 days after sowing",
-      caution: hi ? "पौधे का संपूर्ण विकास करता है" : "Supports overall balanced growth",
+      timing: hi ? "बुवाई के 30–35 दिन बाद (शाखाएं व कल्ले फूटते समय)" : "30–35 days after sowing (tillering/branching)",
+      caution: hi ? "टैंक मिश्रण: सूक्ष्म पोषक तत्व (जिंक EDTA/बोरॉन) या कीटनाशक मिला सकते हैं; खरपतवारनाशक या कॉपर कभी न मिलाएं" : "Can mix with micronutrients (Zinc/Boron) or insecticides; do not mix with herbicides or copper",
       dose: hi ? "5 g/L (1 kg/एकड़)" : "5 g/L (1 kg/acre)",
     };
   }

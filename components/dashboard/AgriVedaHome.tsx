@@ -15,6 +15,8 @@ import {
   Droplets,
   Landmark,
   ClipboardList,
+  Calendar,
+  CheckCircle2,
   type LucideIcon,
 } from "lucide-react";
 import CropProblemCard from "@/components/home/CropProblemCard";
@@ -34,6 +36,7 @@ import { cn } from "@/lib/cn";
 import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import { speakFarmer } from "@/components/ui/SpeakButton";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
+import FarmerAppTour from "@/components/tutorial/FarmerAppTour";
 
 
 
@@ -316,6 +319,7 @@ export default function AgriVedaHome() {
   const lastScan = aiHistory[0];
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
+  const [showTour, setShowTour] = useState(false);
 
   const weatherIsSample = Boolean(weather?.isDemo || weatherError);
 
@@ -357,13 +361,23 @@ export default function AgriVedaHome() {
               <h1 className="mt-0.5 font-display text-[1.45rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
                 {isHi ? "आज क्या करना है?" : "What do you need today?"}
               </h1>
-              <p className="mt-0.5 text-[12px] font-semibold text-[var(--av-text-muted)]">
-                {new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                })}
-              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <span className="text-[12px] font-semibold text-[var(--av-text-muted)]">
+                  {new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                  })}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowTour(true)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300 transition hover:bg-emerald-500/20 active:scale-95"
+                >
+                  <Sparkles className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                  <span>{isHi ? "ऐप चलाना सीखें (डेमो)" : "App Guide (Demo)"}</span>
+                </button>
+              </div>
             </div>
             <HomeWeatherButton weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
           </div>
@@ -415,14 +429,44 @@ export default function AgriVedaHome() {
                 </button>
               </div>
               {primary.cropSlug ? (
-                <AppLink
-                  href={`/crops/${primary.cropSlug}/fertilizer-schedule`}
-                  className="flex items-center gap-2 border-t border-emerald-900/8 bg-emerald-50/60 px-3.5 py-2.5 text-[13px] font-bold text-emerald-800 active:bg-emerald-100/70 dark:bg-emerald-950/25 dark:text-emerald-200"
-                >
-                  <Droplets className="h-4 w-4" />
-                  <span className="flex-1">{isHi ? "अभी कौन-सी खाद डालें" : "Fertilizer for now"}</span>
-                  <ChevronRight className="h-4 w-4" />
-                </AppLink>
+                <div className="mx-3 mb-2.5 rounded-xl border border-emerald-600/20 bg-emerald-50/70 p-2.5 dark:bg-emerald-950/25">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-extrabold uppercase tracking-wide text-emerald-900 dark:text-emerald-200">
+                        {isHi ? "आज का मुख्य काम" : "Today's Key Task"}
+                      </p>
+                      <p className="mt-0.5 text-[12.5px] font-bold leading-snug text-[var(--av-text-primary)]">
+                        {isHi
+                          ? (primary.days != null && primary.days <= 25
+                              ? "पहली सिंचाई व यूरिया की पहली खुराक (21–25 दिन)"
+                              : primary.days != null && primary.days <= 45
+                                ? "NPK 19:19:19 स्प्रे व खरपतवार जाँच"
+                                : "नमी की जाँच और कीट-रोग का निरीक्षण")
+                          : "Check soil moisture, top-dress & pest inspection"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {primary.cropSlug ? (
+                <div className="grid grid-cols-2 divide-x divide-emerald-900/10 border-t border-emerald-900/8 bg-emerald-50/60 dark:bg-emerald-950/25">
+                  <AppLink
+                    href={`/crops/${primary.cropSlug}/care/fertilizer`}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-bold text-emerald-800 active:bg-emerald-100/70 dark:text-emerald-200"
+                  >
+                    <Droplets className="h-3.5 w-3.5" />
+                    <span>{isHi ? "अभी कौन-सी खाद डालें" : "Fertilizer for now"}</span>
+                  </AppLink>
+                  <AppLink
+                    href={`/crops/${primary.cropSlug}/care/calendar`}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-bold text-emerald-800 active:bg-emerald-100/70 dark:text-emerald-200"
+                  >
+                    <Calendar className="h-3.5 w-3.5" />
+                    <span>{isHi ? "इस हफ्ते का काम" : "This week's tasks"}</span>
+                  </AppLink>
+                </div>
               ) : null}
             </div>
           ) : (
@@ -636,6 +680,9 @@ export default function AgriVedaHome() {
         ) : null}
 
       </div>
+
+      {/* Interactive App Screen Tour & Video Guides Modal */}
+      <FarmerAppTour forceOpen={showTour} onClose={() => setShowTour(false)} />
     </div>
   );
 }

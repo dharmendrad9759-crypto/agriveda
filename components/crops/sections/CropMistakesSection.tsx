@@ -20,8 +20,7 @@ import { getCropHindiName } from "@/lib/crops/crop-display";
 import type { Crop } from "@/types/crop";
 import { cn } from "@/lib/cn";
 
-const STAGE_FILTERS: { id: "all" | MistakeWhen; hi: string; en: string; icon: string }[] = [
-  { id: "all", hi: "सभी सावधानियां", en: "All Tips", icon: "📋" },
+const STAGE_FILTERS: { id: MistakeWhen; hi: string; en: string; icon: string }[] = [
   { id: "before", hi: "बुवाई से पहले", en: "Before Sowing", icon: "🌱" },
   { id: "after", hi: "खड़ी फसल में", en: "Standing Crop", icon: "🌾" },
   { id: "other", hi: "कटाई व भंडारण", en: "Harvest & Storage", icon: "📦" },
@@ -34,31 +33,22 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
 
   const allMistakes = useMemo(() => getCropCommonMistakes(crop.slug), [crop.slug]);
 
-  const [activeStage, setActiveStage] = useState<"all" | MistakeWhen>("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [activeStage, setActiveStage] = useState<MistakeWhen>("before");
   const [learnedMap, setLearnedMap] = useState<Record<number, boolean>>({});
 
-  // Filter by stage & search query
+  // Filter by stage
   const filtered = useMemo(() => {
     return allMistakes
       .map((item, originalIndex) => ({ ...item, originalIndex }))
-      .filter((item) => {
-        if (activeStage !== "all" && item.when !== activeStage) return false;
-        if (!searchQuery.trim()) return true;
-        const q = searchQuery.toLowerCase();
-        return (
-          item.wrong.toLowerCase().includes(q) ||
-          item.right.toLowerCase().includes(q)
-        );
-      });
-  }, [allMistakes, activeStage, searchQuery]);
+      .filter((item) => item.when === activeStage);
+  }, [allMistakes, activeStage]);
 
   const toggleLearned = (idx: number) => {
     setLearnedMap((prev) => ({ ...prev, [idx]: !prev[idx] }));
   };
 
   const handleShare = (item: CropMistake) => {
-    const text = `🌾 *${cropTitle} की खेती में यह गलती न करें!*\n\n❌ *गलती:* ${item.wrong}\n\n✅ *सही वैज्ञानिक उपाय:* ${item.right}\n\n📲 *AgriVeda App* पर पूरी जानकारी देखें।`;
+    const text = `🌾 *${cropTitle} की खेती में यह गलती न करें!*\n\n❌ *गलती:* ${item.wrong}\n\n✅ *सही उपाय:* ${item.right}\n\n📲 *AgriVeda App* पर पूरी जानकारी देखें।`;
     if (navigator.share) {
       navigator.share({ title: `${cropTitle} - सावधानियां`, text }).catch(() => {});
     } else {
@@ -79,118 +69,52 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Ultra-Premium Hero Banner */}
-      <div className="relative overflow-hidden rounded-[24px] border border-amber-500/25 bg-gradient-to-br from-amber-950/40 via-emerald-950/60 to-slate-950 p-4 sm:p-5 text-white shadow-xl">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amber-500/15 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-emerald-500/15 blur-3xl"
-        />
-
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-amber-300">
-            <ShieldAlert className="h-3.5 w-3.5" />
-            {hi ? "पैदावार सुरक्षा गाइड" : "Yield Protection Guide"}
-          </span>
-          <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-200">
-            {allMistakes.length} {hi ? "महत्वपूर्ण बिंदु" : "Crucial Points"}
-          </span>
-        </div>
-
-        <h1 className="relative z-10 mt-2 text-lg sm:text-xl font-black leading-tight text-white">
+    <div className="space-y-3.5">
+      {/* Clean Premium Banner */}
+      <div className="relative overflow-hidden rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-950/40 via-emerald-950/60 to-slate-950 p-4 text-white shadow-md">
+        <h1 className="relative z-10 text-base sm:text-lg font-black leading-tight text-white">
           {hi
-            ? `${cropTitle} में किसान की आम गलतियाँ व सही वैज्ञानिक समाधान`
+            ? `${cropTitle} में आम गलतियाँ व सही उपाय`
             : `Common Pitfalls & Right Practices in ${cropTitle}`}
         </h1>
 
-        <p className="relative z-10 mt-1.5 text-xs sm:text-[13px] leading-relaxed text-emerald-100/85">
+        <p className="relative z-10 mt-1 text-xs sm:text-[13px] leading-relaxed text-emerald-100/90">
           {hi
-            ? "अक्सर छोटी गलतियों से 20% से 40% तक पैदावार घट जाती है। नीचे गलती और उसका सही सुधार एक-एक करके समझें:"
-            : "Small mistakes lead to 20-40% yield loss. Review each pitfall and its scientific remedy below:"}
+            ? "छोटी-छोटी गलतियों से पैदावार पर बड़ा असर पड़ता है। नीचे चरण अनुसार सही उपाय देखें:"
+            : "Avoid common pitfalls at every stage to protect your crop and yield:"}
         </p>
-
-        {/* Quick Highlights Bar */}
-        <div className="relative z-10 mt-3.5 grid grid-cols-3 gap-2 border-t border-white/10 pt-3">
-          <div className="rounded-xl bg-white/5 p-2 text-center border border-white/5">
-            <p className="text-[10px] text-amber-200 font-bold uppercase">{hi ? "नुकसान से बचाव" : "Yield Saved"}</p>
-            <p className="mt-0.5 text-xs sm:text-sm font-black text-white">20-40%</p>
-          </div>
-          <div className="rounded-xl bg-white/5 p-2 text-center border border-white/5">
-            <p className="text-[10px] text-emerald-200 font-bold uppercase">{hi ? "लागत में बचत" : "Cost Saved"}</p>
-            <p className="mt-0.5 text-xs sm:text-sm font-black text-white">{hi ? "खाद-दवा बचत" : "Input Savings"}</p>
-          </div>
-          <div className="rounded-xl bg-white/5 p-2 text-center border border-white/5">
-            <p className="text-[10px] text-teal-200 font-bold uppercase">{hi ? "वैज्ञानिक विधि" : "Method"}</p>
-            <p className="mt-0.5 text-xs sm:text-sm font-black text-white">{hi ? "वैज्ञानिक रूप से सुरक्षित" : "Scientifically Verified"}</p>
-          </div>
-        </div>
       </div>
 
-      {/* Filter Tabs & Search Bar */}
-      <div className="space-y-2.5">
-        {/* Stage Filter Chips */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-          {STAGE_FILTERS.map((tab) => {
-            const count =
-              tab.id === "all"
-                ? allMistakes.length
-                : allMistakes.filter((m) => m.when === tab.id).length;
-            const active = activeStage === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveStage(tab.id)}
+      {/* Filter Tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+        {STAGE_FILTERS.map((tab) => {
+          const count = allMistakes.filter((m) => m.when === tab.id).length;
+          const active = activeStage === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveStage(tab.id)}
+              className={cn(
+                "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-black transition active:scale-95",
+                active
+                  ? "bg-emerald-700 text-white shadow-md shadow-emerald-800/30 ring-2 ring-emerald-500/40"
+                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-200 dark:border-slate-800"
+              )}
+            >
+              <span>{tab.icon}</span>
+              <span>{hi ? tab.hi : tab.en}</span>
+              <span
                 className={cn(
-                  "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black transition active:scale-95",
-                  active
-                    ? "bg-emerald-700 text-white shadow-md shadow-emerald-800/30 ring-2 ring-emerald-500/40"
-                    : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-200 dark:border-slate-800"
+                  "ml-0.5 rounded-full px-1.5 py-0.2 text-[10px] font-extrabold",
+                  active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                 )}
               >
-                <span>{tab.icon}</span>
-                <span>{hi ? tab.hi : tab.en}</span>
-                <span
-                  className={cn(
-                    "ml-0.5 rounded-full px-1.5 py-0.2 text-[10px] font-extrabold",
-                    active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                  )}
-                >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Live Search Box */}
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={
-              hi
-                ? "गलती या उपाय खोजें (उदा. यूरिया, बीज, पानी, कटाई)..."
-                : "Search pitfall or remedy (e.g. urea, seed, irrigation)..."
-            }
-            className="w-full rounded-xl border border-slate-200/90 bg-white py-2 pl-9 pr-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400 hover:text-slate-600"
-            >
-              ✕
+                {count}
+              </span>
             </button>
-          )}
-        </div>
+          );
+        })}
       </div>
 
       {/* Cards List */}
@@ -202,8 +126,7 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
           <button
             type="button"
             onClick={() => {
-              setActiveStage("all");
-              setSearchQuery("");
+              setActiveStage("before");
             }}
             className="mt-2 text-xs font-black text-emerald-600 underline"
           >
@@ -226,7 +149,7 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
                     : "border-slate-200/90 dark:border-slate-800"
                 )}
               >
-                {/* Header: Stage Badge + Sequence Number */}
+                {/* Header: Stage Badge */}
                 <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-2">
                     <span
@@ -236,9 +159,6 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
                       )}
                     >
                       {hi ? badge.labelHi : badge.labelEn}
-                    </span>
-                    <span className="text-[11px] font-bold text-slate-400">
-                      #{String(index + 1).padStart(2, "0")}
                     </span>
                   </div>
 
@@ -265,7 +185,7 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
                           <span className="text-[11px] font-black uppercase tracking-wide text-rose-700 dark:text-rose-300">
-                            {hi ? "❌ आम गलती (Avoid This)" : "❌ Common Mistake"}
+                            {hi ? "❌ क्या न करें" : "❌ Common Mistake"}
                           </span>
                         </div>
                         <p className="mt-1 text-xs sm:text-[14px] font-bold leading-snug text-rose-950 dark:text-rose-100">
@@ -280,7 +200,7 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
                     <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
                     <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                       <ArrowDown className="h-3 w-3 text-emerald-600" />
-                      {hi ? "सही वैज्ञानिक उपाय" : "Scientific Remedy"}
+                      {hi ? "सही उपाय" : "Right Practice"}
                     </span>
                     <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
                   </div>

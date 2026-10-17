@@ -177,7 +177,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                 threatCategory="insect"
                 riskChip={<RiskBadge level={pest.risk} hi={hi} />}
                 tipLine={sprayWhen || undefined}
-                openHint={hi ? "क्या करें — पूरा पेज" : "What to do — open"}
+                openHint={hi ? "लक्षण व सही दवा देखें" : "Symptoms & Medicine"}
               />
             </li>
           );

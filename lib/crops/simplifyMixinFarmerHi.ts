@@ -49,7 +49,7 @@ export function simplifyMixinFarmerHi(raw: string): string {
     [/Seaweed\s*Granules?/gi, "Seaweed Granules"],
     [/Amino\s*Acid\s*\/?\s*Biostimulant\s*Tonic/gi, "Amino Acid"],
     [/Amino\s*(Acid\s*)?Tonic/gi, "Amino Acid"],
-    [/जैविक व जड़ सहायता/gi, "जैविक और जड़ की मदद"],
+    [/जैविक व जड़ सहायता/gi, "जैविक खाद व जड़ विकास"],
     [/\bEthephon\b/gi, "ऊँचाई रोकने / पकाने वाली दवा (एथिफॉन)"],
     [/\bV(\d+)\s*[-–]\s*V(\d+)\b/g, "जब $1 से $2 पत्तियाँ आ जाएँ"],
     [

@@ -273,7 +273,7 @@ function SectionShell({
   subtitle,
   accent,
   children,
-  defaultOpen = true,
+  defaultOpen = false,
 }: {
   id: string;
   icon: React.ReactNode;
@@ -400,11 +400,11 @@ function FieldDoctorWeedCards({
   return (
     <div className="space-y-3">
       {/* Hero */}
-      <section className="overflow-hidden rounded-2xl border border-emerald-950/20 bg-gradient-to-br from-emerald-950 via-emerald-800 to-lime-700 text-white shadow-[0_16px_40px_-24px_rgba(6,78,59,0.85)]">
+      <section className="overflow-hidden rounded-2xl border border-emerald-950/20 bg-gradient-to-br from-emerald-950 via-emerald-800 to-teal-800 text-white shadow-md">
         <div className="relative flex gap-3 p-3.5 sm:p-4">
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-8 -top-10 h-36 w-36 rounded-full bg-lime-300/20 blur-2xl"
+            className="pointer-events-none absolute -right-8 -top-10 h-36 w-36 rounded-full bg-lime-300/15 blur-2xl"
           />
           <div className="relative z-10 min-w-0 flex-1">
             <p className="text-[11px] font-bold uppercase tracking-wide text-lime-100/80">
@@ -413,68 +413,31 @@ function FieldDoctorWeedCards({
             <p className="mt-1 text-[18px] font-black leading-tight tracking-tight">
               {hi ? `${cropLabel} — खरपतवार कैसे हटाएँ` : `${cropLabel} — weed control`}
             </p>
-            <div className="mt-3 grid grid-cols-3 gap-1.5">
-              {[
-                {
-                  label: hi ? "खरपतवार" : "Weeds",
-                  value: String(guide.weeds.length),
-                },
-                {
-                  label: hi ? "कड़ा समय" : "Critical",
-                  value: hi
-                    ? farmerWeedHi(guide.criticalPeriodHi)
-                    : guide.criticalPeriodHi,
-                },
-                {
-                  label: hi ? "दवा विकल्प" : "Options",
-                  value: String(
-                    guide.preEmergence.length + guide.postEmergence.length
-                  ),
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-xl bg-black/25 px-2 py-2 backdrop-blur-[2px]"
-                >
-                  <p className="text-[9px] font-bold text-white/65">{item.label}</p>
-                  <p className="mt-0.5 line-clamp-3 text-[10px] font-extrabold leading-snug">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <p className="mt-1 text-xs text-emerald-100/85">
+              {hi
+                ? `कड़ा समय: ${farmerWeedHi(guide.criticalPeriodHi)} तक खेत साफ रखना सबसे जरूरी है।`
+                : `Critical period: Keep field clean during ${guide.criticalPeriodHi}.`}
+            </p>
           </div>
-          <div className="relative z-10 h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-white/25 bg-white/10 shadow-lg sm:h-28 sm:w-28">
+          <div className="relative z-10 h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-sm sm:h-24 sm:w-24">
             <Image
               src={cropImg}
               alt={cropLabel}
               fill
               className="object-cover"
-              sizes="112px"
+              sizes="96px"
             />
           </div>
         </div>
       </section>
-
-      {/* Jump nav */}
-      <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5">
-        {nav.map((n) => (
-          <a
-            key={n.id}
-            href={`#${n.id}`}
-            className="shrink-0 rounded-full border border-emerald-900/10 bg-white px-3 py-1.5 text-[11px] font-bold text-emerald-900 shadow-sm"
-          >
-            {n.label}
-          </a>
-        ))}
-      </div>
 
       {/* CARD 1 — Weed ID */}
       <SectionShell
         id="weed-id"
         icon={<Leaf className="h-4 w-4" />}
         title={hi ? "1. मुख्य खरपतवार पहचानो" : "1. Major weed ID"}
-        accent="bg-gradient-to-r from-emerald-800 to-lime-700 border-emerald-900/20"
+        accent="bg-gradient-to-r from-emerald-800 to-teal-800 border-emerald-900/20"
+        defaultOpen={true}
       >
         <div className="mb-3 flex flex-wrap gap-1.5">
           <button
@@ -581,7 +544,7 @@ function FieldDoctorWeedCards({
             ? "इतने दिनों तक खेत साफ रखना ज़रूरी"
             : "Keep field weed-free here"
         }
-        accent="bg-gradient-to-r from-amber-700 to-orange-600 border-amber-900/15"
+        accent="bg-gradient-to-r from-emerald-900 to-teal-900 border-emerald-900/20"
       >
         <p className="text-[16px] font-black leading-snug text-emerald-950">
           {hi ? farmerWeedHi(guide.criticalPeriodHi) : guide.criticalPeriodHi}
@@ -608,7 +571,7 @@ function FieldDoctorWeedCards({
             ? "बुवाई/रोपाई के 0–3 दिन · खरपतवार निकलने से पहले"
             : "0–3 days after sowing/transplant"
         }
-        accent="bg-gradient-to-r from-lime-700 to-emerald-600 border-lime-900/15"
+        accent="bg-gradient-to-r from-teal-900 to-emerald-800 border-teal-900/20"
       >
         {guide.preEmergence.length > 0 ? (
           <div className="space-y-2.5">
@@ -640,7 +603,7 @@ function FieldDoctorWeedCards({
             ? "सबसे अच्छा: खरपतवार 2–4 पत्ती · सही नोजल और पानी"
             : "Ideal: weeds at 2–4 leaf · right nozzle & water"
         }
-        accent="bg-gradient-to-r from-teal-700 to-cyan-700 border-teal-900/15"
+        accent="bg-gradient-to-r from-emerald-800 to-teal-700 border-emerald-900/20"
       >
         {guide.postEmergence.length > 0 ? (
           <div className="space-y-2.5">
@@ -667,7 +630,7 @@ function FieldDoctorWeedCards({
         id="weed-tips"
         icon={<Lightbulb className="h-4 w-4" />}
         title={hi ? "5. खेत की ज़रूरी बातें" : "5. Field tips"}
-        accent="bg-gradient-to-r from-violet-800 to-indigo-700 border-violet-900/15"
+        accent="bg-gradient-to-r from-stone-800 to-emerald-900 border-stone-800/20"
       >
         <div className="space-y-2.5">
           {guide.fieldDoctorTips.map((tip, i) => {

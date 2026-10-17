@@ -306,10 +306,10 @@ function FertilizerCalculatorInner() {
                     </span>
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
-                        {areaLabel} एकड़ खेत की योजना
+                        {areaLabel} एकड़ की खाद
                       </p>
                       <h1 className="text-xl font-black leading-tight text-white sm:text-2xl">
-                        {cropHi} के लिए कुल खाद
+                        {cropHi} के लिए खाद की मात्रा
                       </h1>
                     </div>
                   </div>
@@ -325,24 +325,6 @@ function FertilizerCalculatorInner() {
                     <ArrowLeft className="h-3.5 w-3.5" />
                     बदलें
                   </button>
-                </div>
-
-                {/* Top Metric Banner */}
-                <div className="relative z-10 mt-4 flex items-center justify-between rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-md">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-200">
-                      संतुलित खाद संस्तुति
-                    </p>
-                    <p className="mt-0.5 text-xl font-black tracking-tight text-white sm:text-2xl">
-                      {plan?.bags.length ?? 0}{" "}
-                      <span className="text-sm font-semibold text-emerald-100">
-                        प्रकार की खाद · नीचे बोरी/थैली का विवरण
-                      </span>
-                    </p>
-                  </div>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 text-emerald-200">
-                    <Package className="h-6 w-6" />
-                  </div>
                 </div>
 
                 {/* Soil adjusted indicator */}
@@ -377,7 +359,7 @@ function FertilizerCalculatorInner() {
                         </h2>
                       </div>
                       <span className="text-[11px] font-semibold text-[var(--av-text-muted)]">
-                        {plan.bags.length} प्रकार
+                        {plan.bags.length} मुख्य उर्वरक
                       </span>
                     </div>
 

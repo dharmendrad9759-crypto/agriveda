@@ -65,44 +65,48 @@ function stageForDays(days: number | null): StageId {
   return "finish";
 }
 
+const STAGE_TABS: Record<StageId, CropTabId[]> = {
+  sowing: ["varieties", "field-prep", "mistakes", "growth"],
+  feed: ["fertilizer", "irrigation", "weeds", "nutrients"],
+  protect: ["pests", "diseases", "expert"],
+  finish: ["harvest", "market", "calendar", "faq"],
+};
+
 const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
-  "field-prep": "नर्सरी, बीज दर, रोपाई, दूरी, मल्चिंग, ड्रिप",
-  fertilizer: "कब डालें और कितनी — यूरिया, डीएपी, एमओपी",
-  irrigation: "कितना और कब पानी दें",
-  pests: "फोटो, लक्षण, दवा",
-  diseases: "फोटो, लक्षण, इलाज",
-  harvest: "तुड़ाई का समय, सहारा, पकने की अवस्था",
-  market: "भंडारण, पैकिंग, लाइव मंडी भाव",
-  weeds: "घास-फूस कैसे हटाएँ",
-  growth: "बुवाई की तारीख डालो — आज का काम",
-  calendar: "फसल का कार्यक्रम",
-  nutrients: "पत्ती पीली / कमज़ोर",
-  faq: "आम सवाल–जवाब",
-  expert: "खेत की सीधी सलाह",
-  mistakes: "बुवाई से पहले, बाद में, और बाकी",
+  varieties: "उन्नत किस्में, उपज क्षमता व बीज दर",
+  "field-prep": "खेत की जुताई, क्यारी व बुवाई दूरी",
+  mistakes: "अक्सर होने वाली गलतियों से बचाव",
+  growth: "बुवाई की तारीख व फसल की बढ़वार",
+  fertilizer: "यूरिया, डीएपी, पोटाश व स्प्रे खुराक",
+  irrigation: "फसल को कब और कितना पानी दें",
+  weeds: "घास-फूस व खरपतवार का सही नियंत्रण",
+  nutrients: "पत्तियों का पीलापन व पोषण सुधार",
+  pests: "कीट पहचान, रोकथाम व असरदार दवा",
+  diseases: "रोग के लक्षण व फफूंदनाशक इलाज",
+  expert: "खेत की सीधी सलाह व फसल डॉक्टर",
+  harvest: "तुड़ाई/खुदाई का समय व सही तरीका",
+  market: "भंडारण, पैकिंग व ताज़ा मंडी भाव",
+  calendar: "फसल का साप्ताहिक काम कार्यक्रम",
+  faq: "किसानों के आम सवाल और जवाब",
 };
 
 const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
-  "field-prep": "Nursery, seed rate, transplant, spacing, mulch, drip",
-  fertilizer: "When & how much — urea, DAP, MOP",
-  irrigation: "How much water, when",
-  pests: "See photo · what it is · which spray",
-  diseases: "See photo · leaf/stem signs · treatment",
-  harvest: "When to pick, staking, ripeness",
-  market: "Storage, packing, live mandi",
-  weeds: "Clear grass from field",
-  growth: "Add sowing date — see today’s work",
-  calendar: "Crop schedule",
-  nutrients: "Yellow or weak leaf",
-  faq: "Common Q&A",
-  expert: "Simple field advice",
-  mistakes: "Before sowing, after sowing, and the rest",
+  varieties: "Recommended varieties, yield & seed rate",
+  "field-prep": "Ploughing, beds & spacing",
+  mistakes: "Avoid common yield-reducing mistakes",
+  growth: "Sowing date and active growth stage",
+  fertilizer: "Urea, DAP, potash & foliar spray doses",
+  irrigation: "When and how much water to give",
+  weeds: "Effective weed and grass management",
+  nutrients: "Yellow leaves & deficiency fixes",
+  pests: "Identify pests, prevention & spray",
+  diseases: "Disease symptoms & fungicide remedies",
+  expert: "Direct field tips & AI crop doctor",
+  harvest: "Harvest timing & proper handling",
+  market: "Storage, packing & live mandi prices",
+  calendar: "Weekly farm task calendar",
+  faq: "Common farmer questions & answers",
 };
-
-const MORE_TEASER_HI = ["घास", "पीली पत्ती", "हफ्ते का काम", "सवाल"] as const;
-const MORE_TEASER_EN = ["Weeds", "Yellow leaf", "This week", "Ask"] as const;
-
-const MORE: CropTabId[] = ["weeds", "growth", "calendar", "nutrients", "faq", "expert"];
 
 interface CropPageTabsProps {
   crop: Pick<Crop, "slug" | "category">;
@@ -115,7 +119,6 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   const { profile, hydrated } = useFarmerProfile();
   const [stage, setStage] = useState<StageId>("sowing");
   const [stageTouched, setStageTouched] = useState(false);
-  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     if (!hydrated || stageTouched) return;
@@ -123,62 +126,11 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
     const days = iso ? daysAfterSowing(iso) : null;
     setStage(stageForDays(days));
   }, [hydrated, stageTouched, profile.sowingDates, crop.slug]);
+
   const harvestLabel = cropHarvestLabel(crop, isHi);
   const harvestHint = cropHarvestHint(crop, isHi);
   const hintMap = isHi ? TAB_HINT_HI : TAB_HINT_EN;
   const openHint = isHi ? "देखो" : "Open";
-
-  const groups: TabGroup[] = [
-    {
-      id: "varieties",
-      stage: "sowing",
-      titleHi: "बीज",
-      titleEn: "Seed",
-      tabs: ["varieties"],
-    },
-    {
-      id: "mistakes",
-      stage: "sowing",
-      titleHi: "आम गलतियाँ",
-      titleEn: "Common mistakes",
-      tabs: ["mistakes"],
-    },
-    {
-      id: "field-prep",
-      stage: "sowing",
-      titleHi: "ज़मीन और बुवाई",
-      titleEn: "Field prep & sowing",
-      tabs: ["field-prep"],
-    },
-    {
-      id: "feed",
-      stage: "feed",
-      titleHi: "खाद और सिंचाई",
-      titleEn: "Fertilizer & irrigation",
-      tabs: ["fertilizer", "irrigation"],
-    },
-    {
-      id: "protect",
-      stage: "protect",
-      titleHi: "कीट और रोग",
-      titleEn: "Pest & disease",
-      tabs: ["pests", "diseases"],
-    },
-    {
-      id: "harvest",
-      stage: "finish",
-      titleHi: harvestLabel,
-      titleEn: harvestLabel,
-      tabs: ["harvest"],
-    },
-    {
-      id: "market",
-      stage: "finish",
-      titleHi: "मंडी भाव और बिक्री",
-      titleEn: "Mandi & sales",
-      tabs: ["market"],
-    },
-  ];
 
   let animIndex = 0;
   const cropLabelHi = getCropHindiName(crop.slug) || crop.slug;
@@ -225,122 +177,48 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
     );
   };
 
-  const visible = groups.filter((group) => group.stage === stage);
+  const currentTabs = STAGE_TABS[stage] || [];
 
   return (
-    <nav className="mb-3 min-w-0 space-y-4" aria-label={t("cropGuide")}>
+    <nav className="mb-3 min-w-0 space-y-3.5" aria-label={t("cropGuide")}>
       <div className="grid grid-cols-4 gap-1.5" role="tablist" aria-label={isHi ? "फसल का चरण" : "Crop stage"}>
-          {STAGES.map((item) => {
-            const on = item.id === stage;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={on}
-                onClick={() => {
-                  setStageTouched(true);
-                  setStage(item.id);
-                }}
-                className={cn(
-                  "min-h-12 rounded-xl border px-1 py-1.5 text-center leading-tight transition active:scale-[0.98]",
-                  on
-                    ? "border-emerald-700 bg-emerald-800 text-white"
-                    : "border-[#D0DDD7] bg-[var(--av-surface)] text-[var(--av-text-primary)]"
-                )}
-              >
-                <span className="block text-[13px] font-black">{isHi ? item.hi : item.en}</span>
-                <span className={cn("block text-[11px] font-semibold", on ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
-                  {isHi ? item.hintHi : item.hintEn}
-                </span>
-              </button>
-            );
-          })}
+        {STAGES.map((item) => {
+          const on = item.id === stage;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              onClick={() => {
+                setStageTouched(true);
+                setStage(item.id);
+              }}
+              className={cn(
+                "min-h-12 rounded-xl border px-1 py-1.5 text-center leading-tight transition active:scale-[0.98]",
+                on
+                  ? "border-emerald-700 bg-emerald-800 text-white shadow-sm"
+                  : "border-[#D0DDD7] bg-[var(--av-surface)] text-[var(--av-text-primary)] hover:border-emerald-500/40"
+              )}
+            >
+              <span className="block text-[13px] font-black">{isHi ? item.hi : item.en}</span>
+              <span className={cn("block text-[11px] font-semibold", on ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
+                {isHi ? item.hintHi : item.hintEn}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       <SpeakButton
         hi={isHi}
-        text={visible
-          .map((group) => (isHi ? `${group.titleHi}. ${(hintMap[group.tabs[0]] ?? "")}` : group.titleEn))
+        text={currentTabs
+          .map((id) => (isHi ? `${t(TAB_I18N[id])}. ${(hintMap[id] ?? "")}` : t(TAB_I18N[id])))
           .join(" ")}
       />
 
-      {visible.map((group) => (
-        <section key={group.id} className="space-y-2" aria-labelledby={`crop-tab-${group.id}`}>
-          <h2
-            id={`crop-tab-${group.id}`}
-            className="px-0.5 text-[16px] font-black leading-tight tracking-tight text-[var(--av-accent)]"
-          >
-            {isHi ? group.titleHi : group.titleEn}
-          </h2>
-          <div className="space-y-2">{group.tabs.map((id) => renderJob(id))}</div>
-        </section>
-      ))}
-
-      <div className="space-y-2 pt-1">
-        <button
-          type="button"
-          onClick={() => setShowMore((v) => !v)}
-          aria-expanded={showMore}
-          className={cn(
-            "group relative w-full overflow-hidden rounded-2xl border text-left transition active:scale-[0.99]",
-            "border-amber-600/35 bg-gradient-to-br from-amber-50 via-orange-50/80 to-emerald-50",
-            "shadow-[0_8px_24px_-12px_rgba(180,83,9,0.45)]",
-            "dark:border-amber-400/25 dark:from-amber-950/50 dark:via-orange-950/30 dark:to-emerald-950/40",
-            showMore && "ring-2 ring-amber-500/40"
-          )}
-        >
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-amber-400/25 blur-2xl dark:bg-amber-500/15"
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -bottom-10 left-8 h-24 w-24 rounded-full bg-emerald-400/20 blur-2xl"
-          />
-
-          <span className="relative flex items-start gap-3 p-3.5 sm:p-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md shadow-amber-700/30">
-              <Sprout className="h-6 w-6" strokeWidth={2.25} />
-            </span>
-
-            <span className="min-w-0 flex-1">
-              <span className="text-[15px] font-black tracking-tight text-amber-950 dark:text-amber-50">
-                {isHi
-                  ? showMore
-                    ? "और बातें खुली हैं"
-                    : "और बातें भी देखो"
-                  : showMore
-                    ? "More tips are open"
-                    : "See more tips too"}
-              </span>
-
-              {!showMore ? (
-                <span className="mt-2.5 flex flex-wrap gap-1.5">
-                  {(isHi ? MORE_TEASER_HI : MORE_TEASER_EN).map((label) => (
-                    <span
-                      key={label}
-                      className="rounded-lg border border-amber-700/15 bg-white/70 px-2 py-1 text-[10px] font-bold text-amber-950/90 dark:border-amber-300/20 dark:bg-black/25 dark:text-amber-50"
-                    >
-                      {label}
-                    </span>
-                  ))}
-                </span>
-              ) : null}
-            </span>
-
-            <span
-              className={cn(
-                "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-600 text-white shadow-sm transition group-hover:bg-amber-700",
-                showMore && "rotate-180"
-              )}
-            >
-              <ChevronDown className="h-5 w-5" strokeWidth={2.5} />
-            </span>
-          </span>
-        </button>
-
-        {showMore ? <div className="space-y-2">{MORE.map((id) => renderJob(id))}</div> : null}
+      <div className="space-y-2.5">
+        {currentTabs.map((id) => renderJob(id))}
       </div>
     </nav>
   );

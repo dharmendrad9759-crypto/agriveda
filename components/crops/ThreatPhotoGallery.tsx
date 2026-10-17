@@ -124,25 +124,12 @@ export default function ThreatPhotoGallery({
           </>
         )}
 
-        {/* Bottom Title & Current Photo Caption */}
+        {/* Bottom Current Photo Caption */}
         <div className="absolute inset-x-0 bottom-0 px-3.5 pb-3 pointer-events-none">
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <p className="text-[17px] font-black leading-tight text-white drop-shadow-sm sm:text-[19px]">
-                {title}
-              </p>
-              {subtitle && (
-                <p className="text-[11px] font-semibold text-white/80 line-clamp-1 drop-shadow-sm">
-                  {subtitle}
-                </p>
-              )}
-            </div>
-
-            {hasMultiple && (
-              <span className="shrink-0 rounded-md bg-white/20 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
-                {hi ? activePhoto.captionHi : activePhoto.captionEn}
-              </span>
-            )}
+          <div className="flex items-end justify-end gap-3">
+            <span className="shrink-0 rounded-md bg-black/60 px-2.5 py-1 text-[11px] font-bold text-white/95 backdrop-blur-xs">
+              {hi ? activePhoto.captionHi : activePhoto.captionEn}
+            </span>
           </div>
         </div>
       </div>

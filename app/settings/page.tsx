@@ -441,12 +441,12 @@ export default function SettingsPage() {
           />
         </Section>
 
-        <Section title={isHi ? "निजता" : "Your data"}>
+        <Section title={isHi ? "निजता व सुरक्षा" : "Privacy & Security"}>
           <Stick
             icon={Shield}
             tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
-            title={isHi ? "ऐप सुधारने में मदद" : "Help improve the app"}
-            hint={isHi ? "बंद रखें — डेटा नहीं बिकता" : "Off by default — data is never sold"}
+            title={isHi ? "ऐप सुधारने में सहयोग" : "Help improve the app"}
+            hint={isHi ? "ऐच्छिक — आपकी जानकारी पूरी तरह सुरक्षित व निजी है" : "Optional — your data stays strictly private & secure"}
             toggle={{
               on: settings.productAnalytics,
               onChange: (v) => update({ productAnalytics: v }),

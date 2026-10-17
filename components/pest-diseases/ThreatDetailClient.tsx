@@ -369,23 +369,18 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
       {/* ─── PEST / DISEASE — field dossier ─── */}
       {!isWeed ? (
         <div className="mx-auto w-full max-w-2xl space-y-5">
-          {/* Authentic Multi-Photo Field Gallery */}
-          <ThreatPhotoGallery
-            primaryImage={threat.image}
-            title={names.primary}
-            subtitle={names.secondary || threat.scientificName || undefined}
-            cropLabel={cropHi || threat.cropName}
-            tagLabel={isPest ? (hi ? "कीट" : "Pest") : (hi ? "रोग" : "Disease")}
-            hi={hi}
-          />
-
-          {/* Title block — name + scientific only */}
-          <header className="space-y-2 px-0.5">
-            <h1 className="font-display text-[1.85rem] font-bold leading-[1.12] tracking-tight text-[var(--av-text-primary)] sm:text-[2.15rem]">
+          {/* Title block — category + name + scientific */}
+          <header className="space-y-2.5 px-0.5">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-black text-emerald-800 dark:text-emerald-300">
+                {cropHi || threat.cropName} · {isPest ? (hi ? "कीट प्रबंधन" : "Pest Control") : (hi ? "रोग प्रबंधन" : "Disease Control")}
+              </span>
+            </div>
+            <h1 className="font-display text-[1.85rem] font-black leading-[1.12] tracking-tight text-[var(--av-text-primary)] sm:text-[2.15rem]">
               {names.primary}
             </h1>
             {names.secondary ? (
-              <p className="text-[15px] font-semibold text-[var(--av-text-secondary)]">
+              <p className="text-[14.5px] font-semibold text-[var(--av-text-secondary)]">
                 {names.secondary}
               </p>
             ) : null}
@@ -434,10 +429,20 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
           ) : null}
 
           {activePestTab === "identify" ? (
-            <section className="space-y-3">
-              <div className="flex items-end justify-between gap-2">
+            <section className="space-y-4">
+              {/* Photo Gallery right in identify tab for symptom diagnosis */}
+              <ThreatPhotoGallery
+                primaryImage={threat.image}
+                title={names.primary}
+                subtitle={names.secondary || threat.scientificName || undefined}
+                cropLabel={cropHi || threat.cropName}
+                tagLabel={isPest ? (hi ? "कीट" : "Pest") : (hi ? "रोग" : "Disease")}
+                hi={hi}
+              />
+
+              <div className="flex items-end justify-between gap-2 pt-2">
                 <h2 className="font-display text-[1.2rem] font-bold tracking-tight text-[var(--av-text-primary)]">
-                  {hi ? "खेत में कैसे दिखे" : "How it shows in field"}
+                  {hi ? "खेत में लक्षण व पहचान" : "Field Symptoms & Identification"}
                 </h2>
                 <Eye className="mb-1 h-5 w-5 text-emerald-800/45" />
               </div>
