@@ -294,7 +294,7 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
     pill1: {
       icon: "🎒",
       label: "15L स्प्रे टंकी",
-      value: `${tankDose} (15L टंकी)`,
+      value: tankDose,
       subtext: "ढोलकी टंकी में नाप",
     },
     pill2: {
@@ -312,7 +312,7 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
     useSticker: true,
     doctorTip: "स्प्रे करते समय 5ml सिलिकॉन स्टीकर (चिपको) ज़रूर मिलाएँ ताकि दवा पत्तों पर चिपक कर पूरा असर करे। सुबह 10 बजे से पहले या शाम को छिड़काव करें।",
     voiceActionLine: `15 लीटर वाली स्प्रे टंकी में ${tankDose} दवा घोलकर पत्तियों पर छिड़काव करें। दवा के साथ 5 मिली सिलिकॉन स्टीकर यानी चिपको ज़रूर मिलाएँ ताकि दवा पत्तों पर चिपक जाए। सुबह या शाम को ही स्प्रे करें।`,
-    tankDose: `${tankDose} (15L टंकी)`,
+    tankDose,
     acreDose,
     waterVolume,
     perLitre,

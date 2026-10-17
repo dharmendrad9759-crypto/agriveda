@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
@@ -116,14 +116,42 @@ function Stepper({ step }: { step: StepId }) {
   );
 }
 
-export default function MixAdvisorClient() {
+function MixAdvisorInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<StepId>("problem");
   const [cropSlug, setCropSlug] = useState("tomato");
   const [stage, setStage] = useState<GrowthStageId>("fruiting");
   const [problemIds, setProblemIds] = useState<string[]>(["early-blight", "fruit-borer"]);
   const [meds, setMeds] = useState<MixMedicine[]>([]);
   const [plan, setPlan] = useState<MixPlan | null>(null);
+  const [cropGridOpen, setCropGridOpen] = useState(false);
+
+  // Scroll to top on step change
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [step]);
+
+  // Restore step and mix state if returning from spray rotation log
+  useEffect(() => {
+    try {
+      const urlStep = searchParams?.get("step");
+      const saved = sessionStorage.getItem("agriveda_mix_state");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.cropSlug) setCropSlug(parsed.cropSlug);
+        if (parsed.stage) setStage(parsed.stage);
+        if (parsed.problemIds && Array.isArray(parsed.problemIds)) setProblemIds(parsed.problemIds);
+        if (parsed.meds && Array.isArray(parsed.meds) && parsed.meds.length > 0) setMeds(parsed.meds);
+        if (parsed.plan) setPlan(parsed.plan);
+        if (urlStep === "guide" || parsed.step === "guide") {
+          setStep("guide");
+        }
+      } else if (urlStep === "guide") {
+        setStep("guide");
+      }
+    } catch {}
+  }, [searchParams]);
 
   // Modal / drawer states
   const [pickSlot, setPickSlot] = useState<number | null>(null);
@@ -333,101 +361,112 @@ export default function MixAdvisorClient() {
               transition={{ duration: 0.28, ease: EASE_OUT }}
               className="space-y-4"
             >
-              {/* Weather hint banner */}
-              <div
-                className={cn(
-                  "rounded-2xl border p-3.5 shadow-sm",
-                  weatherBad
-                    ? "border-rose-500/35 bg-rose-500/10 text-rose-950 dark:text-rose-100"
-                    : "border-sky-500/25 bg-gradient-to-r from-sky-50 to-emerald-50 dark:from-sky-950/40 dark:to-emerald-950/30"
-                )}
-              >
-                <div className="flex items-start gap-2.5">
-                  <CloudRain
-                    className={cn(
-                      "mt-0.5 h-5 w-5 shrink-0",
-                      weatherBad ? "text-rose-600" : "text-sky-600"
-                    )}
-                  />
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-bold text-[var(--av-text-muted)]">
-                      खेत का मौसम · {weatherBits.place}
-                    </p>
-                    <p className="mt-0.5 text-[14px] font-extrabold text-[var(--av-text-primary)]">
-                      {weatherBits.temp} · हवा में नमी {weatherBits.humidity}
-                    </p>
-                    <p
-                      className={cn(
-                        "mt-1 text-[12px] font-semibold leading-snug",
-                        weatherBad
-                          ? "text-rose-800 dark:text-rose-200"
-                          : "text-emerald-900 dark:text-emerald-200"
-                      )}
-                    >
-                      {weatherLine}
-                    </p>
-                  </div>
-                </div>
-              </div>
 
-              {/* Crop Selection Section - ALL CROPS VISIBLE IN OPEN GRID */}
+
+              {/* Crop Selection Section - Collapsible to avoid long scrolling */}
               <div>
                 <div className="flex items-center justify-between">
                   <p className={AV.sectionTitle}>1. फसल चुनें (Crop)</p>
-                  <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
-                    {CROP_PROBLEM_CROPS.length} प्रमुख फसलें
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setCropGridOpen((prev) => !prev)}
+                    className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"
+                  >
+                    {cropGridOpen ? "सूची समेटें ▴" : "सभी फसलें देखें ▾"}
+                  </button>
                 </div>
-                <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
-                  अपनी फसल पर टैप करें — सभी प्रमुख फसलें यहाँ उपलब्ध हैं:
-                </p>
 
-                {/* Open Grid of all crops without horizontal cut-off scrolling */}
-                <div className="mt-2.5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-2.5">
-                  {CROP_PROBLEM_CROPS.map((c) => {
-                    const active = c.slug === cropSlug;
-                    return (
-                      <button
-                        key={c.slug}
-                        type="button"
-                        onClick={() => setCropSlug(c.slug)}
-                        className={cn(
-                          "relative flex flex-col items-center gap-1.5 rounded-2xl border p-2 text-center transition-all active:scale-[0.97]",
-                          active
-                            ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-500/40 shadow-sm"
-                            : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-emerald-500/30"
-                        )}
-                      >
-                        {active && (
-                          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md">
-                            <Check className="h-3.5 w-3.5 stroke-[3]" />
-                          </span>
-                        )}
-                        <span className="relative h-14 w-14 overflow-hidden rounded-xl bg-black/5">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={c.image} alt={c.nameHi} className="h-full w-full object-cover" />
-                        </span>
-                        <div className="min-w-0">
-                          <span
-                            className={cn(
-                              "block text-[13px] font-black leading-tight",
-                              active ? "text-emerald-900 dark:text-emerald-200" : "text-[var(--av-text-primary)]"
-                            )}
-                          >
-                            {c.nameHi}
-                          </span>
-                          <span className="text-[10px] font-semibold text-[var(--av-text-muted)]">
-                            {c.nameEn}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
+                {/* Selected Crop Compact Banner */}
+                <div className="mt-2 flex items-center justify-between rounded-2xl border border-emerald-500/35 bg-emerald-500/10 p-3 shadow-xs">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-black/5 border border-emerald-600/20">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={crop.image} alt={crop.nameHi} className="h-full w-full object-cover" />
+                    </span>
+                    <div className="min-w-0">
+                      <span className="block truncate text-[14px] font-black text-emerald-950 dark:text-emerald-100">
+                        {crop.nameHi} <span className="text-[11px] font-medium text-[var(--av-text-muted)]">({crop.nameEn})</span>
+                      </span>
+                      <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                        ✓ चयनित फसल
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCropGridOpen((prev) => !prev)}
+                    className="shrink-0 rounded-xl border border-emerald-600/30 bg-[var(--av-surface)] px-3 py-1.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-200 transition hover:bg-emerald-500/10 active:scale-95 shadow-2xs"
+                  >
+                    {cropGridOpen ? "बंद करें ▴" : "फसल बदलें ▾"}
+                  </button>
                 </div>
+
+                {/* Open Grid of all crops when toggled */}
+                <AnimatePresence>
+                  {cropGridOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <p className="mt-2 text-[11px] text-[var(--av-text-muted)]">
+                        अपनी फसल पर टैप करें — चुनते ही पेज आगे बढ़ जाएगा:
+                      </p>
+                      <div className="mt-2 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-2.5">
+                        {CROP_PROBLEM_CROPS.map((c) => {
+                          const active = c.slug === cropSlug;
+                          return (
+                            <button
+                              key={c.slug}
+                              type="button"
+                              onClick={() => {
+                                setCropSlug(c.slug);
+                                setCropGridOpen(false);
+                                setTimeout(() => {
+                                  document.getElementById("growth-stage-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                }, 120);
+                              }}
+                              className={cn(
+                                "relative flex flex-col items-center gap-1.5 rounded-2xl border p-2 text-center transition-all active:scale-[0.97]",
+                                active
+                                  ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-500/40 shadow-sm"
+                                  : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-emerald-500/30"
+                              )}
+                            >
+                              {active && (
+                                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md">
+                                  <Check className="h-3.5 w-3.5 stroke-[3]" />
+                                </span>
+                              )}
+                              <span className="relative h-14 w-14 overflow-hidden rounded-xl bg-black/5">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={c.image} alt={c.nameHi} className="h-full w-full object-cover" />
+                              </span>
+                              <div className="min-w-0">
+                                <span
+                                  className={cn(
+                                    "block text-[13px] font-black leading-tight",
+                                    active ? "text-emerald-950 dark:text-emerald-100" : "text-[var(--av-text-primary)]"
+                                  )}
+                                >
+                                  {c.nameHi}
+                                </span>
+                                <span className="text-[10px] font-semibold text-[var(--av-text-muted)]">
+                                  {c.nameEn}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Growth Stage Selection */}
-              <div>
+              <div id="growth-stage-section">
                 <p className={AV.sectionTitle}>2. फसल का चरण (Growth Stage)</p>
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   {GROWTH_STAGES.map((s) => {
@@ -451,11 +490,8 @@ export default function MixAdvisorClient() {
                             active ? "text-emerald-700 dark:text-emerald-300" : "text-[var(--av-text-muted)]"
                           )}
                         />
-                        <span className="text-[12px] font-bold text-[var(--av-text-primary)]">
-                          {s.labelHi.split(" ")[0]}
-                        </span>
-                        <span className="text-[9px] font-medium text-[var(--av-text-muted)] leading-tight">
-                          {s.hintHi}
+                        <span className="text-[12px] font-bold text-[var(--av-text-primary)] leading-tight">
+                          {s.labelHi}
                         </span>
                       </button>
                     );
@@ -468,9 +504,6 @@ export default function MixAdvisorClient() {
                 <div className="flex items-end justify-between gap-2">
                   <div>
                     <p className={AV.sectionTitle}>3. समस्याएँ चुनें (कीट व बीमारियाँ)</p>
-                    <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                      कीट, फफूंद व रोग एक साथ चुनें (अधिकतम {MAX_PROBLEMS})
-                    </p>
                   </div>
                   <span className="shrink-0 rounded-full bg-emerald-600/15 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
                     {problemIds.length}/{MAX_PROBLEMS} चुनी
@@ -709,15 +742,12 @@ export default function MixAdvisorClient() {
                     <div className="flex items-center gap-2">
                       <span
                         className={cn(
-                          "rounded-md px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white",
+                          "rounded-md px-2.5 py-0.5 text-[10.5px] font-extrabold tracking-wide text-white",
                           isSafe && "bg-emerald-700",
                           isCaution && "bg-amber-600",
                           isIncompatible && "bg-rose-700"
                         )}
                       >
-                        {isSafe ? "GREEN TICK" : isCaution ? "YELLOW ALERT" : "RED DANGER"}
-                      </span>
-                      <span className="text-[11px] font-bold opacity-80">
                         {mixVerdict.badgeHi}
                       </span>
                     </div>
@@ -752,17 +782,7 @@ export default function MixAdvisorClient() {
 
               {/* Medicine Tank Slot Cards */}
               <div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={AV.sectionTitle}>टैंक में दवाएँ (Tank Mix Items)</p>
-                    <p className="text-[11px] text-[var(--av-text-muted)]">
-                      अनुशंसित सक्रिय रसायन (Technicals) व सटीक खुराक:
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
-                    {meds.length} दवाएँ + 1 स्टिकर
-                  </span>
-                </div>
+                <p className={AV.sectionTitle}>टैंक में दवाएँ (Tank Mix Items)</p>
 
                 <div className="mt-2.5 space-y-3">
                   {meds.map((m, idx) => {
@@ -1350,7 +1370,33 @@ export default function MixAdvisorClient() {
               {/* Action Buttons */}
               <button
                 type="button"
-                onClick={() => router.push("/spray-rotation/log")}
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem(
+                      "agriveda_mix_state",
+                      JSON.stringify({
+                        cropSlug,
+                        stage,
+                        problemIds,
+                        meds,
+                        plan,
+                        step: "guide",
+                      })
+                    );
+                  } catch {}
+                  const stageObj = GROWTH_STAGES.find((s) => s.id === stage);
+                  const stageLabel = stageObj ? stageObj.labelHi : stage;
+                  const problemLabel = selectedProblems.map((p) => p.nameHi).join(", ");
+                  const medNames = meds.map((m) => m.technical).join(" + ");
+                  const doseLabel = meds.map((m) => m.dosePerAcre || m.doseHi).join(" + ");
+                  router.push(
+                    `/spray-rotation/log?crop=${encodeURIComponent(cropSlug)}&stage=${encodeURIComponent(
+                      stageLabel
+                    )}&problem=${encodeURIComponent(problemLabel)}&med=${encodeURIComponent(
+                      medNames
+                    )}&dose=${encodeURIComponent(doseLabel)}&from=mix-advisor`
+                  );
+                }}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-black text-white shadow-lg shadow-emerald-600/25 active:scale-[0.98]"
               >
                 <CheckCircle2 className="h-5 w-5" />
@@ -1388,5 +1434,13 @@ export default function MixAdvisorClient() {
         </AnimatePresence>
       </div>
     </AppShell>
+  );
+}
+
+export default function MixAdvisorClient() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center text-sm font-bold text-emerald-800">लोड हो रहा है...</div>}>
+      <MixAdvisorInner />
+    </Suspense>
   );
 }

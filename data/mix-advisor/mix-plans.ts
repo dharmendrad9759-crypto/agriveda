@@ -96,9 +96,9 @@ export const GROWTH_STAGES: {
   labelHi: string;
   hintHi: string;
 }[] = [
-  { id: "vegetative", labelHi: "वनस्पति (Vegetative)", hintHi: "पत्ती व तना वृद्धि की अवस्था" },
-  { id: "flowering", labelHi: "फूल (Flowering)", hintHi: "फूल आने व परागण का समय" },
-  { id: "fruiting", labelHi: "फल/दाना (Fruiting)", hintHi: "फल लगने व दाना भराव की अवस्था" },
+  { id: "vegetative", labelHi: "वनस्पति अवस्था", hintHi: "" },
+  { id: "flowering", labelHi: "फूल वाली अवस्था", hintHi: "" },
+  { id: "fruiting", labelHi: "फल और दाने वाली अवस्था", hintHi: "" },
 ];
 
 export const SILICONE_STICKER: MixMedicine = {
@@ -861,12 +861,11 @@ export function generateDynamicMixSteps(
   );
 
   function getShortLabel(m: MixMedicine): string {
-    if (m.brandHi) return `${m.brandHi} (${m.formCode})`;
-    if (m.brands && m.brands.length > 0) {
-      const b = m.brands[0].split("(")[0].trim();
-      if (b) return `${b} (${m.formCode})`;
+    const tech = m.technical.trim();
+    if (tech.toUpperCase().includes(m.formCode.toUpperCase())) {
+      return tech;
     }
-    return `${m.technical} (${m.formCode})`;
+    return `${tech} (${m.formCode})`;
   }
 
   // STEP 1: W - Wettable Powders & Granules (Powder in separate bucket)
@@ -876,7 +875,7 @@ export function generateDynamicMixSteps(
       letter: "W",
       badgeHi: `चरण ${currentStep - 1} · W (पाउडर व दाने)`,
       titleHi: "अलग बाल्टी में पाउडर/दानेदार दवा घोलें",
-      descHi: "5–10L साफ़ पानी में पाउडर/दानेदार दवा अच्छी तरह घोलें ताकि कोई गांठ न रहे, फिर टंकी में मिलाएँ।",
+      descHi: "5–10L साफ़ पानी में घोलकर गांठें पूरी तरह खत्म कर लें।",
       items: powders.map(getShortLabel),
     });
   }
@@ -886,10 +885,10 @@ export function generateDynamicMixSteps(
     stepNo: currentStep++,
     letter: "A",
     badgeHi: `चरण ${currentStep - 1} · A (टैंक आधा भरें)`,
-    titleHi: "स्प्रे टैंक को आधा पानी से भरकर घोल मिलाएँ",
+    titleHi: "स्प्रे टैंक में 50% साफ़ पानी भरें",
     descHi: powders.length > 0
-      ? "टंकी को 50% साफ़ पानी से भरें और पहले से घुला पाउडर घोल डालकर अच्छी तरह हिलाएँ।"
-      : "स्प्रे टंकी (या ड्रम) को आधा (50%) साफ़ पानी से भरें।",
+      ? "घुला हुआ पाउडर घोल इसमें डालकर डंडे से अच्छी तरह हिलाएँ।"
+      : "आधा पानी भरकर घोल की तैयारी करें।",
   });
 
   // STEP 3: L - Liquid Suspensions (SC, Flowables)
@@ -899,7 +898,7 @@ export function generateDynamicMixSteps(
       letter: "L",
       badgeHi: `चरण ${currentStep - 1} · L (गाढ़ा सस्पेंशन SC)`,
       titleHi: "गाढ़ी तरल (SC) दवा मिलाएँ",
-      descHi: "गाढ़ी सस्पेंशन दवा को टंकी में धीरे-धीरे डालते हुए लगातार हिलाते रहें।",
+      descHi: "टंकी में धीरे-धीरे डालते हुए लगातार हिलाते रहें ताकि दवा एकसार मिले।",
       items: suspensions.map(getShortLabel),
     });
   }
@@ -911,7 +910,7 @@ export function generateDynamicMixSteps(
       letter: "E",
       badgeHi: `चरण ${currentStep - 1} · E (इमल्शन तरल EC)`,
       titleHi: "तेल आधारित (EC) दवा मिलाएँ",
-      descHi: "तेल आधारित इमल्शन दवा टंकी में डालें और डंडे से अच्छी तरह घोलें।",
+      descHi: "टंकी में डालकर डंडे से 1 मिनट तक अच्छी तरह घोलें।",
       items: emulsions.map(getShortLabel),
     });
   }
@@ -923,7 +922,7 @@ export function generateDynamicMixSteps(
       letter: "S",
       badgeHi: `चरण ${currentStep - 1} · SL (घुलनशील तरल)`,
       titleHi: "घुलनशील तरल (SL) दवा मिलाएँ",
-      descHi: "पानी में घुलनशील तरल दवा टंकी में डालकर 1 मिनट तक अच्छी तरह मिलाएँ।",
+      descHi: "टंकी में डालकर डंडे से अच्छी तरह एकसार करें।",
       items: liquids.map(getShortLabel),
     });
   }
@@ -934,9 +933,9 @@ export function generateDynamicMixSteps(
       stepNo: currentStep++,
       letter: "S",
       badgeHi: `चरण ${currentStep - 1} · पोषण/टॉनिक`,
-      titleHi: "घुलनशील खाद / टॉनिक मिलाएँ",
-      descHi: "पोषक टॉनिक या स्प्रे खाद टंकी में डालकर मिलाएँ।",
-      items: tonics.map((p) => p.brandHi || (p.brands && p.brands[0] ? p.brands[0].split("(")[0].trim() : p.technical)),
+      titleHi: "घुलनशील खाद या टॉनिक मिलाएँ",
+      descHi: "पोषक तत्वों को टंकी में डालकर अच्छी तरह मिलाएँ।",
+      items: tonics.map((p) => p.technical),
     });
   }
 
@@ -946,8 +945,8 @@ export function generateDynamicMixSteps(
       stepNo: currentStep++,
       letter: "S",
       badgeHi: `अंतिम चरण · S (सिलिकॉन स्टिकर/चिपको)`,
-      titleHi: "सबसे अंत में सिलिकॉन स्टिकर डालें",
-      descHi: "सिलिकॉन स्टिकर डालकर टंकी में पूरा पानी भरें और तुरंत छिड़काव करें (घोल 2–3 घंटे से ज्यादा न रखें)।",
+      titleHi: "सिलिकॉन स्टिकर मिलाएँ और पानी पूरा करें",
+      descHi: "टंकी को ऊपर तक भरकर तुरंत छिड़काव शुरू करें (घोल को 2–3 घंटे से अधिक न रखें)।",
       items: [`सिलिकॉन सुपर स्प्रेडर स्टिकर (${SILICONE_STICKER.doseHi})`],
     });
   }

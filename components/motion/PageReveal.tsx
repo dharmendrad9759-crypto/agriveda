@@ -20,9 +20,12 @@ export default function PageReveal({ children }: { children: React.ReactNode }) 
     return () => mq.removeEventListener?.("change", sync);
   }, []);
 
-  // Remount animation whenever route changes
+  // Remount animation whenever route changes and reset scroll to top
   useEffect(() => {
     setTick((n) => n + 1);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
   }, [pathname]);
 
   if (reduced) return <>{children}</>;

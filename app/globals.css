@@ -111,6 +111,19 @@ a, img, button, [role="button"] {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Global Disable Text Selection on UI Chrome (prevents browser Translate / Copy / Select all callouts) */
+body, h1, h2, h3, h4, h5, h6, p, span, button, label, a, [role="button"], .card, nav, header, footer {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection inside forms, text fields, and search inputs */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+
+
 h1, h2, .font-display {
   font-family: var(--font-display), var(--font-sans);
 }

@@ -36,7 +36,6 @@ import { cn } from "@/lib/cn";
 import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import { speakFarmer } from "@/components/ui/SpeakButton";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
-import FarmerAppTour from "@/components/tutorial/FarmerAppTour";
 
 
 
@@ -59,11 +58,6 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
         <h2 className="mt-1.5 text-[18px] sm:text-xl font-black leading-tight text-white tracking-tight">
           {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop Disease or Pest Issue?"}
         </h2>
-        <p className="mt-1 text-xs font-medium text-emerald-100/85 leading-snug">
-          {isHi
-            ? "पत्ती की फोटो खींचकर तुरंत पहचानें या फसल अनुसार सही दवा व इलाज जानें"
-            : "Take a leaf photo for instant remedy or browse solutions by crop"}
-        </p>
       </div>
 
       {/* Dual action cards with 100% VISIBLE BRIGHT AGRICULTURAL PHOTOGRAPHY */}
@@ -178,40 +172,40 @@ const QUICK_JOBS: {
 }[] = [
   {
     id: "fert",
-    hi: "खाद कितनी?",
-    en: "How much fertilizer?",
-    hintHi: "बोरी में हिसाब",
-    hintEn: "Bag doses",
+    hi: "खाद कैलकुलेटर",
+    en: "Fertilizer Calculator",
+    hintHi: "फसल में कितना खाद पड़ेगा, सही हिसाब",
+    hintEn: "Accurate fertilizer dose per acre",
     href: "/services/fertilizer-calculator",
     icon: Droplets,
     imageSrc: "/images/jobs/job-fertilizer.jpg",
   },
   {
     id: "mandi",
-    hi: "आज का भाव",
-    en: "Today's price",
-    hintHi: "नज़दीकी मंडी",
-    hintEn: "Nearest mandi",
+    hi: "मंडी भाव",
+    en: "Mandi Rates",
+    hintHi: "अपनी मंडी में फसल का ताज़ा भाव देखें",
+    hintEn: "Live prices in nearest mandi",
     href: "/mandi",
     icon: TrendingUp,
     imageSrc: "/images/home/home-job-mandi.jpg",
   },
   {
     id: "schemes",
-    hi: "सरकारी योजना",
-    en: "Govt schemes",
-    hintHi: "किसान मदद",
-    hintEn: "Farmer help",
+    hi: "सरकारी योजना व लोन",
+    en: "Govt Schemes & Loan",
+    hintHi: "सरकारी लोन और सब्सिडी की पूरी जानकारी",
+    hintEn: "Farmer loans & subsidy guides",
     href: "/schemes",
     icon: Landmark,
     imageSrc: "/images/home/home-cta-schemes.jpg",
   },
   {
     id: "ask",
-    hi: "खेती सलाह",
-    en: "Field advice",
-    hintHi: "विशेषज्ञ से पूछो",
-    hintEn: "Ask an expert",
+    hi: "विशेषज्ञ सलाह",
+    en: "Field Advice",
+    hintHi: "खेत के बारे में जो पूछना हो, विशेषज्ञ से पूछें",
+    hintEn: "Ask any farming question to agronomist",
     href: "/ask-query",
     icon: MessageCircle,
     imageSrc: "/images/home/ask-expert-trust.jpg",
@@ -222,6 +216,8 @@ const MORE_JOBS: {
   id: string;
   hi: string;
   en: string;
+  subHi: string;
+  subEn: string;
   href: string;
   imageSrc: string;
 }[] = [
@@ -229,27 +225,35 @@ const MORE_JOBS: {
     id: "farm",
     hi: "मेरा खेत",
     en: "My farm",
+    subHi: "खेत प्रोफाइल व फसलें",
+    subEn: "Farm profile & crops",
     href: "/my-farm",
     imageSrc: "/images/jobs/job-my-farm.jpg",
   },
   {
     id: "mix",
-    hi: "दवा मिलाएँ",
-    en: "Mix medicines",
+    hi: "दवा मिलाएँ (टैंक-मिक्स)",
+    en: "Tank Mix Advisor",
+    subHi: "दो दवाएँ मिलाने से पहले सुरक्षा जाँचें",
+    subEn: "Check compatibility before mixing",
     href: "/mix-advisor",
     imageSrc: "/images/jobs/job-spray.jpg",
   },
   {
     id: "weeds",
-    hi: "खरपतवार",
-    en: "Weeds",
+    hi: "खरपतवार नियंत्रण",
+    en: "Weeds Control",
+    subHi: "घास व खरपतवार नाशक दवाएं",
+    subEn: "Herbicide solutions",
     href: "/pest-diseases?type=weed",
     imageSrc: "/images/threats/threat-weed.jpg",
   },
   {
     id: "leaf",
     hi: "पत्ती पीली / खराब",
-    en: "Yellow / sick leaf",
+    en: "Nutrient Deficiencies",
+    subHi: "पीले व बीमार पत्तों के पोषक तत्व",
+    subEn: "Nutrient solutions",
     href: "/deficiencies",
     imageSrc: "/images/home/home-job-yellow-leaf.jpg",
   },
@@ -257,6 +261,8 @@ const MORE_JOBS: {
     id: "plan",
     hi: "फसल प्लानर",
     en: "Crop Planner",
+    subHi: "बुवाई से कटाई का पूरा कैलेंडर",
+    subEn: "Sowing to harvest schedule",
     href: "/crop-calendar",
     imageSrc: "/images/home/home-job-plan.jpg",
   },
@@ -264,13 +270,17 @@ const MORE_JOBS: {
     id: "alerts",
     hi: "खेत अलर्ट",
     en: "Farm alerts",
+    subHi: "मौसम, कीट व स्प्रे चेतावनी",
+    subEn: "Weather, pests & spray warnings",
     href: "/alerts",
     imageSrc: "/images/jobs/job-alerts.jpg",
   },
   {
     id: "spray-rotation",
-    hi: "स्प्रे चक्र व लॉग",
-    en: "Spray rotation log",
+    hi: "स्प्रे चक्र व डायरी",
+    en: "Spray Rotation & Log",
+    subHi: "दवा बदलने और स्प्रे डायरी का हिसाब",
+    subEn: "Track MoA & spray logs",
     href: "/spray-rotation",
     imageSrc: "/images/jobs/job-spray-avoid.jpg",
   },
@@ -319,7 +329,6 @@ export default function AgriVedaHome() {
   const lastScan = aiHistory[0];
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
-  const [showTour, setShowTour] = useState(false);
 
   const weatherIsSample = Boolean(weather?.isDemo || weatherError);
 
@@ -369,14 +378,6 @@ export default function AgriVedaHome() {
                     month: "long",
                   })}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setShowTour(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300 transition hover:bg-emerald-500/20 active:scale-95"
-                >
-                  <Sparkles className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                  <span>{isHi ? "ऐप चलाना सीखें (डेमो)" : "App Guide (Demo)"}</span>
-                </button>
               </div>
             </div>
             <HomeWeatherButton weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
@@ -618,7 +619,7 @@ export default function AgriVedaHome() {
                     {isHi ? job.hi : job.en}
                   </p>
                   <p className="truncate text-[11px] font-semibold text-[var(--av-text-muted)]">
-                    {isHi ? job.en : job.hi}
+                    {isHi ? job.subHi : job.subEn}
                   </p>
                 </div>
                 <div className="mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400">
@@ -680,9 +681,6 @@ export default function AgriVedaHome() {
         ) : null}
 
       </div>
-
-      {/* Interactive App Screen Tour & Video Guides Modal */}
-      <FarmerAppTour forceOpen={showTour} onClose={() => setShowTour(false)} />
     </div>
   );
 }

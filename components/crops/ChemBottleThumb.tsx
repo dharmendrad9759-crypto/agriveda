@@ -1,6 +1,5 @@
-"use client";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { bottleCategory, getChemPackageType, lookupChemBottle } from "@/lib/crops/chemBottle";
 import { chemBottleImageSrc, hasRealBottlePhoto } from "@/lib/crops/chemBottleSvg";
 import type { ChemBottleCategory } from "@/data/chem-bottle-catalog";
@@ -20,6 +19,21 @@ export default function ChemBottleThumb({
   allowExpand?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!expanded) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [expanded]);
+
   const hit = lookupChemBottle(technical);
   const isReal = hasRealBottlePhoto(technical);
   const pkgType = getChemPackageType(technical, hit?.formulation);
@@ -82,56 +96,59 @@ export default function ChemBottleThumb({
         )}
       </div>
 
-      {/* Enlarged Bottle Modal */}
-      {expanded && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in"
-          onClick={() => setExpanded(false)}
-        >
-          <div
-            className="relative flex w-full max-w-[340px] sm:max-w-[380px] flex-col items-center rounded-3xl bg-white p-5 shadow-2xl border border-stone-200 dark:bg-stone-900 dark:border-stone-800"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
+      {/* Enlarged Bottle Modal — portaled to document.body for true viewport centering */}
+      {expanded && mounted && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in"
               onClick={() => setExpanded(false)}
-              className="absolute right-3.5 top-3.5 rounded-full bg-stone-100 p-2 text-stone-700 transition hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-200"
-              aria-label="Close"
             >
-              <X className="h-5 w-5" />
-            </button>
+              <div
+                className="relative flex w-full max-w-[340px] sm:max-w-[380px] flex-col items-center rounded-3xl bg-white p-5 shadow-2xl border border-stone-200 dark:bg-stone-900 dark:border-stone-800"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setExpanded(false)}
+                  className="absolute right-3.5 top-3.5 rounded-full bg-stone-100 p-2 text-stone-700 transition hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-200"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
 
-            <div className="relative flex w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-stone-50 to-stone-100/80 p-3 border border-stone-200/80 dark:border-stone-700/80 dark:from-stone-800/80 dark:to-stone-900 shadow-sm">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={src}
-                alt={displayName}
-                className="h-[340px] sm:h-[380px] w-auto max-w-full object-contain drop-shadow-xl transition duration-300 hover:scale-105"
-              />
-            </div>
+                <div className="relative flex w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-stone-50 to-stone-100/80 p-3 border border-stone-200/80 dark:border-stone-700/80 dark:from-stone-800/80 dark:to-stone-900 shadow-sm">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt={displayName}
+                    className="h-[320px] sm:h-[360px] w-auto max-w-full object-contain drop-shadow-xl transition duration-300 hover:scale-105"
+                  />
+                </div>
 
-            <div className="mt-3.5 text-center w-full">
-              <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                {isReal
-                  ? isPouch
-                    ? "असली टेक्निकल पैकेट (Product Photo)"
-                    : "असली टेक्निकल बोतल (Product Photo)"
-                  : isPouch
-                  ? "तकनीकी पैकेट (Agro Foil Sachet)"
-                  : "तकनीकी बोतल (Technical Bottle)"}
-              </span>
-              <p className="mt-1.5 text-base font-black text-stone-900 dark:text-stone-100">
-                {displayName}
-              </p>
-              <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-0.5">
-                खाद-बीज की दुकान पर यह टेक्निकल नाम बताकर {isPouch ? "पैकेट" : "दवाई"} लें
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+                <div className="mt-3.5 text-center w-full">
+                  <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                    {isReal
+                      ? isPouch
+                        ? "असली टेक्निकल पैकेट (Product Photo)"
+                        : "असली टेक्निकल बोतल (Product Photo)"
+                      : isPouch
+                      ? "तकनीकी पैकेट (Agro Foil Sachet)"
+                      : "तकनीकी बोतल (Technical Bottle)"}
+                  </span>
+                  <p className="mt-1.5 text-base font-black text-stone-900 dark:text-stone-100">
+                    {displayName}
+                  </p>
+                  <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-0.5">
+                    खाद-बीज की दुकान पर यह टेक्निकल नाम बताकर {isPouch ? "पैकेट" : "दवाई"} लें
+                  </p>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }

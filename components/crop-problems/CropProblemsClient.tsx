@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
 import ProblemFlowShell from "@/components/crop-problems/ProblemFlowShell";
 import { CROP_PROBLEM_CROPS, type CropProblemCrop } from "@/data/crop-curative-problems";
-import { Search, Camera, Sparkles } from "lucide-react";
+import { Camera } from "lucide-react";
 
 const GROUPS: { id: string; title: string; match: (c: CropProblemCrop) => boolean }[] = [
   {
@@ -50,11 +50,8 @@ function CropTile({ crop }: { crop: CropProblemCrop }) {
         />
         <span className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
       </span>
-      <span className="relative mt-2 block text-center text-[12.5px] font-black tracking-tight text-[#052e1c]">
+      <span className="relative mt-2 block text-center text-[13px] font-black tracking-tight text-[#052e1c]">
         {crop.nameHi}
-      </span>
-      <span className="relative mt-0.5 block text-center text-[9.5px] font-extrabold text-emerald-800/70">
-        {crop.problems.length} समस्याएं
       </span>
     </AppLink>
   );
@@ -62,37 +59,20 @@ function CropTile({ crop }: { crop: CropProblemCrop }) {
 
 /** Step 1 — crop picker */
 export default function CropProblemsClient() {
-  const [query, setQuery] = useState("");
-  const [activeGroup, setActiveGroup] = useState<string>("all");
+  const sections = useMemo(() => {
+    const used = new Set<string>();
+    const list = GROUPS.map((g) => {
+      const items = CROP_PROBLEM_CROPS.filter((c) => g.match(c));
+      items.forEach((c) => used.add(c.slug));
+      return { ...g, items };
+    }).filter((g) => g.items.length > 0);
 
-  const filteredCrops = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return CROP_PROBLEM_CROPS.filter((c) => {
-      const matchSearch =
-        !q ||
-        c.nameHi.toLowerCase().includes(q) ||
-        c.nameEn.toLowerCase().includes(q) ||
-        c.slug.toLowerCase().includes(q);
-
-      if (!matchSearch) return false;
-
-      if (activeGroup === "all") return true;
-      const grp = GROUPS.find((g) => g.id === activeGroup);
-      return grp ? grp.match(c) : true;
-    });
-  }, [query, activeGroup]);
-
-  const used = new Set<string>();
-  const sections = GROUPS.map((g) => {
-    const items = filteredCrops.filter((c) => g.match(c));
-    items.forEach((c) => used.add(c.slug));
-    return { ...g, items };
-  }).filter((g) => g.items.length > 0);
-
-  const leftover = filteredCrops.filter((c) => !used.has(c.slug));
-  if (leftover.length) {
-    sections.push({ id: "more", title: "अन्य फसलें", match: () => true, items: leftover });
-  }
+    const leftover = CROP_PROBLEM_CROPS.filter((c) => !used.has(c.slug));
+    if (leftover.length) {
+      list.push({ id: "more", title: "अन्य फसलें", match: () => true, items: leftover });
+    }
+    return list;
+  }, []);
 
   return (
     <ProblemFlowShell
@@ -120,83 +100,23 @@ export default function CropProblemsClient() {
         </p>
       </div>
 
-      {/* Instant Search Bar */}
-      <div className="relative mb-3">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-700/60" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="फसल खोजें (गेहूं, धान, टमाटर, कपास...)..."
-          className="w-full rounded-2xl border border-emerald-900/15 bg-white py-2.5 pl-10 pr-3 text-[12.5px] font-semibold text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 shadow-xs"
-        />
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 no-scrollbar text-[11px] font-black mb-4">
-        <button
-          type="button"
-          onClick={() => setActiveGroup("all")}
-          className={`shrink-0 rounded-xl px-3 py-1.5 transition active:scale-95 ${
-            activeGroup === "all"
-              ? "bg-emerald-800 text-white shadow-xs"
-              : "bg-white text-slate-700 border border-slate-200"
-          }`}
-        >
-          सभी ({CROP_PROBLEM_CROPS.length})
-        </button>
-        {GROUPS.map((g) => (
-          <button
-            key={g.id}
-            type="button"
-            onClick={() => setActiveGroup(g.id)}
-            className={`shrink-0 rounded-xl px-3 py-1.5 transition active:scale-95 ${
-              activeGroup === g.id
-                ? "bg-emerald-800 text-white shadow-xs"
-                : "bg-white text-slate-700 border border-slate-200"
-            }`}
-          >
-            {g.title.split(" ")[0]}
-          </button>
-        ))}
-      </div>
-
-      {/* Sections Grid */}
+      {/* Sections Grid without duplicate numbers or filter bars */}
       <div className="space-y-6 pb-6">
-        {sections.length > 0 ? (
-          sections.map((section) => (
-            <section key={section.id}>
-              <div className="mb-2.5 flex items-center gap-2">
-                <h2 className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-emerald-800/70">
-                  {section.title}
-                </h2>
-                <span className="h-px flex-1 bg-gradient-to-r from-emerald-900/15 to-transparent" />
-                <span className="text-[10px] font-black text-emerald-900/40">{section.items.length}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2.5">
-                {section.items.map((crop) => (
-                  <CropTile key={crop.slug} crop={crop} />
-                ))}
-              </div>
-            </section>
-          ))
-        ) : (
-          <div className="rounded-2xl border border-dashed border-emerald-300 bg-white p-6 text-center shadow-xs">
-            <p className="text-[13px] font-black text-slate-800">
-              कोई फसल नहीं मिली &ldquo;{query}&rdquo;
-            </p>
-            <p className="text-[11px] text-slate-500 mt-1">
-              सीधे कैमरे से फोटो खींचकर AI डॉक्टर से जाँच कराएं:
-            </p>
-            <AppLink
-              href="/ai-doctor"
-              className="mt-3.5 inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-black text-white shadow-md active:scale-95"
-            >
-              <Camera className="h-4 w-4" />
-              <span>📷 AI फोटो से जाँच करें</span>
-            </AppLink>
-          </div>
-        )}
+        {sections.map((section) => (
+          <section key={section.id}>
+            <div className="mb-2.5 flex items-center gap-2">
+              <h2 className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-emerald-800/80">
+                {section.title}
+              </h2>
+              <span className="h-px flex-1 bg-gradient-to-r from-emerald-900/15 to-transparent" />
+            </div>
+            <div className="grid grid-cols-3 gap-2.5">
+              {section.items.map((crop) => (
+                <CropTile key={crop.slug} crop={crop} />
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
 
       {/* AI Doctor Camera Banner */}

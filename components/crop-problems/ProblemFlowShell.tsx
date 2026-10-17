@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
@@ -26,6 +26,12 @@ export default function ProblemFlowShell({
 }) {
   const router = useRouter();
   const progress = Math.min(100, Math.round((step / totalSteps) * 100));
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
+  }, [step]);
 
   return (
     <div className="relative mx-auto min-h-[100dvh] w-full max-w-lg overflow-hidden pb-28 text-[#0B1F16]">
@@ -70,7 +76,7 @@ export default function ProblemFlowShell({
             <div className="flex items-center gap-1.5">
               <Sparkles className="h-3 w-3 text-emerald-600" />
               <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-emerald-700/85">
-                AgriVeda · चरण {step}/{totalSteps}
+                AgriVeda
               </p>
             </div>
             <h1 className="truncate font-display text-[1.2rem] font-bold leading-tight tracking-tight text-[#052e1c]">
@@ -85,14 +91,10 @@ export default function ProblemFlowShell({
           {rightSlot}
         </div>
 
-        <div className="mt-3.5">
-          <div className="mb-1.5 flex items-center justify-between text-[10px] font-bold text-emerald-900/40">
-            <span>प्रगति</span>
-            <span>{progress}%</span>
-          </div>
-          <div className="relative h-2 overflow-hidden rounded-full bg-emerald-900/8">
+        <div className="mt-2.5">
+          <div className="relative h-1.5 overflow-hidden rounded-full bg-emerald-900/10">
             <span
-              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400 shadow-[0_0_16px_rgba(16,185,129,0.45)] transition-[width] duration-500 ease-out"
+              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400 shadow-[0_0_12px_rgba(16,185,129,0.4)] transition-[width] duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>

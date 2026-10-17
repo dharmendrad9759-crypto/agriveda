@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { useAppNavigate } from "@/hooks/useAppNavigate";
@@ -18,49 +19,138 @@ import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
-const SPRAY_CROPS = cropCatalog.filter((c) =>
-  ["paddy", "cotton", "maize", "moongfali"].includes(c.slug)
-);
+const SPRAY_CROPS = cropCatalog;
 
-export default function LogSprayPage() {
+function LogSprayForm() {
   const { t: uiT } = useLocale();
   const navigate = useAppNavigate();
+  const searchParams = useSearchParams();
   const { locale, setLocale } = useSprayLocale();
   const { fields, addField } = useSprayFields();
   const { addLog, isOnline } = useSprayLogs();
   const { showToast } = useToast();
 
-  const [cropId, setCropId] = useState(SPRAY_CROPS[0]?.slug ?? "paddy");
+  const paramCrop = searchParams?.get("crop");
+  const paramStage = searchParams?.get("stage");
+  const paramProblem = searchParams?.get("problem");
+  const paramMed = searchParams?.get("med");
+  const paramDose = searchParams?.get("dose");
+  const fromMixAdvisor = searchParams?.get("from") === "mix-advisor";
+
+  const initialCrop = useMemo(() => {
+    if (!paramCrop) return SPRAY_CROPS[0]?.slug ?? "paddy";
+    const found = SPRAY_CROPS.find(
+      (c) =>
+        c.slug.toLowerCase() === paramCrop.toLowerCase() ||
+        (c.nameHi && c.nameHi.toLowerCase() === paramCrop.toLowerCase()) ||
+        c.name.toLowerCase() === paramCrop.toLowerCase()
+    );
+    return found ? found.slug : paramCrop;
+  }, [paramCrop]);
+
+  const [cropId, setCropId] = useState(initialCrop);
   const [fieldId, setFieldId] = useState(fields[0]?.id ?? "");
-  const [productQuery, setProductQuery] = useState("");
+  const [productQuery, setProductQuery] = useState(paramMed || "");
   const [selectedProduct, setSelectedProduct] = useState<SprayProduct | null>(null);
   const [sprayDate, setSprayDate] = useState(new Date().toISOString().slice(0, 10));
-  const [dose, setDose] = useState("");
-  const [growthStage, setGrowthStage] = useState("");
+  const [dose, setDose] = useState(paramDose || "");
+  const [growthStage, setGrowthStage] = useState(paramStage || "");
   const [pestId, setPestId] = useState("");
   const [diseaseId, setDiseaseId] = useState("");
   const [showAddField, setShowAddField] = useState(false);
   const [newFieldName, setNewFieldName] = useState("");
 
-  const cropFields = fields.filter((f) => f.cropSlug === cropId || f.cropSlug === cropId);
+  const cropFields = fields.filter((f) => f.cropSlug === cropId);
   const activeFieldId = fieldId || cropFields[0]?.id || fields[0]?.id || "";
 
-  const productResults = useMemo(
-    () => searchProducts(productQuery, cropId === "moongfali" ? "moongfali" : cropId),
-    [productQuery, cropId]
-  );
+  const productResults = useMemo(() => {
+    const res = searchProducts(productQuery, cropId === "moongfali" ? "moongfali" : cropId);
+    if (res.length > 0 || !productQuery.trim()) return res;
+    return searchProducts(productQuery);
+  }, [productQuery, cropId]);
 
   const pd = getCropPestDisease(cropId);
 
-  const handleSave = () => {
-    if (!selectedProduct || !activeFieldId || !dose.trim()) {
-      showToast("Product, field, and dose required", "error");
+  // Auto-fill parameters if arriving via query params
+  useEffect(() => {
+    if (paramCrop) {
+      const found = SPRAY_CROPS.find(
+        (c) =>
+          c.slug.toLowerCase() === paramCrop.toLowerCase() ||
+          (c.nameHi && c.nameHi.toLowerCase() === paramCrop.toLowerCase()) ||
+          c.name.toLowerCase() === paramCrop.toLowerCase()
+      );
+      if (found) setCropId(found.slug);
+    }
+    if (paramStage) setGrowthStage(paramStage);
+    if (paramDose) setDose(paramDose);
+    if (paramMed) {
+      setProductQuery(paramMed);
+      const matches = searchProducts(paramMed);
+      if (matches.length > 0) {
+        setSelectedProduct(matches[0]);
+      }
+    }
+  }, [paramCrop, paramStage, paramDose, paramMed]);
+
+  // Try matching pest/disease
+  useEffect(() => {
+    if (!paramProblem) return;
+    const norm = paramProblem.toLowerCase();
+    const foundPest = pd.pests.find(
+      (p) =>
+        p.name.toLowerCase().includes(norm) ||
+        norm.includes(p.name.toLowerCase()) ||
+        p.id === paramProblem
+    );
+    if (foundPest) {
+      setPestId(foundPest.id);
+      setDiseaseId("");
       return;
     }
+    const foundDisease = pd.diseases.find(
+      (d) =>
+        d.name.toLowerCase().includes(norm) ||
+        norm.includes(d.name.toLowerCase()) ||
+        d.id === paramProblem
+    );
+    if (foundDisease) {
+      setDiseaseId(foundDisease.id);
+      setPestId("");
+    }
+  }, [paramProblem, pd]);
+
+  const handleSave = () => {
+    let field = activeFieldId;
+    if (!field) {
+      const f = addField("खेत 1 (Main Field)", cropId);
+      field = f.id;
+    }
+
+    const prod =
+      selectedProduct ||
+      (productQuery.trim()
+        ? {
+            id: `custom-${Date.now()}`,
+            productName: productQuery.trim(),
+            activeIngredient: productQuery.trim(),
+            category: "insecticide" as const,
+            moaType: "IRAC" as const,
+            moaGroup: "Tank-Mix",
+            cropRecommended: [cropId],
+            doseHint: dose.trim(),
+          }
+        : null);
+
+    if (!prod || !dose.trim()) {
+      showToast(locale === "hi" ? "दवा और सटीक खुराक दर्ज करें" : "Product and dose required", "error");
+      return;
+    }
+
     addLog({
       cropId,
-      fieldId: activeFieldId,
-      productId: selectedProduct.id,
+      fieldId: field,
+      productId: prod.id,
       sprayDate,
       doseUsed: dose,
       growthStageAtSpray: growthStage || "Not specified",
@@ -69,7 +159,12 @@ export default function LogSprayPage() {
     });
     showToast(t(locale, "saved"));
     if (!isOnline) showToast(t(locale, "offlineNote"), "info");
-    navigate("/spray-rotation");
+
+    if (fromMixAdvisor) {
+      navigate("/mix-advisor?step=guide");
+    } else {
+      navigate("/spray-rotation");
+    }
   };
 
   const handleAddField = () => {
@@ -83,6 +178,7 @@ export default function LogSprayPage() {
   return (
     <AppShell
       title={t(locale, "logSpray")}
+      backHref={fromMixAdvisor ? "/mix-advisor?step=guide" : "/spray-rotation"}
       breadcrumbs={[
         { label: uiT("navHome"), href: "/" },
         { label: uiT("sprayRotation"), href: "/spray-rotation" },
@@ -110,6 +206,13 @@ export default function LogSprayPage() {
       </DarkCard>
 
       <div className="mt-4 space-y-4">
+        {fromMixAdvisor && (
+          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-[12px] font-bold text-emerald-950 dark:text-emerald-100 flex items-center justify-between">
+            <span>✨ टैंक-मिक्स से जानकारी स्वतः भर दी गई है</span>
+            <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-semibold">Auto-filled</span>
+          </div>
+        )}
+
         <DarkCard delay={1}>
           <label className="block">
             <span className={AV.label}>{t(locale, "selectCrop")}</span>
@@ -121,20 +224,15 @@ export default function LogSprayPage() {
                 setPestId("");
                 setDiseaseId("");
               }}
-              className="av-input mt-2 w-full"
+              className="av-input mt-2 w-full font-bold"
             >
               {SPRAY_CROPS.map((c) => (
                 <option key={c.slug} value={c.slug}>
-                  {c.emoji} {c.name}
+                  {c.emoji} {c.nameHi ? `${c.nameHi} (${c.name})` : c.name}
                 </option>
               ))}
             </select>
           </label>
-          <p className="mt-2 text-[11px] text-[var(--av-text-muted)]">
-            {locale === "hi"
-              ? "अभी सिर्फ ये फसलें शामिल हैं — बाकी फसलों पर दवा का लेबल देखें।"
-              : "Only these crops are covered for now — for others, follow the product label."}
-          </p>
         </DarkCard>
 
         <DarkCard delay={2}>
@@ -149,6 +247,7 @@ export default function LogSprayPage() {
                 {f.name} ({f.cropSlug})
               </option>
             ))}
+            {fields.length === 0 && <option value="">खेत 1 (Main Field)</option>}
           </select>
           {showAddField ? (
             <div className="mt-2 flex gap-2">
@@ -183,6 +282,7 @@ export default function LogSprayPage() {
                 setProductQuery(e.target.value);
                 setSelectedProduct(null);
               }}
+              placeholder="दवा का नाम या टेक्निकल..."
               className="av-input av-input--icon w-full py-2.5"
             />
           </div>
@@ -221,7 +321,7 @@ export default function LogSprayPage() {
           <label className="block">
             <span className={AV.label}>{t(locale, "targetPest")}</span>
             <select
-              value={pestId || diseaseId}
+              value={pestId ? `p-${pestId}` : diseaseId ? `d-${diseaseId}` : ""}
               onChange={(e) => {
                 const v = e.target.value;
                 if (v.startsWith("p-")) {
@@ -237,7 +337,7 @@ export default function LogSprayPage() {
               }}
               className="av-input mt-2 w-full"
             >
-              <option value="">—</option>
+              <option value="">— {paramProblem ? `चयनित: ${paramProblem}` : "समस्या चुनें"} —</option>
               {pd.pests.map((p) => (
                 <option key={p.id} value={`p-${p.id}`}>
                   🐛 {p.name}
@@ -266,7 +366,7 @@ export default function LogSprayPage() {
               <input
                 value={growthStage}
                 onChange={(e) => setGrowthStage(e.target.value)}
-                placeholder="e.g. Tillering"
+                placeholder="उदा. फलन अवस्था"
                 className="av-input mt-2 w-full"
               />
             </label>
@@ -277,7 +377,7 @@ export default function LogSprayPage() {
             <input
               value={dose}
               onChange={(e) => setDose(e.target.value)}
-              placeholder={selectedProduct?.doseHint ?? "e.g. 1 ml/L"}
+              placeholder={selectedProduct?.doseHint ?? "उदा. 15L टंकी में 35 ग्राम"}
               className="av-input mt-2 w-full"
             />
           </label>
@@ -288,5 +388,13 @@ export default function LogSprayPage() {
         </button>
       </div>
     </AppShell>
+  );
+}
+
+export default function LogSprayPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center text-sm font-bold text-emerald-800">लोड हो रहा है...</div>}>
+      <LogSprayForm />
+    </Suspense>
   );
 }

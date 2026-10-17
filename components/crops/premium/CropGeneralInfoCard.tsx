@@ -24,6 +24,13 @@ type InfoRow = {
   highlight?: boolean;
   /** Compact 2×2 facts inside (climate/soil) — denser on phone */
   factGrid?: { k: string; v: string }[];
+  /** Distinct 2-col balanced cost and net profit metric boxes */
+  profitBoxes?: {
+    costLabel: string;
+    costVal: string;
+    profitLabel: string;
+    profitVal: string;
+  };
 };
 
 function InfoCell({
@@ -65,7 +72,26 @@ function InfoCell({
         >
           {row.label}
         </p>
-        {row.factGrid?.length ? (
+        {row.profitBoxes ? (
+          <div className="mt-1.5 grid grid-cols-2 gap-2">
+            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-2 sm:p-2.5">
+              <span className="block text-[10px] font-bold text-amber-900 dark:text-amber-200">
+                {row.profitBoxes.costLabel}
+              </span>
+              <span className="mt-0.5 block text-[13px] sm:text-[14px] font-black text-amber-950 dark:text-amber-100">
+                {row.profitBoxes.costVal}
+              </span>
+            </div>
+            <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/15 p-2 sm:p-2.5">
+              <span className="block text-[10px] font-bold text-emerald-900 dark:text-emerald-200">
+                {row.profitBoxes.profitLabel}
+              </span>
+              <span className="mt-0.5 block text-[13px] sm:text-[14px] font-black text-emerald-950 dark:text-emerald-100">
+                {row.profitBoxes.profitVal}
+              </span>
+            </div>
+          </div>
+        ) : row.factGrid?.length ? (
           <div className="mt-1.5 grid grid-cols-2 gap-1 sm:gap-1.5">
             {row.factGrid.map((f) => {
               const isTemp = f.k === "तापमान" || f.k === "Temp";
@@ -197,15 +223,12 @@ export default function CropGeneralInfoCard({ crop }: Props) {
       icon: Coins,
       label: hi ? "लागत और मुनाफ़ा (अनुमानित) / एकड़" : "Approx. Cost & Profit / acre",
       value: "",
-      lines: hi
-        ? [
-            `लगभग लागत: ${formatInrRange(band.costMin, band.costMax)}`,
-            `अनुमानित मुनाफ़ा: ${formatInrRange(band.profitMin, band.profitMax)}`,
-          ]
-        : [
-            `Approx. Cost: ${formatInrRange(band.costMin, band.costMax)}`,
-            `Estimated Profit: ${formatInrRange(band.profitMin, band.profitMax)}`,
-          ],
+      profitBoxes: {
+        costLabel: hi ? "कुल लागत (Cost)" : "Total Cost",
+        costVal: formatInrRange(band.costMin, band.costMax),
+        profitLabel: hi ? "शुद्ध मुनाफ़ा (Net Profit)" : "Net Profit",
+        profitVal: formatInrRange(band.profitMin, band.profitMax),
+      },
       note: hi
         ? "जिला, मौसम और मंडी भाव से आंकड़ा बदल सकता है"
         : "Varies by district, season and mandi",

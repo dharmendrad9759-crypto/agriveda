@@ -67,9 +67,6 @@ export function AiDoctorHero({
             <h1 className="text-base font-extrabold tracking-tight text-[var(--av-text-primary)] sm:text-lg">
               फसल डॉक्टर
             </h1>
-            <p className="truncate text-[11px] text-[var(--av-text-secondary)]">
-              फोटो या लक्षण से तुरंत रोग पहचान व उपाय
-            </p>
           </div>
         </div>
 
@@ -169,7 +166,7 @@ export function AiDoctorCropSelect({
 
   return (
     <DarkCard className="!p-3 sm:!p-4">
-      <SectionLabel title="फसल चुनें" step={2} hint="फोटो वाली फसल चुनें" />
+      <SectionLabel title="फसल चुनें" step={2} />
       <div className="-mx-0.5 flex gap-2 overflow-x-auto px-0.5 pb-1 scrollbar-hide">
         <CropPickerButton
           active={otherActive}
@@ -688,7 +685,6 @@ export function AiDoctorRecentDiagnoses({
         <div className="mb-3 flex items-start justify-between gap-2">
           <SectionLabel
             title="पिछली जांचें"
-            hint="क्रॉप हेल्थ रिपोर्ट (Crop Health Report) व पुराना इतिहास"
           />
           {onClear && history.length > 0 && (
             <button
