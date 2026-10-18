@@ -1,0 +1,14 @@
+.git
+.github
+.idea
+.vscode
+.tmp*
+/knowledge
+/android
+/capacitor-www
+*.apk
+*.aab
+scripts/
+docs/
+image_provenance_manifest.json
+*.md
