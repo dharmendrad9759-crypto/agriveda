@@ -1039,12 +1039,26 @@ export function buildMixPlanFromProblems(
   for (const prob of selected) {
     const curatives = cropMedsRecord[prob.id];
     if (curatives && curatives.length > 0) {
-      // 1st choice is the primary recommendation
-      const primaryMed = curativeToMixMedicine(curatives[0], prob);
-      // Check if already in list (avoid duplicate active)
-      if (!recommendedMedicines.some((m) => m.activeId === primaryMed.activeId)) {
-        recommendedMedicines.push(primaryMed);
+      // Find the first curative option not yet present in recommendedMedicines
+      const nonDuplicateCurative = curatives.find((c) => {
+        const med = curativeToMixMedicine(c, prob);
+        return !recommendedMedicines.some((m) => m.activeId === med.activeId || m.technical === med.technical);
+      });
+
+      if (nonDuplicateCurative) {
+        const chosenMed = curativeToMixMedicine(nonDuplicateCurative, prob);
+        recommendedMedicines.push(chosenMed);
+      } else {
+        // The curative already in the tank also controls this problem
+        const primaryMed = curativeToMixMedicine(curatives[0], prob);
+        const existing = recommendedMedicines.find(
+          (m) => m.activeId === primaryMed.activeId || m.technical === primaryMed.technical
+        );
+        if (existing && existing.targetProblemHi && !existing.targetProblemHi.includes(prob.nameHi)) {
+          existing.targetProblemHi = `${existing.targetProblemHi} + ${prob.nameHi}`;
+        }
       }
+
       // Add all curatives to alternatives pool
       for (const c of curatives) {
         const altMed = curativeToMixMedicine(c, prob);
@@ -1055,7 +1069,8 @@ export function buildMixPlanFromProblems(
     } else {
       // Fallback from curated catalog if no specific match
       const isPest = prob.tagHi.includes("कीट") || prob.tagHi.includes("कीड़ा");
-      const fallback = isPest ? POPULAR_INSECTICIDES[0] : POPULAR_FUNGICIDES[0];
+      const pool = isPest ? POPULAR_INSECTICIDES : POPULAR_FUNGICIDES;
+      const fallback = pool.find((item) => !recommendedMedicines.some((m) => m.activeId === item.activeId)) ?? pool[0];
       const withTarget: MixMedicine = {
         ...fallback,
         targetProblemId: prob.id,
@@ -1063,6 +1078,11 @@ export function buildMixPlanFromProblems(
       };
       if (!recommendedMedicines.some((m) => m.activeId === withTarget.activeId)) {
         recommendedMedicines.push(withTarget);
+      } else {
+        const existing = recommendedMedicines.find((m) => m.activeId === withTarget.activeId);
+        if (existing && existing.targetProblemHi && !existing.targetProblemHi.includes(prob.nameHi)) {
+          existing.targetProblemHi = `${existing.targetProblemHi} + ${prob.nameHi}`;
+        }
       }
     }
   }

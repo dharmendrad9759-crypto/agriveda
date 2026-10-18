@@ -822,12 +822,17 @@ export default function CropPlannerClient() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between gap-2">
-            <label className="text-xs font-bold text-[var(--av-text-secondary)]">
-              {hi ? "खेत कितना बड़ा?" : t("plannerArea")}
-            </label>
-            <div className="flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-1">
+        <div className="px-4 py-4 pb-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <label className="text-xs font-bold text-[var(--av-text-secondary)]">
+                {hi ? "खेत का रकबा (क्षेत्रफल)" : t("plannerArea")}
+              </label>
+              <p className="text-[11px] text-[var(--av-text-muted)]">
+                {hi ? "एकड़ में दर्ज करें या नीचे से चुनें" : "Enter in acres or select preset"}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/5 px-3 py-1.5 shadow-inner focus-within:border-emerald-600 focus-within:bg-white dark:focus-within:bg-slate-900">
               <input
                 type="number"
                 min={0.1}
@@ -837,12 +842,13 @@ export default function CropPlannerClient() {
                   setArea(e.target.value);
                   setGenerated(false);
                 }}
-                className="w-16 bg-transparent text-sm font-black text-[var(--av-text-primary)] outline-none"
+                className="w-16 bg-transparent text-right text-base font-extrabold text-[var(--av-text-primary)] outline-none"
+                aria-label={hi ? "रकबा एकड़ में" : "Area in acres"}
               />
-              <span className="text-[10px] font-bold text-[var(--av-text-muted)]">{acreUnit}</span>
+              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">{acreUnit}</span>
             </div>
           </div>
-          <div className="mt-2 grid grid-cols-4 gap-2">
+          <div className="mt-3 grid grid-cols-4 gap-2">
             {AREA_PRESETS.map((preset) => (
               <button
                 key={preset}
@@ -852,13 +858,13 @@ export default function CropPlannerClient() {
                   setGenerated(false);
                 }}
                 className={cn(
-                  "rounded-xl border py-2 text-[12px] font-extrabold",
+                  "rounded-xl border py-2.5 text-center text-[12px] font-extrabold transition-all active:scale-95",
                   area === preset
-                    ? "border-emerald-500 bg-emerald-600 text-white"
-                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]"
+                    ? "border-emerald-500 bg-emerald-600 text-white shadow-md shadow-emerald-700/20"
+                    : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-400"
                 )}
               >
-                {preset}
+                {preset} {acreUnit}
               </button>
             ))}
           </div>
@@ -866,7 +872,7 @@ export default function CropPlannerClient() {
       </motion.section>
 
       {/* Generate CTA */}
-      <section className="sticky bottom-24 z-20 overflow-hidden rounded-[1.5rem] border border-emerald-500/20 bg-white p-3 shadow-lg ring-1 ring-emerald-900/5 dark:bg-slate-900 lg:static lg:bottom-auto">
+      <section className="relative z-10 my-4 overflow-hidden rounded-[1.5rem] border border-emerald-500/20 bg-white p-3.5 shadow-md ring-1 ring-emerald-900/5 dark:bg-slate-900">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="px-2">
             <p className="text-[13px] font-bold leading-snug text-slate-800 dark:text-slate-200">

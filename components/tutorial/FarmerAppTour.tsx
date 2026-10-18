@@ -160,7 +160,15 @@ export default function FarmerAppTour({
       setIsOpen(true);
       return;
     }
-    setIsOpen(false);
+    try {
+      const seen = localStorage.getItem(TOUR_STORAGE_KEY);
+      if (!seen) {
+        setCurrentStep(0);
+        setIsOpen(true);
+      }
+    } catch {
+      /* ignore */
+    }
   }, [forceOpen]);
 
   const handleDismiss = () => {

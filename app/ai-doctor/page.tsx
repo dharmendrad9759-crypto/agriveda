@@ -74,6 +74,7 @@ export default function AIDoctorPage() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const secondInputRef = useRef<HTMLInputElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
   const { addEntry, history, clearHistory } = useAIHistory();
   const { showToast } = useToast();
   const [referringExpert, setReferringExpert] = useState(false);
@@ -84,6 +85,13 @@ export default function AIDoctorPage() {
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<DiagnosisResult | null>(null);
+
+  // Auto-scroll to result when diagnosis arrives
+  useEffect(() => {
+    if (result) {
+      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [result]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewUrl2, setPreviewUrl2] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
@@ -608,8 +616,8 @@ export default function AIDoctorPage() {
               const kind = guessDiagnosisKind(result, selectedCrop);
               const speechText = buildDiagnosisSpeechText(result);
               return (
-                <div className="rounded-3xl border border-slate-200/70 bg-[#F8F9FA] p-3 sm:p-4 dark:border-slate-800/80 dark:bg-slate-950/60 animate-fade-in">
-                  <div className="mb-3 flex items-center justify-between">
+                <div ref={resultRef} className="rounded-3xl border border-slate-200/70 bg-[#F8F9FA] p-2.5 sm:p-4 dark:border-slate-800/80 dark:bg-slate-950/60 animate-fade-in">
+                  <div className="mb-2.5 flex items-center justify-between">
                     <button
                       type="button"
                       onClick={handleReset}
@@ -621,16 +629,17 @@ export default function AIDoctorPage() {
                       🌾 {aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}
                     </span>
                   </div>
-                  {/* Card 1: Primary Diagnosis & Observations */}
-                  <div className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+
+                  {/* Card 1: Primary Diagnosis (Compact & Streamlined) */}
+                  <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-4">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-2">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
                           <Stethoscope className="h-4 w-4" />
                         </span>
                         <div>
-                          <h2 className="text-[15px] font-extrabold text-slate-900 dark:text-white">रोग पहचान रिपोर्ट</h2>
-                          <p className="text-[11px] text-[var(--av-text-muted)]">एआई डॉक्टर विश्लेषण</p>
+                          <h2 className="text-[14px] font-extrabold text-slate-900 dark:text-white">रोग पहचान रिपोर्ट</h2>
+                          <p className="text-[10px] text-[var(--av-text-muted)]">एआई डॉक्टर विश्लेषण</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -654,7 +663,7 @@ export default function AIDoctorPage() {
                             const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
                             if (typeof window !== "undefined") window.open(url, "_blank");
                           }}
-                          className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 px-2.5 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700/50 dark:bg-emerald-950/60 dark:text-emerald-200 transition"
+                          className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700/50 dark:bg-emerald-950/60 dark:text-emerald-200 transition"
                           title="WhatsApp पर शेयर करें"
                         >
                           <Share2 className="h-3.5 w-3.5" />
@@ -665,7 +674,7 @@ export default function AIDoctorPage() {
                           onClick={() => {
                             if (typeof window !== "undefined") window.print();
                           }}
-                          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
+                          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
                           title="PDF / प्रिंट करें"
                         >
                           <Printer className="h-3.5 w-3.5" />
@@ -675,126 +684,69 @@ export default function AIDoctorPage() {
                     </div>
 
                     {result.visualObservations && (
-                      <div className="mt-3.5 rounded-xl border border-slate-200/70 bg-slate-50/80 px-3.5 py-3 dark:border-slate-800 dark:bg-slate-800/50">
-                        <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
-                          {previewUrl ? "फोटो में क्या दिखा:" : "समस्या क्या दिखी:"}
-                        </p>
-                        <p className="mt-1 text-[13px] leading-relaxed text-slate-800 dark:text-slate-200">
+                      <div className="mt-2.5 rounded-xl border border-slate-200/70 bg-slate-50/80 px-3 py-2 text-[12px] dark:border-slate-800 dark:bg-slate-800/50">
+                        <span className="font-bold text-[var(--av-text-secondary)]">
+                          {previewUrl ? "फोटो में क्या दिखा: " : "समस्या क्या दिखी: "}
+                        </span>
+                        <span className="text-slate-800 dark:text-slate-200">
                           {simpleObservation(result.visualObservations)}
-                        </p>
+                        </span>
                       </div>
                     )}
 
-                    <div className="mt-3.5 rounded-2xl border border-rose-500/20 bg-rose-50/60 p-4 dark:bg-rose-950/20 sm:p-4.5">
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-2.5 py-0.5 text-[11px] font-extrabold text-rose-800 dark:bg-rose-900/50 dark:text-rose-300">
-                        {likelyThreatLabel(kind)}
+                    {/* Disease Name & Compact Badges (Replaces thick card and removes big severity/stage grid) */}
+                    <div className="mt-2.5 rounded-xl border border-rose-500/20 bg-rose-50/60 p-3 dark:bg-rose-950/20">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-extrabold text-rose-800 dark:bg-rose-900/50 dark:text-rose-300">
+                          {likelyThreatLabel(kind)}
+                        </span>
+                        {result.stage && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200/90 bg-white/90 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                            🌱 {result.stage}
+                          </span>
+                        )}
+                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-800 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+                          {severityHi(result.severity)}
+                        </span>
                       </div>
-                      <h3 className="mt-2 text-xl font-black text-slate-900 dark:text-white sm:text-2xl">
+
+                      <h3 className="mt-1.5 text-lg font-black text-slate-900 dark:text-white sm:text-xl">
                         {result.diseaseName}
                       </h3>
+
                       {result.pathogen && result.pathogen !== "—" ? (
-                        <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                        <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-400">
                           कारण: <span className="font-semibold text-amber-700 dark:text-amber-300">{result.pathogen}</span>
                         </p>
                       ) : null}
-                      {result.riskLevel && result.riskLevel !== "—" ? (
-                        <p className="mt-2 text-xs font-bold text-rose-600 dark:text-rose-400">
-                          खतरा स्तर: {result.riskLevel}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    <div className="mt-3.5 grid grid-cols-2 gap-2.5 text-center">
-                      <div className="rounded-xl border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-800/50">
-                        <p className="text-[11px] font-medium text-[var(--av-text-muted)]">गंभीरता (Severity)</p>
-                        <p className="mt-0.5 font-black text-rose-600 dark:text-rose-400">{severityHi(result.severity)}</p>
-                      </div>
-                      <div className="rounded-xl border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-800/50">
-                        <p className="text-[11px] font-medium text-[var(--av-text-muted)]">फसल अवस्था (Stage)</p>
-                        <p className="mt-0.5 font-black text-slate-900 dark:text-white">{result.stage}</p>
-                      </div>
                     </div>
                   </div>
 
-                  {/* Card 2: "यह क्यों हुआ?" (Causes & Why It Happens) */}
-                  <div className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
-                    <button
-                      type="button"
-                      onClick={() => setShowWhy(!showWhy)}
-                      className="flex w-full items-center justify-between text-left"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
-                          <ShieldCheck className="h-4.5 w-4.5" />
+                  {/* Card 2: "दवा व अनुशंसित मात्रा" (Medicines & Dosage — ELEVATED TO TOP!) */}
+                  <div className="mb-3 rounded-2xl border border-emerald-500/30 bg-white p-3.5 shadow-sm dark:border-emerald-500/30 dark:bg-slate-900 sm:p-4">
+                    <div className="flex items-center justify-between gap-2 pb-2 border-b border-emerald-500/15">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
+                          <Pill className="h-4 w-4" />
                         </span>
                         <div>
-                          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">यह क्यों हुआ?</h3>
-                          <p className="text-[11px] text-[var(--av-text-muted)]">रोग फैलने के कारण व अनुकूल मौसम</p>
+                          <h3 className="text-sm font-extrabold text-emerald-950 dark:text-emerald-200">
+                            दवा व अनुशंसित मात्रा (Treatment)
+                          </h3>
+                          <p className="text-[10px] text-emerald-800/80 dark:text-emerald-300/80 font-medium">
+                            खेत में तुरंत छिड़काव हेतु प्रमाणित दवाएँ
+                          </p>
                         </div>
                       </div>
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                        {showWhy ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 text-[9.5px] font-black text-emerald-800 dark:text-emerald-300">
+                        प्राथमिकता
                       </span>
-                    </button>
-                    {showWhy && (
-                      <ul className="mt-3.5 space-y-2 border-t border-slate-100 pt-3 dark:border-slate-800">
-                        {[
-                          ...result.whyItHappens,
-                          ...result.environmentalFactors,
-                        ]
-                          .map((w) => w.trim())
-                          .filter(Boolean)
-                          .map((w, i) => (
-                            <li key={i} className="rounded-xl bg-slate-50 p-2.5 text-xs font-medium leading-relaxed text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-                              • {w}
-                            </li>
-                          ))}
-                      </ul>
-                    )}
-                  </div>
-
-                  {/* Card 3: "समाधान" (Field Management & Cultural Actions) */}
-                  <div className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
-                    <div className="flex items-center gap-2.5 pb-2.5">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
-                        <Leaf className="h-4.5 w-4.5" />
-                      </span>
-                      <div>
-                        <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">समाधान</h3>
-                        <p className="text-[11px] text-[var(--av-text-muted)]">खेत में करने योग्य प्राथमिक उपाय</p>
-                      </div>
-                    </div>
-                    {result.treatments.length > 0 ? (
-                      <ul className="mt-2 space-y-2">
-                        {result.treatments.map((t, i) => (
-                          <li key={i} className="rounded-xl border border-emerald-500/15 bg-emerald-50/40 p-2.5 text-xs font-medium leading-relaxed text-slate-800 dark:bg-emerald-950/20 dark:text-slate-200">
-                            • {formatFarmerDose(t)}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="mt-2 text-xs text-[var(--av-text-muted)]">
-                        खेत के कदम नहीं मिले — नीचे दवा सेक्शन देखें।
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Card 4: "दवा व अनुशंसित मात्रा" (Medicines & Dosage) */}
-                  <div className="mb-4 rounded-2xl border border-emerald-500/20 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-emerald-500/30 dark:bg-slate-900 sm:p-5">
-                    <div className="flex items-center gap-2.5 pb-2.5">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white">
-                        <Pill className="h-4.5 w-4.5" />
-                      </span>
-                      <div>
-                        <h3 className="text-sm font-extrabold text-emerald-900 dark:text-emerald-300">दवा व अनुशंसित मात्रा</h3>
-                        <p className="text-[11px] text-[var(--av-text-muted)]">रासायनिक व जैविक उपचार खुराक</p>
-                      </div>
                     </div>
 
-                    <div className="mt-2.5 space-y-2.5">
+                    <div className="mt-2.5 space-y-2">
                       {result.activeIngredients.length > 0 ? (
                         result.activeIngredients.map((ai, i) => (
-                          <div key={i} className="rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-3 dark:bg-emerald-950/30">
+                          <div key={i} className="rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-2.5 dark:bg-emerald-950/30">
                             <div className="flex items-center justify-between gap-2">
                               <p className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
                                 {ai.name}
@@ -804,7 +756,7 @@ export default function AIDoctorPage() {
                               </span>
                             </div>
                             {ai.brands && ai.brands.length > 0 ? (
-                              <p className="mt-1.5 text-[11px] font-medium leading-snug text-slate-600 dark:text-slate-300">
+                              <p className="mt-1 text-[11px] font-medium leading-snug text-slate-600 dark:text-slate-300">
                                 <span className="font-semibold text-amber-800 dark:text-amber-400">बाज़ार में: </span>
                                 {ai.brands.join(" · ")}
                               </p>
@@ -821,13 +773,13 @@ export default function AIDoctorPage() {
                     </div>
 
                     {/* Water and per-acre guidance banner */}
-                    <div className="mt-3 rounded-xl bg-amber-500/10 border border-amber-500/25 p-2.5 text-[11px] font-bold text-amber-900 dark:text-amber-200">
-                      💧 1 एकड़ खेत के लिए पानी: अमूमन 150 से 200 लीटर साफ़ पानी में घोल बनाएँ (15 लीटर वाले नैपसैक पंप में 8–10 टंकी प्रति एकड़)। तेज धूप में छिड़काव न करें।
+                    <div className="mt-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 p-2 text-[10.5px] font-bold text-amber-900 dark:text-amber-200">
+                      💧 1 एकड़ खेत के लिए पानी: 150 से 200 लीटर साफ़ पानी (15L नैपसैक पंप में 8–10 टंकी)। तेज धूप में छिड़काव न करें।
                     </div>
 
                     {result.spraySticker ? (
-                      <div className="mt-3 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2.5 dark:bg-sky-950/20">
-                        <p className="text-[11px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
+                      <div className="mt-2 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2 dark:bg-sky-950/20">
+                        <p className="text-[10.5px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
                         <p className="mt-0.5 text-xs text-sky-900 dark:text-sky-200">
                           {formatFarmerDose(result.spraySticker)}
                         </p>
@@ -835,24 +787,78 @@ export default function AIDoctorPage() {
                     ) : null}
 
                     {result.recoveryTonics && result.recoveryTonics.length > 0 ? (
-                      <div className="mt-3 rounded-xl border border-amber-500/25 bg-amber-50/60 p-3 dark:bg-amber-950/20">
-                        <p className="text-xs font-bold text-amber-900 dark:text-amber-200">रिकवरी टॉनिक</p>
-                        <p className="mt-0.5 text-[10.5px] text-[var(--av-text-muted)]">
-                          {kind === "virus"
-                            ? "वायरस के बाद पौधा मज़बूत करने के लिए (वायरस की दवा नहीं)"
-                            : "रोग के बाद पौधा मज़बूत करने के लिए"}
-                        </p>
-                        <ul className="mt-1.5 space-y-1 text-xs text-amber-900 dark:text-amber-300">
+                      <div className="mt-2 rounded-xl border border-amber-500/25 bg-amber-50/60 p-2.5 dark:bg-amber-950/20">
+                        <p className="text-[11px] font-bold text-amber-900 dark:text-amber-200">रिकवरी टॉनिक</p>
+                        <ul className="mt-1 space-y-0.5 text-xs text-amber-900 dark:text-amber-300">
                           {result.recoveryTonics.map((tonic, i) => (
                             <li key={i}>• {formatFarmerDose(tonic)}</li>
                           ))}
                         </ul>
                       </div>
                     ) : null}
+                  </div>
 
-                    <p className="mt-3 text-[10.5px] leading-snug text-[var(--av-text-muted)]">
-                      ⚠️ दवा लगाते समय सुरक्षा किट पहनें व कंपनी का लेबल ध्यानपूर्वक पढ़ें।
-                    </p>
+                  {/* Card 3: "समाधान" (Field Management & Cultural Actions) */}
+                  <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-4">
+                    <div className="flex items-center gap-2 pb-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                        <Leaf className="h-4 w-4" />
+                      </span>
+                      <div>
+                        <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">खेत प्रबंधन व उपाय (समाधान)</h3>
+                        <p className="text-[10px] text-[var(--av-text-muted)]">खेत में करने योग्य प्राथमिक उपाय</p>
+                      </div>
+                    </div>
+                    {result.treatments.length > 0 ? (
+                      <ul className="mt-1 space-y-1.5">
+                        {result.treatments.map((t, i) => (
+                          <li key={i} className="rounded-xl border border-emerald-500/15 bg-emerald-50/40 p-2 text-xs font-medium leading-relaxed text-slate-800 dark:bg-emerald-950/20 dark:text-slate-200">
+                            • {formatFarmerDose(t)}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mt-1 text-xs text-[var(--av-text-muted)]">
+                        खेत के कदम नहीं मिले — ऊपर दवा सेक्शन देखें।
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Card 4: "यह क्यों हुआ?" (Causes & Why It Happens — Collapsible) */}
+                  <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowWhy(!showWhy)}
+                      className="flex w-full items-center justify-between text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                          <ShieldCheck className="h-4 w-4" />
+                        </span>
+                        <div>
+                          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">यह क्यों हुआ? (कारण)</h3>
+                          <p className="text-[10px] text-[var(--av-text-muted)]">रोग फैलने के कारण व अनुकूल मौसम</p>
+                        </div>
+                      </div>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        {showWhy ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                      </span>
+                    </button>
+                    {showWhy && (
+                      <ul className="mt-2.5 space-y-1.5 border-t border-slate-100 pt-2.5 dark:border-slate-800">
+                        {[
+                          ...result.whyItHappens,
+                          ...result.environmentalFactors,
+                        ]
+                          .map((w) => w.trim())
+                          .filter(Boolean)
+                          .map((w, i) => (
+                            <li key={i} className="rounded-xl bg-slate-50 p-2 text-xs font-medium leading-relaxed text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+                              • {w}
+                            </li>
+                          ))}
+                      </ul>
+                    )}
                   </div>
 
                   {/* Card 5: Next Steps & Expert Referral */}

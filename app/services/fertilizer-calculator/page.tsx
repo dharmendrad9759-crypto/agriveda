@@ -184,6 +184,7 @@ function FertilizerCalculatorInner() {
       title="खाद कैलकुलेटर"
       subtitle={step === "ask" ? "फसल चुनें" : `${cropHi} · ${areaLabel} एकड़`}
       backHref={backHref}
+      hubTheme="green"
     >
       <div className="mx-auto max-w-lg space-y-3 pb-24">
         <AnimatePresence mode="wait" initial={false}>

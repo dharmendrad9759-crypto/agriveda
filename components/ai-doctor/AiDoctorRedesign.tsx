@@ -166,7 +166,7 @@ export function AiDoctorCropSelect({
 
   return (
     <DarkCard className="!p-3 sm:!p-4">
-      <SectionLabel title="फसल चुनें" step={2} />
+      <SectionLabel title="फसल चुनें" />
       <div className="-mx-0.5 flex gap-2 overflow-x-auto px-0.5 pb-1 scrollbar-hide">
         <CropPickerButton
           active={otherActive}
@@ -306,7 +306,6 @@ export function AiDoctorSymptoms({
     <DarkCard className="!p-3 sm:!p-4 space-y-3">
       <SectionLabel
         title="लक्षण व खेत की स्थिति"
-        step={3}
         hint="सटीक पहचान के लिए हिस्सा व गंभीरता चुनें (वैकल्पिक)"
       />
 
@@ -444,7 +443,6 @@ export function AiDoctorPhotoUpload({
       <div className="mb-2 flex items-center justify-between gap-2">
         <SectionLabel
           title="फोटो लो"
-          step={1}
           hint="रोगग्रस्त पत्ती या पौधे की साफ़ फोटो लें"
         />
         {hasPreview && onClear && (
@@ -483,7 +481,7 @@ export function AiDoctorPhotoUpload({
 
             {/* Floating Scanner Badge */}
             <div className="pointer-events-none absolute top-2.5 inset-x-0 z-20 flex justify-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1 text-[10.5px] font-bold text-emerald-300 backdrop-blur-md border border-emerald-500/40 shadow-sm">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-black/75 px-3 py-1 text-[10.5px] font-bold text-emerald-300 backdrop-blur-md border border-emerald-500/40 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
                 <span>कैमरा जाँच सक्रिय · पत्ती स्कैन हो रही है</span>
               </span>
@@ -762,25 +760,25 @@ export function AiDoctorRecentDiagnoses({
                     {/* Report details */}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-1.5">
-                        <span className="text-[10px] font-extrabold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-                          हेल्थ रिपोर्ट
+                        <span className="text-[11px] font-bold text-[var(--av-text-muted)]">
+                          {h.result.cropContext || "जाँच रिपोर्ट"}
                         </span>
 
                         {/* Color-coded severity badge */}
                         {severityLevel === "high" ? (
                           <span className="inline-flex items-center gap-1 rounded-full border border-rose-300 bg-rose-50 px-2 py-0.5 text-[10px] font-black text-rose-700 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
                             <span className="h-1.5 w-1.5 rounded-full bg-rose-600 animate-pulse" />
-                            गंभीर (High)
+                            गंभीर
                           </span>
                         ) : severityLevel === "medium" ? (
                           <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-800 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
                             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                            मध्यम (Medium)
+                            मध्यम
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                            सुरक्षित (Low)
+                            कम
                           </span>
                         )}
                       </div>
@@ -789,23 +787,16 @@ export function AiDoctorRecentDiagnoses({
                         {h.result.diseaseName}
                       </h4>
 
-                      <p className="mt-0.5 truncate text-[11px] font-medium text-[var(--av-text-secondary)]">
-                        {h.result.cropContext || h.result.pathogen || "जांच रिपोर्ट"}
-                      </p>
+                      {h.result.pathogen && h.result.pathogen !== "—" ? (
+                        <p className="mt-0.5 truncate text-[11px] font-medium text-[var(--av-text-secondary)]">
+                          {h.result.pathogen}
+                        </p>
+                      ) : null}
 
                       <div className="mt-1 flex items-center justify-between text-[11px]">
                         <span className="font-bold text-emerald-700 hover:underline dark:text-emerald-400">
                           पूरी रिपोर्ट व दवा देखें →
                         </span>
-                        {h.result.confidence ? (
-                          <span className="text-[10px] text-[var(--av-text-muted)]">
-                            {(() => {
-                              const c = Number(h.result.confidence);
-                              const pct = Math.min(99, Math.max(1, Math.round(c <= 1 ? c * 100 : c)));
-                              return `${pct}% अनुमान`;
-                            })()}
-                          </span>
-                        ) : null}
                       </div>
                     </div>
                   </div>

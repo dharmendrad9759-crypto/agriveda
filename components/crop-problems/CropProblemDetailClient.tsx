@@ -107,13 +107,13 @@ function splitLines(text: string, max = 3, kind: "see" | "do" | "warn" = "do"): 
 
 function MiniPoints({ items }: { items: string[] }) {
   return (
-    <ul className="mt-2.5 space-y-2">
+    <ul className="mt-2 space-y-1.5">
       {items.map((item, idx) => (
         <li
           key={`${item}-${idx}`}
-          className="flex items-start gap-2.5 rounded-xl bg-emerald-500/10 px-3 py-2 text-[13px] font-semibold leading-snug text-emerald-950 dark:text-emerald-100"
+          className="flex items-start gap-2 rounded-xl bg-emerald-500/10 px-2.5 py-1.5 text-[12px] font-semibold leading-snug text-emerald-950 dark:text-emerald-100"
         >
-          <span aria-hidden className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+          <span aria-hidden className="mt-[5px] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
           <span>{item}</span>
         </li>
       ))}
@@ -311,27 +311,27 @@ export default function CropProblemDetailClient({
         </div>
 
         {/* 🌟 1. PRIORITY #1: डॉक्टर की अनुशंसित दवा व सही डोज़ (Chemical & Tank Dose First) */}
-        <MockCard className="!border-emerald-500/35 !bg-gradient-to-b !from-emerald-50/60 !to-white dark:!from-slate-900 dark:!to-slate-900/95 !p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
+        <MockCard className="!border-emerald-500/35 !bg-gradient-to-b !from-emerald-50/60 !to-white dark:!from-slate-900 dark:!to-slate-900/95 !p-3 sm:!p-3.5 shadow-sm">
+          <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-700 text-white text-xs font-black shadow-xs">
+              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-700 text-white text-[11px] font-black shadow-xs">
                 1
               </span>
               <div>
-                <h2 className="text-sm font-black text-emerald-950 dark:text-emerald-100">
+                <h2 className="text-[13.5px] font-black text-emerald-950 dark:text-emerald-100">
                   डॉक्टर की अनुशंसित दवा व सही डोज़ (Treatment)
                 </h2>
-                <p className="text-[10.5px] font-bold text-emerald-800 dark:text-emerald-300">
+                <p className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
                   खेत में तुरंत असर करने वाली प्रमाणित दवाएँ
                 </p>
               </div>
             </div>
-            <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 text-[9.5px] font-black text-emerald-800 dark:text-emerald-300">
+            <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 text-[9px] font-black text-emerald-800 dark:text-emerald-300">
               सटीक नाप
             </span>
           </div>
 
-          <div className="space-y-3 mt-3">
+          <div className="space-y-2.5 mt-2">
             {chemItems.map((c, i) => {
               const parsed = parseFarmerDose(c.dose);
               const isExpanded = Boolean(expandedOptions[i]);
@@ -344,31 +344,31 @@ export default function CropProblemDetailClient({
                   {/* Collapsible Header */}
                   <div
                     onClick={() => toggleOption(i)}
-                    className="flex cursor-pointer items-start justify-between gap-3 p-3.5 transition hover:bg-emerald-50/40 dark:hover:bg-slate-800/40"
+                    className="flex cursor-pointer items-start justify-between gap-2.5 p-2.5 sm:p-3 transition hover:bg-emerald-50/40 dark:hover:bg-slate-800/40"
                   >
                     <div className="flex items-start gap-2.5 min-w-0 flex-1">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`inline-block rounded-md px-2 py-0.5 text-[9.5px] font-black text-white shadow-2xs ${
+                            className={`inline-block rounded-md px-1.5 py-0.5 text-[9px] font-black text-white shadow-2xs ${
                               i === 0 ? "bg-emerald-700" : "bg-slate-700 dark:bg-slate-800"
                             }`}
                           >
                             {i === 0 ? "🌟 पहली पसंद (Best Choice)" : `विकल्प ${i + 1}`}
                           </span>
-                          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                          <span className="text-[9.5px] font-bold text-slate-500 dark:text-slate-400">
                             टेक्निकल सॉल्ट
                           </span>
                         </div>
 
                         {/* Prominent Technical Name */}
-                        <h3 className="text-[15px] sm:text-[16px] font-black tracking-tight text-slate-950 dark:text-white leading-snug mt-1 font-mono sm:font-sans">
+                        <h3 className="text-[14.5px] sm:text-[15.5px] font-black tracking-tight text-slate-950 dark:text-white leading-snug mt-0.5 font-mono sm:font-sans">
                           {c.technical}
                         </h3>
 
                         {/* Hindi Name */}
                         {c.nameHi && (
-                          <p className="text-[12px] font-bold text-emerald-800 dark:text-emerald-300 mt-0.5">
+                          <p className="text-[11.5px] font-bold text-emerald-800 dark:text-emerald-300 mt-0.5">
                             {c.nameHi.replace(/\s*\((?!.*(?:उपचार|समय|गोभ|डालें))[^)]*\)\s*/g, " ").trim()}
                           </p>
                         )}
@@ -381,7 +381,7 @@ export default function CropProblemDetailClient({
                         e.stopPropagation();
                         toggleOption(i);
                       }}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 transition hover:bg-emerald-500/20 active:scale-95"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 transition hover:bg-emerald-500/20 active:scale-95"
                       aria-label={isExpanded ? "Collapse" : "Expand"}
                     >
                       {isExpanded ? (
@@ -394,13 +394,13 @@ export default function CropProblemDetailClient({
 
                   {/* Expanded Body Details */}
                   {isExpanded && (
-                    <div className="border-t border-emerald-900/8 px-3.5 pb-3.5 pt-3 space-y-3 animate-in fade-in duration-200">
-                      <div className="flex items-start gap-3">
+                    <div className="border-t border-emerald-900/8 px-3 pb-3 pt-2.5 space-y-2.5 animate-in fade-in duration-200">
+                      <div className="flex items-start gap-2.5">
                         <ChemBottleThumb technical={c.technical} size="md" className="rounded-xl shrink-0 mt-0.5 shadow-xs" />
                         <div className="min-w-0 flex-1">
                           {/* 3 Prominent Stat Pills tailored to application method */}
-                          <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-2.5 space-y-2">
-                            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                          <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-2 space-y-1.5">
+                            <div className="flex items-center justify-between text-[9.5px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
                               <span className="flex items-center gap-1.5">
                                 <span className="h-2 w-2 rounded-full bg-amber-600 animate-pulse" />
                                 <span>सटीक डोज़ — {parsed.methodLabel}:</span>
@@ -411,43 +411,43 @@ export default function CropProblemDetailClient({
                             <div className="grid grid-cols-3 gap-1.5 text-center">
                               {/* Pill 1 */}
                               <div
-                                className={`rounded-xl bg-white dark:bg-slate-900 border-2 p-2 shadow-xs ${
+                                className={`rounded-xl bg-white dark:bg-slate-900 border-2 p-1.5 shadow-xs ${
                                   parsed.isSpray ? "border-emerald-600/40" : "border-amber-600/40"
                                 }`}
                               >
-                                <span className="block text-[9px] font-black uppercase text-emerald-800 dark:text-emerald-300">
+                                <span className="block text-[8.5px] font-black uppercase text-emerald-800 dark:text-emerald-300">
                                   {parsed.pill1.icon} {parsed.pill1.label}
                                 </span>
-                                <span className="block text-[12px] sm:text-[13px] font-black text-emerald-950 dark:text-emerald-100 mt-0.5 leading-tight">
+                                <span className="block text-[11.5px] sm:text-[12.5px] font-black text-emerald-950 dark:text-emerald-100 mt-0.5 leading-tight">
                                   {parsed.pill1.value}
                                 </span>
-                                <span className="block text-[8.5px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                                <span className="block text-[8px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
                                   {parsed.pill1.subtext}
                                 </span>
                               </div>
 
                               {/* Pill 2 */}
-                              <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/30 p-2 shadow-2xs">
-                                <span className="block text-[9px] font-black uppercase text-amber-800 dark:text-amber-300">
+                              <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/30 p-1.5 shadow-2xs">
+                                <span className="block text-[8.5px] font-black uppercase text-amber-800 dark:text-amber-300">
                                   {parsed.pill2.icon} {parsed.pill2.label}
                                 </span>
-                                <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
+                                <span className="block text-[11.5px] sm:text-[12.5px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
                                   {parsed.pill2.value}
                                 </span>
-                                <span className="block text-[8.5px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                                <span className="block text-[8px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
                                   {parsed.pill2.subtext}
                                 </span>
                               </div>
 
                               {/* Pill 3 */}
-                              <div className="rounded-xl bg-white dark:bg-slate-900 border border-sky-500/35 p-2 shadow-2xs">
-                                <span className="block text-[9px] font-black uppercase text-sky-800 dark:text-sky-300">
+                              <div className="rounded-xl bg-white dark:bg-slate-900 border border-sky-500/35 p-1.5 shadow-2xs">
+                                <span className="block text-[8.5px] font-black uppercase text-sky-800 dark:text-sky-300">
                                   {parsed.pill3.icon} {parsed.pill3.label}
                                 </span>
-                                <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
+                                <span className="block text-[11.5px] sm:text-[12.5px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
                                   {parsed.pill3.value}
                                 </span>
-                                <span className="block text-[8.5px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                                <span className="block text-[8px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
                                   {parsed.pill3.subtext}
                                 </span>
                               </div>
@@ -458,21 +458,21 @@ export default function CropProblemDetailClient({
 
                       {/* Market Brands */}
                       {c.brands && c.brands.length > 0 && (
-                        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-[11.5px]">
+                        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1.5 text-[11px]">
                           <span className="font-black text-emerald-950 dark:text-emerald-100">🏷️ बाज़ार में प्रसिद्ध ब्रांड्स: </span>
                           <span className="font-bold text-emerald-800 dark:text-emerald-200">{c.brands.join(" · ")}</span>
                         </div>
                       )}
 
                       {/* Practical Agronomist Doctor Advice */}
-                      <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5 text-[11.5px] space-y-1">
+                      <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2 text-[11px] space-y-0.5">
                         <p className="font-bold text-slate-800 dark:text-slate-200">
                           💡 <span className="font-semibold">{parsed.doctorTip}</span>
                         </p>
                         {c.safety &&
                           !parsed.doctorTip.includes(c.safety) &&
                           !/(?:स्प्रे\s*(?:नहीं|न\s*करें)|बालू|रेत|टंकी\s*की\s*ज़रूरत\s*नहीं)/i.test(c.safety) && (
-                            <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                            <p className="text-[10.5px] text-slate-600 dark:text-slate-400 font-medium">
                               सुरक्षा निर्देश: {c.safety}
                             </p>
                           )}
@@ -500,40 +500,40 @@ export default function CropProblemDetailClient({
         </MockCard>
 
         {/* 2. खेत में कैसे पहचानें (लक्षण — 150-Word UPSC Precision) */}
-        <MockCard className="!p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-800 dark:text-emerald-300 text-xs font-black">
+        <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-800 dark:text-emerald-300 text-[11px] font-black">
               2
             </span>
-            <h2 className="text-sm font-black text-[#0B3D28] dark:text-emerald-200">
+            <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
               खेत में लक्षण व पहचान (लक्षण)
             </h2>
           </div>
-          <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+          <p className="text-[10.5px] font-medium text-slate-600 dark:text-slate-300">
             खेत में पौधे को ध्यान से देखें — ये प्रमुख संकेत दिखाई देंगे:
           </p>
           <MiniPoints items={symptomsList} />
         </MockCard>
 
         {/* 3. यह क्यों फैला और नुकसान का समय (कारण) */}
-        <MockCard className="!p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-600/10 text-amber-800 dark:text-amber-300 text-xs font-black">
+        <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-amber-600/10 text-amber-800 dark:text-amber-300 text-[11px] font-black">
               3
             </span>
-            <h2 className="text-sm font-black text-[#0B3D28] dark:text-emerald-200">
+            <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
               यह क्यों हुआ और नुकसान का समय (कारण)
             </h2>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
+              <p className="text-[10.5px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
                 फैलाव के मुख्य कारण:
               </p>
               <MiniPoints items={causesList} />
             </div>
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-              <p className="text-[11px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-300">
+            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800">
+              <p className="text-[10.5px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-300">
                 तुरंत कदम उठाएँ:
               </p>
               <MiniPoints items={timingList} />
@@ -543,16 +543,16 @@ export default function CropProblemDetailClient({
 
         {/* 4. जैविक व देसी उपाय (Organic) */}
         {organicPoints.length > 0 && (
-          <MockCard className="!p-4 shadow-sm">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-600/10 text-teal-800 dark:text-teal-300 text-xs font-black">
+          <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-teal-600/10 text-teal-800 dark:text-teal-300 text-[11px] font-black">
                 4
               </span>
-              <h2 className="text-sm font-black text-[#0B3D28] dark:text-emerald-200">
+              <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
                 जैविक व देसी उपाय (Organic Alternative)
               </h2>
             </div>
-            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+            <p className="text-[10.5px] font-medium text-slate-600 dark:text-slate-300">
               शुरुआती रोकथाम या बिना केमिकल के बचाव के लिए:
             </p>
             <MiniPoints items={organicPoints} />
@@ -560,25 +560,25 @@ export default function CropProblemDetailClient({
         )}
 
         {/* 5. आगे के लिए रोकथाम व सुझाव */}
-        <MockCard className="!p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-600/10 text-sky-800 dark:text-sky-300 text-xs font-black">
+        <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-sky-600/10 text-sky-800 dark:text-sky-300 text-[11px] font-black">
               5
             </span>
-            <h2 className="text-sm font-black text-[#0B3D28] dark:text-emerald-200">
+            <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
               सावधानियां व आगे के लिए बचाव (Precautions)
             </h2>
           </div>
-          <ul className="mt-2.5 space-y-2 text-[12.5px] font-medium text-slate-700 dark:text-slate-300">
-            <li className="flex items-start gap-2">
+          <ul className="mt-2 space-y-1.5 text-[12px] font-medium text-slate-700 dark:text-slate-300">
+            <li className="flex items-start gap-1.5">
               <span className="text-emerald-600 font-black">✓</span>
               <span><strong>छिड़काव का सही समय:</strong> सुबह 10 बजे से पहले या शाम 4 बजे के बाद ही स्प्रे करें, तेज धूप में दवा उड़ जाती है।</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-1.5">
               <span className="text-emerald-600 font-black">✓</span>
               <span><strong>साफ़ पानी:</strong> हमेशा कुएं या ट्यूबवेल के साफ़ पानी का इस्तेमाल करें; गंदे तालाब के पानी से दवा का असर खत्म हो जाता है।</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-1.5">
               <span className="text-emerald-600 font-black">✓</span>
               <span><strong>कटाई से पूर्व अंतर (PHI):</strong> कटाई से कम से कम 15–20 दिन पहले छिड़काव बंद कर दें।</span>
             </li>

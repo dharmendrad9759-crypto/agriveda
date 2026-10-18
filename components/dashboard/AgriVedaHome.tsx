@@ -36,6 +36,7 @@ import { cn } from "@/lib/cn";
 import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import { speakFarmer } from "@/components/ui/SpeakButton";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
+import FarmerAppTour from "@/components/tutorial/FarmerAppTour";
 
 
 
@@ -352,6 +353,7 @@ export default function AgriVedaHome() {
 
   return (
     <div className="relative mx-auto min-w-0 max-w-lg overflow-x-hidden pb-2">
+      <FarmerAppTour />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-[-20px] top-0 h-[280px] overflow-hidden"

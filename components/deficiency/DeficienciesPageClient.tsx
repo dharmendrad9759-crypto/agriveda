@@ -204,7 +204,7 @@ export default function DeficienciesPageClient() {
               p.tone
             )}
           >
-            <div className="relative aspect-[4/3] w-full bg-emerald-500/5">
+            <div className="relative aspect-[16/10] w-full bg-emerald-500/5">
               {p.imageSrc ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -221,16 +221,16 @@ export default function DeficienciesPageClient() {
                 />
               )}
             </div>
-            <div className="p-3">
-              <p className="text-[14px] font-bold leading-snug text-[var(--av-text-primary)]">
+            <div className="p-2.5">
+              <p className="text-[13px] font-extrabold leading-snug text-[var(--av-text-primary)]">
                 {isHi ? p.hi : p.en}
               </p>
-              <p className="mt-1 text-[11px] font-medium text-[var(--av-text-muted)]">
+              <p className="mt-0.5 text-[10.5px] font-medium text-[var(--av-text-muted)]">
                 {isHi ? p.hintHi : p.hintEn}
               </p>
-              <span className="mt-2 inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
+              <span className="mt-1.5 inline-flex items-center gap-0.5 text-[10.5px] font-bold text-emerald-800 dark:text-emerald-200">
                 {isHi ? "देखो" : "See"}
-                <ChevronRight className="h-3.5 w-3.5" />
+                <ChevronRight className="h-3 w-3" />
               </span>
             </div>
           </AppLink>

@@ -25,6 +25,7 @@ import {
   X,
 } from "lucide-react";
 import AppShell from "@/components/shell/AppShell";
+import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import { CROP_PROBLEM_CROPS, type CropProblemItem } from "@/data/crop-curative-problems";
@@ -64,7 +65,7 @@ const STAGE_ICON = {
   fruiting: Apple,
 } as const;
 
-const MAX_PROBLEMS = 3;
+const MAX_PROBLEMS = 4;
 
 function Stepper({ step }: { step: StepId }) {
   const idx = STEPS.findIndex((s) => s.id === step);
@@ -119,6 +120,7 @@ function Stepper({ step }: { step: StepId }) {
 function MixAdvisorInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
   const [step, setStep] = useState<StepId>("problem");
   const [cropSlug, setCropSlug] = useState("tomato");
   const [stage, setStage] = useState<GrowthStageId>("fruiting");
@@ -127,28 +129,44 @@ function MixAdvisorInner() {
   const [plan, setPlan] = useState<MixPlan | null>(null);
   const [cropGridOpen, setCropGridOpen] = useState(false);
 
+  // Single-step back navigation
+  const handleBackStep = () => {
+    if (step === "guide") {
+      setStep("mix");
+    } else if (step === "mix") {
+      setStep("weather");
+    } else if (step === "weather") {
+      setStep("problem");
+    } else {
+      router.push("/dashboard");
+    }
+  };
+
   // Scroll to top on step change
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [step]);
 
-  // Restore step and mix state if returning from spray rotation log
+  // Restore step and mix state only if returning with step=guide or restore query
   useEffect(() => {
     try {
       const urlStep = searchParams?.get("step");
-      const saved = sessionStorage.getItem("agriveda_mix_state");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.cropSlug) setCropSlug(parsed.cropSlug);
-        if (parsed.stage) setStage(parsed.stage);
-        if (parsed.problemIds && Array.isArray(parsed.problemIds)) setProblemIds(parsed.problemIds);
-        if (parsed.meds && Array.isArray(parsed.meds) && parsed.meds.length > 0) setMeds(parsed.meds);
-        if (parsed.plan) setPlan(parsed.plan);
-        if (urlStep === "guide" || parsed.step === "guide") {
-          setStep("guide");
+      const urlRestore = searchParams?.get("restore");
+      if (urlStep === "guide" || urlRestore) {
+        const saved = sessionStorage.getItem("agriveda_mix_state");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.cropSlug) setCropSlug(parsed.cropSlug);
+          if (parsed.stage) setStage(parsed.stage);
+          if (parsed.problemIds && Array.isArray(parsed.problemIds) && parsed.problemIds.length > 0) {
+            setProblemIds(parsed.problemIds);
+          }
+          if (parsed.meds && Array.isArray(parsed.meds) && parsed.meds.length > 0) setMeds(parsed.meds);
+          if (parsed.plan) setPlan(parsed.plan);
+          if (urlStep === "guide" || parsed.step === "guide") {
+            setStep("guide");
+          }
         }
-      } else if (urlStep === "guide") {
-        setStep("guide");
       }
     } catch {}
   }, [searchParams]);
@@ -233,11 +251,15 @@ function MixAdvisorInner() {
   const toggleProblem = (id: string) => {
     setProblemIds((prev) => {
       if (prev.includes(id)) {
-        if (prev.length <= 1) return prev;
+        if (prev.length <= 1) {
+          showToast("कम से कम 1 समस्या चुनना ज़रूरी है।", "error");
+          return prev;
+        }
         return prev.filter((x) => x !== id);
       }
       if (prev.length >= MAX_PROBLEMS) {
-        return [...prev.slice(1), id];
+        showToast("आप अधिकतम 4 समस्याएँ चुन सकते हैं।", "error");
+        return prev;
       }
       return [...prev, id];
     });
@@ -344,7 +366,12 @@ function MixAdvisorInner() {
   const displayItems = plan ? tankItems(plan, meds) : meds;
 
   return (
-    <AppShell variant="hub" title="दवा मिलाएँ (Tank Mix Advisor)" backHref="/dashboard">
+    <AppShell
+      variant="hub"
+      title="दवा मिलाएँ (Tank Mix Advisor)"
+      backHref="/dashboard"
+      onBack={handleBackStep}
+    >
       <div className="mx-auto max-w-xl space-y-4 px-2 pb-12">
         <Stepper step={step} />
 

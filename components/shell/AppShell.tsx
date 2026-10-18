@@ -26,8 +26,10 @@ interface AppShellProps {
   className?: string;
   variant?: AppShellVariant;
   backHref?: string;
+  onBack?: () => void;
   badge?: string;
   hubPremium?: boolean;
+  hubTheme?: "default" | "amber" | "green";
 }
 
 export default function AppShell({
@@ -40,15 +42,23 @@ export default function AppShell({
   className = "",
   variant = "default",
   backHref,
+  onBack,
   badge = "AGRIVEDA",
   hubPremium = false,
+  hubTheme = "default",
 }: AppShellProps) {
   const router = useRouter();
   const reduced = useReducedMotion();
   const Comp = reduced ? "div" : motion.div;
   const isHub = variant === "hub";
+  const isGreenHub = hubTheme === "green";
+  const isAmberHub = hubPremium || hubTheme === "amber";
   const resolvedBackHref = backHref ?? "/";
   const handleBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     // Prefer history back so "open page -> open next page -> back" behaves naturally.
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back();
@@ -65,7 +75,9 @@ export default function AppShell({
           <header
             className={cn(
               "sticky top-0 z-40 border-b backdrop-blur-xl",
-              hubPremium
+              isGreenHub
+                ? "border-emerald-500/25 bg-gradient-to-r from-[#063321] via-[#042618] to-[#021810] text-white shadow-md shadow-emerald-950/40"
+                : isAmberHub
                 ? "border-amber-500/15 bg-stone-950/90"
                 : "border-emerald-500/15 bg-[var(--background)]/92"
             )}
@@ -75,8 +87,10 @@ export default function AppShell({
                     type="button"
                     onClick={handleBack}
                     className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border active:scale-95",
-                      hubPremium
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border active:scale-95 transition",
+                      isGreenHub
+                        ? "border-emerald-400/30 bg-white/10 text-emerald-200 hover:bg-white/20"
+                        : isAmberHub
                         ? "border-amber-500/25 bg-amber-500/5 text-amber-400"
                         : "border-emerald-500/25 bg-emerald-500/5 text-emerald-600"
                     )}
@@ -87,12 +101,12 @@ export default function AppShell({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <Sparkles
-                    className={cn("h-3.5 w-3.5", hubPremium ? "text-amber-500" : "text-emerald-500")}
+                    className={cn("h-3.5 w-3.5", isGreenHub ? "text-emerald-300" : isAmberHub ? "text-amber-500" : "text-emerald-500")}
                   />
                   <span
                     className={cn(
-                      "text-[10px] font-bold tracking-wide",
-                      hubPremium ? "text-amber-500" : "text-emerald-600"
+                      "text-[10px] font-black tracking-wide",
+                      isGreenHub ? "text-emerald-300" : isAmberHub ? "text-amber-500" : "text-emerald-600"
                     )}
                   >
                     {badge}
@@ -102,7 +116,7 @@ export default function AppShell({
                   <h1
                     className={cn(
                       "truncate text-base font-extrabold",
-                      hubPremium ? "text-amber-50" : "text-[var(--av-text-primary)]"
+                      isGreenHub ? "text-white" : isAmberHub ? "text-amber-50" : "text-[var(--av-text-primary)]"
                     )}
                   >
                     {title}
@@ -112,7 +126,7 @@ export default function AppShell({
                   <p
                     className={cn(
                       "truncate text-[11px]",
-                      hubPremium ? "text-amber-200/60" : "text-[var(--av-text-muted)]"
+                      isGreenHub ? "text-emerald-200/80 font-medium" : isAmberHub ? "text-amber-200/60" : "text-[var(--av-text-muted)]"
                     )}
                   >
                     {subtitle}

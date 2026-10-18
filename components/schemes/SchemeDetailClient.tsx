@@ -6,7 +6,6 @@ import { notFound, useRouter } from "next/navigation";
 import {
   AlertCircle,
   AlertTriangle,
-  ArrowLeft,
   ArrowRight,
   Building2,
   Check,
@@ -188,27 +187,17 @@ export default function SchemeDetailClient({ id }: { id: string }) {
     >
       <div className="space-y-4 pb-32">
         {/* Navigation & Header Bar */}
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 text-[12px] font-bold text-[var(--av-text-secondary)] shadow-sm transition active:scale-95 hover:text-[var(--av-text-primary)]"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>{hi ? "पीछे जाएँ" : "Back"}</span>
-          </button>
-
-          <div className="flex items-center gap-2">
-            <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
-              {hi ? (scheme.level === "central" ? "🇮🇳 केंद्र सरकार" : "🏛️ राज्य सरकार") : scheme.level}
+        {/* Verification & Level Badges */}
+        <div className="flex items-center justify-end gap-2">
+          <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+            {hi ? (scheme.level === "central" ? "🇮🇳 केंद्र सरकार" : "🏛️ राज्य सरकार") : scheme.level}
+          </span>
+          {official && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-800 dark:text-blue-300">
+              <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              <span>{hi ? "सत्यापित" : "Verified"}</span>
             </span>
-            {official && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-800 dark:text-blue-300">
-                <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                <span>{hi ? "सत्यापित" : "Verified"}</span>
-              </span>
-            )}
-          </div>
+          )}
         </div>
 
         {/* Hero Card */}
