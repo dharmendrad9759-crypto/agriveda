@@ -46,6 +46,7 @@ import {
     releasePendingScanLock,
 } from "@/lib/pendingAiScan";
 import {
+    Camera,
     ChevronDown,
     ChevronUp,
     Leaf,
@@ -60,6 +61,42 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
+import { CROP_PROBLEM_CROPS } from "@/data/crop-curative-problems";
+import { cn } from "@/lib/cn";
+
+/** Look up verified reference field image from app's problem catalog */
+function findReferenceThreat(
+  diseaseName: string,
+  cropSlug?: string
+): { nameHi: string; image: string } | null {
+  if (!diseaseName) return null;
+  const dNorm = diseaseName.toLowerCase().replace(/[^a-z0-9\u0900-\u097F]/g, "");
+
+  const allProblems = CROP_PROBLEM_CROPS.flatMap((c) =>
+    c.problems.map((p) => ({
+      ...p,
+      isSameCrop: cropSlug ? c.slug === cropSlug : false,
+    }))
+  ).sort((a, b) => (b.isSameCrop ? 1 : 0) - (a.isSameCrop ? 1 : 0));
+
+  for (const p of allProblems) {
+    const pHi = p.nameHi.toLowerCase().replace(/[^a-z0-9\u0900-\u097F]/g, "");
+    const pEn = p.nameEn.toLowerCase().replace(/[^a-z0-9\u0900-\u097F]/g, "");
+    const pId = p.id.toLowerCase().replace(/-/g, "");
+
+    if (
+      (pHi.length >= 3 && dNorm.includes(pHi)) ||
+      (dNorm.length >= 3 && pHi.includes(dNorm)) ||
+      (pEn.length >= 3 && dNorm.includes(pEn)) ||
+      (dNorm.length >= 3 && pEn.includes(dNorm)) ||
+      (pId.length >= 3 && dNorm.includes(pId))
+    ) {
+      return { nameHi: p.nameHi, image: p.image };
+    }
+  }
+  return null;
+}
 
 /** Keep photo notes farmer-simple — drop English (jargon) parentheses. */
 function simpleObservation(text: string): string {
@@ -623,6 +660,11 @@ export default function AIDoctorPage() {
             {result && !isScanning && (() => {
               const kind = guessDiagnosisKind(result, selectedCrop);
               const speechText = buildDiagnosisSpeechText(result);
+              const referenceThreat = findReferenceThreat(result.diseaseName, selectedCrop);
+              const hasUserPhoto = Boolean(previewUrl);
+              const hasSecondPhoto = Boolean(previewUrl2);
+              const hasRefPhoto = Boolean(referenceThreat?.image);
+
               return (
                 <div ref={resultRef} className="rounded-3xl border border-slate-200/70 bg-[#F8F9FA] p-2.5 sm:p-4 dark:border-slate-800/80 dark:bg-slate-950/60 animate-fade-in">
                   <div className="mb-2.5 flex items-center justify-between">
@@ -691,6 +733,73 @@ export default function AIDoctorPage() {
                       </div>
                     </div>
 
+                    {/* Scanned Leaf Photo & Reference Threat Photo Preview */}
+                    {(hasUserPhoto || hasRefPhoto) && (
+                      <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-100/70 p-2 sm:p-2.5 dark:border-slate-800 dark:bg-slate-900/60">
+                        <div
+                          className={cn(
+                            "grid gap-2",
+                            (hasUserPhoto && hasRefPhoto) || (hasUserPhoto && hasSecondPhoto)
+                              ? "grid-cols-1 sm:grid-cols-2"
+                              : "grid-cols-1"
+                          )}
+                        >
+                          {/* 1. Farmer's Scanned Photo */}
+                          {previewUrl && (
+                            <div className="relative group overflow-hidden rounded-xl border border-slate-300/80 bg-black aspect-[4/3] sm:aspect-[16/10] shadow-2xs">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={previewUrl}
+                                alt="आपकी जाँची गई पत्ती"
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2 sm:p-2.5 pt-6">
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] sm:text-[10.5px] font-extrabold text-white shadow-xs backdrop-blur-xs">
+                                  <Camera className="h-3 w-3" />
+                                  आपकी जाँची गई पत्ती
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 2. Second Photo if present */}
+                          {previewUrl2 && (
+                            <div className="relative group overflow-hidden rounded-xl border border-slate-300/80 bg-black aspect-[4/3] sm:aspect-[16/10] shadow-2xs">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={previewUrl2}
+                                alt="दूसरी फोटो"
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2 sm:p-2.5 pt-6">
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] sm:text-[10.5px] font-extrabold text-white shadow-xs backdrop-blur-xs">
+                                  <Camera className="h-3 w-3" />
+                                  दूसरी फोटो
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 3. Reference Library Photo (if no 2nd photo, or alongside) */}
+                          {!previewUrl2 && referenceThreat?.image && (
+                            <div className="relative group overflow-hidden rounded-xl border border-slate-300/80 bg-black aspect-[4/3] sm:aspect-[16/10] shadow-2xs">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={referenceThreat.image}
+                                alt={referenceThreat.nameHi}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2 sm:p-2.5 pt-6">
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900/95 border border-white/25 px-2.5 py-0.5 text-[10px] sm:text-[10.5px] font-extrabold text-white shadow-xs backdrop-blur-xs">
+                                  🔬 {referenceThreat.nameHi} (लक्षण संदर्भ)
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     {result.visualObservations && (
                       <div className="mt-2.5 rounded-xl border border-slate-200/70 bg-slate-50/80 px-3 py-2 text-[12px] dark:border-slate-800 dark:bg-slate-800/50">
                         <span className="font-bold text-[var(--av-text-secondary)]">
@@ -753,21 +862,27 @@ export default function AIDoctorPage() {
                     <div className="mt-2.5 space-y-2">
                       {result.activeIngredients.length > 0 ? (
                         result.activeIngredients.map((ai, i) => (
-                          <div key={i} className="rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-2.5 dark:bg-emerald-950/30">
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
-                                {ai.name}
-                              </p>
-                              <span className="shrink-0 rounded-md bg-emerald-600 px-2 py-0.5 text-[11px] font-extrabold text-white">
-                                {formatFarmerDose(ai.dose)}
-                              </span>
+                          <div
+                            key={i}
+                            className="flex items-center gap-2.5 rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-2.5 dark:bg-emerald-950/30"
+                          >
+                            <ChemBottleThumb technical={ai.name} size="xs" className="shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2">
+                                <p className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                                  {ai.name}
+                                </p>
+                                <span className="shrink-0 rounded-md bg-emerald-600 px-2 py-0.5 text-[11px] font-extrabold text-white">
+                                  {formatFarmerDose(ai.dose)}
+                                </span>
+                              </div>
+                              {ai.brands && ai.brands.length > 0 ? (
+                                <p className="mt-1 text-[11px] font-medium leading-snug text-slate-600 dark:text-slate-300">
+                                  <span className="font-semibold text-amber-800 dark:text-amber-400">व्यापारिक नाम: </span>
+                                  {ai.brands.join(" · ")}
+                                </p>
+                              ) : null}
                             </div>
-                            {ai.brands && ai.brands.length > 0 ? (
-                              <p className="mt-1 text-[11px] font-medium leading-snug text-slate-600 dark:text-slate-300">
-                                <span className="font-semibold text-amber-800 dark:text-amber-400">व्यापारिक नाम: </span>
-                                {ai.brands.join(" · ")}
-                              </p>
-                            ) : null}
                           </div>
                         ))
                       ) : (
