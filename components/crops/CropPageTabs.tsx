@@ -5,6 +5,7 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { daysAfterSowing } from "@/lib/cropGrowthStage";
 import FarmerSplitCard from "@/components/ui/FarmerSplitCard";
 import SpeakButton from "@/components/ui/SpeakButton";
+import CropGeneralInfoCard from "@/components/crops/premium/CropGeneralInfoCard";
 import { cn } from "@/lib/cn";
 import { cropCareHref } from "@/lib/crops/crop-care-href";
 import type { CropTabId } from "@/lib/crops/crop-tabs";
@@ -19,7 +20,6 @@ import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { Crop } from "@/types/crop";
 import { motion, useReducedMotion } from "framer-motion";
-import { ChevronDown, Sprout } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
@@ -41,17 +41,10 @@ const TAB_I18N: Record<CropTabId, FarmerUiKey> = {
   expert: "cropTabExpert",
 };
 
-type StageId = "sowing" | "feed" | "protect" | "finish";
-
-type TabGroup = {
-  id: string;
-  stage: StageId;
-  titleHi: string;
-  titleEn: string;
-  tabs: CropTabId[];
-};
+export type StageId = "overview" | "sowing" | "feed" | "protect" | "finish";
 
 const STAGES: { id: StageId; hi: string; en: string; hintHi: string; hintEn: string }[] = [
+  { id: "overview", hi: "सामान्य", en: "Overview", hintHi: "जानकारी", hintEn: "Info" },
   { id: "sowing", hi: "बुवाई", en: "Sowing", hintHi: "बीज", hintEn: "Seed" },
   { id: "feed", hi: "खाद", en: "Feed", hintHi: "पानी", hintEn: "Water" },
   { id: "protect", hi: "कीट", en: "Pests", hintHi: "रोग", hintEn: "Disease" },
@@ -59,13 +52,15 @@ const STAGES: { id: StageId; hi: string; en: string; hintHi: string; hintEn: str
 ];
 
 function stageForDays(days: number | null): StageId {
-  if (days == null || days < 20) return "sowing";
+  if (days == null) return "overview";
+  if (days < 20) return "sowing";
   if (days < 55) return "feed";
   if (days < 95) return "protect";
   return "finish";
 }
 
 const STAGE_TABS: Record<StageId, CropTabId[]> = {
+  overview: [],
   sowing: ["varieties", "field-prep", "mistakes", "growth"],
   feed: ["fertilizer", "irrigation", "weeds", "nutrients"],
   protect: ["pests", "diseases", "expert"],
@@ -109,7 +104,7 @@ const TAB_HINT_EN: Partial<Record<CropTabId, string>> = {
 };
 
 interface CropPageTabsProps {
-  crop: Pick<Crop, "slug" | "category">;
+  crop: Crop;
 }
 
 export default function CropPageTabs({ crop }: CropPageTabsProps) {
@@ -117,7 +112,7 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   const { t, locale } = useLocale();
   const isHi = locale === "hi";
   const { profile, hydrated } = useFarmerProfile();
-  const [stage, setStage] = useState<StageId>("sowing");
+  const [stage, setStage] = useState<StageId>("overview");
   const [stageTouched, setStageTouched] = useState(false);
 
   useEffect(() => {
@@ -133,8 +128,12 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   const openHint = isHi ? "देखो" : "Open";
 
   let animIndex = 0;
-  const cropLabelHi = getCropHindiName(crop.slug) || crop.slug;
-  const cropLabelEn = getCatalogCrop(crop.slug)?.name || crop.slug;
+  const cropLabelHi = getCropHindiName(crop.slug) || crop.name || crop.slug;
+  const cropLabelEn = getCatalogCrop(crop.slug)?.name || crop.name || crop.slug;
+
+  const overviewSpeechText = isHi
+    ? `${cropLabelHi} की सामान्य जानकारी। फसल की अवधि ${crop.durationDays} है। बुवाई का सही समय ${crop.sowingGuide.bestSowingTime} है। औसत अनुमानित उत्पादन ${crop.estimatedYield || "उत्तम"} प्रति एकड़। मौसम ${crop.climate} और मिट्टी ${crop.suitableSoil}।`
+    : `${cropLabelEn} general information. Crop duration: ${crop.durationDays}. Sowing time: ${crop.sowingGuide.bestSowingTime}. Average yield: ${crop.estimatedYield || "Good"}. Climate: ${crop.climate}. Suitable soil: ${crop.suitableSoil}.`;
 
   const renderJob = (id: CropTabId) => {
     const i = animIndex++;
@@ -179,9 +178,21 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
 
   const currentTabs = STAGE_TABS[stage] || [];
 
+  const stageSpeechText =
+    stage === "overview"
+      ? overviewSpeechText
+      : currentTabs
+          .map((id) => (isHi ? `${t(TAB_I18N[id])}. ${(hintMap[id] ?? "")}` : t(TAB_I18N[id])))
+          .join(" ");
+
   return (
     <nav className="mb-3 min-w-0 space-y-3.5" aria-label={t("cropGuide")}>
-      <div className="grid grid-cols-4 gap-1.5" role="tablist" aria-label={isHi ? "फसल का चरण" : "Crop stage"}>
+      {/* 5 Stage / Info Navigation Buttons */}
+      <div
+        className="grid grid-cols-5 gap-1 sm:gap-1.5"
+        role="tablist"
+        aria-label={isHi ? "फसल के चरण व सामान्य जानकारी" : "Crop stages & general info"}
+      >
         {STAGES.map((item) => {
           const on = item.id === stage;
           return (
@@ -195,14 +206,19 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
                 setStage(item.id);
               }}
               className={cn(
-                "min-h-12 rounded-xl border px-1 py-1.5 text-center leading-tight transition active:scale-[0.98]",
+                "min-h-12 rounded-xl border px-0.5 sm:px-1 py-1.5 text-center leading-tight transition active:scale-[0.98]",
                 on
                   ? "border-emerald-700 bg-emerald-800 text-white shadow-sm"
                   : "border-[#D0DDD7] bg-[var(--av-surface)] text-[var(--av-text-primary)] hover:border-emerald-500/40"
               )}
             >
-              <span className="block text-[13px] font-black">{isHi ? item.hi : item.en}</span>
-              <span className={cn("block text-[11px] font-semibold", on ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
+              <span className="block text-[12px] sm:text-[13px] font-black">{isHi ? item.hi : item.en}</span>
+              <span
+                className={cn(
+                  "block text-[10px] sm:text-[11px] font-semibold",
+                  on ? "text-emerald-100" : "text-[var(--av-text-muted)]"
+                )}
+              >
                 {isHi ? item.hintHi : item.hintEn}
               </span>
             </button>
@@ -210,16 +226,34 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
         })}
       </div>
 
-      <SpeakButton
-        hi={isHi}
-        text={currentTabs
-          .map((id) => (isHi ? `${t(TAB_I18N[id])}. ${(hintMap[id] ?? "")}` : t(TAB_I18N[id])))
-          .join(" ")}
-      />
-
-      <div className="space-y-2.5">
-        {currentTabs.map((id) => renderJob(id))}
+      {/* Voice Advice Bar */}
+      <div className="flex items-center justify-between gap-2 px-0.5">
+        <SpeakButton hi={isHi} text={stageSpeechText} />
+        {stage === "overview" ? (
+          <span className="text-[11.5px] font-bold text-emerald-800 dark:text-emerald-300">
+            {isHi ? "फसल की पूरी जानकारी सुनें" : "Listen to full crop overview"}
+          </span>
+        ) : (
+          <span className="text-[11px] font-medium text-[var(--av-text-muted)]">
+            {isHi ? "इस चरण के मुख्य काम सुनें" : "Listen to stage guidance"}
+          </span>
+        )}
       </div>
+
+      {/* Content: Overview vs Stage Split Cards */}
+      {stage === "overview" ? (
+        <CropGeneralInfoCard
+          crop={crop}
+          onSelectStage={(newStage) => {
+            setStageTouched(true);
+            setStage(newStage);
+          }}
+        />
+      ) : (
+        <div className="space-y-2.5">
+          {currentTabs.map((id) => renderJob(id))}
+        </div>
+      )}
     </nav>
   );
 }

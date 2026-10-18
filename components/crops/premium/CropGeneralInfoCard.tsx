@@ -11,6 +11,7 @@ import { useState } from "react";
 
 interface Props {
   crop: Crop;
+  onSelectStage?: (stage: "sowing" | "feed" | "protect" | "finish") => void;
 }
 
 type InfoRow = {
@@ -169,7 +170,7 @@ function InfoCell({
   );
 }
 
-export default function CropGeneralInfoCard({ crop }: Props) {
+export default function CropGeneralInfoCard({ crop, onSelectStage }: Props) {
   const { locale } = useLocale();
   const hi = locale === "hi";
   const agro = getCropAgroMeta(crop.slug);
@@ -240,12 +241,17 @@ export default function CropGeneralInfoCard({ crop }: Props) {
   return (
     <section
       className="mb-3 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] sm:mb-4"
-      aria-label={hi ? "फसल की सामान्य जानकारी" : "Crop overview"}
+      aria-label={hi ? "फसल की सामान्य जानकारी" : "Crop general information"}
     >
-      <div className="border-b border-[var(--av-border-subtle)] bg-[color-mix(in_srgb,var(--av-accent-soft)_40%,var(--av-surface))] px-3 py-2 sm:px-3.5 sm:py-3">
-        <p className="text-[14px] font-black leading-tight tracking-tight text-[var(--av-text-primary)] sm:text-[16px]">
-          {hi ? "फसल एक नज़र में" : "Crop at a glance"}
-        </p>
+      <div className="flex items-center justify-between border-b border-[var(--av-border-subtle)] bg-[color-mix(in_srgb,var(--av-accent-soft)_35%,var(--av-surface))] px-3.5 py-2.5 sm:px-4 sm:py-3">
+        <div className="flex items-center gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-700 text-white">
+            <Wheat className="h-3.5 w-3.5" />
+          </span>
+          <h2 className="text-[14.5px] sm:text-[16px] font-black leading-tight tracking-tight text-[var(--av-text-primary)]">
+            {hi ? "फसल की सामान्य जानकारी" : "Crop General Information"}
+          </h2>
+        </div>
       </div>
 
       {/* Mobile: 2-col for short cards → less vertical length; sm+ same */}
@@ -265,6 +271,65 @@ export default function CropGeneralInfoCard({ crop }: Props) {
           </div>
         ))}
       </div>
+
+      {/* Stage navigation shortcuts */}
+      {onSelectStage && (
+        <div className="border-t border-[var(--av-border-subtle)] bg-[color-mix(in_srgb,var(--av-surface-inset)_50%,transparent)] px-3 py-2.5 sm:px-4">
+          <p className="text-[11px] font-black uppercase tracking-wider text-[var(--av-text-muted)]">
+            {hi ? "चरण अनुसार जानकारी देखें:" : "Explore by crop stage:"}
+          </p>
+          <div className="mt-1.5 grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+            <button
+              type="button"
+              onClick={() => onSelectStage("sowing")}
+              className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2.5 py-2 text-left transition hover:border-emerald-600/40 hover:bg-emerald-50/40 active:scale-[0.98]"
+            >
+              <span className="block text-[12px] font-black text-emerald-800 dark:text-emerald-300">
+                {hi ? "बुवाई व बीज →" : "Sowing & Seed →"}
+              </span>
+              <span className="block text-[10px] text-[var(--av-text-muted)]">
+                {hi ? "किस्में, जुताई व बढ़वार" : "Varieties & prep"}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectStage("feed")}
+              className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2.5 py-2 text-left transition hover:border-emerald-600/40 hover:bg-emerald-50/40 active:scale-[0.98]"
+            >
+              <span className="block text-[12px] font-black text-emerald-800 dark:text-emerald-300">
+                {hi ? "खाद व पानी →" : "Feed & Water →"}
+              </span>
+              <span className="block text-[10px] text-[var(--av-text-muted)]">
+                {hi ? "यूरिया, डीएपी व सिंचाई" : "Fertilizer & irrigation"}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectStage("protect")}
+              className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2.5 py-2 text-left transition hover:border-emerald-600/40 hover:bg-emerald-50/40 active:scale-[0.98]"
+            >
+              <span className="block text-[12px] font-black text-emerald-800 dark:text-emerald-300">
+                {hi ? "कीट व रोग →" : "Pests & Disease →"}
+              </span>
+              <span className="block text-[10px] text-[var(--av-text-muted)]">
+                {hi ? "दवा व फसल डॉक्टर" : "Remedies & doctor"}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectStage("finish")}
+              className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2.5 py-2 text-left transition hover:border-emerald-600/40 hover:bg-emerald-50/40 active:scale-[0.98]"
+            >
+              <span className="block text-[12px] font-black text-emerald-800 dark:text-emerald-300">
+                {hi ? "कटाई व मंडी →" : "Harvest & Mandi →"}
+              </span>
+              <span className="block text-[10px] text-[var(--av-text-muted)]">
+                {hi ? "तुड़ाई व ताज़ा भाव" : "Timing & prices"}
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

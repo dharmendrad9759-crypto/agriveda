@@ -2,7 +2,6 @@
 
 import AppShell from "@/components/shell/AppShell";
 import CropPageTabs from "@/components/crops/CropPageTabs";
-import CropGeneralInfoCard from "@/components/crops/premium/CropGeneralInfoCard";
 import CropPremiumHero from "@/components/crops/premium/CropPremiumHero";
 import StubCropNotice from "@/components/crops/StubCropNotice";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -30,8 +29,6 @@ export default function CropDetailClient({ crop }: Props) {
         <CropPremiumHero crop={crop} />
 
         {crop.isStub ? <StubCropNotice hi={locale === "hi"} /> : null}
-
-        <CropGeneralInfoCard crop={crop} />
 
         <CropPageTabs crop={crop} />
       </AppShell>
