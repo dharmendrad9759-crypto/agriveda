@@ -54,6 +54,7 @@ import {
     Printer,
     Share2,
     ShieldCheck,
+    Sprout,
     Stethoscope,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -66,6 +67,13 @@ function simpleObservation(text: string): string {
     .replace(/\s*\([^)]*\)/g, "")
     .replace(/\s{2,}/g, " ")
     .trim();
+}
+
+/** Shorten stage by stripping long English parenthetical jargon (Vegetative / Seedling Stage) */
+function shortenCropStage(stage?: string): string {
+  if (!stage || stage === "—") return "";
+  const cleaned = stage.replace(/\s*\([^)]*[A-Za-z][^)]*\)/g, "").trim();
+  return cleaned || stage.trim();
 }
 
 export default function AIDoctorPage() {
@@ -694,20 +702,19 @@ export default function AIDoctorPage() {
                       </div>
                     )}
 
-                    {/* Disease Name & Compact Badges (Replaces thick card and removes big severity/stage grid) */}
+                    {/* Disease Name & Compact Badges (Removes severity box, shortens and designs stage badge) */}
                     <div className="mt-2.5 rounded-xl border border-rose-500/20 bg-rose-50/60 p-3 dark:bg-rose-950/20">
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-extrabold text-rose-800 dark:bg-rose-900/50 dark:text-rose-300">
                           {likelyThreatLabel(kind)}
                         </span>
-                        {result.stage && (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200/90 bg-white/90 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            🌱 {result.stage}
+                        {shortenCropStage(result.stage) ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/25 bg-emerald-50 px-2.5 py-0.5 text-[10.5px] font-bold text-emerald-900 dark:border-emerald-700/50 dark:bg-emerald-950/50 dark:text-emerald-200 shadow-2xs">
+                            <Sprout className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                            <span className="text-[10px] text-emerald-700/80 dark:text-emerald-400">अवस्था:</span>
+                            <span>{shortenCropStage(result.stage)}</span>
                           </span>
-                        )}
-                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-800 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-                          {severityHi(result.severity)}
-                        </span>
+                        ) : null}
                       </div>
 
                       <h3 className="mt-1.5 text-lg font-black text-slate-900 dark:text-white sm:text-xl">
@@ -731,10 +738,10 @@ export default function AIDoctorPage() {
                         </span>
                         <div>
                           <h3 className="text-sm font-extrabold text-emerald-950 dark:text-emerald-200">
-                            दवा व अनुशंसित मात्रा (Treatment)
+                            दवा व अनुशंसित मात्रा
                           </h3>
                           <p className="text-[10px] text-emerald-800/80 dark:text-emerald-300/80 font-medium">
-                            खेत में तुरंत छिड़काव हेतु प्रमाणित दवाएँ
+                            रासायनिक व जैविक उपचार खुराक
                           </p>
                         </div>
                       </div>
@@ -757,7 +764,7 @@ export default function AIDoctorPage() {
                             </div>
                             {ai.brands && ai.brands.length > 0 ? (
                               <p className="mt-1 text-[11px] font-medium leading-snug text-slate-600 dark:text-slate-300">
-                                <span className="font-semibold text-amber-800 dark:text-amber-400">बाज़ार में: </span>
+                                <span className="font-semibold text-amber-800 dark:text-amber-400">व्यापारिक नाम: </span>
                                 {ai.brands.join(" · ")}
                               </p>
                             ) : null}
@@ -774,17 +781,24 @@ export default function AIDoctorPage() {
 
                     {/* Water and per-acre guidance banner */}
                     <div className="mt-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 p-2 text-[10.5px] font-bold text-amber-900 dark:text-amber-200">
-                      💧 1 एकड़ खेत के लिए पानी: 150 से 200 लीटर साफ़ पानी (15L नैपसैक पंप में 8–10 टंकी)। तेज धूप में छिड़काव न करें।
+                      💧 1 एकड़ खेत के लिए पानी: अमूमन 150 से 200 लीटर साफ़ पानी में घोल बनाएँ (15 लीटर वाले नैपसैक पंप में 8–10 टंकी प्रति एकड़)। तेज धूप में छिड़काव न करें।
                     </div>
 
                     {result.spraySticker ? (
                       <div className="mt-2 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2 dark:bg-sky-950/20">
                         <p className="text-[10.5px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
                         <p className="mt-0.5 text-xs text-sky-900 dark:text-sky-200">
-                          {formatFarmerDose(result.spraySticker)}
+                          सिलिकॉन आधारित चिपको {formatFarmerDose(result.spraySticker)}
                         </p>
                       </div>
-                    ) : null}
+                    ) : (
+                      <div className="mt-2 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2 dark:bg-sky-950/20">
+                        <p className="text-[10.5px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
+                        <p className="mt-0.5 text-xs text-sky-900 dark:text-sky-200">
+                          सिलिकॉन आधारित चिपको 0.5 मिली प्रति लीटर पानी में मिलाएँ।
+                        </p>
+                      </div>
+                    )}
 
                     {result.recoveryTonics && result.recoveryTonics.length > 0 ? (
                       <div className="mt-2 rounded-xl border border-amber-500/25 bg-amber-50/60 p-2.5 dark:bg-amber-950/20">
@@ -796,6 +810,10 @@ export default function AIDoctorPage() {
                         </ul>
                       </div>
                     ) : null}
+
+                    <p className="mt-2 text-[10.5px] text-[var(--av-text-muted)]">
+                      ⚠️ दवा लगाते समय सुरक्षा किट पहनें व कंपनी का लेबल ध्यानपूर्वक पढ़ें।
+                    </p>
                   </div>
 
                   {/* Card 3: "समाधान" (Field Management & Cultural Actions) */}
