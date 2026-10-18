@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, ChevronRight } from "lucide-react";
+import { Calendar } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -35,16 +35,9 @@ export default function CropsPageShell({ children }: { children: React.ReactNode
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5">
-                <a
-                  href="#crop-grid"
-                  className="inline-flex min-h-9 items-center gap-1 rounded-full bg-white px-2.5 py-1.5 text-[12px] font-bold text-emerald-950 sm:px-3 sm:text-[13px]"
-                >
-                  {isHi ? "फसल देखो" : "Browse crops"}
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </a>
                 <AppLink
                   href="/crop-calendar"
-                  className="inline-flex min-h-9 items-center gap-1 rounded-full border border-white/40 bg-white/10 px-2.5 py-1.5 text-[12px] font-bold text-white sm:px-3 sm:text-[13px]"
+                  className="inline-flex min-h-9 items-center gap-1 rounded-full border border-white/40 bg-white/10 px-2.5 py-1.5 text-[12px] font-bold text-white sm:px-3 sm:text-[13px] hover:bg-white/20 transition active:scale-95"
                 >
                   <Calendar className="h-3.5 w-3.5" />
                   {isHi ? "कैलेंडर" : "Calendar"}
