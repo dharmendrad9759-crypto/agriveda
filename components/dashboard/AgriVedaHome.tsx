@@ -43,17 +43,21 @@ import FarmerAppTour from "@/components/tutorial/FarmerAppTour";
 /** Unified Crop Disease & Doctor Hero Card — Photo-first, farmer-friendly, zero AI jargon */
 function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/30 bg-gradient-to-br from-[#063321] via-[#042618] to-[#021810] p-3.5 sm:p-4 text-white shadow-[0_20px_45px_-16px_rgba(4,45,28,0.7)]">
+    <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/25 bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 p-3.5 sm:p-4 text-white shadow-[0_18px_40px_-14px_rgba(5,70,45,0.45)]">
       {/* Background ambient light */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-emerald-400/15 blur-3xl"
+        className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-emerald-400/20 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-teal-400/15 blur-3xl"
       />
 
       {/* Header section — zero AI jargon */}
       <div className="relative z-10">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-0.5 text-[10.5px] font-black uppercase tracking-wider text-emerald-300">
-          <Sparkles className="h-3 w-3" />
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/20 border border-emerald-300/35 px-2.5 py-0.5 text-[10.5px] font-black uppercase tracking-wider text-emerald-200">
+          <Sparkles className="h-3 w-3 text-emerald-300" />
           {isHi ? "रोग व कीट डॉक्टर (Crop Doctor)" : "Crop Disease & Pest Doctor"}
         </span>
         <h2 className="mt-1.5 text-[18px] sm:text-xl font-black leading-tight text-white tracking-tight">
@@ -67,7 +71,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
         <AppLink
           href="/ai-doctor"
           onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_unified_photo_doctor" })}
-          className="group flex flex-col overflow-hidden rounded-2xl border border-emerald-500/35 bg-[#052b1b] shadow-md transition-all duration-300 hover:border-emerald-400 hover:shadow-lg active:scale-[0.97]"
+          className="group flex flex-col overflow-hidden rounded-2xl border border-emerald-400/30 bg-emerald-950/60 backdrop-blur-md shadow-md transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-950/80 hover:shadow-lg active:scale-[0.97]"
         >
           {/* Dedicated 100% UNTOUCHED BRIGHT Photo Window */}
           <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-900">
@@ -82,19 +86,19 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
             />
             {/* Top floating glass badge */}
             <div className="absolute left-2 top-2 z-10">
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/65 px-2 py-0.5 text-[9.5px] font-black text-white backdrop-blur-md border border-white/25 shadow-xs">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/70 px-2 py-0.5 text-[9.5px] font-black text-white backdrop-blur-md border border-white/25 shadow-xs">
                 <Camera className="h-3 w-3 text-emerald-300" />
                 {isHi ? "कैमरा जाँच" : "Camera"}
               </span>
             </div>
             {/* Bottom subtle edge transition */}
-            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#052b1b] to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-emerald-950/90 to-transparent" />
           </div>
 
           {/* Lower Content & CTA Box */}
           <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1">
             <div>
-              <h3 className="text-[14px] sm:text-[15px] font-black leading-tight text-white group-hover:text-emerald-300 transition-colors">
+              <h3 className="text-[14px] sm:text-[15px] font-black leading-tight text-white group-hover:text-emerald-200 transition-colors">
                 {isHi ? "पत्ती की फोटो लें" : "Take Leaf Photo"}
               </h3>
               <p className="mt-0.5 text-[10.5px] font-medium leading-tight text-emerald-100/80 line-clamp-2">
@@ -103,7 +107,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
             </div>
 
             {/* Tap Action Pill Button */}
-            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-emerald-500 px-2.5 py-1.5 text-[11.5px] font-black text-slate-950 shadow-sm transition-all group-hover:bg-emerald-400">
+            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-emerald-400 px-2.5 py-1.5 text-[11.5px] font-black text-emerald-950 shadow-sm transition-all group-hover:bg-emerald-300">
               <span>{isHi ? "फोटो खींचें" : "Take Photo"}</span>
               <Camera className="h-3.5 w-3.5 stroke-[2.5]" />
             </div>
@@ -114,7 +118,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
         <AppLink
           href="/crop-problems"
           onClick={() => track("tool_open", { href: "/crop-problems", label: "home_unified_crop_catalog" })}
-          className="group flex flex-col overflow-hidden rounded-2xl border border-teal-500/35 bg-[#052c28] shadow-md transition-all duration-300 hover:border-teal-400 hover:shadow-lg active:scale-[0.97]"
+          className="group flex flex-col overflow-hidden rounded-2xl border border-teal-400/30 bg-teal-950/60 backdrop-blur-md shadow-md transition-all duration-300 hover:border-teal-300 hover:bg-teal-950/80 hover:shadow-lg active:scale-[0.97]"
         >
           {/* Dedicated 100% UNTOUCHED BRIGHT Photo Window */}
           <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-900">
@@ -129,19 +133,19 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
             />
             {/* Top floating glass badge */}
             <div className="absolute left-2 top-2 z-10">
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/65 px-2 py-0.5 text-[9.5px] font-black text-white backdrop-blur-md border border-white/25 shadow-xs">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/70 px-2 py-0.5 text-[9.5px] font-black text-white backdrop-blur-md border border-white/25 shadow-xs">
                 <ClipboardList className="h-3 w-3 text-teal-300" />
                 {isHi ? "फसल अनुसार" : "By Crop"}
               </span>
             </div>
             {/* Bottom subtle edge transition */}
-            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#052c28] to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-teal-950/90 to-transparent" />
           </div>
 
           {/* Lower Content & CTA Box */}
           <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1">
             <div>
-              <h3 className="text-[14px] sm:text-[15px] font-black leading-tight text-white group-hover:text-teal-300 transition-colors">
+              <h3 className="text-[14px] sm:text-[15px] font-black leading-tight text-white group-hover:text-teal-200 transition-colors">
                 {isHi ? "फसल देखकर पहचानें" : "Identify by Crop"}
               </h3>
               <p className="mt-0.5 text-[10.5px] font-medium leading-tight text-teal-100/80 line-clamp-2">
@@ -150,7 +154,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
             </div>
 
             {/* Tap Action Pill Button */}
-            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-teal-500 px-2.5 py-1.5 text-[11.5px] font-black text-slate-950 shadow-sm transition-all group-hover:bg-teal-400">
+            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-teal-400 px-2.5 py-1.5 text-[11.5px] font-black text-teal-950 shadow-sm transition-all group-hover:bg-teal-300">
               <span>{isHi ? "रोग सूची देखें" : "View Catalog"}</span>
               <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
             </div>

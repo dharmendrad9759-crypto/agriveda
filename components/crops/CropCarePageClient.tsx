@@ -1,6 +1,6 @@
 "use client";
 
-import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
+import AppShell from "@/components/shell/AppShell";
 import AnimatedGrowthTimeline from "@/components/crops/AnimatedGrowthTimeline";
 import CropFertilizerSection from "@/components/crops/sections/CropFertilizerSection";
 import CropPestsSection from "@/components/crops/sections/CropPestsSection";
@@ -128,13 +128,6 @@ export default function CropCarePageClient({ crop, tab }: Props) {
           {tab === "faq" && <CropFaqSection crop={crop} />}
           {tab === "expert" && <CropExpertSection crop={crop} />}
         </div>
-
-        <ShellCtaBanner
-          title={t("cropNeedAdvice")}
-          description={t("cropNeedAdviceDesc")}
-          buttonLabel={t("cropOpenAiDoctor")}
-          href="/ai-doctor"
-        />
       </AppShell>
     </div>
   );

@@ -48,28 +48,6 @@ export default function MandiListClient() {
       }
     >
       <div className="space-y-3">
-        {data?.source === "mock" && (
-          <div
-            role="status"
-            className="rounded-2xl border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/30 px-3.5 py-3 text-emerald-950 dark:text-emerald-100 shadow-sm"
-          >
-            <div className="flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[10px] font-black">
-                ℹ
-              </span>
-              <p className="text-xs sm:text-sm font-black">
-                {isHi
-                  ? "अनुमानित भाव (Estimated Prices) — पिछले ट्रेंड्स पर आधारित"
-                  : "Estimated Prices — Based on Recent Market Trends"}
-              </p>
-            </div>
-            <p className="mt-1 text-xs font-medium leading-snug text-emerald-900/85 dark:text-emerald-200/80">
-              {isHi
-                ? "दैनिक बाज़ार भाव आवक व गुणवत्ता के अनुसार बदलते हैं। अपनी स्थानीय मंडी या eNAM पोर्टल से अंतिम भाव अवश्य सत्यापित करें।"
-                : "Daily mandi rates vary with arrivals and crop grade. Verify with your local market committee or eNAM portal before selling."}
-            </p>
-          </div>
-        )}
         {data?.error && data.source !== "mock" && (
           <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
             {data.error}

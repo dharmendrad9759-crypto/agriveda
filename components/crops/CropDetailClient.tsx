@@ -1,6 +1,6 @@
 "use client";
 
-import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
+import AppShell from "@/components/shell/AppShell";
 import CropPageTabs from "@/components/crops/CropPageTabs";
 import CropGeneralInfoCard from "@/components/crops/premium/CropGeneralInfoCard";
 import CropPremiumHero from "@/components/crops/premium/CropPremiumHero";
@@ -34,13 +34,6 @@ export default function CropDetailClient({ crop }: Props) {
         <CropGeneralInfoCard crop={crop} />
 
         <CropPageTabs crop={crop} />
-
-        <ShellCtaBanner
-          title={t("cropNeedAdvice")}
-          description={t("cropNeedAdviceDesc")}
-          buttonLabel={t("cropOpenAiDoctor")}
-          href="/ai-doctor"
-        />
       </AppShell>
     </div>
   );
