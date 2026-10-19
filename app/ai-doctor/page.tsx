@@ -134,7 +134,10 @@ export default function AIDoctorPage() {
   // Auto-scroll to result when diagnosis arrives
   useEffect(() => {
     if (result) {
-      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 60);
     }
   }, [result]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -262,7 +265,8 @@ export default function AIDoctorPage() {
     setPreviewFailed(false);
     setResult(null);
     setSymptomsOnlyMode(false);
-    showToast("फोटो 1 चुनी — चाहें तो दूसरी भी जोड़ें", "success");
+    showToast("फोटो चुनी गई ✓", "success");
+    setActiveStep(2);
   };
 
   const handleSecondFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -398,6 +402,7 @@ export default function AIDoctorPage() {
     setSelectedCrop(slug);
     setSymptomNotes("");
     setActiveChips([]);
+    setActiveStep(3);
   };
 
   return (
@@ -442,7 +447,7 @@ export default function AIDoctorPage() {
                     >
                       {hasPhoto ? "✓" : "1"}
                     </span>
-                    <span>1. फोटो</span>
+                    <span>फोटो</span>
                   </button>
 
                   <button
@@ -466,7 +471,7 @@ export default function AIDoctorPage() {
                     >
                       {hasCrop ? "✓" : "2"}
                     </span>
-                    <span>2. फसल</span>
+                    <span>फसल</span>
                   </button>
 
                   <button
@@ -488,7 +493,7 @@ export default function AIDoctorPage() {
                     >
                       3
                     </span>
-                    <span>3. लक्षण व जाँच</span>
+                    <span>लक्षण व जाँच</span>
                   </button>
                 </nav>
 
@@ -681,18 +686,17 @@ export default function AIDoctorPage() {
                   </div>
 
                   {/* Card 1: Primary Diagnosis (Compact & Streamlined) */}
-                  <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-4">
-                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
-                          <Stethoscope className="h-4 w-4" />
+                  <div className="mb-2.5 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-3.5">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center gap-1.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600">
+                          <Stethoscope className="h-3.5 w-3.5" />
                         </span>
                         <div>
-                          <h2 className="text-[14px] font-extrabold text-slate-900 dark:text-white">रोग पहचान रिपोर्ट</h2>
-                          <p className="text-[10px] text-[var(--av-text-muted)]">एआई डॉक्टर विश्लेषण</p>
+                          <h2 className="text-[13px] font-extrabold text-slate-900 dark:text-white">पहचाना गया रोग</h2>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      <div className="flex items-center gap-1.5">
                         <DiagnosisListenButton text={speechText} />
                         <button
                           type="button"
@@ -713,129 +717,113 @@ export default function AIDoctorPage() {
                             const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
                             if (typeof window !== "undefined") window.open(url, "_blank");
                           }}
-                          className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700/50 dark:bg-emerald-950/60 dark:text-emerald-200 transition"
+                          className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700/50 dark:bg-emerald-950/60 dark:text-emerald-200 transition"
                           title="WhatsApp पर शेयर करें"
                         >
-                          <Share2 className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">शेयर</span>
+                          <Share2 className="h-3 w-3" />
+                          <span>शेयर</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => {
                             if (typeof window !== "undefined") window.print();
                           }}
-                          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
+                          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
                           title="PDF / प्रिंट करें"
                         >
-                          <Printer className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">PDF</span>
+                          <Printer className="h-3 w-3" />
+                          <span>PDF</span>
                         </button>
                       </div>
                     </div>
 
-                    {/* Scanned Leaf Photo & Reference Threat Photo Preview */}
-                    {(hasUserPhoto || hasRefPhoto) && (
-                      <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-100/70 p-2 sm:p-2.5 dark:border-slate-800 dark:bg-slate-900/60">
-                        <div
-                          className={cn(
-                            "grid gap-2",
-                            (hasUserPhoto && hasRefPhoto) || (hasUserPhoto && hasSecondPhoto)
-                              ? "grid-cols-1 sm:grid-cols-2"
-                              : "grid-cols-1"
-                          )}
-                        >
-                          {/* 1. Farmer's Scanned Photo */}
+                    {/* Disease Name & Compact Single-Line Badges (Takes minimal height, removes big severity box) */}
+                    <div className="mt-2 flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-[17px] font-black text-slate-900 dark:text-white sm:text-lg leading-tight">
+                          {result.diseaseName}
+                        </h3>
+
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          {/* Minimal space severity badge ("मध्यम" takes very little space) */}
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold",
+                              result.severity?.toLowerCase().includes("high") || result.severity?.includes("गंभीर")
+                                ? "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
+                                : result.severity?.toLowerCase().includes("low") || result.severity?.includes("कम")
+                                  ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                                  : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "h-1.5 w-1.5 rounded-full",
+                                result.severity?.toLowerCase().includes("high") || result.severity?.includes("गंभीर")
+                                  ? "bg-rose-600 animate-pulse"
+                                  : result.severity?.toLowerCase().includes("low") || result.severity?.includes("कम")
+                                    ? "bg-emerald-500"
+                                    : "bg-amber-500"
+                              )}
+                            />
+                            {severityHi(result.severity)}
+                          </span>
+
+                          {/* Compact Crop Stage Card */}
+                          {shortenCropStage(result.stage) ? (
+                            <span className="inline-flex items-center gap-1 rounded-md border border-emerald-600/20 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-900 dark:border-emerald-700/40 dark:bg-emerald-950/40 dark:text-emerald-200">
+                              <Sprout className="h-2.5 w-2.5 text-emerald-600 shrink-0" />
+                              <span>{shortenCropStage(result.stage)}</span>
+                            </span>
+                          ) : null}
+
+                          {result.pathogen && result.pathogen !== "—" ? (
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                              कारक: <span className="font-semibold text-amber-800 dark:text-amber-300">{result.pathogen}</span>
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {/* Ultra-compact thumbnail previews (Height 56px) */}
+                      {(hasUserPhoto || hasRefPhoto) && (
+                        <div className="flex shrink-0 items-center gap-1.5">
                           {previewUrl && (
-                            <div className="relative group overflow-hidden rounded-xl border border-slate-300/80 bg-black aspect-[4/3] sm:aspect-[16/10] shadow-2xs">
+                            <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-slate-200 bg-black shadow-2xs">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={previewUrl}
-                                alt="आपकी जाँची गई पत्ती"
-                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                alt="जाँची गई पत्ती"
+                                className="h-full w-full object-cover"
                               />
-                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2 sm:p-2.5 pt-6">
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] sm:text-[10.5px] font-extrabold text-white shadow-xs backdrop-blur-xs">
-                                  <Camera className="h-3 w-3" />
-                                  आपकी जाँची गई पत्ती
-                                </span>
-                              </div>
+                              <span className="absolute bottom-0 inset-x-0 bg-black/75 text-[8px] font-bold text-white text-center py-0.2">
+                                आपकी फोटो
+                              </span>
                             </div>
                           )}
-
-                          {/* 2. Second Photo if present */}
-                          {previewUrl2 && (
-                            <div className="relative group overflow-hidden rounded-xl border border-slate-300/80 bg-black aspect-[4/3] sm:aspect-[16/10] shadow-2xs">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={previewUrl2}
-                                alt="दूसरी फोटो"
-                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                              />
-                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2 sm:p-2.5 pt-6">
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] sm:text-[10.5px] font-extrabold text-white shadow-xs backdrop-blur-xs">
-                                  <Camera className="h-3 w-3" />
-                                  दूसरी फोटो
-                                </span>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* 3. Reference Library Photo (if no 2nd photo, or alongside) */}
                           {!previewUrl2 && referenceThreat?.image && (
-                            <div className="relative group overflow-hidden rounded-xl border border-slate-300/80 bg-black aspect-[4/3] sm:aspect-[16/10] shadow-2xs">
+                            <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-slate-200 bg-black shadow-2xs">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={referenceThreat.image}
                                 alt={referenceThreat.nameHi}
-                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                className="h-full w-full object-cover"
                               />
-                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2 sm:p-2.5 pt-6">
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900/95 border border-white/25 px-2.5 py-0.5 text-[10px] sm:text-[10.5px] font-extrabold text-white shadow-xs backdrop-blur-xs">
-                                  🔬 {referenceThreat.nameHi} (लक्षण संदर्भ)
-                                </span>
-                              </div>
+                              <span className="absolute bottom-0 inset-x-0 bg-black/75 text-[8px] font-bold text-white text-center py-0.2">
+                                संदर्भ
+                              </span>
                             </div>
                           )}
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
 
                     {result.visualObservations && (
-                      <div className="mt-2.5 rounded-xl border border-slate-200/70 bg-slate-50/80 px-3 py-2 text-[12px] dark:border-slate-800 dark:bg-slate-800/50">
-                        <span className="font-bold text-[var(--av-text-secondary)]">
-                          {previewUrl ? "फोटो में क्या दिखा: " : "समस्या क्या दिखी: "}
-                        </span>
-                        <span className="text-slate-800 dark:text-slate-200">
-                          {simpleObservation(result.visualObservations)}
-                        </span>
+                      <div className="mt-2 rounded-xl bg-slate-50 px-2.5 py-1.5 text-[11px] text-slate-700 dark:bg-slate-800/60 dark:text-slate-300 border border-slate-200/60 dark:border-slate-800">
+                        <span className="font-bold text-slate-900 dark:text-white">लक्षण: </span>
+                        <span>{simpleObservation(result.visualObservations)}</span>
                       </div>
                     )}
-
-                    {/* Disease Name & Compact Badges (Removes severity box, shortens and designs stage badge) */}
-                    <div className="mt-2.5 rounded-xl border border-rose-500/20 bg-rose-50/60 p-3 dark:bg-rose-950/20">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-extrabold text-rose-800 dark:bg-rose-900/50 dark:text-rose-300">
-                          {likelyThreatLabel(kind)}
-                        </span>
-                        {shortenCropStage(result.stage) ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/25 bg-emerald-50 px-2.5 py-0.5 text-[10.5px] font-bold text-emerald-900 dark:border-emerald-700/50 dark:bg-emerald-950/50 dark:text-emerald-200 shadow-2xs">
-                            <Sprout className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                            <span className="text-[10px] text-emerald-700/80 dark:text-emerald-400">अवस्था:</span>
-                            <span>{shortenCropStage(result.stage)}</span>
-                          </span>
-                        ) : null}
-                      </div>
-
-                      <h3 className="mt-1.5 text-lg font-black text-slate-900 dark:text-white sm:text-xl">
-                        {result.diseaseName}
-                      </h3>
-
-                      {result.pathogen && result.pathogen !== "—" ? (
-                        <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-400">
-                          कारण: <span className="font-semibold text-amber-700 dark:text-amber-300">{result.pathogen}</span>
-                        </p>
-                      ) : null}
-                    </div>
                   </div>
 
                   {/* Card 2: "दवा व अनुशंसित मात्रा" (Medicines & Dosage — ELEVATED TO TOP!) */}

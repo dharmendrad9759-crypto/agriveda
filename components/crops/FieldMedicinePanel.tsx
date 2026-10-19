@@ -59,14 +59,14 @@ export default function FieldMedicinePanel({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2.5">
       {/* Friendly Farmer Advisory Banner */}
-      <div className="flex items-center gap-2 rounded-2xl border border-emerald-800/15 bg-emerald-50/80 px-3.5 py-2.5 dark:bg-emerald-950/30">
-        <Sparkles className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
-        <p className="text-[12px] font-bold text-emerald-950 dark:text-emerald-100">
+      <div className="flex items-center gap-2 rounded-xl border border-emerald-800/15 bg-emerald-50/80 px-3 py-2 dark:bg-emerald-950/30">
+        <Sparkles className="h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-300" />
+        <p className="text-[11.5px] font-bold text-emerald-950 dark:text-emerald-100">
           {hi
-            ? "हर दवाई की बोतल पर उसका असली 'टेक्निकल नाम' छपा होता है। दुकान पर यही नाम मांगें।"
-            : "Every bottle clearly displays its official technical formula. Ask for this technical name at the store."}
+            ? "हर दवाई की बोतल पर असली 'टेक्निकल नाम' छपा होता है। दुकान पर यही नाम मांगें।"
+            : "Every bottle displays its official technical formula. Ask for this technical name."}
         </p>
       </div>
 
@@ -91,7 +91,7 @@ export default function FieldMedicinePanel({
         return (
           <section
             key={tier.title}
-            className={`overflow-hidden rounded-2xl border ${theme.border} ${theme.bg} p-3.5 shadow-sm transition-all`}
+            className={`overflow-hidden rounded-xl border ${theme.border} ${theme.bg} p-2.5 sm:p-3 shadow-xs transition-all`}
           >
             {/* Tier Title Toggle Button */}
             <button
@@ -101,18 +101,18 @@ export default function FieldMedicinePanel({
             >
               <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-black ${theme.badge}`}
+                  className={`flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full text-[11px] font-black ${theme.badge}`}
                 >
                   {tIdx + 1}
                 </span>
-                <h3 className={`text-[15px] font-black tracking-tight ${theme.header} truncate`}>
+                <h3 className={`text-[14px] font-black tracking-tight ${theme.header} truncate`}>
                   {tier.title}
                 </h3>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400">
+                <span className="text-[10.5px] font-semibold text-stone-500 dark:text-stone-400">
                   {parsedItems.filter((i) => i.isChemical).length}{" "}
-                  {hi ? "दवा विकल्प" : "options"}
+                  {hi ? "विकल्प" : "options"}
                 </span>
                 <ChevronDown
                   className={`h-4 w-4 text-stone-500 transition-transform duration-200 ${
@@ -124,7 +124,7 @@ export default function FieldMedicinePanel({
 
             {/* Medicine Option Cards (Rendered when accordion is open) */}
             {isOpen && (
-              <div className="mt-3.5 space-y-3">
+              <div className="mt-2.5 space-y-2">
               {parsedItems.map((item, oIdx) => {
                 if (!item.isChemical) {
                   return (
@@ -143,72 +143,72 @@ export default function FieldMedicinePanel({
                 return (
                   <article
                     key={item.id}
-                    className="flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white p-3 shadow-sm transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
+                    className="flex flex-col overflow-hidden rounded-xl border border-stone-200/90 bg-white p-2.5 shadow-xs transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-2.5">
                         {/* Left: Bottle Photo/Visual with Technical Name on Bottle */}
-                        <div className="flex flex-col items-center">
+                        <div className="flex flex-col items-center shrink-0">
                           <ChemBottleThumb
                             technical={item.technicalEn || item.technicalHi}
                             category={item.category}
                             size="sm"
-                            className="rounded-lg shadow-sm"
+                            className="rounded-lg shadow-xs"
                           />
-                          <span className="mt-1 text-[9px] font-extrabold text-stone-400">
+                          <span className="mt-0.5 text-[8.5px] font-extrabold text-stone-400">
                             {getChemPackageType(item.technicalEn || item.technicalHi, item.formulation) === "pouch"
-                              ? (hi ? "पैकेट फोटो" : "Pouch Pack")
-                              : (hi ? "बोतल फोटो" : "Bottle Shot")}
+                              ? (hi ? "पैकेट" : "Pouch")
+                              : (hi ? "बोतल" : "Bottle")}
                           </span>
                         </div>
 
                       {/* Right: Technical Information, Dose & Brands */}
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-black text-stone-700 dark:bg-stone-800 dark:text-stone-300">
+                        <div className="flex flex-wrap items-center gap-1">
+                          <span className="rounded bg-stone-100 px-1.5 py-0.2 text-[9.5px] font-black text-stone-700 dark:bg-stone-800 dark:text-stone-300">
                             {hi ? `विकल्प ${oIdx + 1}` : `Option ${oIdx + 1}`}
                           </span>
 
-                          <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                          <span className="rounded bg-emerald-50 px-1.5 py-0.2 text-[9.5px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                             {item.categoryLabelHi}
                           </span>
 
                           {item.formulation && (
-                            <span className="rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-black text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
+                            <span className="rounded bg-blue-50 px-1.5 py-0.2 text-[9.5px] font-black text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
                               {item.formulation}
                             </span>
                           )}
                         </div>
 
                         {/* Technical Name Headline */}
-                        <h4 className="mt-1 text-[15px] font-black leading-snug text-stone-950 dark:text-stone-50">
+                        <h4 className="mt-0.5 text-[14px] font-black leading-snug text-stone-950 dark:text-stone-50">
                           {item.technicalHi}
                         </h4>
 
                         {/* Standard English Technical if different */}
                         {item.technicalEn && item.technicalEn !== item.technicalHi && (
-                          <p className="text-[11px] font-extrabold text-stone-500 dark:text-stone-400">
+                          <p className="text-[10.5px] font-extrabold text-stone-500 dark:text-stone-400">
                             {item.technicalEn}
                           </p>
                         )}
 
                         {/* Popular Market Brands */}
                         {item.brands.length > 0 && (
-                          <div className="mt-1.5 rounded-lg bg-amber-50/80 px-2 py-1 text-[11px] font-semibold text-amber-950 dark:bg-amber-950/40 dark:text-amber-200">
+                          <div className="mt-1 rounded bg-amber-50/80 px-1.5 py-0.5 text-[10.5px] font-semibold text-amber-950 dark:bg-amber-950/40 dark:text-amber-200">
                             <span className="font-extrabold text-amber-800 dark:text-amber-300">
-                              {hi ? "बाज़ार में प्रसिद्ध नाम: " : "Popular Brands: "}
+                              {hi ? "प्रसिद्ध ब्रांड: " : "Brands: "}
                             </span>
                             {item.brands.join(", ")}
                           </div>
                         )}
 
                         {/* Dose & Water Information */}
-                        <div className="mt-2.5 space-y-1.5">
-                          <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <div className="mt-1.5 space-y-1">
+                          <div className="flex flex-wrap items-center gap-1 text-[10.5px]">
                             {/* Per Liter */}
-                            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 font-bold text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">
-                              <Droplets className="h-3 w-3 text-emerald-600" />
+                            <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">
+                              <Droplets className="h-2.5 w-2.5 text-emerald-600" />
                               <span className="font-medium text-stone-500 dark:text-stone-400">
-                                {hi ? "प्रति लीटर: " : "Per Liter: "}
+                                {hi ? "प्रति ली: " : "Per L: "}
                               </span>
                               <span>{item.farmerDose?.perLiter || item.dose}</span>
                             </span>

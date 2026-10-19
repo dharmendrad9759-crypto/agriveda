@@ -95,8 +95,9 @@ export default function LaunchFlow() {
 
   const finishSplash = useCallback(() => {
     markSplashShown();
+    markIntroDone();
     void hideNativePluginSplash(0);
-    setPhase(hasCompletedFirstRun() ? "done" : "intro");
+    setPhase("done");
   }, []);
 
   const finishIntro = useCallback(() => {

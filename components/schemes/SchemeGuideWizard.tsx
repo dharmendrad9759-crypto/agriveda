@@ -301,34 +301,22 @@ export default function SchemeGuideWizard({ guide }: { guide: SchemeGuide }) {
           ) : null}
         </section>
 
-        <div className="flex gap-2">
-          <button
-            type="button"
-            disabled={stepIndex === 0}
-            onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
-            className={cn(
-              "inline-flex flex-1 items-center justify-center gap-1 rounded-xl border border-[var(--av-border)] py-3 text-[13px] font-bold",
-              stepIndex === 0 && "opacity-40"
-            )}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            पीछे
-          </button>
+        <div>
           {!isLast ? (
             <button
               type="button"
               onClick={() => setStepIndex((i) => Math.min(steps.length - 1, i + 1))}
-              className={`inline-flex flex-1 items-center justify-center gap-1 ${AV.btnPrimary}`}
+              className={`inline-flex w-full items-center justify-center gap-1.5 rounded-xl py-3.5 text-[14px] font-bold ${AV.btnPrimary}`}
             >
-              आगे
+              आगे बढ़ें
               <ChevronRight className="h-4 w-4" />
             </button>
           ) : (
             <AppLink
               href="/schemes"
-              className="inline-flex flex-1 items-center justify-center rounded-xl border border-[var(--av-border)] py-3 text-[13px] font-bold"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-3.5 text-[14px] font-bold text-[var(--av-text-primary)] shadow-sm"
             >
-              सभी योजनाएँ
+              सभी योजनाएँ देखें
             </AppLink>
           )}
         </div>

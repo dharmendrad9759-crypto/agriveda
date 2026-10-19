@@ -822,9 +822,9 @@ export default function CropPlannerClient() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="px-4 py-4 pb-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
+        <div className="px-4 py-3.5 pb-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <label className="text-xs font-bold text-[var(--av-text-secondary)]">
                 {hi ? "खेत का रकबा (क्षेत्रफल)" : t("plannerArea")}
               </label>
@@ -832,7 +832,7 @@ export default function CropPlannerClient() {
                 {hi ? "एकड़ में दर्ज करें या नीचे से चुनें" : "Enter in acres or select preset"}
               </p>
             </div>
-            <div className="flex items-center gap-2 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/5 px-3 py-1.5 shadow-inner focus-within:border-emerald-600 focus-within:bg-white dark:focus-within:bg-slate-900">
+            <div className="flex shrink-0 items-center justify-between sm:justify-end gap-2 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/5 px-3 py-1.5 shadow-inner focus-within:border-emerald-600 focus-within:bg-white dark:focus-within:bg-slate-900">
               <input
                 type="number"
                 min={0.1}
@@ -845,10 +845,10 @@ export default function CropPlannerClient() {
                 className="w-16 bg-transparent text-right text-base font-extrabold text-[var(--av-text-primary)] outline-none"
                 aria-label={hi ? "रकबा एकड़ में" : "Area in acres"}
               />
-              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">{acreUnit}</span>
+              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 shrink-0">{acreUnit}</span>
             </div>
           </div>
-          <div className="mt-3 grid grid-cols-4 gap-2">
+          <div className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-2">
             {AREA_PRESETS.map((preset) => (
               <button
                 key={preset}
@@ -858,7 +858,7 @@ export default function CropPlannerClient() {
                   setGenerated(false);
                 }}
                 className={cn(
-                  "rounded-xl border py-2.5 text-center text-[12px] font-extrabold transition-all active:scale-95",
+                  "rounded-xl border py-2 px-1 text-center text-[11px] sm:text-xs font-black transition-all active:scale-95 whitespace-nowrap overflow-hidden text-ellipsis",
                   area === preset
                     ? "border-emerald-500 bg-emerald-600 text-white shadow-md shadow-emerald-700/20"
                     : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-400"

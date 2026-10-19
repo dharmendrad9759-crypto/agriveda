@@ -289,30 +289,30 @@ export function AiDoctorSymptoms({
   const chips = getSymptomChipsForCrop(cropSlug);
 
   const PARTS = [
-    { id: "leaf", labelHi: "पत्ती (Leaf)" },
-    { id: "stem", labelHi: "तना (Stem)" },
-    { id: "root", labelHi: "जड़ (Root)" },
-    { id: "fruit", labelHi: "फल/फूल (Fruit/Flower)" },
-    { id: "whole", labelHi: "पूरा पौधा (Whole Plant)" },
+    { id: "leaf", labelHi: "पत्ती" },
+    { id: "stem", labelHi: "तना" },
+    { id: "root", labelHi: "जड़" },
+    { id: "fruit", labelHi: "फल/फूल" },
+    { id: "whole", labelHi: "पूरा पौधा" },
   ];
 
   const SEVERITIES = [
-    { id: "low", labelHi: "कम (Low)" },
-    { id: "medium", labelHi: "मध्यम (Medium)" },
-    { id: "high", labelHi: "अधिक (High)" },
+    { id: "low", labelHi: "कम" },
+    { id: "medium", labelHi: "मध्यम" },
+    { id: "high", labelHi: "अधिक" },
   ];
 
   return (
     <DarkCard className="!p-3 sm:!p-4 space-y-3">
       <SectionLabel
         title="लक्षण व खेत की स्थिति"
-        hint="सटीक पहचान के लिए हिस्सा व गंभीरता चुनें (वैकल्पिक)"
+        hint="सटीक पहचान के लिए हिस्सा व लक्षण चुनें (वैकल्पिक)"
       />
 
-      {/* 1. प्रभावित हिस्सा (Affected Part) */}
+      {/* 1. प्रभावित हिस्सा */}
       <div>
         <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
-          1. प्रभावित हिस्सा (Affected Part):
+          1. प्रभावित हिस्सा:
         </p>
         <div className="mt-1.5 flex flex-wrap gap-1.5">
           {PARTS.map((p) => {
@@ -322,7 +322,7 @@ export function AiDoctorSymptoms({
                 key={p.id}
                 type="button"
                 onClick={() => onSelectPart?.(isSel ? "" : p.labelHi)}
-                className={`min-h-[30px] rounded-full border px-3 py-1 text-[11px] font-bold transition active:scale-[0.97] ${
+                className={`min-h-[28px] rounded-full border px-2.5 py-0.5 text-[11px] font-bold transition active:scale-[0.97] ${
                   isSel
                     ? "border-emerald-600 bg-emerald-600 text-white shadow-sm"
                     : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-400"
@@ -335,10 +335,10 @@ export function AiDoctorSymptoms({
         </div>
       </div>
 
-      {/* 2. समस्या की गंभीरता (Severity) */}
+      {/* 2. समस्या की गंभीरता */}
       <div>
         <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
-          2. समस्या की गंभीरता (Severity):
+          2. समस्या की गंभीरता:
         </p>
         <div className="mt-1.5 flex flex-wrap gap-1.5">
           {SEVERITIES.map((s) => {
@@ -348,7 +348,7 @@ export function AiDoctorSymptoms({
                 key={s.id}
                 type="button"
                 onClick={() => onSelectSeverity?.(isSel ? "" : s.labelHi)}
-                className={`min-h-[30px] rounded-full border px-3 py-1 text-[11px] font-bold transition active:scale-[0.97] ${
+                className={`min-h-[28px] rounded-full border px-2.5 py-0.5 text-[11px] font-bold transition active:scale-[0.97] ${
                   isSel
                     ? "border-amber-600 bg-amber-600 text-white shadow-sm"
                     : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-amber-400"
@@ -364,26 +364,24 @@ export function AiDoctorSymptoms({
       {/* 3. सामान्य लक्षण चिप्स */}
       <div>
         <p className="text-[11px] font-bold text-[var(--av-text-secondary)]">
-          3. फसल अनुसार लक्षण:
+          3. फसल अनुसार प्रमुख लक्षण:
         </p>
         <div className="mt-1.5 flex flex-wrap gap-1.5 sm:gap-2">
           {chips.map((chip) => {
+            const chipText = chip.hi || chip.label;
             const active = activeChips.includes(chip.id);
             return (
               <button
                 key={`${cropSlug}-${chip.id}`}
                 type="button"
-                onClick={() => onToggleChip(chip.id, chip.label)}
-                className={`min-h-[30px] rounded-full border px-2.5 py-1 text-[11px] font-semibold transition active:scale-[0.97] sm:px-3 ${
+                onClick={() => onToggleChip(chip.id, chipText)}
+                className={`min-h-[28px] rounded-full border px-2.5 py-0.5 text-[11px] font-bold transition active:scale-[0.97] sm:px-3 ${
                   active
                     ? "border-emerald-500 bg-emerald-600 text-white shadow-sm"
                     : "border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-400"
                 }`}
               >
-                {chip.label}
-                <span className={`ml-1 ${active ? "text-emerald-100" : "text-[var(--av-text-muted)]"}`}>
-                  · {chip.hi}
-                </span>
+                {chipText}
               </button>
             );
           })}
@@ -396,7 +394,7 @@ export function AiDoctorSymptoms({
           onChange={(e) => onChange(e.target.value.slice(0, 300))}
           placeholder="अन्य कोई लक्षण (जैसे: पत्ते पर काले धब्बे, पीलापन, कीड़ा दिखा)..."
           rows={2}
-          className="av-input min-h-[58px] sm:min-h-[66px] w-full resize-none text-xs leading-relaxed"
+          className="av-input min-h-[54px] sm:min-h-[60px] w-full resize-none text-xs leading-relaxed"
         />
         {voiceSlot && <div className="mt-2">{voiceSlot}</div>}
         <p className="mt-1 text-right text-[10px] text-[var(--av-text-muted)]">{value.length}/300</p>
@@ -480,10 +478,10 @@ export function AiDoctorPhotoUpload({
             </motion.div>
 
             {/* Floating Scanner Badge */}
-            <div className="pointer-events-none absolute top-2.5 inset-x-0 z-20 flex justify-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-black/75 px-3 py-1 text-[10.5px] font-bold text-emerald-300 backdrop-blur-md border border-emerald-500/40 shadow-sm">
+            <div className="pointer-events-none absolute bottom-2.5 inset-x-0 z-20 flex justify-center px-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-black/85 px-3 py-1 text-[10.5px] font-bold text-emerald-300 backdrop-blur-md border border-emerald-500/40 shadow-md">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-                <span>कैमरा जाँच सक्रिय · पत्ती स्कैन हो रही है</span>
+                <span>पत्ती स्कैन सक्रिय · स्पष्ट फोटो</span>
               </span>
             </div>
 

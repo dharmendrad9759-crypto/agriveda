@@ -224,14 +224,14 @@ function FertilizerCalculatorInner() {
               <div
                 className={cn(
                   AV.card,
-                  "rounded-[22px] border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]"
+                  "rounded-[22px] border border-emerald-500/20 bg-gradient-to-b from-emerald-500/5 via-[var(--av-surface)] to-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]"
                 )}
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
                     फसल चुनें ({crops.length})
                   </p>
-                  <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
                     टैप करें
                   </span>
                 </div>
@@ -770,6 +770,7 @@ export default function FertilizerCalculatorPage() {
           title="खाद कैलकुलेटर"
           subtitle="लोड हो रहा है…"
           backHref="/dashboard"
+          hubTheme="green"
         >
           <div className="mx-auto max-w-lg px-1 py-8 text-center text-sm text-[var(--av-text-muted)]">
             कैलकुलेटर खुल रहा है…

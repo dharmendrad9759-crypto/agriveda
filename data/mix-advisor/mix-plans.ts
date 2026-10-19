@@ -1035,6 +1035,19 @@ export function buildMixPlanFromProblems(
   const recommendedMedicines: MixMedicine[] = [];
   const alternativesPool: MixMedicine[] = [];
 
+  const isSameMed = (a: MixMedicine, b: MixMedicine) => {
+    if (a.activeId === b.activeId) return true;
+    const techA = a.technical.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const techB = b.technical.toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (techA === techB || (techA.length > 5 && techB.length > 5 && (techA.includes(techB) || techB.includes(techA)))) {
+      return true;
+    }
+    if (a.brands && b.brands && a.brands.some((brA) => b.brands?.some((brB) => brA.toLowerCase() === brB.toLowerCase()))) {
+      return true;
+    }
+    return false;
+  };
+
   // For each selected problem, find the authoritative ICAR curative recommendation
   for (const prob of selected) {
     const curatives = cropMedsRecord[prob.id];
@@ -1042,7 +1055,7 @@ export function buildMixPlanFromProblems(
       // Find the first curative option not yet present in recommendedMedicines
       const nonDuplicateCurative = curatives.find((c) => {
         const med = curativeToMixMedicine(c, prob);
-        return !recommendedMedicines.some((m) => m.activeId === med.activeId || m.technical === med.technical);
+        return !recommendedMedicines.some((m) => isSameMed(m, med));
       });
 
       if (nonDuplicateCurative) {
@@ -1051,9 +1064,7 @@ export function buildMixPlanFromProblems(
       } else {
         // The curative already in the tank also controls this problem
         const primaryMed = curativeToMixMedicine(curatives[0], prob);
-        const existing = recommendedMedicines.find(
-          (m) => m.activeId === primaryMed.activeId || m.technical === primaryMed.technical
-        );
+        const existing = recommendedMedicines.find((m) => isSameMed(m, primaryMed));
         if (existing && existing.targetProblemHi && !existing.targetProblemHi.includes(prob.nameHi)) {
           existing.targetProblemHi = `${existing.targetProblemHi} + ${prob.nameHi}`;
         }
@@ -1062,7 +1073,7 @@ export function buildMixPlanFromProblems(
       // Add all curatives to alternatives pool
       for (const c of curatives) {
         const altMed = curativeToMixMedicine(c, prob);
-        if (!alternativesPool.some((a) => a.technical === altMed.technical)) {
+        if (!alternativesPool.some((a) => isSameMed(a, altMed))) {
           alternativesPool.push(altMed);
         }
       }
@@ -1070,16 +1081,16 @@ export function buildMixPlanFromProblems(
       // Fallback from curated catalog if no specific match
       const isPest = prob.tagHi.includes("कीट") || prob.tagHi.includes("कीड़ा");
       const pool = isPest ? POPULAR_INSECTICIDES : POPULAR_FUNGICIDES;
-      const fallback = pool.find((item) => !recommendedMedicines.some((m) => m.activeId === item.activeId)) ?? pool[0];
+      const fallback = pool.find((item) => !recommendedMedicines.some((m) => isSameMed(m, item))) ?? pool[0];
       const withTarget: MixMedicine = {
         ...fallback,
         targetProblemId: prob.id,
         targetProblemHi: `${prob.nameHi} (${prob.nameEn})`,
       };
-      if (!recommendedMedicines.some((m) => m.activeId === withTarget.activeId)) {
+      if (!recommendedMedicines.some((m) => isSameMed(m, withTarget))) {
         recommendedMedicines.push(withTarget);
       } else {
-        const existing = recommendedMedicines.find((m) => m.activeId === withTarget.activeId);
+        const existing = recommendedMedicines.find((m) => isSameMed(m, withTarget));
         if (existing && existing.targetProblemHi && !existing.targetProblemHi.includes(prob.nameHi)) {
           existing.targetProblemHi = `${existing.targetProblemHi} + ${prob.nameHi}`;
         }

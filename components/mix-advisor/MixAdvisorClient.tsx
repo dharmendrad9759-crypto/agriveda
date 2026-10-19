@@ -124,21 +124,43 @@ function MixAdvisorInner() {
   const [step, setStep] = useState<StepId>("problem");
   const [cropSlug, setCropSlug] = useState("tomato");
   const [stage, setStage] = useState<GrowthStageId>("fruiting");
-  const [problemIds, setProblemIds] = useState<string[]>(["early-blight", "fruit-borer"]);
+  const [problemIds, setProblemIds] = useState<string[]>([]);
   const [meds, setMeds] = useState<MixMedicine[]>([]);
   const [plan, setPlan] = useState<MixPlan | null>(null);
   const [cropGridOpen, setCropGridOpen] = useState(false);
 
+  // Synchronized browser history step navigation
+  const goToStep = (nextStep: StepId) => {
+    setStep(nextStep);
+    if (typeof window !== "undefined") {
+      window.history.pushState({ agrivedaMix: true, step: nextStep }, "");
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      if (e.state && e.state.agrivedaMix && e.state.step) {
+        setStep(e.state.step);
+      } else {
+        setStep("problem");
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   // Single-step back navigation
   const handleBackStep = () => {
-    if (step === "guide") {
-      setStep("mix");
-    } else if (step === "mix") {
-      setStep("weather");
-    } else if (step === "weather") {
-      setStep("problem");
+    if (step === "guide" || step === "mix" || step === "weather") {
+      if (typeof window !== "undefined" && window.history.state?.agrivedaMix) {
+        window.history.back();
+      } else {
+        if (step === "guide") setStep("mix");
+        else if (step === "mix") setStep("weather");
+        else if (step === "weather") setStep("problem");
+      }
     } else {
-      router.push("/dashboard");
+      router.push("/");
     }
   };
 
@@ -234,27 +256,9 @@ function MixAdvisorInner() {
     };
   }, []);
 
-  // Update default selected problems when crop changes
-  useEffect(() => {
-    const valid = problemIds.filter((id) => problems.some((p) => p.id === id));
-    if (valid.length === problemIds.length && valid.length > 0) return;
-    const first = problems[0];
-    const second = problems.find((p) => p.tagHi.includes("कीट") || p.tagHi.includes("कीड़ा")) ?? problems[1];
-    if (first && second && first.id !== second.id) {
-      setProblemIds([first.id, second.id]);
-    } else if (first) {
-      setProblemIds([first.id]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cropSlug, problems]);
-
   const toggleProblem = (id: string) => {
     setProblemIds((prev) => {
       if (prev.includes(id)) {
-        if (prev.length <= 1) {
-          showToast("कम से कम 1 समस्या चुनना ज़रूरी है।", "error");
-          return prev;
-        }
         return prev.filter((x) => x !== id);
       }
       if (prev.length >= MAX_PROBLEMS) {
@@ -271,12 +275,12 @@ function MixAdvisorInner() {
     if (!next) return;
     setPlan(next);
     setMeds(next.medicines);
-    setStep("weather");
+    goToStep("weather");
   };
 
   const goToMix = () => {
     if (!meds.length) return;
-    setStep("mix");
+    goToStep("mix");
   };
 
   // Evaluate current compatibility
@@ -369,7 +373,7 @@ function MixAdvisorInner() {
     <AppShell
       variant="hub"
       title="दवा मिलाएँ (Tank Mix Advisor)"
-      backHref="/dashboard"
+      backHref="/"
       onBack={handleBackStep}
     >
       <div className="mx-auto max-w-xl space-y-4 px-2 pb-12">
@@ -449,6 +453,7 @@ function MixAdvisorInner() {
                               type="button"
                               onClick={() => {
                                 setCropSlug(c.slug);
+                                setProblemIds([]); // Clear to avoid carrying over selections from other crop
                                 setCropGridOpen(false);
                                 setTimeout(() => {
                                   document.getElementById("growth-stage-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -536,6 +541,34 @@ function MixAdvisorInner() {
                     {problemIds.length}/{MAX_PROBLEMS} चुनी
                   </span>
                 </div>
+
+                {/* Stable Selection Chips */}
+                {selectedProblems.length > 0 && (
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-2.5 shadow-2xs">
+                    <span className="text-[11px] font-black text-emerald-950 dark:text-emerald-100 mr-1">
+                      चुने गए रोग/कीट:
+                    </span>
+                    {selectedProblems.map((p) => (
+                      <span
+                        key={p.id}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-extrabold text-white shadow-xs"
+                      >
+                        ✓ {p.nameHi}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleProblem(p.id);
+                          }}
+                          className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/30 hover:bg-white/50 text-white transition active:scale-95"
+                          title="हटाएँ"
+                        >
+                          <X className="h-2.5 w-2.5 stroke-[3]" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 <div className="mt-2.5 grid grid-cols-2 gap-2.5">
                   {problems.map((p) => {
@@ -709,7 +742,7 @@ function MixAdvisorInner() {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setStep("problem")}
+                  onClick={handleBackStep}
                   className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] py-3 text-[14px] font-bold active:scale-[0.98]"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -975,7 +1008,7 @@ function MixAdvisorInner() {
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setStep("weather")}
+                  onClick={handleBackStep}
                   className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] py-3 text-[14px] font-bold active:scale-[0.98]"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -984,7 +1017,7 @@ function MixAdvisorInner() {
                 <button
                   type="button"
                   disabled={isIncompatible}
-                  onClick={() => setStep("guide")}
+                  onClick={() => goToStep("guide")}
                   className="flex flex-[1.6] items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-[15px] font-black text-white shadow-md shadow-emerald-600/25 active:scale-[0.98] disabled:opacity-40"
                 >
                   अगला: घोल विधि (Guide)
@@ -1433,7 +1466,7 @@ function MixAdvisorInner() {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setStep("mix")}
+                  onClick={handleBackStep}
                   className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] py-2.5 text-[13px] font-bold active:scale-[0.98]"
                 >
                   <ArrowLeft className="h-4 w-4" />
