@@ -17,7 +17,7 @@ interface Agriveda2ShellProps {
 export default function Agriveda2Shell({
   title,
   subtitle,
-  backHref = "/",
+  backHref,
   onBack,
   badge = BRAND,
   children,

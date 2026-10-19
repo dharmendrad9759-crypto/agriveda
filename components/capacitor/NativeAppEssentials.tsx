@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { isCapacitorNative } from "@/lib/capacitorNav";
+import { getPreviousNavUrl, popNavHistory } from "@/lib/navigationTracker";
 
 /**
  * Standard native essentials: Android back button, status bar polish.
@@ -23,6 +24,12 @@ export default function NativeAppEssentials() {
         }
 
         const handle = await App.addListener("backButton", ({ canGoBack }) => {
+          const prev = getPreviousNavUrl();
+          if (prev) {
+            popNavHistory();
+            window.history.back();
+            return;
+          }
           if (canGoBack || window.history.length > 1) {
             window.history.back();
             return;

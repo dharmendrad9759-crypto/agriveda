@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
+import { navigateBack } from "@/lib/navigationTracker";
 
 /** Premium problem-flow chrome — crop pick → problem → cure */
 export default function ProblemFlowShell({
@@ -59,13 +60,7 @@ export default function ProblemFlowShell({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => {
-              if (typeof window !== "undefined" && window.history.length > 1) {
-                router.back();
-              } else {
-                router.push(backHref);
-              }
-            }}
+            onClick={() => navigateBack({ router, backHref })}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-emerald-900/10 bg-white text-emerald-800 shadow-[0_8px_20px_-14px_rgba(4,120,87,0.55)] active:scale-95"
             aria-label="Back"
           >

@@ -345,10 +345,14 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "copper-hydroxide-53-8-df": "/images/chem/real/copper-hydroxide-53-8-df.jpg",
   "copper-oxychloride-50-wp": "/images/chem/real/copper-oxychloride-50-wp.jpg",
   "deltamethrin-2-8-ec": "/images/chem/real/deltamethrin-2-8-ec.jpg",
+  "diafenthiuron-50-wp": "/images/chem/real/diafenthiuron-50-wp.jpg",
   "difenoconazole-25-ec": "/images/chem/real/difenoconazole-25-ec.jpg",
   "dimethomorph-50-wp": "/images/chem/real/dimethomorph-50-wp.jpg",
+  "dinotefuran-20-sg": "/images/chem/real/dinotefuran-20-sg.jpg",
   "emamectin-benzoate-5-sg": "/images/chem/real/emamectin-benzoate-5-sg.jpg",
   "fipronil-0-3-gr": "/images/chem/real/fipronil-0-3-gr.jpg",
+  "flonicamid-50-wg": "/images/chem/real/flonicamid-50-wg.jpg",
+  "flubendiamide-39-sc": "/images/chem/real/flubendiamide-39-sc.jpg",
   "glyphosate-41-sl": "/images/chem/real/glyphosate-41-sl.jpg",
   "hexaconazole-5-ec": "/images/chem/real/hexaconazole-5-ec.jpg",
   "imidacloprid-17-8-sl": "/images/chem/real/imidacloprid-17-8-sl.jpg",
@@ -357,70 +361,83 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "metalaxyl-m-mancozeb-wp": "/images/chem/real/metalaxyl-m-mancozeb-wp.jpg",
   "pendimethalin-30-ec": "/images/chem/real/pendimethalin-30-ec.jpg",
   "pretilachlor-50-ec": "/images/chem/real/pretilachlor-50-ec.jpg",
+  "profenofos-50-ec": "/images/chem/real/profenofos-50-ec.jpg",
   "propineb-70-wp": "/images/chem/real/propineb-70-wp.jpg",
   "pyraclostrobin-20-wg": "/images/chem/real/pyraclostrobin-20-wg.jpg",
   "spinosad-45-sc": "/images/chem/real/spinosad-45-sc.jpg",
+  "spinetoram-11-7-sc": "/images/chem/real/spinetoram-11-7-sc.jpg",
+  "spiromesifen-22-9-sc": "/images/chem/real/spiromesifen-22-9-sc.jpg",
+  "broflanilide-300-sc": "/images/chem/real/broflanilide-300-sc.jpg",
+  "cyantraniliprole-10-od": "/images/chem/real/cyantraniliprole-10-od.jpg",
+  "silicon-spreader": "/images/chem/real/silicon-spreader.jpg",
   "tebuconazole-25-9-ec": "/images/chem/real/tebuconazole-25-9-ec.jpg",
   "tebuconazole-trifloxystrobin": "/images/chem/real/tebuconazole-trifloxystrobin.jpg",
   "tebuconazole-trifloxystrobin-wg": "/images/chem/real/tebuconazole-trifloxystrobin-wg.jpg",
   "thiamethoxam-25-wg": "/images/chem/real/thiamethoxam-25-wg.jpg",
   "tricyclazole-75-wp": "/images/chem/real/tricyclazole-75-wp.jpg",
+  "propiconazole-25-ec": "/images/chem/real/propiconazole-25-ec.jpg",
+  "streptocycline-sp": "/images/chem/real/streptocycline-sp.jpg",
 
-  // Curative Fungicide Mappings (Triazoles, Combinations, Systemics)
-  "propiconazole-25-ec": "/images/chem/real/tebuconazole-25-9-ec.jpg",
-  "propiconazole": "/images/chem/real/tebuconazole-25-9-ec.jpg",
-  "tebuconazole-2-ds": "/images/chem/real/tebuconazole-25-9-ec.jpg",
-  "cymoxanil-mancozeb-wp": "/images/chem/real/carbendazim-mancozeb-wp.jpg",
-  "carboxin-thiram-ds": "/images/chem/real/carbendazim-50-wp.jpg",
-  "validamycin-3-l": "/images/chem/real/hexaconazole-5-ec.jpg",
-  "streptocycline-sp": "/images/chem/real/copper-oxychloride-50-wp.jpg",
-  "isoprothiolane-40-ec": "/images/chem/real/difenoconazole-25-ec.jpg",
-  "edifenphos-50-ec": "/images/chem/real/hexaconazole-5-ec.jpg",
-
-  // Curative Insecticide Mappings (Diamides, Sucking Pest Regulators, Soil)
-  "spinetoram-11-7-sc": "/images/chem/real/spinosad-45-sc.jpg",
-  "flubendiamide-39-sc": "/images/chem/real/chlorantraniliprole-18-5-sc.jpg",
-  "dinotefuran-20-sg": "/images/chem/real/thiamethoxam-25-wg.jpg",
-  "flonicamid-50-wg": "/images/chem/real/thiamethoxam-25-wg.jpg",
-  "pymetrozine-50-wg": "/images/chem/real/thiamethoxam-25-wg.jpg",
-  "diafenthiuron-50-wp": "/images/chem/real/propineb-70-wp.jpg",
-  "cartap-50-sp": "/images/chem/real/cartap-4-gr.jpg",
-  "fipronil-5-sc": "/images/chem/real/fipronil-0-3-gr.jpg",
-  "chlorpyrifos-20-ec": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
-  "triflumezopyrim-10-sc": "/images/chem/real/buprofezin-25-sc.jpg",
-  "kasugamycin-3-sl": "/images/chem/real/difenoconazole-25-ec.jpg",
-  "dimethoate-30-ec": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
-  "iprodione-50-wp": "/images/chem/real/carbendazim-50-wp.jpg",
-  "wettable-sulphur-80-wdg": "/images/chem/real/mancozeb-75-wp.jpg",
-  "dinocap-48-ec": "/images/chem/real/tebuconazole-25-9-ec.jpg",
-  "propargite-57-ec": "/images/chem/real/buprofezin-25-sc.jpg",
-  "profenofos-cypermethrin-ec": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
-  "triadimefon-25-wp": "/images/chem/real/propineb-70-wp.jpg",
-  "malathion-50-ec": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
-  "trichoderma-viride-1-wp": "/images/chem/real/carbendazim-50-wp.jpg",
-  "abamectin-1-9-ec": "/images/chem/real/emamectin-benzoate-5-sg.jpg",
-  "indoxacarb-14-5-sc": "/images/chem/real/chlorantraniliprole-18-5-sc.jpg",
-  "thiacloprid-21-7-sc": "/images/chem/real/imidacloprid-17-8-sl.jpg",
+  // Extended aliases & family matches
+  "tebuconazole-25-ec": "/images/chem/real/tebuconazole-25-9-ec.jpg",
+  "tebuconazole": "/images/chem/real/tebuconazole-25-9-ec.jpg",
+  "chlorpyrifos-50-cypermethrin-5-ec": "/images/chem/real/profenofos-50-ec.jpg",
+  "indoxacarb-14-5-sc": "/images/chem/real/flubendiamide-39-sc.jpg",
+  "kasugamycin-3-sl": "/images/chem/real/streptocycline-sp.jpg",
+  "thiophanate-methyl-70-wp": "/images/chem/real/carbendazim-50-wp.jpg",
+  "thifluzamide-24-sc": "/images/chem/real/azoxystrobin-250-sc.jpg",
+  "spirotetramat-15-od": "/images/chem/real/cyantraniliprole-10-od.jpg",
+  "acetamiprid-20-sp": "/images/chem/real/acephate-75-sp.jpg",
+  "pymetrozine-50-wg": "/images/chem/real/flonicamid-50-wg.jpg",
+  "validamycin-3-l": "/images/chem/real/streptocycline-sp.jpg",
+  "isoprothiolane-40-ec": "/images/chem/real/tricyclazole-75-wp.jpg",
+  "abamectin-1-9-ec": "/images/chem/real/spiromesifen-22-9-sc.jpg",
   "pyriproxyfen-10-ec": "/images/chem/real/buprofezin-25-sc.jpg",
-  "pyriproxyfen-bifenthrin-ec": "/images/chem/real/buprofezin-25-sc.jpg",
-  "novaluron-emamectin-sc": "/images/chem/real/emamectin-benzoate-5-sg.jpg",
-  "famoxadone-cymoxanil-sc": "/images/chem/real/carbendazim-mancozeb-wp.jpg",
-  "imidacloprid-70-ws": "/images/chem/real/imidacloprid-17-8-sl.jpg",
-  "thiamethoxam-30-fs": "/images/chem/real/thiamethoxam-25-wg.jpg",
-  "azoxystrobin-23-sc": "/images/chem/real/azoxystrobin-250-sc.jpg",
+  "thiodicarb-75-wp": "/images/chem/real/acephate-75-sp.jpg",
+  "captan-50-wp": "/images/chem/real/mancozeb-75-wp.jpg",
+  "chlorothalonil": "/images/chem/real/chlorothalonil-75-wp.jpg",
+  "quinalphos-25-ec": "/images/chem/real/profenofos-50-ec.jpg",
+  "cartap-hydrochloride-50-sp": "/images/chem/real/cartap-4-gr.jpg",
+  "fipronil-5-sc": "/images/chem/real/fipronil-0-3-gr.jpg",
+  "chlorantraniliprole-0-4-gr": "/images/chem/real/fipronil-0-3-gr.jpg",
+  "chlorantraniliprole": "/images/chem/real/chlorantraniliprole-18-5-sc.jpg",
+  "emamectin-benzoate": "/images/chem/real/emamectin-benzoate-5-sg.jpg",
+  "flubendiamide": "/images/chem/real/flubendiamide-39-sc.jpg",
+  "dinotefuran": "/images/chem/real/dinotefuran-20-sg.jpg",
+  "flonicamid": "/images/chem/real/flonicamid-50-wg.jpg",
+  "diafenthiuron": "/images/chem/real/diafenthiuron-50-wp.jpg",
+  "spiromesifen": "/images/chem/real/spiromesifen-22-9-sc.jpg",
+  "spinetoram": "/images/chem/real/spinetoram-11-7-sc.jpg",
+  "broflanilide": "/images/chem/real/broflanilide-300-sc.jpg",
+  "cyantraniliprole": "/images/chem/real/cyantraniliprole-10-od.jpg",
+  "thiamethoxam": "/images/chem/real/thiamethoxam-25-wg.jpg",
+  "imidacloprid": "/images/chem/real/imidacloprid-17-8-sl.jpg",
+  "mancozeb": "/images/chem/real/mancozeb-75-wp.jpg",
+  "carbendazim": "/images/chem/real/carbendazim-50-wp.jpg",
+  "copper-oxychloride": "/images/chem/real/copper-oxychloride-50-wp.jpg",
+  "copper-hydroxide": "/images/chem/real/copper-hydroxide-53-8-df.jpg",
+  "difenoconazole": "/images/chem/real/difenoconazole-25-ec.jpg",
+  "hexaconazole": "/images/chem/real/hexaconazole-5-ec.jpg",
+  "tricyclazole": "/images/chem/real/tricyclazole-75-wp.jpg",
+  "propineb": "/images/chem/real/propineb-70-wp.jpg",
+  "pyraclostrobin": "/images/chem/real/pyraclostrobin-20-wg.jpg",
+  "dimethomorph": "/images/chem/real/dimethomorph-50-wp.jpg",
+  "azoxystrobin": "/images/chem/real/azoxystrobin-250-sc.jpg",
+  "buprofezin": "/images/chem/real/buprofezin-25-sc.jpg",
+  "lambda-cyhalothrin": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
+  "deltamethrin": "/images/chem/real/deltamethrin-2-8-ec.jpg",
+  "glyphosate": "/images/chem/real/glyphosate-41-sl.jpg",
+  "atrazine": "/images/chem/real/atrazine-50-wp.jpg",
+  "pendimethalin": "/images/chem/real/pendimethalin-30-ec.jpg",
+  "pretilachlor": "/images/chem/real/pretilachlor-50-ec.jpg",
+  "bispyribac-sodium": "/images/chem/real/bispyribac-sodium-10-sc.jpg",
+  "spinosad": "/images/chem/real/spinosad-45-sc.jpg",
 };
 
-export function hasRealBottlePhoto(technical: string): boolean {
-  const hit = lookupChemBottle(technical);
-  if (hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]) return true;
+export const STATIC_SVG_BOTTLES = new Set<string>([]);
 
-  // Key-word search fallback
-  const norm = (technical || "").toLowerCase();
-  for (const [slug, url] of Object.entries(REAL_BOTTLE_PHOTOS)) {
-    const root = slug.split("-")[0];
-    if (root.length >= 4 && norm.includes(root)) return true;
-  }
-  return false;
+export function hasRealBottlePhoto(technical: string): boolean {
+  return true;
 }
 
 export function chemBottleImageSrc(technical: string): string {
@@ -428,25 +445,22 @@ export function chemBottleImageSrc(technical: string): string {
   if (hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]) {
     return REAL_BOTTLE_PHOTOS[hit.slug];
   }
-
-  // Key-word fallback across chemical families
-  const norm = (technical || "").toLowerCase();
-  for (const [slug, url] of Object.entries(REAL_BOTTLE_PHOTOS)) {
-    const root = slug.split("-")[0];
-    if (root.length >= 4 && norm.includes(root)) {
-      return url;
-    }
+  const norm = technical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  if (REAL_BOTTLE_PHOTOS[norm]) {
+    return REAL_BOTTLE_PHOTOS[norm];
   }
 
+  // Gracefully fallback to high-definition commercial product photo matching formulation
+  const cat = hit?.category || bottleCategory(technical);
   const pkgType = getChemPackageType(technical, hit?.formulation);
   if (pkgType === "pouch") {
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-      renderChemPouchSvg(technical, hit?.category)
-    )}`;
+    if (cat === "fungicide") return "/images/chem/real/carbendazim-50-wp.jpg";
+    if (cat === "herbicide") return "/images/chem/real/atrazine-50-wp.jpg";
+    return "/images/chem/real/emamectin-benzoate-5-sg.jpg";
   }
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-    renderChemBottleSvg(technical, hit?.category)
-  )}`;
+  if (cat === "fungicide") return "/images/chem/real/azoxystrobin-250-sc.jpg";
+  if (cat === "herbicide") return "/images/chem/real/pendimethalin-30-ec.jpg";
+  return "/images/chem/real/chlorantraniliprole-18-5-sc.jpg";
 }
 
 

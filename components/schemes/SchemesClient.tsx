@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { navigateBack } from "@/lib/navigationTracker";
 import {
   ArrowLeft,
   ArrowRight,
@@ -159,10 +160,7 @@ function TopBar({ hi }: { hi: boolean }) {
       <button
         type="button"
         aria-label={hi ? "वापस" : "Back"}
-        onClick={() => {
-          if (typeof window !== "undefined" && window.history.length > 1) router.back();
-          else router.push("/");
-        }}
+        onClick={() => navigateBack({ router })}
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-primary)] shadow-sm active:scale-95"
       >
         <ArrowLeft className="h-4 w-4" />

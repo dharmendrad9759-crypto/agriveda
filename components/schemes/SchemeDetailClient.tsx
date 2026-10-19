@@ -179,6 +179,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
   return (
     <AppShell
       title={shortName}
+      backHref="/schemes"
       breadcrumbs={[
         { label: hi ? "होम" : "Home", href: "/" },
         { label: hi ? "योजनाएँ" : "Schemes", href: "/schemes" },

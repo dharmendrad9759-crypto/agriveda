@@ -233,7 +233,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <AppShell className="!bg-transparent" backHref="/" title={t("settingsTitle")}>
+    <AppShell className="!bg-transparent" title={t("settingsTitle")}>
       <div className="mx-auto max-w-lg space-y-5">
         <div className="flex items-center justify-between rounded-2xl border border-emerald-900/10 bg-[var(--av-surface)] p-3.5 shadow-sm dark:border-white/10">
           <div className="flex items-center gap-3 min-w-0">

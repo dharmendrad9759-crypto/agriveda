@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import {
@@ -300,13 +301,87 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
     return desc ? [desc] : [];
   }, [isWeed, threat.symptoms, threat.description, hi]);
 
-  const defaultPestTab: PestTab = identifyTips.length
-    ? "identify"
-    : hasSpray
-      ? "spray"
+  const router = useRouter();
+  const defaultPestTab: PestTab = hasSpray
+    ? "spray"
+    : identifyTips.length
+      ? "identify"
       : "control";
+  const [tabHistory, setTabHistory] = useState<PestTab[]>([defaultPestTab]);
   const [pestTab, setPestTab] = useState<PestTab>(defaultPestTab);
   const [lightbox, setLightbox] = useState<string | null>(null);
+
+  const cropTab =
+    threat.type === "weed"
+      ? "weeds"
+      : threat.type === "disease"
+        ? "diseases"
+        : "pests";
+  const backHref = `/crops/${threat.cropSlug}/care/${cropTab}`;
+  const cropListLabel = cropHi
+    ? `${threat.cropName} (${cropHi})`
+    : threat.cropName;
+
+  const pestTabs = (
+    [
+      { id: "spray" as const, label: hi ? "दवा" : "Spray", show: hasSpray },
+      {
+        id: "identify" as const,
+        label: hi ? "पहचान" : "ID",
+        show: identifyTips.length > 0 || Boolean(fieldMedicine?.tips?.length),
+      },
+      {
+        id: "control" as const,
+        label: hi ? "बचाव" : "Prevention",
+        show: true,
+      },
+    ] as const
+  ).filter((t) => t.show);
+
+  const activePestTab = pestTabs.some((t) => t.id === pestTab)
+    ? pestTab
+    : pestTabs[0]?.id ?? "spray";
+
+  const switchTab = (nextTab: PestTab) => {
+    if (nextTab === pestTab) return;
+    setPestTab(nextTab);
+    setTabHistory((prev) => [...prev, nextTab]);
+    if (typeof window !== "undefined") {
+      window.history.pushState({ pestTab: nextTab }, "", `#${nextTab}`);
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      const stateTab = e.state?.pestTab as PestTab | undefined;
+      const hashTab = window.location.hash.replace("#", "") as PestTab;
+      const target =
+        stateTab ||
+        (["identify", "spray", "control"].includes(hashTab) ? hashTab : undefined);
+
+      if (target && target !== pestTab) {
+        setPestTab(target);
+        setTabHistory((prev) => (prev.length > 1 ? prev.slice(0, -1) : [target]));
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [pestTab]);
+
+  const handleBack = () => {
+    if (tabHistory.length > 1) {
+      const updated = [...tabHistory];
+      updated.pop();
+      const prevTab = updated[updated.length - 1];
+      setTabHistory(updated);
+      setPestTab(prevTab);
+      if (typeof window !== "undefined") {
+        window.history.replaceState({ pestTab: prevTab }, "", `#${prevTab}`);
+      }
+      return;
+    }
+  };
 
   const chemCards = useMemo(() => weedChemCards(weedChems, hi), [weedChems, hi]);
 
@@ -322,40 +397,10 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
     return formatFarmerDoseSummary(threat.activeIngredient, "", hi);
   }, [threat.activeIngredient, hi]);
 
-  const cropTab =
-    threat.type === "weed"
-      ? "weeds"
-      : threat.type === "disease"
-        ? "diseases"
-        : "pests";
-  const backHref = `/crops/${threat.cropSlug}/care/${cropTab}`;
-  const cropListLabel = cropHi
-    ? `${threat.cropName} (${cropHi})`
-    : threat.cropName;
-
-  const pestTabs = (
-    [
-      {
-        id: "identify" as const,
-        label: hi ? "पहचान" : "ID",
-        show: identifyTips.length > 0,
-      },
-      { id: "spray" as const, label: hi ? "दवा" : "Spray", show: hasSpray },
-      {
-        id: "control" as const,
-        label: hi ? "बिना दवा" : "Other",
-        show: pestControls.length > 0,
-      },
-    ] as const
-  ).filter((t) => t.show);
-
-  const activePestTab = pestTabs.some((t) => t.id === pestTab)
-    ? pestTab
-    : pestTabs[0]?.id ?? "spray";
-
   return (
     <AppShell
       backHref={backHref}
+      onBack={tabHistory.length > 1 ? handleBack : undefined}
       breadcrumbs={[
         { label: hi ? "होम" : "Home", href: "/" },
         { label: cropListLabel, href: `/crops/${threat.cropSlug}` },
@@ -415,7 +460,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                   type="button"
                   role="tab"
                   aria-selected={activePestTab === t.id}
-                  onClick={() => setPestTab(t.id)}
+                  onClick={() => switchTab(t.id)}
                   className={
                     activePestTab === t.id
                       ? "rounded-[0.9rem] bg-[var(--av-surface)] px-2 py-2.5 text-[13px] font-bold text-[var(--av-text-primary)] shadow-[0_8px_20px_-12px_rgba(0,0,0,0.4)]"
@@ -461,10 +506,33 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                   </li>
                 ))}
               </ol>
+
+              {/* Field Experience & Detailed Symptoms (Moved from medicine tab as requested by farmer) */}
+              {fieldMedicine?.tips && fieldMedicine.tips.length > 0 && (
+                <div className="mt-4 space-y-2 rounded-2xl border border-emerald-800/20 bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/30 p-3.5 dark:border-emerald-800/40 dark:from-stone-900 dark:to-emerald-950/20 shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🌾</span>
+                    <h3 className="text-[14px] font-black text-emerald-950 dark:text-emerald-100">
+                      {hi ? "खेत के अनुभव व विशेष पहचान" : "Field Diagnosis & Detailed Symptoms"}
+                    </h3>
+                  </div>
+                  <div className="space-y-2 pt-1">
+                    {fieldMedicine.tips.map((tip, idx) => (
+                      <div
+                        key={idx}
+                        className="rounded-xl border border-emerald-600/20 bg-white/95 p-3 text-[13px] font-medium leading-relaxed text-stone-800 dark:border-stone-800 dark:bg-stone-900/90 dark:text-stone-200 shadow-2xs"
+                      >
+                        <p>{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {hasSpray ? (
                 <button
                   type="button"
-                  onClick={() => setPestTab("spray")}
+                  onClick={() => switchTab("spray")}
                   className="w-full rounded-2xl border border-emerald-800/15 bg-emerald-950/[0.04] px-4 py-3 text-[13px] font-bold text-emerald-950 dark:text-emerald-100"
                 >
                   {hi ? "दवा और मात्रा देखें →" : "See medicine & dose →"}
@@ -553,31 +621,101 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
           ) : null}
 
           {activePestTab === "control" ? (
-            <section className="space-y-3">
-              <h2 className="font-display text-[1.2rem] font-bold tracking-tight text-[var(--av-text-primary)]">
-                {hi ? "बिना दवा के उपाय" : "Non-chemical controls"}
-              </h2>
-              {pestControls.map((section, si) => {
-                const Icon = section.icon;
-                return (
-                  <div key={section.key} className="border-l-[3px] border-emerald-600/40 pl-3.5">
-                    <p className="flex items-center gap-1.5 text-[12px] font-bold text-[var(--av-text-primary)]">
-                      <Icon className="h-3.5 w-3.5 text-emerald-800" />
-                      {si + 1}. {section.title}
+            <section className="space-y-3.5">
+              <div>
+                <h2 className="font-display text-[1.25rem] font-black tracking-tight text-[var(--av-text-primary)]">
+                  {hi ? "बचाव व एकीकृत प्रबंधन (Prevention & IPM)" : "Prevention & Integrated Pest Management"}
+                </h2>
+                <p className="mt-0.5 text-[12.5px] font-semibold text-[var(--av-text-muted)]">
+                  {hi
+                    ? "बुवाई/रोपाई पूर्व बचाव, खेत की स्वच्छता एवं जैविक मित्र कीट"
+                    : "Early protection, field sanitation, and biological defense"}
+                </p>
+              </div>
+
+              {pestControls.length > 0 ? (
+                <div className="space-y-3">
+                  {pestControls.map((section, si) => {
+                    const Icon = section.icon;
+                    return (
+                      <div
+                        key={section.key}
+                        className="overflow-hidden rounded-xl border border-emerald-700/25 bg-emerald-50/60 p-3 dark:border-emerald-800/50 dark:bg-emerald-950/20 shadow-xs"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                            <Icon className="h-3.5 w-3.5" />
+                          </span>
+                          <h4 className="text-[13px] font-black text-emerald-950 dark:text-emerald-100">
+                            {si + 1}. {section.title}
+                          </h4>
+                        </div>
+                        <ul className="mt-2.5 space-y-2 pl-1">
+                          {section.items.map((item, i) => (
+                            <li
+                              key={i}
+                              className="flex items-start gap-2 text-[12.5px] font-medium leading-relaxed text-stone-800 dark:text-stone-200"
+                            >
+                              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  <div className="rounded-xl border border-emerald-700/25 bg-emerald-50/60 p-3 dark:border-emerald-800/50 dark:bg-emerald-950/20">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                        <Shield className="h-3.5 w-3.5" />
+                      </span>
+                      <h4 className="text-[13px] font-black text-emerald-950 dark:text-emerald-100">
+                        1. {hi ? "प्रमाणित एवं रोगमुक्त पौध/बीज" : "Certified Healthy Seed/Seedlings"}
+                      </h4>
+                    </div>
+                    <p className="mt-2 text-[12.5px] font-medium text-stone-700 dark:text-stone-300">
+                      {hi
+                        ? "बुवाई पूर्व बीज उपचार करें और नर्सरी से केवल स्वस्थ व रोगमुक्त पौधे ही मुख्य खेत में रोपित करें।"
+                        : "Use certified disease-free planting material and treat seeds before sowing."}
                     </p>
-                    <ul className="mt-2 space-y-1.5">
-                      {section.items.map((item, i) => (
-                        <li
-                          key={i}
-                          className="text-[12px] leading-snug text-[var(--av-text-secondary)]"
-                        >
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
                   </div>
-                );
-              })}
+
+                  <div className="rounded-xl border border-teal-700/25 bg-teal-50/60 p-3 dark:border-teal-800/50 dark:bg-teal-950/20">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-600 text-white">
+                        <Sprout className="h-3.5 w-3.5" />
+                      </span>
+                      <h4 className="text-[13px] font-black text-teal-950 dark:text-teal-100">
+                        2. {hi ? "खेत की स्वच्छता व फसल चक्र" : "Field Sanitation & Rotation"}
+                      </h4>
+                    </div>
+                    <p className="mt-2 text-[12.5px] font-medium text-stone-700 dark:text-stone-300">
+                      {hi
+                        ? "मेड़ों और नालियों से खरपतवार हटाएं ताकि कीटों को छिपने का आश्रय न मिले। एक ही कुल की फसल लगातार न लगाएं।"
+                        : "Keep field borders clean of weeds that act as alternate hosts and practice crop rotation."}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-green-700/25 bg-green-50/60 p-3 dark:border-green-800/50 dark:bg-green-950/20">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-green-600 text-white">
+                        <Leaf className="h-3.5 w-3.5" />
+                      </span>
+                      <h4 className="text-[13px] font-black text-green-950 dark:text-green-100">
+                        3. {hi ? "मित्र कीट व जैविक संरक्षण" : "Beneficial Predators & Biological Care"}
+                      </h4>
+                    </div>
+                    <p className="mt-2 text-[12.5px] font-medium text-stone-700 dark:text-stone-300">
+                      {hi
+                        ? "लेडीबर्ड भृंग, सिरफिड मक्खी और मकड़ियों जैसे प्राकृतिक मित्र कीटों को संरक्षित रखें। बिना ईटीएल पार किए भारी रासायनिक कीटनाशक न डालें।"
+                        : "Conserve natural predators like ladybird beetles and spiders by avoiding broad-spectrum sprays."}
+                    </p>
+                  </div>
+                </div>
+              )}
             </section>
           ) : null}
 

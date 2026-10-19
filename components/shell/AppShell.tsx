@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ChevronRight, Sparkles } from "lucide-react";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
@@ -8,6 +8,7 @@ import AppLink from "@/components/ui/AppLink";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import { usePathname, useRouter } from "next/navigation";
+import { navigateBack, recordNavVisit } from "@/lib/navigationTracker";
 
 interface Breadcrumb {
   label: string;
@@ -48,24 +49,27 @@ export default function AppShell({
   hubTheme = "default",
 }: AppShellProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const reduced = useReducedMotion();
   const Comp = reduced ? "div" : motion.div;
   const isHub = variant === "hub";
   const isGreenHub = hubTheme === "green";
   const isAmberHub = hubPremium || hubTheme === "amber";
-  const resolvedBackHref = backHref ?? "/";
+
+  // Record in-app navigation history
+  useEffect(() => {
+    if (pathname) {
+      recordNavVisit(pathname);
+    }
+  }, [pathname]);
+
   const handleBack = () => {
-    if (onBack) {
-      onBack();
-      return;
-    }
-    // Prefer history back so "open page -> open next page -> back" behaves naturally.
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-      return;
-    }
-    // Fallback when there is no meaningful history (fresh tab / hard navigation).
-    router.push(resolvedBackHref);
+    navigateBack({
+      router,
+      backHref,
+      breadcrumbs,
+      onBack,
+    });
   };
 
   if (isHub) {
@@ -141,7 +145,6 @@ export default function AppShell({
     );
   }
 
-  const pathname = usePathname();
   const isHome = pathname === "/";
   const showBackOnMobile = !isHome || Boolean(backHref);
 

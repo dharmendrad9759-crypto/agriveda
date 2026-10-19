@@ -26,6 +26,21 @@ const CROP_ALIAS: Record<string, string> = {
   tur: "pulses",
   pigeonpea: "pulses",
   tuar: "pulses",
+  rice: "paddy",
+  dhan: "paddy",
+  chawal: "paddy",
+  aloo: "potato",
+  alu: "potato",
+  baingan: "brinjal",
+  tamatar: "tomato",
+  ganna: "sugarcane",
+  gehun: "wheat",
+  gehu: "wheat",
+  sarson: "mustard",
+  pyaj: "onion",
+  lahsun: "garlic",
+  adrak: "ginger",
+  mirch: "chilli",
 };
 
 export function findFieldMedicine(

@@ -78,7 +78,6 @@ export default function CropProblemsClient() {
     <ProblemFlowShell
       title="फसल चुनें"
       step={1}
-      backHref="/"
     >
       {/* Header Banner */}
       <div className="mb-4 overflow-hidden rounded-[24px] border border-emerald-900/10 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 p-4 text-white shadow-[0_20px_50px_-30px_rgba(4,47,26,0.7)]">

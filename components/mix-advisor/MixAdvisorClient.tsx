@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { navigateBack } from "@/lib/navigationTracker";
 import {
   AlertTriangle,
   Apple,
@@ -160,7 +161,7 @@ function MixAdvisorInner() {
         else if (step === "weather") setStep("problem");
       }
     } else {
-      router.push("/");
+      navigateBack({ router });
     }
   };
 
@@ -373,7 +374,6 @@ function MixAdvisorInner() {
     <AppShell
       variant="hub"
       title="दवा मिलाएँ (Tank Mix Advisor)"
-      backHref="/"
       onBack={handleBackStep}
     >
       <div className="mx-auto max-w-xl space-y-4 px-2 pb-12">

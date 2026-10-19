@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { navigateBack } from "@/lib/navigationTracker";
 
 interface PageHeaderProps {
   title: string;
@@ -9,20 +10,14 @@ interface PageHeaderProps {
   backHref?: string;
 }
 
-export default function PageHeader({ title, subtitle, backHref = "/" }: PageHeaderProps) {
+export default function PageHeader({ title, subtitle, backHref }: PageHeaderProps) {
   const router = useRouter();
   return (
     <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-[#030712]/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
         <button
           type="button"
-          onClick={() => {
-            if (typeof window !== "undefined" && window.history.length > 1) {
-              router.back();
-            } else {
-              router.push(backHref);
-            }
-          }}
+          onClick={() => navigateBack({ router, backHref })}
           className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 transition-all hover:border-emerald-400/40 hover:bg-emerald-500/10 hover:shadow-[0_0_12px_rgba(0,255,136,0.2)]"
           aria-label="Go back"
         >
