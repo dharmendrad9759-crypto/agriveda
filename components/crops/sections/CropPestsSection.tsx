@@ -37,9 +37,14 @@ function pestFieldRisk(
   return index === 0 ? "high" : index < 3 ? "medium" : "low";
 }
 
-function pestThumb(scientific?: string, catalogImage?: string) {
+function pestThumb(
+  scientific?: string,
+  catalogImage?: string,
+  cropSlug?: string,
+  threatName?: string
+) {
   return (
-    getPestSpeciesImage(scientific) ||
+    getPestSpeciesImage(scientific, cropSlug, threatName) ||
     catalogImage ||
     "/images/threats/threat-insect.jpg"
   );
@@ -94,23 +99,25 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
         scientific: p.scientificName,
         etl: p.etl,
         risk: pestFieldRisk(p.pestName, sownDays, i),
-        image: pestThumb(p.scientificName, match?.image),
+        image: pestThumb(p.scientificName, match?.image, crop.slug, p.pestName),
       };
     });
   }, [crop.slug, useRichPests, profile, catalogPests, sownDays]);
 
-  const pests = useRichPests
+  const basePests = useRichPests
     ? richPests
     : fieldGuidePests.length
       ? fieldGuidePests.map((p, i) => ({
           ...p,
           risk: pestFieldRisk(p.name, sownDays, i),
+          image: pestThumb(p.scientific, undefined, crop.slug, p.name),
           detailHref: threatDetailPath(crop.slug, "pest", p.id),
         }))
       : ipmPests.length
         ? ipmPests.map((p, i) => ({
             ...p,
             risk: pestFieldRisk(p.name, sownDays, i),
+            image: pestThumb(p.scientific, undefined, crop.slug, p.name),
             detailHref: threatDetailPath(crop.slug, "pest", p.id),
           }))
         : catalogPests.map((p, i) => ({
@@ -119,9 +126,34 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
             scientific: p.scientificName,
             etl: p.etl,
             risk: pestFieldRisk(p.name, sownDays, i),
-            image: pestThumb(p.scientificName, p.image),
+            image: pestThumb(p.scientificName, p.image, crop.slug, p.name),
             detailHref: threatDetailPath(crop.slug, "pest", p.id),
           }));
+
+  const pests = useMemo(() => {
+    const seen = new Set<string>();
+    return basePests.filter((p) => {
+      const img = "image" in p && p.image ? String(p.image) : "";
+      const sciKey = ("scientific" in p ? String(p.scientific ?? "") : "")
+        .toLowerCase()
+        .split(/[/,(]/)[0]
+        .trim();
+      const nameKey = p.name.toLowerCase().replace(/\s*\([^)]*\)/g, "").trim();
+      if (img.startsWith("/images/crop-identification/") && seen.has(`img:${img}`)) {
+        return false;
+      }
+      if (sciKey.length >= 5 && seen.has(`sci:${sciKey}`)) {
+        return false;
+      }
+      if (nameKey && seen.has(`name:${nameKey}`)) {
+        return false;
+      }
+      if (img.startsWith("/images/crop-identification/")) seen.add(`img:${img}`);
+      if (sciKey.length >= 5) seen.add(`sci:${sciKey}`);
+      if (nameKey) seen.add(`name:${nameKey}`);
+      return true;
+    });
+  }, [basePests]);
 
   const filtered = pests.filter(
     (p) =>
@@ -159,9 +191,14 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
               ? String(pest.detailHref)
               : threatDetailPath(crop.slug, "pest", pest.id);
           const img =
-            "image" in pest
+            "image" in pest && pest.image
               ? String(pest.image)
-              : pestThumb("scientific" in pest ? String(pest.scientific) : undefined);
+              : pestThumb(
+                  "scientific" in pest ? String(pest.scientific) : undefined,
+                  undefined,
+                  crop.slug,
+                  pest.name
+                );
           const sci = "scientific" in pest ? String(pest.scientific) : "";
           const etl = "etl" in pest && pest.etl ? String(pest.etl) : "";
           const sprayWhen = etl ? formatPestSprayWhen(etl, hi) : "";

@@ -92,15 +92,35 @@ export function isDoseOrMeasurement(s: string): boolean {
 }
 
 /**
- * Splits a complex advice line that contains "या" / "अथवा" into individual choices.
+ * Splits a complex advice line into individual sentences or alternatives.
+ * First splits on full stops (। or \n) when sentences are independent clauses,
+ * and then splits on "या" / "अथवा" when alternatives are provided.
+ * Note: Never splits on "/" which is part of unit measurements (e.g. ml/L, g/acre).
  */
 export function splitMedicineLine(line: string): string[] {
-  const cleaned = line.replace(/।\s*$/, "").trim();
-  if (!cleaned) return [];
+  if (!line) return [];
+  const trimmed = line.trim();
+  if (!trimmed) return [];
 
-  // Don't split inside parentheses
-  const parts = cleaned.split(/\s+(?:या|अथवा|\/)\s+(?![^(]*\))/i);
-  return parts.map((p) => p.trim()).filter((p) => p.length > 3);
+  // Split on purna viram (।) or newline if followed by space/text and not inside parentheses
+  const sentences = trimmed
+    .split(/।(?:\s+|$|\n)(?![^(]*\))/i)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 2);
+
+  const results: string[] = [];
+  for (const sentence of sentences) {
+    // Split on "या" / "अथवा" only (never split on "/" which breaks units like ml/L)
+    const subParts = sentence.split(/\s+(?:या|अथवा)\s+(?![^(]*\))/i);
+    for (const p of subParts) {
+      const cleanP = p.replace(/^[•·\-\s]+/, '').trim();
+      if (cleanP.length > 2) {
+        results.push(cleanP);
+      }
+    }
+  }
+
+  return results.length > 0 ? results : [trimmed];
 }
 
 /**
@@ -336,16 +356,68 @@ export function parseTrapItem(text: string): ParsedMedicineItem {
 }
 
 /**
+ * Detects if a text represents a pre-mixed combination chemical product
+ * (e.g. "एसीफेट 50% + इमिडाक्लोप्रिड 1.8% SP @ 2 ग्राम/लीटर") rather than a farmer tank-mix.
+ */
+export function isPreMixFormulation(text: string): boolean {
+  if (!text.includes("+")) return false;
+  // If text mentions adjuvant / sticker / spreader, it is a tank-mix, not a single pre-mix
+  if (/सिलिकॉन|स्प्रेडर|स्टीकर|चिपको|silicon|adjuvant/i.test(text)) return false;
+
+  // Multiple parenthesized doses or multiple "@" indicate a multi-chemical tank-mix
+  const multiDoseInParens = (text.match(/\([^)]*(?:मिली|ग्राम|ml|g|gm)[^)]*\)/gi) || []).length;
+  const multiAtDose = (text.match(/@/g) || []).length;
+  if (multiDoseInParens >= 2 || multiAtDose >= 2) return false;
+
+  // Pattern: % + % followed by formulation code (SP, ZC, WG, WP, SC, EC, etc.)
+  const hasPercentPlus = /%\s*\+\s*[^%]+%/i.test(text) || /\b(?:g\/l|g\/L)\s*\+\s*[^g]+(?:g\/l|g\/L)/i.test(text);
+  const hasFormulation = /\b(?:WP|EC|SC|SG|WG|WDG|SL|SP|FS|OD|ZC|DF|GR|WS)\b/i.test(text);
+
+  return hasPercentPlus && hasFormulation;
+}
+
+/**
+ * Checks if a sentence/line mentions a real chemical medicine, bio-control agent, or spray formulation.
+ */
+export function isChemicalMention(text: string): boolean {
+  if (!text) return false;
+  if (isTrapText(text)) return false;
+
+  // Has agricultural formulation code (e.g. WP, SC, EC, etc.)
+  if (/\b(?:WP|EC|SC|SG|WG|WDG|SL|SP|FS|OD|ZC|DF|GR|CG|DS|WS|DP|PPM)\b/i.test(text)) {
+    return true;
+  }
+
+  // Lookup in catalog / Hindi chem map
+  if (lookupChemBottle(text)) {
+    return true;
+  }
+
+  // Common agrochemical keywords
+  if (
+    /(?:कार्बेन्डाजिम|मैनकोजेब|मैंकोजेब|कॉपर|स्ट्रेप्टोसाइक्लिन|स्ट्रेप्टोमाइसिन|मेटालैक्सिल|थायोफैनेट|कासुगामाइसिन|वैलिडामाइसिन|क्लोरोथैलोनिल|टेबुकोनाज़ोल|प्रोपिकोनाज़ोल|हेक्साकोनाज़ोल|एज़ोक्सीस्ट्रोबिन|डाइफेनोकोनाज़ोल|ट्राइकोडर्मा|स्यूडोमोनास|नीम\s*(?:तेल|ऑयल|खली)|एज़ाडिराक्टिन|अज़ाडिराक्टिन|फिप्रोनिल|क्लोरोपायरीफॉस|इमिडाक्लोप्रिड|थायमेथॉक्सम|एसिटामिप्रिड|स्पिनोसैड|स्पिनेटोरम|फ्लुबेंडियामाइड|कोराजन|उलाला|लार्विन|डायमेथोएट|मैलाथियान|क्विनालफॉस|सल्फर|गंधक|बोरॉन|कार्बोफ्यूरान|फ्यूराडान|पेगासस|डायफेंथियूरॉन|इंडोक्साकार्ब|अवांट|प्रोफेनोफॉस|क्यूराक्रॉन|अल्फा\s*नेफ्थाइल|जिबरेलिक|ह्यूमिक|ब्यूवेरिया|मेटाराइजियम|बैसिलस)/i.test(
+      text
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Detects if the given text describes a tank-mix combination (2 chemicals + silicon spreader).
  */
 export function isTankMixText(text: string): boolean {
   if (!text.includes("+")) return false;
+  // Pre-mix formulations (e.g. Acephate 50% + Imidacloprid 1.8% SP) are single products, not tank mixes
+  if (isPreMixFormulation(text)) return false;
+
   const hasSpreader = /सिलिकॉन|स्प्रेडर|स्टीकर|चिपको|silicon/i.test(text);
-  const doseMatches =
-    text.match(
-      /\d+(?:\.\d+)?\s*(?:%|g\/l|g\/L|ग्राम|मिली|ml|gm|g|EC|SC|SG|WP|WG|SL|OD|ZC|DF|SP|FS)/gi
-    ) || [];
-  return doseMatches.length >= 2 || hasSpreader;
+  const parenDoses = (text.match(/\([^)]*(?:मिली|ग्राम|ml|g|gm)[^)]*\)/gi) || []).length;
+  const atDoses = (text.match(/@/g) || []).length;
+
+  return hasSpreader || parenDoses >= 2 || atDoses >= 2;
 }
 
 /**
@@ -355,7 +427,17 @@ export function parseTankMix(
   text: string,
   defaultKind: "pest" | "disease" = "pest"
 ): ParsedMedicineItem {
-  const parts = text.split(/\s*\+\s*/);
+  const rawParts = text.split(/\s*\+\s*/);
+  const parts: string[] = [];
+  for (let i = 0; i < rawParts.length; i++) {
+    const p = rawParts[i].trim();
+    if (i < rawParts.length - 1 && /%\s*$/.test(p)) {
+      // e.g. "एसीफेट 50%" + "इमिडाक्लोप्रिड 1.8% SP (...)"
+      parts.push(`${p} + ${rawParts[++i].trim()}`);
+    } else {
+      parts.push(p);
+    }
+  }
   const components: TankMixComponent[] = [];
   let spreaderInfo: TankMixDetails["spreader"] = undefined;
 
@@ -514,12 +596,8 @@ export function parseMedicineItem(
   }
 
   // 3. Check if this is an agronomic sentence rather than a chemical spray
-  const isAdviceOnly =
-    /^(?:खेत|फसल|बुवाई|प्रमाणित|टीशू|रोगमुक्त|संक्रमित|क्षारीय|कोहरा|पौधे|ब्लीचिंग|सल्फर\s*90%|गोबर)/i.test(
-      text.trim()
-    ) && !/@|\b(?:WP|EC|SC|SG|WG|SL|SP|FS|OD|DF|GR)\b/i.test(text);
-
-  if (isAdviceOnly) {
+  // 3. Check if this is an agronomic sentence rather than a chemical spray
+  if (!isChemicalMention(text)) {
     return {
       id: Math.random().toString(36).slice(2, 9),
       raw: text,

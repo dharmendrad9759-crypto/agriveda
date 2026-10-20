@@ -10,26 +10,45 @@ import { Camera } from "lucide-react";
 const GROUPS: { id: string; title: string; match: (c: CropProblemCrop) => boolean }[] = [
   {
     id: "cereals",
-    title: "अनाज (Cereals)",
-    match: (c) => ["paddy", "wheat", "maize"].includes(c.slug),
+    title: "अनाज व मिलेट्स (Cereals & Millets)",
+    match: (c) => ["paddy", "wheat", "maize", "bajra"].includes(c.slug),
+  },
+  {
+    id: "pulses",
+    title: "दलहन (Pulses)",
+    match: (c) => ["gram", "tur", "moong", "urad", "masoor"].includes(c.slug),
   },
   {
     id: "veg",
     title: "सब्ज़ियाँ (Vegetables)",
     match: (c) =>
-      ["tomato", "potato", "onion", "chilli", "brinjal", "cauliflower", "bhindi", "cucumber"].includes(
-        c.slug
-      ),
+      [
+        "tomato",
+        "potato",
+        "onion",
+        "chilli",
+        "capsicum",
+        "brinjal",
+        "cabbage",
+        "cauliflower",
+        "bhindi",
+        "cucumber",
+      ].includes(c.slug),
   },
   {
     id: "cash",
     title: "नकदी व तिलहन (Cash & Oilseeds)",
-    match: (c) => ["cotton", "sugarcane", "mustard", "soybean"].includes(c.slug),
+    match: (c) => ["cotton", "sugarcane", "soybean", "groundnut", "mustard"].includes(c.slug),
   },
   {
     id: "spice",
     title: "मसाला फसलें (Spices)",
-    match: (c) => ["turmeric", "ginger", "garlic"].includes(c.slug),
+    match: (c) => ["garlic", "ginger", "turmeric"].includes(c.slug),
+  },
+  {
+    id: "fruits",
+    title: "फल व बागवानी (Fruits)",
+    match: (c) => ["mango", "banana", "grapes"].includes(c.slug),
   },
 ];
 

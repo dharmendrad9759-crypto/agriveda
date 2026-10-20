@@ -15,6 +15,7 @@ import {
   FlaskConical,
   ZoomIn,
   AlertTriangle,
+  ShieldCheck,
 } from "lucide-react";
 import type { EnrichedThreat } from "@/types/pest-disease-ui";
 import EtlGuideCard from "@/components/shell/EtlGuideCard";
@@ -33,6 +34,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import SpeakButton from "@/components/ui/SpeakButton";
 import { getWeedStageImages, getWeedCardImage } from "@/lib/weeds/weedStageImages";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
+import { isChemicalMention } from "@/lib/crops/medicineParser";
 import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
 import { technicalFromSprayLine } from "@/lib/crops/chemBottle";
 import { getCropManagementProfile } from "@/data/crop-management";
@@ -461,6 +463,16 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
             />
           </header>
 
+          {/* Crop-specific high-resolution identification gallery */}
+          <ThreatPhotoGallery
+            primaryImage={threat.image}
+            title={names.primary}
+            subtitle={names.secondary || threat.scientificName || undefined}
+            cropLabel={cropHi || threat.cropName}
+            tagLabel={isPest ? (hi ? "कीट" : "Pest") : (hi ? "रोग" : "Disease")}
+            hi={hi}
+          />
+
           {/* Segmented field tabs */}
           {pestTabs.length > 1 ? (
             <div
@@ -491,16 +503,6 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
 
           {activePestTab === "identify" ? (
             <section className="space-y-4">
-              {/* Photo Gallery right in identify tab for symptom diagnosis */}
-              <ThreatPhotoGallery
-                primaryImage={threat.image}
-                title={names.primary}
-                subtitle={names.secondary || threat.scientificName || undefined}
-                cropLabel={cropHi || threat.cropName}
-                tagLabel={isPest ? (hi ? "कीट" : "Pest") : (hi ? "रोग" : "Disease")}
-                hi={hi}
-              />
-
               <div className="flex items-end justify-between gap-2 pt-2">
                 <h2 className="font-display text-[1.2rem] font-bold tracking-tight text-[var(--av-text-primary)]">
                   {hi ? "खेत में लक्षण व पहचान" : "Field Symptoms & Identification"}
@@ -605,20 +607,29 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                       </div>
                     </div>
                   ) : null}
-                  {farmerChemLines.map((c, i) => (
-                    <div
-                      key={i}
-                      className="flex overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]"
-                    >
-                      <ChemBottleThumb technical={technicalFromSprayLine(c)} size="sm" />
-                      <p className="min-w-0 flex-1 px-3 py-2.5 text-xs leading-snug text-[var(--av-text-secondary)]">
-                        <span className="mr-1 font-bold text-[var(--av-text-primary)]">
-                          {farmerAiDose ? i + 2 : i + 1}.
-                        </span>
-                        {c}
-                      </p>
-                    </div>
-                  ))}
+                  {farmerChemLines.map((c, i) => {
+                    const isChem = isChemicalMention(c);
+                    return (
+                      <div
+                        key={i}
+                        className="flex overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]"
+                      >
+                        {isChem ? (
+                          <ChemBottleThumb technical={technicalFromSprayLine(c)} size="sm" />
+                        ) : (
+                          <div className="flex w-16 shrink-0 items-center justify-center bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                            <ShieldCheck className="h-6 w-6" />
+                          </div>
+                        )}
+                        <p className="min-w-0 flex-1 px-3 py-2.5 text-xs leading-snug text-[var(--av-text-secondary)]">
+                          <span className="mr-1 font-bold text-[var(--av-text-primary)]">
+                            {farmerAiDose ? i + 2 : i + 1}.
+                          </span>
+                          {c}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 

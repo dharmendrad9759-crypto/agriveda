@@ -3,6 +3,10 @@ import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { THREAT_DETAIL_OVERRIDES, THREAT_IMAGES } from "@/data/pest-disease-details";
 import { getWeedCardImage } from "@/lib/weeds/weedStageImages";
 import { getDiseaseSpeciesImage, getPestSpeciesImage } from "@/lib/pests/threatSpeciesImages";
+import {
+  getCropIdentificationFromUrl,
+  getCropIdentificationImage,
+} from "@/lib/pests/cropIdentificationImages";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 
@@ -30,9 +34,16 @@ function isWeakThreatImage(path: string | undefined): boolean {
 function resolveThreatImage(
   overrideImage: string | undefined,
   itemImage: string | undefined,
-  speciesImage?: string
+  speciesImage?: string,
+  cropSpecificImage?: string
 ): string | undefined {
-  // Prefer species / disease pathogen art first
+  // 1. Crop-specific WebP identification asset always wins first
+  if (cropSpecificImage) return cropSpecificImage;
+  if (itemImage?.startsWith("/images/crop-identification/")) return itemImage;
+  if (speciesImage?.startsWith("/images/crop-identification/")) return speciesImage;
+  if (overrideImage?.startsWith("/images/crop-identification/")) return overrideImage;
+
+  // 2. Species / disease pathogen art next
   if (speciesImage && !GENERIC_STOCK.test(speciesImage) && !isWeakThreatImage(speciesImage)) {
     return speciesImage;
   }
@@ -132,6 +143,30 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
   const override = THREAT_DETAIL_OVERRIDES[key];
   const merged = { ...ipmOverride, ...override };
   const category: ThreatCategory = "insect";
+  const cropIdImg = getCropIdentificationImage(
+    crop.slug,
+    `${pest.id} ${pest.name} ${pest.scientificName}`
+  );
+  const resolvedImg =
+    resolveThreatImage(
+      merged?.image,
+      pest.image,
+      getPestSpeciesImage(pest.scientificName, crop.slug, `${pest.id} ${pest.name}`),
+      cropIdImg
+    ) ?? THREAT_IMAGES.insect;
+  const cropIdInfo = getCropIdentificationFromUrl(resolvedImg);
+
+  const defaultSymptoms = cropIdInfo?.meta?.symptomHi
+    ? [
+        cropIdInfo.meta.symptomHi,
+        `${pest.stage} अवस्था में दिखने वाला चबाने/चूसने का नुकसान`,
+        "पौधे की वृद्धि और उपज की क्षमता कम होना",
+      ]
+    : [
+        `${pest.stage} अवस्था में दिखने वाला चबाने/चूसने का नुकसान`,
+        "पौधे की वृद्धि और उपज की क्षमता कम होना",
+        "प्रभावित भागों पर honeydew या frass दिख सकता है",
+      ];
 
   const base: EnrichedThreat = {
     id: pest.id,
@@ -141,21 +176,13 @@ function enrichPest(crop: CropPestDiseaseData, pest: PestItem): EnrichedThreat {
     category,
     name: pest.name,
     scientificName: pest.scientificName,
-    image:
-      resolveThreatImage(
-        merged?.image,
-        pest.image,
-        getPestSpeciesImage(pest.scientificName)
-      ) ?? THREAT_IMAGES.insect,
+    image: resolvedImg,
     stage: pest.stage,
     description:
       merged?.description ??
+      cropIdInfo?.meta?.symptomHi ??
       `${pest.scientificName} ${crop.name} की एक प्रमुख कीट समस्या है। यह ${pest.stage} अवस्था में फसल को नुकसान पहुँचाता है। समेकित प्रबंधन में निगरानी, जैविक नियंत्रण और Economic Threshold Level (ETL) पर ही लक्षित रासायनिक उपचार शामिल है।`,
-    symptoms: merged?.symptoms ?? [
-      `${pest.stage} अवस्था में दिखने वाला चबाने/चूसने का नुकसान`,
-      "पौधे की वृद्धि और उपज की क्षमता कम होना",
-      "प्रभावित भागों पर honeydew या frass दिख सकता है",
-    ],
+    symptoms: merged?.symptoms ?? defaultSymptoms,
     remediation: merged?.remediation ?? [
       pest.control ?? "अनुशंसित नियंत्रण के लिए package of practices का पालन करें",
       "संवेदनशील अवस्था में सप्ताह में दो बार खेत की जाँच करें",
@@ -179,6 +206,30 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
   const override = THREAT_DETAIL_OVERRIDES[key];
   const merged = { ...ipmOverride, ...override };
   const category = merged?.category ?? inferDiseaseCategory(disease.pathogen, disease.name);
+  const cropIdImg = getCropIdentificationImage(
+    crop.slug,
+    `${disease.id} ${disease.name} ${disease.pathogen}`
+  );
+  const resolvedImg =
+    resolveThreatImage(
+      merged?.image,
+      disease.image,
+      getDiseaseSpeciesImage(disease.pathogen, crop.slug, `${disease.id} ${disease.name}`),
+      cropIdImg
+    ) ?? THREAT_IMAGES.fungalLeaf;
+  const cropIdInfo = getCropIdentificationFromUrl(resolvedImg);
+
+  const defaultSymptoms = cropIdInfo?.meta?.symptomHi
+    ? [
+        cropIdInfo.meta.symptomHi,
+        `${disease.stage} अवस्था में विशिष्ट दाग या लक्षण`,
+        "आर्द्रता और तापमान अनुकूल होने पर धीरे-धीरे फैलाव",
+      ]
+    : [
+        `${disease.stage} अवस्था में विशिष्ट दाग या लक्षण`,
+        "आर्द्रता और तापमान अनुकूल होने पर धीरे-धीरे फैलाव",
+        "रोग की गंभीरता और समय के अनुसार उपज में कमी",
+      ];
 
   const base: EnrichedThreat = {
     id: disease.id,
@@ -189,21 +240,13 @@ function enrichDisease(crop: CropPestDiseaseData, disease: DiseaseItem): Enriche
     name: disease.name,
     scientificName: disease.pathogen,
     pathogen: disease.pathogen,
-    image:
-      resolveThreatImage(
-        merged?.image,
-        disease.image,
-        getDiseaseSpeciesImage(disease.pathogen)
-      ) ?? THREAT_IMAGES.fungalLeaf,
+    image: resolvedImg,
     stage: disease.stage,
     description:
       merged?.description ??
+      cropIdInfo?.meta?.symptomHi ??
       `${disease.name} ${disease.pathogen} से होता है। यह ${crop.name} में ${disease.stage} अवस्था में प्रभावित करता है और अनुकूल मौसम में फैलता है। उपज क्षति रोकने के लिए शीघ्र पहचान और समेकित रोग प्रबंधन जरूरी है।`,
-    symptoms: merged?.symptoms ?? [
-      `${disease.stage} अवस्था में विशिष्ट दाग या लक्षण`,
-      "आर्द्रता और तापमान अनुकूल होने पर धीरे-धीरे फैलाव",
-      "रोग की गंभीरता और समय के अनुसार उपज में कमी",
-    ],
+    symptoms: merged?.symptoms ?? defaultSymptoms,
     remediation: merged?.remediation ?? [
       disease.control ?? "स्थानीय सलाह के अनुसार अनुशंसित fungicide/bactericide लगाएँ",
       "संक्रमित पौधों के अवशेष हटाकर नष्ट करें",
@@ -347,7 +390,8 @@ function pestManagementToThreat(
     name: p.pestName,
     scientificName: p.scientificName,
     image:
-      getPestSpeciesImage(p.scientificName) || THREAT_IMAGES.insect,
+      getPestSpeciesImage(p.scientificName, cropSlug, `${id} ${p.pestName}`) ||
+      THREAT_IMAGES.insect,
     stage: "फसल अवधि",
     description:
       p.identification ||
@@ -399,7 +443,9 @@ function enrichDiseaseFromManagement(
     name: d.diseaseName,
     scientificName: d.pathogen,
     pathogen: d.pathogen,
-    image: getDiseaseSpeciesImage(d.pathogen) || THREAT_IMAGES.fungalLeaf,
+    image:
+      getDiseaseSpeciesImage(d.pathogen, cropSlug, `${id} ${d.diseaseName}`) ||
+      THREAT_IMAGES.fungalLeaf,
     stage: "फसल अवधि",
     description: `${d.diseaseName} ${cropName} में लगता है। जल्दी पहचान कर इलाज करें।`,
     symptoms: d.symptoms?.length ? d.symptoms : ["पत्तियों / तने पर दाग या मुरझान"],

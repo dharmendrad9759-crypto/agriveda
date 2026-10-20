@@ -4,6 +4,8 @@
  * Prefer explicit aliases for messy pathogen strings; else slug convention.
  */
 
+import { getCropIdentificationImage } from "@/lib/pests/cropIdentificationImages";
+
 function norm(s: string): string {
   return s
     .toLowerCase()
@@ -174,7 +176,18 @@ function firstSpeciesChunk(raw: string): string {
   return raw.split("/")[0]?.trim() || raw;
 }
 
-export function getPestSpeciesImage(scientificName?: string | null): string | undefined {
+export function getPestSpeciesImage(
+  scientificName?: string | null,
+  cropSlug?: string,
+  threatName?: string
+): string | undefined {
+  if (cropSlug) {
+    const cropSpecific = getCropIdentificationImage(
+      cropSlug,
+      `${threatName || ""} ${scientificName || ""}`
+    );
+    if (cropSpecific) return cropSpecific;
+  }
   if (!scientificName) return undefined;
   const key = norm(scientificName);
   const alias = PEST_ALIASES[key] ?? PEST_ALIASES[scientificName.toLowerCase().trim()];
@@ -202,7 +215,18 @@ export function getPestSpeciesImage(scientificName?: string | null): string | un
   return pestPath(slug);
 }
 
-export function getDiseaseSpeciesImage(pathogen?: string | null): string | undefined {
+export function getDiseaseSpeciesImage(
+  pathogen?: string | null,
+  cropSlug?: string,
+  threatName?: string
+): string | undefined {
+  if (cropSlug) {
+    const cropSpecific = getCropIdentificationImage(
+      cropSlug,
+      `${threatName || ""} ${pathogen || ""}`
+    );
+    if (cropSpecific) return cropSpecific;
+  }
   if (!pathogen) return undefined;
   const key = norm(pathogen);
 

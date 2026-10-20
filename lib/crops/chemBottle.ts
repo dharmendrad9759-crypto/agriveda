@@ -28,6 +28,21 @@ for (const entry of CHEM_BOTTLE_CATALOG) {
 
 const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   // Insecticides
+  // Specific formulations
+  "क्लोरांट्रानिलीप्रोल 0.4%": "chlorantraniliprole-0-4-gr",
+  "क्लोरेंट्रानिलिप्रोल 0.4%": "chlorantraniliprole-0-4-gr",
+  "क्लोरांट्रानिलिप्रोल 0.4%": "chlorantraniliprole-0-4-gr",
+  "इमिडाक्लोप्रिड 70%": "imidacloprid-70-ws",
+  "इमिडाक्लोप्रिड 48%": "imidacloprid-48-fs",
+  "थायमेथॉक्सम 30%": "thiamethoxam-30-fs",
+  "थियामेथोक्सम 30%": "thiamethoxam-30-fs",
+  "फिप्रोनिल 5%": "fipronil-5-sc",
+  "फ़िप्रोनिल 5%": "fipronil-5-sc",
+  "फिप्रोनिल 80%": "fipronil-80-wg",
+  "कार्टाप हाइड्रोक्लोराइड 50%": "cartap-50-sp",
+  "कार्टप हाइड्रोक्लोराइड 50%": "cartap-50-sp",
+  "कार्टाप 50%": "cartap-50-sp",
+  "कार्टप 50%": "cartap-50-sp",
   "इमामेक्टिन": "emamectin-benzoate-5-sg",
   "एमामेक्टिन": "emamectin-benzoate-5-sg",
   "क्लोरांट्रानिलीप्रोल": "chlorantraniliprole-18-5-sc",
@@ -71,6 +86,37 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "बेनेविया": "cyantraniliprole-10-od",
   "benevia": "cyantraniliprole-10-od",
   "एसीफेट": "acephate-75-sp",
+  "एसेफेट": "acephate-75-sp",
+  "ऐसीफेट": "acephate-75-sp",
+  "असताफ": "acephate-75-sp",
+  "लैंसर गोल्ड": "acephate-75-sp",
+  "थायोडिकार्ब": "thiodicarb-75-wp",
+  "लार्विन": "thiodicarb-75-wp",
+  "नोवाल्यूरॉन": "novaluron-10-ec",
+  "नोवालुरॉन": "novaluron-10-ec",
+  "रिमोन": "novaluron-10-ec",
+  "पायरीप्रॉक्सीफेन": "pyriproxyfen-10-ec",
+  "पाइरीप्रॉक्सीफेन": "pyriproxyfen-10-ec",
+  "लैनो": "pyriproxyfen-10-ec",
+  "टोलफेनपायराड": "tolfenpyrad-15-ec",
+  "कीफन": "tolfenpyrad-15-ec",
+  "फ्लोनिकैमिड": "flonicamid-50-wg",
+  "क्लोरेंट्रानिलिप्रोल": "chlorantraniliprole-18-5-sc",
+  "क्लोरांट्रानिलिप्रोल": "chlorantraniliprole-18-5-sc",
+  "फर्टेरा": "chlorantraniliprole-0-4-gr",
+  "फरटेरा": "chlorantraniliprole-0-4-gr",
+  "कार्बोफ्यूरान": "carbofuran-3-cg",
+  "फ्यूराडान": "carbofuran-3-cg",
+  "नीम तेल": "neem-oil",
+  "नीम ऑयल": "neem-oil",
+  "एज़ाडिराक्टिन": "neem-oil",
+  "अज़ाडिराक्टिन": "neem-oil",
+  "ट्राइकोडर्मा": "trichoderma-viride-1-wp",
+  "स्यूडोमोनास": "pseudomonas-fluorescens",
+  "सल्फर": "wettable-sulphur-80-wdg",
+  "घुलनशील सल्फर": "wettable-sulphur-80-wdg",
+  "पायराक्लोस्ट्रोबिन": "pyraclostrobin-20-wg",
+  "कैब्रियो टॉप": "pyraclostrobin-20-wg",
   "पाइमेट्रोज़िन": "pymetrozine-50-wg",
   "चेस": "pymetrozine-50-wg",
   "क्लोरफेनापायर": "chlorfenapyr-10-sc",
@@ -198,16 +244,30 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "सीवीड": "seaweed-amino",
 };
 
-/** Prefer the longest alias match so "chlorantraniliprole 18.5 sc" beats generic name. */
+/** Prefer the earliest and longest alias match so "एसीफेट 50% + इमिडाक्लोप्रिड 1.8% SP" matches Acephate and "chlorantraniliprole 0.4% gr" beats generic name. */
 export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
   if (!raw) return undefined;
 
-  // 1. Check Hindi mapping first
+  // 1. Check Hindi mapping first: pick the keyword that appears earliest in raw
+  //    (breaking ties by longest keyword length)
+  let bestHindiSlug: string | undefined;
+  let bestHindiIdx = Infinity;
+  let bestHindiLen = 0;
+
   for (const [hiWord, targetSlug] of Object.entries(HINDI_AGRI_CHEM_MAP)) {
-    if (raw.includes(hiWord)) {
-      const match = CHEM_BOTTLE_CATALOG.find((e) => e.slug === targetSlug);
-      if (match) return match;
+    const idx = raw.indexOf(hiWord);
+    if (idx !== -1) {
+      if (idx < bestHindiIdx || (idx === bestHindiIdx && hiWord.length > bestHindiLen)) {
+        bestHindiIdx = idx;
+        bestHindiLen = hiWord.length;
+        bestHindiSlug = targetSlug;
+      }
     }
+  }
+
+  if (bestHindiSlug) {
+    const match = CHEM_BOTTLE_CATALOG.find((e) => e.slug === bestHindiSlug);
+    if (match) return match;
   }
 
   // 2. English / normalized search
@@ -217,11 +277,16 @@ export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
 
   let best: ChemBottleEntry | undefined;
   let bestLen = 0;
+  let bestIdx = Infinity;
   for (const [key, entry] of byAlias) {
     if (key.length < 4) continue;
-    if (n.includes(key) && key.length > bestLen) {
-      best = entry;
-      bestLen = key.length;
+    const idx = n.indexOf(key);
+    if (idx !== -1) {
+      if (key.length > bestLen || (key.length === bestLen && idx < bestIdx)) {
+        best = entry;
+        bestLen = key.length;
+        bestIdx = idx;
+      }
     }
   }
   return best;
@@ -335,7 +400,17 @@ export function toEnglishTechnical(raw: string): string {
     [/डायफेंथियूरॉन/gi, "DIAFENTHIURON"],
     [/स्पाइरोमेसिफेन/gi, "SPIROMESIFEN"],
     [/साइपरमेथ्रिन/gi, "CYPERMETHRIN"],
-    [/एसीफेट/gi, "ACEPHATE"],
+    [/एसेफेट|एसीफेट|ऐसीफेट|असताफ|लैंसर\s*गोल्ड/gi, "ACEPHATE"],
+    [/थायोडिकार्ब|लार्विन/gi, "THIODICARB"],
+    [/नोवाल्यूरॉन|नोवालुरॉन|रिमोन/gi, "NOVALURON"],
+    [/पायरीप्रॉक्सीफेन|पाइरीप्रॉक्सीफेन|लैनो/gi, "PYRIPROXYFEN"],
+    [/टोलफेनपायराड|कीफन/gi, "TOLFENPYRAD"],
+    [/कार्बोफ्यूरान|फ्यूराडान/gi, "CARBOFURAN"],
+    [/नीम\s*तेल|नीम\s*ऑयल|एज़ाडिराक्टिन|अज़ाडिराक्टिन/gi, "AZADIRACHTIN (NEEM OIL)"],
+    [/ट्राइकोडर्मा(?:\s*विरिडी|\s*हर्जियानम)?/gi, "TRICHODERMA VIRIDE"],
+    [/स्यूडोमोनास(?:\s*फ्लोरेसेंस)?/gi, "PSEUDOMONAS FLUORESCENS"],
+    [/घुलनशील\s*सल्फर|सल्फर/gi, "WETTABLE SULPHUR"],
+    [/पायराक्लोस्ट्रोबिन|कैब्रियो\s*टॉप/gi, "PYRACLOSTROBIN"],
     [/पाइमेट्रोज़िन/gi, "PYMETROZINE"],
     [/क्लोरफेनापायर/gi, "CHLORFENAPYR"],
     [/ब्रोफ्लै?निलाइड/gi, "BROFLANILIDE"],

@@ -17,9 +17,14 @@ import type { Crop } from "@/types/crop";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
-function diseaseThumb(pathogen?: string, catalogImage?: string) {
+function diseaseThumb(
+  pathogen?: string,
+  catalogImage?: string,
+  cropSlug?: string,
+  threatName?: string
+) {
   return (
-    getDiseaseSpeciesImage(pathogen) ||
+    getDiseaseSpeciesImage(pathogen, cropSlug, threatName) ||
     catalogImage ||
     "/images/threats/threat-disease.jpg"
   );
@@ -99,21 +104,28 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
           ? ("high" as const)
           : ("medium" as const),
         type: d.type,
-        image: diseaseThumb(d.pathogen ?? match?.pathogen ?? undefined, match?.image),
+        image: diseaseThumb(
+          d.pathogen ?? match?.pathogen ?? undefined,
+          match?.image,
+          crop.slug,
+          d.diseaseName
+        ),
       };
     });
   }, [crop.slug, useRichDiseases, profile, catalogDiseases]);
 
-  const diseases = useRichDiseases
+  const baseDiseases = useRichDiseases
     ? richDiseases
     : fieldGuideDiseases.length
       ? fieldGuideDiseases.map((d) => ({
           ...d,
+          image: diseaseThumb(d.scientific, undefined, crop.slug, d.name),
           detailHref: threatDetailPath(crop.slug, "disease", d.id),
         }))
       : ipmDiseases.length
         ? ipmDiseases.map((d) => ({
             ...d,
+            image: diseaseThumb(d.scientific, undefined, crop.slug, d.name),
             detailHref: threatDetailPath(crop.slug, "disease", d.id),
           }))
         : catalogDiseases.map((d) => ({
@@ -122,9 +134,34 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
             scientific: d.pathogen ?? d.scientificName,
             risk: d.category === "viral" ? ("high" as const) : ("medium" as const),
             type: d.category,
-            image: diseaseThumb(d.pathogen, d.image),
+            image: diseaseThumb(d.pathogen, d.image, crop.slug, d.name),
             detailHref: threatDetailPath(crop.slug, "disease", d.id),
           }));
+
+  const diseases = useMemo(() => {
+    const seen = new Set<string>();
+    return baseDiseases.filter((d) => {
+      const img = "image" in d && d.image ? String(d.image) : "";
+      const sciKey = ("scientific" in d ? String(d.scientific ?? "") : "")
+        .toLowerCase()
+        .split(/[/,(]/)[0]
+        .trim();
+      const nameKey = d.name.toLowerCase().replace(/\s*\([^)]*\)/g, "").trim();
+      if (img.startsWith("/images/crop-identification/") && seen.has(`img:${img}`)) {
+        return false;
+      }
+      if (sciKey.length >= 5 && seen.has(`sci:${sciKey}`)) {
+        return false;
+      }
+      if (nameKey && seen.has(`name:${nameKey}`)) {
+        return false;
+      }
+      if (img.startsWith("/images/crop-identification/")) seen.add(`img:${img}`);
+      if (sciKey.length >= 5) seen.add(`sci:${sciKey}`);
+      if (nameKey) seen.add(`name:${nameKey}`);
+      return true;
+    });
+  }, [baseDiseases]);
 
   const filtered = diseases.filter(
     (d) =>
@@ -162,9 +199,14 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
               ? String(d.detailHref)
               : threatDetailPath(crop.slug, "disease", d.id);
           const img =
-            "image" in d
+            "image" in d && d.image
               ? String(d.image)
-              : diseaseThumb("scientific" in d ? String(d.scientific) : undefined);
+              : diseaseThumb(
+                  "scientific" in d ? String(d.scientific) : undefined,
+                  undefined,
+                  crop.slug,
+                  d.name
+                );
           const sci = "scientific" in d ? String(d.scientific ?? "") : "";
           const typeRaw = "type" in d && d.type ? String(d.type) : "";
           const typeLabel = pathogenTypeLabel(typeRaw || sci || d.name, hi);

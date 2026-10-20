@@ -123,21 +123,32 @@ const CROP_CONFIGS: FieldGuideCropConfig[] = [
       "Field-practical paddy guide aligned with ICAR IPM, CIBRC label discipline and state-specific fertilizer packages. Doses marked unknown must be taken from the current approved product label.",
     pestIds: {
       "brown planthopper": "p1",
+      nilaparvata: "p1",
       "yellow stem borer": "p2",
+      "stem borer": "p2",
+      scirpophaga: "p2",
       "rice leaf folder": "p4",
       "leaf folder": "p4",
-      "rice earhead bug": "p6",
-      "gundhi bug": "p6",
-      earhead: "p6",
+      cnaphalocrocis: "p4",
+      "rice earhead bug": "p7",
+      "gundhi bug": "p7",
+      earhead: "p7",
+      leptocorisa: "p7",
     },
     diseaseIds: {
       "rice blast": "d1",
       blast: "d1",
+      magnaporthe: "d1",
+      pyricularia: "d1",
       "sheath blight": "d2",
+      rhizoctonia: "d2",
       "bacterial leaf blight": "d3",
       blb: "d3",
+      xanthomonas: "d3",
       "brown spot": "d4",
+      bipolaris: "d4",
       "false smut": "d5",
+      ustilaginoidea: "d5",
     },
   },
   {
@@ -148,16 +159,22 @@ const CROP_CONFIGS: FieldGuideCropConfig[] = [
       "Field-practical cucumber guide for trellised and open-field production — ICAR-IIHR IPM, CIBRC label discipline, fertigation timing and continuous-harvest PHI awareness.",
     pestIds: {
       "fruit fly": "p1",
+      bactrocera: "p1",
       "red pumpkin beetle": "p2",
       "cucumber beetle": "p2",
       "pumpkin beetle": "p2",
+      aulacophora: "p2",
       aphid: "p3",
       aphids: "p3",
+      aphis: "p3",
     },
     diseaseIds: {
       "downy mildew": "d1",
+      pseudoperonospora: "d1",
       "powdery mildew": "d2",
+      podosphaera: "d2",
       anthracnose: "d3",
+      colletotrichum: "d3",
     },
   },
 ];
@@ -196,19 +213,19 @@ function normalizeKey(name: string): string {
 }
 
 function resolvePestId(pestName: string, pestIds: Record<string, string>): string {
-  const key = normalizeKey(pestDisplayName(pestName));
+  const key = normalizeKey(pestName);
   for (const [pattern, id] of Object.entries(pestIds)) {
     if (key.includes(pattern)) return id;
   }
-  return `p${normalizeKey(pestName).slice(0, 8)}`;
+  return `p${key.replace(/\s+/g, "").slice(0, 8)}`;
 }
 
 function resolveDiseaseId(diseaseName: string, diseaseIds: Record<string, string>): string {
-  const key = normalizeKey(pestDisplayName(diseaseName));
+  const key = normalizeKey(diseaseName);
   for (const [pattern, id] of Object.entries(diseaseIds)) {
     if (key.includes(pattern)) return id;
   }
-  return `d${normalizeKey(diseaseName).slice(0, 8)}`;
+  return `d${key.replace(/\s+/g, "").slice(0, 8)}`;
 }
 
 function weedTypeLabel(raw: string): string {
@@ -568,34 +585,17 @@ export function mergeCropFieldGuideCatalog(base: CropPestDiseaseData): CropPestD
   if (!entry) return base;
 
   const { guide, config } = entry;
-  const fieldCatalog: CropPestDiseaseData = {
-    slug: config.slug,
-    name: config.name,
-    emoji: config.emoji,
-    pests: guide.pest_database.map((p) => buildCatalogPest(p, config.slug, config.pestIds)),
-    diseases: guide.disease_database.map((d) => buildCatalogDisease(d, config.slug, config.diseaseIds)),
-    weeds: guide.weed_database.map((w, i) => buildCatalogWeed(w, i, config.slug)),
-  };
-
-  const pests = [...base.pests];
-  for (const p of fieldCatalog.pests) {
-    const idx = pests.findIndex((x) => x.id === p.id);
-    if (idx >= 0) pests[idx] = { ...pests[idx], ...p };
-    else pests.push(p);
-  }
-
-  const diseases = [...base.diseases];
-  for (const d of fieldCatalog.diseases) {
-    const idx = diseases.findIndex((x) => x.id === d.id);
-    if (idx >= 0) diseases[idx] = { ...diseases[idx], ...d };
-    else diseases.push(d);
-  }
+  const fieldWeeds = guide.weed_database.map((w, i) => buildCatalogWeed(w, i, config.slug));
 
   return {
     ...base,
-    pests,
-    diseases,
-    weeds: fieldCatalog.weeds.length ? fieldCatalog.weeds : base.weeds,
+    pests: base.pests.length
+      ? base.pests
+      : guide.pest_database.map((p) => buildCatalogPest(p, config.slug, config.pestIds)),
+    diseases: base.diseases.length
+      ? base.diseases
+      : guide.disease_database.map((d) => buildCatalogDisease(d, config.slug, config.diseaseIds)),
+    weeds: base.weeds.length ? base.weeds : fieldWeeds,
   };
 }
 

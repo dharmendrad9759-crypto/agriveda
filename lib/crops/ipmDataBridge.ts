@@ -377,40 +377,17 @@ function normKey(s: string): string {
   return s.toLowerCase().replace(/\s+/g, " ").replace(/[()]/g, " ").trim();
 }
 
-/** Prefer IPM (richer ladder) when same species; keep unique base rows so lists don't shrink. */
+/** Keep curated base rows intact when present; only fall back to IPM rows if base is empty. */
 function unionPests(base: PestItem[], ipm: PestItem[]): PestItem[] {
   if (!ipm.length) return base;
   if (!base.length) return ipm;
-  const bySci = new Map<string, PestItem>();
-  for (const p of base) bySci.set(normKey(p.scientificName || p.name), p);
-  for (const p of ipm) bySci.set(normKey(p.scientificName || p.name), p);
-  // Stable-ish order: base order first, then IPM-only extras
-  const out: PestItem[] = [];
-  const seen = new Set<string>();
-  for (const p of [...base, ...ipm]) {
-    const k = normKey(p.scientificName || p.name);
-    if (seen.has(k)) continue;
-    seen.add(k);
-    out.push(bySci.get(k)!);
-  }
-  return out.map((p, i) => ({ ...p, id: `p${i + 1}` }));
+  return base;
 }
 
 function unionDiseases(base: DiseaseItem[], ipm: DiseaseItem[]): DiseaseItem[] {
   if (!ipm.length) return base;
   if (!base.length) return ipm;
-  const byPath = new Map<string, DiseaseItem>();
-  for (const d of base) byPath.set(normKey(d.pathogen || d.name), d);
-  for (const d of ipm) byPath.set(normKey(d.pathogen || d.name), d);
-  const out: DiseaseItem[] = [];
-  const seen = new Set<string>();
-  for (const d of [...base, ...ipm]) {
-    const k = normKey(d.pathogen || d.name);
-    if (seen.has(k)) continue;
-    seen.add(k);
-    out.push(byPath.get(k)!);
-  }
-  return out.map((d, i) => ({ ...d, id: `d${i + 1}` }));
+  return base;
 }
 
 export function mergeIpmCatalog(base: CropPestDiseaseData): CropPestDiseaseData {

@@ -66,7 +66,19 @@ export default function ThreatPhotoGallery({
         />
 
         {/* Gradient Overlay for bottom text */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent pointer-events-none" />
+
+        {/* Bottom diagnostic caption badge for crop-specific identification photos */}
+        {activePhoto.url.startsWith("/images/crop-identification/") && (
+          <div className="absolute bottom-2.5 left-3 right-12 z-10 pointer-events-none">
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1 text-[11px] font-bold text-white/95 backdrop-blur-xs">
+              <Camera className="h-3 w-3 text-emerald-400 shrink-0" />
+              <span className="truncate">
+                {hi ? activePhoto.badgeHi : activePhoto.badgeEn}
+              </span>
+            </span>
+          </div>
+        )}
 
         {/* Top Zoom Control */}
         <div className="absolute right-3 top-3 z-10">

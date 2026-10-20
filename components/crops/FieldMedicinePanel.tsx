@@ -136,12 +136,18 @@ export default function FieldMedicinePanel({
         const trapCount = parsedItems.filter((i) => i.kind === "trap").length;
         const mixCount = parsedItems.filter((i) => i.kind === "mix").length;
         const chemCount = parsedItems.filter((i) => i.kind === "chemical").length;
+        const adviceCount = parsedItems.filter((i) => i.kind === "advice").length;
 
-        const optionBadgeText = trapCount > 0 && chemCount === 0 && mixCount === 0
-          ? `${trapCount} ${hi ? "ट्रैप विकल्प" : "trap option"}`
-          : mixCount > 0 && chemCount === 0
-          ? `${mixCount} ${hi ? "मिश्रण विकल्प" : "mix option"}`
-          : `${chemCount || parsedItems.length} ${hi ? "दवा विकल्प" : "options"}`;
+        const optionBadgeText =
+          trapCount > 0 && chemCount === 0 && mixCount === 0
+            ? `${trapCount} ${hi ? "ट्रैप विकल्प" : "trap option"}`
+            : mixCount > 0 && chemCount === 0
+            ? `${mixCount} ${hi ? "मिश्रण विकल्प" : "mix option"}`
+            : adviceCount > 0 && chemCount === 0 && mixCount === 0
+            ? `${adviceCount} ${hi ? "बचाव उपाय" : "prevention tips"}`
+            : `${chemCount || parsedItems.length} ${hi ? "दवा विकल्प" : "options"}${
+                adviceCount > 0 ? ` + ${adviceCount} बचाव` : ""
+              }`;
 
         return (
           <section
@@ -462,6 +468,35 @@ export default function FieldMedicinePanel({
                               </>
                             )}
                           </button>
+                        </div>
+                      </article>
+                    );
+                  }
+
+                  // ─── 2.5 ADVICE / NON-CHEMICAL PREVENTION CARD (NO BOTTLE PHOTO) ───
+                  if (item.kind === "advice" || !item.isChemical) {
+                    return (
+                      <article
+                        key={item.id}
+                        className="flex flex-col overflow-hidden rounded-xl border border-emerald-500/35 bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/30 p-3 shadow-xs transition hover:shadow-md dark:border-emerald-800/50 dark:from-stone-900 dark:to-emerald-950/20"
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                            <ShieldCheck className="h-5 w-5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="rounded bg-emerald-600 px-2 py-0.5 text-[9.5px] font-black text-white">
+                                {hi ? "बचाव व रोकथाम उपाय" : "Preventive Agronomic Practice"}
+                              </span>
+                              <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                                {hi ? "प्राकृतिक व खेत प्रबंधन" : "Zero Chemical / Field Management"}
+                              </span>
+                            </div>
+                            <p className="mt-1.5 text-[13.5px] font-bold leading-relaxed text-stone-900 dark:text-stone-100">
+                              {item.raw}
+                            </p>
+                          </div>
                         </div>
                       </article>
                     );

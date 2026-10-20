@@ -3,6 +3,8 @@
  * Generated: 2026-10-11T09:18:05.556Z
  */
 
+import { getCropIdentificationFromUrl } from "@/lib/pests/cropIdentificationImages";
+
 export interface ThreatPhotoItem {
   url: string;
   badgeHi: string;
@@ -941,6 +943,18 @@ const PHOTO_METAS = [
 
 export function getThreatGalleryPhotos(primaryImageUrl?: string): ThreatPhotoItem[] {
   if (!primaryImageUrl) return [];
+
+  // Check crop-specific WebP identification asset first
+  const cropId = getCropIdentificationFromUrl(primaryImageUrl);
+  if (cropId && cropId.gallery.length > 0) {
+    return cropId.gallery.map((g) => ({
+      url: g.src,
+      badgeHi: g.badgeHi,
+      badgeEn: g.badgeEn,
+      captionHi: g.captionHi,
+      captionEn: g.captionEn,
+    }));
+  }
 
   // Normalize image path
   const normalized = primaryImageUrl.split("?")[0].replace(/-[23]\.jpg$/, ".jpg");

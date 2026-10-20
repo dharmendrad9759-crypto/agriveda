@@ -516,6 +516,10 @@ import { getIpmCatalogEntry, mergeIpmCatalog } from "@/lib/crops/ipmDataBridge";
 import { mergeCropFieldGuideCatalog } from "@/lib/crops/cropFieldGuideBridge";
 import { mergeWeedAbioticCatalog } from "@/lib/crops/weedAbioticBridge";
 import { normalizeCropSlug } from "@/lib/crops/cropImages";
+import {
+  getAllCropIdentificationProblems,
+  getCropIdentificationImage,
+} from "@/lib/pests/cropIdentificationImages";
 
 /** Empty catalog — never silently reuse another crop's pests/diseases. */
 export function emptyCropPestDisease(slug: string): CropPestDiseaseData {
@@ -528,6 +532,98 @@ export function emptyCropPestDisease(slug: string): CropPestDiseaseData {
     pests: [],
     diseases: [],
     weeds: [],
+  };
+}
+
+function withCropIdentificationCatalog(data: CropPestDiseaseData): CropPestDiseaseData {
+  // Overwrite existing curated pest/disease photos with the new crop-specific WebP assets
+  const mappedPests = data.pests.map((p) => {
+    const idImg = getCropIdentificationImage(
+      data.slug,
+      `${p.id} ${p.name} ${p.scientificName}`
+    );
+    return idImg ? { ...p, image: idImg } : p;
+  });
+
+  const mappedDiseases = data.diseases.map((d) => {
+    const idImg = getCropIdentificationImage(
+      data.slug,
+      `${d.id} ${d.name} ${d.pathogen}`
+    );
+    return idImg ? { ...d, image: idImg } : d;
+  });
+
+  // Deduplicate so the same insect or disease never appears twice
+  const seenPestKeys = new Set<string>();
+  const updatedPests = mappedPests.filter((p) => {
+    const sci = (p.scientificName || "").toLowerCase().split(/[/,(]/)[0].trim();
+    const nameKey = p.name.toLowerCase().replace(/\s*\([^)]*\)/g, "").trim();
+    const imgKey = p.image.startsWith("/images/crop-identification/") ? p.image : "";
+    if (
+      (imgKey && seenPestKeys.has(`img:${imgKey}`)) ||
+      (sci.length >= 5 && seenPestKeys.has(`sci:${sci}`)) ||
+      (nameKey && seenPestKeys.has(`name:${nameKey}`))
+    ) {
+      return false;
+    }
+    if (imgKey) seenPestKeys.add(`img:${imgKey}`);
+    if (sci.length >= 5) seenPestKeys.add(`sci:${sci}`);
+    if (nameKey) seenPestKeys.add(`name:${nameKey}`);
+    return true;
+  });
+
+  const seenDiseaseKeys = new Set<string>();
+  const updatedDiseases = mappedDiseases.filter((d) => {
+    const sci = (d.pathogen || "").toLowerCase().split(/[/,(]/)[0].trim();
+    const nameKey = d.name.toLowerCase().replace(/\s*\([^)]*\)/g, "").trim();
+    const imgKey = d.image.startsWith("/images/crop-identification/") ? d.image : "";
+    if (
+      (imgKey && seenDiseaseKeys.has(`img:${imgKey}`)) ||
+      (sci.length >= 5 && seenDiseaseKeys.has(`sci:${sci}`)) ||
+      (nameKey && seenDiseaseKeys.has(`name:${nameKey}`))
+    ) {
+      return false;
+    }
+    if (imgKey) seenDiseaseKeys.add(`img:${imgKey}`);
+    if (sci.length >= 5) seenDiseaseKeys.add(`sci:${sci}`);
+    if (nameKey) seenDiseaseKeys.add(`name:${nameKey}`);
+    return true;
+  });
+
+  // Only populate from getAllCropIdentificationProblems if a crop had zero pests or zero diseases
+  if (updatedPests.length === 0 || updatedDiseases.length === 0) {
+    const needPests = updatedPests.length === 0;
+    const needDiseases = updatedDiseases.length === 0;
+    const allCropIdProblems = getAllCropIdentificationProblems(data.slug);
+    for (const prob of allCropIdProblems) {
+      if (prob.type === "pest" && needPests) {
+        updatedPests.push({
+          id: `cid-${prob.problemSlug.replace(/_/g, "-")}`,
+          name: prob.nameHi,
+          scientificName: prob.scientificName,
+          image: prob.imageUrl,
+          stage: prob.stageHi,
+          iracGroup: "—",
+          control: prob.symptomHi,
+        });
+      } else if (prob.type === "disease" && needDiseases) {
+        updatedDiseases.push({
+          id: `cid-${prob.problemSlug.replace(/_/g, "-")}`,
+          name: prob.nameHi,
+          pathogen: prob.scientificName,
+          image: prob.imageUrl,
+          stage: prob.stageHi,
+          fracGroup: "—",
+          control: prob.symptomHi,
+        });
+      }
+    }
+  }
+
+  return {
+    ...data,
+    pests: updatedPests,
+    diseases: updatedDiseases,
   };
 }
 
@@ -563,11 +659,15 @@ export function getCropPestDisease(slug: string): CropPestDiseaseData {
   const key = normalizeCropSlug(slug);
   const base = cropPestDiseaseData[key] ?? getIpmCatalogEntry(key);
   if (!base) {
-    return mergeWeedAbioticCatalog(emptyCropPestDisease(key));
+    return withCropIdentificationCatalog(
+      mergeWeedAbioticCatalog(emptyCropPestDisease(key))
+    );
   }
-  return withMedicineListExtras(
-    mergeWeedAbioticCatalog(
-      mergeCropFieldGuideCatalog(mergeIpmCatalog({ ...base, slug: key }))
+  return withCropIdentificationCatalog(
+    withMedicineListExtras(
+      mergeWeedAbioticCatalog(
+        mergeCropFieldGuideCatalog(mergeIpmCatalog({ ...base, slug: key }))
+      )
     )
   );
 }
@@ -584,12 +684,11 @@ const rawPestDiseaseCropList = [
     name: c.name,
     emoji: c.emoji,
   })),
-  ...["brinjal", "bhindi", "cauliflower", "cabbage", "capsicum", "cucumber", "moong"]
-    .filter((slug) => getIpmCatalogEntry(slug) && !cropCatalog.some((c) => c.slug === slug))
-    .map((slug) => {
-      const entry = getIpmCatalogEntry(slug)!;
-      return { slug, name: entry.name, emoji: entry.emoji };
-    }),
+  ...[
+    { slug: "jowar", name: "Jowar (ज्वार)", emoji: "🌾" },
+    { slug: "watermelon", name: "Watermelon (तरबूज)", emoji: "🍉" },
+    { slug: "turmeric", name: "Turmeric (हल्दी)", emoji: "🟡" },
+  ].filter((extra) => !cropCatalog.some((c) => c.slug === extra.slug)),
 ];
 
 /** Crop chips for pest/disease hub — only crops with real PDW content. */

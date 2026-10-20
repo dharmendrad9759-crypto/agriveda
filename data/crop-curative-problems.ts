@@ -4,6 +4,12 @@
  * Chem lines: product class + “लेबल अनुसार” — no invented wild doses.
  */
 
+import {
+  getAllCropIdentificationProblems,
+  getCropIdentificationImage,
+  type CropIdentificationProblemMeta,
+} from "@/lib/pests/cropIdentificationImages";
+
 export type CropProblemItem = {
   id: string;
   nameHi: string;
@@ -62,7 +68,7 @@ function prob(
   };
 }
 
-export const CROP_PROBLEM_CROPS: CropProblemCrop[] = [
+const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
   {
     slug: "paddy",
     nameHi: "धान",
@@ -347,10 +353,264 @@ export const CROP_PROBLEM_CROPS: CropProblemCrop[] = [
       prob("onion-maggot", "लहसुन/प्याज मक्खी", "Onion maggot", "कीट", `${P}/pest-delia-antiqua.jpg`, "अंकुर–बल्ब", "पौधे पीले; जड़/बल्ब कुतरे।", ["लगातार प्याज परिवार"], ["फसल चक्र", "अवशेष साफ"], ["क्लोरपायरिफॉस डrench शैली — लेबल"], "पीले धब्बे खेत में", "रोपाई समय उपचार।"),
     ],
   },
+  {
+    slug: "bajra",
+    nameHi: "बाजरा",
+    nameEn: "Pearl Millet",
+    emoji: "🌿",
+    image: `${C}/bajra.jpg`,
+    problems: [],
+  },
+  {
+    slug: "gram",
+    nameHi: "चना",
+    nameEn: "Chickpea (Gram)",
+    emoji: "🫘",
+    image: `${C}/chana.jpg`,
+    problems: [],
+  },
+  {
+    slug: "tur",
+    nameHi: "अरहर (तूर)",
+    nameEn: "Pigeon Pea (Tur)",
+    emoji: "🫛",
+    image: `${C}/pulses.jpg`,
+    problems: [],
+  },
+  {
+    slug: "moong",
+    nameHi: "मूंग",
+    nameEn: "Green Gram (Moong)",
+    emoji: "🫘",
+    image: `${C}/moong.jpg`,
+    problems: [],
+  },
+  {
+    slug: "urad",
+    nameHi: "उड़द",
+    nameEn: "Black Gram (Urad)",
+    emoji: "⚫",
+    image: `${C}/urad.jpg`,
+    problems: [],
+  },
+  {
+    slug: "masoor",
+    nameHi: "मसूर",
+    nameEn: "Lentil (Masoor)",
+    emoji: "🟠",
+    image: `${C}/masoor.jpg`,
+    problems: [],
+  },
+  {
+    slug: "groundnut",
+    nameHi: "मूंगफली",
+    nameEn: "Groundnut",
+    emoji: "🥜",
+    image: `${C}/groundnut.jpg`,
+    problems: [],
+  },
+  {
+    slug: "cabbage",
+    nameHi: "पत्तागोभी",
+    nameEn: "Cabbage",
+    emoji: "🥬",
+    image: "/images/crop-identification/09_cabbage/cabbage_butterfly.webp",
+    problems: [],
+  },
+  {
+    slug: "capsicum",
+    nameHi: "शिमला मिर्च",
+    nameEn: "Capsicum (Bell Pepper)",
+    emoji: "🫑",
+    image: "/images/crop-identification/07_capsicum/helicoverpa_fruit_borer.webp",
+    problems: [],
+  },
+  {
+    slug: "mango",
+    nameHi: "आम",
+    nameEn: "Mango",
+    emoji: "🥭",
+    image: `${C}/mango.jpg`,
+    problems: [],
+  },
+  {
+    slug: "banana",
+    nameHi: "केला",
+    nameEn: "Banana",
+    emoji: "🍌",
+    image: `${C}/banana.jpg`,
+    problems: [],
+  },
+  {
+    slug: "grapes",
+    nameHi: "अंगूर",
+    nameEn: "Grapes",
+    emoji: "🍇",
+    image: `${C}/grapes.jpg`,
+    problems: [],
+  },
 ];
 
+function inferProblemTagHi(meta: CropIdentificationProblemMeta): string {
+  if (meta.type === "pest") return "कीट";
+  const s = `${meta.problemSlug} ${meta.scientificName} ${meta.nameEn}`.toLowerCase();
+  if (/virus|mosaic|curl|bunchy|tungro/i.test(s)) return "वायरस";
+  if (/xanthomonas|ralstonia|erwinia|bacterial|scab/i.test(s)) return "जीवाणु";
+  if (/phytoplasma|little_leaf|grassy_shoot/i.test(s)) return "माइकोप्लाज्मा";
+  return "फफूंद";
+}
+
+function defaultChemicalsForProblem(meta: CropIdentificationProblemMeta): string[] {
+  const s = `${meta.problemSlug} ${meta.scientificName} ${meta.nameEn}`.toLowerCase();
+  if (meta.type === "pest") {
+    if (/borer|bollworm|armyworm|caterpillar|moth|looper|webber|worm|weevil|beetle|sawfly/i.test(s)) {
+      return [
+        "क्लोरेंट्रानिलिप्रोल / इमामेक्टिन — लेबल अनुसार",
+        "स्पिनेटोरम / फ्लूबेंडिमाइड — लेबल अनुसार",
+      ];
+    }
+    if (/thrips/i.test(s)) {
+      return [
+        "स्पिनेटोरम / स्पिनोसैड — लेबल अनुसार",
+        "फिप्रोनिल / डायफेंथियूरॉन — लेबल अनुसार",
+      ];
+    }
+    if (/mite/i.test(s)) {
+      return [
+        "स्पिरोमीसिफेन / एबामेक्टिन — लेबल अनुसार",
+      ];
+    }
+    if (/whitefly/i.test(s)) {
+      return [
+        "फ्लोनिकैमिड / डायफेंथियूरॉन / पाइरिप्रोक्सीफेन — लेबल अनुसार",
+      ];
+    }
+    if (/termite|grub/i.test(s)) {
+      return [
+        "क्लोरपायरिफॉस / फिप्रोनिल — लेबल अनुसार",
+      ];
+    }
+    return [
+      "इमिडाक्लोप्रिड / थियामेथोक्साम — लेबल अनुसार",
+      "फ्लोनिकैमिड / स्पिनोसैड — लेबल अनुसार",
+    ];
+  }
+
+  if (/virus|mosaic|curl|bunchy|tungro|sterility/i.test(s)) {
+    return [
+      "थियामेथोक्साम / डायफेंथियूरॉन (वाहक कीट नियंत्रण) — लेबल अनुसार",
+      "इमिडाक्लोप्रिड / फ्लोनिकैमिड — लेबल अनुसार",
+    ];
+  }
+  if (/xanthomonas|ralstonia|erwinia|bacterial/i.test(s)) {
+    return [
+      "स्ट्रेप्टोसाइक्लिन + कॉपर ऑक्सीक्लोराइड — लेबल अनुसार",
+    ];
+  }
+  if (/downy|late_blight|damping|soft_rot|gummosis|white_rust/i.test(s)) {
+    return [
+      "मेटालैक्सिल + मैंकोज़ेब — लेबल अनुसार",
+      "कॉपर ऑक्सीक्लोराइड — लेबल अनुसार",
+    ];
+  }
+  if (/powdery/i.test(s)) {
+    return [
+      "हेक्साकोनाज़ोल / टेबुकोनाज़ोल — लेबल अनुसार",
+      "सल्फर — लेबल अनुसार",
+    ];
+  }
+  if (/wilt|rot|scurf|smut|bunt/i.test(s)) {
+    return [
+      "कार्बेन्डाजिम / टेबुकोनाज़ोल — लेबल अनुसार",
+      "ट्राइकोडर्मा + कॉपर — लेबल अनुसार",
+    ];
+  }
+  return [
+    "प्रोपिकोनाज़ोल / टेबुकोनाज़ोल — लेबल अनुसार",
+    "मैंकोज़ेब / एज़ोक्सीस्ट्रोबिन — लेबल अनुसार",
+  ];
+}
+
+function enrichCropProblemCrop(crop: CropProblemCrop): CropProblemCrop {
+  // Overwrite existing problem photos with crop-specific WebP images
+  const upgradedProblems = crop.problems.map((p) => {
+    const webp = getCropIdentificationImage(
+      crop.slug,
+      `${p.id} ${p.nameHi} ${p.nameEn}`
+    );
+    return webp ? { ...p, image: webp } : p;
+  });
+
+  // Only populate from getAllCropIdentificationProblems when the crop had no existing problems list
+  if (upgradedProblems.length === 0) {
+    const usedSlugs = new Set<string>();
+    const extraProblems = getAllCropIdentificationProblems(crop.slug);
+
+    for (const meta of extraProblems) {
+      // Skip if a paired sibling problem was already added
+      if (
+        usedSlugs.has(meta.problemSlug) ||
+        meta.pairedSlugs?.some((sib) => usedSlugs.has(sib))
+      ) {
+        continue;
+      }
+      usedSlugs.add(meta.problemSlug);
+
+      const id = meta.problemSlug.replace(/_/g, "-");
+      const shortHi = meta.nameHi.replace(/\s*\([^)]+\)\s*$/, "").trim();
+      upgradedProblems.push(
+        prob(
+          id,
+          shortHi,
+          meta.nameEn,
+          inferProblemTagHi(meta),
+          meta.imageUrl,
+          meta.stageHi,
+          meta.symptomHi,
+          [
+            meta.type === "pest"
+              ? "अनुकूल गर्म-आर्द्र मौसम और खेत के पास वैकल्पिक पोषी खरपतवार"
+              : "उच्च नमी, मौसम में उतार-चढ़ाव और संवेदनशील किस्म",
+            "समय पर शुरुआती निगरानी न होना",
+          ],
+          [
+            "खेत और मेड़ों को खरपतवार मुक्त रखें",
+            meta.type === "pest" ? "नीम तेल 10,000 PPM या फेरोमोन/पीला ट्रैप लगाएँ" : "ट्राइकोडर्मा एवं बीज उपचार अपनाएँ",
+          ],
+          defaultChemicalsForProblem(meta),
+          "शुरुआती लक्षण या ETL दिखते ही",
+          "सुबह या शाम को साफ़ पानी के साथ छिड़काव करें।"
+        )
+      );
+    }
+  }
+
+  return {
+    ...crop,
+    problems: upgradedProblems,
+  };
+}
+
+export const CROP_PROBLEM_CROPS: CropProblemCrop[] =
+  RAW_CROP_PROBLEM_CROPS.map(enrichCropProblemCrop);
+
+const CROP_PROBLEM_ALIASES: Record<string, string> = {
+  chana: "gram",
+  chickpea: "gram",
+  pulses: "tur",
+  arhar: "tur",
+  pigeonpea: "tur",
+  moongfali: "groundnut",
+  peanut: "groundnut",
+  rice: "paddy",
+  okra: "bhindi",
+  eggplant: "brinjal",
+};
+
 export function getCropProblemCrop(slug: string): CropProblemCrop | undefined {
-  return CROP_PROBLEM_CROPS.find((c) => c.slug === slug);
+  const norm = slug.trim().toLowerCase();
+  const mapped = CROP_PROBLEM_ALIASES[norm] ?? norm;
+  return CROP_PROBLEM_CROPS.find((c) => c.slug === mapped || c.slug === norm);
 }
 
 export function getCropProblem(
