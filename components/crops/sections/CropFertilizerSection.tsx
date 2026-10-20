@@ -26,10 +26,11 @@ import { simplifyFertilizerNoteHi } from "@/lib/crops/simplifyFertilizerNoteHi";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import {
+  fertilizerAmountParts,
   fertilizerBagLabel,
   fertilizerBagPurposeHi,
-  fertilizerPackKg,
   fertilizerPackHi,
+  GOLDEN_FIELD_RULES_HI,
 } from "@/data/agriveda2/fertilizer-data";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
@@ -37,7 +38,6 @@ import CropFertilizerMixinPanel from "@/components/crops/sections/CropFertilizer
 import { getCropFertilizerMixinGuide } from "@/lib/crops/fertilizerMixinFieldGuide";
 import {
   buildMixinFoliarCardsRich,
-  buildMixinNotes,
   buildMixinOrganicCards,
 } from "@/lib/crops/fertilizerMixinTabs";
 import { simplifyMixinFarmerHi } from "@/lib/crops/simplifyMixinFarmerHi";
@@ -48,15 +48,17 @@ import {
   AlertTriangle,
   Calculator,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
-  Clock,
   Droplets,
   FileText,
   FlaskConical,
   Leaf,
+  Lightbulb,
   Minus,
   Plus,
   Share2,
+  ShieldCheck,
   Sparkles,
   XCircle,
 } from "lucide-react";
@@ -81,38 +83,80 @@ const SUB_TABS: {
 
 const PRESET_ACRES = [0.5, 1, 2, 3, 5];
 
-/** Approximate government subsidized retail prices (INR) per standard pack */
+/** Approximate government subsidized / market retail prices (INR) per kg */
 const ESTIMATED_PRICES: Record<string, { price: number; perKg: number }> = {
   urea: { price: 266.5, perKg: 5.92 },
   dap: { price: 1350, perKg: 27 },
   mop: { price: 1700, perKg: 34 },
   ssp: { price: 450, perKg: 9 },
   gypsum: { price: 200, perKg: 4 },
-  zinc: { price: 450, perKg: 45 },
-  borax: { price: 120, perKg: 120 },
+  zinc: { price: 450, perKg: 90 },
+  borax: { price: 250, perKg: 250 },
+  ws_npk: { price: 160, perKg: 160 },
+  calcium_nitrate: { price: 1500, perKg: 60 },
+  sulphur_wdg: { price: 300, perKg: 100 },
+  mycorrhiza: { price: 480, perKg: 120 },
+  humic: { price: 400, perKg: 400 },
+  zyme: { price: 650, perKg: 65 },
 };
 
-function getApproxProductCost(name: string, kg: number): number {
+function getApproxProductCost(name: string, val: number, unit: string = "किग्रा"): number {
+  if (!Number.isFinite(val) || val <= 0) return 0;
+  // Convert grams/ml to kg/litre equivalent for per-kg pricing
+  let kg = val;
+  if (unit === "ग्राम" || unit === "मि.ली") {
+    kg = val / 1000;
+  } else if (unit === "टन") {
+    kg = val * 1000;
+  }
   const n = name.toLowerCase();
   if (n.includes("urea") || n.includes("यूरिया")) return Math.round(kg * ESTIMATED_PRICES.urea.perKg);
-  if (n.includes("dap") || n.includes("डीएपी")) return Math.round(kg * ESTIMATED_PRICES.dap.perKg);
-  if (n.includes("mop") || n.includes("पोटाश")) return Math.round(kg * ESTIMATED_PRICES.mop.perKg);
-  if (n.includes("ssp") || n.includes("सिंगल सुपर")) return Math.round(kg * ESTIMATED_PRICES.ssp.perKg);
-  if (n.includes("zinc") || n.includes("जिंक")) return Math.round(kg * ESTIMATED_PRICES.zinc.perKg);
-  if (n.includes("borax") || n.includes("बोरॉन")) return Math.round(kg * ESTIMATED_PRICES.borax.perKg);
-  if (n.includes("gypsum") || n.includes("जिप्सम")) return Math.round(kg * ESTIMATED_PRICES.gypsum.perKg);
-  return Math.round(kg * 20);
+  if (n.includes("dap") || n.includes("डीएपी") || n.includes("10:26:26"))
+    return Math.round(kg * ESTIMATED_PRICES.dap.perKg);
+  if (n.includes("mop") || n.includes("पोटाश") || n.includes("sop"))
+    return Math.round(kg * ESTIMATED_PRICES.mop.perKg);
+  if (n.includes("ssp") || n.includes("सिंगल सुपर"))
+    return Math.round(kg * ESTIMATED_PRICES.ssp.perKg);
+  if (n.includes("कैल्शियम नाइट्रेट") || n.includes("calcium"))
+    return Math.round(kg * ESTIMATED_PRICES.calcium_nitrate.perKg);
+  if (n.includes("19:19:19") || n.includes("12:61:00") || n.includes("00:52:34") || n.includes("00:00:50") || n.includes("13:00:45"))
+    return Math.round(kg * ESTIMATED_PRICES.ws_npk.perKg);
+  if (n.includes("चिलेटेड जिंक") || n.includes("edta"))
+    return Math.round(kg * 600);
+  if (n.includes("zinc") || n.includes("जिंक"))
+    return Math.round(kg * ESTIMATED_PRICES.zinc.perKg);
+  if (n.includes("borax") || n.includes("बोरॉन"))
+    return Math.round(kg * ESTIMATED_PRICES.borax.perKg);
+  if (n.includes("सल्फर") || n.includes("sulphur"))
+    return Math.round(kg * ESTIMATED_PRICES.sulphur_wdg.perKg);
+  if (n.includes("माइकोराइजा") || n.includes("mycorrhiza"))
+    return Math.round(kg * ESTIMATED_PRICES.mycorrhiza.perKg);
+  if (n.includes("ह्यूमिक") || n.includes("humic"))
+    return Math.round(kg * ESTIMATED_PRICES.humic.perKg);
+  if (n.includes("जाइम") || n.includes("सागरिका"))
+    return Math.round(kg * ESTIMATED_PRICES.zyme.perKg);
+  if (n.includes("gypsum") || n.includes("जिप्सम"))
+    return Math.round(kg * ESTIMATED_PRICES.gypsum.perKg);
+  if (n.includes("गोबर") || n.includes("fym"))
+    return Math.round(val * 1200);
+  return Math.max(50, Math.round(kg * 80));
 }
 
-function toDripSchedule(
-  rows: { stage: number; time: string; apply: string }[],
-  hi: boolean
-): { stage: number; time: string; apply: string }[] {
+type ScheduleRow = {
+  stage: number;
+  time: string;
+  method?: string;
+  apply: string;
+  benefit?: string;
+};
+
+function toDripSchedule(rows: ScheduleRow[], hi: boolean): ScheduleRow[] {
   if (!rows.length) {
     return [
       {
         stage: 1,
         time: hi ? "रोपाई / बुवाई के बाद" : "After transplant / sowing",
+        method: hi ? "ड्रिप फर्टीगेशन" : "Drip Fertigation",
         apply: hi
           ? "ड्रिप से 19:19:19 — 2.5 kg/एकड़, सप्ताह में 2 बार चलाएँ"
           : "Start light NPK via drip (19:19:19) — 2.5 kg/acre, 2×/week",
@@ -120,6 +164,7 @@ function toDripSchedule(
       {
         stage: 2,
         time: hi ? "शाखा / कल्ले फूटना" : "Vegetative Stage",
+        method: hi ? "ड्रिप फर्टीगेशन" : "Drip Fertigation",
         apply: hi
           ? "यूरिया / 12:61:00 — जड़ों के विकास हेतु 3–4 दिन के अंतर पर"
           : "Urea / 12:61:00 for root vigor in weekly pulses",
@@ -127,18 +172,19 @@ function toDripSchedule(
       {
         stage: 3,
         time: hi ? "फूल व फल विकास" : "Flowering & Fruiting",
+        method: hi ? "ड्रिप फर्टीगेशन" : "Drip Fertigation",
         apply: hi
-          ? "0:52:34 और 0:0:50 (पोटाश) — फल की चमक व वज़न बढ़ाने के लिए"
-          : "0:52:34 and 0:0:50 for fruit size, weight, and luster",
+          ? "00:52:34 और 00:00:50 (पोटाश) — फल की चमक व वज़न बढ़ाने के लिए"
+          : "00:52:34 and 00:00:50 for fruit size, weight, and luster",
       },
     ];
   }
   return rows.map((r, i) => ({
     ...r,
     apply: hi
-      ? `${r.apply} · ड्रिप से: 3–4 दिन के अंतराल पर छोटी खुराकों में दें`
+      ? `${r.apply} · ड्रिप/ड्रेंचिंग से: 3–4 दिन के अंतराल पर चलाएँ (कैल्शियम नाइट्रेट हमेशा अलग चलाएं)`
       : `${r.apply} · Via Drip: split dose every 3–4 days`,
-    time: i === 0 ? (hi ? `${r.time} (ड्रिप शुरू)` : `${r.time} (start drip)`) : r.time,
+    time: i === 0 ? (hi ? `${r.time} (बेसल/ड्रिप)` : `${r.time} (start drip)`) : r.time,
   }));
 }
 
@@ -191,12 +237,13 @@ function NutritionBar({
 }
 
 export default function CropFertilizerSection({ crop }: { crop: Crop }) {
-  const { t, locale } = useLocale();
+  const { locale } = useLocale();
   const hi = locale === "hi";
   const [activeSubTab, setActiveSubTab] = useState<SubTabId>("schedule");
   const [fertMode, setFertMode] = useState<FertMode>("normal");
   const [acresText, setAcresText] = useState("1");
   const [soilTest, setSoilTest] = useState<SoilTestLevels>({});
+  const [showProtectionMixin, setShowProtectionMixin] = useState(false);
 
   /** Acreage with clean fallback */
   const acres = useMemo(() => {
@@ -221,10 +268,6 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     () => (mixinGuide ? buildMixinOrganicCards(mixinGuide) : []),
     [mixinGuide]
   );
-  const mixinNotes = useMemo(
-    () => (mixinGuide ? buildMixinNotes(mixinGuide) : null),
-    [mixinGuide]
-  );
 
   useEffect(() => {
     if (!supportsDrip) setFertMode("normal");
@@ -241,14 +284,15 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   );
   const dossierFertLines = profile?.fertilizerSchedule ?? [];
   const dossierMicros = profile?.micronutrients ?? [];
-  const dossierPgr = profile?.dossierPgrNotes ?? [];
 
-  const scheduleRows = useMemo(() => {
+  const scheduleRows: ScheduleRow[] = useMemo(() => {
     if (plan?.schedule?.length) {
       return plan.schedule.map((s, i) => ({
         stage: i + 1,
         time: s.time,
+        method: s.method,
         apply: s.apply,
+        benefit: s.benefit,
       }));
     }
     if (dossierFertLines.length) {
@@ -278,12 +322,22 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     [scheduleRows, supportsDrip]
   );
 
-  const displaySchedule = useMemo(() => {
+  const displaySchedule: ScheduleRow[] = useMemo(() => {
     if (supportsDrip && fertMode === "drip") {
       return toDripSchedule(scheduleForCrop, hi);
     }
     return scheduleForCrop;
   }, [fertMode, scheduleForCrop, hi, supportsDrip]);
+
+  /** Extract foliar spray & drenching stages from the verified schedule */
+  const verifiedFoliarStages = useMemo(() => {
+    if (!plan?.schedule?.length) return [];
+    return plan.schedule.filter(
+      (s) =>
+        /स्प्रे|foliar|spray|ड्रेंचिंग|drench/i.test(s.method ?? "") ||
+        /स्प्रे|19:19:19|00:52:34|00:00:50|13:00:45|12:61:00|बोरॉन|चिलेटेड/i.test(s.apply)
+    );
+  }, [plan]);
 
   const foliarRows = useMemo(() => {
     const micros = crop.fertilizerSchedule.micronutrients ?? [];
@@ -355,6 +409,16 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     const factorN = plan?.soilFactors.n ?? 1;
     const factorP = plan?.soilFactors.p ?? 1;
     const factorK = plan?.soilFactors.k ?? 1;
+    const nRow = plan?.nutrients.find((x) => x.nutrient.includes("N"));
+    const pRow = plan?.nutrients.find((x) => x.nutrient.includes("P"));
+    const kRow = plan?.nutrients.find((x) => x.nutrient.includes("K"));
+    if (nRow || pRow || kRow) {
+      return {
+        n: nRow ? nutrientTotal(nRow.detail) ?? 0 : 0,
+        p: pRow ? nutrientTotal(pRow.detail) ?? 0 : 0,
+        k: kRow ? nutrientTotal(kRow.detail) ?? 0 : 0,
+      };
+    }
     if (icar) {
       return {
         n: Math.round(haToAcre(icar.n, 1) * factorN * 10) / 10,
@@ -362,14 +426,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
         k: Math.round(haToAcre(icar.k2o, 1) * factorK * 10) / 10,
       };
     }
-    const nRow = plan?.nutrients.find((x) => x.nutrient === "N");
-    const pRow = plan?.nutrients.find((x) => x.nutrient === "P");
-    const kRow = plan?.nutrients.find((x) => x.nutrient === "K");
-    return {
-      n: nRow ? nutrientTotal(nRow.detail) ?? 0 : 0,
-      p: pRow ? nutrientTotal(pRow.detail) ?? 0 : 0,
-      k: kRow ? nutrientTotal(kRow.detail) ?? 0 : 0,
-    };
+    return { n: 0, p: 0, k: 0 };
   }, [icar, plan]);
 
   const bags = useMemo(() => {
@@ -393,8 +450,8 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const totalEstimatedCost = useMemo(() => {
     let sum = 0;
     for (const b of bags) {
-      const kg = parseFloat(b.amount) || 0;
-      sum += getApproxProductCost(b.name, kg);
+      const { num, unit } = fertilizerAmountParts(b.amount);
+      sum += getApproxProductCost(b.name, parseFloat(num) || 0, unit);
     }
     return sum;
   }, [bags]);
@@ -433,10 +490,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/35 bg-emerald-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-emerald-300 backdrop-blur-md">
               <Sparkles className="h-3.5 w-3.5" />
-              {hi ? "वैज्ञानिक खाद प्रबंधन (Fertilizer Plan)" : "Scientific Fertilizer Plan"}
+              {hi ? "वैज्ञानिक + फील्ड-टेस्टेड (High-Yield)" : "Scientific + Field-Tested Plan"}
             </span>
             <span className="rounded-full bg-white/15 border border-white/20 px-2.5 py-0.5 text-[10.5px] font-extrabold text-white/90 backdrop-blur-md">
-              🏛️ ICAR मानक
+              🏛️ ICAR/SAU मानक
             </span>
           </div>
 
@@ -458,8 +515,8 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               </h1>
               <p className="mt-1 text-[12px] font-medium leading-snug text-emerald-100/85">
                 {hi
-                  ? "संतुलित खुराक, सटीक बोरी संख्या व अधिक पैदावार का वैज्ञानिक फॉर्मूला"
-                  : "Balanced nutrients, exact bag counts & high yield fertilizer schedule"}
+                  ? "बेसल खाद, यूरिया कोटिंग, जड़ों में ड्रेंचिंग और फोलियर स्प्रे का बंपर पैदावार शेड्यूल"
+                  : "Balanced basal, top-dressing, root drenching & foliar spray schedule"}
               </p>
             </div>
           </div>
@@ -591,15 +648,25 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       </div>
 
       {/* =========================================================================
-          TAB 1: SCHEDULE (खाद कब दें)
+          TAB 1: SCHEDULE (खाद कब दें — वैज्ञानिक + प्रैक्टिकल फील्ड शेड्यूल)
       ========================================================================= */}
-      {activeSubTab === "schedule" && mixinGuide ? (
-        <CropFertilizerMixinPanel guide={mixinGuide} acres={acres} />
-      ) : null}
-
-      {activeSubTab === "schedule" && !mixinGuide ? (
+      {activeSubTab === "schedule" ? (
         <div className="space-y-3.5">
-          {/* DAP + Zinc Warning Alert */}
+          {/* Category Rule Banner */}
+          {plan?.categoryRuleHi && (
+            <div className="rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/10 p-3.5 shadow-sm">
+              <div className="flex items-start gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-xs shadow-xs">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                </span>
+                <p className="text-[11.5px] font-bold leading-relaxed text-[var(--av-text-primary)]">
+                  {plan.categoryRuleHi}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* DAP + Zinc & Calcium Nitrate Golden Rule Alert */}
           <div className="rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3.5 shadow-sm dark:bg-amber-950/20">
             <div className="flex items-start gap-2.5">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-white font-black text-xs shadow-xs">
@@ -607,12 +674,12 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               </span>
               <div>
                 <h4 className="text-[12.5px] font-black text-amber-950 dark:text-amber-100">
-                  {hi ? "सुनहरा नियम: DAP / SSP के साथ जिंक सल्फेट कभी न मिलाएँ!" : "Golden Rule: Never mix DAP with Zinc!"}
+                  {hi ? "💡 किसान टिप (गोल्डन नियम): खाद मिलाते समय सावधानी" : "Golden Rule: Fertilizer Mixing Safety"}
                 </h4>
                 <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-amber-900/90 dark:text-amber-200/90">
                   {hi
-                    ? "डीएपी (फॉस्फोरस) और जिंक सल्फेट मिलकर अघुलनशील जिंक फॉस्फेट बनाते हैं जिससे दोनों बेकार हो जाते हैं। बुवाई पर DAP दें, और जिंक सल्फेट खेत तैयारी में अलग दें या पहली सिंचाई पर यूरिया के साथ दें।"
-                    : "Mixing DAP and Zinc causes insoluble zinc phosphate, wasting both. Apply DAP at sowing, and Zinc separately during land prep or at 1st irrigation."}
+                    ? "1) DAP/SSP के साथ सामान्य जिंक सल्फेट कभी मिलाकर न डालें (दोनों मिलकर पत्थर जैसा 'जिंक फास्फेट' बना लेते हैं) — बेसल में Chelated Zinc (EDTA 12%) लें या जिंक को पहली यूरिया के साथ दें। 2) कैल्शियम नाइट्रेट को किसी भी सल्फेट या फॉस्फेट खाद के साथ न मिलाएं, हमेशा अलग से चलाएं।"
+                    : "Never mix DAP/SSP with normal Zinc Sulphate (use Chelated Zinc EDTA 12% or apply with 1st Urea). Always run Calcium Nitrate separately from sulphate/phosphate fertilizers."}
                 </p>
               </div>
             </div>
@@ -623,8 +690,8 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               <div className="mb-3.5 flex rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-1">
                 {(
                   [
-                    { id: "normal" as const, label: hi ? "🌾 साधारण / ज़मीन में" : "Soil Broadcast" },
-                    { id: "drip" as const, label: hi ? "💧 ड्रिप फर्टीगेशन" : "Drip Fertigation" },
+                    { id: "normal" as const, label: hi ? "🌾 वैज्ञानिक + फील्ड शेड्यूल" : "Field Schedule" },
+                    { id: "drip" as const, label: hi ? "💧 ड्रिप फर्टीगेशन मोड" : "Drip Fertigation" },
                   ] as const
                 ).map((m) => (
                   <button
@@ -647,10 +714,12 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             <div className="flex items-center justify-between pb-1">
               <div>
                 <h3 className="text-[14px] font-black text-[var(--av-text-primary)]">
-                  {hi ? `खाद डालने का समय (${acres} एकड़ के लिए)` : `Fertilizer Schedule (${acres} Acre)`}
+                  {hi
+                    ? `अवस्था अनुसार खाद व स्प्रे शेड्यूल (${acres} एकड़ के लिए)`
+                    : `Stage-Wise Fertilizer Schedule (${acres} Acre)`}
                 </h3>
                 <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                  चरण अनुसार सही मात्रा · मिट्टी में पर्याप्त नमी होने पर ही खाद दें
+                  दानेदार खाद + जड़ों में ड्रेंचिंग + फोलियर स्प्रे का सटीक फील्ड कॉम्बिनेशन
                 </p>
               </div>
             </div>
@@ -658,15 +727,17 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             {displaySchedule.length ? (
               <ol className="mt-3.5 space-y-3">
                 {displaySchedule.map((row) => {
-                  const products = parseFertilizerApplyLine(
-                    hi ? simplifyFertilizerNoteHi(row.apply) : row.apply
-                  );
+                  const products = parseFertilizerApplyLine(row.apply);
+                  const isSpray =
+                    row.method?.includes("स्प्रे") || row.apply.includes("स्प्रे");
+                  const isDrench =
+                    row.method?.includes("ड्रेंचिंग") || row.method?.includes("ड्रिप");
                   return (
                     <li
                       key={`${fertMode}-${row.stage}-${row.time}`}
                       className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]/40 p-3.5 shadow-xs transition hover:border-emerald-500/30"
                     >
-                      <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border)]/60 pb-2.5">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--av-border)]/60 pb-2.5">
                         <div className="flex items-center gap-2">
                           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white text-[11px] font-black shadow-xs">
                             0{row.stage}
@@ -675,15 +746,24 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                             {row.time}
                           </span>
                         </div>
-                        <span className="rounded-full bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                          {hi ? `चरण ${row.stage}` : `Stage ${row.stage}`}
+                        <span
+                          className={cn(
+                            "rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold",
+                            isSpray
+                              ? "border-sky-500/30 bg-sky-500/15 text-sky-900 dark:text-sky-200"
+                              : isDrench
+                              ? "border-purple-500/30 bg-purple-500/15 text-purple-900 dark:text-purple-200"
+                              : "border-emerald-500/20 bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
+                          )}
+                        >
+                          {row.method || (hi ? `चरण ${row.stage}` : `Stage ${row.stage}`)}
                         </span>
                       </div>
 
                       <ul className="mt-2.5 space-y-2">
-                        {products.map((p) => (
+                        {products.map((p, idx) => (
                           <li
-                            key={`${p.name}-${p.dose}`}
+                            key={`${p.name}-${p.dose}-${idx}`}
                             className="flex items-center gap-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2 shadow-xs"
                           >
                             <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-[var(--av-border)] bg-white">
@@ -708,6 +788,13 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                           </li>
                         ))}
                       </ul>
+
+                      {row.benefit && (
+                        <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-[11.5px] font-bold text-emerald-950 dark:text-emerald-100">
+                          <span className="text-xs leading-none">🎯</span>
+                          <span>मुख्य फायदा: {row.benefit}</span>
+                        </div>
+                      )}
                     </li>
                   );
                 })}
@@ -725,15 +812,44 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               <span>{scheduleTip}</span>
             </div>
           </DarkCard>
+
+          {/* Optional expandable Crop Protection Mix-in Field Guide */}
+          {mixinGuide ? (
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setShowProtectionMixin((v) => !v)}
+                className="flex w-full items-center justify-between rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 py-3 text-left shadow-xs"
+              >
+                <div>
+                  <p className="text-xs font-black text-[var(--av-text-primary)]">
+                    🛡️ खाद + कीट/रोग सुरक्षा मिक्स-इन फील्ड गाइड (विस्तृत)
+                  </p>
+                  <p className="text-[10.5px] text-[var(--av-text-muted)]">
+                    बीज उपचार, कीटनाशक व फफूंदनाशक के साथ खाद मिलाने के नियम
+                  </p>
+                </div>
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 text-[var(--av-text-muted)] transition-transform",
+                    showProtectionMixin && "rotate-180"
+                  )}
+                />
+              </button>
+              {showProtectionMixin && (
+                <CropFertilizerMixinPanel guide={mixinGuide} acres={acres} />
+              )}
+            </div>
+          ) : null}
         </div>
       ) : null}
 
       {/* =========================================================================
-          TAB 2: FOLIAR SPRAY (पत्ती स्प्रे)
+          TAB 2: FOLIAR SPRAY (पत्ती स्प्रे व ड्रेंचिंग)
       ========================================================================= */}
       {activeSubTab === "foliar" && (
         <div className="space-y-3.5">
-          {/* Foliar Zinc Caution Alert */}
+          {/* Foliar Zinc & Calcium Nitrate Caution Alert */}
           <div className="rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3.5 shadow-sm dark:bg-amber-950/20">
             <div className="flex items-start gap-2.5">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-white font-black text-xs shadow-xs">
@@ -741,22 +857,63 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               </span>
               <div>
                 <h4 className="text-[12.5px] font-black text-amber-950 dark:text-amber-100">
-                  {hi ? "स्प्रे सावधानी: पत्ती पर जिंक छिड़काव नियम" : "Foliar Zinc Caution"}
+                  {hi ? "स्प्रे व ड्रेंचिंग के गोल्डन नियम" : "Foliar Spray & Drenching Rules"}
                 </h4>
                 <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-amber-900/90 dark:text-amber-200/90">
                   {hi
-                    ? "पत्तियों पर स्प्रे के लिए चिलेटेड जिंक (Zn EDTA 12%) सबसे सुरक्षित है (चूने की जरूरत नहीं)। यदि जिंक सल्फेट 21% छिड़कें तो 1 किग्रा दवा में 500 ग्राम बुझा चूना अवश्य मिलाएँ ताकि पत्तियाँ न झुलसें।"
-                    : "Chelated Zinc (Zn EDTA 12%) is safest for foliar spray. If spraying ZnSO4 21%, always add 500g slaked lime per 1kg ZnSO4 to avoid leaf burning."}
+                    ? "NPK 19:19:19 या 00:52:34 के साथ स्प्रे में हमेशा Chelated Zinc (EDTA 12%) और बोरॉन (20%) का प्रयोग करें। कैल्शियम नाइट्रेट को किसी भी सल्फेट या फॉस्फेट वाले खाद (जैसे 19:19:19, 00:52:34, मैग्नीशियम सल्फेट) के साथ मिलाकर स्प्रे या ड्रेंचिंग न करें।"
+                    : "Use Chelated Zinc (EDTA 12%) and Boron (20%) with water-soluble NPK sprays. Never mix Calcium Nitrate with any sulphate or phosphate fertilizer."}
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Crop-specific Foliar Spray & Drenching Stages from the High-Yield Schedule */}
+          {verifiedFoliarStages.length > 0 && (
+            <DarkCard>
+              <div className="pb-1">
+                <h3 className="text-[14px] font-black text-[var(--av-text-primary)]">
+                  {hi
+                    ? `${hindi || crop.name} के फोलियर स्प्रे व ड्रेंचिंग चरण (${acres} एकड़)`
+                    : `${crop.name} Foliar Spray & Drenching Stages (${acres} Acre)`}
+                </h3>
+                <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
+                  💧 स्प्रे की मात्रा और पानी दोनों {acres} एकड़ के हिसाब से सेट हैं
+                </p>
+              </div>
+              <ul className="mt-3 space-y-2.5">
+                {verifiedFoliarStages.map((s, idx) => (
+                  <li
+                    key={`${s.time}-${idx}`}
+                    className="rounded-2xl border border-sky-500/30 bg-[var(--av-surface)] p-3.5 shadow-xs space-y-2"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-1.5">
+                      <span className="inline-block rounded-md bg-sky-500/15 border border-sky-500/30 px-2 py-0.5 text-[10px] font-black text-sky-900 dark:text-sky-200">
+                        {s.method || "फोलियर स्प्रे"}
+                      </span>
+                      <span className="text-xs font-black text-[var(--av-text-primary)]">
+                        {s.time}
+                      </span>
+                    </div>
+                    <p className="text-[13px] font-black text-[var(--av-text-primary)]">
+                      {s.apply}
+                    </p>
+                    {s.benefit && (
+                      <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                        🎯 मुख्य फायदा: {s.benefit}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </DarkCard>
+          )}
+
           <DarkCard>
             <div className="flex items-center justify-between pb-1">
               <div>
                 <h3 className="text-[14px] font-black text-[var(--av-text-primary)]">
-                  {hi ? "पत्ती पर छिड़काव व सूक्ष्म पोषक (Foliar Sprays)" : "Leaf Spray & Micronutrients"}
+                  {hi ? "पत्ती पर छिड़काव व सूक्ष्म पोषक गाइड" : "Leaf Spray & Micronutrients"}
                 </h3>
                 <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
                   💧 {hi ? "साफ़ पानी (150–200 L प्रति एकड़) · सुबह या शाम के समय स्प्रे करें" : "Clean water (150–200 L/acre) · Spray in morning or evening"}
@@ -904,10 +1061,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             <div className="flex items-center justify-between pb-1">
               <div>
                 <h3 className="text-[14px] font-black text-[var(--av-text-primary)]">
-                  {hi ? "जैविक व प्राकृतिक विकल्प" : "Organic Soil Conditioners"}
+                  {hi ? "जैविक व बायो-स्टिमुलेंट विकल्प" : "Organic & Bio-Inputs"}
                 </h3>
                 <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                  🌿 {hi ? "गोबर खाद · वर्मीकम्पोस्ट · ट्राइकोडर्मा · जीवामृत" : "FYM · Vermicompost · Trichoderma · Jeevamrut"}
+                  🌿 {hi ? "माइकोराइजा · ह्यूमिक एसिड · ट्राइकोडर्मा · गोबर खाद · नीम खली" : "Mycorrhiza · Humic Acid · Trichoderma · FYM · Neem Cake"}
                 </p>
               </div>
             </div>
@@ -981,10 +1138,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             <div className="flex items-center justify-between pb-1">
               <div>
                 <h3 className="text-[14px] font-black text-[var(--av-text-primary)]">
-                  {hi ? `कुल खाद व बोरी संख्या (${acres} एकड़)` : `Total Fertilizer Bags (${acres} Acre)`}
+                  {hi ? `कुल खाद व पैक संख्या (${acres} एकड़)` : `Total Fertilizer Packs (${acres} Acre)`}
                 </h3>
                 <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                  बाज़ार में उपलब्ध मानक पैक साइज़ (यूरिया 45 kg, DAP 50 kg, जिंक 10 kg)
+                  दानेदार खाद, ड्रेंचिंग और फोलियर स्प्रे पैक का पूरा हिसाब
                 </p>
               </div>
             </div>
@@ -1020,9 +1177,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             {/* Retail Product Cards List */}
             <ul className="mt-3.5 space-y-2.5">
               {bags.map((b) => {
-                const kg = parseFloat(b.amount) || 0;
-                const packText = fertilizerPackHi(b.name, kg);
-                const cost = getApproxProductCost(b.name, kg);
+                const { num, unit } = fertilizerAmountParts(b.amount);
+                const val = parseFloat(num) || 0;
+                const packText = fertilizerPackHi(b.name, val, unit);
+                const cost = getApproxProductCost(b.name, val, unit);
                 return (
                   <li
                     key={b.name}
@@ -1043,11 +1201,11 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                           {b.name}
                         </h4>
                         <span className="text-[12px] font-black text-emerald-800 dark:text-emerald-300">
-                          {b.amount}
+                          {num} {unit}
                         </span>
                       </div>
                       <p className="mt-0.5 text-[11.5px] font-bold text-amber-900 dark:text-amber-200">
-                        {packText || `${b.amount} कुल`}
+                        {packText || b.amount}
                       </p>
                       <div className="mt-1 flex items-center justify-between text-[10.5px] font-semibold text-[var(--av-text-muted)]">
                         <span>{fertilizerBagPurposeHi(b.name)}</span>
@@ -1065,10 +1223,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             <div className="mt-4 flex items-center justify-between rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
               <div>
                 <span className="block text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
-                  {hi ? "कुल अनुमानित खाद बजट:" : "Total Fertilizer Budget:"}
+                  {hi ? "कुल अनुमानित खाद व स्प्रे बजट:" : "Total Fertilizer Budget:"}
                 </span>
                 <span className="text-[10px] text-[var(--av-text-muted)]">
-                  (सरकारी सब्सिडी दर के आधार पर)
+                  (बाज़ार व सब्सिडी दर के अनुमानित आधार पर)
                 </span>
               </div>
               <span className="text-[18px] font-black text-emerald-900 dark:text-emerald-100">
@@ -1118,19 +1276,19 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </p>
             <div className="mt-3.5 space-y-2.5">
               <NutritionBar
-                label={hi ? "नाइट्रोजन (यूरिया)" : "Nitrogen (N)"}
+                label={hi ? "नाइट्रोजन (N)" : "Nitrogen (N)"}
                 value={npkAcre.n * acres}
                 max={npkMax * acres}
                 color="#10b981"
               />
               <NutritionBar
-                label={hi ? "फॉस्फोरस (डीएपी)" : "Phosphorus (P)"}
+                label={hi ? "फॉस्फोरस (P)" : "Phosphorus (P)"}
                 value={npkAcre.p * acres}
                 max={npkMax * acres}
                 color="#3b82f6"
               />
               <NutritionBar
-                label={hi ? "पोटाश (एमओपी)" : "Potash (K)"}
+                label={hi ? "पोटाश (K)" : "Potash (K)"}
                 value={npkAcre.k * acres}
                 max={npkMax * acres}
                 color="#f59e0b"
@@ -1141,10 +1299,45 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       )}
 
       {/* =========================================================================
-          TAB 5: MUST-KNOW RULES (जरूरी नियम)
+          TAB 5: MUST-KNOW RULES (जरूरी नियम व 3 गोल्डन फील्ड नियम)
       ========================================================================= */}
       {activeSubTab === "notes" && (
         <div className="space-y-3.5">
+          {/* 3 Golden Field Rules Card */}
+          <DarkCard>
+            <div className="flex items-center gap-2 pb-1">
+              <Lightbulb className="h-4 w-4 text-amber-500" />
+              <h3 className="text-[14px] font-black text-[var(--av-text-primary)]">
+                {hi ? "💡 किसान टिप: कैलकुलेटर के 3 गोल्डन फील्ड नियम" : "3 Golden Field Rules"}
+              </h3>
+            </div>
+            <div className="mt-2.5 space-y-2.5">
+              {GOLDEN_FIELD_RULES_HI.map((rule) => (
+                <div
+                  key={rule.id}
+                  className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3"
+                >
+                  <p className="text-xs font-black text-amber-950 dark:text-amber-200">
+                    {rule.titleHi}
+                  </p>
+                  <p className="mt-1 text-[11.5px] font-medium leading-relaxed text-[var(--av-text-primary)]">
+                    {rule.bodyHi}
+                  </p>
+                </div>
+              ))}
+              {plan?.categoryRuleHi && (
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+                  <p className="text-xs font-black text-emerald-950 dark:text-emerald-200">
+                    🌾 इस फसल श्रेणी का विशेष नियम
+                  </p>
+                  <p className="mt-1 text-[11.5px] font-medium leading-relaxed text-[var(--av-text-primary)]">
+                    {plan.categoryRuleHi}
+                  </p>
+                </div>
+              )}
+            </div>
+          </DarkCard>
+
           {/* Do's Card */}
           <DarkCard>
             <div className="flex items-center gap-2 pb-1">
@@ -1155,10 +1348,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </div>
             <ul className="mt-2.5 space-y-2">
               {[
-                hi ? "यूरिया को 2 से 3 बार में बाँटकर दें — पौधा अधिक ग्रहण करता है।" : "Split urea in 2-3 top dressings.",
-                hi ? "जिंक व सूक्ष्म पोषक हमेशा पहली सिंचाई पर दें।" : "Apply zinc and micronutrients at 1st irrigation.",
+                hi ? "यूरिया को 2 से 3 बार में बाँटकर दें और पहली यूरिया पर ह्यूमिक एसिड / जिंक / सल्फर की कोटिंग करें।" : "Split urea in 2-3 top dressings.",
+                hi ? "गभोट अवस्था व फूल-दाना बनते समय 00:52:34 + बोरॉन (20%) का स्प्रे करें — पोलिनेशन और दाना भराव दोगुना होता है।" : "Spray 00:52:34 + Boron at booting/flowering stage.",
                 hi ? "खाद डालते समय खेत में पर्याप्त नमी होना अनिवार्य है।" : "Ensure optimal soil moisture during application.",
-                hi ? "बुवाई से पहले बीज उपचार (FIR) अवश्य करें।" : "Complete FIR seed treatment before sowing.",
+                hi ? "बुवाई से पहले बीज उपचार (FIR / राइजोबियम + PSB) अवश्य करें।" : "Complete seed treatment before sowing.",
               ].map((n) => (
                 <li
                   key={n}
@@ -1181,10 +1374,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </div>
             <ul className="mt-2.5 space-y-2">
               {[
-                hi ? "DAP और जिंक सल्फेट को एक साथ कभी न मिलाएँ (दोनों अघुलनशील हो जाते हैं)।" : "Never mix DAP with Zinc Sulphate.",
+                hi ? "DAP/SSP और सामान्य जिंक सल्फेट को एक साथ कभी न मिलाएँ (दोनों मिलकर पत्थर बन जाते हैं)।" : "Never mix DAP/SSP with normal Zinc Sulphate.",
+                hi ? "कैल्शियम नाइट्रेट को किसी भी सल्फेट या फॉस्फेट वाले खाद (DAP, MgSO4, 19:19:19, 00:52:34) के साथ मिलाकर न चलाएं।" : "Never mix Calcium Nitrate with sulphate or phosphate fertilizers.",
+                hi ? "दलहनी फसलों में फूल आते समय यूरिया बिल्कुल न डालें और कंद फसलों (प्याज/लहसुन/आलू) में अंतिम 30–40 दिन में यूरिया न दें।" : "Avoid urea during flowering in pulses and last 30–40 days in bulb/tuber crops.",
                 hi ? "सूखी मिट्टी में कभी भी यूरिया या डीएपी का छिड़काव न करें।" : "Never broadcast urea in dry soil without irrigation.",
-                hi ? "सारा यूरिया एक साथ बुवाई पर न डालें — इससे पौधे जल सकते हैं।" : "Do not dump all nitrogen in basal dose.",
-                hi ? "दलहनी फसलों में अतिरिक्त यूरिया न दें — इससे जड़ की गांठे खराब होती हैं।" : "Avoid excess urea on legumes.",
               ].map((n) => (
                 <li
                   key={n}

@@ -7,13 +7,19 @@ import { navigateBack } from "@/lib/navigationTracker";
 import {
   ArrowLeft,
   ArrowRight,
+  Banknote,
+  Check,
+  CheckCircle2,
   ChevronDown,
+  CreditCard,
   ExternalLink,
   MapPin,
   Search,
   Shield,
+  ShieldAlert,
   Sparkles,
-  CheckCircle2,
+  Tractor,
+  X,
 } from "lucide-react";
 import AppShell from "@/components/shell/AppShell";
 import AppLink from "@/components/ui/AppLink";
@@ -153,30 +159,59 @@ function SectionTitle({ children }: { children: ReactNode }) {
   );
 }
 
-function TopBar({ hi }: { hi: boolean }) {
+function TopBar({
+  hi,
+  selectedStateNameHi,
+  onOpenStateModal,
+}: {
+  hi: boolean;
+  selectedStateNameHi: string;
+  onOpenStateModal: () => void;
+}) {
   const router = useRouter();
   return (
-    <header className="flex items-center gap-3">
+    <header className="flex items-center justify-between gap-2.5">
+      <div className="flex items-center gap-2.5 min-w-0">
+        <button
+          type="button"
+          aria-label={hi ? "वापस" : "Back"}
+          onClick={() => navigateBack({ router })}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-stone-200/90 bg-white text-stone-700 shadow-xs transition hover:bg-stone-50 active:scale-95 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </button>
+        <div className="min-w-0">
+          <h1 className="truncate text-[17px] font-black tracking-tight text-stone-900 dark:text-white">
+            {hi ? "सरकारी योजनाएँ" : "Govt Schemes"}
+          </h1>
+          <p className="truncate text-[11px] font-semibold text-stone-500 dark:text-stone-400">
+            {hi ? "सब्सिडी, पात्रता व आवेदन" : "Subsidies & Eligibility"}
+          </p>
+        </div>
+      </div>
+
       <button
         type="button"
-        aria-label={hi ? "वापस" : "Back"}
-        onClick={() => navigateBack({ router })}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-primary)] shadow-sm active:scale-95"
+        onClick={onOpenStateModal}
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-600/30 bg-emerald-50/90 px-3 py-1.5 text-[12px] font-black text-emerald-900 shadow-xs transition hover:bg-emerald-100/90 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/50 dark:text-emerald-300"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <MapPin className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
+        <span className="max-w-[105px] truncate">{selectedStateNameHi}</span>
+        <ChevronDown className="h-3.5 w-3.5 opacity-60 shrink-0" />
       </button>
-      <div className="min-w-0 flex-1 text-center">
-        <h1 className="truncate text-[16px] font-extrabold text-[#07512f] dark:text-emerald-100">
-          {hi ? "किसान योजनाएँ एवं सब्सिडी" : "Farmer Schemes & Subsidy"}
-        </h1>
-      </div>
-      <span className="w-10" aria-hidden />
     </header>
   );
 }
 
-/** Split card: text left · photo right */
-function GroupTile({
+const BENTO_ICONS: Record<string, { icon: typeof Banknote; bg: string; color: string }> = {
+  cash: { icon: Banknote, bg: "bg-emerald-50 dark:bg-emerald-950/50", color: "text-emerald-700 dark:text-emerald-300" },
+  equipment: { icon: Tractor, bg: "bg-amber-50 dark:bg-amber-950/50", color: "text-amber-700 dark:text-amber-300" },
+  protection: { icon: ShieldAlert, bg: "bg-blue-50 dark:bg-blue-950/50", color: "text-blue-700 dark:text-blue-300" },
+  credit: { icon: CreditCard, bg: "bg-purple-50 dark:bg-purple-950/50", color: "text-purple-700 dark:text-purple-300" },
+};
+
+/** 2x2 Bento Grid Card: Pure white, clean icon, bold typography */
+function BentoCategoryCard({
   group,
   hi,
   count,
@@ -187,38 +222,138 @@ function GroupTile({
   count: number;
   onSelect: () => void;
 }) {
+  const meta = BENTO_ICONS[group.id] || {
+    icon: Sparkles,
+    bg: "bg-stone-50 dark:bg-stone-800",
+    color: "text-stone-700 dark:text-stone-300",
+  };
+  const Icon = meta.icon;
+
   return (
     <button
       type="button"
       onClick={onSelect}
-      className="group relative flex min-h-[96px] w-full overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 text-left shadow-md shadow-emerald-900/20 transition active:scale-[0.99]"
+      className="group relative flex flex-col justify-between rounded-2xl border border-stone-200/90 bg-white p-3.5 text-left shadow-xs transition hover:border-emerald-600/40 hover:shadow-md active:scale-[0.98] dark:border-stone-800 dark:bg-stone-900"
     >
-      <span className="relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-0.5 bg-emerald-950 px-3.5 py-3">
-        <span className="text-[14px] font-extrabold leading-snug text-white">
+      <div className="flex items-center justify-between">
+        <span className={cn("flex h-10 w-10 items-center justify-center rounded-xl", meta.bg, meta.color)}>
+          <Icon className="h-5 w-5" />
+        </span>
+        <span className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-bold text-stone-600 dark:bg-stone-800 dark:text-stone-300">
+          {count} {hi ? "योजनाएँ" : "schemes"}
+        </span>
+      </div>
+      <div className="mt-3">
+        <p className="text-[13.5px] font-black leading-snug text-stone-900 transition group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400">
           {hi ? group.titleHi : group.titleEn}
-        </span>
-        <span className="line-clamp-2 text-[11px] font-medium leading-snug text-emerald-100/85">
+        </p>
+        <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-stone-500 dark:text-stone-400">
           {hi ? group.blurbHi : group.blurbEn}
-        </span>
-        <span className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-200">
-          {count} {hi ? "योजनाएँ · देखें" : "schemes · open"}
-          <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-        </span>
-      </span>
-      <span className="relative w-[44%] min-w-[120px] max-w-[180px] shrink-0 self-stretch">
-        <Image
-          src={group.image}
-          alt=""
-          fill
-          sizes="220px"
-          className="object-cover transition duration-300 group-hover:scale-105"
-        />
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-emerald-950 via-emerald-950/55 to-transparent"
-        />
-      </span>
+        </p>
+      </div>
     </button>
+  );
+}
+
+/** Clean State Selection Sheet/Modal */
+function StateSelectModal({
+  open,
+  onClose,
+  selectedState,
+  onSelect,
+  hi,
+}: {
+  open: boolean;
+  onClose: () => void;
+  selectedState: string;
+  onSelect: (st: string) => void;
+  hi: boolean;
+}) {
+  const [filter, setFilter] = useState("");
+  if (!open) return null;
+
+  const allStateKeys = ["all", ...Object.keys(INDIAN_STATES_SCHEME_META)];
+  const filtered = allStateKeys.filter((st) => {
+    if (st === "all") return true;
+    const meta = INDIAN_STATES_SCHEME_META[st];
+    const q = filter.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      st.toLowerCase().includes(q) ||
+      (meta?.stateHi && meta.stateHi.toLowerCase().includes(q))
+    );
+  });
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-in fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="relative flex max-h-[85vh] w-full max-w-md flex-col rounded-3xl border border-stone-200 bg-white p-5 shadow-2xl dark:border-stone-800 dark:bg-stone-900"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
+          <div>
+            <h3 className="text-base font-black text-stone-900 dark:text-white">
+              {hi ? "📍 अपना राज्य चुनें" : "Select Your State"}
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              {hi ? "राज्य के अनुसार सटीक योजनाएं दिखेंगी" : "Filter schemes by your state"}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-stone-100 p-1.5 text-stone-600 transition hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="relative my-3">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400" />
+          <input
+            type="search"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder={hi ? "राज्य का नाम खोजें…" : "Search state…"}
+            className="w-full rounded-xl border border-stone-200 bg-stone-50 py-2 pl-9 pr-3 text-xs font-semibold text-stone-900 outline-none focus:border-emerald-600 dark:border-stone-800 dark:bg-stone-800 dark:text-stone-100"
+          />
+        </div>
+
+        <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[50vh]">
+          {filtered.map((st) => {
+            const isSelected = selectedState === st;
+            const label =
+              st === "all"
+                ? hi ? "🇮🇳 सभी राज्य (All India)" : "All States (All India)"
+                : `${INDIAN_STATES_SCHEME_META[st]?.stateHi || st} (${st})`;
+            return (
+              <button
+                key={st}
+                type="button"
+                onClick={() => {
+                  onSelect(st);
+                  onClose();
+                }}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs font-bold transition active:scale-[0.99]",
+                  isSelected
+                    ? "bg-emerald-950 text-white shadow-xs dark:bg-emerald-600"
+                    : "bg-stone-50/80 text-stone-800 hover:bg-stone-100 dark:bg-stone-800/60 dark:text-stone-200 dark:hover:bg-stone-800"
+                )}
+              >
+                <span>{label}</span>
+                {isSelected ? <Check className="h-4 w-4 text-emerald-300" /> : null}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -240,86 +375,79 @@ function SchemeListCard({
   const hook = farmerSchemeHook(scheme.id, scheme.hookHi, hi);
 
   const schemeMeta = SCHEME_STATE_DETAILS[scheme.id];
-  const stateStatus = getSchemeStateStatus(scheme.id, selectedState === "all" ? "Uttar Pradesh" : selectedState);
 
-  // Status text for card
   const statusBadge =
     schemeMeta?.windowStatus === "open"
-      ? { text: hi ? "आवेदन चालू" : "Open", color: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-600/20" }
+      ? { text: hi ? "🟢 आवेदन चालू" : "🟢 Open", color: "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40" }
       : schemeMeta?.windowStatus === "seasonal"
-      ? { text: hi ? "मौसमी विंडो" : "Seasonal", color: "bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-600/20" }
+      ? { text: hi ? "🟡 मौसमी विंडो" : "🟡 Seasonal", color: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40" }
       : schemeMeta?.windowStatus === "quota"
-      ? { text: hi ? "टोकन कोटा" : "Quota", color: "bg-blue-500/10 text-blue-800 dark:text-blue-300 border-blue-600/20" }
-      : { text: hi ? "सक्रिय" : "Active", color: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-600/20" };
-
-  const isStateSpecificMatch =
-    selectedState !== "all" &&
-    scheme.level === "state" &&
-    scheme.state?.toLowerCase() === selectedState.toLowerCase();
+      ? { text: hi ? "🔵 टोकन कोटा" : "🔵 Quota", color: "bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40" }
+      : { text: hi ? "🟢 सक्रिय" : "🟢 Active", color: "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40" };
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] transition hover:shadow-md">
+    <article className="overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-xs transition hover:border-emerald-500/40 hover:shadow-md dark:border-stone-800 dark:bg-stone-900">
       <AppLink
         href={schemeHref(scheme.id)}
         onClick={() => track("scheme_card_open", { id: scheme.id, from: "schemes_list", state: selectedState })}
         className="group relative flex min-h-[96px] active:scale-[0.99]"
       >
-        <span className="relative w-[34%] min-w-[105px] max-w-[140px] shrink-0 self-stretch">
+        <span className="relative w-[32%] min-w-[100px] max-w-[130px] shrink-0 self-stretch">
           <Image
             src={img}
             alt=""
             fill
             sizes="150px"
-            className="object-cover transition duration-500 group-hover:scale-105"
+            className="object-cover transition duration-300 group-hover:scale-105"
           />
-          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-black/10 to-[var(--av-surface)]/40" />
+          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-white/40 dark:to-stone-900/40" />
         </span>
 
         <span className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-3">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-black text-emerald-800 dark:text-emerald-300">
-              {hi ? (scheme.level === "central" ? "केंद्र सरकार" : "राज्य सरकार") : scheme.level}
+            <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[9.5px] font-bold text-stone-700 dark:bg-stone-800 dark:text-stone-300">
+              {hi ? (scheme.level === "central" ? "🇮🇳 केंद्र सरकार" : "🏛️ राज्य सरकार") : scheme.level}
             </span>
 
             {scheme.level === "state" && scheme.state ? (
-              <span className="rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-black text-amber-800 dark:text-amber-300">
-                ⭐ {INDIAN_STATES_SCHEME_META[scheme.state]?.stateHi || scheme.state} {hi ? "विशेष" : "Govt"}
+              <span className="rounded-md bg-amber-50 px-1.5 py-0.5 text-[9.5px] font-black text-amber-800 border border-amber-200/60 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40">
+                ⭐ {INDIAN_STATES_SCHEME_META[scheme.state]?.stateHi || scheme.state}
               </span>
             ) : null}
 
-            <span className={cn("rounded-md border px-1.5 py-0.5 text-[9px] font-bold", statusBadge.color)}>
+            <span className={cn("rounded-md border px-1.5 py-0.5 text-[9.5px] font-bold", statusBadge.color)}>
               {statusBadge.text}
             </span>
           </div>
 
-          <h3 className="line-clamp-1 text-[14px] font-black leading-snug text-[var(--av-text-primary)]">
+          <h3 className="line-clamp-1 text-[14px] font-extrabold leading-snug text-stone-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">
             {title}
           </h3>
 
-          <p className="line-clamp-2 text-[11px] font-medium leading-snug text-[var(--av-text-secondary)]">
+          <p className="line-clamp-2 text-[11px] font-medium leading-snug text-stone-500 dark:text-stone-400">
             {hook}
           </p>
 
           {scheme.benefitAmount && (
-            <div className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-extrabold text-amber-700 dark:text-amber-300">
-              <Sparkles className="h-3 w-3" />
+            <div className="mt-0.5 inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-black text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 w-fit">
+              <Sparkles className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{scheme.benefitAmount}</span>
             </div>
           )}
 
-          <div className="mt-1 flex items-center justify-between pt-1 border-t border-[var(--av-border)]/40">
+          <div className="mt-1 flex items-center justify-between pt-1 border-t border-stone-100 dark:border-stone-800">
             {official ? (
-              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+              <span className="inline-flex items-center gap-0.5 text-[10.5px] font-bold text-emerald-800 dark:text-emerald-400">
                 <Shield className="h-3 w-3 text-emerald-600" />
                 <span>{hi ? "आधिकारिक पोर्टल" : "Official portal"}</span>
               </span>
             ) : (
-              <span className="text-[10px] font-medium text-[var(--av-text-muted)]">
+              <span className="text-[10px] font-medium text-stone-400">
                 {hi ? "मार्गदर्शन" : "Guidance"}
               </span>
             )}
 
-            <span className="inline-flex items-center gap-0.5 text-[11px] font-black text-[#07512f] dark:text-emerald-300 group-hover:translate-x-0.5 transition">
+            <span className="inline-flex items-center gap-0.5 text-[11px] font-black text-emerald-800 transition group-hover:translate-x-0.5 dark:text-emerald-300">
               {hi ? "पात्रता व प्रक्रिया →" : "Details →"}
             </span>
           </div>
@@ -327,14 +455,14 @@ function SchemeListCard({
       </AppLink>
 
       {official && onOfficial ? (
-        <div className="border-t border-[var(--av-border)] bg-[var(--av-surface-inset)]/30 px-3 py-1.5 flex items-center justify-between">
-          <span className="text-[11px] font-medium text-[var(--av-text-muted)] truncate max-w-[60%]">
+        <div className="border-t border-stone-100 bg-stone-50/60 px-3 py-1.5 flex items-center justify-between dark:border-stone-800 dark:bg-stone-900/60">
+          <span className="text-[11px] font-medium text-stone-400 truncate max-w-[60%]">
             {scheme.authority ? scheme.authority.split(",")[0] : ""}
           </span>
           <button
             type="button"
             onClick={() => onOfficial(scheme)}
-            className="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-300 hover:underline"
+            className="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-800 hover:underline dark:text-emerald-300"
           >
             <ExternalLink className="h-3 w-3" />
             <span>{hi ? "पोर्टल खोलें" : "Open portal"}</span>
@@ -370,6 +498,7 @@ export default function SchemesClient() {
   const [level, setLevel] = useState<LevelFilter>("all");
   const [q, setQ] = useState("");
   const [selectedState, setSelectedState] = useState<string>("all");
+  const [showStateModal, setShowStateModal] = useState<boolean>(false);
   const [forYou, setForYou] = useState<FarmerScheme[] | null>(null);
   const allRef = useRef<HTMLDivElement>(null);
   const leave = useOfficialLeave();
@@ -495,109 +624,74 @@ export default function SchemesClient() {
 
   const selectedStateNameHi =
     selectedState === "all"
-      ? hi ? "सभी राज्य (All India)" : "All States"
+      ? hi ? "सभी राज्य" : "All India"
       : INDIAN_STATES_SCHEME_META[selectedState]?.stateHi || selectedState;
+
+  // Split into 4 Core categories for 2x2 Bento and secondary
+  const coreGroups = SCHEME_GROUPS.slice(0, 4);
+  const secondaryGroups = SCHEME_GROUPS.slice(4);
 
   return (
     <AppShell>
       <div className="space-y-4 pb-12">
-        <TopBar hi={hi} />
+        <TopBar
+          hi={hi}
+          selectedStateNameHi={selectedStateNameHi}
+          onOpenStateModal={() => setShowStateModal(true)}
+        />
 
-        {/* Cinematic hero */}
-        <section className="relative min-h-[130px] overflow-hidden rounded-3xl shadow-xl shadow-emerald-950/20">
-          <Image
-            src={SCHEMES_HOME_BANNER}
-            alt=""
-            fill
-            priority
-            sizes="640px"
-            className="object-cover object-[center_28%]"
-          />
-          <span className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/70 to-black/25" />
-          <div className="relative z-10 flex min-h-[130px] flex-col justify-end p-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-emerald-300">
-              AgriVeda Schemes
-            </p>
-            <h1 className="mt-0.5 text-[19px] font-black leading-tight text-white sm:text-[22px]">
-              {hi ? "सरकारी योजनाएँ, सब्सिडी व पात्रता" : "Government Schemes & Subsidy"}
-            </h1>
-            <p className="mt-1 max-w-[95%] text-[11px] font-semibold text-emerald-50/90 leading-snug">
-              {hi
-                ? "पात्रता शर्तें · ज़रूरी कागज़ात · आवेदन प्रक्रिया व आधिकारिक पोर्टल"
-                : "Eligibility · Documents · Application process & official portals"}
-            </p>
-          </div>
-        </section>
-
-        {/* State Filter Bar with Dropdown & Chips */}
-        <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-sm space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-[12px] font-black text-[#07512f] dark:text-emerald-300">
-              <MapPin className="h-3.5 w-3.5" />
-              <span>{hi ? "राज्य अनुसार योजनाएँ देखें:" : "Filter by state:"}</span>
-            </div>
-            <span className="text-[11px] font-bold text-[var(--av-text-muted)]">
-              {selectedStateNameHi}
-            </span>
-          </div>
-
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-            {POPULAR_STATES.map((st) => {
-              const isSelected = selectedState === st;
-              const label =
-                st === "all"
-                  ? hi ? "सभी राज्य" : "All India"
-                  : INDIAN_STATES_SCHEME_META[st]?.stateHi || st;
-              return (
-                <button
-                  key={st}
-                  type="button"
-                  onClick={() => {
-                    setSelectedState(st);
-                    track("scheme_filter_state", { state: st });
-                  }}
-                  className={cn(
-                    "shrink-0 rounded-xl px-3 py-1.5 text-[11px] font-black transition active:scale-95",
-                    isSelected
-                      ? "bg-emerald-950 text-white shadow-sm dark:bg-emerald-600"
-                      : "border border-[var(--av-border)] bg-[var(--av-surface-inset)]/60 text-[var(--av-text-secondary)] hover:bg-[var(--av-surface-inset)]"
-                  )}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Search Bar */}
+        {/* Search Bar with Clear Button */}
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
           <input
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={hi ? "योजना या लाभ खोजें… जैसे KCC, PM-KISAN, तारबंदी, सोलर" : "Search schemes… KCC, PM-KISAN, solar"}
-            className="min-h-[46px] w-full rounded-2xl border border-emerald-800/20 bg-[var(--av-surface)] py-2.5 pl-12 pr-3 text-[13px] font-medium text-[var(--av-text-primary)] shadow-sm outline-none ring-emerald-600/30 focus:ring-2"
+            placeholder={
+              hi
+                ? "योजना या लाभ खोजें… जैसे KCC, सोलर, तारबंदी, PM-KISAN"
+                : "Search schemes… KCC, solar, fencing, PM-KISAN"
+            }
+            className="min-h-[46px] w-full rounded-2xl border border-stone-200/90 bg-white py-2.5 pl-11 pr-10 text-[13px] font-medium text-stone-900 shadow-xs outline-none transition ring-emerald-500/20 focus:border-emerald-600 focus:ring-4 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-100"
             aria-label={hi ? "योजना खोजें" : "Search schemes"}
           />
+          {q && (
+            <button
+              type="button"
+              onClick={() => setQ("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
-        {/* Level Filters (All, Central, State) */}
-        <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+        {/* Segmented Switch (All | Central | State) */}
+        <div className="flex rounded-2xl border border-stone-200/90 bg-stone-100/80 p-1 dark:border-stone-800 dark:bg-stone-900/90">
           {(["all", "central", "state"] as const).map((id) => (
             <button
               key={id}
               type="button"
               onClick={() => setLevel(id)}
               className={cn(
-                "shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-black transition",
+                "flex-1 rounded-xl py-2 text-center text-[12px] font-extrabold transition",
                 level === id
-                  ? "bg-emerald-950 text-white shadow-md dark:bg-emerald-600"
-                  : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                  ? "bg-white text-stone-900 shadow-xs dark:bg-stone-800 dark:text-white"
+                  : "text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200"
               )}
             >
-              {id === "all" ? (hi ? "सभी स्तर" : "All") : id === "central" ? (hi ? "🇮🇳 केंद्र सरकार" : "Central") : hi ? "🏛️ राज्य सरकार" : "State"}
+              {id === "all"
+                ? hi
+                  ? "सभी स्तर"
+                  : "All"
+                : id === "central"
+                ? hi
+                  ? "🇮🇳 केंद्र सरकार"
+                  : "Central"
+                : hi
+                ? "🏛️ राज्य सरकार"
+                : "State"}
             </button>
           ))}
         </div>
@@ -621,10 +715,12 @@ export default function SchemesClient() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-[var(--av-border)] p-8 text-center text-[13px] font-semibold text-[var(--av-text-muted)] space-y-2">
+              <div className="rounded-2xl border border-dashed border-stone-200 bg-white p-8 text-center text-[13px] font-semibold text-stone-500 dark:border-stone-800 dark:bg-stone-900 space-y-2">
                 <p>{hi ? "इस नाम से कोई योजना नहीं मिली।" : "No schemes found matching search."}</p>
-                <p className="text-[11px] text-[var(--av-text-secondary)]">
-                  {hi ? "सुझाव: KCC, सोलर, बीमा या नकद लिखकर खोजें।" : "Tip: Try searching KCC, solar, or insurance."}
+                <p className="text-[11px] text-stone-400">
+                  {hi
+                    ? "सुझाव: KCC, सोलर, बीमा या नकद लिखकर खोजें।"
+                    : "Tip: Try searching KCC, solar, or insurance."}
                 </p>
               </div>
             )}
@@ -634,7 +730,7 @@ export default function SchemesClient() {
             <button
               type="button"
               onClick={() => setView("overview")}
-              className="inline-flex items-center gap-1.5 text-[13px] font-black text-[#07512f] dark:text-emerald-300"
+              className="inline-flex items-center gap-1.5 text-[13px] font-black text-emerald-800 dark:text-emerald-300"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>{hi ? "सभी श्रेणियाँ वापस देखें" : "Back to all categories"}</span>
@@ -661,7 +757,7 @@ export default function SchemesClient() {
                   setForYou(null);
                   setView("overview");
                 }}
-                className="inline-flex items-center gap-1.5 text-[13px] font-black text-[#07512f] dark:text-emerald-300"
+                className="inline-flex items-center gap-1.5 text-[13px] font-black text-emerald-800 dark:text-emerald-300"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span>{hi ? "वापस श्रेणियाँ" : "Back to categories"}</span>
@@ -670,12 +766,16 @@ export default function SchemesClient() {
 
             {view === "overview" && !forYou ? (
               <>
-                {/* Categories */}
+                {/* 2x2 Bento Grid for Core Scheme Categories */}
                 <section>
-                  <SectionTitle>{hi ? "किस प्रकार की मदद चाहिए?" : "What help do you need?"}</SectionTitle>
-                  <div className="space-y-3">
-                    {SCHEME_GROUPS.map((group) => (
-                      <GroupTile
+                  <SectionTitle>
+                    {hi ? "किस प्रकार की मदद चाहिए?" : "What help do you need?"}
+                  </SectionTitle>
+
+                  {/* 2x2 Clean Bento Grid */}
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {coreGroups.map((group) => (
+                      <BentoCategoryCard
                         key={group.id}
                         group={group}
                         hi={hi}
@@ -687,10 +787,30 @@ export default function SchemesClient() {
                       />
                     ))}
                   </div>
+
+                  {/* Secondary Categories Pill Strip */}
+                  <div className="mt-2.5 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                    {secondaryGroups.map((group) => (
+                      <button
+                        key={group.id}
+                        type="button"
+                        onClick={() => {
+                          setView(group.id);
+                          track("scheme_group_open", { id: group.id });
+                        }}
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-stone-200/90 bg-white px-3 py-2 text-[12px] font-black text-stone-700 shadow-xs transition hover:border-emerald-600/40 hover:text-emerald-800 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300"
+                      >
+                        <span>{hi ? group.titleHi : group.titleEn}</span>
+                        <span className="rounded-full bg-stone-100 px-1.5 py-0.2 text-[10px] font-bold text-stone-500 dark:bg-stone-800">
+                          {groupCounts[group.id]}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </section>
 
                 {/* Recommended / Popular in state */}
-                <section>
+                <section className="pt-1">
                   <SectionTitle>
                     {selectedState !== "all"
                       ? hi
@@ -718,9 +838,13 @@ export default function SchemesClient() {
                       setView("all");
                       allRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
-                    className="mt-3 flex min-h-[46px] w-full items-center justify-center gap-1.5 rounded-2xl bg-emerald-950 text-[13px] font-black text-white shadow-md active:scale-95 transition dark:bg-emerald-700 hover:bg-emerald-900"
+                    className="mt-3 flex min-h-[46px] w-full items-center justify-center gap-1.5 rounded-2xl bg-emerald-950 text-[13px] font-black text-white shadow-xs transition hover:bg-emerald-900 active:scale-95 dark:bg-emerald-700 dark:hover:bg-emerald-600"
                   >
-                    <span>{hi ? `सभी ${filteredSchemes.length} योजनाएँ देखें` : `See all ${filteredSchemes.length} schemes`}</span>
+                    <span>
+                      {hi
+                        ? `सभी ${filteredSchemes.length} योजनाएँ देखें`
+                        : `See all ${filteredSchemes.length} schemes`}
+                    </span>
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </section>
@@ -756,6 +880,18 @@ export default function SchemesClient() {
           </>
         )}
       </div>
+
+      {/* State Selection Modal */}
+      <StateSelectModal
+        open={showStateModal}
+        onClose={() => setShowStateModal(false)}
+        selectedState={selectedState}
+        onSelect={(st) => {
+          setSelectedState(st);
+          track("scheme_filter_state", { state: st });
+        }}
+        hi={hi}
+      />
 
       <OfficialLeaveConfirm
         open={Boolean(leave.pending)}

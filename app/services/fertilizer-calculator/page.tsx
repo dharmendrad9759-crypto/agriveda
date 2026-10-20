@@ -17,7 +17,8 @@ import {
   CheckCircle2,
   FileText,
   Clock,
-  Layers,
+  Lightbulb,
+  ShieldCheck,
 } from "lucide-react";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
 import { cropCatalog } from "@/data/crop-catalog";
@@ -30,6 +31,7 @@ import {
   fertilizerAmountParts,
   fertilizerBagPurposeHi,
   fertilizerPackHi,
+  GOLDEN_FIELD_RULES_HI,
 } from "@/data/agriveda2/fertilizer-data";
 import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
 import { EASE_OUT } from "@/lib/motion/variants";
@@ -133,24 +135,6 @@ function FertilizerCalculatorInner() {
     ? `/crops/${cropFromUrl}/care/fertilizer`
     : "/dashboard";
 
-  // Calculate approximate total bags from plan.bags
-  const totalBagsEstimate = useMemo(() => {
-    if (!plan || !plan.bags.length) return 0;
-    let total = 0;
-    for (const b of plan.bags) {
-      const match = b.amount.match(/([\d.]+)\s*बोरी/);
-      if (match) {
-        total += parseFloat(match[1]);
-      } else {
-        const kgMatch = b.amount.match(/([\d.]+)\s*किग्रा/);
-        if (kgMatch) {
-          total += parseFloat(kgMatch[1]) / 45; // average 45kg bag
-        }
-      }
-    }
-    return Math.max(1, Math.round(total * 10) / 10);
-  }, [plan]);
-
   const handleCropSelect = (selectedSlug: string) => {
     setSlug(selectedSlug);
     setShowBottomSheet(true);
@@ -166,22 +150,29 @@ function FertilizerCalculatorInner() {
     if (!plan) return;
     const bagLines = plan.bags
       .map((b) => {
-        const { num } = fertilizerAmountParts(b.amount);
-        const packInfo = fertilizerPackHi(b.name, parseFloat(num) || 0);
+        const { num, unit } = fertilizerAmountParts(b.amount);
+        const packInfo = fertilizerPackHi(b.name, parseFloat(num) || 0, unit);
         return `• ${b.name}: ${b.amount}${packInfo ? ` (${packInfo})` : ""}`;
       })
       .join("\n");
     const scheduleLines = plan.schedule
-      .map((s, i) => `${i + 1}. *${s.time}*: ${s.apply}`)
-      .join("\n");
+      .map((s, i) => {
+        const methodPart = s.method ? ` [${s.method}]` : "";
+        const benefitPart = s.benefit ? `\n   🎯 फायदा: ${s.benefit}` : "";
+        return `${i + 1}. *${s.time}*${methodPart}:\n   ${s.apply}${benefitPart}`;
+      })
+      .join("\n\n");
 
     const message =
-      `🌾 *खाद की पर्ची — AgriVeda*\n\n` +
+      `🌾 *खाद की वैज्ञानिक + फील्ड पर्ची — AgriVeda*\n\n` +
       `*फसल:* ${cropHi}\n` +
       `*खेत:* ${areaLabel} एकड़\n` +
       (plan.soilAdjusted ? `*(मिट्टी रिपोर्ट अनुसार संतुलित)*\n\n` : `\n`) +
-      `📦 *कुल आवश्यक खाद:*\n${bagLines}\n\n` +
-      `📅 *डालने का सही समय:*\n${scheduleLines}\n\n` +
+      `📦 *कुल आवश्यक खाद सामग्री:*\n${bagLines}\n\n` +
+      `📅 *अवस्था अनुसार डालने का तरीका:*\n${scheduleLines}\n\n` +
+      `💡 *किसान टिप (गोल्डन नियम):*\n` +
+      `• DAP/SSP के साथ सामान्य जिंक सल्फेट कभी मिलाकर न डालें (Chelated Zinc EDTA 12% लें या पहली यूरिया के साथ दें)।\n` +
+      `• कैल्शियम नाइट्रेट को किसी भी सल्फेट या फॉस्फेट वाले खाद के साथ न मिलाएं, हमेशा अलग चलाएं।\n\n` +
       `_AgriVeda किसान ऐप से तैयार_`;
 
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
@@ -192,7 +183,7 @@ function FertilizerCalculatorInner() {
 
   const handleGenericShare = async () => {
     if (!plan) return;
-    const summary = `${cropHi} के लिए ${areaLabel} एकड़ खाद योजना — कुल ${plan.bags.length} प्रकार की खाद। AgriVeda`;
+    const summary = `${cropHi} के लिए ${areaLabel} एकड़ वैज्ञानिक + प्रैक्टिकल खाद योजना — कुल ${plan.bags.length} प्रकार की खाद। AgriVeda`;
     if (navigator.share) {
       try {
         await navigator.share({
@@ -238,14 +229,14 @@ function FertilizerCalculatorInner() {
                     <Package className="h-4 w-4 text-emerald-300" />
                   </span>
                   <p className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300">
-                    सटीक खाद खुराक
+                    ICAR/SAU + फील्ड-टेस्टेड (High-Yield)
                   </p>
                 </div>
                 <h1 className="mt-2 text-xl font-black tracking-tight text-white sm:text-2xl">
                   किस फसल की खाद निकालनी है?
                 </h1>
                 <p className="mt-1 text-xs font-medium leading-relaxed text-emerald-100/85">
-                  फसल पर टैप करें — एकड़ डालते ही समय अनुसार खाद की पूरी पर्ची मिल जाएगी।
+                  सभी 29 फसलों के लिए दानेदार खाद, जड़ों के पास ड्रेंचिंग और फोलियर स्प्रे का सटीक शेड्यूल।
                 </p>
               </div>
 
@@ -258,7 +249,7 @@ function FertilizerCalculatorInner() {
               >
                 <div className="mb-3 flex items-center justify-between">
                   <p className="text-sm font-black tracking-tight text-emerald-950 dark:text-emerald-200">
-                    फसल चुनें
+                    फसल चुनें ({crops.length} फसलें)
                   </p>
                 </div>
                 <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
@@ -298,6 +289,38 @@ function FertilizerCalculatorInner() {
                   })}
                 </div>
               </div>
+
+              {/* 3 Golden Field Rules Preview on Ask Screen */}
+              <div
+                className={cn(
+                  AV.card,
+                  "rounded-[22px] border border-amber-500/25 bg-gradient-to-br from-amber-500/10 via-[var(--av-surface)] to-[var(--av-surface)] p-4 shadow-sm"
+                )}
+              >
+                <div className="mb-2.5 flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                    <Lightbulb className="h-4 w-4" />
+                  </span>
+                  <h2 className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                    💡 किसान टिप: 3 गोल्डन फील्ड नियम
+                  </h2>
+                </div>
+                <div className="space-y-2">
+                  {GOLDEN_FIELD_RULES_HI.map((rule) => (
+                    <div
+                      key={rule.id}
+                      className="rounded-xl border border-amber-500/20 bg-[var(--av-surface-inset)] p-2.5"
+                    >
+                      <p className="text-xs font-black text-[var(--av-text-primary)]">
+                        {rule.titleHi}
+                      </p>
+                      <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                        {rule.bodyHi}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </motion.div>
           ) : (
             /* =================================================== */
@@ -333,7 +356,7 @@ function FertilizerCalculatorInner() {
                     </span>
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
-                        {areaLabel} एकड़ की खाद
+                        {areaLabel} एकड़ · वैज्ञानिक + फील्ड शेड्यूल
                       </p>
                       <h1 className="text-xl font-black leading-tight text-white sm:text-2xl">
                         {cropHi} के लिए खाद की मात्रा
@@ -369,6 +392,19 @@ function FertilizerCalculatorInner() {
                 </div>
               ) : (
                 <>
+                  {/* Category Rule Banner (if present) */}
+                  {plan.categoryRuleHi && (
+                    <div className="flex items-start gap-2.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
+                      <ShieldCheck
+                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+                        aria-hidden
+                      />
+                      <p className="text-xs font-bold leading-relaxed text-[var(--av-text-primary)]">
+                        {plan.categoryRuleHi}
+                      </p>
+                    </div>
+                  )}
+
                   {/* Total Bags Breakdown Grid */}
                   <div
                     className={cn(
@@ -382,42 +418,42 @@ function FertilizerCalculatorInner() {
                           <Package className="h-4 w-4" />
                         </span>
                         <h2 className="text-sm font-extrabold text-[var(--av-text-primary)]">
-                          खाद सामग्री (कुल मात्रा)
+                          खाद सामग्री (कुल मात्रा · {areaLabel} एकड़)
                         </h2>
                       </div>
                       <span className="text-[11px] font-semibold text-[var(--av-text-muted)]">
-                        {plan.bags.length} मुख्य उर्वरक
+                        {plan.bags.length} कृषि इनपुट
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                       {plan.bags.map((b) => {
-                        const { num, rest } = fertilizerAmountParts(b.amount);
-                        const packInfo = fertilizerPackHi(b.name, parseFloat(num) || 0);
+                        const { num, unit, rest } = fertilizerAmountParts(b.amount);
+                        const packInfo = fertilizerPackHi(b.name, parseFloat(num) || 0, unit);
                         return (
                           <div
                             key={b.name}
                             className="group relative flex flex-col justify-between rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3 transition hover:border-emerald-500/30"
                           >
                             <div>
-                              <div className="flex items-center justify-between">
-                                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
                                   🌾
                                 </span>
-                                <span className="rounded-md bg-[var(--av-surface)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--av-text-muted)] border border-[var(--av-border)]">
+                                <span className="rounded-md bg-[var(--av-surface)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--av-text-muted)] border border-[var(--av-border)] line-clamp-1">
                                   {fertilizerBagPurposeHi(b.name)}
                                 </span>
                               </div>
-                              <p className="mt-2 text-xs font-black leading-tight text-[var(--av-text-primary)] line-clamp-1">
+                              <p className="mt-2 text-xs font-black leading-tight text-[var(--av-text-primary)] line-clamp-2">
                                 {b.name}
                               </p>
                             </div>
 
                             <div className="mt-2.5 pt-2 border-t border-[var(--av-border)]/60">
-                              <p className="text-xl font-black leading-none text-emerald-700 dark:text-emerald-300">
+                              <p className="text-lg font-black leading-none text-emerald-700 dark:text-emerald-300">
                                 {num}{" "}
                                 <span className="text-[11px] font-bold text-[var(--av-text-muted)]">
-                                  किग्रा
+                                  {unit}
                                 </span>
                               </p>
                               {packInfo ? (
@@ -425,9 +461,9 @@ function FertilizerCalculatorInner() {
                                   {packInfo}
                                 </p>
                               ) : null}
-                              {rest && !/^किग्रा/i.test(rest) ? (
-                                <p className="mt-0.5 line-clamp-1 text-[10px] font-semibold text-[var(--av-text-muted)]">
-                                  {rest.replace(/^किग्रा\s*·?\s*/, "")}
+                              {rest ? (
+                                <p className="mt-0.5 line-clamp-2 text-[10px] font-semibold text-[var(--av-text-muted)]">
+                                  {rest}
                                 </p>
                               ) : null}
                             </div>
@@ -452,10 +488,10 @@ function FertilizerCalculatorInner() {
                           </span>
                           <div>
                             <h2 className="text-sm font-extrabold text-[var(--av-text-primary)]">
-                              चरण अनुसार खाद (कब और कैसे डालें)
+                              अवस्था अनुसार शेड्यूल (कब, कैसे और क्या डालें)
                             </h2>
                             <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
-                              समय पर खाद देने से फसल का पूरा उत्पादन मिलता है
+                              बेसल + टॉप ड्रेसिंग + ड्रेंचिंग + फोलियर स्प्रे कॉम्बिनेशन
                             </p>
                           </div>
                         </div>
@@ -468,6 +504,10 @@ function FertilizerCalculatorInner() {
                         <div className="space-y-4">
                           {plan.schedule.map((s, i) => {
                             const isFirst = i === 0;
+                            const isSpray =
+                              s.method?.includes("स्प्रे") || s.apply.includes("स्प्रे");
+                            const isDrench =
+                              s.method?.includes("ड्रेंचिंग") || s.method?.includes("ड्रिप");
                             return (
                               <div key={`${s.time}-${i}`} className="relative flex gap-3.5">
                                 {/* Number Badge on line */}
@@ -477,11 +517,23 @@ function FertilizerCalculatorInner() {
 
                                 {/* Content Card for this stage */}
                                 <div className="flex-1 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3.5 shadow-sm">
-                                  <div className="flex flex-wrap items-center justify-between gap-1">
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-600/10 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">
-                                      चरण {i + 1} · {isFirst ? "बुवाई का समय (बेसल)" : `सिंचाई / टॉप ड्रेसिंग`}
+                                  <div className="flex flex-wrap items-center justify-between gap-1.5">
+                                    <span
+                                      className={cn(
+                                        "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-extrabold",
+                                        isSpray
+                                          ? "bg-sky-600/15 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300"
+                                          : isDrench
+                                          ? "bg-purple-600/15 text-purple-800 dark:bg-purple-500/20 dark:text-purple-300"
+                                          : "bg-emerald-600/10 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300"
+                                      )}
+                                    >
+                                      {s.method ||
+                                        (isFirst
+                                          ? "मिट्टी में (Basal)"
+                                          : "सिंचाई / टॉप ड्रेसिंग")}
                                     </span>
-                                    <span className="text-[11px] font-bold text-[var(--av-text-muted)]">
+                                    <span className="text-xs font-black text-[var(--av-text-primary)]">
                                       {s.time}
                                     </span>
                                   </div>
@@ -490,11 +542,20 @@ function FertilizerCalculatorInner() {
                                     {s.apply}
                                   </p>
 
-                                  <p className="mt-1.5 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
-                                    {isFirst
-                                      ? "बुवाई के समय खाद को बीज से 4-5 सेमी नीचे या कतारों में डालें ताकि पौधे की जड़ें मजबूत हों।"
-                                      : "सिंचाई के बाद खेत में पैर टिकने पर छिड़कें। पत्तों पर ओस या पानी सूखा होना चाहिए।"}
-                                  </p>
+                                  {s.benefit ? (
+                                    <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1.5">
+                                      <span className="text-xs leading-none">🎯</span>
+                                      <p className="text-[11px] font-bold leading-snug text-emerald-900 dark:text-emerald-200">
+                                        मुख्य फायदा: {s.benefit}
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    <p className="mt-1.5 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                                      {isFirst
+                                        ? "बुवाई के समय खाद को बीज से 4-5 सेमी नीचे या कतारों में डालें ताकि पौधे की जड़ें मजबूत हों।"
+                                        : "सिंचाई के बाद खेत में पैर टिकने पर छिड़कें। पत्तों पर ओस या पानी सूखा होना चाहिए।"}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             );
@@ -547,7 +608,7 @@ function FertilizerCalculatorInner() {
                     </AnimatePresence>
                   </div>
 
-                  {/* Farmer Tips & Caution */}
+                  {/* Crop-specific Farmer Tip & Caution */}
                   {(plan.farmerTipHi ||
                     plan.guideNotes.find((n) => !n.includes("मिट्टी जाँच"))) && (
                     <div className="flex gap-2.5 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5">
@@ -555,15 +616,53 @@ function FertilizerCalculatorInner() {
                         className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400"
                         aria-hidden
                       />
-                      <p className="text-xs font-medium leading-relaxed text-[var(--av-text-primary)]">
+                      <p className="text-xs font-semibold leading-relaxed text-[var(--av-text-primary)]">
                         {plan.farmerTipHi ||
                           plan.guideNotes.find((n) => !n.includes("मिट्टी जाँच"))}
                       </p>
                     </div>
                   )}
 
+                  {/* 💡 3 Golden Field Rules ("किसान टिप") */}
+                  <div
+                    className={cn(
+                      AV.card,
+                      "rounded-[24px] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-[var(--av-surface)] to-[var(--av-surface)] p-4 shadow-sm"
+                    )}
+                  >
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                        <Lightbulb className="h-4 w-4" />
+                      </span>
+                      <div>
+                        <h3 className="text-sm font-black text-[var(--av-text-primary)]">
+                          💡 किसान टिप: 3 गोल्डन फील्ड नियम
+                        </h3>
+                        <p className="text-[10.5px] font-medium text-[var(--av-text-muted)]">
+                          खाद मिलाते और स्प्रे करते समय इन वैज्ञानिक नियमों का हमेशा ध्यान रखें
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {plan.goldenRulesHi.map((rule) => (
+                        <div
+                          key={rule.id}
+                          className="rounded-xl border border-amber-500/20 bg-[var(--av-surface-inset)] p-3"
+                        >
+                          <p className="text-xs font-black text-amber-900 dark:text-amber-300">
+                            {rule.titleHi}
+                          </p>
+                          <p className="mt-1 text-[11.5px] font-medium leading-relaxed text-[var(--av-text-primary)]">
+                            {rule.bodyHi}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   <p className="text-center text-[10.5px] font-medium text-[var(--av-text-muted)]">
-                    यह मात्रा मानक कृषि विश्वविद्यालयों की संस्तुतियों पर आधारित है।
+                    यह शेड्यूल ICAR/SAU वैज्ञानिक संस्तुतियों और प्रैक्टिकल हाई-यील्ड फील्ड परीक्षणों पर आधारित है।
                   </p>
                 </>
               )}
@@ -799,8 +898,8 @@ export default function FertilizerCalculatorPage() {
           backHref="/dashboard"
           hubTheme="green"
         >
-          <div className="mx-auto max-w-lg px-1 py-8 text-center text-sm text-[var(--av-text-muted)]">
-            कैलकुलेटर खुल रहा है…
+          <div className="py-12 text-center text-sm text-[var(--av-text-muted)]">
+            लोड हो रहा है…
           </div>
         </Agriveda2Shell>
       }

@@ -112,6 +112,11 @@ export default function BottomNav() {
   const reduced = useReducedMotion();
   const aiActive = pathname.startsWith("/ai-doctor");
 
+  // Hide BottomNav on inner scheme detail/guide screens where a dedicated sticky CTA is present
+  if (pathname.startsWith("/schemes/")) {
+    return null;
+  }
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"

@@ -97,6 +97,8 @@ export const FERT_MIXIN_ALIASES: Record<string, string> = {
   eggplant: "brinjal",
   baingan: "brinjal",
   rai: "mustard",
+  cabbage: "cauliflower",
+  capsicum: "chilli",
 };
 
 /** All source crops — Parts 1–4 merged */

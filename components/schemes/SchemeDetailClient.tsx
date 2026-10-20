@@ -90,6 +90,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
   const [applyMode, setApplyMode] = useState<"online" | "csc">("online");
   const [checkedDocs, setCheckedDocs] = useState<Record<string, boolean>>({});
   const [quizAnswers, setQuizAnswers] = useState<Record<number, boolean | null>>({});
+  const [showIneligibility, setShowIneligibility] = useState(false);
 
   const img = resolveSchemeImage(scheme);
   const hasGuide = GUIDED.has(scheme.id);
@@ -187,56 +188,87 @@ export default function SchemeDetailClient({ id }: { id: string }) {
       ]}
     >
       <div className="space-y-4 pb-32">
-        {/* Navigation & Header Bar */}
-        {/* Verification & Level Badges */}
-        <div className="flex items-center justify-end gap-2">
-          <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
-            {hi ? (scheme.level === "central" ? "🇮🇳 केंद्र सरकार" : "🏛️ राज्य सरकार") : scheme.level}
-          </span>
-          {official && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-800 dark:text-blue-300">
-              <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-              <span>{hi ? "सत्यापित" : "Verified"}</span>
-            </span>
-          )}
-        </div>
+        {/* Clean Header Card */}
+        <section className="relative overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)] sm:p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                  {hi ? (scheme.level === "central" ? "🇮🇳 केंद्र सरकार" : "🏛️ राज्य सरकार") : scheme.level}
+                </span>
+                <span className="rounded-full bg-[var(--av-surface-inset)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+                  {CATEGORY_LABEL_HI[scheme.category]}
+                </span>
+                {official && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-800 dark:text-blue-300">
+                    <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                    <span>{hi ? "सत्यापित" : "Verified"}</span>
+                  </span>
+                )}
+              </div>
 
-        {/* Hero Card */}
-        <section className="relative min-h-[160px] overflow-hidden rounded-3xl border border-emerald-900/20 shadow-xl shadow-emerald-950/20">
-          <Image
-            src={img}
-            alt=""
-            fill
-            priority
-            sizes="640px"
-            className="object-cover object-center"
-          />
-          <span className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/80 to-black/35" />
-          <div className="relative z-10 flex min-h-[160px] flex-col justify-end p-4 sm:p-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-emerald-400/20 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-200 backdrop-blur-md">
-                {CATEGORY_LABEL_HI[scheme.category]}
-              </span>
-              <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-md">
-                {stateStatus.stateBadgeHi}
-              </span>
+              <h1 className="text-[20px] font-black leading-tight text-[var(--av-text-primary)] sm:text-[22px]">
+                {shortName}
+              </h1>
+
+              <p className="text-[12px] font-medium text-[var(--av-text-muted)]">
+                {scheme.authority}
+              </p>
             </div>
 
-            <h1 className="mt-2 text-[22px] font-black leading-tight text-white drop-shadow-sm sm:text-[24px]">
-              {shortName}
-            </h1>
+            {/* Compact Scheme Image Thumbnail */}
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] shadow-sm">
+              <Image
+                src={img}
+                alt=""
+                fill
+                sizes="64px"
+                className="object-cover object-center"
+              />
+            </div>
+          </div>
+
+          {/* 2 Highlight Pills: लाभ & स्थिति */}
+          <div className="mt-4 grid grid-cols-2 gap-2 border-t border-[var(--av-border)]/60 pt-3">
+            <div className="flex items-center gap-2 rounded-xl bg-emerald-50/70 p-2.5 dark:bg-emerald-950/30">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600/15 text-emerald-700 dark:text-emerald-300">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                  {hi ? "मुख्य लाभ" : "Benefit"}
+                </p>
+                <p className="truncate text-[12px] font-extrabold text-emerald-900 dark:text-emerald-200">
+                  {scheme.benefitHi.split("।")[0].split("(")[0].trim()}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-xl bg-blue-50/70 p-2.5 dark:bg-blue-950/30">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-600/15 text-blue-700 dark:text-blue-300">
+                <Clock className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
+                  {hi ? "आवेदन स्थिति" : "Status"}
+                </p>
+                <p className="truncate text-[12px] font-extrabold text-blue-900 dark:text-blue-200">
+                  {stateStatus.windowStatusTextHi || (hi ? "आवेदन चालू" : "Active")}
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Compact 3-Tab Navigator */}
-        <div className="sticky top-2 z-20 flex rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/95 p-1.5 shadow-md backdrop-blur-md">
+        {/* Clean Modern Underline Tabs */}
+        <div className="sticky top-2 z-20 flex rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/95 p-1 shadow-sm backdrop-blur-md">
           <button
             type="button"
             onClick={() => setActiveTab("eligibility")}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-[12px] font-black transition",
+              "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-[12px] font-extrabold transition",
               activeTab === "eligibility"
-                ? "bg-emerald-950 text-white shadow-sm dark:bg-emerald-600"
+                ? "bg-emerald-900 text-white shadow-sm dark:bg-emerald-600"
                 : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
             )}
           >
@@ -248,9 +280,9 @@ export default function SchemeDetailClient({ id }: { id: string }) {
             type="button"
             onClick={() => setActiveTab("documents")}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-[12px] font-black transition",
+              "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-[12px] font-extrabold transition",
               activeTab === "documents"
-                ? "bg-emerald-950 text-white shadow-sm dark:bg-emerald-600"
+                ? "bg-emerald-900 text-white shadow-sm dark:bg-emerald-600"
                 : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
             )}
           >
@@ -258,7 +290,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
             <span>{hi ? "कागज़ात" : "Docs"}</span>
             <span
               className={cn(
-                "rounded-full px-1.5 py-0.5 text-[9px] font-bold",
+                "rounded-full px-1.5 py-0.5 text-[9px] font-black",
                 activeTab === "documents"
                   ? "bg-white/20 text-white"
                   : "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
@@ -272,9 +304,9 @@ export default function SchemeDetailClient({ id }: { id: string }) {
             type="button"
             onClick={() => setActiveTab("process")}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-[12px] font-black transition",
+              "flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-[12px] font-extrabold transition",
               activeTab === "process"
-                ? "bg-emerald-950 text-white shadow-sm dark:bg-emerald-600"
+                ? "bg-emerald-900 text-white shadow-sm dark:bg-emerald-600"
                 : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
             )}
           >
@@ -286,161 +318,192 @@ export default function SchemeDetailClient({ id }: { id: string }) {
         {/* TAB 1: पात्रता व लाभ (Eligibility & Benefits) */}
         {activeTab === "eligibility" && (
           <div className="space-y-4">
-            {/* SECTION 1: राज्य व आवेदन स्थिति */}
-            <section className="space-y-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600/15 text-emerald-700 dark:text-emerald-300">
-                    <MapPin className="h-4 w-4" />
+            {/* Clean State Applicability Bar (Replaces 8-state selector buttons) */}
+            <div className="flex items-center gap-2.5 rounded-2xl border border-emerald-500/25 bg-emerald-50/60 p-3.5 text-[12px] dark:border-emerald-800/30 dark:bg-emerald-950/20">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <div className="min-w-0 flex-1 space-y-0.5">
+                <p className="font-extrabold text-emerald-950 dark:text-emerald-100">
+                  {scheme.level === "central"
+                    ? (hi ? "✅ यह योजना पूरे भारत (सभी राज्यों) के पात्र किसानों के लिए मान्य है।" : "✅ Applicable to eligible farmers across all Indian states.")
+                    : stateStatus.stateMessageHi}
+                </p>
+                {stateStatus.deptNameHi && (
+                  <p className="text-[11px] font-medium text-[var(--av-text-secondary)]">
+                    <span className="font-bold">{hi ? "नोडल विभाग: " : "Nodal Department: "}</span>
+                    {stateStatus.deptNameHi}
+                  </p>
+                )}
+                {stateStatus.stateNote && (
+                  <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
+                    💡 {stateStatus.stateNote}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* ⚡ त्वरित पात्रता जांच (3 आसान सवाल) — Moved to TOP of Tab 1 */}
+            {quizList.length > 0 && (
+              <section className="space-y-3 rounded-2xl border border-emerald-600/20 bg-gradient-to-b from-emerald-50/40 to-transparent p-4 shadow-[var(--av-shadow-sm)] dark:border-emerald-900/30 dark:from-emerald-950/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600/15 text-emerald-700 dark:text-emerald-300">
+                      <Compass className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h2 className="text-[14px] font-black text-[var(--av-text-primary)]">
+                        {hi ? "⚡ त्वरित पात्रता जांच (3 आसान सवाल)" : "Instant Eligibility Check"}
+                      </h2>
+                      <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+                        {hi ? "जवाब देकर तुरंत जानें कि आप पात्र हैं या नहीं" : "Answer to check your eligibility"}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-[14px] font-extrabold text-[var(--av-text-primary)]">
-                      {hi ? "राज्य अनुसार उपलब्धता व स्थिति" : "State Availability & Status"}
-                    </h2>
-                    <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
-                      {hi ? "अपना राज्य चुनें और आवेदन की स्थिति देखें" : "Select state to view application status"}
-                    </p>
-                  </div>
+                  {answeredQuizCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={resetQuiz}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)]"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                      <span>{hi ? "रीसेट" : "Reset"}</span>
+                    </button>
+                  )}
                 </div>
 
-                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                  {INDIAN_STATES_SCHEME_META[selectedState]?.stateHi || selectedState}
-                </span>
-              </div>
-
-              {/* Quick State Selector Chips + Dropdown */}
-              <div className="space-y-2 pt-1">
-                <div className="flex flex-wrap gap-1.5">
-                  {POPULAR_STATES.map((st) => {
-                    const isSelected = selectedState === st;
-                    const stateHi = INDIAN_STATES_SCHEME_META[st]?.stateHi || st;
+                <div className="space-y-2.5 pt-1">
+                  {quizList.map((q, idx) => {
+                    const ans = quizAnswers[idx];
+                    const hasAnswered = ans !== undefined && ans !== null;
+                    const isOk = hasAnswered && ans === q.mustBeYes;
                     return (
-                      <button
-                        key={st}
-                        type="button"
-                        onClick={() => {
-                          setSelectedState(st);
-                          track("scheme_state_change", { id: scheme.id, state: st });
-                        }}
+                      <div
+                        key={idx}
                         className={cn(
-                          "rounded-xl px-2.5 py-1 text-[11px] font-bold transition active:scale-95",
-                          isSelected
-                            ? "bg-emerald-950 text-white shadow-sm dark:bg-emerald-600"
-                            : "border border-[var(--av-border)] bg-[var(--av-surface-inset)]/60 text-[var(--av-text-secondary)] hover:bg-[var(--av-surface-inset)]"
+                          "rounded-xl border p-3 text-[12px] transition",
+                          !hasAnswered
+                            ? "border-[var(--av-border)] bg-[var(--av-surface)]"
+                            : isOk
+                            ? "border-emerald-600/30 bg-emerald-500/10"
+                            : "border-rose-600/30 bg-rose-500/10"
                         )}
                       >
-                        {stateHi}
-                      </button>
+                        <p className="font-bold text-[var(--av-text-primary)]">{q.questionHi}</p>
+                        <div className="mt-2.5 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleQuizAnswer(idx, true)}
+                            className={cn(
+                              "rounded-lg px-3.5 py-1.5 text-[11px] font-black transition active:scale-95",
+                              ans === true
+                                ? "bg-emerald-700 text-white shadow-sm"
+                                : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                            )}
+                          >
+                            {hi ? "हाँ (Yes)" : "Yes"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleQuizAnswer(idx, false)}
+                            className={cn(
+                              "rounded-lg px-3.5 py-1.5 text-[11px] font-black transition active:scale-95",
+                              ans === false
+                                ? "bg-emerald-700 text-white shadow-sm"
+                                : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                            )}
+                          >
+                            {hi ? "नहीं (No)" : "No"}
+                          </button>
+
+                          {hasAnswered && (
+                            <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-bold">
+                              {isOk ? (
+                                <span className="text-emerald-700 dark:text-emerald-300">✅ पात्र</span>
+                              ) : (
+                                <span className="text-rose-700 dark:text-rose-300">⚠️ ध्यान दें</span>
+                              )}
+                            </span>
+                          )}
+                        </div>
+
+                        {hasAnswered && !isOk && (
+                          <p className="mt-2 text-[11px] font-medium text-rose-800 dark:text-rose-200">
+                            {q.failHintHi}
+                          </p>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
 
-                {/* Dropdown for any state */}
-                <div className="flex items-center gap-2 pt-0.5">
-                  <span className="text-[11px] font-semibold text-[var(--av-text-muted)]">
-                    {hi ? "अन्य राज्य:" : "Other state:"}
-                  </span>
-                  <div className="relative min-w-[150px] flex-1">
-                    <select
-                      value={selectedState}
-                      onChange={(e) => {
-                        setSelectedState(e.target.value);
-                        track("scheme_state_change", { id: scheme.id, state: e.target.value });
-                      }}
-                      className="w-full appearance-none rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-1.5 pr-8 text-[12px] font-bold text-[var(--av-text-primary)] shadow-sm outline-none focus:border-emerald-600"
-                      aria-label={hi ? "राज्य चुनें" : "Select state"}
-                    >
-                      {Object.keys(INDIAN_STATES_SCHEME_META).map((st) => (
-                        <option key={st} value={st}>
-                          {INDIAN_STATES_SCHEME_META[st].stateHi} ({st})
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--av-text-muted)]" />
+                {answeredQuizCount === quizList.length && (
+                  <div
+                    className={cn(
+                      "rounded-xl p-3 text-center text-[12px] font-extrabold transition",
+                      allQuizPassed
+                        ? "bg-emerald-800 text-white shadow-md dark:bg-emerald-700"
+                        : "border border-amber-300 bg-amber-100 text-amber-950 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-200"
+                    )}
+                  >
+                    {allQuizPassed
+                      ? (hi
+                        ? "🎉 बधाई! आप इस योजना के लिए पूरी तरह पात्र लग रहे हैं। अब नीचे कागज़ात चेकलिस्ट देखें।"
+                        : "🎉 Congratulations! You appear fully eligible for this scheme.")
+                      : (hi
+                        ? "⚠️ कुछ शर्तों पर ध्यान देना आवश्यक है। सटीक पुष्टि के लिए नजदीकी CSC या कृषि कार्यालय से संपर्क करें।"
+                        : "⚠️ Please review the criteria above before applying.")}
                   </div>
+                )}
+              </section>
+            )}
+
+            {/* पात्रता मानदंड (Eligibility Criteria) */}
+            <section className="space-y-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600/15 text-emerald-700 dark:text-emerald-300">
+                  <UserCheck className="h-4 w-4" />
+                </div>
+                <div>
+                  <h2 className="text-[14px] font-extrabold text-[var(--av-text-primary)]">
+                    {hi ? "पात्रता — कौन ले सकता है लाभ?" : "Eligibility Criteria"}
+                  </h2>
+                  <p className="text-[11px] text-[var(--av-text-muted)]">
+                    {hi ? "आवेदन करने से पहले अपनी पात्रता अवश्य जांचें" : "Check eligibility conditions"}
+                  </p>
                 </div>
               </div>
 
-              {/* Dynamic State Status Box */}
-              <div
-                className={cn(
-                  "rounded-2xl border p-3.5 transition",
-                  stateStatus.isApplicableInState
-                    ? "border-emerald-700/25 bg-emerald-500/10 dark:bg-emerald-950/30"
-                    : "border-amber-700/30 bg-amber-500/10 dark:bg-amber-950/30"
-                )}
-              >
-                <div className="flex items-start gap-2.5">
-                  {stateStatus.isApplicableInState ? (
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" />
-                  ) : (
-                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-400" />
-                  )}
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <p
-                      className={cn(
-                        "text-[13px] font-extrabold leading-tight",
-                        stateStatus.isApplicableInState
-                          ? "text-emerald-950 dark:text-emerald-100"
-                          : "text-amber-950 dark:text-amber-100"
-                      )}
-                    >
-                      {stateStatus.stateMessageHi}
-                    </p>
-
-                    {stateStatus.deptNameHi && (
-                      <p className="text-[11px] font-medium text-[var(--av-text-secondary)]">
-                        <span className="font-bold">{hi ? "नोडल विभाग: " : "Nodal Department: "}</span>
-                        {stateStatus.deptNameHi}
-                      </p>
-                    )}
-
-                    {stateStatus.stateNote && (
-                      <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
-                        💡 {stateStatus.stateNote}
-                      </p>
-                    )}
+              <div className="space-y-2">
+                <div className="rounded-xl border border-emerald-800/15 bg-emerald-50/60 p-3 text-[13px] font-semibold text-[var(--av-text-primary)] dark:bg-emerald-950/20">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                    <span>
+                      <strong className="text-emerald-900 dark:text-emerald-200">
+                        {hi ? "पात्र किसान श्रेणी: " : "Eligible category: "}
+                      </strong>
+                      {scheme.whoHi}
+                    </span>
                   </div>
                 </div>
 
-                <div className="mt-3 grid grid-cols-2 gap-2 pt-2 border-t border-[var(--av-border)]/50 sm:grid-cols-3">
-                  <div className="rounded-xl bg-[var(--av-surface)]/80 p-2 text-left">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-                      {hi ? "योजना स्थिति" : "Scheme"}
-                    </span>
-                    <p className="text-[12px] font-extrabold text-emerald-700 dark:text-emerald-300">
-                      🟢 {hi ? "योजना चालू है" : "Active"}
-                    </p>
+                {scheme.tipsHi.map((tip, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-2.5 px-2 text-[12px] font-medium leading-relaxed text-[var(--av-text-secondary)]"
+                  >
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+                    <span>{tip}</span>
                   </div>
-
-                  <div className="rounded-xl bg-[var(--av-surface)]/80 p-2 text-left">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-                      {hi ? "आवेदन स्थिति" : "Applications"}
-                    </span>
-                    <p className="text-[12px] font-extrabold text-blue-700 dark:text-blue-300">
-                      {stateStatus.windowStatusTextHi}
-                    </p>
-                  </div>
-
-                  <div className="col-span-2 rounded-xl bg-[var(--av-surface)]/80 p-2 text-left sm:col-span-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-                      {hi ? "आवेदन माध्यम" : "Mode"}
-                    </span>
-                    <p className="text-[11px] font-bold text-[var(--av-text-primary)]">
-                      {hi ? "ऑनलाइन + CSC केंद्र" : "Online + CSC"}
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </section>
 
-            {/* SECTION 2: योजना का मुख्य लाभ व उद्देश्य */}
+            {/* योजना का उद्देश्य व मुख्य लाभ */}
             <section className="space-y-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600/15 text-emerald-700 dark:text-emerald-300">
                   <Landmark className="h-4 w-4" />
                 </div>
-                <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
+                <h2 className="text-[14px] font-extrabold text-[var(--av-text-primary)]">
                   {hi ? "योजना का उद्देश्य व मुख्य लाभ" : "Key Benefits & Purpose"}
                 </h2>
               </div>
@@ -454,7 +517,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 pt-1">
+              <div className="grid grid-cols-1 gap-2 pt-1 sm:grid-cols-2">
                 <div className="flex items-center gap-2.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2.5">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
                     <Sparkles className="h-3.5 w-3.5" />
@@ -485,185 +548,51 @@ export default function SchemeDetailClient({ id }: { id: string }) {
               </div>
             </section>
 
-            {/* SECTION 3: पात्रता मानदंड */}
-            <section className="space-y-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600/15 text-emerald-700 dark:text-emerald-300">
-                  <UserCheck className="h-4 w-4" />
-                </div>
-                <div>
-                  <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
-                    {hi ? "पात्रता — कौन ले सकता है लाभ?" : "Eligibility Criteria"}
-                  </h2>
-                  <p className="text-[11px] text-[var(--av-text-muted)]">
-                    {hi ? "आवेदन करने से पहले अपनी पात्रता अवश्य जांचें" : "Check eligibility conditions"}
-                  </p>
-                </div>
-              </div>
-
-              {/* 1. कौन पात्र है */}
-              <div className="space-y-2">
-                <div className="rounded-xl border border-emerald-800/15 bg-emerald-50/60 p-3 text-[13px] font-semibold text-[var(--av-text-primary)] dark:bg-emerald-950/20">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                    <span>
-                      <strong className="text-emerald-900 dark:text-emerald-200">
-                        {hi ? "पात्र किसान श्रेणी: " : "Eligible category: "}
-                      </strong>
-                      {scheme.whoHi}
-                    </span>
+            {/* Collapsible Accordion: किन किसानों को लाभ नहीं मिलेगा? (अपात्रता शर्तें) */}
+            {schemeMeta?.ineligibilityHi && schemeMeta.ineligibilityHi.length > 0 && (
+              <div className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]">
+                <button
+                  type="button"
+                  onClick={() => setShowIneligibility((prev) => !prev)}
+                  className="flex w-full items-center justify-between p-3.5 text-left transition hover:bg-[var(--av-surface-inset)]/50"
+                >
+                  <div className="flex items-center gap-2 text-[13px] font-bold text-rose-700 dark:text-rose-400">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <span>{hi ? "किन किसानों को लाभ नहीं मिलेगा? (अपात्रता शर्तें)" : "Who is NOT eligible:"}</span>
                   </div>
-                </div>
-
-                {scheme.tipsHi.map((tip, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start gap-2.5 px-2 text-[12px] font-medium leading-relaxed text-[var(--av-text-secondary)]"
-                  >
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
-                    <span>{tip}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* 2. कौन अपात्र है */}
-              {schemeMeta?.ineligibilityHi && schemeMeta.ineligibilityHi.length > 0 && (
-                <div className="mt-3 rounded-xl border border-rose-700/20 bg-rose-50/40 p-3 text-[12px] dark:bg-rose-950/20">
-                  <div className="flex items-center gap-1.5 pb-1.5 font-bold text-rose-900 dark:text-rose-200">
-                    <AlertTriangle className="h-4 w-4 text-rose-600" />
-                    <span>{hi ? "किन किसानों को लाभ नहीं मिलेगा (अपात्रता शर्तें):" : "Who is NOT eligible:"}</span>
-                  </div>
-                  <ul className="space-y-1.5 pl-5 list-disc text-rose-950/80 dark:text-rose-200/80">
-                    {schemeMeta.ineligibilityHi.map((item, idx) => (
-                      <li key={idx} className="leading-snug">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* 3. त्वरित पात्रता जांच */}
-              {quizList.length > 0 && (
-                <div className="mt-3 rounded-2xl border border-emerald-800/20 bg-[var(--av-surface-inset)]/60 p-3.5 space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Compass className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
-                      <h3 className="text-[13px] font-black text-[var(--av-text-primary)]">
-                        {hi ? "⚡ त्वरित पात्रता जांच (3 आसान सवाल)" : "Instant Eligibility Check"}
-                      </h3>
-                    </div>
-                    {answeredQuizCount > 0 && (
-                      <button
-                        type="button"
-                        onClick={resetQuiz}
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)]"
-                      >
-                        <RotateCcw className="h-3 w-3" />
-                        <span>{hi ? "रीसेट" : "Reset"}</span>
-                      </button>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 text-[var(--av-text-muted)] transition-transform duration-200",
+                      showIneligibility && "rotate-180"
                     )}
+                  />
+                </button>
+                {showIneligibility && (
+                  <div className="border-t border-rose-100 bg-rose-50/40 p-3.5 text-[12px] dark:border-rose-950/40 dark:bg-rose-950/20">
+                    <ul className="space-y-2 pl-5 list-disc text-rose-950/90 dark:text-rose-200/90">
+                      {schemeMeta.ineligibilityHi.map((item, idx) => (
+                        <li key={idx} className="leading-relaxed">
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                )}
+              </div>
+            )}
 
-                  <div className="space-y-2">
-                    {quizList.map((q, idx) => {
-                      const ans = quizAnswers[idx];
-                      const hasAnswered = ans !== undefined && ans !== null;
-                      const isOk = hasAnswered && ans === q.mustBeYes;
-                      return (
-                        <div
-                          key={idx}
-                          className={cn(
-                            "rounded-xl border p-2.5 text-[12px] transition",
-                            !hasAnswered
-                              ? "border-[var(--av-border)] bg-[var(--av-surface)]"
-                              : isOk
-                              ? "border-emerald-600/30 bg-emerald-500/10"
-                              : "border-rose-600/30 bg-rose-500/10"
-                          )}
-                        >
-                          <p className="font-bold text-[var(--av-text-primary)]">{q.questionHi}</p>
-                          <div className="mt-2 flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => handleQuizAnswer(idx, true)}
-                              className={cn(
-                                "rounded-lg px-3 py-1 text-[11px] font-black transition active:scale-95",
-                                ans === true
-                                  ? "bg-emerald-700 text-white"
-                                  : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
-                              )}
-                            >
-                              {hi ? "हाँ (Yes)" : "Yes"}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleQuizAnswer(idx, false)}
-                              className={cn(
-                                "rounded-lg px-3 py-1 text-[11px] font-black transition active:scale-95",
-                                ans === false
-                                  ? "bg-emerald-700 text-white"
-                                  : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
-                              )}
-                            >
-                              {hi ? "नहीं (No)" : "No"}
-                            </button>
-
-                            {hasAnswered && (
-                              <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-bold">
-                                {isOk ? (
-                                  <span className="text-emerald-700 dark:text-emerald-300">✅ पात्र</span>
-                                ) : (
-                                  <span className="text-rose-700 dark:text-rose-300">⚠️ ध्यान दें</span>
-                                )}
-                              </span>
-                            )}
-                          </div>
-
-                          {hasAnswered && !isOk && (
-                            <p className="mt-2 text-[11px] font-medium text-rose-800 dark:text-rose-200">
-                              {q.failHintHi}
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {answeredQuizCount === quizList.length && (
-                    <div
-                      className={cn(
-                        "rounded-xl p-3 text-center text-[12px] font-extrabold transition",
-                        allQuizPassed
-                          ? "bg-emerald-800 text-white shadow-md"
-                          : "bg-amber-100 text-amber-950 border border-amber-300"
-                      )}
-                    >
-                      {allQuizPassed
-                        ? hi
-                          ? "🎉 बधाई! आप इस योजना के लिए पूरी तरह पात्र लग रहे हैं। अब कागज़ात चेकलिस्ट देखें।"
-                          : "🎉 Congratulations! You appear fully eligible for this scheme."
-                        : hi
-                        ? "⚠️ कुछ शर्तों पर ध्यान देना आवश्यक है। सटीक पुष्टि के लिए नजदीकी CSC या कृषि कार्यालय से संपर्क करें।"
-                        : "⚠️ Please review the criteria above before applying."}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Action Button: Next to Docs */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab("documents");
-                  window.scrollTo({ top: 120, behavior: "smooth" });
-                }}
-                className="mt-3 flex w-full items-center justify-between rounded-xl bg-emerald-950 px-4 py-3 text-[13px] font-black text-white shadow transition hover:bg-emerald-900 active:scale-[0.99] dark:bg-emerald-700"
-              >
-                <span>{hi ? "अगला कदम: ज़रूरी कागज़ात चेक करें ➔" : "Next: Check Required Documents ➔"}</span>
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </section>
+            {/* Action Button: Next to Docs */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("documents");
+                window.scrollTo({ top: 120, behavior: "smooth" });
+              }}
+              className="flex w-full items-center justify-between rounded-xl bg-emerald-900 px-4 py-3 text-[13px] font-black text-white shadow transition hover:bg-emerald-800 active:scale-[0.99] dark:bg-emerald-700"
+            >
+              <span>{hi ? "अगला कदम: ज़रूरी कागज़ात चेक करें ➔" : "Next: Check Required Documents ➔"}</span>
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         )}
 
@@ -677,7 +606,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                     <FileCheck2 className="h-4 w-4" />
                   </div>
                   <div>
-                    <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
+                    <h2 className="text-[14px] font-extrabold text-[var(--av-text-primary)]">
                       {hi ? "ज़रूरी दस्तावेज़ (कागज़ात चेकलिस्ट)" : "Required Documents"}
                     </h2>
                     <p className="text-[11px] text-[var(--av-text-muted)]">
@@ -700,7 +629,11 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                 </div>
                 <div className="flex justify-between text-[10px] font-bold text-[var(--av-text-muted)]">
                   <span>{docsProgressPercent}% {hi ? "तैयारी पूरी" : "completed"}</span>
-                  <span>{docsProgressPercent === 100 ? (hi ? "✅ आवेदन के लिए तैयार!" : "Ready to apply!") : (hi ? "कागज़ात पूरे करें" : "Complete docs")}</span>
+                  <span>
+                    {docsProgressPercent === 100
+                      ? (hi ? "✅ आवेदन के लिए तैयार!" : "Ready to apply!")
+                      : (hi ? "कागज़ात पूरे करें" : "Complete docs")}
+                  </span>
                 </div>
               </div>
 
@@ -759,7 +692,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                   setActiveTab("process");
                   window.scrollTo({ top: 120, behavior: "smooth" });
                 }}
-                className="mt-2 flex w-full items-center justify-between rounded-xl bg-emerald-950 px-4 py-3 text-[13px] font-black text-white shadow transition hover:bg-emerald-900 active:scale-[0.99] dark:bg-emerald-700"
+                className="mt-2 flex w-full items-center justify-between rounded-xl bg-emerald-900 px-4 py-3 text-[13px] font-black text-white shadow transition hover:bg-emerald-800 active:scale-[0.99] dark:bg-emerald-700"
               >
                 <span>{hi ? "अगला कदम: आवेदन प्रक्रिया देखें ➔" : "Next: View Application Process ➔"}</span>
                 <ChevronRight className="h-4 w-4" />
@@ -771,7 +704,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
         {/* TAB 3: आवेदन प्रक्रिया (How to Apply & Portal) */}
         {activeTab === "process" && (
           <div className="space-y-4">
-            {/* SECTION 5: आवेदन कैसे करें */}
+            {/* आवेदन कैसे करें */}
             <section className="space-y-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -779,7 +712,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                     <ShieldCheck className="h-4 w-4" />
                   </div>
                   <div>
-                    <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
+                    <h2 className="text-[14px] font-extrabold text-[var(--av-text-primary)]">
                       {hi ? "आवेदन प्रक्रिया — कैसे करें आवेदन?" : "Application Process"}
                     </h2>
                     <p className="text-[11px] text-[var(--av-text-muted)]">
@@ -797,7 +730,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                   className={cn(
                     "flex items-center justify-center gap-1.5 rounded-xl py-2 text-[12px] font-black transition",
                     applyMode === "online"
-                      ? "bg-emerald-950 text-white shadow-sm dark:bg-emerald-600"
+                      ? "bg-emerald-900 text-white shadow-sm dark:bg-emerald-600"
                       : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
                   )}
                 >
@@ -811,7 +744,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                   className={cn(
                     "flex items-center justify-center gap-1.5 rounded-xl py-2 text-[12px] font-black transition",
                     applyMode === "csc"
-                      ? "bg-emerald-950 text-white shadow-sm dark:bg-emerald-600"
+                      ? "bg-emerald-900 text-white shadow-sm dark:bg-emerald-600"
                       : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
                   )}
                 >
@@ -827,15 +760,15 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                 </div>
               ) : null}
 
-              {/* Stepper Timeline */}
-              <div className="space-y-3 pt-1">
+              {/* Connected Vertical Stepper Timeline */}
+              <div className="relative space-y-4 pl-7 pt-2 before:absolute before:bottom-3 before:left-[13px] before:top-4 before:w-0.5 before:bg-emerald-300 dark:before:bg-emerald-800">
                 {activeSteps.map((s, idx) => (
-                  <div key={idx} className="relative flex items-start gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-950 text-[12px] font-black text-white shadow-md dark:bg-emerald-600">
+                  <div key={idx} className="relative">
+                    <span className="absolute -left-7 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-[12px] font-black text-white shadow ring-4 ring-[var(--av-surface)] dark:bg-emerald-500">
                       {s.step}
                     </span>
 
-                    <div className="min-w-0 flex-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3">
+                    <div className="min-w-0 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm">
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-[13px] font-extrabold text-[var(--av-text-primary)]">
                           {s.titleHi}
@@ -855,14 +788,14 @@ export default function SchemeDetailClient({ id }: { id: string }) {
               </div>
             </section>
 
-            {/* SECTION 6: आधिकारिक सरकारी पोर्टल कार्ड */}
+            {/* आधिकारिक सरकारी पोर्टल कार्ड */}
             <section className="space-y-3 rounded-2xl border-2 border-emerald-700/30 bg-gradient-to-b from-emerald-900/10 to-transparent p-4 shadow-md">
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-700 text-white">
                   <Building2 className="h-4 w-4" />
                 </div>
                 <div>
-                  <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">
+                  <h2 className="text-[14px] font-extrabold text-[var(--av-text-primary)]">
                     {hi ? "आधिकारिक सरकारी पोर्टल" : "Official Government Portal"}
                   </h2>
                   <p className="text-[11px] text-[var(--av-text-muted)]">
@@ -871,14 +804,14 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-emerald-800/20 bg-[var(--av-surface)] p-3.5 space-y-2.5">
+              <div className="space-y-2.5 rounded-xl border border-emerald-800/20 bg-[var(--av-surface)] p-3.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="min-w-0">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
                       {hi ? "सरकारी वेबसाइट" : "Official Website"}
                     </span>
                     <p className="truncate text-[13px] font-black text-emerald-800 dark:text-emerald-300">
-                      {portalHost || scheme.officialSourceTitle || "आधिकारिक पोर्टल"}
+                      {portalHost || scheme.officialSourceTitle || (hi ? "आधिकारिक पोर्टल" : "Official Portal")}
                     </p>
                   </div>
 
@@ -902,7 +835,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
                   <button
                     type="button"
                     onClick={() => requestPortal("detail_body_action")}
-                    className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 px-4 text-[13px] font-black text-white shadow-lg transition hover:bg-emerald-900 active:scale-[0.99] dark:bg-emerald-700 dark:hover:bg-emerald-600"
+                    className="flex min-h-[46px] w-full items-center justify-center gap-2 rounded-2xl bg-emerald-900 px-4 text-[13px] font-black text-white shadow-lg transition hover:bg-emerald-800 active:scale-[0.99] dark:bg-emerald-700 dark:hover:bg-emerald-600"
                   >
                     <span>
                       {hi
@@ -929,39 +862,50 @@ export default function SchemeDetailClient({ id }: { id: string }) {
         )}
       </div>
 
-      {/* STICKY BOTTOM ACTIONS */}
-      <div className="fixed inset-x-0 bottom-[4.5rem] z-30 mx-auto flex w-full max-w-lg gap-2 px-3 lg:bottom-4">
-        {hasGuide ? (
-          <AppLink
-            href={`/schemes/${scheme.id}/guide`}
-            onClick={() => track("scheme_guide_start", { id: scheme.id, from: "detail_sticky" })}
-            className="flex min-h-[48px] flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[12px] font-black text-[#07512f] shadow-sm transition active:scale-95 dark:text-emerald-100"
-          >
-            {hi ? "पात्रता गाइड" : "Eligibility Guide"}
-            <ArrowRight className="h-4 w-4" />
-          </AppLink>
-        ) : (
-          <AppLink
-            href="/schemes"
-            className="flex min-h-[48px] flex-1 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[12px] font-black text-[#07512f] shadow-sm transition active:scale-95 dark:text-emerald-100"
-          >
-            {hi ? "अन्य योजनाएँ" : "All Schemes"}
-          </AppLink>
-        )}
+      {/* STICKY BOTTOM ACTIONS (Pinned at bottom-0, never covered by bottom nav) */}
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-lg border-t border-[var(--av-border)] bg-[var(--av-surface)]/95 px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-xl backdrop-blur-md">
+        <div className="flex items-center gap-2">
+          {hasGuide ? (
+            <AppLink
+              href={`/schemes/${scheme.id}/guide`}
+              onClick={() => track("scheme_guide_start", { id: scheme.id, from: "detail_sticky" })}
+              className="flex min-h-[46px] flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[12px] font-black text-[var(--av-text-primary)] shadow-sm transition active:scale-95"
+            >
+              <span>{hi ? "पात्रता गाइड" : "Eligibility Guide"}</span>
+              <ArrowRight className="h-4 w-4" />
+            </AppLink>
+          ) : stateStatus.helpline ? (
+            <a
+              href={`tel:${stateStatus.helpline.split(" ")[0].replace(/[^0-9]/g, "")}`}
+              className="flex min-h-[46px] flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[12px] font-black text-blue-700 dark:text-blue-300 shadow-sm transition active:scale-95"
+            >
+              <PhoneCall className="h-3.5 w-3.5" />
+              <span>{hi ? "हेल्पलाइन" : "Helpline"}</span>
+            </a>
+          ) : (
+            <AppLink
+              href="/schemes"
+              className="flex min-h-[46px] flex-1 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[12px] font-black text-[var(--av-text-primary)] shadow-sm transition active:scale-95"
+            >
+              {hi ? "अन्य योजनाएँ" : "All Schemes"}
+            </AppLink>
+          )}
 
-        {official ? (
-          <button
-            type="button"
-            onClick={() => requestPortal("detail_sticky")}
-            className="flex min-h-[48px] flex-[1.4] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#07512f] to-[#08763f] px-3 text-[13px] font-black text-white shadow-xl transition active:scale-[0.99]"
-          >
-            <span>{hi ? "सरकारी पोर्टल ↗" : "Official Portal ↗"}</span>
-          </button>
-        ) : (
-          <span className="flex min-h-[48px] flex-[1.4] items-center justify-center rounded-2xl bg-[var(--av-surface-inset)] px-2 text-center text-[10px] font-semibold text-[var(--av-text-muted)]">
-            {hi ? SCHEMES_MISSING_SOURCE_HI : SCHEMES_MISSING_SOURCE_EN}
-          </span>
-        )}
+          {official ? (
+            <button
+              type="button"
+              onClick={() => requestPortal("detail_sticky")}
+              className="flex min-h-[46px] flex-[1.4] items-center justify-center gap-1.5 rounded-2xl bg-emerald-600 px-4 text-[13px] font-black text-white shadow-lg shadow-emerald-700/20 transition hover:bg-emerald-700 active:scale-[0.99] dark:bg-emerald-500 dark:hover:bg-emerald-600"
+            >
+              <span>{hi ? "सरकारी पोर्टल ↗" : "Official Portal ↗"}</span>
+              <ExternalLink className="h-3.5 w-3.5" />
+            </button>
+          ) : (
+            <span className="flex min-h-[46px] flex-[1.4] items-center justify-center rounded-2xl bg-[var(--av-surface-inset)] px-2 text-center text-[10px] font-semibold text-[var(--av-text-muted)]">
+              {hi ? SCHEMES_MISSING_SOURCE_HI : SCHEMES_MISSING_SOURCE_EN}
+            </span>
+          )}
+        </div>
       </div>
 
       <OfficialLeaveConfirm
