@@ -27,10 +27,31 @@ export default function ChemBottleThumb({
 
   useEffect(() => {
     if (!expanded) return;
-    const prev = document.body.style.overflow;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyTouchAction = document.body.style.touchAction;
+
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    const preventTouch = (e: TouchEvent) => {
+      // Prevent background scrolling while modal is open
+      if ((e.target as HTMLElement)?.closest?.('[data-modal-content="true"]')) {
+        return;
+      }
+      e.preventDefault();
+    };
+
+    window.addEventListener("touchmove", preventTouch, { passive: false });
+
     return () => {
-      document.body.style.overflow = prev;
+      window.removeEventListener("touchmove", preventTouch);
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.touchAction = prevBodyTouchAction;
+      window.scrollTo(0, scrollY);
     };
   }, [expanded]);
 
@@ -102,10 +123,13 @@ export default function ChemBottleThumb({
             <div
               role="dialog"
               aria-modal="true"
-              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in"
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in touch-none select-none overscroll-none"
               onClick={() => setExpanded(false)}
+              onTouchMove={(e) => e.preventDefault()}
+              onWheel={(e) => e.preventDefault()}
             >
               <div
+                data-modal-content="true"
                 className="relative flex w-full max-w-[340px] sm:max-w-[380px] flex-col items-center rounded-3xl bg-white p-5 shadow-2xl border border-stone-200 dark:bg-stone-900 dark:border-stone-800"
                 onClick={(e) => e.stopPropagation()}
               >

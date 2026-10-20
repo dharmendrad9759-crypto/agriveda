@@ -126,16 +126,15 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
         </div>
       </AppLink>
 
-      {/* Subtle secondary option for farmers without photo */}
-      <div className="relative z-10 mt-2.5 flex items-center justify-between px-1 text-[11px] font-medium text-emerald-200/80">
-        <span>{isHi ? "फोटो नहीं है?" : "No photo handy?"}</span>
+      {/* Secondary option for farmers to browse all crop diseases/problems */}
+      <div className="relative z-10 mt-2.5 flex items-center justify-between px-1 text-[11.5px] font-medium text-emerald-200/85">
+        <span>{isHi ? "या सभी रोग व कीट देखें:" : "Or browse all problems:"}</span>
         <AppLink
-          href="/ai-doctor"
-          onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_doctor_symptoms_only" })}
-          className="inline-flex items-center gap-1 font-bold text-white underline underline-offset-2 hover:text-emerald-200 transition active:opacity-75"
+          href="/crop-problems"
+          onClick={() => track("tool_open", { href: "/crop-problems", label: "home_browse_crop_problems" })}
+          className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 font-bold text-white backdrop-blur-xs transition hover:bg-white/25 active:scale-95"
         >
-          <span>{isHi ? "बिना फोटो लक्षणों से जाँचें" : "Identify by symptoms"}</span>
-          <ArrowRight className="h-3 w-3" />
+          <span>{isHi ? "फसल रोग व कीट डायरेक्ट्री →" : "Crop Problems Directory →"}</span>
         </AppLink>
       </div>
     </div>

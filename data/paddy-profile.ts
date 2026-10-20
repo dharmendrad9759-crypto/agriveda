@@ -290,7 +290,7 @@ export const paddyProfile: CropManagementProfile = {
         "संतुलित NPK — अधिक N से बचें",
         "कटाई के बाद संक्रमित अवशेष हटाएँ",
       ],
-      biologicalControl: ["Trichoderma harzianum मिट्टी में 2.5 kg/ha"],
+      biologicalControl: ["ट्राइकोडर्मा हार्जिएनम (मित्र फंगस) 1 किग्रा/एकड़: गोबर की खाद में मिलाकर मिट्टी में मिलाएँ"],
       chemicalControl: [
         "Validamycin 3 L — FRAC 26",
         "Hexaconazole 5 EC — FRAC 3",

@@ -76,6 +76,35 @@ function FertilizerCalculatorInner() {
   const [showBottomSheet, setShowBottomSheet] = useState(false);
 
   useEffect(() => {
+    if (!showBottomSheet) return;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyTouchAction = document.body.style.touchAction;
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    const preventTouch = (e: TouchEvent) => {
+      if ((e.target as HTMLElement)?.closest?.('[data-bottom-sheet="true"]')) {
+        return;
+      }
+      e.preventDefault();
+    };
+
+    window.addEventListener("touchmove", preventTouch, { passive: false });
+
+    return () => {
+      window.removeEventListener("touchmove", preventTouch);
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.touchAction = prevBodyTouchAction;
+      window.scrollTo(0, scrollY);
+    };
+  }, [showBottomSheet]);
+
+  useEffect(() => {
     if (!cropFromUrl) return;
     setSlug(cropFromUrl);
     setStep("plan");
@@ -228,12 +257,9 @@ function FertilizerCalculatorInner() {
                 )}
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
-                    फसल चुनें ({crops.length})
+                  <p className="text-sm font-black tracking-tight text-emerald-950 dark:text-emerald-200">
+                    फसल चुनें
                   </p>
-                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                    टैप करें
-                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
                   {crops.map((c) => {
@@ -587,6 +613,7 @@ function FertilizerCalculatorInner() {
 
               {/* Bottom Sheet Card */}
               <motion.div
+                data-bottom-sheet="true"
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
@@ -714,25 +741,25 @@ function FertilizerCalculatorInner() {
                         setSoilTest({});
                       }}
                       className={cn(
-                        "flex-1 rounded-xl py-2 text-xs font-bold transition active:scale-95",
+                        "flex-1 rounded-xl py-2.5 text-xs font-black transition active:scale-95",
                         !hasSoilReport
                           ? "bg-emerald-600 text-white shadow-sm"
                           : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
                       )}
                     >
-                      नहीं (मानक सलाह)
+                      नहीं
                     </button>
                     <button
                       type="button"
                       onClick={() => setHasSoilReport(true)}
                       className={cn(
-                        "flex-1 rounded-xl py-2 text-xs font-bold transition active:scale-95",
+                        "flex-1 rounded-xl py-2.5 text-xs font-black transition active:scale-95",
                         hasSoilReport
                           ? "bg-amber-600 text-white shadow-sm"
                           : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
                       )}
                     >
-                      हाँ (रिपोर्ट दर्ज करें)
+                      हाँ
                     </button>
                   </div>
 

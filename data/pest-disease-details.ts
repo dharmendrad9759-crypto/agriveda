@@ -345,7 +345,7 @@ export const THREAT_DETAIL_OVERRIDES: Record<string, ThreatDetailOverride> = {
       "पहले लक्षण पर Validamycin 3 L @ 2.5 ml/L (FRAC 26)",
       "Alternate spray Hexaconazole 5 EC @ 1 ml/L (FRAC 3)",
       "Wider spacing और balanced N humidity कम करते हैं",
-      "Trichoderma harzianum soil application 2.5 kg/ha",
+      "ट्राइकोडर्मा हार्जिएनम (मित्र फंगस) 1 किग्रा प्रति एकड़: बुवाई/रोपाई पूर्व 50 किग्रा सड़ी गोबर की खाद (FYM) में मिलाकर 3-4 दिन छाया में रखें, फिर नम मिट्टी में मिलाएँ",
     ],
     activeIngredient: "Validamycin 3 L @ 2.5 ml/L (FRAC 26)",
   },
@@ -615,7 +615,7 @@ export const THREAT_DETAIL_OVERRIDES: Record<string, ThreatDetailOverride> = {
     ],
     remediation: [
       "Carbendazim 50 WP seed treatment @ 2 g/kg (FRAC 1)",
-      "Trichoderma viride 10 g/kg seed + 2.5 kg/ha soil",
+      "ट्राइकोडर्मा विरिडी (मित्र फंगस) 1 किग्रा प्रति एकड़: गोबर की खाद में मिलाकर मिट्टी में दें (या 8–10 ग्राम/किग्रा बीज उपचार)",
       "Nursery Pythium के लिए Metalaxyl + Mancozeb drench 2 g/L",
       "Raised beds और waterlogging से बचें",
     ],

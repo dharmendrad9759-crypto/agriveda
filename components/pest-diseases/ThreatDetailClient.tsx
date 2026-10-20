@@ -51,7 +51,7 @@ function farmerSymptomLine(s: string, hi: boolean): string {
   if (!hi) return cleaned;
   return farmerSpeak(
     cleaned
-      .replace(/\bDead hearts?\b/gi, "डेडहार्ट")
+      .replace(/\bDead hearts?\b/gi, "डेडहार्ट (सूखा मुख्य तना)")
       .replace(/\bWhite ears?\b/gi, "सफ़ेद बालियाँ")
       .replace(/\bcentral shoot\b/gi, "बीच का तना")
       .replace(/\bempty chaffy panicle\b/gi, "खाली फूस वाली बाली")
@@ -60,14 +60,23 @@ function farmerSymptomLine(s: string, hi: boolean): string {
       .replace(/\bheading\s*पर\b/gi, "बालियाँ निकलते समय")
       .replace(/\bheading\b/gi, "बालियाँ निकलते समय")
       .replace(/\bStem\b/g, "तना")
+      .replace(/Leaf\s*sheaths?\s*पर\s*oval\s*greenish[-\s]*grey\s*lesions/gi, "पत्ती के खोल (शीथ) पर अंडाकार हरे-धूसर धब्बे")
+      .replace(/Leaf\s*sheaths?\b/gi, "पत्ती का खोल (शीथ)")
+      .replace(/oval\s*greenish[-\s]*grey\s*lesions/gi, "अंडाकार हरे-धूसर धब्बे")
+      .replace(/Lesions\s*मिलकर\s*sheath\s*और\s*leaves\s*सूखती\s*हैं/gi, "धब्बे आपस में मिलकर खोल और पत्तियों को सुखा देते हैं")
+      .replace(/Unfilled\s*grains\s*और\s*lodging/gi, "बालियों में दाने नहीं भरते और फसल गिर जाती है")
+      .replace(/Leaf\s*margins?\s*पर\s*water[-\s]*soaked\s*lesions\s*yellow\s*फिर\s*white/gi, "पत्तियों के किनारों पर पानी भीगे जैसे धब्बे, जो पहले पीले फिर सफेद पड़ते हैं")
+      .replace(/Kresek\s*phase\s*[—\-–]\s*पूरे\s*seedling\s*clump\s*का\s*wilting/gi, "क्रेसक अवस्था — पूरा पौधा सूखकर मुरझा जाता है")
+      .replace(/सुबह\s*lesion\s*surface\s*पर\s*milky\s*bacterial\s*ooze/gi, "सुबह के समय धब्बों की सतह पर दूधिया चिपचिपा जीवाणु स्राव दिखता है")
       .replace(/Grey\s*centre\s*brown\s*margin\s*वाले\s*diamond[-\s]*shaped\s*lesions/gi, "बीच धूसर / किनारा भूरा — हीरे जैसे धब्बे (Diamond spots)")
       .replace(/diamond[-\s]*shaped\s*lesions?/gi, "हीरे जैसे धब्बे")
       .replace(/Grey\s*centre\s*brown\s*margin/gi, "बीच धूसर, किनारा भूरा")
       .replace(/\bNeck\s*rot\b/gi, "गर्दन सड़न (Neck rot)")
-      .replace(/blackened\s*panicle\s*neck/gi, "बाली की गर्दन काली")
+      .replace(/blackened\s*panicle\s*neck/gi, "बाली की गर्दन काली पड़ना")
       .replace(/chaffy\s*grains?/gi, "खोखले दाने")
       .replace(/\bNode\s*rot\b/gi, "गाँठ सड़न (Node rot)")
       .replace(/plant\s*breakage/gi, "पौधा टूटना")
+      .replace(/water[-\s]*soaked\s*lesions?/gi, "पानी भीगे जैसे धब्बे")
       .replace(/\blesions?\b/gi, "धब्बे")
       .replace(/\bwindow[-\s]*pane feeding\b/gi, "पत्ती पर खिड़की जैसे सफेद धब्बे")
       .replace(/\bwhorl\b/gi, "चोँगा (गोभ)")
@@ -77,6 +86,13 @@ function farmerSymptomLine(s: string, hi: boolean): string {
       .replace(/\btassel\b/gi, "नर मंजरी")
       .replace(/\bcob damage\b/gi, "भुट्टे को नुकसान")
       .replace(/\byoung leaves\b/gi, "नई पत्तियाँ")
+      .replace(/\bdamping[-\s]*off\b/gi, "आर्द्र गलन (पौध सड़न)")
+      .replace(/\bwilting\b/gi, "मुरझाना")
+      .replace(/\byellowing\b/gi, "पीलापन")
+      .replace(/\bcurling\b/gi, "पत्तियों का मुड़ना (मरोड़िया)")
+      .replace(/\bpowdery mildew\b/gi, "सफेद चूर्णी फफूंद (छाछिया)")
+      .replace(/\bdowny mildew\b/gi, "डाउनी मिल्ड्यू (रोमिल फफूंद)")
+      .replace(/\bwaterlogging\b/gi, "जलभराव")
   );
 }
 
@@ -622,11 +638,8 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
 
           {activePestTab === "control" ? (
             <section className="space-y-3.5">
-              <div>
-                <h2 className="font-display text-[1.25rem] font-black tracking-tight text-[var(--av-text-primary)]">
-                  {hi ? "बचाव व एकीकृत प्रबंधन (Prevention & IPM)" : "Prevention & Integrated Pest Management"}
-                </h2>
-                <p className="mt-0.5 text-[12.5px] font-semibold text-[var(--av-text-muted)]">
+              <div className="pt-0.5 pb-1">
+                <p className="text-[13px] font-bold text-emerald-950 dark:text-emerald-200">
                   {hi
                     ? "बुवाई/रोपाई पूर्व बचाव, खेत की स्वच्छता एवं जैविक मित्र कीट"
                     : "Early protection, field sanitation, and biological defense"}
