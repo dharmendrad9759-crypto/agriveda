@@ -215,6 +215,13 @@ function MixAdvisorInner() {
 
   const problems = crop?.problems ?? [];
 
+  const visibleProblems = useMemo(() => {
+    return problems.filter((p) => {
+      if (!p.stages || p.stages.length === 0) return true;
+      return p.stages.includes(stage);
+    });
+  }, [problems, stage]);
+
   const selectedProblems = useMemo(
     () => problems.filter((p) => problemIds.includes(p.id)),
     [problems, problemIds]
@@ -571,10 +578,11 @@ function MixAdvisorInner() {
                 )}
 
                 <div className="mt-2.5 grid grid-cols-2 gap-2.5">
-                  {problems.map((p) => {
+                  {visibleProblems.map((p) => {
                     const active = problemIds.includes(p.id);
                     const isFungus = p.tagHi.includes("फफूंद") || p.tagHi.includes("फंगस");
                     const isPest = p.tagHi.includes("कीट") || p.tagHi.includes("कीड़ा");
+                    const isVirus = Boolean(p.isVirus || p.tagHi.includes("वायरस"));
 
                     return (
                       <button
@@ -590,7 +598,15 @@ function MixAdvisorInner() {
                       >
                         <span className="relative block h-24 w-full bg-black/5">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={p.image} alt={p.nameHi} className="h-full w-full object-cover" />
+                          <img
+                            src={p.image}
+                            alt={p.nameHi}
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "/images/crops/tomato.jpg";
+                            }}
+                          />
                           {active && (
                             <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md">
                               <Check className="h-4 w-4 stroke-[3]" />
@@ -599,7 +615,13 @@ function MixAdvisorInner() {
                           <span
                             className={cn(
                               "absolute bottom-1.5 left-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm",
-                              isFungus ? "bg-amber-700/90" : isPest ? "bg-sky-700/90" : "bg-purple-700/90"
+                              isVirus
+                                ? "bg-purple-700/90"
+                                : isFungus
+                                  ? "bg-amber-700/90"
+                                  : isPest
+                                    ? "bg-sky-700/90"
+                                    : "bg-teal-700/90"
                             )}
                           >
                             {p.tagHi}
@@ -612,6 +634,11 @@ function MixAdvisorInner() {
                           <span className="line-clamp-1 text-[10px] font-medium text-[var(--av-text-muted)]">
                             {p.nameEn}
                           </span>
+                          {p.specialFactHi && (
+                            <span className="mt-1 block text-[9.5px] font-semibold text-amber-800 dark:text-amber-300 line-clamp-1">
+                              💡 {p.specialFactHi}
+                            </span>
+                          )}
                         </span>
                       </button>
                     );
@@ -857,6 +884,25 @@ function MixAdvisorInner() {
                             <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-black text-emerald-900 dark:text-emerald-200">
                               दवा {idx + 1}
                             </span>
+                            {m.levelLabelHi ? (
+                              <span className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[10px] font-extrabold text-blue-900 dark:text-blue-200">
+                                {m.levelLabelHi}
+                              </span>
+                            ) : m.level ? (
+                              <span className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[10px] font-extrabold text-blue-900 dark:text-blue-200">
+                                स्तर {m.level}
+                              </span>
+                            ) : null}
+                            {m.isTopPerformer && (
+                              <span className="rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
+                                🔥 बेस्ट ट्रायल रिजल्ट (Top Performer)
+                              </span>
+                            )}
+                            {m.resistanceWarning && (
+                              <span className="rounded-md bg-rose-500/15 px-2 py-0.5 text-[9.5px] font-bold text-rose-800 dark:text-rose-300">
+                                ⚠️ पुराना / कम असरदार (Resistance Risk)
+                              </span>
+                            )}
                             {m.targetProblemHi && (
                               <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-900 dark:text-amber-200">
                                 🎯 {m.targetProblemHi} हेतु
@@ -889,6 +935,12 @@ function MixAdvisorInner() {
                             <p className="text-[10px] font-medium text-[var(--av-text-muted)]">
                               बाजार के लोकप्रिय ब्रांड: {m.brands.slice(0, 3).join(", ")}
                             </p>
+                          )}
+                          {m.isVirusTarget && (
+                            <div className="mt-2 rounded-xl bg-purple-500/10 border border-purple-500/20 p-2 text-[11px] font-medium text-purple-900 dark:text-purple-200 flex items-start gap-1.5">
+                              <span className="font-black text-purple-700 dark:text-purple-300">🛡️ वायरस विशेष:</span>
+                              <span>वायरस पर कोई फफूंदनाशक काम नहीं करता। केवल वेक्टर कीट नियंत्रण + वायरस रोधक ही वैज्ञानिक समाधान है।</span>
+                            </div>
                           )}
                         </div>
 
@@ -1059,12 +1111,12 @@ function MixAdvisorInner() {
                           </div>
                           <p className="text-[15px] font-black text-[var(--av-text-primary)] leading-tight">
                             {activeSlotMed?.targetProblemHi
-                              ? `${activeSlotMed.targetProblemHi} हेतु स्वीकृत दवाएँ`
+                              ? `${activeSlotMed.targetProblemHi} हेतु 3 अनुमोदित विकल्प`
                               : "वैकल्पिक दवा चुनें"}
                           </p>
                           <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
                             {activeSlotMed?.targetProblemHi
-                              ? `केवल "${activeSlotMed.targetProblemHi}" हेतु अनुशंसित दवाएँ:`
+                              ? `वैज्ञानिक क्रम 1 ➔ 2 ➔ 3 में अनुशंसित दवाएँ:`
                               : "अन्य अनुशंसित सुरक्षित दवाएँ:"}
                           </p>
                         </div>
@@ -1076,6 +1128,12 @@ function MixAdvisorInner() {
                           <X className="h-4 w-4" />
                         </button>
                       </div>
+
+                      {activeSlotMed?.isVirusTarget && (
+                        <div className="mx-3 mt-2.5 rounded-xl bg-purple-500/15 border border-purple-500/30 p-2.5 text-[11px] font-medium text-purple-900 dark:text-purple-200">
+                          🛡️ <span className="font-extrabold">वैज्ञानिक सलाह (वायरस):</span> वायरस पर कोई फफूंदनाशक काम नहीं करता। केवल वेक्टर (सफेद मक्खी) नियंत्रण व वायरस रोधक विकल्प ही चुनें।
+                        </div>
+                      )}
 
                       <div className="max-h-[60vh] space-y-2 overflow-y-auto p-3">
                         {slotAlternatives.map((opt) => {
@@ -1097,6 +1155,21 @@ function MixAdvisorInner() {
                                   <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-200">
                                     {opt.formCode} {opt.formHi ? `(${opt.formHi})` : ""}
                                   </span>
+                                  {opt.levelLabelHi && (
+                                    <span className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[10px] font-extrabold text-blue-900 dark:text-blue-200">
+                                      {opt.levelLabelHi}
+                                    </span>
+                                  )}
+                                  {opt.isTopPerformer && (
+                                    <span className="rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
+                                      🔥 बेस्ट ट्रायल रिजल्ट
+                                    </span>
+                                  )}
+                                  {opt.resistanceWarning && (
+                                    <span className="rounded-md bg-rose-500/15 px-2 py-0.5 text-[9.5px] font-bold text-rose-800 dark:text-rose-300">
+                                      ⚠️ पुराना / कम असरदार
+                                    </span>
+                                  )}
                                 </div>
 
                                 {/* English Technical Formulation Name */}

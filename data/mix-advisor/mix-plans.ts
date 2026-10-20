@@ -65,6 +65,16 @@ export type MixMedicine = {
   safetyHi?: string;
   /** Whether this is a non-pesticidal adjuvant / sticker */
   isAdjuvant?: boolean;
+  /** Level 1 (Initial), Level 2 (Moderate), Level 3 (Advanced/Top Trial) */
+  level?: 1 | 2 | 3;
+  /** Level badge in Hindi e.g. "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥" */
+  levelLabelHi?: string;
+  /** Whether marked as top trial performer */
+  isTopPerformer?: boolean;
+  /** Warning about older chemistry or pest resistance risk */
+  resistanceWarning?: string;
+  /** Whether the target problem is viral (requires vector insecticide + viricide) */
+  isVirusTarget?: boolean;
 };
 
 export type DynamicMixStep = {
@@ -616,24 +626,37 @@ export function curativeToMixMedicine(
   problem: CropProblemItem
 ): MixMedicine {
   const formCode = extractFormulationCode(curative.technical);
-  const category = determineCategory(problem.tagHi, curative.technical);
+  const isVirus = Boolean(
+    problem.isVirus ||
+    problem.tagHi.includes("वायरस") ||
+    problem.id.includes("ymv") ||
+    problem.id.includes("leaf-curl") ||
+    problem.id.includes("mosaic")
+  );
+
+  let category = determineCategory(problem.tagHi, curative.technical);
+  if (isVirus && category === "fungicide") {
+    category = "insecticide";
+  }
+
   const activeId = cleanActiveId(curative.technical);
   const { fracIracCode, fracIracGroupHi } = getChemicalGroup(curative.technical, category);
 
   let kindHi = "फफूंदनाशक (Fungicide)";
-  if (category === "insecticide") kindHi = "कीटनाशक (Insecticide)";
+  if (isVirus) kindHi = "वेक्टर कीटनाशक + वायरस रोधक";
+  else if (category === "insecticide") kindHi = "कीटनाशक (Insecticide)";
   else if (category === "bactericide") kindHi = "जीवाणुनाशक (Bactericide)";
   else if (category === "tonic") kindHi = "पोषक टॉनिक (Tonic)";
 
   // Parse doses
   let dosePerLiter = "1–2 मिली/ग्राम प्रति लीटर पानी";
-  let dosePerAcre = "200–300 मिली/ग्राम प्रति एकड़";
+  let dosePerAcre = curative.dosePerAcre || "200–300 मिली/ग्राम प्रति एकड़";
 
   const literMatch = curative.dose.match(/([0-9.]+(?:\s*(?:से|-)\s*[0-9.]+)?\s*(?:मिली|ग्राम|मि\.ली\.|g|ml)[^,(]*\/[^,(]*लीटर)/i);
   if (literMatch) dosePerLiter = literMatch[1].trim();
 
   const acreMatch = curative.dose.match(/([0-9.]+(?:\s*(?:से|-)\s*[0-9.]+)?\s*(?:मिली|ग्राम|किग्रा|g|ml|kg)[^,()]*प्रति\s*एकड़)/i);
-  if (acreMatch) dosePerAcre = acreMatch[1].trim();
+  if (acreMatch && !curative.dosePerAcre) dosePerAcre = acreMatch[1].trim();
 
   return {
     activeId,
@@ -652,6 +675,11 @@ export function curativeToMixMedicine(
     targetProblemHi: `${problem.nameHi} (${problem.nameEn})`,
     brands: curative.brands,
     safetyHi: curative.safety,
+    level: curative.level,
+    levelLabelHi: curative.levelLabelHi,
+    isTopPerformer: curative.isTopPerformer,
+    resistanceWarning: curative.resistanceWarning,
+    isVirusTarget: isVirus,
   };
 }
 
@@ -718,9 +746,9 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
         };
       }
 
-      // 2. Copper Oxychloride / Copper Hydroxide + EC Formulation
+      // 2. Copper Oxychloride / Copper Hydroxide / Bordeaux + EC Formulation
       const isCopper = (m: MixMedicine) =>
-        /copper|कॉपर|blitox|blue copper/i.test(m.technical + " " + m.nameHi + " " + m.activeId);
+        /copper|कॉपर|blitox|blue copper|bordeaux|बोर्डो/i.test(m.technical + " " + m.nameHi + " " + m.activeId);
       const isEC = (m: MixMedicine) => m.formCode === "EC" || /ec/i.test(m.technical);
 
       if ((isCopper(a) && isEC(b)) || (isCopper(b) && isEC(a))) {
@@ -728,9 +756,9 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
         const ecMed = isCopper(a) ? b : a;
         return {
           status: "incompatible",
-          title: "खतरा: घोल फट जाएगा और पत्तियां झुलस सकती हैं!",
+          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
           badgeHi: "🔴 गंभीर खतरा (Curdling & Leaf Burn)",
-          messageHi: `खतरा: ${copperMed.nameHi} (कॉपर) को ${ecMed.nameHi} (EC तेल आधारित फॉर्मूलेशन) के साथ टैंक में कभी न मिलाएँ। घोल तुरंत फटकर दही जैसा हो जाएगा और फसल जल (Phytotoxicity) सकती है।`,
+          messageHi: `खतरा: ${copperMed.nameHi} (कॉपर/बोर्डो) को ${ecMed.nameHi} (EC तेल आधारित फॉर्मूलेशन) के साथ टैंक में कभी न मिलाएँ। घोल तुरंत फटकर दही जैसा हो जाएगा और फसल जल (Phytotoxicity) सकती है।`,
           conflictReason: "कॉपर साल्ट और इमल्शन विलायक आपस में रासायनिक क्रिया करके अवक्षेप बना देते हैं।",
           remedyHi: "कॉपर को केवल WP/SC पाउडर के साथ मिलाएँ, या इस EC दवा को 3 दिन बाद अलग स्प्रे करें।",
           badPair: [a, b],
@@ -739,13 +767,13 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
 
       // 3. Copper + Organophosphates (OP)
       const isOP = (m: MixMedicine) =>
-        /chlorpyrifos|profenofos|dimethoate|acephate|malathion/i.test(m.technical + " " + m.activeId);
+        /chlorpyrifos|profenofos|dimethoate|acephate|malathion|quinalphos/i.test(m.technical + " " + m.activeId);
       if ((isCopper(a) && isOP(b)) || (isCopper(b) && isOP(a))) {
         return {
           status: "incompatible",
-          title: "खतरा: कीटनाशक असर खत्म और फसल पर विषैला प्रभाव!",
-          badgeHi: "🔴 असंगत रासायनिक मिश्रण",
-          messageHi: `खतरा: कॉपर की क्षारीय प्रकृति से आर्गेनोफॉस्फेट कीटनाशक (${isOP(a) ? a.nameHi : b.nameHi}) का क्षारीय अपघटन हो जाता है, जिससे कीटनाशक असर खत्म हो जाता है और फसल झुलस सकती है।`,
+          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
+          badgeHi: "🔴 असंगत रासायनिक मिश्रण (Alkaline Hydrolysis)",
+          messageHi: `खतरा: कॉपर की क्षारीय प्रकृति से आर्गेनोफॉस्फेट कीटनाशक (${isOP(a) ? a.nameHi : b.nameHi}) का क्षारीय अपघटन हो जाता है, जिससे घोल फट सकता है, कीटनाशक असर खत्म हो जाता है और फसल झुलस सकती है।`,
           conflictReason: "Alkaline Hydrolysis",
           remedyHi: "इन दोनों का अलग-अलग छिड़काव करें।",
           badPair: [a, b],
@@ -758,7 +786,7 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
       if ((isCopper(a) && isSulphur(b)) || (isCopper(b) && isSulphur(a))) {
         return {
           status: "incompatible",
-          title: "खतरा: फसल की पत्तियां तेज जलेंगी (Severe Scorch)!",
+          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
           badgeHi: "🔴 बहुत खतरनाक (Phytotoxicity)",
           messageHi: "खतरा: कॉपर और सल्फर का एक साथ छिड़काव करने से तेज धूप में पत्तियां बुरी तरह जल जाती हैं। कृषि वैज्ञानिक इसे कभी मिलाने की अनुमति नहीं देते।",
           conflictReason: "Copper + Sulphur extreme phytotoxicity reaction",
@@ -771,11 +799,26 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
       if ((isSulphur(a) && isEC(b)) || (isSulphur(b) && isEC(a))) {
         return {
           status: "incompatible",
-          title: "खतरा: सल्फर + EC तेल से पत्तियां झुलसेंगी!",
+          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
           badgeHi: "🔴 असंगत (Crop Scorch Risk)",
           messageHi: `खतरा: सल्फर को तेल आधारित EC कीटनाशक (${isEC(a) ? a.nameHi : b.nameHi}) के साथ मिलाने से पत्तों पर मोमी परत नष्ट हो जाती है और फसल जल सकती है।`,
           conflictReason: "Sulphur oil interaction",
           remedyHi: "सल्फर के साथ केवल WP/WDG या SC फॉर्मूलेशन का ही इस्तेमाल करें।",
+          badPair: [a, b],
+        };
+      }
+
+      // 5b. Calcium Nitrate + Sulphates / Phosphates
+      const isCalcium = (m: MixMedicine) => /calcium|कैल्शियम|calcium nitrate/i.test(m.technical + " " + m.nameHi);
+      const isSulphateOrPhos = (m: MixMedicine) => /sulphate|sulfate|phosphate|सल्फेट|फॉस्फेट|0-52-34|12-61-0|dap/i.test(m.technical + " " + m.nameHi);
+      if ((isCalcium(a) && isSulphateOrPhos(b)) || (isCalcium(b) && isSulphateOrPhos(a))) {
+        return {
+          status: "incompatible",
+          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
+          badgeHi: "🔴 अवक्षेप (Gypsum / Insoluble Sludge)",
+          messageHi: "खतरा: कैल्शियम और सल्फेट/फॉस्फेट आपस में मिलकर अघुलनशील जिप्सम (चूने की मोटी परत) बना देते हैं। घोल तुरंत फट जाता है और नोजल चोक हो जाता है।",
+          conflictReason: "Calcium Sulphate / Phosphate precipitation",
+          remedyHi: "कैल्शियम नाइट्रेट का हमेशा अलग छिड़काव करें।",
           badPair: [a, b],
         };
       }
@@ -989,25 +1032,15 @@ export function getProblemSpecificAlternatives(
       };
 
       const mappedList = curatives.map((c) => curativeToMixMedicine(c, problemItem));
-      const seen = new Set<string>();
-      const result: MixMedicine[] = [];
-
-      for (const m of mappedList) {
-        if (!seen.has(m.technical)) {
-          seen.add(m.technical);
-          result.push(m);
-        }
-      }
-
-      // Ensure the currently selected medicine is present
-      if (!seen.has(medicine.technical)) {
-        result.unshift(medicine);
-      }
-      return result;
+      // Return the exact technicals in strict 1 -> 2 -> 3 sequence
+      return mappedList;
     }
   }
 
   // Fallback for manually added slots without a target problem
+  if (medicine.isVirusTarget) {
+    return POPULAR_INSECTICIDES;
+  }
   if (medicine.category === "insecticide") {
     return POPULAR_INSECTICIDES;
   }
@@ -1079,13 +1112,21 @@ export function buildMixPlanFromProblems(
       }
     } else {
       // Fallback from curated catalog if no specific match
-      const isPest = prob.tagHi.includes("कीट") || prob.tagHi.includes("कीड़ा");
+      const isVirus = Boolean(
+        prob.isVirus ||
+        prob.tagHi.includes("वायरस") ||
+        prob.id.includes("ymv") ||
+        prob.id.includes("leaf-curl") ||
+        prob.id.includes("mosaic")
+      );
+      const isPest = isVirus || prob.tagHi.includes("कीट") || prob.tagHi.includes("कीड़ा");
       const pool = isPest ? POPULAR_INSECTICIDES : POPULAR_FUNGICIDES;
       const fallback = pool.find((item) => !recommendedMedicines.some((m) => isSameMed(m, item))) ?? pool[0];
       const withTarget: MixMedicine = {
         ...fallback,
         targetProblemId: prob.id,
         targetProblemHi: `${prob.nameHi} (${prob.nameEn})`,
+        isVirusTarget: isVirus,
       };
       if (!recommendedMedicines.some((m) => isSameMed(m, withTarget))) {
         recommendedMedicines.push(withTarget);

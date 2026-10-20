@@ -1,7 +1,11 @@
 /**
- * Authoritative Curative Medicine Knowledge Base for Crop Problems
- * Contains accurate English Technical Names, Commercial Hindi Names,
- * Precise Dosages (per liter and per acre), and Indian Market Brand Names.
+ * Master Authoritative Curative Medicine Knowledge Base for Crop Problems
+ * 29 Crops with Strict 1 ➔ 2 ➔ 3 Technical Progression Sequence:
+ * Level 1: Initial / Traditional / Preventive
+ * Level 2: Moderate / Broad Spectrum
+ * Level 3: Advanced / Top Trial Performer (🔥 बेस्ट ट्रायल रिजल्ट)
+ *
+ * All Virus targets strictly blocked from Fungicides (Vector Insecticides + Viricide only).
  */
 
 export interface CurativeMedicine {
@@ -10,1855 +14,6212 @@ export interface CurativeMedicine {
   dose: string;      // e.g. "1 ml/L (200 ml / acre in 200 L water)"
   brands: string[];  // e.g. ["Tilt (Syngenta)", "Bumper (Adama)"]
   safety?: string;
+  level?: 1 | 2 | 3;
+  levelLabelHi?: string;
+  dosePerAcre?: string;
+  isTopPerformer?: boolean;
+  resistanceWarning?: string;
 }
 
 export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedicine[]>> = {
-  wheat: {
-    "yellow-rust": [
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ — 200 लीटर पानी में)",
-        brands: ["Tilt (Syngenta)", "Bumper (Adama)", "Result"],
-        safety: "पीली धारी दिखते ही तुरंत पहला स्प्रे करें; 15 दिन बाद आवश्यकता पड़ने पर दोहराएँ।",
-      },
-      {
-        nameHi: "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
-        technical: "Tebuconazole 25.9% EC",
-        dose: "1 से 1.25 मिली / लीटर पानी (200–250 मिली प्रति एकड़)",
-        brands: ["Folicur (Bayer)", "Orius (Adama)", "Constant"],
-        safety: "कटाई से कम से कम 20 दिन पहले छिड़काव बंद करें।",
-      },
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-        technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Amistar Top (Syngenta)", "Custodia"],
-        safety: "तेज धूप में स्प्रे न करें, सुबह या शाम को छिड़काव करें।",
-      },
-    ],
-    "brown-rust": [
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Tilt (Syngenta)", "Bumper (Adama)"],
-        safety: "पत्तियों पर भूरे गोल धब्बे फैलने से पहले छिड़काव करें।",
-      },
-      {
-        nameHi: "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
-        technical: "Tebuconazole 25.9% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Folicur (Bayer)", "Orius"],
-        safety: "साफ़ पानी का प्रयोग करें।",
-      },
-    ],
-    "spot-blotch": [
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Tilt (Syngenta)", "Bumper"],
-      },
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Dithane M-45 (Corteva)", "Indofil M-45"],
-      },
-    ],
-    "loose-smut": [
-      {
-        nameHi: "कार्बोक्सिन 37.5% + थीरम 37.5% DS (विटावैक्स पावर - बीज उपचार)",
-        technical: "Carboxin 37.5% + Thiram 37.5% DS",
-        dose: "2.5 से 3 ग्राम प्रति किग्रा बीज (बुवाई पूर्व बीज शोधन)",
-        brands: ["Vitavax Power (Dhanuka)"],
-        safety: "यह रोग बीज जनित है, खड़ी फसल में स्प्रे से ठीक नहीं होता; बीज उपचार अनिवार्य है।",
-      },
-      {
-        nameHi: "टेबुकोनाज़ोल 2% DS (रेक्सिल - बीज उपचार)",
-        technical: "Tebuconazole 2% DS",
-        dose: "1 से 1.2 ग्राम प्रति किग्रा बीज",
-        brands: ["Raxil (Bayer)"],
-      },
-    ],
-    "karnal-bunt": [
-      {
-        nameHi: "कार्बोक्सिन 37.5% + थीरम 37.5% DS (बीज उपचार)",
-        technical: "Carboxin 37.5% + Thiram 37.5% DS",
-        dose: "2.5 ग्राम प्रति किग्रा बीज",
-        brands: ["Vitavax Power (Dhanuka)"],
-      },
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (बालियाँ निकलते समय)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Tilt (Syngenta)"],
-      },
-    ],
-    "aphid": [
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (60–80 मिली प्रति एकड़ in 150 लीटर पानी)",
-        brands: ["Confidor (Bayer)", "Tatamida", "Victor"],
-        safety: "फूल खिलने के समय मधुमक्खियों के बचाव हेतु शाम 4 बजे के बाद ही स्प्रे करें।",
-      },
-      {
-        nameHi: "थियामेथोक्साम 25% WG (अकतारा)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (80–100 ग्राम प्रति एकड़)",
-        brands: ["Actara (Syngenta)", "Areva"],
-      },
-      {
-        nameHi: "फ्लोनिकैमिड 50% WG (उलाला)",
-        technical: "Flonicamid 50% WG",
-        dose: "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़)",
-        brands: ["Ulala (UPL)"],
-      },
-    ],
-    "termite": [
-      {
-        nameHi: "क्लोरपाइरीफॉस 20% EC (डरमेट)",
-        technical: "Chlorpyrifos 20% EC",
-        dose: "1 से 1.25 लीटर प्रति एकड़ (20-25 किग्रा सूखी बालू या रेत में मिलाकर पहली सिंचाई से पूर्व खेत में बिखेरें)",
-        brands: ["Durmet (Dhanuka)", "Dursban", "Trishul"],
-      },
-      {
-        nameHi: "फिप्रोनिल 0.3% GR दानेदार (रीजेंट अल्ट्रा)",
-        technical: "Fipronil 0.3% GR",
-        dose: "8 से 10 किग्रा प्रति एकड़ (खेत में बुरकाव करें और तुरंत हल्की सिंचाई करें)",
-        brands: ["Regent Ultra (Bayer)", "Mortar (Dhanuka)"],
-      },
-      {
-        nameHi: "फिप्रोनिल 5% SC (रीजेंट)",
-        technical: "Fipronil 5% SC",
-        dose: "बीज उपचार: 4-5 मिली प्रति किग्रा बीज (बुवाई पूर्व) या 800 मिली प्रति एकड़ सिंचाई के पानी के साथ बहाएँ",
-        brands: ["Regent (Bayer)", "Fax"],
-      },
-    ],
-    "powdery": [
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Tilt (Syngenta)"],
-      },
-      {
-        nameHi: "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
-        technical: "Hexaconazole 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Contaf Plus (Tata Rallis)"],
-      },
-    ],
-  },
-
-  paddy: {
-    blast: [
-      {
-        nameHi: "ट्राइसाइक्लाज़ोल 75% WP (बाण / बीम)",
-        technical: "Tricyclazole 75% WP",
-        dose: "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़ — 200 लीटर पानी में)",
-        brands: ["Beam (Corteva)", "Baan (Dhanuka)", "Sivic"],
-        safety: "पत्तियों पर आँख जैसे धब्बे दिखते ही पहला छिड़काव करें।",
-      },
-      {
-        nameHi: "आइसोप्रोथिओलेन 40% EC (फुजी-वन)",
-        technical: "Isoprothiolane 40% EC",
-        dose: "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
-        brands: ["Fuji-one (Rallis)"],
-      },
-      {
-        nameHi: "कसुगामाइसिन 3% SL (कसू-बी)",
-        technical: "Kasugamycin 3% SL",
-        dose: "2 से 2.5 मिली / लीटर पानी (400–500 मिली प्रति एकड़)",
-        brands: ["Kasu-B (Dhanuka)"],
-      },
-    ],
-    "stem-borer": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़ in 200 लीटर पानी)",
-        brands: ["Coragen (FMC)", "Cover"],
-        safety: "डेड हार्ट (Dead heart) 5% या मोथ दिखने पर तुरंत स्प्रे करें।",
-      },
-      {
-        nameHi: "कार्टैप हाइड्रोक्लोराइड 50% SP (कैलिडान)",
-        technical: "Cartap hydrochloride 50% SP",
-        dose: "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
-        brands: ["Caldan 50 SP (Dhanuka)", "Padan"],
-      },
-      {
-        nameHi: "फ्लूबेंडिमाइड 39.35% SC (फेम)",
-        technical: "Flubendiamide 39.35% SC",
-        dose: "0.25 मिली / लीटर पानी (50 मिली प्रति एकड़)",
-        brands: ["Fame (Bayer)"],
-      },
-    ],
-    bph: [
-      {
-        nameHi: "पाइमेट्रोज़िन 50% WDG (चेस)",
-        technical: "Pymetrozine 50% WDG",
-        dose: "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़ — पौधों के आधार पर स्प्रे)",
-        brands: ["Chess (Syngenta)", "Fulstop"],
-        safety: "स्प्रे नोजल को पौधों के निचले भाग (जड़ों के पास) की तरफ रखें।",
-      },
-      {
-        nameHi: "डाइनोटेफ्यूरान 20% SG (टोकन)",
-        technical: "Dinotefuran 20% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
-        brands: ["Token (Indofil)", "Oshin"],
-      },
-      {
-        nameHi: "ट्रिफ्लूमेज़ोपाइरिम 10% SC (पेक्सलॉन)",
-        technical: "Triflumezopyrim 10% SC",
-        dose: "0.5 मिली / लीटर पानी (94 मिली प्रति एकड़)",
-        brands: ["Pexalon (Corteva)"],
-      },
-    ],
-    "sheath-blight": [
-      {
-        nameHi: "वैलिडामाइसिन 3% L (शीथमार)",
-        technical: "Validamycin 3% L",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Sheathmar (Dhanuka)", "Rhizocin"],
-      },
-      {
-        nameHi: "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
-        technical: "Hexaconazole 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Contaf Plus (Tata Rallis)", "Sitara"],
-      },
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-        technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Amistar Top (Syngenta)"],
-      },
-    ],
-    blb: [
-      {
-        nameHi: "स्ट्रेप्टोसाइक्लिन (90:10) + कॉपर ऑक्सीक्लोराइड 50% WP",
-        technical: "Streptocycline 90% + Copper oxychloride 50% WP",
-        dose: "स्ट्रेप्टोसाइक्लिन 6 ग्राम + कॉपर ऑक्सीक्लोराइड 500 ग्राम प्रति एकड़ (200 L पानी में)",
-        brands: ["Streptocycline (HAL) + Blitox 50 (Rallis)"],
-        safety: "तेज बारिश के बाद पत्तियों के किनारे पीले होने पर तुरंत छिड़कें।",
-      },
-    ],
-    "leaf-folder": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़ — 200 L पानी में)",
-        brands: ["Coragen (FMC)", "Cover"],
-      },
-      {
-        nameHi: "फ्लूबेंडिमाइड 39.35% SC (फेम)",
-        technical: "Flubendiamide 39.35% SC",
-        dose: "0.25 मिली / लीटर पानी (50 मिली प्रति एकड़)",
-        brands: ["Fame (Bayer)"],
-      },
-      {
-        nameHi: "स्पिनोसैड 45% SC (ट्रेसर)",
-        technical: "Spinosad 45% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़)",
-        brands: ["Tracer (Corteva)"],
-      },
-    ],
-    "brown-spot": [
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — 200 L पानी में)",
-        brands: ["Dithane M-45 (Corteva)", "Indofil M-45"],
-      },
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Tilt (Syngenta)", "Bumper (Adama)"],
-      },
-    ],
-    tungro: [
-      {
-        nameHi: "थियामेथोक्साम 25% WG (अकतारा — हरा फुदका वाहक नियंत्रण)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ — 200 L पानी में)",
-        brands: ["Actara (Syngenta)", "Areva"],
-        safety: "वायरस की सीधी दवा नहीं होती; हरा फुदका (GLH) का नियंत्रण करें।",
-      },
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
-        brands: ["Confidor (Bayer)"],
-      },
-    ],
-  },
-
-  potato: {
-    "late-blight": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (400–500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)", "Master (Indofil)", "Krilaxyl"],
-        safety: "मौसम ठंडा-गीला होने और रात में ओस पड़ने पर बीमारी शुरू होने से पहले छिड़काव करें।",
-      },
-      {
-        nameHi: "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
-        technical: "Cymoxanil 8% + Mancozeb 64% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Curzate (Corteva)", "Moximate"],
-      },
-      {
-        nameHi: "डाइमेथोमॉर्फ 50% WP (एक्रोबैट)",
-        technical: "Dimethomorph 50% WP",
-        dose: "1.2 से 1.5 ग्राम / लीटर पानी (250–300 ग्राम प्रति एकड़)",
-        brands: ["Acrobat (BASF)"],
-      },
-    ],
-    "early-blight": [
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Dithane M-45 (Corteva)", "Indofil M-45"],
-      },
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 23% SC (एमिस्टार)",
-        technical: "Azoxystrobin 23% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Amistar (Syngenta)"],
-      },
-    ],
-    scab: [
-      {
-        nameHi: "ट्राइकोडर्मा विरिडी 1% WP (कंद शोधन)",
-        technical: "Trichoderma viride 1% WP",
-        dose: "5 ग्राम / किग्रा कंद या 2.5 किग्रा / एकड़ गोबर खाद में मिलाकर बुवाई पूर्व",
-        brands: ["Sanjivani", "Niprot"],
-        safety: "कंद को उपचारित कर छाया में सुखाकर ही बोएँ।",
-      },
-      {
-        nameHi: "मैंकोजेब 75% WP (कंद उपचार)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी के घोल में कंद 10 मिनट डुबोएँ",
-        brands: ["Dithane M-45 (Corteva)"],
-      },
-    ],
-    aphid: [
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (60–80 मिली प्रति एकड़ in 150 L पानी)",
-        brands: ["Confidor (Bayer)", "Tatamida"],
-      },
-      {
-        nameHi: "थियामेथोक्साम 25% WG (अकतारा)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (80–100 ग्राम प्रति एकड़)",
-        brands: ["Actara (Syngenta)"],
-      },
-    ],
-  },
-
-  tomato: {
-    "late-blight": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (400–500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)", "Master", "Krilaxyl"],
-        safety: "पानी जैसे धब्बे दिखते ही तुरंत छिड़काव करें। फल तोड़ने से 10 दिन पहले बंद करें।",
-      },
-      {
-        nameHi: "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
-        technical: "Cymoxanil 8% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (400–500 ग्राम प्रति एकड़)",
-        brands: ["Curzate (Corteva)", "Moximate"],
-        safety: "संक्रमण शुरू होते ही 48 घंटे के भीतर उपचारात्मक असर करता है।",
-      },
-      {
-        nameHi: "डाइमेथोमॉर्फ 50% WP (एक्रोबैट)",
-        technical: "Dimethomorph 50% WP",
-        dose: "1.2 से 1.5 ग्राम / लीटर पानी (250–300 ग्राम प्रति एकड़)",
-        brands: ["Acrobat (BASF)"],
-        safety: "फंगस की कोशिका भित्ति को नष्ट करता है; रिडोमिल के साथ रोटेशन करें।",
-      },
-      {
-        nameHi: "फेमोक्साडोन 16.6% + साइमोक्सानिल 22.1% SC (इक्वेशन प्रो)",
-        technical: "Famoxadone 16.6% + Cymoxanil 22.1% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Equation Pro (Corteva)"],
-        safety: "तेज वर्षा व ठंड के मौसम में पछेती झुलसा का सबसे आधुनिक सिस्टेमिक नियंत्रण।",
-      },
-      {
-        nameHi: "मैंडिप्रोपामाइड 23.4% SC (रेवस)",
-        technical: "Mandipropamid 23.4% SC",
-        dose: "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़)",
-        brands: ["Revus (Syngenta)"],
-      },
-    ],
-    "early-blight": [
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-        technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Amistar Top (Syngenta)", "Custodia (Adama)"],
-        safety: "अगेती झुलसा व पर्ण धब्बा पर दोहरा सुरक्षात्मक व उपचारात्मक असर।",
-      },
-      {
-        nameHi: "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
-        technical: "Tebuconazole 50% + Trifloxystrobin 25% WG",
-        dose: "0.7 ग्राम / लीटर पानी (140 ग्राम प्रति एकड़)",
-        brands: ["Nativo (Bayer)"],
-        safety: "पौधों में हरियाली बढ़ाता है और पत्तों के धब्बों को तुरंत सुखाता है।",
-      },
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Dithane M-45 (Corteva)", "Indofil M-45"],
-        safety: "सस्ती और प्रभावी संपर्क फफूंदनाशक दवा; पत्तों पर सुरक्षा कवच बनाती है।",
-      },
-      {
-        nameHi: "क्लोरोथैलोनिल 75% WP (कवच)",
-        technical: "Chlorothalonil 75% WP",
-        dose: "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
-        brands: ["Kavach (Syngenta)"],
-        safety: "बारिश में भी पत्तों पर चिपकी रहती है; रोग के शुरुआती लक्षणों पर छिड़कें।",
-      },
-      {
-        nameHi: "पायराक्लोस्ट्रोबिन 20% WG (हेडलाइन)",
-        technical: "Pyraclostrobin 20% WG",
-        dose: "1 ग्राम / लीटर पानी (200 ग्राम प्रति एकड़)",
-        brands: ["Headline (BASF)", "Cabrio Top"],
-      },
-      {
-        nameHi: "प्रोपिनेब 70% WP (एन्ट्राकॉल)",
-        technical: "Propineb 70% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Antracol (Bayer)"],
-      },
-    ],
-    "leaf-curl": [
-      {
-        nameHi: "थियामेथोक्साम 25% WG (सफेद मक्खी वाहक नियंत्रण)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Actara (Syngenta)", "Areva"],
-        safety: "पत्ती मुड़ने वाले बेगोमोवायरस को सफेद मक्खी फैलाती है; मक्खी को नियंत्रित करें।",
-      },
-      {
-        nameHi: "डायफेंथियूरॉन 50% WP (पेगासस)",
-        technical: "Diafenthiuron 50% WP",
-        dose: "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़)",
-        brands: ["Pegasus (Syngenta)"],
-      },
-      {
-        nameHi: "पाइरिप्रोक्सीफेन 10% + बाइफेंथ्रिन 10% EC (लैनो)",
-        technical: "Pyriproxyfen 10% + Bifenthrin 10% EC",
-        dose: "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
-        brands: ["Lano (Sumitomo)"],
-      },
-      {
-        nameHi: "एफिडोपायरोपेन 50 g/L DC (सेफीना)",
-        technical: "Afidopyropen 50 g/L DC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Sefina (BASF)"],
-      },
-    ],
-    "fruit-borer": [
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Proclaim (Syngenta)", "Missile", "Sperto"],
-        safety: "फल तुड़ाई से कम से कम 3 दिन पहले ही स्प्रे करें (PHI: 3 दिन)।",
-      },
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)", "Cover"],
-        safety: "अंडे से इल्ली निकलते ही खत्म कर देती है; 20-25 दिन तक सुरक्षा।",
-      },
-      {
-        nameHi: "स्पिनेटोरम 11.7% SC (डेलिगेट)",
-        technical: "Spinetoram 11.7% SC",
-        dose: "0.9 मिली / लीटर पानी (180 मिली प्रति एकड़)",
-        brands: ["Delegate (Corteva)"],
-        safety: "आधुनिक ग्रीन केमिस्ट्री तकनीक; इल्ली को तुरंत खाना बंद कराती है।",
-      },
-      {
-        nameHi: "फ्लूबेंडिमाइड 39.35% SC (फेम)",
-        technical: "Flubendiamide 39.35% SC",
-        dose: "0.25 मिली / लीटर पानी (50 मिली प्रति एकड़)",
-        brands: ["Fame (Bayer)"],
-      },
-      {
-        nameHi: "नोवाल्यूरॉन 5.25% + इमामेक्टिन बेंजोएट 0.9% SC (बाराजाइड)",
-        technical: "Novaluron 5.25% + Emamectin Benzoate 0.9% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Barazide (Adama)"],
-      },
-    ],
-    whitefly: [
-      {
-        nameHi: "फ्लोनिकैमिड 50% WG (उलाला)",
-        technical: "Flonicamid 50% WG",
-        dose: "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ulala (UPL)"],
-        safety: "सफेद मक्खी को तुरंत लकवाग्रस्त कर 30 मिनट में रस चूसना बंद करा देता है।",
-      },
-      {
-        nameHi: "पाइरिप्रोक्सीफेन 10% + बाइफेंथ्रिन 10% EC",
-        technical: "Pyriproxyfen 10% + Bifenthrin 10% EC",
-        dose: "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Lano (Sumitomo)"],
-      },
-      {
-        nameHi: "डायफेंथियूरॉन 50% WP (पेगासस)",
-        technical: "Diafenthiuron 50% WP",
-        dose: "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़)",
-        brands: ["Pegasus (Syngenta)"],
-      },
-      {
-        nameHi: "एफिडोपायरोपेन 50 g/L DC (सेफीना)",
-        technical: "Afidopyropen 50 g/L DC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Sefina (BASF)"],
-      },
-      {
-        nameHi: "स्पिरोमीसिफेन 22.9% SC (ओबेरॉन)",
-        technical: "Spiromesifen 22.9% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Oberon (Bayer)"],
-      },
-    ],
-    "bacterial-wilt": [
-      {
-        nameHi: "कॉपर ऑक्सीक्लोराइड 50% WP + स्ट्रेप्टोसाइक्लिन (जड़ ड्रेंचिंग)",
-        technical: "Copper oxychloride 50% WP + Streptocycline 90%",
-        dose: "कॉपर 2.5 ग्राम + स्ट्रेप्टोसाइक्लिन 0.1 ग्राम / लीटर पानी (जड़ों में डालें)",
-        brands: ["Blitox 50 + Streptocycline"],
-        safety: "संक्रमित पौधे को उखाड़कर नष्ट करें और स्वस्थ पौधों की जड़ों में घोल डालें।",
-      },
+  "tomato": {
+    "damping-off": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
+                "technical": "Copper Oxychloride 50% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Blitox 50 (Rallis)",
+                      "Blue Copper"
+                ],
+                "safety": "जड़ों में धार से ड्रेंचिंग करें; किसी EC दवा के साथ न मिलाएँ।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर (ड्रेंचिंग)",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)",
+                      "Krilaxyl"
+                ],
+                "safety": "सिस्टेमिक व कॉन्टैक्ट का दोहरा असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "प्रोपेमोकार्ब 53.2% + फॉसेटिल-अल 31% SL (प्रिविक्यूर एनर्जी)",
+                "technical": "Propamocarb 53.2% + Fosetyl-Al 31% SL",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Previcur Energy (Bayer)"
+                ],
+                "safety": "नर्सरी व जड़ गलन पर सबसे आधुनिक रिसर्च मॉलिक्यूल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
     "leaf-miner": [
-      {
-        nameHi: "एबामेक्टिन 1.9% EC (वर्टिमेक)",
-        technical: "Abamectin 1.9% EC",
-        dose: "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Vertimec (Syngenta)"],
-      },
-      {
-        nameHi: "स्पिनोसैड 45% SC (ट्रेसर)",
-        technical: "Spinosad 45% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़)",
-        brands: ["Tracer (Corteva)"],
-      },
+          {
+                "nameHi": "प्रोफेनोफॉस 40% + साइपरमेथ्रिन 4% EC (रॉकेट)",
+                "technical": "Profenofos 40% + Cypermethrin 4% EC",
+                "dose": "1.75 मिली / लीटर पानी (350 मिली प्रति एकड़)",
+                "brands": [
+                      "Roket (PI)",
+                      "Polytrin"
+                ],
+                "safety": "शुरुआती स्तर पर उपयोगी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "350 मिली / एकड़",
+                "resistanceWarning": "⚠️ पुराना रसायन — अधिक प्रकोप में ट्रांसलैमिनार दवा चुनें।"
+          },
+          {
+                "nameHi": "एबामेक्टिन 1.9% EC (वर्टिमेक)",
+                "technical": "Abamectin 1.9% EC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Vertimec (Syngenta)",
+                      "Abacin"
+                ],
+                "safety": "ट्रांसलैमिनार क्रिया — पत्ती के अंदर घुसकर नागअली को मारती है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर (ट्रांसलैमिनार)",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "सायंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
+                "technical": "Cyantraniliprole 10.26% OD",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Benevia (FMC)"
+                ],
+                "safety": "पत्ती सुरंगक व रस चूसक दोनों पर सर्वश्रेष्ठ आधुनिक ट्रायल परिणाम।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
-    "fusarium-wilt": [
-      {
-        nameHi: "कार्बेन्डाजिम 50% WP (बाविस्टिन — जड़ ड्रेंचिंग)",
-        technical: "Carbendazim 50% WP",
-        dose: "2 ग्राम / लीटर पानी (पौधों की जड़ों में 100-150 मिली घोल डालें)",
-        brands: ["Bavistin (Crystal)", "Derosal"],
-      },
-      {
-        nameHi: "ट्राइकोडर्मा विरिडी 1% WP (जैविक भूमि उपचार)",
-        technical: "Trichoderma viride 1% WP",
-        dose: "2.5 किग्रा प्रति एकड़ सड़ी गोबर खाद में मिलाकर",
-        brands: ["Sanjivani"],
-      },
+    "whitefly": [
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP (मानिक/प्राइड)",
+                "technical": "Acetamiprid 20% SP",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Manik (UPL)",
+                      "Pride"
+                ],
+                "safety": "शुरुआती रस चूसक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़",
+                "resistanceWarning": "⚠️ पुराना रसायन — कई क्षेत्रों में सफेद मक्खी में प्रतिरोध देखा गया है।"
+          },
+          {
+                "nameHi": "डायफेंथियूरॉन 50% WP (पेगासस/पोलो)",
+                "technical": "Diafenthiuron 50% WP",
+                "dose": "1 ग्राम / लीटर पानी (200 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Pegasus (Syngenta)",
+                      "Polo"
+                ],
+                "safety": "निम्फ और वयस्क दोनों को तेजी से नियंत्रित करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एफिडोपाइरोपेन 50 g/L DC (सेफिना)",
+                "technical": "Afidopyropen 50 g/L DC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Sefina (BASF)",
+                      "Pyriproxyfen + Bifenthrin (250 ml)"
+                ],
+                "safety": "सफेद मक्खी पर दुनिया का सबसे आधुनिक कॉर्डोटोनल ऑर्गन मॉड्यूलेटर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "400 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
-  },
-
-  mustard: {
-    "white-rust": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (400–500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)", "Master"],
-        safety: "सफेद फफोले दिखते ही तुरंत छिड़काव करें ताकि फूल विकृत न हों।",
-      },
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Dithane M-45 (Corteva)"],
-      },
+    "early-blight": [
+          {
+                "nameHi": "मैंकोजेब 75% WP (डाइथेन एम-45)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "2.5–3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)",
+                      "Kavach (Chlorothalonil 400g)"
+                ],
+                "safety": "संपर्क फफूंदनाशक; बीमारी आने से पहले सुरक्षा चक्र बनाता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती / सुरक्षात्मक स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "सिस्टेमिक उपचार व सुरक्षा — धब्बों को तुरंत बढ़ने से रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लुक्सापाइरॉक्साड + पायराक्लोस्ट्रोबिन SC (मेरीवोन)",
+                "technical": "Fluxapyroxad 250 g/L + Pyraclostrobin 250 g/L SC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Merivon (BASF)"
+                ],
+                "safety": "SDHI + स्ट्रोबिल्यूरिन का सबसे शक्तिशाली संयोजन; 21 दिन सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
-    aphid: [
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (60–80 मिली प्रति एकड़ in 150 L पानी)",
-        brands: ["Confidor (Bayer)", "Tatamida"],
-        safety: "मधुमक्खी परागण बचाव हेतु शाम के समय 4 बजे के बाद ही स्प्रे करें।",
-      },
-      {
-        nameHi: "थियामेथोक्साम 25% WG (अकतारा)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (80–100 ग्राम प्रति एकड़)",
-        brands: ["Actara (Syngenta)"],
-      },
-      {
-        nameHi: "डाइमेथोएट 30% EC (रोगोर)",
-        technical: "Dimethoate 30% EC",
-        dose: "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
-        brands: ["Rogor (FMC)"],
-      },
+    "thrips": [
+          {
+                "nameHi": "फिप्रोनिल 5% SC (रीजेंट)",
+                "technical": "Fipronil 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Regent (BASF)",
+                      "Mahaveer"
+                ],
+                "safety": "सामान्य थ्रिप्स नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.9 मिली / लीटर पानी (180 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "थ्रिप्स व सुंडी दोनों का संपूर्ण सफाया; प्राकृतिक स्पाइनोसिन वर्ग।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "180 मिली / एकड़"
+          },
+          {
+                "nameHi": "ब्रोफ्लैनिलाइड 300 g/L SC (एक्सपोनस)",
+                "technical": "Broflanilide 300 g/L SC",
+                "dose": "0.17 मिली / लीटर पानी (34 मिली प्रति एकड़)",
+                "brands": [
+                      "Exponus (BASF)"
+                ],
+                "safety": "रेजिस्टेंट थ्रिप्स पर भारत का सबसे नवीनतम व तीव्र असरदार टेक्निकल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "34 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
-    "alternaria-blight": [
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Dithane M-45 (Corteva)"],
-      },
-      {
-        nameHi: "इप्रोडिओन 50% WP (रोवराल)",
-        technical: "Iprodione 50% WP",
-        dose: "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
-        brands: ["Rovral (FMC)"],
-      },
-    ],
-    "powdery-mildew": [
-      {
-        nameHi: "वेटेबल सल्फर 80% WDG (सल्फेक्स)",
-        technical: "Wettable Sulphur 80% WDG",
-        dose: "2.5 से 3 ग्राम / लीटर पानी (500–600 ग्राम प्रति एकड़)",
-        brands: ["Sulfex (Excel)", "Thiovit (Syngenta)"],
-      },
-      {
-        nameHi: "डिनोकैप 48% EC (कैराथेन)",
-        technical: "Dinocap 48% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Karathane"],
-      },
-    ],
-  },
-
-  chilli: {
-    "damping-off": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (नर्सरी क्यारियों में झारे से तर-बतर करें)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)", "Master"],
-        safety: "नर्सरी में अतिरिक्त पानी न ठहरने दें और क्यारियों में धूप लगने दें।",
-      },
-      {
-        nameHi: "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
-        technical: "Copper oxychloride 50% WP",
-        dose: "2.5 ग्राम / लीटर पानी",
-        brands: ["Blitox 50 (Tata Rallis)"],
-      },
-    ],
-    thrips: [
-      {
-        nameHi: "स्पिनेटोरम 11.7% SC (डेलिगेट)",
-        technical: "Spinetoram 11.7% SC",
-        dose: "0.8 से 1 मिली / लीटर पानी (160–180 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Delegate (Corteva)"],
-        safety: "पत्तियों के नीचे की सतह पर अच्छी तरह स्प्रे करें।",
-      },
-      {
-        nameHi: "स्पिनोसैड 45% SC (ट्रेसर)",
-        technical: "Spinosad 45% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Tracer (Corteva)"],
-      },
-      {
-        nameHi: "फिप्रोनिल 5% SC (रीजेंट)",
-        technical: "Fipronil 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Regent (Bayer)"],
-      },
-    ],
-    anthracnose: [
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-        technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Amistar Top (Syngenta)", "Custodia"],
-      },
-      {
-        nameHi: "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
-        technical: "Tebuconazole 25.9% EC",
-        dose: "1 से 1.25 मिली / लीटर पानी (200–250 मिली प्रति एकड़)",
-        brands: ["Folicur (Bayer)", "Orius"],
-      },
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Dithane M-45 (Corteva)"],
-      },
-    ],
-    "leaf-curl": [
-      {
-        nameHi: "थियामेथोक्साम 25% WG (सफेद मक्खी व थ्रिप्स नियंत्रण)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
-        brands: ["Actara (Syngenta)"],
-      },
-      {
-        nameHi: "डायफेंथियूरॉन 50% WP (पेगासस)",
-        technical: "Diafenthiuron 50% WP",
-        dose: "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़)",
-        brands: ["Pegasus (Syngenta)"],
-      },
-    ],
-    "powdery-mildew": [
-      {
-        nameHi: "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
-        technical: "Hexaconazole 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Contaf Plus (Tata Rallis)"],
-      },
-      {
-        nameHi: "वेटेबल सल्फर 80% WDG",
-        technical: "Wettable Sulphur 80% WDG",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Sulfex (Excel)", "Thiovit (Syngenta)"],
-      },
-    ],
-    mite: [
-      {
-        nameHi: "स्पिरोमीसिफेन 22.9% SC (ओबेरॉन)",
-        technical: "Spiromesifen 22.9% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Oberon (Bayer)"],
-      },
-      {
-        nameHi: "प्रोपारगाइट 57% EC (ओमाइट)",
-        technical: "Propargite 57% EC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Omite (Dhanuka)"],
-      },
-      {
-        nameHi: "एबामेक्टिन 1.9% EC (वर्टिमेक)",
-        technical: "Abamectin 1.9% EC",
-        dose: "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
-        brands: ["Vertimec (Syngenta)"],
-      },
-    ],
-  },
-
-  maize: {
-    "fall-army": [
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ — पौधों की गोभ/कोर में डालें)",
-        brands: ["Proclaim (Syngenta)", "Missile"],
-        safety: "स्प्रे का घोल सीधे मक्का की गोभ (Whorl) के अंदर पहुँचना चाहिए।",
-      },
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 से 0.4 मिली / लीटर पानी (60 मिली प्रति एकड़ in 150–200 L पानी)",
-        brands: ["Coragen (FMC)", "Cover"],
-      },
-      {
-        nameHi: "स्पिनेटोरम 11.7% SC",
-        technical: "Spinetoram 11.7% SC",
-        dose: "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
-        brands: ["Delegate (Corteva)"],
-      },
-    ],
-    "stem-borer": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 से 0.4 मिली / लीटर पानी (60 मिली प्रति एकड़ in 150–200 L पानी)",
-        brands: ["Coragen (FMC)", "Cover"],
-      },
-      {
-        nameHi: "कार्टैप हाइड्रोक्लोराइड 4% GR (दाने — गोभ में डालें)",
-        technical: "Cartap hydrochloride 4% GR",
-        dose: "7.5 किग्रा प्रति एकड़ (पौधों की गोभ में दाने डालें)",
-        brands: ["Caldan 4G (Dhanuka)", "Padan"],
-      },
-    ],
-    turcicum: [
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Dithane M-45 (Corteva)"],
-      },
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Tilt (Syngenta)"],
-      },
-    ],
-    maydis: [
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Dithane M-45 (Corteva)"],
-      },
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-        technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Amistar Top (Syngenta)"],
-      },
-    ],
-    "common-rust": [
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Tilt (Syngenta)"],
-      },
-      {
-        nameHi: "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
-        technical: "Tebuconazole 25.9% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Folicur (Bayer)"],
-      },
-    ],
-    "shoot-fly": [
-      {
-        nameHi: "थियामेथोक्साम 30% FS (बीज उपचार)",
-        technical: "Thiamethoxam 30% FS",
-        dose: "6 से 8 मिली प्रति किग्रा बीज",
-        brands: ["Cruiser (Syngenta)"],
-        safety: "अंकुर मक्खी से बचाव हेतु बुवाई पूर्व बीज शोधन अनिवार्य है।",
-      },
-      {
-        nameHi: "इमिडाक्लोप्रिड 70% WS (गौचो — बीज उपचार)",
-        technical: "Imidacloprid 70% WS",
-        dose: "5 ग्राम प्रति किग्रा बीज",
-        brands: ["Gaucho (Bayer)"],
-      },
-    ],
-  },
-
-  onion: {
-    "purple-blotch": [
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — स्टिकर ज़रूर मिलाएँ)",
-        brands: ["Dithane M-45 (Corteva)", "Indofil M-45"],
-        safety: "प्याज की पत्ती चिकनी होती है, इसलिए 1 मिली/लीटर चिपको (Sticker) ज़रूर मिलाएँ।",
-      },
-      {
-        nameHi: "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
-        technical: "Tebuconazole 25.9% EC",
-        dose: "1 से 1.25 मिली / लीटर पानी (200–250 मिली प्रति एकड़)",
-        brands: ["Folicur (Bayer)", "Orius"],
-      },
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-        technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Amistar Top (Syngenta)"],
-      },
-    ],
-    thrips: [
-      {
-        nameHi: "फिप्रोनिल 5% SC (रीजेंट)",
-        technical: "Fipronil 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Regent (Bayer)"],
-        safety: "प्याज के भीतरी पत्तों के जोड़ (Axil) में स्प्रे पहुँचना चाहिए।",
-      },
-      {
-        nameHi: "स्पिनेटोरम 11.7% SC (डेलिगेट)",
-        technical: "Spinetoram 11.7% SC",
-        dose: "0.8 से 1 मिली / लीटर पानी (160–180 मिली प्रति एकड़)",
-        brands: ["Delegate (Corteva)"],
-      },
-      {
-        nameHi: "प्रोफेनोफॉस 40% + साइपरमेथ्रिन 4% EC (पॉलीट्रिन सी)",
-        technical: "Profenofos 40% + Cypermethrin 4% EC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Polytrin C (Syngenta)", "Roket"],
-      },
-    ],
-    stemphylium: [
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 23% SC (एमिस्टार)",
-        technical: "Azoxystrobin 23% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Amistar (Syngenta)"],
-      },
-      {
-        nameHi: "मैंकोजेब 75% WP",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Dithane M-45 (Corteva)"],
-      },
-    ],
-    "downy-mildew": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (400–500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)"],
-      },
-      {
-        nameHi: "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
-        technical: "Copper oxychloride 50% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Blitox 50 (Rallis)"],
-      },
-    ],
-  },
-
-  brinjal: {
-    "shoot-fruit-borer": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-        safety: "फल तुड़ाई के तुरंत बाद स्प्रे करें ताकि दवाई का असर फलों पर कम से कम रहे।",
-      },
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Proclaim (Syngenta)", "Missile"],
-      },
-      {
-        nameHi: "स्पिनोसैड 45% SC (ट्रेसर)",
-        technical: "Spinosad 45% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़)",
-        brands: ["Tracer (Corteva)"],
-      },
-    ],
-    "little-leaf": [
-      {
-        nameHi: "थियामेथोक्साम 25% WG (अकतारा — लीफ हॉपर वाहक नियंत्रण)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
-        brands: ["Actara (Syngenta)"],
-        safety: "यह फाइटोप्लाज्मा रोग फुदका (Jassid) द्वारा फैलता है; बीमार पौधा उखाड़ें।",
-      },
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
-        brands: ["Confidor (Bayer)"],
-      },
-    ],
-    "phomopsis-blight": [
-      {
-        nameHi: "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
-        technical: "Carbendazim 12% + Mancozeb 63% WP",
-        dose: "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Saaf (UPL)", "Sixer"],
-      },
-      {
-        nameHi: "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
-        technical: "Copper oxychloride 50% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Blitox 50 (Rallis)"],
-      },
-    ],
-    "red-mite": [
-      {
-        nameHi: "स्पिरोमीसिफेन 22.9% SC (ओबेरॉन)",
-        technical: "Spiromesifen 22.9% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Oberon (Bayer)"],
-      },
-      {
-        nameHi: "प्रोपारगाइट 57% EC (ओमाइट)",
-        technical: "Propargite 57% EC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
-        brands: ["Omite (Dhanuka)"],
-      },
-    ],
-  },
-
-  cauliflower: {
-    "diamondback-moth": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-        safety: "DBM इल्ली में दवाओं के प्रति प्रतिरोध जल्दी बनता है; दवा बदल-बदल कर छिड़कें।",
-      },
-      {
-        nameHi: "स्पिनेटोरम 11.7% SC (डेलिगेट)",
-        technical: "Spinetoram 11.7% SC",
-        dose: "0.9 मिली / लीटर पानी (180 मिली प्रति एकड़)",
-        brands: ["Delegate (Corteva)"],
-      },
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
-        brands: ["Proclaim (Syngenta)"],
-      },
-    ],
-    "black-rot": [
-      {
-        nameHi: "स्ट्रेप्टोसाइक्लिन 90% + कॉपर ऑक्सीक्लोराइड 50% WP",
-        technical: "Streptocycline 90% + Copper oxychloride 50% WP",
-        dose: "स्ट्रेप्टोसाइक्लिन 6 ग्राम + कॉपर ऑक्सीक्लोराइड 500 ग्राम प्रति एकड़ (200 L पानी में)",
-        brands: ["Streptocycline (HAL) + Blitox 50 (Rallis)"],
-        safety: "पत्ती पर V-आकार के पीले धब्बे दिखते ही तुरंत छिड़काव करें।",
-      },
-    ],
-    "downy-mildew": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (400–500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)"],
-      },
-      {
-        nameHi: "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
-        technical: "Cymoxanil 8% + Mancozeb 64% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Curzate (Corteva)"],
-      },
-    ],
-    "damping-off": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड - ड्रेंचिंग)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2.5 ग्राम / लीटर पानी (नर्सरी क्यारियों में झारे से तर-बतर करें)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)"],
-      },
-    ],
-  },
-
-  cotton: {
-    bollworm: [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-      },
-      {
-        nameHi: "फ्लूबेंडिमाइड 39.35% SC (फेम)",
-        technical: "Flubendiamide 39.35% SC",
-        dose: "0.25 मिली / लीटर पानी (50 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Fame (Bayer)"],
-      },
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Proclaim (Syngenta)"],
-      },
-    ],
-    whitefly: [
-      {
-        nameHi: "पाइरिप्रोक्सीफेन 10% EC (लैनो)",
-        technical: "Pyriproxyfen 10% EC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Lano (Sumitomo)"],
-        safety: "सफेद मक्खी के अंडों और निम्फ पर बहुत असरदार; पत्तियों के नीचे स्प्रे करें।",
-      },
-      {
-        nameHi: "डायफेंथियूरॉन 50% WP (पेगासस)",
-        technical: "Diafenthiuron 50% WP",
-        dose: "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Pegasus (Syngenta)"],
-      },
-      {
-        nameHi: "फ्लोनिकैमिड 50% WG (उलाला)",
-        technical: "Flonicamid 50% WG",
-        dose: "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ulala (UPL)"],
-      },
-    ],
-    "pink-bollworm": [
-      {
-        nameHi: "प्रोफेनोफॉस 40% + साइपरमेथ्रिन 4% EC (पॉलीट्रिन सी)",
-        technical: "Profenofos 40% + Cypermethrin 4% EC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Polytrin C (Syngenta)", "Roket"],
-        safety: "फूलों में रोसेट (Rosette) दिखते ही पहला स्प्रे करें; फेरोमोन ट्रैप लगाएँ।",
-      },
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Proclaim (Syngenta)"],
-      },
-      {
-        nameHi: "स्पिनेटोरम 11.7% SC (डेलिगेट)",
-        technical: "Spinetoram 11.7% SC",
-        dose: "0.9 मिली / लीटर पानी (180 मिली प्रति एकड़)",
-        brands: ["Delegate (Corteva)"],
-      },
-    ],
-    "bacterial-blight": [
-      {
-        nameHi: "कॉपर ऑक्सीक्लोराइड 50% WP + स्ट्रेप्टोसाइक्लिन 90%",
-        technical: "Copper oxychloride 50% WP + Streptocycline 90%",
-        dose: "कॉपर 500 ग्राम + स्ट्रेप्टोसाइक्लिन 6 ग्राम प्रति एकड़ (200 L पानी में)",
-        brands: ["Blitox 50 + Streptocycline"],
-      },
+    "red-spider-mite": [
+          {
+                "nameHi": "प्रोपारगाइट 57% EC (ओमाइट)",
+                "technical": "Propargite 57% EC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Omite (Dhanuka)"
+                ],
+                "safety": "वयस्क मकड़ी पर तुरंत नॉकडाउन असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिरोमीसिफेन 22.9% SC (ओबेरॉन)",
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Oberon (Bayer)"
+                ],
+                "safety": "अंडे, निम्फ और वयस्क तीनों अवस्थाओं का संपूर्ण नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "इटोक्साजोल 10% SC (बोर्नियो)",
+                "technical": "Etoxazole 10% SC",
+                "dose": "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़)",
+                "brands": [
+                      "Borneo (Sumitomo)",
+                      "Fenazaquin 10% EC (300 ml)"
+                ],
+                "safety": "माइट ग्रोथ रेगुलेटर — अंडों को फूटने से रोकता है, 20 दिन लंबा असर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "160 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
     "leaf-curl": [
-      {
-        nameHi: "थियामेथोक्साम 25% WG (सफेद मक्खी नियंत्रण)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Actara (Syngenta)"],
-        safety: "सीएलसीयूवी (CLCuV) वायरस का सीधा इलाज नहीं है; सफेद मक्खी रोकें।",
-      },
-      {
-        nameHi: "फ्लोनिकैमिड 50% WG (उलाला)",
-        technical: "Flonicamid 50% WG",
-        dose: "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ulala (UPL)"],
-      },
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL + नीम तेल 10,000 PPM",
+                "technical": "Imidacloprid 17.8% SL + Neem Oil",
+                "dose": "150 मिली इमिडाक्लोप्रिड + 300 मिली नीम तेल प्रति एकड़",
+                "brands": [
+                      "Confidor (Bayer) + Neem Gold"
+                ],
+                "safety": "शुरुआती वाहक नियंत्रण; फफूंदनाशक कभी न डालें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · वेक्टर नियंत्रण",
+                "dosePerAcre": "150 ml + 300 ml नीम / एकड़"
+          },
+          {
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला) + सूक्ष्म पोषक तत्व",
+                "technical": "Flonicamid 50% WG + Micronutrient Mix",
+                "dose": "80 ग्राम उलाला + 200 ग्राम सूक्ष्म पोषक तत्व प्रति एकड़",
+                "brands": [
+                      "Ulala (UPL) + Chelated Micro"
+                ],
+                "safety": "सफेद मक्खी की सूंड को 30 मिनट में लकवाग्रस्त करता है; पौधा हरा-भरा होता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर (वेक्टर ब्लॉक + पोषण)",
+                "dosePerAcre": "80 g + 200 g / एकड़"
+          },
+          {
+                "nameHi": "डायफेंथियूरॉन 47.8% SC + सीवीड अर्क / वाइरोबान",
+                "technical": "Diafenthiuron 47.8% SC + Viricide/Seaweed Extract",
+                "dose": "200 मिली पेगासस + 250 मिली सीवीड प्रति एकड़",
+                "brands": [
+                      "Pegasus SC + Sagarika/Viroban"
+                ],
+                "safety": "सफेद मक्खी का पूर्ण खात्मा + पौधे में रोग-प्रतिरोधक क्षमता (एंटी-वायरल इम्यूनिटी) जाग्रत।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 ml + 250 ml / एकड़",
+                "isTopPerformer": true
+          }
     ],
-  },
-
-  sugarcane: {
-    "early-shoot-borer": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन — गन्ने की जड़ों पर स्प्रे)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.35 मिली / लीटर पानी (150 मिली प्रति एकड़ — 400 L पानी में जड़ों के पास)",
-        brands: ["Coragen (FMC)"],
-        safety: "बुवाई के समय या जमाव के 30-45 दिन बाद कतारों में जड़ों के पास ड्रेन्चिंग करें।",
-      },
-      {
-        nameHi: "फिप्रोनिल 0.3% GR (रीजेंट दाने)",
-        technical: "Fipronil 0.3% GR",
-        dose: "10 किग्रा प्रति एकड़ (बुवाई के समय कतारों में डालें)",
-        brands: ["Regent Ultra (Bayer)", "Mortar"],
-      },
-    ],
-    "top-borer": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.35 मिली / लीटर पानी (150 मिली प्रति एकड़ in 400 L पानी)",
-        brands: ["Coragen (FMC)"],
-      },
-      {
-        nameHi: "कार्टैप हाइड्रोक्लोराइड 4% GR (कैलिडान दाने)",
-        technical: "Cartap hydrochloride 4% GR",
-        dose: "10 किग्रा प्रति एकड़ (गोभ/जड़ों में डालें)",
-        brands: ["Caldan 4G (Dhanuka)"],
-      },
-    ],
-    "red-rot": [
-      {
-        nameHi: "कार्बेन्डाजिम 50% WP (बाविस्टिन — टुकड़ा शोधन)",
-        technical: "Carbendazim 50% WP",
-        dose: "2 ग्राम / लीटर पानी के घोल में गन्ने के टुकड़े 15 मिनट डुबोएँ",
-        brands: ["Bavistin (Crystal)"],
-        safety: "लाल सड़न ग्रसित खेत से बीज कभी न लें; रोगरोधी किस्म का चयन करें।",
-      },
-      {
-        nameHi: "ट्राइकोडर्मा विरिडी 1% WP (भूमि उपचार)",
-        technical: "Trichoderma viride 1% WP",
-        dose: "2.5 किग्रा / एकड़ सड़ी गोबर खाद में मिलाकर कतारों में डालें",
-        brands: ["Sanjivani"],
-      },
-    ],
-    smut: [
-      {
-        nameHi: "ट्रायडिमेफॉन 25% WP (बायलेटन — टुकड़ा उपचार)",
-        technical: "Triadimefon 25% WP",
-        dose: "1 ग्राम / लीटर पानी में टुकड़े 10 मिनट डुबोएँ",
-        brands: ["Bayleton (Bayer)"],
-      },
-      {
-        nameHi: "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
-        technical: "Carbendazim 50% WP",
-        dose: "2 ग्राम / लीटर पानी में बीज टुकड़ा उपचार",
-        brands: ["Bavistin"],
-      },
-    ],
-    pyrilla: [
-      {
-        nameHi: "क्लोरपाइरीफॉस 20% EC (डर्सबान)",
-        technical: "Chlorpyrifos 20% EC",
-        dose: "2.5 मिली / लीटर पानी (500 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Dursban (Corteva)", "Radar"],
-      },
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Confidor (Bayer)"],
-      },
-    ],
-  },
-
-  soybean: {
-    "stem-fly": [
-      {
-        nameHi: "थियामेथोक्साम 30% FS (बीज शोधन)",
-        technical: "Thiamethoxam 30% FS",
-        dose: "10 मिली प्रति किग्रा बीज (बुवाई से पहले बीज उपचार)",
-        brands: ["Cruiser (Syngenta)"],
-        safety: "तना मक्खी से बचाव केवल बुवाई पूर्व बीज शोधन से ही संभव है।",
-      },
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-      },
-    ],
-    semilooper: [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-      },
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Proclaim (Syngenta)", "Missile"],
-      },
-      {
-        nameHi: "इंडोक्साकार्ब 14.5% SC (अवांट)",
-        technical: "Indoxacarb 14.5% SC",
-        dose: "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
-        brands: ["Avaunt (FMC)"],
-      },
-    ],
-    "girdle-beetle": [
-      {
-        nameHi: "थियाक्लोप्रिड 21.7% SC (एलांटो)",
-        technical: "Thiacloprid 21.7% SC",
-        dose: "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Alanto (Bayer)"],
-        safety: "तना काटने वाले गर्डल बीटल के लक्षण दिखते ही तुरंत पहला स्प्रे करें।",
-      },
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-      },
-    ],
-    "yellow-mosaic": [
-      {
-        nameHi: "थियामेथोक्साम 25% WG (सफेद मक्खी नियंत्रण)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Actara (Syngenta)"],
-        safety: "पीला मोजेक वायरस सफेद मक्खी से फैलता है; मक्खी को रोकें।",
-      },
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Confidor (Bayer)"],
-      },
-    ],
-    rust: [
-      {
-        nameHi: "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
-        technical: "Hexaconazole 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Contaf Plus (Tata Rallis)"],
-      },
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Tilt (Syngenta)"],
-      },
-    ],
-  },
-
-  bhindi: {
-    "yvmv-yellow-vein": [
-      {
-        nameHi: "थियामेथोक्साम 25% WG (सफेद मक्खी नियंत्रण)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Actara (Syngenta)"],
-        safety: "पीली शिरा मोजेक वायरस सफेद मक्खी से फैलता है; मक्खी को रोकें।",
-      },
-      {
-        nameHi: "डायफेंथियूरॉन 50% WP (पेगासस)",
-        technical: "Diafenthiuron 50% WP",
-        dose: "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Pegasus (Syngenta)"],
-      },
+    "bacterial-spot-wilt": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP + स्ट्रेप्टोसाइक्लिन",
+                "technical": "Copper Oxychloride 50% WP + Streptocycline",
+                "dose": "500 ग्राम ब्लाइटॉक्स + 18 ग्राम स्ट्रेप्टोसाइक्लिन प्रति एकड़",
+                "brands": [
+                      "Blitox 50 + Streptocycline (Hindustan Antibiotics)"
+                ],
+                "safety": "पारंपरिक जीवाणुनाशक घोल।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 g + 18 g / एकड़"
+          },
+          {
+                "nameHi": "कॉपर हाइड्रॉक्साइड 53.8% DF (कोसाइड) + कासुगामाइसिन 3% SL",
+                "technical": "Copper Hydroxide 53.8% DF + Kasugamycin 3% SL",
+                "dose": "350 ग्राम कोसाइड + 300 मिली कासु-बी प्रति एकड़",
+                "brands": [
+                      "Kocide (Corteva) + Kasu-B (Dhanuka)"
+                ],
+                "safety": "आधुनिक सूक्ष्म कॉपर आयन जो पौधों पर सुरक्षित और जीवाणु पर अधिक घातक हैं।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "350 g + 300 ml / एकड़"
+          },
+          {
+                "nameHi": "कासुगामाइसिन 5% + कॉपर ऑक्सीक्लोराइड 45% WP (कोनिका)",
+                "technical": "Kasugamycin 5% + Copper Oxychloride 45% WP",
+                "dose": "1.5 ग्राम / लीटर पानी (300 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Conika (Dhanuka)"
+                ],
+                "safety": "सिस्टेमिक एंटीबायोटिक और सुरक्षात्मक कॉपर का पेटेंट प्री-मिक्स; बेस्ट ट्रायल रिजल्ट।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "300 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
     ],
     "fruit-borer": [
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Proclaim (Syngenta)", "Missile"],
-        safety: "फल तुड़ाई के तुरंत बाद छिड़काव करें। तुड़ाई अंतराल (PHI): 3 दिन।",
-      },
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-      },
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "Missile"
+                ],
+                "safety": "छोटी इल्लियों पर तुरंत असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लूबेंडियामाइड 39.35% SC (फेम)",
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "0.2 मिली / लीटर पानी (40 मिली प्रति एकड़)",
+                "brands": [
+                      "Fame (Bayer)"
+                ],
+                "safety": "बड़ी इल्लियों के मांसपेशियों को तुरंत शिथिल करके भोजन बंद कराती है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "40 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)"
+                ],
+                "safety": "21 दिन तक इल्लियों से अभेद्य सुरक्षा; फल बेदाग रहते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
-    jassid: [
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (60–80 मिली प्रति एकड़ in 150 L पानी)",
-        brands: ["Confidor (Bayer)"],
-      },
-      {
-        nameHi: "थियामेथोक्साम 25% WG (अकतारा)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (80–100 ग्राम प्रति एकड़)",
-        brands: ["Actara (Syngenta)"],
-      },
+    "pinworm": [
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% SC (अवांट)",
+                "technical": "Indoxacarb 14.5% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Avaunt (FMC)"
+                ],
+                "safety": "शुरुआती पिनवर्म इल्ली नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.9 मिली / लीटर पानी (180 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "पत्ती के अंदर व डंठल के छेदों में ट्रांसलैमिनार प्रवेश।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "180 मिली / एकड़"
+          },
+          {
+                "nameHi": "सायंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
+                "technical": "Cyantraniliprole 10.26% OD",
+                "dose": "1.2 मिली / लीटर पानी (240 मिली प्रति एकड़)",
+                "brands": [
+                      "Benevia (FMC)",
+                      "Tetraniliprole 200 SC (Vayego - 100 ml)"
+                ],
+                "safety": "टूटा एब्सोलूटा पिनवर्म पर विश्वव्यापी गोल्ड स्टैंडर्ड टेक्निकल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "240 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
-    "powdery-mildew": [
-      {
-        nameHi: "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
-        technical: "Hexaconazole 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Contaf Plus (Tata Rallis)"],
-      },
-      {
-        nameHi: "वेटेबल सल्फर 80% WDG (सल्फेक्स)",
-        technical: "Wettable Sulphur 80% WDG",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Sulfex (Excel)", "Thiovit"],
-      },
-    ],
+    "late-blight": [
+          {
+                "nameHi": "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
+                "technical": "Cymoxanil 8% + Mancozeb 64% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Curzate (Corteva)",
+                      "Moximate"
+                ],
+                "safety": "शुरुआती लक्षण या कोहरे में तुरंत स्प्रे करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "डाइमेथोमॉर्फ 50% WP + मेटीराम 70% WG",
+                "technical": "Dimethomorph 50% WP + Metiram 70% WG",
+                "dose": "200 ग्राम एक्रोबैट + 400 ग्राम पॉलीराम प्रति एकड़",
+                "brands": [
+                      "Acrobat (BASF) + Polyram"
+                ],
+                "safety": "ओओमाइसिटी कवक की कोशिका भित्ति को नष्ट करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 g + 400 g / एकड़"
+          },
+          {
+                "nameHi": "एमिटोक्ट्राडिन + डाइमेथोमॉर्फ (ज़ैमप्रो)",
+                "technical": "Ametoctradin + Dimethomorph",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Zampro (BASF)",
+                      "Famoxadone + Cymoxanil (Equation Pro - 200 ml)"
+                ],
+                "safety": "पछेती झुलसा पर सबसे उन्नत और बारिश में न धुलने वाला कवकनाशी।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "300 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
   },
-
-  cucumber: {
-    "downy-mildew": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (400–500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)", "Master"],
-      },
-      {
-        nameHi: "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
-        technical: "Cymoxanil 8% + Mancozeb 64% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Curzate (Corteva)"],
-      },
+  "paddy": {
+    "foot-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़ — ड्रेंचिंग/स्प्रे)",
+                "brands": [
+                      "Bavistin (Crystal)",
+                      "Derosal"
+                ],
+                "safety": "पौधों की जड़ों के पास पानी में स्प्रे करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "250 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियोफैनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "1.5 ग्राम / लीटर पानी (300 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)"
+                ],
+                "safety": "संवहनी ऊतकों में घुसकर कवक जाल को खत्म करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Orius"
+                ],
+                "safety": "बकाने रोग पर सबसे असरदार ट्रायजोल कवकनाशी।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "stem-borer": [
+          {
+                "nameHi": "कार्टाप हाइड्रोक्लोराइड 4% GR / 50% SP",
+                "technical": "Cartap Hydrochloride 4% GR / 50% SP",
+                "dose": "8 किग्रा दानेदार या 400 ग्राम स्प्रे प्रति एकड़",
+                "brands": [
+                      "Padan (Dhanuka)",
+                      "Caldan"
+                ],
+                "safety": "जड़ों द्वारा अवशोषित होकर तने तक पहुंचता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "8 kg GR / 400 g SP प्रति एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 0.6% GR (फर्टेरा / रीजेंट अल्ट्रा)",
+                "technical": "Fipronil 0.6% GR",
+                "dose": "4 किग्रा प्रति एकड़ (खेत में खाद के साथ बिखेरें)",
+                "brands": [
+                      "Ferterra (FMC)",
+                      "Regent Ultra"
+                ],
+                "safety": "कल्ले फूटने के समय 2-3 सेमी खड़े पानी में डालें।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर (दानेदार)",
+                "dosePerAcre": "4 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन / बायेगो)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़) या टेट्रानिलिप्रोल (80 ml)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Vayego (Bayer - 80 ml)"
+                ],
+                "safety": "सफेद बाली (White Earhead) से 100% सुरक्षा; लंबे समय तक सुरक्षित।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "leaf-folder": [
+          {
+                "nameHi": "लैम्ब्डा-साइहेलोथ्रिन 5% EC या प्रोफेनोफॉस 50% EC",
+                "technical": "Lambda-cyhalothrin 5% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़) या प्रोफेनोफॉस (400 ml)",
+                "brands": [
+                      "Karate (Syngenta)",
+                      "Curacron"
+                ],
+                "safety": "शुरुआती इल्ली नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "Missile"
+                ],
+                "safety": "पत्ती के अंदर छिपी इल्ली को तुरंत मारता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लूबेंडियामाइड 20% WG (ताकुमी)",
+                "technical": "Flubendiamide 20% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़) या कोराजन (60 ml)",
+                "brands": [
+                      "Takumi (Tata Rallis)",
+                      "Coragen (FMC)"
+                ],
+                "safety": "पत्ती लपेटक पर सर्वश्रेष्ठ नियंत्रण, पत्तियां तुरंत हरी हो जाती हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "sheath-blight": [
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
+                "technical": "Hexaconazole 5% SC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf Plus (Tata Rallis)"
+                ],
+                "safety": "किफायती सिस्टेमिक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "थिफ्लूज़ामाइड 24% SC (पल्सर)",
+                "technical": "Thifluzamide 24% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Pulsor (Indofil)"
+                ],
+                "safety": "शीथ ब्लाइट की कवक पर सटीक व विशिष्ट मारक क्षमता।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर (विशिष्ट फफूंदनाशक)",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया / नेटिवो)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़) या नेटिवो (120 g)",
+                "brands": [
+                      "Custodia (Adama)",
+                      "Nativo (Bayer - 120 g)"
+                ],
+                "safety": "शीथ ब्लाइट, ब्लास्ट और चमक तीनों में नंबर-1 ट्रायल परफॉर्मर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "bph": [
+          {
+                "nameHi": "डाइनोटिफ्यूरान 20% SG (ओशीन / टोकन)",
+                "technical": "Dinotefuran 20% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Osheen (PI)",
+                      "Token"
+                ],
+                "safety": "सिस्टेमिक रस चूसक कीटनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "पाइमेट्रोज़िन 50% WG (चेस)",
+                "technical": "Pymetrozine 50% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Chess (Syngenta)"
+                ],
+                "safety": "फुदकों की सूंड को स्थायी रूप से बंद कर देता है, भोजन बंद होने से मृत्यु।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "120 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "ट्राइफ्लूमेज़ोपाइरिम 10% SC (पेक्सलोन)",
+                "technical": "Triflumezopyrim 10% SC",
+                "dose": "0.47 मिली / लीटर पानी (94 मिली प्रति एकड़)",
+                "brands": [
+                      "Pexalon (Corteva)"
+                ],
+                "safety": "BPH/WBPH पर भारत का सबसे शक्तिशाली टेक्निकल; 25 दिन तक हॉपर बर्न से पूर्ण सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "94 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "blb": [
+          {
+                "nameHi": "कॉपर हाइड्रॉक्साइड 53.8% DF + स्ट्रेप्टोसाइक्लिन",
+                "technical": "Copper Hydroxide 53.8% DF + Streptocycline",
+                "dose": "350 ग्राम कोसाइड + 18 ग्राम स्ट्रेप्टोसाइक्लिन प्रति एकड़",
+                "brands": [
+                      "Kocide (Corteva) + Streptocycline"
+                ],
+                "safety": "जीवाणु संक्रमण को आगे बढ़ने से रोकता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "350 g + 18 g / एकड़"
+          },
+          {
+                "nameHi": "कासुगामाइसिन 3% SL + कॉपर ऑक्सीक्लोराइड",
+                "technical": "Kasugamycin 3% SL + Copper Oxychloride",
+                "dose": "400 मिली कासु-बी + 400 ग्राम ब्लाइटॉक्स प्रति एकड़",
+                "brands": [
+                      "Kasu-B (Dhanuka) + Blitox"
+                ],
+                "safety": "सिस्टेमिक एंटीबायोटिक जो पौधे के संवहन तंत्र में पहुंचता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 ml + 400 g / एकड़"
+          },
+          {
+                "nameHi": "बिस्मर्थियाज़ोल 20% WP + स्ट्रेप्टोसाइक्लिन",
+                "technical": "Bismerthiazol 20% WP + Streptocycline",
+                "dose": "300 ग्राम बिस्मर्थियाज़ोल + 18 ग्राम स्ट्रेप्टोसाइक्लिन प्रति एकड़",
+                "brands": [
+                      "Bismerthiazol 20% WP + Streptocycline"
+                ],
+                "safety": "BLB के जीवाणु पर विशिष्ट एंटी-बैक्टीरियल मारक क्षमता।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "300 g + 18 g / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "blast": [
+          {
+                "nameHi": "ट्राइसाइक्लाज़ोल 75% WP (बीम / बाण)",
+                "technical": "Tricyclazole 75% WP",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Beam (Corteva)",
+                      "Baan"
+                ],
+                "safety": "धान ब्लास्ट का सबसे प्रसिद्ध और विश्वसनीय फफूंदनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "120 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "आइसोप्रोपियोलेन 40% EC (फ्यूजीवान)",
+                "technical": "Isoprothiolane 40% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Fujione (Rallis)"
+                ],
+                "safety": "ब्लास्ट के साथ-साथ पौधों की जड़ों को मजबूत बनाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "पिकोक्सीस्ट्रोबिन + ट्राइसाइक्लाज़ोल SC (गैलीलियो वे / बाण प्लस)",
+                "technical": "Picoxystrobin + Tricyclazole",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़) या ट्राइसाइक्लाजोल+मैंकोजेब (500 g)",
+                "brands": [
+                      "Galileo Way (Corteva)",
+                      "Baan Plus (500 g)"
+                ],
+                "safety": "स्ट्रोबिल्यूरिन + ट्राइसाइक्लाजोल का शक्तिशाली दोहरा प्रहार; गर्दन तोड़ ब्लास्ट से पूर्ण सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "400 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "false-smut": [
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)",
+                      "Bumper"
+                ],
+                "safety": "बाली निकलने से ठीक पहले सुरक्षात्मक स्प्रे करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · सुरक्षात्मक स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "कॉपर हाइड्रॉक्साइड 53.8% DF (कोसाइड)",
+                "technical": "Copper Hydroxide 53.8% DF",
+                "dose": "1.75 ग्राम / लीटर पानी (350 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Kocide (Corteva)"
+                ],
+                "safety": "कवक बीजाणुओं के अंकुरण को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "350 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "पिकोक्सीस्ट्रोबिन 7% + प्रोपिकोनाज़ोल 12% SC (गैलीलियो वे)",
+                "technical": "Picoxystrobin 7% + Propiconazole 12% SC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Galileo Way (Corteva)"
+                ],
+                "safety": "हल्दी रोग और शीथ ब्लाइट दोनों पर भारत का नंबर-1 प्रूवन टेक्निकल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "400 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "gundhi-bug": [
+          {
+                "nameHi": "क्लोरपायरीफॉस 20% EC",
+                "technical": "Chlorpyrifos 20% EC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Dursban",
+                      "Tricel"
+                ],
+                "safety": "तेज गंध और तुरंत मारक क्षमता।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 25% WG + लैम्ब्डा-साइहेलोथ्रिन 5% EC",
+                "technical": "Thiamethoxam 25% WG + Lambda-cyhalothrin 5% EC",
+                "dose": "100 ग्राम थियामेथोक्साम + 200 मिली लैम्ब्डा प्रति एकड़",
+                "brands": [
+                      "Actara + Karate"
+                ],
+                "safety": "सिस्टेमिक रस चूसक और संपर्क सुंडी नाशक का मिश्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 g + 200 ml / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
+                "brands": [
+                      "Alika (Syngenta)"
+                ],
+                "safety": "माइक्रोकैप्सूल तकनीक; गंधी बग पर तुरंत नॉकडाउन और 15 दिन सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "80 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "soybean": {
+    "stem-fly": [
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "सिस्टेमिक कीटनाशक; तने के अंदर रस में फैलता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
+                "brands": [
+                      "Alika (Syngenta)"
+                ],
+                "safety": "वयस्क मक्खी और अंदर के मैगट दोनों पर दोहरा वार।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 मिली / एकड़"
+          },
+          {
+                "nameHi": "बीटा-साइफ्लूथ्रिन 8.49% + इमिडाक्लोप्रिड 19.81% OD (सोलोमन)",
+                "technical": "Beta-cyfluthrin 8.49% + Imidacloprid 19.81% OD",
+                "dose": "0.7 मिली / लीटर पानी (140 मिली प्रति एकड़)",
+                "brands": [
+                      "Solomon (Bayer)"
+                ],
+                "safety": "OD फॉर्मूलेशन तेल आधारित जो पौधे में तेजी से अंदर समाहित होकर तना मक्खी को जड़ से खत्म करता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "140 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "charcoal-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)",
+                      "Sixer"
+                ],
+                "safety": "जड़ों व तने पर सुरक्षात्मक फफूंदनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Orius"
+                ],
+                "safety": "गहरी सिस्टेमिक क्रिया; तने की संवहनी नलियों में कवक नष्ट।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन + टेबुकोनाज़ोल SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़) या पेनफ्लूफेन+ट्राइफ्लॉक्सीस्ट्रोबिन",
+                "brands": [
+                      "Custodia (Adama)",
+                      "EverGol Xtend"
+                ],
+                "safety": "तना सड़न व रतुआ दोनों पर संपूर्ण नियंत्रण; जड़ें मजबूत।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "girdle-beetle": [
+          {
+                "nameHi": "प्रोफेनोफॉस 50% EC",
+                "technical": "Profenofos 50% EC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Curacron (Syngenta)",
+                      "Carina"
+                ],
+                "safety": "ओविसाइडल (अंडा नाशक) क्रिया।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "थायक्लोप्रिड 21.7% SC (एलांटो)",
+                "technical": "Thiacloprid 21.7% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Alanto (Bayer)"
+                ],
+                "safety": "तने के अंदर छल्ले में बैठे ग्रब को खत्म करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 9.3% + लैम्ब्डा-साइहेलोथ्रिन 4.6% ZC (एम्पलिगो)",
+                "technical": "Chlorantraniliprole 9.3% + Lambda-cyhalothrin 4.6% ZC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Ampligo (Syngenta)"
+                ],
+                "safety": "चक्र भृंग और सेमिलूपर दोनों पर अचूक नॉकडाउन और लंबा असर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "ymv": [
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP",
+                "technical": "Acetamiprid 20% SP",
+                "dose": "0.4 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Manik (UPL)",
+                      "Pride"
+                ],
+                "safety": "शुरुआती सफेद मक्खी नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · वेक्टर नियंत्रण",
+                "dosePerAcre": "80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "बीटा-साइफ्लूथ्रिन + इमिडाक्लोप्रिड OD (सोलोमन)",
+                "technical": "Beta-cyfluthrin 8.49% + Imidacloprid 19.81% OD",
+                "dose": "0.7 मिली / लीटर पानी (140 मिली प्रति एकड़)",
+                "brands": [
+                      "Solomon (Bayer)"
+                ],
+                "safety": "सफेद मक्खी के वयस्क और निम्फ दोनों पर तीव्र प्रहार।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "140 मिली / एकड़"
+          },
+          {
+                "nameHi": "पाइरीप्रॉक्सीफेन 5% + डायफेंथियूरॉन 25% SE (वनस्टेप)",
+                "technical": "Pyriproxyfen 5% + Diafenthiuron 25% SE",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "OneStep (Adama)"
+                ],
+                "safety": "IGR + सिस्टेमिक किलर — अंडे, बच्चे और उड़ने वाली मक्खी का 100% खात्मा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "400 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "spodoptera-semilooper": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "Missile"
+                ],
+                "safety": "छोटी इल्लियों पर किफायती व तेज।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% + एसिटामिप्रिड 7.7% SC",
+                "technical": "Indoxacarb 14.5% + Acetamiprid 7.7% w/w SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate / Ampligo Alternative"
+                ],
+                "safety": "इल्ली और रस चूसक दोनों पर एक साथ असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन / एक्सपोनस 25 ml)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़) या ब्रोफ्लैनिलाइड (25 ml)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Exponus (BASF - 25 ml)"
+                ],
+                "safety": "बड़ी से बड़ी इल्ली का 2 घंटे में भोजन बंद; 20 दिन की पूर्ण सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pod-blight": [
+          {
+                "nameHi": "टेबुकोनाज़ोल 10% + सल्फर 65% WG (स्वाधीन)",
+                "technical": "Tebuconazole 10% + Sulphur 65% WG",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Swadheen (Tata Rallis)",
+                      "Harsh"
+                ],
+                "safety": "फफूंदनाशक के साथ सल्फर पोषण भी प्रदान करता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "पायराक्लोस्ट्रोबिन 20% WG (हेडलाइन)",
+                "technical": "Pyraclostrobin 20% WG",
+                "dose": "0.75 ग्राम / लीटर पानी (150 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Headline (BASF)"
+                ],
+                "safety": "पौधों में हरियाली और रोग प्रतिरोधक क्षमता बढ़ाता है (AgCelence प्रभाव)।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लुक्सापाइरॉक्साड + पायराक्लोस्ट्रोबिन SC (प्रियाक्सर)",
+                "technical": "Fluxapyroxad 167 g/L + Pyraclostrobin 333 g/L SC",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Priaxor (BASF)"
+                ],
+                "safety": "सोयाबीन फली झुलसा व रतुआ पर भारत का नंबर-1 प्रीमियम कवकनाशी।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "maize": {
+    "shoot-fly-stem-borer": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL + लैम्ब्डा-साइहेलोथ्रिन 5% EC",
+                "technical": "Imidacloprid 17.8% SL + Lambda-cyhalothrin 5% EC",
+                "dose": "100 मिली इमिडाक्लोप्रिड + 200 मिली लैम्ब्डा प्रति एकड़",
+                "brands": [
+                      "Confidor + Karate"
+                ],
+                "safety": "शुरुआती तना मक्खी नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ml + 200 ml / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
+                "brands": [
+                      "Alika (Syngenta)"
+                ],
+                "safety": "पोंगली के अंदर घुसकर तना छेदक को मारता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
+                "technical": "Chlorantraniliprole 0.4% GR",
+                "dose": "4 किग्रा प्रति एकड़ (सीधे पोंगली/गोभ के अंदर डालें)",
+                "brands": [
+                      "Ferterra (FMC)"
+                ],
+                "safety": "गोभ में डालने पर 25 दिन तक तना छेदक से पूर्ण मुक्ति।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "4 किग्रा / एकड़ (पोंगली में)",
+                "isTopPerformer": true
+          }
+    ],
+    "fall-armyworm": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG + नोवाल्यूरॉन 10% EC",
+                "technical": "Emamectin Benzoate 5% SG + Novaluron 10% EC",
+                "dose": "100 ग्राम इमामेक्टिन + 150 मिली नोवाल्यूरॉन प्रति एकड़",
+                "brands": [
+                      "Proclaim + Rimon"
+                ],
+                "safety": "छोटी इल्लियों और अंडों का नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 g + 150 ml / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 9.3% + लैम्ब्डा-साइहेलोथ्रिन 4.6% ZC (एम्पलिगो)",
+                "technical": "Chlorantraniliprole 9.3% + Lambda-cyhalothrin 4.6% ZC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Ampligo (Syngenta)"
+                ],
+                "safety": "फॉल आर्मीवर्म पर तीव्र मारक क्षमता और लंबी सुरक्षा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "बड़ी से बड़ी FAW इल्ली का संपूर्ण सफाया; भारत में फॉल आर्मीवर्म का सबसे विश्वसनीय मॉलिक्यूल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "turcicum-blight": [
+          {
+                "nameHi": "मैंकोजेब 75% WP",
+                "technical": "Mancozeb 75% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)",
+                      "Indofil"
+                ],
+                "safety": "सुरक्षात्मक संपर्क कवकनाशी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · सुरक्षात्मक स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)",
+                      "Bumper"
+                ],
+                "safety": "सिस्टेमिक उपचार; धब्बों को तुरंत बढ़ने से रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "मक्का झुलसा पर दोहरा सिस्टेमिक नियंत्रण; पत्तियां अंत तक हरी रहती हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "post-flowering-stalk-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP",
+                "technical": "Carbendazim 50% WP",
+                "dose": "1.5 ग्राम / लीटर पानी (300 ग्राम प्रति एकड़ — जड़ों के पास)",
+                "brands": [
+                      "Bavistin (Crystal)"
+                ],
+                "safety": "तने के निचले हिस्से पर स्प्रे/ड्रेंचिंग करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "300 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)"
+                ],
+                "safety": "संवहनी नलियों में कवक फैलाव को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "तना सड़न से पौधे को गिरने (Lodging) से बचाता है; दाना पूरा भरता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "groundnut": {
+    "collar-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — जड़ों की तरफ)",
+                "brands": [
+                      "Saaf (UPL)",
+                      "Sixer"
+                ],
+                "safety": "शुरुआती जड़ गलन पर स्प्रे।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)"
+                ],
+                "safety": "सिस्टेमिक क्रिया द्वारा कवक जाल को खत्म करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "थिफ्लूज़ामाइड 24% SC (पल्सर)",
+                "technical": "Thifluzamide 24% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Pulsor (Indofil)"
+                ],
+                "safety": "मूंगफली के स्टेम रॉट (स्क्लेरोशियम) पर भारत का सबसे सटीक व शक्तिशाली फफूंदनाशक।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "white-grub": [
+          {
+                "nameHi": "क्लोरपायरीफॉस 50% EC",
+                "technical": "Chlorpyrifos 50% EC",
+                "dose": "1 लीटर प्रति एकड़ (सिंचाई के पानी के साथ)",
+                "brands": [
+                      "Dursban 50",
+                      "Tricel"
+                ],
+                "safety": "सिंचाई के पानी के साथ नाली में चलाएँ।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "1 लीटर / एकड़"
+          },
+          {
+                "nameHi": "क्लोथियानिडिन 50% WDG (दंतोत्सु)",
+                "technical": "Clothianidin 50% WDG",
+                "dose": "120 ग्राम प्रति एकड़ (ड्रेंचिंग या खाद में मिलाकर)",
+                "brands": [
+                      "Dantotsu (Sumitomo)"
+                ],
+                "safety": "जड़ों द्वारा अवशोषित होकर सफेद लट को तुरंत लकवाग्रस्त करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "120 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 40% + इमिडाक्लोप्रिड 40% WG (लेसेन्टा)",
+                "technical": "Fipronil 40% + Imidacloprid 40% WG",
+                "dose": "150 ग्राम प्रति एकड़ (रेत में मिलाकर जड़ों में डालें)",
+                "brands": [
+                      "Lesenta (Bayer)"
+                ],
+                "safety": "सफेद लट और दीमक पर सबसे अचूक व प्रूवन टेक्निकल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "thrips-jassid": [
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "शुरुआती रस चूसक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 5% SC (रीजेंट)",
+                "technical": "Fipronil 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Regent (BASF)"
+                ],
+                "safety": "थ्रिप्स और तेला पर प्रभावी संपर्क व सिस्टेमिक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "थ्रिप्स और सुंडी दोनों का संपूर्ण सफाया; पौधे तेजी से बढ़ते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "tikka-rust": [
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% EC (कोंटाफ)",
+                "technical": "Hexaconazole 5% EC",
+                "dose": "1.75 मिली / लीटर पानी (350 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf (Tata Rallis)"
+                ],
+                "safety": "किफायती सिस्टेमिक टिक्का नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "350 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)"
+                ],
+                "safety": "टिक्का और रतुआ दोनों पर शक्तिशाली उपचारात्मक क्रिया।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़) या ओपेरा (300 ml)",
+                "brands": [
+                      "Nativo (Bayer)",
+                      "Opera (BASF - 300 ml)"
+                ],
+                "safety": "मूंगफली के टिक्का व रतुआ पर भारत का सर्वश्रेष्ठ फफूंदनाशक; पत्ते अंत तक हरे रहते हैं और दाने मोटे बनते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "hairy-caterpillar": [
+          {
+                "nameHi": "क्विनालफॉस 25% EC",
+                "technical": "Quinalphos 25% EC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Ekalux (Syngenta)",
+                      "Flash"
+                ],
+                "safety": "रोमिल इल्लियों पर तेज संपर्क प्रभाव।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)"
+                ],
+                "safety": "इल्लियों के पेट में जाकर तुरंत भोजन बंद कराता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन / प्लेथोरा 250 ml)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़) या प्लेथोरा (250 ml)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Plethora (Adama - 250 ml)"
+                ],
+                "safety": "बड़ी रोमिल इल्ली और स्पोडोप्टेरा दोनों का संपूर्ण सफाया।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "chilli": {
+    "collar-rot-wilt": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
+                "technical": "Copper Oxychloride 50% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — ड्रेंचिंग)",
+                "brands": [
+                      "Blitox 50 (Rallis)",
+                      "Blue Copper"
+                ],
+                "safety": "जड़ों में धार से डालें; किसी EC कीटनाशक के साथ न मिलाएँ।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर (ड्रेंचिंग)",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
+                "technical": "Metalaxyl-M 4% + Mancozeb 64% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold MZ (Syngenta)"
+                ],
+                "safety": "जड़ों को स्वस्थ व सुरक्षित रखता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "उकठा व जड़ गलन पर सबसे शक्तिशाली आधुनिक सिस्टेमिक मिश्रण।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "thrips": [
+          {
+                "nameHi": "फिप्रोनिल 80% WG (जम्प) या इमिडाक्लोप्रिड 70% WG",
+                "technical": "Fipronil 80% WG",
+                "dose": "40 ग्राम प्रति एकड़ (0.2 ग्राम प्रति लीटर पानी)",
+                "brands": [
+                      "Jump (Bayer)",
+                      "Confidor 70 WG (40 g)"
+                ],
+                "safety": "शुरुआती थ्रिप्स नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "40 ग्राम / एकड़",
+                "resistanceWarning": "⚠️ पुराना रसायन — काले थ्रिप्स (Black Thrips) पर कम असरदार; स्तर 2 या 3 चुनें।"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या बेनेविया (200 ml)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.9 मिली / लीटर पानी (180 मिली प्रति एकड़) या बेनेविया (200 ml)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Benevia (FMC - 200 ml)"
+                ],
+                "safety": "फूलों के अंदर बैठे काले थ्रिप्स पर अचूक प्रहार।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर (ब्लैक थ्रिप्स स्पेशलिस्ट)",
+                "dosePerAcre": "180 मिली / एकड़"
+          },
+          {
+                "nameHi": "ब्रोफ्लैनिलाइड 300 g/L SC (एक्सपोनस) या ग्रेसिया (160 ml)",
+                "technical": "Broflanilide 300 g/L SC",
+                "dose": "0.17 मिली / लीटर पानी (34 मिली प्रति एकड़) या फ्लक्सामेटामाइड (160 ml)",
+                "brands": [
+                      "Exponus (BASF)",
+                      "Gracia (Godrej - 160 ml)"
+                ],
+                "safety": "भारत में रेजिस्टेंट ब्लैक थ्रिप्स पर नंबर-1 ट्रायल परफॉर्मर; 30 मिनट में खाना बंद।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "34 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "broad-mite": [
+          {
+                "nameHi": "फेनपायरोक्सिमेट 5% EC (मिटिगेट / सेडना)",
+                "technical": "Fenpyroximate 5% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Mitigate (Dhanuka)",
+                      "Sedna"
+                ],
+                "safety": "वयस्क मकड़ियों पर तुरंत नॉकडाउन।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "डायफेंथियूरॉन 47.8% SC (पेगासस) या ओबेरॉन (200 ml)",
+                "technical": "Diafenthiuron 47.8% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़) या ओबेरॉन (200 ml)",
+                "brands": [
+                      "Pegasus SC (Syngenta)",
+                      "Oberon (Bayer)"
+                ],
+                "safety": "मकड़ी और सफेद मक्खी दोनों पर एक साथ नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "एबामेक्टिन 1.9% EC + हेक्सिथियाज़ॉक्स 5.45% EC",
+                "technical": "Abamectin 1.9% EC + Hexythiazox 5.45% EC",
+                "dose": "150 मिली एबामेक्टिन + 200 मिली हेक्सिथियाज़ॉक्स प्रति एकड़",
+                "brands": [
+                      "Vertimec + Maiden"
+                ],
+                "safety": "अंडे, निम्फ और वयस्क तीनों अवस्थाओं का 100% खात्मा; पत्ते तुरंत सीधे व चमकदार।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 ml + 200 ml / एकड़",
+                "isTopPerformer": true
+          }
     ],
     "powdery-mildew": [
-      {
-        nameHi: "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
-        technical: "Hexaconazole 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Contaf Plus (Tata Rallis)"],
-      },
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 23% SC (एमिस्टार)",
-        technical: "Azoxystrobin 23% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Amistar (Syngenta)"],
-      },
+          {
+                "nameHi": "वेटेबल सल्फर 80% WP या माइक्लोब्यूटानिल 10% WP",
+                "technical": "Wettable Sulphur 80% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़) या माइक्लोब्यूटानिल (150 g)",
+                "brands": [
+                      "Sulfex (Excel)",
+                      "Boon (Myclobutanil - 150 g)"
+                ],
+                "safety": "सुरक्षात्मक फफूंदनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "सिस्टेमिक उपचार — सफेद पाउडर को तुरंत सुखा देता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लुक्सापाइरॉक्साड + पायराक्लोस्ट्रोबिन (मेरीवोन / नेटिवो 120 g)",
+                "technical": "Fluxapyroxad + Pyraclostrobin SC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़) या नेटिवो (120 g)",
+                "brands": [
+                      "Merivon (BASF)",
+                      "Nativo (Bayer - 120 g)"
+                ],
+                "safety": "चूर्णी फफूंद और फल सड़न दोनों पर सबसे प्रीमियम सुरक्षा; मिर्च में लाल चमक।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "fruit-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "Missile"
+                ],
+                "safety": "शुरुआती इल्ली नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "नोवाल्यूरॉन 5.25% + इंडोक्साकार्ब 4.5% SC (प्लेथोरा)",
+                "technical": "Novaluron 5.25% + Indoxacarb 4.5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Plethora (Adama)"
+                ],
+                "safety": "अंडे, छोटी इल्ली और बड़ी इल्ली तीनों पर असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन / फेम 50 ml)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़) या फ्लूबेंडियामाइड (50 ml)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Fame (Bayer - 50 ml)"
+                ],
+                "safety": "मिर्च के फल छेदक पर 21 दिन की अटूट सुरक्षा; फल छेद-मुक्त रहते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "anthracnose-dieback": [
+          {
+                "nameHi": "प्रोपिनेब 70% WP (एंट्राकोल)",
+                "technical": "Propineb 70% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Antracol (Bayer)"
+                ],
+                "safety": "जिंक युक्त सुरक्षात्मक कवकनाशी; पौधों को हरा रखता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Nativo (Bayer)"
+                ],
+                "safety": "मिर्च की फल सड़न और डाई-बैक पर सबसे प्रूवन टेक्निकल।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "120 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटीराम 55% + पायराक्लोस्ट्रोबिन 5% WG (कैब्रियो टॉप)",
+                "technical": "Metiram 55% + Pyraclostrobin 5% WG",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Cabrio Top (BASF)"
+                ],
+                "safety": "मिर्च को फफूंद से मुक्त कर लाल व चमकदार बनाता है; बाजार में उच्चतम भाव।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "600 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "capsicum": {
+    "collar-rot-wilt": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
+                "technical": "Copper Oxychloride 50% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — ड्रेंचिंग)",
+                "brands": [
+                      "Blitox 50 (Rallis)",
+                      "Blue Copper"
+                ],
+                "safety": "जड़ों में धार से डालें; किसी EC कीटनाशक के साथ न मिलाएँ।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर (ड्रेंचिंग)",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
+                "technical": "Metalaxyl-M 4% + Mancozeb 64% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold MZ (Syngenta)"
+                ],
+                "safety": "जड़ों को स्वस्थ व सुरक्षित रखता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "उकठा व जड़ गलन पर सबसे शक्तिशाली आधुनिक सिस्टेमिक मिश्रण।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "thrips": [
+          {
+                "nameHi": "फिप्रोनिल 80% WG (जम्प) या इमिडाक्लोप्रिड 70% WG",
+                "technical": "Fipronil 80% WG",
+                "dose": "40 ग्राम प्रति एकड़ (0.2 ग्राम प्रति लीटर पानी)",
+                "brands": [
+                      "Jump (Bayer)",
+                      "Confidor 70 WG (40 g)"
+                ],
+                "safety": "शुरुआती थ्रिप्स नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "40 ग्राम / एकड़",
+                "resistanceWarning": "⚠️ पुराना रसायन — काले थ्रिप्स (Black Thrips) पर कम असरदार; स्तर 2 या 3 चुनें।"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या बेनेविया (200 ml)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.9 मिली / लीटर पानी (180 मिली प्रति एकड़) या बेनेविया (200 ml)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Benevia (FMC - 200 ml)"
+                ],
+                "safety": "फूलों के अंदर बैठे काले थ्रिप्स पर अचूक प्रहार।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर (ब्लैक थ्रिप्स स्पेशलिस्ट)",
+                "dosePerAcre": "180 मिली / एकड़"
+          },
+          {
+                "nameHi": "ब्रोफ्लैनिलाइड 300 g/L SC (एक्सपोनस) या ग्रेसिया (160 ml)",
+                "technical": "Broflanilide 300 g/L SC",
+                "dose": "0.17 मिली / लीटर पानी (34 मिली प्रति एकड़) या फ्लक्सामेटामाइड (160 ml)",
+                "brands": [
+                      "Exponus (BASF)",
+                      "Gracia (Godrej - 160 ml)"
+                ],
+                "safety": "भारत में रेजिस्टेंट ब्लैक थ्रिप्स पर नंबर-1 ट्रायल परफॉर्मर; 30 मिनट में खाना बंद।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "34 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "broad-mite": [
+          {
+                "nameHi": "फेनपायरोक्सिमेट 5% EC (मिटिगेट / सेडना)",
+                "technical": "Fenpyroximate 5% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Mitigate (Dhanuka)",
+                      "Sedna"
+                ],
+                "safety": "वयस्क मकड़ियों पर तुरंत नॉकडाउन।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "डायफेंथियूरॉन 47.8% SC (पेगासस) या ओबेरॉन (200 ml)",
+                "technical": "Diafenthiuron 47.8% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़) या ओबेरॉन (200 ml)",
+                "brands": [
+                      "Pegasus SC (Syngenta)",
+                      "Oberon (Bayer)"
+                ],
+                "safety": "मकड़ी और सफेद मक्खी दोनों पर एक साथ नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "एबामेक्टिन 1.9% EC + हेक्सिथियाज़ॉक्स 5.45% EC",
+                "technical": "Abamectin 1.9% EC + Hexythiazox 5.45% EC",
+                "dose": "150 मिली एबामेक्टिन + 200 मिली हेक्सिथियाज़ॉक्स प्रति एकड़",
+                "brands": [
+                      "Vertimec + Maiden"
+                ],
+                "safety": "अंडे, निम्फ और वयस्क तीनों अवस्थाओं का 100% खात्मा; पत्ते तुरंत सीधे व चमकदार।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 ml + 200 ml / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-mildew": [
+          {
+                "nameHi": "वेटेबल सल्फर 80% WP या माइक्लोब्यूटानिल 10% WP",
+                "technical": "Wettable Sulphur 80% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़) या माइक्लोब्यूटानिल (150 g)",
+                "brands": [
+                      "Sulfex (Excel)",
+                      "Boon (Myclobutanil - 150 g)"
+                ],
+                "safety": "सुरक्षात्मक फफूंदनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "सिस्टेमिक उपचार — सफेद पाउडर को तुरंत सुखा देता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लुक्सापाइरॉक्साड + पायराक्लोस्ट्रोबिन (मेरीवोन / नेटिवो 120 g)",
+                "technical": "Fluxapyroxad + Pyraclostrobin SC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़) या नेटिवो (120 g)",
+                "brands": [
+                      "Merivon (BASF)",
+                      "Nativo (Bayer - 120 g)"
+                ],
+                "safety": "चूर्णी फफूंद और फल सड़न दोनों पर सबसे प्रीमियम सुरक्षा; मिर्च में लाल चमक।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "fruit-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "Missile"
+                ],
+                "safety": "शुरुआती इल्ली नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "नोवाल्यूरॉन 5.25% + इंडोक्साकार्ब 4.5% SC (प्लेथोरा)",
+                "technical": "Novaluron 5.25% + Indoxacarb 4.5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Plethora (Adama)"
+                ],
+                "safety": "अंडे, छोटी इल्ली और बड़ी इल्ली तीनों पर असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन / फेम 50 ml)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़) या फ्लूबेंडियामाइड (50 ml)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Fame (Bayer - 50 ml)"
+                ],
+                "safety": "मिर्च के फल छेदक पर 21 दिन की अटूट सुरक्षा; फल छेद-मुक्त रहते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "anthracnose-dieback": [
+          {
+                "nameHi": "प्रोपिनेब 70% WP (एंट्राकोल)",
+                "technical": "Propineb 70% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Antracol (Bayer)"
+                ],
+                "safety": "जिंक युक्त सुरक्षात्मक कवकनाशी; पौधों को हरा रखता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Nativo (Bayer)"
+                ],
+                "safety": "मिर्च की फल सड़न और डाई-बैक पर सबसे प्रूवन टेक्निकल।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "120 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटीराम 55% + पायराक्लोस्ट्रोबिन 5% WG (कैब्रियो टॉप)",
+                "technical": "Metiram 55% + Pyraclostrobin 5% WG",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Cabrio Top (BASF)"
+                ],
+                "safety": "मिर्च को फफूंद से मुक्त कर लाल व चमकदार बनाता है; बाजार में उच्चतम भाव।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "600 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "cauliflower": {
+    "damping-off-wirestem": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — ड्रेंचिंग)",
+                "brands": [
+                      "Saaf (UPL)"
+                ],
+                "safety": "जड़ों में धार से डालें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)"
+                ],
+                "safety": "सिस्टेमिक क्रिया द्वारा तने की सड़न रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "वायरस्टेम व जड़ गलन पर सबसे असरदार आधुनिक सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "aphid": [
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP",
+                "technical": "Acetamiprid 20% SP",
+                "dose": "0.4 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Manik",
+                      "Pride"
+                ],
+                "safety": "किफायती सिस्टेमिक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "पौधे में रस के साथ फैलकर माहू का खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला)",
+                "technical": "Flonicamid 50% WG",
+                "dose": "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ulala (UPL)"
+                ],
+                "safety": "माहू की सूंड को तुरंत बंद करता है; मित्र कीटों (मधुमक्खी/लेडीबर्ड) के लिए सुरक्षित।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "dbm": [
+          {
+                "nameHi": "कार्टाप हाइड्रोक्लोराइड 50% SP या इमामेक्टिन 5% SG",
+                "technical": "Cartap Hydrochloride 50% SP",
+                "dose": "1.5 ग्राम / लीटर पानी (300 ग्राम प्रति एकड़) या इमामेक्टिन (100 g)",
+                "brands": [
+                      "Caldan (Dhanuka)",
+                      "Proclaim (100 g)"
+                ],
+                "safety": "शुरुआती इल्ली नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "300 ग्राम / एकड़",
+                "resistanceWarning": "⚠️ DBM में पुराने रसायनों के प्रति भारी प्रतिरोध है; मध्यम या उच्च स्तर चुनें।"
+          },
+          {
+                "nameHi": "क्लोरफेनापायर 10% SC (इन्ट्रेपिड) या स्पिनोसैड 45% SC (ट्रेसर)",
+                "technical": "Chlorfenapyr 10% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़) या स्पिनोसैड (75 ml)",
+                "brands": [
+                      "Intrepid (BASF)",
+                      "Tracer (Corteva - 75 ml)"
+                ],
+                "safety": "रेजिस्टेंट DBM इल्ली के माइटोकॉन्ड्रिया को ब्लॉक करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "ब्रोफ्लैनिलाइड 300 g/L SC (एक्सपोनस) या ग्रेसिया (160 ml)",
+                "technical": "Broflanilide 300 g/L SC",
+                "dose": "0.17 मिली / लीटर पानी (34 मिली प्रति एकड़) या फ्लक्सामेटामाइड (160 ml)",
+                "brands": [
+                      "Exponus (BASF)",
+                      "Gracia (Godrej - 160 ml)"
+                ],
+                "safety": "भारत में DBM पर सबसे घातक व आधुनिक मॉलिक्यूल; 100% नियंत्रण, फूल बिल्कुल सफेद व बेदाग।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "34 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "spodoptera-butterfly": [
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% SC (अवांट)",
+                "technical": "Indoxacarb 14.5% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Avaunt (FMC)"
+                ],
+                "safety": "इल्ली के तंत्रिका तंत्र पर काम करता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "नोवाल्यूरॉन 5.25% + इमामेक्टिन बेंजोएट 0.9% SC",
+                "technical": "Novaluron 5.25% + Emamectin Benzoate 0.9% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Barazide (Adama)"
+                ],
+                "safety": "केंचुल बदलने से रोकता है और पेट में जहर फैलाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)"
+                ],
+                "safety": "पत्ता गोभी और फूलगोभी में इल्लियों से 20 दिन की पूर्ण सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "black-rot": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP + स्ट्रेप्टोसाइक्लिन",
+                "technical": "Copper Oxychloride 50% WP + Streptocycline",
+                "dose": "500 ग्राम ब्लाइटॉक्स + 18 ग्राम स्ट्रेप्टोसाइक्लिन प्रति एकड़",
+                "brands": [
+                      "Blitox 50 + Streptocycline"
+                ],
+                "safety": "पारंपरिक जीवाणुनाशक घोल।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 g + 18 g / एकड़"
+          },
+          {
+                "nameHi": "कॉपर हाइड्रॉक्साइड 53.8% DF (कोसाइड) + कासुगामाइसिन 3% SL",
+                "technical": "Copper Hydroxide 53.8% DF + Kasugamycin 3% SL",
+                "dose": "350 ग्राम कोसाइड + 300 मिली कासु-बी प्रति एकड़",
+                "brands": [
+                      "Kocide (Corteva) + Kasu-B"
+                ],
+                "safety": "जीवाणु के कोशिका विभाजन को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "350 g + 300 ml / एकड़"
+          },
+          {
+                "nameHi": "कासुगामाइसिन 5% + कॉपर ऑक्सीक्लोराइड 45% WP (कोनिका)",
+                "technical": "Kasugamycin 5% + Copper Oxychloride 45% WP",
+                "dose": "1.5 ग्राम / लीटर पानी (300 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Conika (Dhanuka)"
+                ],
+                "safety": "काला सड़न पर भारत का सबसे असरदार पेटेंटेड कवक व जीवाणुनाशक।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "300 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "alternaria-downy": [
+          {
+                "nameHi": "मैंकोजेब 75% WP (डाइथेन एम-45)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)"
+                ],
+                "safety": "सुरक्षात्मक संपर्क कवकनाशी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
+                "technical": "Cymoxanil 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Curzate (Corteva)"
+                ],
+                "safety": "डाउनी मिल्ड्यू और अल्टरनेरिया दोनों पर काम करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)"
+                ],
+                "safety": "गोभी के फूल को एकदम दूध जैसा सफेद और धब्बा-मुक्त रखता है; प्रीमियम भाव।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "cabbage": {
+    "damping-off-wirestem": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — ड्रेंचिंग)",
+                "brands": [
+                      "Saaf (UPL)"
+                ],
+                "safety": "जड़ों में धार से डालें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)"
+                ],
+                "safety": "सिस्टेमिक क्रिया द्वारा तने की सड़न रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "वायरस्टेम व जड़ गलन पर सबसे असरदार आधुनिक सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "aphid": [
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP",
+                "technical": "Acetamiprid 20% SP",
+                "dose": "0.4 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Manik",
+                      "Pride"
+                ],
+                "safety": "किफायती सिस्टेमिक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "पौधे में रस के साथ फैलकर माहू का खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला)",
+                "technical": "Flonicamid 50% WG",
+                "dose": "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ulala (UPL)"
+                ],
+                "safety": "माहू की सूंड को तुरंत बंद करता है; मित्र कीटों (मधुमक्खी/लेडीबर्ड) के लिए सुरक्षित।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "dbm": [
+          {
+                "nameHi": "कार्टाप हाइड्रोक्लोराइड 50% SP या इमामेक्टिन 5% SG",
+                "technical": "Cartap Hydrochloride 50% SP",
+                "dose": "1.5 ग्राम / लीटर पानी (300 ग्राम प्रति एकड़) या इमामेक्टिन (100 g)",
+                "brands": [
+                      "Caldan (Dhanuka)",
+                      "Proclaim (100 g)"
+                ],
+                "safety": "शुरुआती इल्ली नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "300 ग्राम / एकड़",
+                "resistanceWarning": "⚠️ DBM में पुराने रसायनों के प्रति भारी प्रतिरोध है; मध्यम या उच्च स्तर चुनें।"
+          },
+          {
+                "nameHi": "क्लोरफेनापायर 10% SC (इन्ट्रेपिड) या स्पिनोसैड 45% SC (ट्रेसर)",
+                "technical": "Chlorfenapyr 10% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़) या स्पिनोसैड (75 ml)",
+                "brands": [
+                      "Intrepid (BASF)",
+                      "Tracer (Corteva - 75 ml)"
+                ],
+                "safety": "रेजिस्टेंट DBM इल्ली के माइटोकॉन्ड्रिया को ब्लॉक करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "ब्रोफ्लैनिलाइड 300 g/L SC (एक्सपोनस) या ग्रेसिया (160 ml)",
+                "technical": "Broflanilide 300 g/L SC",
+                "dose": "0.17 मिली / लीटर पानी (34 मिली प्रति एकड़) या फ्लक्सामेटामाइड (160 ml)",
+                "brands": [
+                      "Exponus (BASF)",
+                      "Gracia (Godrej - 160 ml)"
+                ],
+                "safety": "भारत में DBM पर सबसे घातक व आधुनिक मॉलिक्यूल; 100% नियंत्रण, फूल बिल्कुल सफेद व बेदाग।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "34 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "spodoptera-butterfly": [
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% SC (अवांट)",
+                "technical": "Indoxacarb 14.5% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Avaunt (FMC)"
+                ],
+                "safety": "इल्ली के तंत्रिका तंत्र पर काम करता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "नोवाल्यूरॉन 5.25% + इमामेक्टिन बेंजोएट 0.9% SC",
+                "technical": "Novaluron 5.25% + Emamectin Benzoate 0.9% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Barazide (Adama)"
+                ],
+                "safety": "केंचुल बदलने से रोकता है और पेट में जहर फैलाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)"
+                ],
+                "safety": "पत्ता गोभी और फूलगोभी में इल्लियों से 20 दिन की पूर्ण सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "black-rot": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP + स्ट्रेप्टोसाइक्लिन",
+                "technical": "Copper Oxychloride 50% WP + Streptocycline",
+                "dose": "500 ग्राम ब्लाइटॉक्स + 18 ग्राम स्ट्रेप्टोसाइक्लिन प्रति एकड़",
+                "brands": [
+                      "Blitox 50 + Streptocycline"
+                ],
+                "safety": "पारंपरिक जीवाणुनाशक घोल।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 g + 18 g / एकड़"
+          },
+          {
+                "nameHi": "कॉपर हाइड्रॉक्साइड 53.8% DF (कोसाइड) + कासुगामाइसिन 3% SL",
+                "technical": "Copper Hydroxide 53.8% DF + Kasugamycin 3% SL",
+                "dose": "350 ग्राम कोसाइड + 300 मिली कासु-बी प्रति एकड़",
+                "brands": [
+                      "Kocide (Corteva) + Kasu-B"
+                ],
+                "safety": "जीवाणु के कोशिका विभाजन को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "350 g + 300 ml / एकड़"
+          },
+          {
+                "nameHi": "कासुगामाइसिन 5% + कॉपर ऑक्सीक्लोराइड 45% WP (कोनिका)",
+                "technical": "Kasugamycin 5% + Copper Oxychloride 45% WP",
+                "dose": "1.5 ग्राम / लीटर पानी (300 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Conika (Dhanuka)"
+                ],
+                "safety": "काला सड़न पर भारत का सबसे असरदार पेटेंटेड कवक व जीवाणुनाशक।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "300 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "alternaria-downy": [
+          {
+                "nameHi": "मैंकोजेब 75% WP (डाइथेन एम-45)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)"
+                ],
+                "safety": "सुरक्षात्मक संपर्क कवकनाशी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
+                "technical": "Cymoxanil 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Curzate (Corteva)"
+                ],
+                "safety": "डाउनी मिल्ड्यू और अल्टरनेरिया दोनों पर काम करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)"
+                ],
+                "safety": "गोभी के फूल को एकदम दूध जैसा सफेद और धब्बा-मुक्त रखता है; प्रीमियम भाव।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "cucumber": {
+    "red-pumpkin-beetle": [
+          {
+                "nameHi": "क्लोरपायरीफॉस 20% EC",
+                "technical": "Chlorpyrifos 20% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Dursban",
+                      "Tricel"
+                ],
+                "safety": "शुरुआती संपर्क नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "साइपरमेथ्रिन 25% EC या थियामेथोक्साम 25% WG",
+                "technical": "Cypermethrin 25% EC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़) या अकतारा (80 g)",
+                "brands": [
+                      "Ustaad",
+                      "Actara (80 g)"
+                ],
+                "safety": "तेज नॉकडाउन क्रिया।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "बीटा-साइफ्लूथ्रिन + इमिडाक्लोप्रिड OD (सोलोमन)",
+                "technical": "Beta-cyfluthrin + Imidacloprid OD",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Solomon (Bayer)"
+                ],
+                "safety": "लाल भृंग और रस चूसक दोनों का संपूर्ण खात्मा; बेल तेजी से बढ़ती है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "leafminer-whitefly": [
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP",
+                "technical": "Acetamiprid 20% SP",
+                "dose": "0.4 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Manik",
+                      "Pride"
+                ],
+                "safety": "रस चूसक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एबामेक्टिन 1.9% EC + थियामेथोक्साम 25% WG",
+                "technical": "Abamectin 1.9% EC + Thiamethoxam 25% WG",
+                "dose": "150 मिली एबामेक्टिन + 80 ग्राम थियामेथोक्साम प्रति एकड़",
+                "brands": [
+                      "Vertimec + Actara"
+                ],
+                "safety": "पत्ती सुरंगक और सफेद मक्खी दोनों पर दोहरा वार।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 ml + 80 g / एकड़"
+          },
+          {
+                "nameHi": "सायंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
+                "technical": "Cyantraniliprole 10.26% OD",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Benevia (FMC)"
+                ],
+                "safety": "ककड़ी वर्गीय फसलों में नागअली और सफेद मक्खी पर सबसे आधुनिक ट्रायल परफॉर्मर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "downy-mildew": [
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)"
+                ],
+                "safety": "प्रारंभिक सुरक्षात्मक स्प्रे।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "डाइमेथोमॉर्फ 50% WP + मेटीराम 70% WG",
+                "technical": "Dimethomorph 50% WP + Metiram 70% WG",
+                "dose": "200 ग्राम एक्रोबैट + 400 ग्राम पॉलीराम प्रति एकड़",
+                "brands": [
+                      "Acrobat (BASF) + Polyram"
+                ],
+                "safety": "ओओमाइसिटी कवक की दीवार को तोड़ता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 g + 400 g / एकड़"
+          },
+          {
+                "nameHi": "सायाज़ोफामाइड 34.5% SC (रानमैन) या ज़ैमप्रो (300 ml)",
+                "technical": "Cyazofamid 34.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़) या एमिटोक्ट्राडिन+डाइमेथोमॉर्फ",
+                "brands": [
+                      "Ranman (Summit Agro)",
+                      "Zampro (BASF - 300 ml)"
+                ],
+                "safety": "खीरे के डाउनी मिल्ड्यू पर दुनिया का सबसे शक्तिशाली फफूंदनाशक; बारिश में भी असरदार।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-mildew": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Bavistin (Crystal)"
+                ],
+                "safety": "शुरुआती सिस्टेमिक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "250 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
+                "technical": "Hexaconazole 5% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf Plus (Tata Rallis)"
+                ],
+                "safety": "सफेद पाउडर को तेजी से सुखाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़) या विवांडो (100 ml)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Vivando (BASF - 100 ml)"
+                ],
+                "safety": "पाउडरी मिल्ड्यू पर अचूक नियंत्रण और खीरे में हरी चमक; बेल अंत तक फलती है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
     "fruit-fly": [
-      {
-        nameHi: "मैलाथियान 50% EC + गुड़ का चारा (Bait)",
-        technical: "Malathion 50% EC + Jaggery Bait",
-        dose: "2 मिली मैलाथियान + 10 ग्राम गुड़ प्रति लीटर पानी (खेत के किनारों पर छिड़कें)",
-        brands: ["Cythion (FMC)"],
-        safety: "फल मक्खी नियंत्रण हेतु क्यू-ल्यूर (Cue-lure) फेरोमोन ट्रैप 6-8 प्रति एकड़ लगाएँ।",
-      },
-    ],
-    "mosaic-virus": [
-      {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (माहू/वेक्टर नियंत्रण)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (80 मिली प्रति एकड़ in 150 L पानी)",
-        brands: ["Confidor (Bayer)"],
-      },
-    ],
+          {
+                "nameHi": "क्यू-ल्यूर ट्रैप (8/एकड़) + मैलाथियान 50% EC (गुड़ चारा)",
+                "technical": "Cue-lure Trap + Malathion 50% EC Poison Bait",
+                "dose": "8 ट्रैप/एकड़ + 300 मिली मैलाथियान व 500 ग्राम गुड़ का घोल मेड़ों पर छिड़कें",
+                "brands": [
+                      "Cue-lure Traps + Cythion"
+                ],
+                "safety": "नर मक्खियों को ट्रैप में पकड़ें और मादा को मीठे चारे से मारें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · ट्रैप व चारा स्तर",
+                "dosePerAcre": "8 ट्रैप + 300 ml / एकड़"
+          },
+          {
+                "nameHi": "डेल्टामेथ्रिन 2.8% EC या स्पिनोसैड 45% SC (ट्रेसर)",
+                "technical": "Deltamethrin 2.8% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़) या स्पिनोसैड (75 ml)",
+                "brands": [
+                      "Decis (Bayer)",
+                      "Tracer (Corteva - 75 ml)"
+                ],
+                "safety": "उड़ने वाली वयस्क मक्खियों पर तेज नॉकडाउन।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "सायंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
+                "technical": "Cyantraniliprole 10.26% OD",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Benevia (FMC)"
+                ],
+                "safety": "डंक मारने वाली मक्खी और अंदर के अंडों/मैगट का संपूर्ण सफाया; खीरे बिल्कुल सीधे व बेदाग।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
   },
-
-  turmeric: {
-    "rhizome-rot": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड — कंद शोधन व ड्रेंचिंग)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2.5 ग्राम / लीटर पानी (कंद डुबोएँ व पौधों की जड़ों में डालें)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)"],
-      },
-      {
-        nameHi: "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स — ड्रेंचिंग)",
-        technical: "Copper oxychloride 50% WP",
-        dose: "3 ग्राम / लीटर पानी (जड़ों में डालें)",
-        brands: ["Blitox 50 (Rallis)"],
-      },
+  "brinjal": {
+    "jassid-little-leaf": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)"
+                ],
+                "safety": "शुरुआती रस चूसक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "120 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला)",
+                "technical": "Flonicamid 50% WG",
+                "dose": "0.4 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ulala (UPL)"
+                ],
+                "safety": "रस चूसक कीटों की सूंड को तुरंत बंद करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "डायफेंथियूरॉन 50% WP + पाइरीप्रॉक्सीफेन 10% EC",
+                "technical": "Diafenthiuron 50% WP + Pyriproxyfen 10% EC",
+                "dose": "200 ग्राम डायफेंथियूरॉन + 200 मिली पाइरीप्रॉक्सीफेन प्रति एकड़",
+                "brands": [
+                      "Pegasus + Lano"
+                ],
+                "safety": "सफेद मक्खी, तेला और उनके अंडों का 100% खात्मा; लिटिल लीफ का फैलाव रुकता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 g + 200 ml / एकड़",
+                "isTopPerformer": true
+          }
     ],
-    "leaf-spot": [
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Dithane M-45 (Corteva)"],
-      },
-      {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-        brands: ["Tilt (Syngenta)"],
-      },
+    "shoot-fruit-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG + नीम तेल 10,000 PPM",
+                "technical": "Emamectin Benzoate 5% SG + Neem Oil",
+                "dose": "100 ग्राम इमामेक्टिन + 300 मिली नीम तेल प्रति एकड़",
+                "brands": [
+                      "Proclaim + Neem Gold"
+                ],
+                "safety": "शुरुआती कोपल अवस्था में असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 g + 300 ml / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन) या फेम (50 ml)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़) या फ्लूबेंडियामाइड (50 ml)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Fame (Bayer - 50 ml)"
+                ],
+                "safety": "फल व तना छेदक पर 21 दिन की अटूट सुरक्षा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या एक्सपोनस (34 ml)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.9 मिली / लीटर पानी (180 मिली प्रति एकड़) या ब्रोफ्लैनिलाइड (34 ml)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Exponus (BASF - 34 ml)"
+                ],
+                "safety": "रेजिस्टेंट बैंगन फल छेदक पर भारत का सबसे नवीनतम व सर्वोच्च ट्रायल रिजल्ट; बैंगन 100% बेदाग।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "180 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
+    "epilachna-beetle": [
+          {
+                "nameHi": "प्रोफेनोफॉस 50% EC",
+                "technical": "Profenofos 50% EC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Curacron (Syngenta)",
+                      "Carina"
+                ],
+                "safety": "संपर्क व पेट का विष।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
+                "brands": [
+                      "Alika (Syngenta)"
+                ],
+                "safety": "वयस्क भृंग और कांटेदार ग्रब दोनों पर तीव्र नॉकडाउन।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 मिली / एकड़"
+          },
+          {
+                "nameHi": "नोवाल्यूरॉन 5.25% + इंडोक्साकार्ब 4.5% SC (प्लेथोरा)",
+                "technical": "Novaluron 5.25% + Indoxacarb 4.5% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Plethora (Adama)"
+                ],
+                "safety": "हड्डा भृंग के अंडों को फूटने से रोकता है और वयस्क को खत्म करता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "red-spider-mite": [
+          {
+                "nameHi": "प्रोपारगाइट 57% EC (ओमाइट)",
+                "technical": "Propargite 57% EC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Omite (Dhanuka)"
+                ],
+                "safety": "वयस्क मकड़ी पर तुरंत असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिरोमीसिफेन 22.9% SC (ओबेरॉन)",
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Oberon (Bayer)"
+                ],
+                "safety": "मकड़ी के सभी जीवन चरणों पर प्रभावी।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "इटोक्साजोल 10% SC (बोर्नियो)",
+                "technical": "Etoxazole 10% SC",
+                "dose": "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़)",
+                "brands": [
+                      "Borneo (Sumitomo)"
+                ],
+                "safety": "अंडों को फूटने से रोकता है; 20 दिन का लंबा असर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "160 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "phomopsis-blight": [
+          {
+                "nameHi": "मैंकोजेब 75% WP",
+                "technical": "Mancozeb 75% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)"
+                ],
+                "safety": "सुरक्षात्मक संपर्क कवकनाशी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)"
+                ],
+                "safety": "सिस्टेमिक व संपर्क दोहरा असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Nativo (Bayer)"
+                ],
+                "safety": "बैंगन फल सड़न पर सर्वश्रेष्ठ नियंत्रण; फल चमकदार व कड़े रहते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "sugarcane": {
+    "termite-white-grub": [
+          {
+                "nameHi": "क्लोरपायरीफॉस 50% EC",
+                "technical": "Chlorpyrifos 50% EC",
+                "dose": "1 लीटर प्रति एकड़ (कूड़ में धार से या पानी के साथ)",
+                "brands": [
+                      "Dursban 50",
+                      "Tricel"
+                ],
+                "safety": "दीमक पर तेज असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "1 लीटर / एकड़"
+          },
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL + फिप्रोनिल 5% SC",
+                "technical": "Imidacloprid 17.8% SL + Fipronil 5% SC",
+                "dose": "250 मिली इमिडाक्लोप्रिड + 500 मिली फिप्रोनिल प्रति एकड़",
+                "brands": [
+                      "Confidor + Regent"
+                ],
+                "safety": "जड़ों को दीमक व लट से मुक्त रखता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 ml + 500 ml / एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 40% + इमिडाक्लोप्रिड 40% WG (लेसेन्टा)",
+                "technical": "Fipronil 40% + Imidacloprid 40% WG",
+                "dose": "150–200 ग्राम प्रति एकड़ (बुवाई के समय कूड़ में डालें)",
+                "brands": [
+                      "Lesenta (Bayer)"
+                ],
+                "safety": "दीमक और सफेद लट दोनों का 100% खात्मा; अंकुरण 95%+ होता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150-200 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "early-shoot-borer": [
+          {
+                "nameHi": "कार्टाप हाइड्रोक्लोराइड 4% GR",
+                "technical": "Cartap Hydrochloride 4% GR",
+                "dose": "10 किग्रा प्रति एकड़ (कल्लों के पास डालकर मिट्टी चढ़ाएँ)",
+                "brands": [
+                      "Padan 4G (Dhanuka)"
+                ],
+                "safety": "कल्लों के समय जड़ों में डालें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "10 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 0.6% GR (फर्टेरा)",
+                "technical": "Fipronil 0.6% GR",
+                "dose": "5 किग्रा प्रति एकड़ (कल्लों के पास डालकर सिंचाई करें)",
+                "brands": [
+                      "Ferterra (FMC)"
+                ],
+                "safety": "कंसुआ के साथ-साथ कल्ले अधिक फूटते हैं।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "5 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "150 मिली प्रति एकड़ (400 लीटर पानी में जड़ों में धार से ड्रेंचिंग)",
+                "brands": [
+                      "Coragen (FMC)"
+                ],
+                "safety": "गन्ने के कंसुआ पर भारत का नंबर-1 गोल्ड स्टैंडर्ड; 60 दिन तक बेजोड़ सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 मिली / एकड़ (ड्रेंचिंग)",
+                "isTopPerformer": true
+          }
+    ],
+    "top-borer": [
+          {
+                "nameHi": "कार्बोफ्यूरॉन 3% CG",
+                "technical": "Carbofuran 3% CG",
+                "dose": "12 किग्रा प्रति एकड़ (गोभ के पास डालें)",
+                "brands": [
+                      "Furadan"
+                ],
+                "safety": "पारंपरिक सिस्टेमिक दानेदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "12 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
+                "technical": "Chlorantraniliprole 0.4% GR",
+                "dose": "6 किग्रा प्रति एकड़ (खेत में डालकर हल्की सिंचाई करें)",
+                "brands": [
+                      "Ferterra (FMC)"
+                ],
+                "safety": "जड़ों द्वारा अवशोषित होकर चोटी तक पहुंचता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "6 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "150 मिली प्रति एकड़ (जड़ों के पास ड्रेंचिंग)",
+                "brands": [
+                      "Coragen (FMC)"
+                ],
+                "safety": "चोटी बेधक की तीसरी व चौथी पीढ़ी का पूर्ण खात्मा; गन्ने की लंबाई पूरी मिलती है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pokkah-boeng": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
+                "technical": "Copper Oxychloride 50% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Blitox 50 (Rallis)"
+                ],
+                "safety": "चोटी पर फफूंद बीजाणुओं को नष्ट करता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)"
+                ],
+                "safety": "सिस्टेमिक उपचार व बाहरी सुरक्षा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)"
+                ],
+                "safety": "पोक्का बोइंग को तुरंत सुखाकर चोटी को सीधा खोलता है; गन्ना फिर से तेजी से बढ़ता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pyrilla-woolly-aphid": [
+          {
+                "nameHi": "क्लोरपायरीफॉस 20% EC",
+                "technical": "Chlorpyrifos 20% EC",
+                "dose": "2.5 मिली / लीटर पानी (500 मिली प्रति एकड़)",
+                "brands": [
+                      "Dursban",
+                      "Tricel"
+                ],
+                "safety": "संपर्क नॉकडाउन असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 मिली / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "सिस्टेमिक रस चूसक नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "120 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Alika (Syngenta)"
+                ],
+                "safety": "पायरिला व वूली एफिड दोनों का 100% खात्मा; पत्तियां फिर से साफ व हरी।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "red-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — जड़ों में)",
+                "brands": [
+                      "Bavistin (Crystal)"
+                ],
+                "safety": "जड़ों के पास ड्रेंचिंग करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियोफैनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)"
+                ],
+                "safety": "संवहनी नलियों में कवक फैलाव को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "स्वस्थ गन्नों को लाल सड़न के संक्रमण से बचाता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "300 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "potato": {
+    "black-scurf": [
+          {
+                "nameHi": "मैंकोजेब 75% WP (डाइथेन एम-45)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "3 ग्राम / लीटर पानी (घोल बनाकर कंद उपचार करें)",
+                "brands": [
+                      "Dithane M-45 (Corteva)"
+                ],
+                "safety": "पारंपरिक बीज कंद उपचार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "बीज उपचार"
+          },
+          {
+                "nameHi": "पेनफ्लूफेन 22.43% FS (एमिस्टो प्राइम)",
+                "technical": "Penflufen 22.43% FS",
+                "dose": "80 मिली प्रति 1000 किग्रा बीज आलू (स्प्रे करके उपचारित करें)",
+                "brands": [
+                      "Emesto Prime (Bayer)"
+                ],
+                "safety": "काली पपड़ी पर भारत का सबसे आधुनिक बीज उपचार मॉलिक्यूल।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर (प्रीमियम बीज उपचार)",
+                "dosePerAcre": "80 ml / 1000 kg बीज"
+          },
+          {
+                "nameHi": "थिफ्लूज़ामाइड 24% SC (पल्सर)",
+                "technical": "Thifluzamide 24% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़ — ड्रेंचिंग/स्प्रे)",
+                "brands": [
+                      "Pulsor (Indofil)"
+                ],
+                "safety": "खेत में काली पपड़ी और तना कैंकर का 100% सफाया; आलू एकदम साफ व चिकने।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "cutworm": [
+          {
+                "nameHi": "क्लोरपायरीफॉस 20% EC",
+                "technical": "Chlorpyrifos 20% EC",
+                "dose": "3 मिली / लीटर पानी (600 मिली प्रति एकड़ — शाम को तने के पास)",
+                "brands": [
+                      "Dursban",
+                      "Tricel"
+                ],
+                "safety": "शाम को मिट्टी के ऊपर स्प्रे करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 मिली / एकड़"
+          },
+          {
+                "nameHi": "लैम्ब्डा-साइहेलोथ्रिन 5% EC (कराटे)",
+                "technical": "Lambda-cyhalothrin 5% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Karate (Syngenta)"
+                ],
+                "safety": "तेज संपर्क क्रिया से कटुआ सुंडी को तुरंत मारता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 9.3% + लैम्ब्डा-साइहेलोथ्रिन 4.6% ZC (एम्पलिगो)",
+                "technical": "Chlorantraniliprole 9.3% + Lambda-cyhalothrin 4.6% ZC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Ampligo (Syngenta)"
+                ],
+                "safety": "कटुआ कीट का रात में शत-प्रतिशत खात्मा; एक भी पौधा नहीं कटता।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "aphid-whitefly": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)"
+                ],
+                "safety": "शुरुआती रस चूसक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "120 मिली / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "सिस्टेमिक क्रिया द्वारा पत्तियों में रस के साथ फैलता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला) या डायफेंथियूरॉन 50% WP (200 g)",
+                "technical": "Flonicamid 50% WG",
+                "dose": "0.4 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़) या पेगासस (200 g)",
+                "brands": [
+                      "Ulala (UPL)",
+                      "Pegasus (Syngenta - 200 g)"
+                ],
+                "safety": "आलू के माहू व सफेद मक्खी पर सबसे आधुनिक नियंत्रण; लीफ रोल वायरस का प्रसार तुरंत रुकता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "80 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "early-blight": [
+          {
+                "nameHi": "मैंकोजेब 75% WP (डाइथेन एम-45)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)"
+                ],
+                "safety": "सुरक्षात्मक संपर्क कवकनाशी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "प्रोपिनेब 70% WP (एंट्राकोल)",
+                "technical": "Propineb 70% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Antracol (Bayer)"
+                ],
+                "safety": "जिंक युक्त कवकनाशी; पौधे हरे व मजबूत रहते हैं।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "अगेती झुलसा को तुरंत सुखाकर नई पत्तियों को स्वस्थ रखता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "late-blight": [
+          {
+                "nameHi": "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
+                "technical": "Cymoxanil 8% + Mancozeb 64% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Curzate (Corteva)",
+                      "Moximate"
+                ],
+                "safety": "कोहरे के मौसम में तुरंत पहला सुरक्षात्मक स्प्रे।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "डाइमेथोमॉर्फ 50% WP (एक्रोबैट) + मैंकोजेब 75% WP",
+                "technical": "Dimethomorph 50% WP + Mancozeb 75% WP",
+                "dose": "200 ग्राम एक्रोबैट + 500 ग्राम मैंकोजेब प्रति एकड़",
+                "brands": [
+                      "Acrobat (BASF) + Dithane M-45"
+                ],
+                "safety": "ओओमाइसिटी कवक की कोशिका दीवार को तोड़ता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 g + 500 g / एकड़"
+          },
+          {
+                "nameHi": "मैंडीप्रोपामिड 23.4% SC (रिवस) या इक्वेशन प्रो (200 ml)",
+                "technical": "Mandipropamid 23.4% SC",
+                "dose": "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़) या फेमोक्साडोन+साइमोक्सानिल",
+                "brands": [
+                      "Revus (Syngenta)",
+                      "Equation Pro (Corteva - 200 ml)"
+                ],
+                "safety": "पछेती झुलसा पर दुनिया का नंबर-1 कवकनाशी; मोमी परत पर चिपककर 15 दिन अभेद्य सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "160 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "bajra": {
+    "shoot-fly-white-grub": [
+          {
+                "nameHi": "क्लोरपायरीफॉस 20% EC",
+                "technical": "Chlorpyrifos 20% EC",
+                "dose": "2.5 मिली / लीटर पानी (500 मिली प्रति एकड़)",
+                "brands": [
+                      "Dursban",
+                      "Tricel"
+                ],
+                "safety": "जड़ों के पास स्प्रे करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 मिली / एकड़"
+          },
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL + साइपरमेथ्रिन 25% EC",
+                "technical": "Imidacloprid 17.8% SL + Cypermethrin 25% EC",
+                "dose": "100 मिली इमिडाक्लोप्रिड + 150 मिली साइपरमेथ्रिन प्रति एकड़",
+                "brands": [
+                      "Confidor + Ustaad"
+                ],
+                "safety": "तना मक्खी पर तेज नॉकडाउन।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 ml + 150 ml / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
+                "brands": [
+                      "Alika (Syngenta)"
+                ],
+                "safety": "तना मक्खी और सफेद लट दोनों का संपूर्ण खात्मा; कल्ले अधिक फूटते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "80 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "downy-mildew-green-ear": [
+          {
+                "nameHi": "मैंकोजेब 75% WP",
+                "technical": "Mancozeb 75% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)"
+                ],
+                "safety": "शुरुआती सुरक्षात्मक स्प्रे।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil MZ (Syngenta)"
+                ],
+                "safety": "सिस्टेमिक क्रिया द्वारा जोगिया रोग को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "हरित बाली रोग और पत्ती झुलसा दोनों पर पूर्ण नियंत्रण; सिट्टे स्वस्थ बनते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "ergot-smut": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)"
+                ],
+                "safety": "बाली निकलते समय सुरक्षात्मक स्प्रे।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)",
+                      "Bumper"
+                ],
+                "safety": "कवक बीजाणुओं के अंकुरण को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)"
+                ],
+                "safety": "अर्गट व कांगियारी पर सबसे प्रभावी उपचारात्मक फफूंदनाशक; दाने जहरीले नहीं बनते।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "wheat": {
+    "termite-root-aphid": [
+          {
+                "nameHi": "क्लोरपायरीफॉस 20% EC",
+                "technical": "Chlorpyrifos 20% EC",
+                "dose": "1 लीटर प्रति एकड़ (सिंचाई के पानी में नाली से चलाएँ)",
+                "brands": [
+                      "Dursban",
+                      "Tricel"
+                ],
+                "safety": "दीमक पर तेज असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "1 लीटर / एकड़"
+          },
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "150 मिली प्रति एकड़ (जड़ों की तरफ स्प्रे)",
+                "brands": [
+                      "Confidor (Bayer)"
+                ],
+                "safety": "जड़ माहू का सिस्टेमिक खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 25% WG + फिप्रोनिल 5% SC",
+                "technical": "Thiamethoxam 25% WG + Fipronil 5% SC",
+                "dose": "100 ग्राम थियामेथोक्साम + 300 मिली फिप्रोनिल प्रति एकड़",
+                "brands": [
+                      "Actara + Regent"
+                ],
+                "safety": "दीमक और जड़ माहू दोनों का 100% खात्मा; जड़ों का शानदार विकास।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 g + 300 ml / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pink-stem-borer": [
+          {
+                "nameHi": "कार्टाप हाइड्रोक्लोराइड 4% GR",
+                "technical": "Cartap Hydrochloride 4% GR",
+                "dose": "8 किग्रा प्रति एकड़ (सिंचाई से पहले खेत में बिखेरें)",
+                "brands": [
+                      "Padan 4G (Dhanuka)"
+                ],
+                "safety": "जड़ों द्वारा अवशोषित होकर तने तक पहुंचता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "8 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
+                "technical": "Chlorantraniliprole 0.4% GR",
+                "dose": "4 किग्रा प्रति एकड़",
+                "brands": [
+                      "Ferterra (FMC)"
+                ],
+                "safety": "तने के अंदर बैठी गुलाबी सुंडी को खत्म करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "4 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़ स्प्रे)",
+                "brands": [
+                      "Alika (Syngenta)"
+                ],
+                "safety": "गुलाबी तना छेदक और माहू दोनों पर अचूक वार; कल्ले स्वस्थ रहते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "yellow-brown-rust": [
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)",
+                      "Bumper"
+                ],
+                "safety": "पीला रतुआ का सबसे लोकप्रिय व विश्वसनीय फफूंदनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Orius"
+                ],
+                "safety": "रतुआ को तुरंत सुखाकर झंडा पत्ती (Flag leaf) को सुरक्षित रखता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Nativo (Bayer)"
+                ],
+                "safety": "पीला व भूरा रतुआ दोनों पर 100% कंट्रोल; झंडा पत्ती अंत तक हरी, दाने मोटे व चमकदार।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-karnal-bunt": [
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% EC (कोंटाफ)",
+                "technical": "Hexaconazole 5% EC",
+                "dose": "1.75 मिली / लीटर पानी (350 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf (Tata Rallis)"
+                ],
+                "safety": "चूर्णी फफूंद नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "350 मिली / एकड़"
+          },
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)"
+                ],
+                "safety": "करनाल बंट और रतुआ दोनों को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "करनाल बंट, रतुआ और चूर्णी फफूंद तीनों पर पूर्ण सुरक्षा; दाने 100% साफ व भारी।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "earhead-aphid": [
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP",
+                "technical": "Acetamiprid 20% SP",
+                "dose": "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Manik",
+                      "Pride"
+                ],
+                "safety": "किफायती सिस्टेमिक माहू नाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "60 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.4 ग्राम / लीटर पानी (50-80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "बालियों में रस के साथ फैलकर माहू का तुरंत खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "50-80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)"
+                ],
+                "safety": "माहू का 100% नॉकडाउन; 15 दिन तक बालियों पर दोबारा माहू नहीं आता।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "80 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "onion": {
+    "basal-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Bavistin (Crystal)"
+                ],
+                "safety": "जड़ों के पास ड्रेंचिंग करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियोफैनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)"
+                ],
+                "safety": "गुलाबी जड़ रोग और कंद सड़न पर उत्कृष्ट सिस्टेमिक नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "जड़ों को स्वस्थ रखकर कंद का आकार और वजन 25% बढ़ाता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "thrips": [
+          {
+                "nameHi": "प्रोफेनोफॉस 40% + साइपरमेथ्रिन 4% EC (रॉकेट)",
+                "technical": "Profenofos 40% + Cypermethrin 4% EC",
+                "dose": "1.75 मिली / लीटर पानी (350 मिली प्रति एकड़)",
+                "brands": [
+                      "Roket (PI)",
+                      "Polytrin"
+                ],
+                "safety": "शुरुआती थ्रिप्स नियंत्रण (सिलिकॉन स्टिकर अवश्य मिलाएँ)।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "350 मिली / एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 40% + इमिडाक्लोप्रिड 40% WG (लेसेन्टा)",
+                "technical": "Fipronil 40% + Imidacloprid 40% WG",
+                "dose": "60–80 ग्राम प्रति एकड़ (0.4 ग्राम / लीटर पानी)",
+                "brands": [
+                      "Lesenta (Bayer)"
+                ],
+                "safety": "पत्तियों के जोड़ में छिपे थ्रिप्स का सिस्टेमिक खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "60-80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या एक्सपोनस (30 ml)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़) या ब्रोफ्लैनिलाइड (30 ml)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Exponus (BASF - 30 ml)"
+                ],
+                "safety": "प्याज व लहसुन के थ्रिप्स पर भारत का सबसे सटीक व अचूक मॉलिक्यूल; चांदी जैसे दाग खत्म।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "purple-blotch": [
+          {
+                "nameHi": "मैंकोजेब 75% WP या प्रोपिनेब 70% WP (एंट्राकोल)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)",
+                      "Antracol (Bayer)"
+                ],
+                "safety": "सुरक्षात्मक संपर्क कवकनाशी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "सिस्टेमिक क्रिया — बैंगनी धब्बों को तुरंत बढ़ने से रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो / कैब्रियो टॉप)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़) या कैब्रियो टॉप (500 g)",
+                "brands": [
+                      "Nativo (Bayer)",
+                      "Cabrio Top (BASF - 500 g)"
+                ],
+                "safety": "बैंगनी धब्बा व स्टेमफिलियम झुलसा पर भारत का नंबर-1 कवकनाशी; पत्तियां हरी व कंद सुडौल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "downy-mildew-twister": [
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)"
+                ],
+                "safety": "प्रारंभिक डाउनी मिल्ड्यू नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
+                "technical": "Cymoxanil 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Curzate (Corteva)"
+                ],
+                "safety": "डाउनी मिल्ड्यू को फैलने से रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन + टेबुकोनाज़ोल (कस्टोडिया 250 ml) + GA नियंत्रक",
+                "technical": "Azoxystrobin + Tebuconazole SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "ट्विस्टर रोग (जलेबी रोग) व डाउनी मिल्ड्यू पर दोहरा सिस्टेमिक नियंत्रण; गर्दन सीधी होती है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "garlic": {
+    "basal-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Bavistin (Crystal)"
+                ],
+                "safety": "जड़ों के पास ड्रेंचिंग करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियोफैनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)"
+                ],
+                "safety": "गुलाबी जड़ रोग और कंद सड़न पर उत्कृष्ट सिस्टेमिक नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "जड़ों को स्वस्थ रखकर कंद का आकार और वजन 25% बढ़ाता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "thrips": [
+          {
+                "nameHi": "प्रोफेनोफॉस 40% + साइपरमेथ्रिन 4% EC (रॉकेट)",
+                "technical": "Profenofos 40% + Cypermethrin 4% EC",
+                "dose": "1.75 मिली / लीटर पानी (350 मिली प्रति एकड़)",
+                "brands": [
+                      "Roket (PI)",
+                      "Polytrin"
+                ],
+                "safety": "शुरुआती थ्रिप्स नियंत्रण (सिलिकॉन स्टिकर अवश्य मिलाएँ)।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "350 मिली / एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 40% + इमिडाक्लोप्रिड 40% WG (लेसेन्टा)",
+                "technical": "Fipronil 40% + Imidacloprid 40% WG",
+                "dose": "60–80 ग्राम प्रति एकड़ (0.4 ग्राम / लीटर पानी)",
+                "brands": [
+                      "Lesenta (Bayer)"
+                ],
+                "safety": "पत्तियों के जोड़ में छिपे थ्रिप्स का सिस्टेमिक खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "60-80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या एक्सपोनस (30 ml)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़) या ब्रोफ्लैनिलाइड (30 ml)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Exponus (BASF - 30 ml)"
+                ],
+                "safety": "प्याज व लहसुन के थ्रिप्स पर भारत का सबसे सटीक व अचूक मॉलिक्यूल; चांदी जैसे दाग खत्म।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "purple-blotch": [
+          {
+                "nameHi": "मैंकोजेब 75% WP या प्रोपिनेब 70% WP (एंट्राकोल)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)",
+                      "Antracol (Bayer)"
+                ],
+                "safety": "सुरक्षात्मक संपर्क कवकनाशी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "सिस्टेमिक क्रिया — बैंगनी धब्बों को तुरंत बढ़ने से रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो / कैब्रियो टॉप)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़) या कैब्रियो टॉप (500 g)",
+                "brands": [
+                      "Nativo (Bayer)",
+                      "Cabrio Top (BASF - 500 g)"
+                ],
+                "safety": "बैंगनी धब्बा व स्टेमफिलियम झुलसा पर भारत का नंबर-1 कवकनाशी; पत्तियां हरी व कंद सुडौल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "downy-mildew-twister": [
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)"
+                ],
+                "safety": "प्रारंभिक डाउनी मिल्ड्यू नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
+                "technical": "Cymoxanil 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Curzate (Corteva)"
+                ],
+                "safety": "डाउनी मिल्ड्यू को फैलने से रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन + टेबुकोनाज़ोल (कस्टोडिया 250 ml) + GA नियंत्रक",
+                "technical": "Azoxystrobin + Tebuconazole SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "ट्विस्टर रोग (जलेबी रोग) व डाउनी मिल्ड्यू पर दोहरा सिस्टेमिक नियंत्रण; गर्दन सीधी होती है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "cotton": {
+    "jassid-aphid": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL या थियामेथोक्साम 25% WG",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़) या अकतारा (80 g)",
+                "brands": [
+                      "Confidor (Bayer)",
+                      "Actara (80 g)"
+                ],
+                "safety": "शुरुआती रस चूसक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला)",
+                "technical": "Flonicamid 50% WG",
+                "dose": "0.3–0.4 ग्राम / लीटर पानी (60-80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ulala (UPL)"
+                ],
+                "safety": "तेला व माहू की सूंड बंद कर देता है; पत्तियां तुरंत हरी हो जाती हैं।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "60-80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "डाइनोटिफ्यूरान 20% SG (ओशीन / टोकन)",
+                "technical": "Dinotefuran 20% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Osheen (PI)",
+                      "Token"
+                ],
+                "safety": "थर्ड जनरेशन नियोनिकोटिनॉइड; हॉपर बर्न से तुरंत राहत और 20 दिन की सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "thrips": [
+          {
+                "nameHi": "फिप्रोनिल 5% SC (रीजेंट)",
+                "technical": "Fipronil 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Regent (BASF)"
+                ],
+                "safety": "थ्रिप्स पर संपर्क व पेट क्रिया।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "थ्रिप्स पर अचूक प्रहार; पत्तियां तुरंत सीधी।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लक्सामेटामाइड 10% EC (ग्रेसिया)",
+                "technical": "Fluxametamide 10% EC",
+                "dose": "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़)",
+                "brands": [
+                      "Gracia (Godrej)"
+                ],
+                "safety": "रेजिस्टेंट थ्रिप्स पर भारत का सबसे नवीनतम व तीव्र मॉलिक्यूल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "160 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "whitefly": [
+          {
+                "nameHi": "डायफेंथियूरॉन 50% WP (पेगासस/पोलो)",
+                "technical": "Diafenthiuron 50% WP",
+                "dose": "1 ग्राम / लीटर पानी (200 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Pegasus (Syngenta)",
+                      "Polo"
+                ],
+                "safety": "वयस्क व निम्फ का नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "200 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "पाइरीप्रॉक्सीफेन 10% EC + डायफेंथियूरॉन 50% WP",
+                "technical": "Pyriproxyfen 10% EC + Diafenthiuron 50% WP",
+                "dose": "250 मिली पाइरीप्रॉक्सीफेन + 200 ग्राम डायफेंथियूरॉन प्रति एकड़",
+                "brands": [
+                      "Lano + Pegasus"
+                ],
+                "safety": "अंडे, बच्चे और वयस्क तीनों अवस्थाओं का संपूर्ण खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 ml + 200 g / एकड़"
+          },
+          {
+                "nameHi": "एफिडोपाइरोपेन 50 g/L DC (सेफिना) या ओबेरॉन (200 ml)",
+                "technical": "Afidopyropen 50 g/L DC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़) या स्पिरोमीसिफेन (200 ml)",
+                "brands": [
+                      "Sefina (BASF)",
+                      "Oberon (Bayer - 200 ml)"
+                ],
+                "safety": "सफेद मक्खी पर दुनिया का सबसे आधुनिक व असरदार टेक्निकल; 20 दिन तक कपास बिल्कुल साफ।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "400 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "mealybug": [
+          {
+                "nameHi": "प्रोफेनोफॉस 50% EC",
+                "technical": "Profenofos 50% EC",
+                "dose": "2.5 मिली / लीटर पानी (500 मिली प्रति एकड़)",
+                "brands": [
+                      "Curacron (Syngenta)",
+                      "Carina"
+                ],
+                "safety": "मोमी परत को गलाकर संपर्क से मारता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 मिली / एकड़"
+          },
+          {
+                "nameHi": "बुप्रोफेज़िन 25% SC (एप्लाउड)",
+                "technical": "Buprofezin 25% SC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Applaud (Rallis)"
+                ],
+                "safety": "कीट विकास अवरोधक (IGR) — केंचुल बदलने से रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिरोटेट्रामैट 150 OD (मोवेंटो एनर्जी)",
+                "technical": "Spirotetramat 150 OD",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Movento Energy (Bayer)"
+                ],
+                "safety": "2-वे सिस्टेमिक — पौधे में ऊपर और नीचे दोनों तरफ बहकर छिपे मिलीबग को खत्म करता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pink-bollworm": [
+          {
+                "nameHi": "प्रोफेनोफॉस 40% + साइपरमेथ्रिन 4% EC (रॉकेट)",
+                "technical": "Profenofos 40% + Cypermethrin 4% EC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Roket (PI)",
+                      "Polytrin"
+                ],
+                "safety": "अंडा नाशक व संपर्क क्रिया।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 मिली / एकड़"
+          },
+          {
+                "nameHi": "फेनप्रोपैथ्रिन 10% EC (डैनिटोल) या डेल्टामेथ्रिन 10% EC",
+                "technical": "Fenpropathrin 10% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़) या डेल्टामेथ्रिन (200 ml)",
+                "brands": [
+                      "Danitol (Sumitomo)",
+                      "Decis (200 ml)"
+                ],
+                "safety": "गुलाबी सुंडी के पतंगों और छोटी इल्लियों पर तेज नॉकडाउन।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 9.3% + लैम्ब्डा-साइहेलोथ्रिन 4.6% ZC (एम्पलिगो)",
+                "technical": "Chlorantraniliprole 9.3% + Lambda-cyhalothrin 4.6% ZC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़) या इमामेक्टिन+ल्यूफेन्यूरॉन",
+                "brands": [
+                      "Ampligo (Syngenta)",
+                      "Ampligo ZC"
+                ],
+                "safety": "गुलाबी सुंडी पर भारत का सबसे सटीक व शक्तिशाली मॉलिक्यूल; टिंडे 100% साफ व सफेद रुई।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "boll-rot-blight": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP + स्ट्रेप्टोसाइक्लिन",
+                "technical": "Copper Oxychloride 50% WP + Streptocycline",
+                "dose": "500 ग्राम ब्लाइटॉक्स + 18 ग्राम स्ट्रेप्टोसाइक्लिन प्रति एकड़",
+                "brands": [
+                      "Blitox 50 + Streptocycline"
+                ],
+                "safety": "जीवाणु झुलसा (Angular Leaf Spot) पर उपयोगी।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 g + 18 g / एकड़"
+          },
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)"
+                ],
+                "safety": "दहिया रोग और टिंडा सड़न पर संपर्क व सिस्टेमिक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लुक्सापाइरॉक्साड + पायराक्लोस्ट्रोबिन SC (प्रियाक्सर / एमिस्टार टॉप)",
+                "technical": "Fluxapyroxad 167 g/L + Pyraclostrobin 333 g/L SC",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़) या एमिस्टार टॉप (200 ml)",
+                "brands": [
+                      "Priaxor (BASF)",
+                      "Amistar Top (Syngenta - 200 ml)"
+                ],
+                "safety": "कपास के दहिया रोग, पत्ती धब्बा और टिंडा सड़न पर भारत का सबसे प्रीमियम फफूंदनाशक।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "moong": {
+    "fusarium-wilt-root-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Bavistin (Crystal)"
+                ],
+                "safety": "जड़ों में धार से ड्रेंचिंग करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियोफैनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)"
+                ],
+                "safety": "दलहनी फसलों के उकठा पर बेहतरीन सिस्टेमिक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर / कस्टोडिया 250 ml)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Custodia (250 ml)"
+                ],
+                "safety": "जड़ गलन और उकठा पर सबसे शक्तिशाली सिस्टेमिक सुरक्षा; पौधे सूखने से बचते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "ymv-whitefly": [
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "रस चूसक कीटों का शुरुआती नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · वेक्टर नियंत्रण",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP + नीम तेल 10000 PPM",
+                "technical": "Acetamiprid 20% SP + Neem Oil",
+                "dose": "80 ग्राम एसिटामिप्रिड + 300 मिली नीम तेल प्रति एकड़",
+                "brands": [
+                      "Manik + Neem Gold"
+                ],
+                "safety": "रासायनिक व जैविक का दोहरा सुरक्षा चक्र।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 g + 300 ml / एकड़"
+          },
+          {
+                "nameHi": "पाइरीप्रॉक्सीफेन 10% + बाइफेंथ्रिन 10% EC या उलाला (60 g)",
+                "technical": "Pyriproxyfen 10% + Bifenthrin 10% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़) या फ्लोनिकामिड (60 g)",
+                "brands": [
+                      "Lano (Sumitomo)",
+                      "Ulala (UPL - 60 g)"
+                ],
+                "safety": "सफेद मक्खी के अंडों, बच्चों और वयस्कों का संपूर्ण सफाया; YMV वायरस का फैलाव तुरंत बंद।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "flower-thrips-aphid": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)"
+                ],
+                "safety": "शुरुआती रस चूसक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 मिली / एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 5% SC (रीजेंट)",
+                "technical": "Fipronil 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Regent (BASF)"
+                ],
+                "safety": "फूलों के अंदर छिपे थ्रिप्स पर अचूक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "फूल झड़ने से रोकता है और शत-प्रतिशत फलियां बनती हैं; दलहनी फसलों का नंबर-1 मॉलिक्यूल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pod-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "Missile"
+                ],
+                "safety": "छोटी इल्लियों पर तुरंत असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% SC (अवांट) या फेम (40 ml)",
+                "technical": "Indoxacarb 14.5% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़) या फ्लूबेंडियामाइड (40 ml)",
+                "brands": [
+                      "Avaunt (FMC)",
+                      "Fame (Bayer - 40 ml)"
+                ],
+                "safety": "बड़ी हेलिकोवर्पा इल्लियों का भोजन तुरंत बंद।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)"
+                ],
+                "safety": "चना, अरहर, मूंग में फली छेदक पर 21 दिन की अटूट सुरक्षा; दाने 100% साबुत।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-ascochyta": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)"
+                ],
+                "safety": "सुरक्षात्मक व सिस्टेमिक मिश्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% EC (कोंटाफ)",
+                "technical": "Hexaconazole 5% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf (Tata Rallis)"
+                ],
+                "safety": "चूर्णी फफूंद को तेजी से सुखाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)"
+                ],
+                "safety": "चूर्णी फफूंद और एस्कोकाइटा झुलसा दोनों पर संपूर्ण नियंत्रण; फलियां बेदाग।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "urad": {
+    "fusarium-wilt-root-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Bavistin (Crystal)"
+                ],
+                "safety": "जड़ों में धार से ड्रेंचिंग करें।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "थियोफैनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)"
+                ],
+                "safety": "दलहनी फसलों के उकठा पर बेहतरीन सिस्टेमिक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर / कस्टोडिया 250 ml)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Custodia (250 ml)"
+                ],
+                "safety": "जड़ गलन और उकठा पर सबसे शक्तिशाली सिस्टेमिक सुरक्षा; पौधे सूखने से बचते हैं।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "ymv-whitefly": [
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "रस चूसक कीटों का शुरुआती नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · वेक्टर नियंत्रण",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP + नीम तेल 10000 PPM",
+                "technical": "Acetamiprid 20% SP + Neem Oil",
+                "dose": "80 ग्राम एसिटामिप्रिड + 300 मिली नीम तेल प्रति एकड़",
+                "brands": [
+                      "Manik + Neem Gold"
+                ],
+                "safety": "रासायनिक व जैविक का दोहरा सुरक्षा चक्र।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 g + 300 ml / एकड़"
+          },
+          {
+                "nameHi": "पाइरीप्रॉक्सीफेन 10% + बाइफेंथ्रिन 10% EC या उलाला (60 g)",
+                "technical": "Pyriproxyfen 10% + Bifenthrin 10% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़) या फ्लोनिकामिड (60 g)",
+                "brands": [
+                      "Lano (Sumitomo)",
+                      "Ulala (UPL - 60 g)"
+                ],
+                "safety": "सफेद मक्खी के अंडों, बच्चों और वयस्कों का संपूर्ण सफाया; YMV वायरस का फैलाव तुरंत बंद।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "flower-thrips-aphid": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)"
+                ],
+                "safety": "शुरुआती रस चूसक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 मिली / एकड़"
+          },
+          {
+                "nameHi": "फिप्रोनिल 5% SC (रीजेंट)",
+                "technical": "Fipronil 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Regent (BASF)"
+                ],
+                "safety": "फूलों के अंदर छिपे थ्रिप्स पर अचूक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "फूल झड़ने से रोकता है और शत-प्रतिशत फलियां बनती हैं; दलहनी फसलों का नंबर-1 मॉलिक्यूल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pod-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "Missile"
+                ],
+                "safety": "छोटी इल्लियों पर तुरंत असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% SC (अवांट) या फेम (40 ml)",
+                "technical": "Indoxacarb 14.5% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़) या फ्लूबेंडियामाइड (40 ml)",
+                "brands": [
+                      "Avaunt (FMC)",
+                      "Fame (Bayer - 40 ml)"
+                ],
+                "safety": "बड़ी हेलिकोवर्पा इल्लियों का भोजन तुरंत बंद।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)"
+                ],
+                "safety": "चना, अरहर, मूंग में फली छेदक पर 21 दिन की अटूट सुरक्षा; दाने 100% साबुत।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-ascochyta": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)"
+                ],
+                "safety": "सुरक्षात्मक व सिस्टेमिक मिश्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% EC (कोंटाफ)",
+                "technical": "Hexaconazole 5% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf (Tata Rallis)"
+                ],
+                "safety": "चूर्णी फफूंद को तेजी से सुखाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)"
+                ],
+                "safety": "चूर्णी फफूंद और एस्कोकाइटा झुलसा दोनों पर संपूर्ण नियंत्रण; फलियां बेदाग।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "arhar": {
+    "fusarium-wilt-root-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Bavistin (Crystal)",
+                      "Derosal"
+                ],
+                "safety": "जड़ों में ड्रेंचिंग करें; केवल मिट्टी के संपर्क में असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · पारंपरिक / शुरुआती",
+                "dosePerAcre": "400 ग्राम / एकड़",
+                "resistanceWarning": "लगातार प्रयोग से कवक में प्रतिरोधक क्षमता का खतरा।"
+          },
+          {
+                "nameHi": "थायोफेनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "1.5-2 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)",
+                      "Topsin-M"
+                ],
+                "safety": "जड़ों व तने दोनों पर तेज सिस्टेमिक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1-1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Tebusul"
+                ],
+                "safety": "उकठा व जड़ गलन पर सबसे गहरा सिस्टेमिक नियंत्रण।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "ymv-whitefly": [
+          {
+                "nameHi": "थियामेथोक्सम 25% WG (एक्टारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)",
+                      "Anant"
+                ],
+                "safety": "शुरुआती रस चूसक कीटों पर सिस्टेमिक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "100 ग्राम / एकड़",
+                "resistanceWarning": "कई क्षेत्रों में सफेद मक्खी में प्रतिरोधक क्षमता देखी गई है।"
+          },
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP + नीम तेल",
+                "technical": "Acetamiprid 20% SP (80 g) + Neem Oil (300 ml)",
+                "dose": "0.4 ग्राम + 1.5 मिली / लीटर पानी",
+                "brands": [
+                      "Pride (Dhanuka)",
+                      "Manik"
+                ],
+                "safety": "सफेद मक्खी के अंडों और प्रौढ़ों दोनों पर दोहरा असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 ग्राम + 300 मिली / एकड़"
+          },
+          {
+                "nameHi": "पायरीप्रॉक्सीफेन 10% + बाइफेन्थ्रिन 10% EC",
+                "technical": "Pyriproxyfen 10% + Bifenthrin 10% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Lano (Sumitomo)",
+                      "Dhaakad"
+                ],
+                "safety": "सफेद मक्खी के अंडे, शिशु और उड़ने वाले कीड़ों का संपूर्ण सफाया।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "flower-thrips-aphid": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)",
+                      "Tatamida"
+                ],
+                "safety": "शुरुआती रस चूसक कीटों पर असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 मिली / एकड़",
+                "resistanceWarning": "लगातार छिड़काव से थ्रिप्स में प्रतिरोधक क्षमता।"
+          },
+          {
+                "nameHi": "फिप्रोनिल 5% SC (रीजेंट)",
+                "technical": "Fipronil 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Regent (BASF)",
+                      "Mahaveer"
+                ],
+                "safety": "फूलों के अंदर छिपे थ्रिप्स पर बेहतरीन मारक क्षमता।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Largo"
+                ],
+                "safety": "थ्रिप्स और माहू पर आधुनिक ग्रीन मॉलिक्यूल, तुरंत ड्रॉप डाउन असर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pod-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "EM-1"
+                ],
+                "safety": "शुरुआती व मध्यम आकार की इल्लियों पर तेज असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती इल्ली स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% SC या फ्लूबेन्डियामाइड 39.35% SC",
+                "technical": "Indoxacarb 14.5% SC (150 ml) या Flubendiamide 39.35% SC (40 ml)",
+                "dose": "0.75 मिली / लीटर पानी",
+                "brands": [
+                      "Avaunt (FMC)",
+                      "Fame (Bayer)"
+                ],
+                "safety": "बड़ी सुंडियों के भोजन को तुरंत बंद कर देता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3-0.4 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Cover"
+                ],
+                "safety": "फली छेदक पर 21 दिनों तक अटूट सुरक्षा कवच, बेस्ट फील्ड ट्रायल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-ascochyta": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)",
+                      "Sixer"
+                ],
+                "safety": "सिस्टेमिक व कॉन्टैक्ट फंगीसाइड का संतुलित मिश्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "500 ग्राम / एकड़",
+                "resistanceWarning": "लगातार प्रयोग से कवक में प्रतिरोधक क्षमता का खतरा।"
+          },
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% EC (कंटाफ)",
+                "technical": "Hexaconazole 5% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf Plus (Tata)",
+                      "Sitara"
+                ],
+                "safety": "चूर्णी फफूंद पर गहरा आंतरिक नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Godrej Custodia"
+                ],
+                "safety": "ब्रॉड स्पेक्ट्रम फंगीसाइड, पत्ती और फलियों को हरा-भरा और चमकदार रखता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "chana": {
+    "fusarium-wilt-root-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Bavistin (Crystal)",
+                      "Derosal"
+                ],
+                "safety": "जड़ों में ड्रेंचिंग करें; केवल मिट्टी के संपर्क में असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · पारंपरिक / शुरुआती",
+                "dosePerAcre": "400 ग्राम / एकड़",
+                "resistanceWarning": "लगातार प्रयोग से कवक में प्रतिरोधक क्षमता का खतरा।"
+          },
+          {
+                "nameHi": "थायोफेनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "1.5-2 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)",
+                      "Topsin-M"
+                ],
+                "safety": "जड़ों व तने दोनों पर तेज सिस्टेमिक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1-1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Tebusul"
+                ],
+                "safety": "उकठा व जड़ गलन पर सबसे गहरा सिस्टेमिक नियंत्रण।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "ymv-whitefly": [
+          {
+                "nameHi": "थियामेथोक्सम 25% WG (एक्टारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)",
+                      "Anant"
+                ],
+                "safety": "शुरुआती रस चूसक कीटों पर सिस्टेमिक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "100 ग्राम / एकड़",
+                "resistanceWarning": "कई क्षेत्रों में सफेद मक्खी में प्रतिरोधक क्षमता देखी गई है।"
+          },
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP + नीम तेल",
+                "technical": "Acetamiprid 20% SP (80 g) + Neem Oil (300 ml)",
+                "dose": "0.4 ग्राम + 1.5 मिली / लीटर पानी",
+                "brands": [
+                      "Pride (Dhanuka)",
+                      "Manik"
+                ],
+                "safety": "सफेद मक्खी के अंडों और प्रौढ़ों दोनों पर दोहरा असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 ग्राम + 300 मिली / एकड़"
+          },
+          {
+                "nameHi": "पायरीप्रॉक्सीफेन 10% + बाइफेन्थ्रिन 10% EC",
+                "technical": "Pyriproxyfen 10% + Bifenthrin 10% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Lano (Sumitomo)",
+                      "Dhaakad"
+                ],
+                "safety": "सफेद मक्खी के अंडे, शिशु और उड़ने वाले कीड़ों का संपूर्ण सफाया।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "flower-thrips-aphid": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)",
+                      "Tatamida"
+                ],
+                "safety": "शुरुआती रस चूसक कीटों पर असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 मिली / एकड़",
+                "resistanceWarning": "लगातार छिड़काव से थ्रिप्स में प्रतिरोधक क्षमता।"
+          },
+          {
+                "nameHi": "फिप्रोनिल 5% SC (रीजेंट)",
+                "technical": "Fipronil 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Regent (BASF)",
+                      "Mahaveer"
+                ],
+                "safety": "फूलों के अंदर छिपे थ्रिप्स पर बेहतरीन मारक क्षमता।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Largo"
+                ],
+                "safety": "थ्रिप्स और माहू पर आधुनिक ग्रीन मॉलिक्यूल, तुरंत ड्रॉप डाउन असर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pod-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "EM-1"
+                ],
+                "safety": "शुरुआती व मध्यम आकार की इल्लियों पर तेज असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती इल्ली स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% SC या फ्लूबेन्डियामाइड 39.35% SC",
+                "technical": "Indoxacarb 14.5% SC (150 ml) या Flubendiamide 39.35% SC (40 ml)",
+                "dose": "0.75 मिली / लीटर पानी",
+                "brands": [
+                      "Avaunt (FMC)",
+                      "Fame (Bayer)"
+                ],
+                "safety": "बड़ी सुंडियों के भोजन को तुरंत बंद कर देता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3-0.4 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Cover"
+                ],
+                "safety": "फली छेदक पर 21 दिनों तक अटूट सुरक्षा कवच, बेस्ट फील्ड ट्रायल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-ascochyta": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)",
+                      "Sixer"
+                ],
+                "safety": "सिस्टेमिक व कॉन्टैक्ट फंगीसाइड का संतुलित मिश्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "500 ग्राम / एकड़",
+                "resistanceWarning": "लगातार प्रयोग से कवक में प्रतिरोधक क्षमता का खतरा।"
+          },
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% EC (कंटाफ)",
+                "technical": "Hexaconazole 5% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf Plus (Tata)",
+                      "Sitara"
+                ],
+                "safety": "चूर्णी फफूंद पर गहरा आंतरिक नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Godrej Custodia"
+                ],
+                "safety": "ब्रॉड स्पेक्ट्रम फंगीसाइड, पत्ती और फलियों को हरा-भरा और चमकदार रखता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "masoor": {
+    "fusarium-wilt-root-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Bavistin (Crystal)",
+                      "Derosal"
+                ],
+                "safety": "जड़ों में ड्रेंचिंग करें; केवल मिट्टी के संपर्क में असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · पारंपरिक / शुरुआती",
+                "dosePerAcre": "400 ग्राम / एकड़",
+                "resistanceWarning": "लगातार प्रयोग से कवक में प्रतिरोधक क्षमता का खतरा।"
+          },
+          {
+                "nameHi": "थायोफेनेट मिथाइल 70% WP (रोको)",
+                "technical": "Thiophanate Methyl 70% WP",
+                "dose": "1.5-2 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Roko (Biostadt)",
+                      "Topsin-M"
+                ],
+                "safety": "जड़ों व तने दोनों पर तेज सिस्टेमिक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1-1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Tebusul"
+                ],
+                "safety": "उकठा व जड़ गलन पर सबसे गहरा सिस्टेमिक नियंत्रण।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "ymv-whitefly": [
+          {
+                "nameHi": "थियामेथोक्सम 25% WG (एक्टारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)",
+                      "Anant"
+                ],
+                "safety": "शुरुआती रस चूसक कीटों पर सिस्टेमिक नियंत्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "100 ग्राम / एकड़",
+                "resistanceWarning": "कई क्षेत्रों में सफेद मक्खी में प्रतिरोधक क्षमता देखी गई है।"
+          },
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP + नीम तेल",
+                "technical": "Acetamiprid 20% SP (80 g) + Neem Oil (300 ml)",
+                "dose": "0.4 ग्राम + 1.5 मिली / लीटर पानी",
+                "brands": [
+                      "Pride (Dhanuka)",
+                      "Manik"
+                ],
+                "safety": "सफेद मक्खी के अंडों और प्रौढ़ों दोनों पर दोहरा असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 ग्राम + 300 मिली / एकड़"
+          },
+          {
+                "nameHi": "पायरीप्रॉक्सीफेन 10% + बाइफेन्थ्रिन 10% EC",
+                "technical": "Pyriproxyfen 10% + Bifenthrin 10% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Lano (Sumitomo)",
+                      "Dhaakad"
+                ],
+                "safety": "सफेद मक्खी के अंडे, शिशु और उड़ने वाले कीड़ों का संपूर्ण सफाया।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "flower-thrips-aphid": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)",
+                      "Tatamida"
+                ],
+                "safety": "शुरुआती रस चूसक कीटों पर असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 मिली / एकड़",
+                "resistanceWarning": "लगातार छिड़काव से थ्रिप्स में प्रतिरोधक क्षमता।"
+          },
+          {
+                "nameHi": "फिप्रोनिल 5% SC (रीजेंट)",
+                "technical": "Fipronil 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Regent (BASF)",
+                      "Mahaveer"
+                ],
+                "safety": "फूलों के अंदर छिपे थ्रिप्स पर बेहतरीन मारक क्षमता।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Largo"
+                ],
+                "safety": "थ्रिप्स और माहू पर आधुनिक ग्रीन मॉलिक्यूल, तुरंत ड्रॉप डाउन असर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "pod-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "EM-1"
+                ],
+                "safety": "शुरुआती व मध्यम आकार की इल्लियों पर तेज असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती इल्ली स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "इंडोक्साकार्ब 14.5% SC या फ्लूबेन्डियामाइड 39.35% SC",
+                "technical": "Indoxacarb 14.5% SC (150 ml) या Flubendiamide 39.35% SC (40 ml)",
+                "dose": "0.75 मिली / लीटर पानी",
+                "brands": [
+                      "Avaunt (FMC)",
+                      "Fame (Bayer)"
+                ],
+                "safety": "बड़ी सुंडियों के भोजन को तुरंत बंद कर देता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3-0.4 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Cover"
+                ],
+                "safety": "फली छेदक पर 21 दिनों तक अटूट सुरक्षा कवच, बेस्ट फील्ड ट्रायल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-ascochyta": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)",
+                      "Sixer"
+                ],
+                "safety": "सिस्टेमिक व कॉन्टैक्ट फंगीसाइड का संतुलित मिश्रण।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "500 ग्राम / एकड़",
+                "resistanceWarning": "लगातार प्रयोग से कवक में प्रतिरोधक क्षमता का खतरा।"
+          },
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% EC (कंटाफ)",
+                "technical": "Hexaconazole 5% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf Plus (Tata)",
+                      "Sitara"
+                ],
+                "safety": "चूर्णी फफूंद पर गहरा आंतरिक नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Godrej Custodia"
+                ],
+                "safety": "ब्रॉड स्पेक्ट्रम फंगीसाइड, पत्ती और फलियों को हरा-भरा और चमकदार रखता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "mustard": {
+    "painted-bug-sawfly": [
+          {
+                "nameHi": "क्विनालफॉस 25% EC (एकालक्स)",
+                "technical": "Quinalphos 25% EC",
+                "dose": "1.75 मिली / लीटर पानी (350 मिली प्रति एकड़)",
+                "brands": [
+                      "Ekalux (Syngenta)",
+                      "Flash"
+                ],
+                "safety": "कॉन्टैक्ट व पेट का जहर, तुरंत नॉकडाउन असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "350 मिली / एकड़",
+                "resistanceWarning": "पुरानी केमिस्ट्री; तेज धूप में असर घटता है।"
+          },
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL + साइपरमेथ्रिन 25% EC",
+                "technical": "Imidacloprid 17.8% SL (100 ml) + Cypermethrin 25% EC (100 ml)",
+                "dose": "0.5 मिली + 0.5 मिली / लीटर पानी",
+                "brands": [
+                      "Confidor + Ustaad"
+                ],
+                "safety": "रस चूसक बग और पत्ती खाने वाली सुंडी दोनों पर दोहरा वार।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 मिली + 100 मिली / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्सम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
+                "brands": [
+                      "Alika (Syngenta)",
+                      "Ampligo"
+                ],
+                "safety": "सिस्टेमिक व कॉन्टैक्ट का सबसे आधुनिक ZC फॉर्मूलेशन, लंबा असर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "80 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "white-rust-alternaria": [
+          {
+                "nameHi": "मैंकोजेब 75% WP (इंडोफिल M-45)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "2.5-3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Indofil M-45",
+                      "Dithane M-45"
+                ],
+                "safety": "सुरक्षात्मक कॉन्टैक्ट फंगीसाइड, पत्तियों पर परत बनाता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · सुरक्षात्मक स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़",
+                "resistanceWarning": "बारिश या तेज ओस में धुल जाता है।"
+          },
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)",
+                      "Krilaxyl"
+                ],
+                "safety": "सफेद रतुआ (Albugo) पर आंतरिक सिस्टेमिक मारक क्षमता।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "सफेद रतुआ और अल्टरनेरिया दोनों का एक साथ संपूर्ण इलाज, पत्तियां अंत तक हरी।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "sclerotinia-rot": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Bavistin (Crystal)",
+                      "Derosal"
+                ],
+                "safety": "पारंपरिक सिस्टेमिक दवा, शुरुआती फैलाव को रोकती है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़",
+                "resistanceWarning": "स्क्लेरोटिनिया कवक में कार्बेन्डाजिम के प्रति सहनशीलता बढ़ी है।"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)",
+                      "Tebusul"
+                ],
+                "safety": "तने के अंदर गहराई तक प्रवेश कर कवक जाल को खत्म करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन + टेबुकोनाज़ोल (कस्टोडिया) या बोस्केलिड + पायराक्लोस्ट्रोबिन",
+                "technical": "Azoxystrobin + Tebuconazole SC (250 ml) या Boscalid + Pyraclostrobin",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)",
+                      "Signum (BASF)"
+                ],
+                "safety": "तना गलन पर आधुनिक रिसर्च फंगीसाइड, तने को टूटने से पूरी तरह बचाता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "mustard-aphid": [
+          {
+                "nameHi": "डाइमेथोएट 30% EC (रोगोर)",
+                "technical": "Dimethoate 30% EC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Rogor (FMC)",
+                      "Tafgor"
+                ],
+                "safety": "तीव्र गंध वाला सिस्टेमिक व कॉन्टैक्ट कीटनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · पारंपरिक स्तर",
+                "dosePerAcre": "300 मिली / एकड़",
+                "resistanceWarning": "मधुमक्खियों के लिए अत्यधिक विषैला; लगातार इस्तेमाल से प्रतिरोध।"
+          },
+          {
+                "nameHi": "थियामेथोक्सम 25% WG (एक्टारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.4-0.5 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)",
+                      "Anant"
+                ],
+                "safety": "पौधे में तुरंत अवशोषित होकर माहू का रस चूसना रोक देता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "80 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला) या पाइमेट्रोज़िन 50% WG (चेस)",
+                "technical": "Flonicamid 50% WG (60 g) या Pymetrozine 50% WG (100 g)",
+                "dose": "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ulala (UPL)",
+                      "Chess (Syngenta)"
+                ],
+                "safety": "माहू के सुई जैसे मुंह को तुरंत पैरालाइज करता है, मित्र कीटों और मधुमक्खियों के लिए सुरक्षित।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "60 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "bhindi": {
+    "damping-off": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP (बाविस्टिन)",
+                "technical": "Carbendazim 50% WP",
+                "dose": "1.5-2 ग्राम / लीटर पानी (300 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Bavistin (Crystal)",
+                      "Derosal"
+                ],
+                "safety": "जड़ों में ड्रेंचिंग करें; शुरुआती स्तर पर असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर (ड्रेंचिंग)",
+                "dosePerAcre": "300 ग्राम / एकड़",
+                "resistanceWarning": "लगातार इस्तेमाल से कवक में प्रतिरोध का जोखिम।"
+          },
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)",
+                      "Krilaxyl"
+                ],
+                "safety": "जड़ गलन और आद्र गलन पर दोहरी सुरक्षा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "पौध गलन व तना सड़न पर सबसे आधुनिक सुरक्षात्मक व उपचारात्मक फंगीसाइड।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "jassid-whitefly": [
+          {
+                "nameHi": "थियामेथोक्सम 25% WG (एक्टारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.4-0.5 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)",
+                      "Anant"
+                ],
+                "safety": "शुरुआती रस चूसक कीटों पर सिस्टेमिक असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "80 ग्राम / एकड़",
+                "resistanceWarning": "सफेद मक्खी में प्रतिरोधक क्षमता का खतरा।"
+          },
+          {
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला)",
+                "technical": "Flonicamid 50% WG",
+                "dose": "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Ulala (UPL)"
+                ],
+                "safety": "तेला व सफेद मक्खी का रस चूसना 30 मिनट में बंद कर देता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "60 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "डायाफेन्थियूरॉन 50% WP (पेगासस) या एफिडोपायरोपेन 50 DC (सेफिना)",
+                "technical": "Diafenthiuron 50% WP (200 g) या Afidopyropen 50 DC (400 ml)",
+                "dose": "1 ग्राम / लीटर पानी (200 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Pegasus (Syngenta)",
+                      "Sefina (BASF)"
+                ],
+                "safety": "वयस्क सफेद मक्खी और तेला दोनों पर वाष्पशील व सिस्टेमिक मारक क्षमता।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "ymv": [
+          {
+                "nameHi": "एसिटामिप्रिड 20% SP + नीम तेल",
+                "technical": "Acetamiprid 20% SP (80 g) + Neem Oil (300 ml)",
+                "dose": "0.4 ग्राम + 1.5 मिली / लीटर पानी",
+                "brands": [
+                      "Pride (Dhanuka)",
+                      "Manik"
+                ],
+                "safety": "सफेद मक्खी को भगाने और मारने का शुरुआती उपाय।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · वेक्टर नियंत्रण",
+                "dosePerAcre": "80 ग्राम + 300 मिली / एकड़"
+          },
+          {
+                "nameHi": "पायरीप्रॉक्सीफेन 10% + बाइफेन्थ्रिन 10% EC",
+                "technical": "Pyriproxyfen 10% + Bifenthrin 10% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Lano (Sumitomo)",
+                      "Dhaakad"
+                ],
+                "safety": "सफेद मक्खी के अंडों, शिशुओं और उड़ने वाली मक्खी का खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "डायाफेन्थियूरॉन 47.8% SC + सीवीड / वायरस रोधक",
+                "technical": "Diafenthiuron 47.8% SC (200 ml) + Seaweed / Viricide (250 ml)",
+                "dose": "1 मिली + 1.25 मिली / लीटर पानी",
+                "brands": [
+                      "Pegasus SC",
+                      "Viroban / Biovita"
+                ],
+                "safety": "वेक्टर सफेद मक्खी का तुरंत नॉकडाउन + पौधे की प्रतिरोधक क्षमता में वृद्धि।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली + 250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "fruit-borer": [
+          {
+                "nameHi": "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
+                "technical": "Emamectin Benzoate 5% SG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Proclaim (Syngenta)",
+                      "EM-1"
+                ],
+                "safety": "शुरुआती फल छेदक इल्ली पर असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.3-0.4 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Cover"
+                ],
+                "safety": "फल छेदक इल्ली पर 15-20 दिनों तक अचूक नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "60 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या फ्लूबेन्डियामाइड 39.35% SC (फेम)",
+                "technical": "Spinetoram 11.7% SC (150 ml) या Flubendiamide 39.35% SC (40 ml)",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)",
+                      "Fame (Bayer)"
+                ],
+                "safety": "बड़ी से बड़ी इल्ली का तुरंत खात्मा, आधुनिक ग्रीन मॉलिक्यूल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "red-spider-mite": [
+          {
+                "nameHi": "फेनाज़ाक्विन 10% EC (मैजिस्टर)",
+                "technical": "Fenazaquin 10% EC",
+                "dose": "1.5-2 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Magister (Dhanuka)"
+                ],
+                "safety": "कॉन्टैक्ट माइटिसाइड, शुरुआती मकड़ी पर असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "300 मिली / एकड़",
+                "resistanceWarning": "मकड़ियों में जल्दी प्रतिरोध विकसित होता है।"
+          },
+          {
+                "nameHi": "स्पाइरोमेसिफेन 22.9% SC (ओबेरॉन)",
+                "technical": "Spiromesifen 22.9% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Oberon (Bayer)",
+                      "Volt"
+                ],
+                "safety": "मकड़ी के अंडों और शिशुओं के लिपिड विकास को रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "एटोक्साज़ोल 10% SC (बोर्नियो)",
+                "technical": "Etoxazole 10% SC",
+                "dose": "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़)",
+                "brands": [
+                      "Borneo (Sumitomo)"
+                ],
+                "safety": "मकड़ी के सभी अंडों को नष्ट करने वाला सबसे एडवांस्ड ओविसाइडल माइटिसाइड।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "160 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-mildew": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Saaf (UPL)",
+                      "Sixer"
+                ],
+                "safety": "पारंपरिक फफूंदनाशक, शुरुआती धब्बों पर असरदार।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "500 ग्राम / एकड़",
+                "resistanceWarning": "लगातार प्रयोग से कवक में प्रतिरोधक क्षमता का खतरा।"
+          },
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% SC (कंटाफ)",
+                "technical": "Hexaconazole 5% SC",
+                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
+                "brands": [
+                      "Contaf Plus (Tata)"
+                ],
+                "safety": "सफेद चूर्ण रोग पर गहरा आंतरिक सिस्टेमिक असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "चूर्ण रोग और पत्ती धब्बों का संपूर्ण निवारण, पत्तियों में लंबे समय तक चमक।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "ginger": {
     "shoot-borer": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-      },
-      {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
-        brands: ["Proclaim (Syngenta)"],
-      },
+          {
+                "nameHi": "क्लोरोपायरीफॉस 20% EC (डरसबैन)",
+                "technical": "Chlorpyrifos 20% EC",
+                "dose": "2.5 मिली / लीटर पानी (500 मिली प्रति एकड़)",
+                "brands": [
+                      "Dursban (Corteva)",
+                      "Tricel"
+                ],
+                "safety": "तेज गंध वाला कॉन्टैक्ट व वाष्पशील कीटनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · पारंपरिक स्तर",
+                "dosePerAcre": "500 मिली / एकड़",
+                "resistanceWarning": "पुरानी केमिस्ट्री; लगातार प्रयोग से बचें।"
+          },
+          {
+                "nameHi": "लैम्ब्डा-साइहेलोथ्रिन 5% EC (कराटे) या फ्लूबेन्डियामाइड 39.35% SC",
+                "technical": "Lambda-cyhalothrin 5% EC (250 ml) या Flubendiamide (50 ml)",
+                "dose": "1.25 मिली / लीटर पानी",
+                "brands": [
+                      "Karate (Syngenta)",
+                      "Fame (Bayer)"
+                ],
+                "safety": "तने के अंदर छिपी सुंडी पर तेज नॉकडाउन असर।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Cover"
+                ],
+                "safety": "तने में प्रवेश करने वाली सुंडी पर 21 दिनों तक अटूट सुरक्षा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "80 मिली / एकड़",
+                "isTopPerformer": true
+          }
     ],
-  },
-
-  ginger: {
-    "soft-rot-rhizome": [
-      {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड — प्रकंद शोधन व ड्रेंचिंग)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2.5 ग्राम / लीटर पानी (प्रकंद 15 मिनट डुबोएँ व जड़ों में ड्रेन्च करें)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)"],
-      },
-      {
-        nameHi: "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
-        technical: "Copper oxychloride 50% WP",
-        dose: "3 ग्राम / लीटर पानी (जड़ों में डालें)",
-        brands: ["Blitox 50 (Rallis)"],
-      },
+    "rhizome-rot": [
+          {
+                "nameHi": "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
+                "technical": "Copper Oxychloride 50% WP",
+                "dose": "4 ग्राम / लीटर पानी (800 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Blitox (Rallis)",
+                      "Blue Copper"
+                ],
+                "safety": "मिट्टी में कवक को मारने के लिए ड्रेंचिंग; किसी EC दवा के साथ न मिलाएं।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती ड्रेंचिंग",
+                "dosePerAcre": "800 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मेटालैक्सिल 8% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
+                "technical": "Metalaxyl 8% + Mancozeb 64% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Ridomil Gold (Syngenta)",
+                      "Krilaxyl"
+                ],
+                "safety": "पायथियम (Pythium) कवक पर सबसे अचूक सिस्टेमिक ड्रेंचिंग।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फेनामिडोन 10% + मैंकोजेब 50% WG (सेक्टिन) या फॉसेटिल-अल 80% WP (एलियेट)",
+                "technical": "Fenamidone 10% + Mancozeb 50% WG (600 g) या Fosetyl-Al 80% WP (500 g)",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Sectin (Bayer)",
+                      "Aliette (Bayer)"
+                ],
+                "safety": "प्रकंद सड़न पर आधुनिक रिसर्च फंगीसाइड, पौधे के दोनों संवहनी तंतुओं (Xylem व Phloem) में संचरित।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "600 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
     ],
     "bacterial-wilt": [
-      {
-        nameHi: "स्ट्रेप्टोसाइक्लिन 90% + कॉपर ऑक्सीक्लोराइड 50% WP",
-        technical: "Streptocycline 90% + Copper oxychloride 50% WP",
-        dose: "स्ट्रेप्टोसाइक्लिन 6 ग्राम + कॉपर 500 ग्राम प्रति एकड़ (200 L पानी में जड़ों में डालें)",
-        brands: ["Streptocycline (HAL) + Blitox 50"],
-      },
+          {
+                "nameHi": "कॉपर हाइड्रॉक्साइड 53.8% DF + स्ट्रेप्टोसाइक्लिन",
+                "technical": "Copper Hydroxide 53.8% DF (400 g) + Streptocycline (24 g)",
+                "dose": "2 ग्राम + 0.12 ग्राम / लीटर पानी (जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Kocide (Corteva) + Plantomycin"
+                ],
+                "safety": "जीवाणु नाशक और तांबा आधारित सुरक्षा कवच।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर (ड्रेंचिंग)",
+                "dosePerAcre": "400 ग्राम + 24 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "कासुगामाइसिन 3% SL + कॉपर ऑक्सीक्लोराइड 50% WP",
+                "technical": "Kasugamycin 3% SL (400 ml) + Copper Oxychloride (500 g)",
+                "dose": "2 मिली + 2.5 ग्राम / लीटर पानी",
+                "brands": [
+                      "Kasu-B (Dhanuka) + Blitox"
+                ],
+                "safety": "एंटीबायोटिक व कॉपर का शक्तिशाली मिश्रण, जीवाणु की दीवार तोड़ता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "400 मिली + 500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "कासुगामाइसिन 5% + कॉपर ऑक्सीक्लोराइड 45% WP + ब्लीचिंग पाउडर",
+                "technical": "Kasugamycin 5% + Copper Oxychloride 45% WP (400 g) + Bleaching Powder (मिट्टी में नाली के पास)",
+                "dose": "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Kasu-Max (Dhanuka)"
+                ],
+                "safety": "जीवाणु उकठा पर सबसे उन्नत सिस्टेमिक एंटीबायोटिक कॉपर फॉर्मूलेशन।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "400 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
     ],
-    "shoot-borer": [
-      {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)"],
-      },
-    ],
+    "leaf-spot": [
+          {
+                "nameHi": "मैंकोजेब 75% WP (इंडोफिल M-45)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Indofil M-45"
+                ],
+                "safety": "कॉन्टैक्ट सुरक्षा, धब्बों के फैलाव को रोकता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · सुरक्षात्मक स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़",
+                "resistanceWarning": "बारिश में जल्दी धुल जाता है।"
+          },
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)",
+                      "Result"
+                ],
+                "safety": "पत्तियों के अंदर गहराई से धब्बों को सुखाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)",
+                      "Custodia"
+                ],
+                "safety": "पत्ती धब्बे का संपूर्ण इलाज, पत्तियों को अंत तक हरा और सक्रिय रखता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "200 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
   },
-
-  garlic: {
-    "purple-blotch": [
-      {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — स्टिकर ज़रूर मिलाएँ)",
-        brands: ["Dithane M-45 (Corteva)", "Indofil M-45"],
-      },
-      {
-        nameHi: "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
-        technical: "Tebuconazole 25.9% EC",
-        dose: "1 से 1.25 मिली / लीटर पानी (200–250 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Folicur (Bayer)", "Orius"],
-      },
+  "mango": {
+    "mango-hopper": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.4 मिली / लीटर पानी",
+                "brands": [
+                      "Confidor (Bayer)",
+                      "Tatamida"
+                ],
+                "safety": "बौर पर हॉपर की शुरुआती रोकथाम।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "80 मिली / 200 लीटर पानी",
+                "resistanceWarning": "लगातार इस्तेमाल से हॉपर में प्रतिरोध का खतरा।"
+          },
+          {
+                "nameHi": "थियामेथोक्सम 25% WG (एक्टारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.3 ग्राम / लीटर पानी",
+                "brands": [
+                      "Actara (Syngenta)",
+                      "Anant"
+                ],
+                "safety": "रस चूसक भुनगे को तुरंत पैरालाइज करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "60 ग्राम / 200 लीटर पानी"
+          },
+          {
+                "nameHi": "डिनोटिफ्यूरान 20% SG (ओशीन) या बुप्रोफेजिन 25% SC",
+                "technical": "Dinotefuran 20% SG (0.4 g/L) या Buprofezin 25% SC (1.5 ml/L)",
+                "dose": "0.4 ग्राम / लीटर पानी",
+                "brands": [
+                      "Oshin (PI Industries)",
+                      "Applaud"
+                ],
+                "safety": "तीसरी पीढ़ी का नियोनिकोटिनोइड, हॉपर और उसके शिशुओं पर तुरंत ड्रॉप-डाउन असर।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "80 ग्राम / 200 लीटर पानी",
+                "isTopPerformer": true
+          }
     ],
-    thrips: [
-      {
-        nameHi: "फिप्रोनिल 5% SC (रीजेंट)",
-        technical: "Fipronil 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Regent (Bayer)"],
-      },
-      {
-        nameHi: "स्पिनेटोरम 11.7% SC (डेलिगेट)",
-        technical: "Spinetoram 11.7% SC",
-        dose: "0.8 से 1 मिली / लीटर पानी (160–180 मिली प्रति एकड़)",
-        brands: ["Delegate (Corteva)"],
-      },
+    "powdery-mildew": [
+          {
+                "nameHi": "घुलनशील सल्फर 80% WP (सल्फेक्स)",
+                "technical": "Wettable Sulphur 80% WP",
+                "dose": "2 ग्राम / लीटर पानी",
+                "brands": [
+                      "Sulfex (Excel)",
+                      "Thiovit"
+                ],
+                "safety": "सुरक्षात्मक फफूंदनाशक व सूक्ष्म पोषक तत्व सल्फर की आपूर्ति।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · सुरक्षात्मक स्तर",
+                "dosePerAcre": "400 ग्राम / 200 लीटर पानी",
+                "resistanceWarning": "35 डिग्री से अधिक तापमान पर फूल जलने का खतरा रहता है।"
+          },
+          {
+                "nameHi": "हेक्साकोनाज़ोल 5% SC (कंटाफ)",
+                "technical": "Hexaconazole 5% SC",
+                "dose": "1.5 मिली / लीटर पानी",
+                "brands": [
+                      "Contaf Plus (Tata)"
+                ],
+                "safety": "बौर के डंठल के अंदर प्रवेश कर दहिया को पूरी तरह सुखाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली / 200 लीटर पानी"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी",
+                "brands": [
+                      "Nativo (Bayer)"
+                ],
+                "safety": "दहिया रोग पर विश्व प्रसिद्ध फॉर्मूलेशन, बौर को झड़ने से बचाता है और फल सेटिंग बढ़ाता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 ग्राम / 200 लीटर पानी",
+                "isTopPerformer": true
+          }
     ],
-    stemphylium: [
-      {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-        technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Amistar Top (Syngenta)"],
-      },
-    ],
+    "anthracnose-fruit-fly": [
+          {
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP + मिथाइल यूजेनॉल ट्रैप",
+                "technical": "Carbendazim 12% + Mancozeb 63% WP (2 g/L) + Methyl Eugenol Traps",
+                "dose": "2 ग्राम / लीटर पानी + 8 ट्रैप / एकड़",
+                "brands": [
+                      "Saaf + Pheromone Traps"
+                ],
+                "safety": "शुरुआती काले धब्बों पर सुरक्षा और फल मक्खी नर कीटों की ट्रैपिंग।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "400 ग्राम + ट्रैप्स"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन + डिफेनोकोनाज़ोल + डेल्टामेथ्रिन 2.8% EC",
+                "technical": "Azoxystrobin + Difenoconazole (1 ml/L) + Deltamethrin 2.8% EC (1 ml/L)",
+                "dose": "1 मिली + 1 मिली / लीटर पानी",
+                "brands": [
+                      "Amistar Top + Decis"
+                ],
+                "safety": "काले धब्बे अंदर से साफ और वयस्क मक्खियों का नॉकडाउन।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली + 200 मिली / 200 लीटर पानी"
+          },
+          {
+                "nameHi": "पायराक्लोस्ट्रोबिन 20% WG (कैब्रियो) + स्पिनोसैड 45% SC (ट्रेसर)",
+                "technical": "Pyraclostrobin 20% WG (0.5 g/L) + Spinosad 45% SC (0.3 ml/L)",
+                "dose": "0.5 ग्राम + 0.3 मिली / लीटर पानी",
+                "brands": [
+                      "Cabrio Top (BASF) + Tracer (Corteva)"
+                ],
+                "safety": "फलों पर चमक व एन्थ्रेक्नोज का पूर्ण सफाया + फल मक्खी का प्राकृतिक सुरक्षित खात्मा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 ग्राम + 60 मिली / 200 लीटर पानी",
+                "isTopPerformer": true
+          }
+    ]
   },
+  "banana": {
+    "panama-wilt": [
+          {
+                "nameHi": "कार्बेन्डाजिम 50% WP + कॉपर ऑक्सीक्लोराइड 50% WP",
+                "technical": "Carbendazim 50% WP (2 g/L) + Copper Oxychloride (3 g/L)",
+                "dose": "2 ग्राम + 3 ग्राम / लीटर पानी (जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Bavistin + Blitox"
+                ],
+                "safety": "जड़ों में कवक व सड़ांध रोकने का पारंपरिक उपाय।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती ड्रेंचिंग",
+                "dosePerAcre": "400 ग्राम + 600 ग्राम / एकड़",
+                "resistanceWarning": "पनामा विल्ट रेस 4 पर साधारण फंगीसाइड का असर सीमित।"
+          },
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC + स्ट्रेप्टोसाइक्लिन",
+                "technical": "Propiconazole 25% EC (1.5 ml/L) + Streptocycline (0.1 g/L)",
+                "dose": "1.5 मिली + 0.1 ग्राम / लीटर पानी",
+                "brands": [
+                      "Tilt (Syngenta) + Plantomycin"
+                ],
+                "safety": "फफूंद व जीवाणु सड़ांध दोनों पर सिस्टेमिक नियंत्रण।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 मिली + 20 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.5 मिली / लीटर पानी (जड़ों व तने पर ड्रेंचिंग)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "केले की संवहनी नलिकाओं में तेजी से फैलने वाले कवक को रोकता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "300 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "sigatoka": [
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC + मिनरल ऑयल/स्टिकर",
+                "technical": "Propiconazole 25% EC (200 ml/एकड़) + Mineral Oil / Sticker",
+                "dose": "1 मिली / लीटर पानी + 1 मिली स्टिकर",
+                "brands": [
+                      "Tilt (Syngenta)",
+                      "Result"
+                ],
+                "safety": "सिगाटोका के धब्बों को तुरंत रोकता है।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "200 मिली / एकड़",
+                "resistanceWarning": "लगातार प्रोपिकोनाज़ोल छिड़कने से सिगाटोका कवक में प्रतिरोध देखा गया है।"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Nativo (Bayer)"
+                ],
+                "safety": "पत्तियों के दोनों तरफ सुरक्षित परत बनाता है और नए पत्तों को सुरक्षित रखता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "120 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "फ्लुक्सापाइरॉक्साड + पायराक्लोस्ट्रोबिन (प्रियाक्सर)",
+                "technical": "Fluxapyroxad + Pyraclostrobin SC",
+                "dose": "0.6 मिली / लीटर पानी (120 मिली प्रति एकड़)",
+                "brands": [
+                      "Priaxor (BASF)"
+                ],
+                "safety": "सिगाटोका पर सबसे एडवांस्ड SDHI मॉलिक्यूल, पत्तियां अंत तक हरी व घौद का अधिकतम वजन।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "scarring-beetle-thrips": [
+          {
+                "nameHi": "क्लोरोपायरीफॉस 20% EC",
+                "technical": "Chlorpyrifos 20% EC",
+                "dose": "2 मिली / लीटर पानी (घौद पर स्प्रे)",
+                "brands": [
+                      "Dursban (Corteva)",
+                      "Tricel"
+                ],
+                "safety": "कमल निकलते समय प्रारंभिक स्प्रे।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्प्रे",
+                "dosePerAcre": "400 मिली / 200 लीटर पानी"
+          },
+          {
+                "nameHi": "एसीफेट 75% SP (असाटाफ)",
+                "technical": "Acephate 75% SP",
+                "dose": "1.5 ग्राम / लीटर पानी",
+                "brands": [
+                      "Asataf (Rallis)",
+                      "Starthene"
+                ],
+                "safety": "फूलों और घौद के अंदर गहराई तक प्रवेश कर थ्रिप्स का खात्मा।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "300 ग्राम / 200 लीटर पानी"
+          },
+          {
+                "nameHi": "स्पिनोसैड 45% SC (ट्रेसर) या स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinosad 45% SC (0.4 ml/L) या Spinetoram 11.7% SC (0.5 ml/L)",
+                "dose": "0.4 मिली / लीटर पानी",
+                "brands": [
+                      "Tracer (Corteva)",
+                      "Delegate"
+                ],
+                "safety": "केले के छिलके पर शून्य दाग, निर्यात गुणवत्ता के लिए सबसे सुरक्षित ग्रीन मॉलिक्यूल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "80 मिली / 200 लीटर पानी",
+                "isTopPerformer": true
+          }
+    ]
+  },
+  "grapes": {
+    "downy-mildew": [
+          {
+                "nameHi": "साइमोक्सानिल 8% + मैंकोजेब 64% WP (कर्जेट)",
+                "technical": "Cymoxanil 8% + Mancozeb 64% WP",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Curzate (Corteva)",
+                      "Moximate"
+                ],
+                "safety": "सुरक्षात्मक और छिपे हुए कवक पर शुरुआती उपचारात्मक असर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती रोकथाम",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "डाइमेथोमॉर्फ 50% WP + मेटिराम 70% WG",
+                "technical": "Dimethomorph 50% WP (250 g) + Metiram 70% WG (500 g)",
+                "dose": "1.25 ग्राम + 2.5 ग्राम / लीटर पानी",
+                "brands": [
+                      "Acrobat (BASF) + Polyram"
+                ],
+                "safety": "कवक की कोशिका भित्ति को तुरंत नष्ट करने वाला शक्तिशाली संयोजन।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 ग्राम + 500 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "मैंडीप्रोपामिड 23.4% SC (रेवस) या अमिसुलब्रोम 17.7% SC",
+                "technical": "Mandipropamid 23.4% SC (160 ml) या Amisulbrom (150 ml)",
+                "dose": "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़)",
+                "brands": [
+                      "Revus (Syngenta)",
+                      "Amistar"
+                ],
+                "safety": "डाउनी मिल्ड्यू पर विश्व स्तरीय अत्याधुनिक मॉलिक्यूल, बारिश में 1 घंटे बाद भी नहीं धुलता।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "160 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "powdery-mildew": [
+          {
+                "nameHi": "माइक्लोब्यूटानिल 10% WP (सिस्टेन)",
+                "technical": "Myclobutanil 10% WP",
+                "dose": "0.75 ग्राम / लीटर पानी (150 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Systhane (Corteva)",
+                      "Boon"
+                ],
+                "safety": "प्रारंभिक चूर्णी फफूंद को रोकने वाला ट्रियाज़ोल।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "150 ग्राम / एकड़",
+                "resistanceWarning": "लगातार उपयोग से कवक में प्रतिरोध का खतरा।"
+          },
+          {
+                "nameHi": "टेट्राकोनाज़ोल 3.8% EW (डोमार्क) या डिफेनोकोनाज़ोल 25% EC (स्कोर)",
+                "technical": "Tetraconazole 3.8% EW (250 ml) या Difenoconazole 25% EC (100 ml)",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Domark (Isagro)",
+                      "Score (Syngenta)"
+                ],
+                "safety": "अंगूर की त्वचा पर सुरक्षित, दानों पर कोई सफेद दाग नहीं छोड़ता।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "मेट्राफेनोन 50% SC (विवांडो) या फ्लुक्सापाइरॉक्साड + डिफेनोकोनाज़ोल",
+                "technical": "Metrafenone 50% SC (100 ml) या Fluxapyroxad + Difenoconazole",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Vivando (BASF)"
+                ],
+                "safety": "भुरी रोग पर अद्वितीय मोड ऑफ एक्शन, दानों की चमक व एक्सपोर्ट क्वालिटी सुनिश्चित।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "100 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "thrips-mealybug": [
+          {
+                "nameHi": "फिप्रोनिल 80% WG + बुप्रोफेजिन 25% SC",
+                "technical": "Fipronil 80% WG (40 g) + Buprofezin 25% SC (400 ml)",
+                "dose": "0.2 ग्राम + 2 मिली / लीटर पानी",
+                "brands": [
+                      "Jump + Applaud"
+                ],
+                "safety": "थ्रिप्स पर तीव्र मारक क्षमता व मिलीबग के शिशुओं की रोकथाम।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · दोहरा वार",
+                "dosePerAcre": "40 ग्राम + 400 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "थ्रिप्स पर दुनिया का सर्वश्रेष्ठ नॉकडाउन मॉलिक्यूल, दानों पर दाग नहीं पड़ने देता।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "स्पाइरोटेट्रामैट 150 OD (मोवेन्टो) या सायंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
+                "technical": "Spirotetramat 150 OD (250 ml) या Cyantraniliprole 10.26% OD (200 ml)",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Movento (Bayer)",
+                      "Benevia (FMC)"
+                ],
+                "safety": "दोनों दिशाओं में चलने वाला (Two-way systemic) आधुनिक कीटनाशक, गुच्छों के अंदर छिपे मिलीबग का संपूर्ण खात्मा।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ]
+  }
 };
 
-/**
- * Intelligent Fallback: Parses raw cure lines and derives verified English technical name,
- * certified 3-metric dose, and market brands for any crop problem.
- */
+// Aliases for seamless crop resolution
+const ALIASES: Record<string, string> = {
+  tur: "arhar",
+  pigeonpea: "arhar",
+  gram: "chana",
+  chickpea: "chana",
+  rice: "paddy",
+  okra: "bhindi",
+  eggplant: "brinjal",
+  peanut: "groundnut",
+  moongfali: "groundnut",
+  pulses: "moong",
+};
+
+for (const [alias, target] of Object.entries(ALIASES)) {
+  if (CROP_PROBLEM_MEDICINES[target] && !CROP_PROBLEM_MEDICINES[alias]) {
+    CROP_PROBLEM_MEDICINES[alias] = CROP_PROBLEM_MEDICINES[target];
+  }
+}
+
 export function getCurativeMedicines(
   cropSlug: string,
   problemId: string,
-  rawLines: string[]
+  rawLines?: string[]
 ): CurativeMedicine[] {
-  const mapped = CROP_PROBLEM_MEDICINES[cropSlug]?.[problemId];
+  const norm = cropSlug.trim().toLowerCase();
+  const mappedSlug = ALIASES[norm] || norm;
+  const mapped = CROP_PROBLEM_MEDICINES[mappedSlug]?.[problemId] || CROP_PROBLEM_MEDICINES[cropSlug]?.[problemId];
   if (mapped && mapped.length > 0) return mapped;
 
-  // Fallback heuristic parser with comprehensive ICAR active ingredient mapping
-  return rawLines.slice(0, 3).map((line) => {
+  if (!rawLines || rawLines.length === 0) return [];
+  return rawLines.slice(0, 3).map((line, i) => {
     const raw = line.split("—")[0]?.trim() || line;
-
-    // Fungicides
-    if (/ट्राइसाइक्लाज़ोल|tricyclazole|beam/i.test(line)) {
-      return {
-        nameHi: "ट्राइसाइक्लाज़ोल 75% WP (बाण / बीम)",
-        technical: "Tricyclazole 75% WP",
-        dose: "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़ — 200 L पानी में)",
-        brands: ["Beam (Corteva)", "Baan (Dhanuka)", "Sivic"],
-        safety: "लक्षण दिखते ही छिड़कें; आवश्यकता पड़ने पर 10-12 दिन बाद दोहराएँ।",
-      };
-    }
-
-    if (/आइसोप्रोथिओलेन|isoprothiolane|fuji/i.test(line)) {
-      return {
-        nameHi: "आइसोप्रोथिओलेन 40% EC (फुजी-वन)",
-        technical: "Isoprothiolane 40% EC",
-        dose: "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़ — 200 L पानी में)",
-        brands: ["Fuji-one (Rallis)"],
-      };
-    }
-
-    if (/वैलिडामाइसिन|validamycin|sheathmar/i.test(line)) {
-      return {
-        nameHi: "वैलिडामाइसिन 3% L (शीथमार)",
-        technical: "Validamycin 3% L",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ — 200 L पानी में)",
-        brands: ["Sheathmar (Dhanuka)", "Rhizocin"],
-      };
-    }
-
-    if (/मेटालैक्सिल|metalaxyl|ridomil/i.test(line)) {
-      return {
-        nameHi: "मेटालैक्सिल-एम 4% + मैंकोजेब 64% WP (रिडोमिल गोल्ड)",
-        technical: "Metalaxyl-M 4% + Mancozeb 64% WP",
-        dose: "2 से 2.5 ग्राम / लीटर पानी (400–500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ridomil Gold MZ 68 WP (Syngenta)", "Master", "Krilaxyl"],
-        safety: "लक्षण दिखते ही या बारिश/ओस से पहले छिड़कें।",
-      };
-    }
-
-    if (/प्रोपिकोनाज़ोल|propiconazole|tilt/i.test(line)) {
-      return {
-        nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
-        technical: "Propiconazole 25% EC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ — 200 L पानी में)",
-        brands: ["Tilt (Syngenta)", "Bumper (Adama)"],
-      };
-    }
-
-    if (/टेबुकोनाज़ोल|tebuconazole|folicur/i.test(line)) {
-      return {
-        nameHi: "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
-        technical: "Tebuconazole 25.9% EC",
-        dose: "1 से 1.25 मिली / लीटर पानी (200–250 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Folicur (Bayer)", "Orius"],
-      };
-    }
-
-    if (/एज़ोक्सीस्ट्रोबिन|azoxystrobin|amistar/i.test(line)) {
-      return {
-        nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-        technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Amistar Top (Syngenta)", "Custodia"],
-      };
-    }
-
-    if (/मैंकोज़ेब|मैंकोजेब|mancozeb|dithane/i.test(line)) {
-      return {
-        nameHi: "मैंकोजेब 75% WP (डाइथेन एम-45)",
-        technical: "Mancozeb 75% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Dithane M-45 (Corteva)", "Indofil M-45"],
-      };
-    }
-
-    if (/हेक्साकोनाज़ोल|hexaconazole|contaf/i.test(line)) {
-      return {
-        nameHi: "हेक्साकोनाज़ोल 5% SC (कोंटाफ प्लस)",
-        technical: "Hexaconazole 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Contaf Plus (Tata Rallis)", "Sitara"],
-      };
-    }
-
-    if (/कार्बेन्डाजिम|carbendazim|bavistin|saaf/i.test(line)) {
-      return {
-        nameHi: "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
-        technical: "Carbendazim 12% + Mancozeb 63% WP",
-        dose: "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Saaf (UPL)", "Sixer"],
-      };
-    }
-
-    if (/कॉपर|copper|blitox/i.test(line)) {
-      return {
-        nameHi: "कॉपर ऑक्सीक्लोराइड 50% WP (ब्लाइटॉक्स)",
-        technical: "Copper oxychloride 50% WP",
-        dose: "2.5 से 3 ग्राम / लीटर पानी (500–600 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Blitox 50 (Rallis)", "Blue Copper"],
-      };
-    }
-
-    if (/स्ट्रेप्टोसाइक्लिन|streptocycline/i.test(line)) {
-      return {
-        nameHi: "स्ट्रेप्टोसाइक्लिन 90% (जीवाणुनाशक)",
-        technical: "Streptocycline 90% (Streptomycin + Tetracycline)",
-        dose: "6 ग्राम का पाउच प्रति 50–60 लीटर पानी (कॉपर के साथ मिलाकर)",
-        brands: ["Streptocycline (HAL)"],
-      };
-    }
-
-    if (/सल्फर|sulphur|sulfex/i.test(line)) {
-      return {
-        nameHi: "वेटेबल सल्फर 80% WDG (सल्फेक्स)",
-        technical: "Wettable Sulphur 80% WDG",
-        dose: "2.5 से 3 ग्राम / लीटर पानी (500–600 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Sulfex (Excel)", "Thiovit (Syngenta)"],
-      };
-    }
-
-    if (/डाइमेथोमॉर्फ|dimethomorph|acrobat/i.test(line)) {
-      return {
-        nameHi: "डाइमेथोमॉर्फ 50% WP (एक्रोबैट)",
-        technical: "Dimethomorph 50% WP",
-        dose: "1.2 से 1.5 ग्राम / लीटर पानी (250–300 ग्राम प्रति एकड़)",
-        brands: ["Acrobat (BASF)"],
-      };
-    }
-
-    if (/साइमोक्सानिल|cymoxanil|curzate/i.test(line)) {
-      return {
-        nameHi: "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
-        technical: "Cymoxanil 8% + Mancozeb 64% WP",
-        dose: "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
-        brands: ["Curzate (Corteva)"],
-      };
-    }
-
-    // Insecticides
-    if (/क्लोरेंट्रानिलिप्रोल|chlorantraniliprole|coragen/i.test(line)) {
-      return {
-        nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
-        technical: "Chlorantraniliprole 18.5% SC",
-        dose: "0.3 से 0.4 मिली / लीटर पानी (60–80 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Coragen (FMC)", "Cover"],
-      };
-    }
-
-    if (/इमामेक्टिन|emamectin|proclaim/i.test(line)) {
-      return {
-        nameHi: "इमामेक्टिन बेंजोएट 5% SG (प्रोक्लेम)",
-        technical: "Emamectin benzoate 5% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Proclaim (Syngenta)", "Missile", "Sperto"],
-      };
-    }
-
-    if (/इमिडाक्लोप्रिड|imidacloprid|confidor/i.test(line)) {
-      return {
-        nameHi: "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
-        technical: "Imidacloprid 17.8% SL",
-        dose: "0.5 मिली / लीटर पानी (60–80 मिली प्रति एकड़ in 150 L पानी)",
-        brands: ["Confidor (Bayer)", "Tatamida"],
-      };
-    }
-
-    if (/थियामेथोक्साम|thiamethoxam|actara/i.test(line)) {
-      return {
-        nameHi: "थियामेथोक्साम 25% WG (अकतारा)",
-        technical: "Thiamethoxam 25% WG",
-        dose: "0.5 ग्राम / लीटर पानी (80–100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Actara (Syngenta)", "Areva"],
-      };
-    }
-
-    if (/पाइमेट्रोज़िन|pymetrozine|chess/i.test(line)) {
-      return {
-        nameHi: "पाइमेट्रोज़िन 50% WDG (चेस)",
-        technical: "Pymetrozine 50% WDG",
-        dose: "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Chess (Syngenta)", "Fulstop"],
-      };
-    }
-
-    if (/डाइनोटेफ्यूरान|dinotefuran|token|oshin/i.test(line)) {
-      return {
-        nameHi: "डाइनोटेफ्यूरान 20% SG (टोकन)",
-        technical: "Dinotefuran 20% SG",
-        dose: "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Token (Indofil)", "Oshin"],
-      };
-    }
-
-    if (/कार्टैप|cartap|caldan/i.test(line)) {
-      return {
-        nameHi: "कार्टैप हाइड्रोक्लोराइड 50% SP (कैलिडान)",
-        technical: "Cartap hydrochloride 50% SP",
-        dose: "2 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Caldan 50 SP (Dhanuka)", "Padan"],
-      };
-    }
-
-    if (/फ्लूबेंडिमाइड|flubendiamide|fame/i.test(line)) {
-      return {
-        nameHi: "फ्लूबेंडिमाइड 39.35% SC (फेम)",
-        technical: "Flubendiamide 39.35% SC",
-        dose: "0.25 मिली / लीटर पानी (50 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Fame (Bayer)"],
-      };
-    }
-
-    if (/स्पिनोसैड|spinosad|tracer/i.test(line)) {
-      return {
-        nameHi: "स्पिनोसैड 45% SC (ट्रेसर)",
-        technical: "Spinosad 45% SC",
-        dose: "0.35 मिली / लीटर पानी (70 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Tracer (Corteva)"],
-      };
-    }
-
-    if (/स्पिनेटोरम|spinetoram|delegate/i.test(line)) {
-      return {
-        nameHi: "स्पिनेटोरम 11.7% SC (डेलिगेट)",
-        technical: "Spinetoram 11.7% SC",
-        dose: "0.8 से 1 मिली / लीटर पानी (160–180 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Delegate (Corteva)"],
-      };
-    }
-
-    if (/फिप्रोनिल|fipronil|regent/i.test(line)) {
-      return {
-        nameHi: "फिप्रोनिल 5% SC (रीजेंट)",
-        technical: "Fipronil 5% SC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Regent (Bayer)"],
-      };
-    }
-
-    if (/फ्लोनिकैमिड|flonicamid|ulala/i.test(line)) {
-      return {
-        nameHi: "फ्लोनिकैमिड 50% WG (उलाला)",
-        technical: "Flonicamid 50% WG",
-        dose: "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Ulala (UPL)"],
-      };
-    }
-
-    if (/डायफेंथियूरॉन|diafenthiuron|pegasus/i.test(line)) {
-      return {
-        nameHi: "डायफेंथियूरॉन 50% WP (पेगासस)",
-        technical: "Diafenthiuron 50% WP",
-        dose: "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़ in 200 L पानी)",
-        brands: ["Pegasus (Syngenta)"],
-      };
-    }
-
-    if (/पाइरिप्रोक्सीफेन|pyriproxyfen|lano/i.test(line)) {
-      return {
-        nameHi: "पाइरिप्रोक्सीफेन 10% EC (लैनो)",
-        technical: "Pyriproxyfen 10% EC",
-        dose: "2 मिली / लीटर पानी (400 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Lano (Sumitomo)"],
-      };
-    }
-
-    if (/स्पिरोमीसिफेन|spiromesifen|oberon/i.test(line)) {
-      return {
-        nameHi: "स्पिरोमीसिफेन 22.9% SC (ओबेरॉन)",
-        technical: "Spiromesifen 22.9% SC",
-        dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Oberon (Bayer)"],
-      };
-    }
-
-    if (/एबामेक्टिन|abamectin|vertimec/i.test(line)) {
-      return {
-        nameHi: "एबामेक्टिन 1.9% EC (वर्टिमेक)",
-        technical: "Abamectin 1.9% EC",
-        dose: "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Vertimec (Syngenta)"],
-      };
-    }
-
-    if (/क्लोरपायरिफॉस|क्लोरपाइरीफॉस|chlorpyrifos|dursban/i.test(line)) {
-      return {
-        nameHi: "क्लोरपाइरीफॉस 20% EC (डर्सबान)",
-        technical: "Chlorpyrifos 20% EC",
-        dose: "2 से 2.5 मिली / लीटर पानी (400–500 मिली प्रति एकड़ in 200 L पानी)",
-        brands: ["Dursban (Corteva)", "Radar"],
-      };
-    }
-
-    if (/कार्बोक्सिन|carboxin|vitavax/i.test(line)) {
-      return {
-        nameHi: "कार्बोक्सिन 37.5% + थीरम 37.5% DS (विटावैक्स पावर - बीज उपचार)",
-        technical: "Carboxin 37.5% + Thiram 37.5% DS",
-        dose: "2.5 से 3 ग्राम प्रति किग्रा बीज (बुवाई पूर्व शोधन)",
-        brands: ["Vitavax Power (Dhanuka)"],
-      };
-    }
-
-    // Herbicides
-    if (/पेंडीमेथालिन|pendimethalin|stomp/i.test(line)) {
-      return {
-        nameHi: "पेंडीमेथालिन 30% EC (स्टॉम्प)",
-        technical: "Pendimethalin 30% EC",
-        dose: "1 से 1.2 लीटर प्रति एकड़ (200 L पानी में बुवाई के 48 घंटे के भीतर)",
-        brands: ["Stomp (BASF)", "Dhanutop"],
-      };
-    }
-
-    if (/एट्राजिन|atrazine|atrataf/i.test(line)) {
-      return {
-        nameHi: "एट्राजिन 50% WP (एट्राटाफ)",
-        technical: "Atrazine 50% WP",
-        dose: "500 से 800 ग्राम प्रति एकड़ (200 L पानी में बुवाई पूर्व)",
-        brands: ["Atrataf (Rallis)"],
-      };
-    }
-
-    // Clean dynamic extraction if specific chemical name couldn't be regex-matched
-    const cleanWord = raw
-      .replace(/शैली|लेबल|अनुसार|स्प्रे|छिड़काव|इलाज|नियंत्रण|प्रयोग|करें/gi, "")
-      .trim();
-
     return {
-      nameHi: cleanWord || raw,
-      technical: cleanWord ? `${cleanWord} (ICAR Certified Formulation)` : "Recommended Crop Protection Formulation",
-      dose: "1.5 से 2 मिली या ग्राम प्रति लीटर पानी (300–400 मात्रा प्रति एकड़ — 200 L साफ़ पानी में)",
-      brands: ["नज़दीकी प्रमाणित कृषि सेवा केंद्र या कंपनी बोतल लेबल अनुसार"],
+      nameHi: raw,
+      technical: i === 0 ? "Standard Technical Formulation" : "Complementary Technical",
+      dose: "अनुशंसित डोज़: 1.5–2 ग्राम/मिली प्रति लीटर पानी (लेबल अनुसार)",
+      brands: ["प्रमाणित कृषि सेवा केंद्र से संपर्क करें"],
+      level: (i + 1) as 1 | 2 | 3,
+      levelLabelHi: `स्तर ${i + 1}`,
     };
   });
 }
+
