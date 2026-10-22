@@ -132,13 +132,6 @@ export default function ProfilePage() {
                     : ""}
                 </p>
               </div>
-              <AppLink
-                href="/profile/edit"
-                className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-white/20 bg-white/10 px-2.5 py-1.5 text-[11px] font-bold text-white transition active:scale-[0.98]"
-              >
-                <Pencil className="h-3 w-3" />
-                {isHi ? "बदलें" : "Edit"}
-              </AppLink>
             </div>
 
             <div className="mt-4 grid grid-cols-3 gap-2">

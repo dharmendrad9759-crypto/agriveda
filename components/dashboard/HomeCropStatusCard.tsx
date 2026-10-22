@@ -81,12 +81,25 @@ export default function HomeCropStatusCard({
   }, [showDatePicker]);
 
   // Form state for date picker modal
-  const todayIso = new Date().toISOString().split("T")[0];
-  const initialDate =
-    field.sowingDate && !Number.isNaN(new Date(field.sowingDate).getTime())
-      ? new Date(field.sowingDate).toISOString().split("T")[0]
-      : todayIso;
+  const toLocalIso = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+  const todayIso = toLocalIso(new Date());
+  const initialDate = (() => {
+    if (!field.sowingDate) return todayIso;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(field.sowingDate)) return field.sowingDate;
+    const parsed = new Date(field.sowingDate);
+    return Number.isNaN(parsed.getTime()) ? todayIso : toLocalIso(parsed);
+  })();
   const [selectedDate, setSelectedDate] = useState(initialDate);
+
+  const openDatePicker = () => {
+    setSelectedDate(initialDate);
+    setShowDatePicker(true);
+  };
 
   const cropSlug = field.cropSlug || "";
   const cropHindi = getCropHindiName(cropSlug) || field.crop;
@@ -106,10 +119,11 @@ export default function HomeCropStatusCard({
   const setDaysAgo = (daysAgo: number) => {
     const d = new Date();
     d.setDate(d.getDate() - daysAgo);
-    setSelectedDate(d.toISOString().split("T")[0]);
+    setSelectedDate(toLocalIso(d));
   };
 
   const handleSaveDate = () => {
+    if (!selectedDate || Number.isNaN(new Date(selectedDate).getTime())) return;
     onUpdateSowingDate(field.id, selectedDate);
     setShowDatePicker(false);
   };
@@ -194,7 +208,7 @@ export default function HomeCropStatusCard({
               {/* SOWING DATE PILL - TAPPING OPENS MODAL DIRECTLY */}
               <button
                 type="button"
-                onClick={() => setShowDatePicker(true)}
+                onClick={openDatePicker}
                 className={`group/btn relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black transition-all active:scale-95 ${
                   timeline.hasSowingDate
                     ? "bg-emerald-600 text-white shadow-sm shadow-emerald-700/25 hover:bg-emerald-700"
@@ -232,7 +246,7 @@ export default function HomeCropStatusCard({
             </div>
           </div>
 
-          {/* Sowing Date Subtitle with Direct "तारीख बदलें" trigger */}
+          {/* Sowing Date Subtitle */}
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-emerald-900/8 pt-2 text-[11.5px] dark:border-emerald-500/10">
             <span className="flex items-center gap-1 text-[var(--av-text-secondary)]">
               <span className="font-bold text-[var(--av-text-muted)]">
@@ -240,19 +254,17 @@ export default function HomeCropStatusCard({
               </span>{" "}
               {timeline.sowingDateFormatted}
             </span>
-            <button
-              type="button"
-              onClick={() => setShowDatePicker(true)}
-              className="font-extrabold text-emerald-700 hover:underline dark:text-emerald-400"
-            >
-              {timeline.hasSowingDate
-                ? isHi
-                  ? "तारीख बदलें ✎"
-                  : "Change Date ✎"
-                : isHi
+            {!timeline.hasSowingDate ? (
+              <button
+                type="button"
+                onClick={openDatePicker}
+                className="font-extrabold text-emerald-700 hover:underline dark:text-emerald-400"
+              >
+                {isHi
                   ? "यहाँ क्लिक कर तारीख डालें →"
                   : "Click to set date →"}
-            </button>
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -281,23 +293,45 @@ export default function HomeCropStatusCard({
           </div>
         </div>
 
-        {/* ── BOTTOM ACTIONS STRIP (COMPACT TWO-BUTTON ROW) ── */}
+        {/* ── BOTTOM ACTIONS STRIP (COMPACT TWO-BUTTON ROW WITH GATEKEEPER LOGIC) ── */}
         <div className="relative z-10 mt-2.5 grid grid-cols-2 divide-x divide-emerald-900/10 border-t border-emerald-900/10 bg-emerald-50/70 text-center dark:divide-emerald-500/15 dark:border-emerald-500/15 dark:bg-emerald-950/30">
-          <AppLink
-            href={cropSlug ? `/crops/${cropSlug}/care/fertilizer` : "/services/fertilizer-calculator"}
-            className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
-          >
-            <Droplets className="h-4 w-4 shrink-0 text-emerald-600" />
-            <span>{isHi ? "अभी कौन-सी खाद डालें →" : "Fertilizer for now →"}</span>
-          </AppLink>
+          {timeline.hasSowingDate ? (
+            <AppLink
+              href={cropSlug ? `/crops/${cropSlug}/care/fertilizer?das=${timeline.days}` : "/services/fertilizer-calculator"}
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
+            >
+              <Droplets className="h-4 w-4 shrink-0 text-emerald-600" />
+              <span>{isHi ? "अभी कौन-सी खाद डालें →" : "Fertilizer for now →"}</span>
+            </AppLink>
+          ) : (
+            <button
+              type="button"
+              onClick={openDatePicker}
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
+            >
+              <Droplets className="h-4 w-4 shrink-0 text-emerald-600" />
+              <span>{isHi ? "अभी कौन-सी खाद डालें →" : "Fertilizer for now →"}</span>
+            </button>
+          )}
 
-          <AppLink
-            href={cropSlug ? `/crops/${cropSlug}/care/calendar` : "/crop-calendar"}
-            className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
-          >
-            <Calendar className="h-4 w-4 shrink-0 text-emerald-600" />
-            <span>{isHi ? "इस हफ्ते का काम →" : "This week's tasks →"}</span>
-          </AppLink>
+          {timeline.hasSowingDate ? (
+            <AppLink
+              href={cropSlug ? `/crops/${cropSlug}/care/calendar?das=${timeline.days}` : "/crop-calendar"}
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
+            >
+              <Calendar className="h-4 w-4 shrink-0 text-emerald-600" />
+              <span>{isHi ? "इस हफ्ते का काम →" : "This week's tasks →"}</span>
+            </AppLink>
+          ) : (
+            <button
+              type="button"
+              onClick={openDatePicker}
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
+            >
+              <Calendar className="h-4 w-4 shrink-0 text-emerald-600" />
+              <span>{isHi ? "इस हफ्ते का काम →" : "This week's tasks →"}</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -354,7 +388,7 @@ export default function HomeCropStatusCard({
                     <Sparkles className="h-4 w-4 shrink-0 text-emerald-600" />
                     <div>
                       <span className="font-black">
-                        {isHi ? "उत्तम बुवाई समय (अनुशंसित):" : "Optimal Sowing Window:"}
+                        {isHi ? "उत्तम बुवाई समय:" : "Optimal Sowing Window:"}
                       </span>{" "}
                       <span className="font-extrabold text-emerald-700 dark:text-emerald-300">
                         {optimalWindow}
@@ -414,7 +448,7 @@ export default function HomeCropStatusCard({
                 {/* Resulting Days Live Preview */}
                 {modalDaysPreview !== null && (
                   <div className="mt-3.5 flex items-center justify-between rounded-xl bg-slate-100 px-3 py-2 text-xs font-black text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                    <span>{isHi ? "गणना किए गए दिन:" : "Calculated Days:"}</span>
+                    <span>{isHi ? "फसल की उम्र (बुवाई के बाद के दिन):" : "Crop Age (Days after sowing):"}</span>
                     <span className="rounded-full bg-emerald-600 px-2.5 py-0.5 text-white">
                       {isHi ? `${modalDaysPreview} दिन` : `Day ${modalDaysPreview}`}
                     </span>

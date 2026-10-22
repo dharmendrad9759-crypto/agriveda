@@ -27,6 +27,21 @@ export interface CropTimelineGuidance {
   speechScript: string;
 }
 
+const CROP_ALIASES = {
+  wheat: ["wheat", "gehun", "gehu"],
+  maize: ["maize", "makka", "corn"],
+  paddy: ["paddy", "dhan", "rice", "dhaan"],
+  mustard: ["mustard", "sarson", "rai"],
+  potato: ["potato", "alu", "aloo"],
+  chana: ["chana", "gram", "chickpea"],
+  cotton: ["cotton", "kapas"],
+} as const;
+
+export function isCrop(slug: string, crop: keyof typeof CROP_ALIASES): boolean {
+  const s = slug.trim().toLowerCase();
+  return (CROP_ALIASES[crop] as readonly string[]).includes(s);
+}
+
 /** Get official / optimum sowing window for farmer display */
 export function getOptimalSowingWindow(slug: string, isHi: boolean): string {
   const buwai = getBuwaiForSlug(slug);
@@ -47,13 +62,13 @@ export function getOptimalSowingWindow(slug: string, isHi: boolean): string {
   if (agroWindow) {
     // If it has English notes, provide clean Hindi range
     if (isHi) {
-      if (slug.includes("wheat") || slug.includes("gehun")) return "25 अक्टूबर – 15 नवंबर";
-      if (slug.includes("maize") || slug.includes("makka")) return "15 जून – 15 जुलाई (खरीफ) / 15 जन – 28 फर (बसंत)";
-      if (slug.includes("paddy") || slug.includes("dhan")) return "15 जून – 15 जुलाई";
-      if (slug.includes("mustard") || slug.includes("sarson")) return "1 – 25 अक्टूबर";
-      if (slug.includes("potato") || slug.includes("alu")) return "15 अक्टूबर – 5 नवंबर";
-      if (slug.includes("chana") || slug.includes("gram")) return "15 अक्टूबर – 15 नवंबर";
-      if (slug.includes("cotton") || slug.includes("kapas")) return "15 अप्रैल – 15 मई";
+      if (isCrop(slug, "wheat")) return "25 अक्टूबर – 15 नवंबर";
+      if (isCrop(slug, "maize")) return "15 जून – 15 जुलाई (खरीफ) / 15 जन – 28 फर (बसंत)";
+      if (isCrop(slug, "paddy")) return "15 जून – 15 जुलाई";
+      if (isCrop(slug, "mustard")) return "1 – 25 अक्टूबर";
+      if (isCrop(slug, "potato")) return "15 अक्टूबर – 5 नवंबर";
+      if (isCrop(slug, "chana")) return "15 अक्टूबर – 15 नवंबर";
+      if (isCrop(slug, "cotton")) return "15 अप्रैल – 15 मई";
     }
     return agroWindow.split("(")[0]?.trim() || agroWindow;
   }
@@ -134,7 +149,7 @@ export function getCropTimelineGuidance(opts: {
   }
 
   // WHEAT / गेहूँ
-  if (slug.includes("wheat") || slug.includes("gehun")) {
+  if (isCrop(slug, "wheat")) {
     if (days <= 20) {
       return {
         days,
@@ -358,7 +373,7 @@ export function getCropTimelineGuidance(opts: {
   }
 
   // MAIZE / मक्का
-  if (slug.includes("maize") || slug.includes("makka") || slug.includes("corn")) {
+  if (isCrop(slug, "maize")) {
     if (days <= 20) {
       return {
         days,
@@ -550,7 +565,7 @@ export function getCropTimelineGuidance(opts: {
   }
 
   // PADDY / धान
-  if (slug.includes("paddy") || slug.includes("dhan") || slug.includes("rice")) {
+  if (isCrop(slug, "paddy")) {
     if (days <= 20) {
       return {
         days,
@@ -652,7 +667,7 @@ export function getCropTimelineGuidance(opts: {
   }
 
   // MUSTARD / सरसों
-  if (slug.includes("mustard") || slug.includes("sarson")) {
+  if (isCrop(slug, "mustard")) {
     if (days <= 25) {
       return {
         days,

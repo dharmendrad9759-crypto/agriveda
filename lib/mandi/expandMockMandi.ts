@@ -18,10 +18,16 @@ export function expandMockMandi(state: string, district?: string): MandiRow[] {
     .map((r) => ({ ...r, state, district: district || r.district || r.mandi }));
 
   const stateDistricts = getDistrictsForState(state);
+  
+  // If specific district is requested, generate standard APMC mandis for that district
   const markets = district
-    ? [district]
+    ? [
+        `${district} मुख्य मंडी (APMC)`,
+        `${district} अनाज मंडी`,
+        `${district} फल-सब्जी मंडी`,
+      ]
     : stateDistricts.length > 0
-      ? stateDistricts.slice(0, 15)
+      ? stateDistricts.slice(0, 35)
       : ["स्थानीय मंडी"];
 
   const crops = EXTRA_CROP_OPTIONS.slice(0, 18);
@@ -29,6 +35,7 @@ export function expandMockMandi(state: string, district?: string): MandiRow[] {
   let i = 0;
 
   for (const mandi of markets) {
+    const assignedDistrict = district || mandi.replace(/\s+(मुख्य मंडी \(APMC\)|अनाज मंडी|फल-सब्जी मंडी|Mandi)$/i, "");
     for (const crop of crops) {
       if (rows.some((r) => r.mandi.toLowerCase().includes(mandi.toLowerCase()) && r.crop === crop)) continue;
       const seed = (mandi.length + crop.length + i) * 137;
@@ -36,13 +43,13 @@ export function expandMockMandi(state: string, district?: string): MandiRow[] {
       const spread = 80 + (seed % 200);
       const grade = GRADES[seed % GRADES.length];
       rows.push({
-        id: `mock-${state}-${mandi}-${crop}-${grade}-${i}`,
+        id: `mock-${state}-${mandi.replace(/\s+/g, "_")}-${crop}-${grade}-${i}`,
         crop,
         cropHi: CROP_HI[crop] ?? crop,
         variety: grade,
-        mandi: `${mandi} Mandi`,
+        mandi: mandi.includes("मंडी") || mandi.includes("Mandi") ? mandi : `${mandi} Mandi`,
         state,
-        district: district || mandi,
+        district: assignedDistrict,
         min: modal - spread,
         max: modal + spread,
         modal,
@@ -53,9 +60,9 @@ export function expandMockMandi(state: string, district?: string): MandiRow[] {
         arrivalDate: new Date().toISOString().slice(0, 10),
       });
       i += 1;
-      if (rows.length >= 220) break;
+      if (rows.length >= 350) break;
     }
-    if (rows.length >= 220) break;
+    if (rows.length >= 350) break;
   }
 
   return rows;

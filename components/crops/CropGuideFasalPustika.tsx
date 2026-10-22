@@ -26,7 +26,9 @@ import {
   PestAndDiseaseItem,
   ChemicalControlItem,
   TOMATO_CROP_GUIDE,
+  getCropGuideBySlug,
 } from "@/lib/crops/cropGuideData";
+import { cropCatalog } from "@/data/crop-catalog";
 import { cn } from "@/lib/cn";
 
 // ============================================================================
@@ -408,37 +410,18 @@ interface CropGuideScreenProps {
 }
 
 export default function CropGuideScreen({ cropSlug = "tomato" }: CropGuideScreenProps) {
-  const [guideData, setGuideData] = useState<CropGuideData>(TOMATO_CROP_GUIDE);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [guideData, setGuideData] = useState<CropGuideData>(() => getCropGuideBySlug(cropSlug));
 
-  // Dynamic API Fetch with Fallback
+  // Sync guide whenever cropSlug changes
   useEffect(() => {
-    let isMounted = true;
-    async function fetchCropGuide() {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/v1/crops/${cropSlug}/guide`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json?.data && isMounted) {
-            setGuideData(json.data);
-          }
-        }
-      } catch (err) {
-        console.warn("[CropGuide] Using fallback local dataset:", err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-
-    void fetchCropGuide();
-    return () => {
-      isMounted = false;
-    };
+    setGuideData(getCropGuideBySlug(cropSlug));
   }, [cropSlug]);
 
+  const currentCrop = cropCatalog.find((c) => c.slug === cropSlug) ?? cropCatalog[0];
+  const emoji = currentCrop?.emoji || (cropSlug === "paddy" || cropSlug === "wheat" ? "🌾" : "🌱");
+
   return (
-    <div className="relative min-h-screen pb-28 pt-2">
+    <div className="relative min-h-screen pb-6 pt-2">
       {/* Header Info */}
       <div className="mb-4 rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent p-4 dark:bg-slate-900/60">
         <div className="flex items-center justify-between">
@@ -454,7 +437,7 @@ export default function CropGuideScreen({ cropSlug = "tomato" }: CropGuideScreen
               4 मुख्य चरण: शुरुआत, लगाना, देखभाल, और सुरक्षा (प्रमाणित तकनीकी नियंत्रण सहित)
             </p>
           </div>
-          <span className="text-3xl">🍅</span>
+          <span className="text-3xl">{emoji}</span>
         </div>
       </div>
 
@@ -468,9 +451,6 @@ export default function CropGuideScreen({ cropSlug = "tomato" }: CropGuideScreen
           />
         ))}
       </div>
-
-      {/* Sticky Krishi Doctor Bottom CTA Banner */}
-      <StickyDoctorBanner cropName={guideData.crop_name_hi || guideData.crop_name} />
     </div>
   );
 }

@@ -64,6 +64,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 type SubTabId = "schedule" | "foliar" | "organic" | "calculator" | "notes";
 type FertMode = "normal" | "drip";
@@ -236,9 +237,58 @@ function NutritionBar({
   );
 }
 
+function findMatchingStageIndex(rows: { time: string; apply: string }[], das: number): number {
+  if (!rows.length) return 0;
+  if (das <= 10) return 0;
+
+  for (let i = 0; i < rows.length; i++) {
+    const text = rows[i].time;
+    const rangeMatch = text.match(/(\d+)\s*(?:-|–|to|से)\s*(\d+)/i);
+    if (rangeMatch) {
+      const start = parseInt(rangeMatch[1], 10);
+      const end = parseInt(rangeMatch[2], 10);
+      if (das >= start - 3 && das <= end + 5) {
+        return i;
+      }
+    }
+    const singleMatch = text.match(/(\d+)\s*(?:दिन|days|DAS)/i);
+    if (singleMatch) {
+      const d = parseInt(singleMatch[1], 10);
+      if (Math.abs(das - d) <= 7) {
+        return i;
+      }
+    }
+  }
+
+  let closestIdx = 0;
+  let minDiff = 999;
+  for (let i = 0; i < rows.length; i++) {
+    const text = rows[i].time;
+    const matches = text.match(/\d+/g);
+    if (matches) {
+      for (const m of matches) {
+        const val = parseInt(m, 10);
+        if (val >= 0 && val <= 180) {
+          const diff = Math.abs(val - das);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIdx = i;
+          }
+        }
+      }
+    }
+  }
+  return closestIdx;
+}
+
 export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const { locale } = useLocale();
   const hi = locale === "hi";
+  const searchParams = useSearchParams();
+  const dasParam = searchParams?.get("das");
+  const parsedDas = dasParam !== null && !isNaN(Number(dasParam)) ? Number(dasParam) : null;
+  const [showFullSchedule, setShowFullSchedule] = useState(false);
+
   const [activeSubTab, setActiveSubTab] = useState<SubTabId>("schedule");
   const [fertMode, setFertMode] = useState<FertMode>("normal");
   const [acresText, setAcresText] = useState("1");
@@ -302,13 +352,13 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
         apply,
       }));
     }
-    const basal = crop.fertilizerSchedule.basalDose.map((d, i) => ({
+    const basal = (crop.fertilizerSchedule?.basalDose ?? []).map((d, i) => ({
       stage: i + 1,
       time: hi ? "बुवाई के समय" : "Basal",
       apply: d,
     }));
-    const stageWise = crop.fertilizerSchedule.stageWise.flatMap((st, si) =>
-      st.details.map((d, di) => ({
+    const stageWise = (crop.fertilizerSchedule?.stageWise ?? []).flatMap((st, si) =>
+      (st.details ?? []).map((d, di) => ({
         stage: basal.length + si + di + 1,
         time: st.stage,
         apply: d,
@@ -329,6 +379,11 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
     return scheduleForCrop;
   }, [fertMode, scheduleForCrop, hi, supportsDrip]);
 
+  const currentStageIndex = useMemo(() => {
+    if (parsedDas === null) return -1;
+    return findMatchingStageIndex(displaySchedule, parsedDas);
+  }, [displaySchedule, parsedDas]);
+
   /** Extract foliar spray & drenching stages from the verified schedule */
   const verifiedFoliarStages = useMemo(() => {
     if (!plan?.schedule?.length) return [];
@@ -340,39 +395,53 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   }, [plan]);
 
   const foliarRows = useMemo(() => {
-    const micros = crop.fertilizerSchedule.micronutrients ?? [];
-    const sprays = crop.fertilizerSchedule.foliarSpray ?? [];
+    const micros = crop.fertilizerSchedule?.micronutrients ?? [];
+    const sprays = crop.fertilizerSchedule?.foliarSpray ?? [];
     const fromIcar = icar?.micronutrients ?? [];
     const fromPlan =
       plan?.nutrients.filter((n) => ["Zn", "Fe", "B", "Mg", "S", "Micro"].includes(n.nutrient)) ??
       [];
 
     const rows: { name: string; detail: string }[] = [];
-    for (const m of dossierMicros) rows.push({ name: hi ? "सूक्ष्म खाद" : "Micronutrient", detail: m });
-    for (const m of micros) rows.push({ name: hi ? "सूक्ष्म खाद" : "Micronutrient", detail: m });
-    for (const s of sprays) rows.push({ name: hi ? "पत्ती स्प्रे" : "Foliar spray", detail: s });
-    for (const m of fromIcar) rows.push({ name: hi ? "सूक्ष्म खाद" : "Guide micronutrient", detail: m });
-    for (const n of fromPlan) rows.push({ name: n.nutrient, detail: n.detail });
+    const isSoil = (text: string) => /मिट्टी में|बुवाई के समय|बेसल|basal|यूरिया के साथ छिड़कें|बेंटोनाइट दानेदार|खेत की तैयारी/i.test(text);
 
-    if (plan?.farmerTipHi) {
-      rows.push({ name: hi ? "खेत सलाह" : "Field tip", detail: plan.farmerTipHi });
+    for (const s of sprays) {
+      if (!isSoil(s)) rows.push({ name: hi ? "पत्ती स्प्रे" : "Foliar spray", detail: s });
+    }
+    for (const m of dossierMicros) {
+      if (!isSoil(m) && /स्प्रे|spray|छिड़काव|पत्ती|फोलियर|g\/L|प्रति लीटर|L पानी|19:19:19|00:52:34|बोरॉन|जिंक/i.test(m)) {
+        rows.push({ name: hi ? "पत्ती स्प्रे" : "Foliar spray", detail: m });
+      }
+    }
+    for (const m of micros) {
+      if (!isSoil(m) && /स्प्रे|spray|छिड़काव|पत्ती|फोलियर|g\/L|प्रति लीटर|L पानी/i.test(m)) {
+        rows.push({ name: hi ? "पत्ती स्प्रे" : "Foliar spray", detail: m });
+      }
+    }
+    for (const n of fromPlan) {
+      if (!isSoil(n.detail) && /स्प्रे|spray|छिड़काव|पत्ती|फोलियर|g\/L|प्रति लीटर|L पानी/i.test(n.detail)) {
+        rows.push({ name: n.nutrient, detail: n.detail });
+      }
     }
 
     if (!rows.length) {
       rows.push({
-        name: hi ? "मिट्टी जाँच" : "Soil test first",
+        name: hi ? "संतुलित स्प्रे" : "Foliar spray",
         detail: hi
-          ? `${hindi || crop.name}: जिंक/आयरन/बोरॉन सिर्फ कमी दिखे तो — 2–3 साल में मिट्टी जाँच कराएँ`
-          : `${crop.name}: Zn/Fe/B foliar only if deficiency — soil test every 2–3 years`,
+          ? `${hindi || crop.name}: आवश्यकता अनुसार NPK 19:19:19 (1 किग्रा/एकड़) या 00:52:34 का 150 लीटर पानी में घोल बनाकर स्प्रे करें`
+          : `${crop.name}: Spray NPK 19:19:19 (1 kg/acre) or 00:52:34 in 150L water as needed`,
       });
     }
+
     const seen = new Set<string>();
-    return rows.filter((r) => {
+    const filtered = rows.filter((r) => {
       if (seen.has(r.detail)) return false;
       seen.add(r.detail);
       return true;
     });
-  }, [crop, icar, plan, dossierMicros, hi, hindi]);
+
+    return filtered.slice(0, 4);
+  }, [crop, dossierMicros, icar, plan, hi, hindi]);
 
   const foliarCards = useMemo(() => toFoliarCards(foliarRows, hi), [foliarRows, hi]);
 
@@ -725,80 +794,157 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </div>
 
             {displaySchedule.length ? (
-              <ol className="mt-3.5 space-y-3">
-                {displaySchedule.map((row) => {
-                  const products = parseFertilizerApplyLine(row.apply);
-                  const isSpray =
-                    row.method?.includes("स्प्रे") || row.apply.includes("स्प्रे");
-                  const isDrench =
-                    row.method?.includes("ड्रेंचिंग") || row.method?.includes("ड्रिप");
-                  return (
-                    <li
-                      key={`${fertMode}-${row.stage}-${row.time}`}
-                      className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]/40 p-3.5 shadow-xs transition hover:border-emerald-500/30"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--av-border)]/60 pb-2.5">
-                        <div className="flex items-center gap-2">
-                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white text-[11px] font-black shadow-xs">
-                            0{row.stage}
-                          </span>
-                          <span className="text-[13px] font-black text-[var(--av-text-primary)]">
-                            {row.time}
-                          </span>
-                        </div>
-                        <span
-                          className={cn(
-                            "rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold",
-                            isSpray
-                              ? "border-sky-500/30 bg-sky-500/15 text-sky-900 dark:text-sky-200"
-                              : isDrench
-                              ? "border-purple-500/30 bg-purple-500/15 text-purple-900 dark:text-purple-200"
-                              : "border-emerald-500/20 bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
-                          )}
-                        >
-                          {row.method || (hi ? `चरण ${row.stage}` : `Stage ${row.stage}`)}
+              <div className="mt-3.5 space-y-3">
+                {parsedDas !== null && (
+                  <div className="rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/10 p-3 shadow-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-600 text-xs font-black text-white">
+                          🌱
                         </span>
-                      </div>
-
-                      <ul className="mt-2.5 space-y-2">
-                        {products.map((p, idx) => (
-                          <li
-                            key={`${p.name}-${p.dose}-${idx}`}
-                            className="flex items-center gap-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2 shadow-xs"
-                          >
-                            <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-[var(--av-border)] bg-white">
-                              <Image
-                                src={fertilizerProductImage(p.name)}
-                                alt={p.name}
-                                fill
-                                className="object-cover"
-                                sizes="44px"
-                              />
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-[12.5px] font-black text-[var(--av-text-primary)]">
-                                {p.name}
-                              </p>
-                              {p.dose ? (
-                                <p className="text-[11.5px] font-black text-emerald-700 dark:text-emerald-300">
-                                  {p.dose}
-                                </p>
-                              ) : null}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-
-                      {row.benefit && (
-                        <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-[11.5px] font-bold text-emerald-950 dark:text-emerald-100">
-                          <span className="text-xs leading-none">🎯</span>
-                          <span>मुख्य फायदा: {row.benefit}</span>
+                        <div>
+                          <p className="text-[12.5px] font-black text-[var(--av-text-primary)]">
+                            {hi ? `फसल की उम्र: ${parsedDas} दिन` : `Crop Age: ${parsedDas} Days`}
+                          </p>
+                          <p className="text-[11px] font-medium text-[var(--av-text-secondary)]">
+                            {hi
+                              ? "वर्तमान अवस्था के अनुसार संस्तुत खाद नीचे देखें"
+                              : "Recommended fertilizer for current stage below"}
+                          </p>
                         </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ol>
+                      </div>
+                      <span className="rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-black text-white shadow-xs">
+                        {hi ? "वर्तमान अवस्था" : "Active Stage"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <ol className="space-y-3">
+                  {(parsedDas !== null && !showFullSchedule && currentStageIndex >= 0
+                    ? [displaySchedule[currentStageIndex]]
+                    : displaySchedule
+                  ).map((row, idx) => {
+                    const isCurrentStage =
+                      parsedDas !== null &&
+                      (currentStageIndex === idx ||
+                        (!showFullSchedule && currentStageIndex >= 0));
+                    const products = parseFertilizerApplyLine(row.apply);
+                    const isSpray =
+                      row.method?.includes("स्प्रे") || row.apply.includes("स्प्रे");
+                    const isDrench =
+                      row.method?.includes("ड्रेंचिंग") || row.method?.includes("ड्रिप");
+                    return (
+                      <li
+                        key={`${fertMode}-${row.stage}-${row.time}`}
+                        className={cn(
+                          "rounded-2xl border p-3.5 shadow-xs transition",
+                          isCurrentStage
+                            ? "border-2 border-emerald-500 bg-emerald-500/10 shadow-md ring-2 ring-emerald-500/20"
+                            : "border-[var(--av-border)] bg-[var(--av-surface-inset)]/40 hover:border-emerald-500/30"
+                        )}
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--av-border)]/60 pb-2.5">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[11px] font-black shadow-xs",
+                                isCurrentStage
+                                  ? "bg-emerald-600 text-white ring-2 ring-emerald-400"
+                                  : "bg-emerald-600 text-white"
+                              )}
+                            >
+                              0{row.stage}
+                            </span>
+                            <span className="text-[13px] font-black text-[var(--av-text-primary)]">
+                              {row.time}
+                            </span>
+                            {isCurrentStage && (
+                              <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[9.5px] font-black text-white">
+                                {hi ? "★ अभी डालें" : "★ Apply Now"}
+                              </span>
+                            )}
+                          </div>
+                          <span
+                            className={cn(
+                              "rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold",
+                              isSpray
+                                ? "border-sky-500/30 bg-sky-500/15 text-sky-900 dark:text-sky-200"
+                                : isDrench
+                                ? "border-purple-500/30 bg-purple-500/15 text-purple-900 dark:text-purple-200"
+                                : "border-emerald-500/20 bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
+                            )}
+                          >
+                            {row.method || (hi ? `चरण ${row.stage}` : `Stage ${row.stage}`)}
+                          </span>
+                        </div>
+
+                        <ul className="mt-2.5 space-y-2">
+                          {products.map((p, pIdx) => (
+                            <li
+                              key={`${p.name}-${p.dose}-${pIdx}`}
+                              className="flex items-center gap-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2 shadow-xs"
+                            >
+                              <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-[var(--av-border)] bg-white">
+                                <Image
+                                  src={fertilizerProductImage(p.name)}
+                                  alt={p.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="44px"
+                                />
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[12.5px] font-black text-[var(--av-text-primary)]">
+                                  {p.name}
+                                </p>
+                                {p.dose ? (
+                                  <p className="text-[11.5px] font-black text-emerald-700 dark:text-emerald-300">
+                                    {p.dose}
+                                  </p>
+                                ) : null}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+
+                        {row.benefit && (
+                          <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-[11.5px] font-bold text-emerald-950 dark:text-emerald-100">
+                            <span className="text-xs leading-none">🎯</span>
+                            <span>मुख्य फायदा: {row.benefit}</span>
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+
+                {parsedDas !== null && displaySchedule.length > 1 && (
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowFullSchedule((prev) => !prev)}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 py-2.5 text-[12px] font-black text-emerald-800 transition hover:bg-emerald-500/20 active:scale-[0.98] dark:text-emerald-200"
+                    >
+                      <span>
+                        {showFullSchedule
+                          ? hi
+                            ? "👆 केवल वर्तमान अवस्था देखें"
+                            : "👆 Show only current stage"
+                          : hi
+                          ? `👇 पूरी खाद योजना देखें (0 से 95 दिन - कुल ${displaySchedule.length} चरण)`
+                          : `👇 View full schedule (${displaySchedule.length} stages)`}
+                      </span>
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 transition-transform",
+                          showFullSchedule && "rotate-180"
+                        )}
+                      />
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <p className="mt-3 text-xs text-[var(--av-text-muted)]">
                 {hi
@@ -813,34 +959,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </div>
           </DarkCard>
 
-          {/* Optional expandable Crop Protection Mix-in Field Guide */}
-          {mixinGuide ? (
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => setShowProtectionMixin((v) => !v)}
-                className="flex w-full items-center justify-between rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 py-3 text-left shadow-xs"
-              >
-                <div>
-                  <p className="text-xs font-black text-[var(--av-text-primary)]">
-                    🛡️ खाद + कीट/रोग सुरक्षा मिक्स-इन फील्ड गाइड (विस्तृत)
-                  </p>
-                  <p className="text-[10.5px] text-[var(--av-text-muted)]">
-                    बीज उपचार, कीटनाशक व फफूंदनाशक के साथ खाद मिलाने के नियम
-                  </p>
-                </div>
-                <ChevronDown
-                  className={cn(
-                    "h-4 w-4 text-[var(--av-text-muted)] transition-transform",
-                    showProtectionMixin && "rotate-180"
-                  )}
-                />
-              </button>
-              {showProtectionMixin && (
-                <CropFertilizerMixinPanel guide={mixinGuide} acres={acres} />
-              )}
-            </div>
-          ) : null}
+
         </div>
       ) : null}
 

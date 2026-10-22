@@ -556,12 +556,11 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "leaf-folder": [
           {
-                "nameHi": "लैम्ब्डा-साइहेलोथ्रिन 5% EC या प्रोफेनोफॉस 50% EC",
+                "nameHi": "लैम्ब्डा-साइहेलोथ्रिन 5% EC (कराटे)",
                 "technical": "Lambda-cyhalothrin 5% EC",
-                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़) या प्रोफेनोफॉस (400 ml)",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
                 "brands": [
-                      "Karate (Syngenta)",
-                      "Curacron"
+                      "Karate (Syngenta)"
                 ],
                 "safety": "शुरुआती इल्ली नियंत्रण।",
                 "level": 1,
@@ -680,7 +679,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "कॉपर हाइड्रॉक्साइड 53.8% DF + स्ट्रेप्टोसाइक्लिन",
                 "technical": "Copper Hydroxide 53.8% DF + Streptocycline",
-                "dose": "350 ग्राम कोसाइड + 18 ग्राम स्ट्रेप्टोसाइक्लिन प्रति एकड़",
+                "dose": "कॉपर: 2 ग्राम/ली. + स्ट्रेप्टो: 1 ग्राम प्रति 10 ली. पानी (350 g + 18 g / एकड़)",
                 "brands": [
                       "Kocide (Corteva) + Streptocycline"
                 ],
@@ -692,7 +691,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "कासुगामाइसिन 3% SL + कॉपर ऑक्सीक्लोराइड",
                 "technical": "Kasugamycin 3% SL + Copper Oxychloride",
-                "dose": "400 मिली कासु-बी + 400 ग्राम ब्लाइटॉक्स प्रति एकड़",
+                "dose": "कासुगामाइसिन: 2 मिली/ली. + कॉपर: 2 ग्राम/ली. पानी (400 ml + 400 g / एकड़)",
                 "brands": [
                       "Kasu-B (Dhanuka) + Blitox"
                 ],
@@ -1238,6 +1237,46 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "250 मिली / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "common-rust": [
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)",
+                      "Bumper (Adama)"
+                ],
+                "safety": "रतुआ कवक पर तुरंत असरदार रोकथाम व उपचारात्मक क्रिया।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
+                "brands": [
+                      "Custodia (Adama)"
+                ],
+                "safety": "दोहरी क्रिया — रतुआ और पत्ती झुलसा दोनों को एक साथ रोकता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "पायराक्लोस्ट्रोबिन 20% WG (हेडलाइन)",
+                "technical": "Pyraclostrobin 20% WG",
+                "dose": "0.75-1 ग्राम / लीटर पानी (150 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Headline (BASF)"
+                ],
+                "safety": "उत्कृष्ट फफूंदनाशक — पत्तियों को हरा-भरा रखता है और दाने का वजन बढ़ाता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "150 ग्राम / एकड़",
                 "isTopPerformer": true
           }
     ]
@@ -6186,11 +6225,30 @@ const ALIASES: Record<string, string> = {
   gram: "chana",
   chickpea: "chana",
   rice: "paddy",
+  dhan: "paddy",
+  dhaan: "paddy",
+  corn: "maize",
+  makka: "maize",
   okra: "bhindi",
   eggplant: "brinjal",
   peanut: "groundnut",
   moongfali: "groundnut",
   pulses: "moong",
+};
+
+const PROBLEM_ALIASES: Record<string, Record<string, string>> = {
+  maize: {
+    rust: "common-rust",
+    "common-rust": "common-rust",
+    "shoot-fly": "shoot-fly-stem-borer",
+    "stem-fly": "shoot-fly-stem-borer",
+    "stem-borer": "shoot-fly-stem-borer",
+    "shoot-fly-stem-borer": "shoot-fly-stem-borer",
+    "fall-army-worm": "fall-armyworm",
+    faw: "fall-armyworm",
+    "stalk-rot": "post-flowering-stalk-rot",
+    blight: "turcicum-blight",
+  },
 };
 
 for (const [alias, target] of Object.entries(ALIASES)) {
@@ -6206,7 +6264,15 @@ export function getCurativeMedicines(
 ): CurativeMedicine[] {
   const norm = cropSlug.trim().toLowerCase();
   const mappedSlug = ALIASES[norm] || norm;
-  const mapped = CROP_PROBLEM_MEDICINES[mappedSlug]?.[problemId] || CROP_PROBLEM_MEDICINES[cropSlug]?.[problemId];
+  const normProb = problemId.trim().toLowerCase();
+  const targetProblemId = PROBLEM_ALIASES[mappedSlug]?.[normProb] || normProb;
+
+  const mapped =
+    CROP_PROBLEM_MEDICINES[mappedSlug]?.[targetProblemId] ||
+    CROP_PROBLEM_MEDICINES[cropSlug]?.[targetProblemId] ||
+    CROP_PROBLEM_MEDICINES[mappedSlug]?.[problemId] ||
+    CROP_PROBLEM_MEDICINES[cropSlug]?.[problemId];
+
   if (mapped && mapped.length > 0) return mapped;
 
   if (!rawLines || rawLines.length === 0) return [];

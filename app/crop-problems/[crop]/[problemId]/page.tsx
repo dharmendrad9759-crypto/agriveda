@@ -2,9 +2,16 @@ import CropProblemDetailClient from "@/components/crop-problems/CropProblemDetai
 import { CROP_PROBLEM_CROPS } from "@/data/crop-curative-problems";
 
 export function generateStaticParams() {
-  return CROP_PROBLEM_CROPS.flatMap((c) =>
+  const base = CROP_PROBLEM_CROPS.flatMap((c) =>
     c.problems.map((p) => ({ crop: c.slug, problemId: p.id }))
   );
+  const aliases = [
+    { crop: "maize", problemId: "rust" },
+    { crop: "maize", problemId: "shoot-fly" },
+    { crop: "maize", problemId: "stem-fly" },
+    { crop: "maize", problemId: "stem-borer" },
+  ];
+  return [...base, ...aliases];
 }
 
 export default async function CropProblemDetailPage({

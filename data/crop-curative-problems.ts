@@ -876,7 +876,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "तना सड़न (Post-Flowering Stalk Rot)",
         "nameEn": "Post-Flowering Stalk Rot",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-fusarium-moniliforme.jpg",
+        "image": "/images/crop-identification/04_maize/post_flowering_stalk_rot.webp",
         "stageHi": "भुट्टा बनने की अवस्था (50+ दिन)",
         "stages": [
           "fruiting"
@@ -896,6 +896,36 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         ],
         "whenToActHi": "फूल व भुट्टा आने के समय",
         "tipHi": "जड़ों के पास तने के निचले हिस्से पर स्प्रे करें।"
+      },
+      {
+        "id": "common-rust",
+        "nameHi": "सामान्य रतुआ (Common Rust)",
+        "nameEn": "Common Rust (Puccinia sorghi)",
+        "tagHi": "फफूंद",
+        "image": "/images/diseases/disease-puccinia-sorghi-2.jpg",
+        "stageHi": "वानस्पतिक व फूल अवस्था (30-65 दिन)",
+        "stages": [
+          "vegetative",
+          "flowering"
+        ],
+        "specialFactHi": "पत्तियों की दोनों सतहों पर लाल-भूरे या सुनहरे उभरे हुए दाने (पुस्ट्यूल) बनते हैं, जिन्हें छूने पर हाथ पर जंग जैसा चूर्ण लगता है।",
+        "whatHi": "पक्सीनिया सोरघाई कवक से पत्तियों पर जंग जैसे धब्बे बनते हैं जिससे पत्तियां सूख जाती हैं और प्रकाश संश्लेषण ठप हो जाता है।",
+        "whyHi": [
+          "ठंडा व अत्यधिक नमी वाला मौसम (16–25°C)",
+          "हवा के साथ फफूंद बीजाणुओं का तेजी से फैलना",
+          "अत्यधिक घना रोपण व धूप की कमी"
+        ],
+        "cureOrganicHi": [
+          "प्रतिरोधी संकर किस्मों का चयन करें",
+          "खेत को खरपतवार मुक्त रखें और धूप-हवा आने दें"
+        ],
+        "cureChemicalHi": [
+          "टिल्ट (प्रोपिकोनाज़ोल 25% EC) 200 ml",
+          "कस्टोडिया (एज़ोक्सीस्ट्रोबिन + टेबुकोनाज़ोल) 250 ml",
+          "हेडलाइन (पायराक्लोस्ट्रोबिन 20% WG) 150 g"
+        ],
+        "whenToActHi": "पत्ती पर पहला जंग जैसा लाल-भूरा दाना दिखते ही",
+        "tipHi": "निचली पत्तियों पर पहला पुस्ट्यूल दिखते ही तुरंत छिड़काव करें ताकि यह ऊपरी झंडा पत्ती तक न फैले।"
       }
     ]
   },
@@ -4498,8 +4528,30 @@ const CROP_PROBLEM_ALIASES: Record<string, string> = {
   moongfali: "groundnut",
   peanut: "groundnut",
   rice: "paddy",
+  dhan: "paddy",
+  dhaan: "paddy",
+  corn: "maize",
+  makka: "maize",
+  sarson: "mustard",
+  gehu: "wheat",
+  gehun: "wheat",
   okra: "bhindi",
   eggplant: "brinjal",
+};
+
+const PROBLEM_ID_ALIASES: Record<string, Record<string, string>> = {
+  maize: {
+    rust: "common-rust",
+    "common-rust": "common-rust",
+    "shoot-fly": "shoot-fly-stem-borer",
+    "stem-fly": "shoot-fly-stem-borer",
+    "stem-borer": "shoot-fly-stem-borer",
+    "shoot-fly-stem-borer": "shoot-fly-stem-borer",
+    "fall-army-worm": "fall-armyworm",
+    faw: "fall-armyworm",
+    "stalk-rot": "post-flowering-stalk-rot",
+    blight: "turcicum-blight",
+  },
 };
 
 export function getCropProblemCrop(slug: string): CropProblemCrop | undefined {
@@ -4514,7 +4566,20 @@ export function getCropProblem(
 ): { crop: CropProblemCrop; problem: CropProblemItem } | undefined {
   const crop = getCropProblemCrop(cropSlug);
   if (!crop) return undefined;
-  const problem = crop.problems.find((p) => p.id === problemId);
+
+  const normProblem = problemId.trim().toLowerCase();
+  const cropAliases = PROBLEM_ID_ALIASES[crop.slug] ?? {};
+  const targetId = cropAliases[normProblem] ?? normProblem;
+
+  let problem = crop.problems.find((p) => p.id === targetId);
+  if (!problem && normProblem) {
+    problem = crop.problems.find(
+      (p) =>
+        p.id.toLowerCase() === normProblem ||
+        p.id.toLowerCase().replace(/-/g, "") === normProblem.replace(/-/g, "") ||
+        p.nameEn.toLowerCase().replace(/[^a-z0-9]+/g, "-") === normProblem
+    );
+  }
   if (!problem) return undefined;
   return { crop, problem };
 }

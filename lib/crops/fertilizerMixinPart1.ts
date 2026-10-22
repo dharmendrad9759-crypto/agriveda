@@ -204,10 +204,10 @@ export const PART1_GUIDES: Record<string, CropFertilizerMixinGuide> = {
           {
             kind: "fertilizer",
             technical: "Sulphur",
-            formulation: "90% granular / bentonite",
-            doseHi: "3–4 किग्रा / एकड़ — यूरिया के साथ",
+            formulation: "80% WDG (पाउडर)",
+            doseHi: "3 किग्रा / एकड़ — यूरिया के साथ",
             sourceClaimHi:
-              "स्रोत दावा: सल्फर — ठंड / मिट्टी ताप से जुड़ी उपज सुरक्षा का उल्लेख",
+              "स्रोत दावा: सल्फर 80% WDG पाउडर — तुरंत घुलनशील, पीलापन दूर व कल्ले बढ़ाना",
           },
         ],
         pestProtection: [],

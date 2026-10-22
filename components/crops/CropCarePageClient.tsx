@@ -25,7 +25,68 @@ import { cropHarvestLabel } from "@/lib/crops/harvestLabel";
 import type { CropTabId } from "@/lib/crops/crop-tabs";
 import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 import type { Crop } from "@/types/crop";
-import { useMemo } from "react";
+import React, { Component, useMemo, type ReactNode } from "react";
+
+const TAB_TO_STAGE: Record<string, string> = {
+  varieties: "sowing",
+  "field-prep": "sowing",
+  mistakes: "sowing",
+  growth: "sowing",
+  fertilizer: "feed",
+  irrigation: "feed",
+  weeds: "feed",
+  nutrients: "feed",
+  pests: "protect",
+  diseases: "protect",
+  expert: "protect",
+  harvest: "finish",
+  market: "finish",
+  calendar: "finish",
+  faq: "finish",
+};
+
+class SectionErrorBoundary extends Component<
+  { children: ReactNode; title: string; hi: boolean },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; title: string; hi: boolean }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("[SectionErrorBoundary]", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-center">
+          <p className="text-base font-black text-emerald-950 dark:text-emerald-100">
+            {this.props.hi ? `${this.props.title} लोड नहीं हो सका` : `Could not load ${this.props.title}`}
+          </p>
+          <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
+            {this.props.hi
+              ? "डेटा प्रोसेस करने में समस्या आई। पुनः प्रयास करें।"
+              : "An error occurred while loading this section. Please retry."}
+          </p>
+          <button
+            type="button"
+            onClick={() => this.setState({ hasError: false })}
+            className="mt-3 inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2 text-xs font-black text-white hover:bg-emerald-700 active:scale-95 transition"
+          >
+            {this.props.hi ? "फिर से लोड करें" : "Retry"}
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const TAB_TITLE: Record<Exclude<CropTabId, "overview" | "harvest">, FarmerUiKey> = {
   growth: "cropTabGrowth",
@@ -70,15 +131,17 @@ export default function CropCarePageClient({ crop, tab }: Props) {
     detail.establishment === "transplant" ? t("cropDatHint") : t("cropDasHint");
 
   const isThreatTab = tab === "pests" || tab === "diseases";
+  const parentStage = TAB_TO_STAGE[tab] || "overview";
+  const parentCropHref = `/crops/${crop.slug}?stage=${parentStage}`;
 
   return (
     <div className="crop-premium-page relative min-h-screen">
       <AppShell
         className="relative z-10 !bg-transparent"
-        backHref={`/crops/${crop.slug}`}
+        backHref={parentCropHref}
         breadcrumbs={[
           { label: locale === "hi" ? "फसलें" : "Crops", href: "/crops" },
-          { label: cropLabel, href: `/crops/${crop.slug}` },
+          { label: cropLabel, href: parentCropHref },
           { label: title },
         ]}
       >
@@ -102,31 +165,33 @@ export default function CropCarePageClient({ crop, tab }: Props) {
         )}
 
         <div className="min-w-0">
-          {tab === "growth" && (
-            <div className="space-y-4">
-              <AnimatedGrowthTimeline
-                stages={detail.growthStages}
-                cropSlug={crop.slug}
-                cropName={cropLabel}
-              />
-            </div>
-          )}
-          {tab === "field-prep" && <CropFieldPrepSection crop={crop} />}
-          {tab === "fertilizer" && <CropFertilizerSection crop={crop} />}
-          {tab === "pests" && <CropPestsSection crop={crop} />}
-          {tab === "diseases" && <CropDiseasesSection crop={crop} />}
-          {tab === "nutrients" && <CropNutrientsSection crop={crop} />}
-          {tab === "irrigation" && (
-            <CropIrrigationSection crop={crop} detail={detail} timingHint={timingHint} />
-          )}
-          {tab === "weeds" && <CropWeedSection crop={crop} />}
-          {tab === "calendar" && <CropCalendarSection crop={crop} detail={detail} />}
-          {tab === "varieties" && <CropVarietiesSection crop={crop} />}
-          {tab === "mistakes" && <CropMistakesSection crop={crop} />}
-          {tab === "harvest" && <CropHarvestSection crop={crop} />}
-          {tab === "market" && <CropMarketSection crop={crop} />}
-          {tab === "faq" && <CropFaqSection crop={crop} />}
-          {tab === "expert" && <CropExpertSection crop={crop} />}
+          <SectionErrorBoundary key={tab} title={title} hi={locale === "hi"}>
+            {tab === "growth" && (
+              <div className="space-y-4">
+                <AnimatedGrowthTimeline
+                  stages={detail.growthStages}
+                  cropSlug={crop.slug}
+                  cropName={cropLabel}
+                />
+              </div>
+            )}
+            {tab === "field-prep" && <CropFieldPrepSection crop={crop} />}
+            {tab === "fertilizer" && <CropFertilizerSection crop={crop} />}
+            {tab === "pests" && <CropPestsSection crop={crop} />}
+            {tab === "diseases" && <CropDiseasesSection crop={crop} />}
+            {tab === "nutrients" && <CropNutrientsSection crop={crop} />}
+            {tab === "irrigation" && (
+              <CropIrrigationSection crop={crop} detail={detail} timingHint={timingHint} />
+            )}
+            {tab === "weeds" && <CropWeedSection crop={crop} />}
+            {tab === "calendar" && <CropCalendarSection crop={crop} detail={detail} />}
+            {tab === "varieties" && <CropVarietiesSection crop={crop} />}
+            {tab === "mistakes" && <CropMistakesSection crop={crop} />}
+            {tab === "harvest" && <CropHarvestSection crop={crop} />}
+            {tab === "market" && <CropMarketSection crop={crop} />}
+            {tab === "faq" && <CropFaqSection crop={crop} />}
+            {tab === "expert" && <CropExpertSection crop={crop} />}
+          </SectionErrorBoundary>
         </div>
       </AppShell>
     </div>

@@ -10,10 +10,10 @@ import type {
 /** Tune agronomic thresholds here */
 export const SPRAY_WINDOW_CONFIG = {
   windKmh: {
-    goodMin: 3,
+    goodMin: 1,
     goodMax: 15,
     cautionMax: 20,
-    inversionMax: 3,
+    inversionMax: 1,
   },
   tempC: {
     goodMin: 15,
@@ -111,7 +111,7 @@ export function getSprayWindowStatus(
     return {
       status: "AVOID",
       reasonEn: `${rainPct}% rain chance in the next 3 hours — spray may wash off.`,
-      reasonHi: `अगले 3 घंटे में ${rainPct}% बारिश की संभावना — spray धो सकती है, टालें।`,
+      reasonHi: `अगले 3 घंटे में ${rainPct}% बारिश की संभावना — छिड़काव धुल सकता है, अभी टालें।`,
       factors,
     };
   }
@@ -123,7 +123,7 @@ export function getSprayWindowStatus(
       reasonEn:
         "Calm, clear morning/night air can trap spray — wait for wind to pick up (3–15 km/h).",
       reasonHi:
-        "शांत सुबह/रात की हवा में spray फंस सकता है — 3–15 km/h हवा आने तक रुकें।",
+        "शांत सुबह/रात की ठंडी हवा में छिड़काव हवा में ठहर सकता है — हल्की हवा (1–15 km/h) चलने पर छिड़काव करें।",
       factors,
     };
   }
@@ -168,7 +168,7 @@ export function getSprayWindowStatus(
     return {
       status: "CAUTION",
       reasonEn: `${cautionReasonsEn.join("; ")}. Spray only if urgent and use larger droplets.`,
-      reasonHi: `${cautionReasonsHi.join("؛ ")}. ज़रूरी हो तभी spray करें, बड़ी droplets इस्तेमाल करें।`,
+      reasonHi: `${cautionReasonsHi.join(" | ")} — ज़रूरी हो तभी छिड़काव करें, मोटी फुहार (बड़ी बूंदें) रखें।`,
       factors,
     };
   }
@@ -188,7 +188,7 @@ export function getSprayWindowStatus(
     return {
       status: "GOOD",
       reasonEn: "Wind, temperature, humidity, and rain look suitable for spraying now.",
-      reasonHi: "हवा, तापमान, नमी और बारिश — अभी spray के लिए अच्छी स्थिति है।",
+      reasonHi: "हवा, तापमान और नमी छिड़काव के लिए पूरी तरह अनुकूल हैं।",
       factors: ["all_good"],
     };
   }

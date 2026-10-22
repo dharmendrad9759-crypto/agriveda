@@ -3,22 +3,36 @@ import { sprayProducts, getProductById } from "@/data/spray-products";
 
 const SEASON_START_MONTH = 6; // June — Kharif season start (India)
 
-function getMoAGroup(product: SprayProduct): string {
-  return `${product.moaType} ${product.moaGroup}`;
+function getMoAGroup(product: SprayProduct | null | undefined): string {
+  if (!product) return "N/A";
+  const type = product.moaType ?? "";
+  const group = product.moaGroup ?? "";
+  return `${type} ${group}`.trim() || "N/A";
 }
 
 function getSeasonSprays(logs: SprayLog[]): SprayLog[] {
+  if (!Array.isArray(logs) || logs.length === 0) return [];
   const now = new Date();
   const seasonYear = now.getMonth() >= SEASON_START_MONTH - 1 ? now.getFullYear() : now.getFullYear() - 1;
   const seasonStart = new Date(seasonYear, SEASON_START_MONTH - 1, 1);
 
   return logs
-    .filter((l) => new Date(l.sprayDate) >= seasonStart)
-    .sort((a, b) => new Date(b.sprayDate).getTime() - new Date(a.sprayDate).getTime());
+    .filter((l) => {
+      if (!l || !l.sprayDate) return false;
+      const d = new Date(l.sprayDate);
+      return !isNaN(d.getTime()) && d >= seasonStart;
+    })
+    .sort((a, b) => {
+      const tA = a.sprayDate ? new Date(a.sprayDate).getTime() : 0;
+      const tB = b.sprayDate ? new Date(b.sprayDate).getTime() : 0;
+      return (isNaN(tB) ? 0 : tB) - (isNaN(tA) ? 0 : tA);
+    });
 }
 
 export function attachProducts(logs: SprayLog[]): SprayWithProduct[] {
+  if (!Array.isArray(logs) || logs.length === 0) return [];
   return logs
+    .filter((log): log is SprayLog => Boolean(log && log.productId))
     .map((log) => {
       const product = getProductById(log.productId);
       if (!product) return null;
@@ -34,8 +48,8 @@ export function checkResistanceRisk(sprayHistory: SprayLog[]): import("@/types/s
   if (withProducts.length === 0) {
     return {
       risk: "low",
-      title: "No sprays this season",
-      message: "Log your first spray to start rotation tracking.",
+      title: "इस सीजन अभी कोई छिड़काव दर्ज नहीं है",
+      message: "नीचे बटन दबाकर अपनी पहली स्प्रे दर्ज करें ताकि रोटेशन रिकॉर्ड शुरू हो सके।",
       repeatedGroups: [],
       consecutiveWarning: false,
       lastThreeGroups: [],
@@ -58,21 +72,21 @@ export function checkResistanceRisk(sprayHistory: SprayLog[]): import("@/types/s
     lastThreeGroups.length >= 2 && lastThreeGroups[0] === lastThreeGroups[1];
 
   let risk: "low" | "medium" | "high" = "low";
-  let title = "Low resistance risk";
-  let message = "MoA rotation looks good. Continue alternating mode-of-action groups.";
+  let title = "सुरक्षित चक्र (दवा असर करेगी ✓)";
+  let message = "दवाएँ सही क्रम में बदलकर डाली जा रही हैं। कीट/रोग में दवा के प्रति प्रतिरोध (रेसिस्टेंस) नहीं बनेगा।";
 
   if (consecutiveWarning || repeatedGroups.length > 0) {
     risk = "high";
-    title = "High resistance risk";
+    title = "चेतावनी: दवा बेअसर होने का भारी खतरा ⚠️";
     message = consecutiveWarning
-      ? `Consecutive sprays used ${lastThreeGroups[0]}. Switch to a different IRAC/FRAC/HRAC group immediately.`
-      : `MoA group(s) ${repeatedGroups.join(", ")} used 2+ times in last 3 sprays. Rotate before next application.`;
+      ? `लगातार एक ही ग्रुप (${lastThreeGroups[0]}) की दवा छिड़की गई है। तुरंत अगली स्प्रे में दूसरी श्रेणी की दवा बदलें!`
+      : `पिछली 3 स्प्रे में ग्रुप ${repeatedGroups.join(", ")} को 2 या अधिक बार दोहराया गया है। अगली बार बदलें।`;
   } else if (withProducts.length >= 2) {
     const lastTwoSame = lastThreeGroups.length >= 2 && lastThreeGroups[0] === lastThreeGroups[1];
     if (lastTwoSame) {
       risk = "medium";
-      title = "Medium resistance risk";
-      message = "Consider rotating to a different MoA group for the next spray.";
+      title = "सावधानी: अगली बार अलग दवा डालें";
+      message = "कीटों को दवा की आदत पड़ने से रोकने के लिए अगली बार अलग ग्रुप की दवा का चुनाव करें।";
     }
   }
 
@@ -101,12 +115,25 @@ export function suggestNextMoAGroup(
 
   let candidates = sprayProducts.filter((p) => p.cropRecommended.includes(cropId));
 
+  const isNematicide = (p: SprayProduct) =>
+    /velum|fluopyram|nematicide|सूत्रकृमि|नेमाटोड/i.test(p.productName + " " + p.activeIngredient);
+
   if (pestId) {
-    const pestFiltered = candidates.filter((p) => p.targetPests?.includes(pestId));
-    if (pestFiltered.length > 0) candidates = pestFiltered;
+    const exactPest = candidates.filter((p) => p.targetPests?.includes(pestId));
+    if (exactPest.length > 0) {
+      candidates = exactPest;
+    } else {
+      const pestFiltered = candidates.filter((p) => p.category === "insecticide" && !isNematicide(p));
+      if (pestFiltered.length > 0) candidates = pestFiltered;
+    }
   } else if (diseaseId) {
-    const disFiltered = candidates.filter((p) => p.targetDiseases?.includes(diseaseId));
-    if (disFiltered.length > 0) candidates = disFiltered;
+    const exactDisease = candidates.filter((p) => p.targetDiseases?.includes(diseaseId) && !isNematicide(p));
+    if (exactDisease.length > 0) {
+      candidates = exactDisease;
+    } else {
+      const disFiltered = candidates.filter((p) => p.category === "fungicide" && !isNematicide(p));
+      if (disFiltered.length > 0) candidates = disFiltered;
+    }
   }
 
   const rotated = candidates.filter((p) => !usedGroups.has(getMoAGroup(p)));
@@ -122,8 +149,8 @@ export function suggestNextMoAGroup(
   return [...byGroup.values()].slice(0, 3).map((product) => ({
     product,
     reason: usedGroups.size > 0
-      ? `Different ${product.moaType} group (${product.moaGroup}) — not used in your last 2 sprays`
-      : `Recommended for ${cropId} — ${product.activeIngredient}`,
+      ? `अलग समूह (${product.moaType} ${product.moaGroup}) — पिछली स्प्रे से अलग है, इसलिए पूरा असर मिलेगा ✓`
+      : `असरदार व सुरक्षित चक्र रोटेशन हेतु अनुशंसित`,
   }));
 }
 

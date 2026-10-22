@@ -63,8 +63,8 @@ const STAGE_TABS: Record<StageId, CropTabId[]> = {
   overview: [],
   sowing: ["varieties", "field-prep", "mistakes", "growth"],
   feed: ["fertilizer", "irrigation", "weeds", "nutrients"],
-  protect: ["pests", "diseases", "expert"],
-  finish: ["harvest", "market", "calendar", "faq"],
+  protect: ["pests", "diseases"],
+  finish: ["harvest", "market", "faq"],
 };
 
 const TAB_HINT_HI: Partial<Record<CropTabId, string>> = {
@@ -114,6 +114,42 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
   const { profile, hydrated } = useFarmerProfile();
   const [stage, setStage] = useState<StageId>("overview");
   const [stageTouched, setStageTouched] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const sp = new URLSearchParams(window.location.search);
+        const urlStage = sp.get("stage") as StageId | null;
+        const validStages: StageId[] = ["overview", "sowing", "feed", "protect", "finish"];
+        if (urlStage && validStages.includes(urlStage)) {
+          setStage(urlStage);
+          setStageTouched(true);
+          sessionStorage.setItem(`agriveda_stage_${crop.slug}`, urlStage);
+          return;
+        }
+        const saved = sessionStorage.getItem(`agriveda_stage_${crop.slug}`) as StageId | null;
+        if (saved && validStages.includes(saved)) {
+          setStage(saved);
+          setStageTouched(true);
+          return;
+        }
+      }
+    } catch {
+      // Safe fallback
+    }
+  }, [crop.slug]);
+
+  const handleSelectStage = (newStage: StageId) => {
+    setStageTouched(true);
+    setStage(newStage);
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(`agriveda_stage_${crop.slug}`, newStage);
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   useEffect(() => {
     if (!hydrated || stageTouched) return;
@@ -201,10 +237,7 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
               type="button"
               role="tab"
               aria-selected={on}
-              onClick={() => {
-                setStageTouched(true);
-                setStage(item.id);
-              }}
+              onClick={() => handleSelectStage(item.id)}
               className={cn(
                 "min-h-12 rounded-xl border px-0.5 sm:px-1 py-1.5 text-center leading-tight transition active:scale-[0.98]",
                 on
@@ -244,10 +277,7 @@ export default function CropPageTabs({ crop }: CropPageTabsProps) {
       {stage === "overview" ? (
         <CropGeneralInfoCard
           crop={crop}
-          onSelectStage={(newStage) => {
-            setStageTouched(true);
-            setStage(newStage);
-          }}
+          onSelectStage={(newStage) => handleSelectStage(newStage)}
         />
       ) : (
         <div className="space-y-2.5">

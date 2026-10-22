@@ -72,14 +72,16 @@ export default function CropFertilizerMixinPanel({
   guide,
   acres,
 }: {
-  guide: CropFertilizerMixinGuide;
+  guide?: CropFertilizerMixinGuide | null;
   acres: number;
   cropLabelHi?: string;
 }) {
-  const stages = useMemo(() => buildMixinScheduleStages(guide), [guide]);
+  const stages = useMemo(() => (guide ? buildMixinScheduleStages(guide) : []), [guide]);
   const [openId, setOpenId] = useState<number | null>(
     () => stages[0]?.stageNumber ?? null
   );
+
+  if (!guide) return null;
 
   return (
     <div className="space-y-4">

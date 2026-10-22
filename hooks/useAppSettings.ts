@@ -34,8 +34,12 @@ export function useAppSettings() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setSettings({ ...DEFAULT, ...readStorage(KEY, DEFAULT) });
+    const loaded = { ...DEFAULT, ...readStorage(KEY, DEFAULT) };
+    setSettings(loaded);
     setHydrated(true);
+    if (typeof document !== "undefined") {
+      document.documentElement.toggleAttribute("data-field-mode", Boolean(loaded.fieldMode));
+    }
   }, []);
 
   const update = useCallback((patch: Partial<AppSettings>) => {

@@ -214,7 +214,7 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
   {
     id: "all-crops-imp",
     sourceFile: "all crps imp points.pdf",
-    title: "Multi-crop important points",
+    title: "सभी फसलों के महत्वपूर्ण नियम",
     crops: ["paddy", "wheat", "maize", "cotton", "soybean", "tomato", "chilli"],
     topics: ["general"],
     lang: "hi",
@@ -275,7 +275,7 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
   {
     id: "wheat-basic",
     sourceFile: "NFSM_Package.pdf",
-    title: "Wheat basics",
+    title: "गेहूँ की मुख्य बातें",
     crops: ["wheat"],
     topics: ["fertilizer", "disease"],
     lang: "hi",

@@ -71,12 +71,8 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
         </p>
       </div>
 
-      {/* Hero Action Card — Full width, photo + instant scan action */}
-      <AppLink
-        href="/ai-doctor"
-        onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_unified_photo_doctor" })}
-        className="group relative z-10 mt-3.5 block overflow-hidden rounded-2xl border border-emerald-400/35 bg-emerald-950/70 backdrop-blur-md shadow-lg transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-950/90 hover:shadow-xl active:scale-[0.98]"
-      >
+      {/* Hero Action Card — Photo + side-by-side action buttons */}
+      <div className="relative z-10 mt-3.5 overflow-hidden rounded-2xl border border-emerald-400/35 bg-emerald-950/70 backdrop-blur-md shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-stretch">
           {/* Dedicated Photo Window */}
           <div className="relative h-36 sm:h-auto sm:w-44 shrink-0 overflow-hidden bg-slate-900">
@@ -87,7 +83,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
               sizes="(max-width: 640px) 100vw, 200px"
               quality={85}
               priority
-              className="object-cover object-[center_25%] transition-transform duration-500 group-hover:scale-105"
+              className="object-cover object-[center_25%]"
             />
             {/* Camera Floating Reticle Pill */}
             <div className="absolute left-2.5 top-2.5 z-10">
@@ -99,7 +95,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
             <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-transparent to-transparent sm:hidden" />
           </div>
 
-          {/* Value Props & Primary Tap Action */}
+          {/* Value Props & Side-by-Side Tap Actions */}
           <div className="flex flex-1 flex-col justify-between p-3.5 sm:p-4">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 text-[12px] font-bold text-white">
@@ -116,26 +112,27 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
               </div>
             </div>
 
-            {/* Tap Action Button */}
-            <div className="mt-3.5 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 py-2.5 px-4 text-[13px] font-black text-emerald-950 shadow-md transition-all group-hover:from-emerald-300 group-hover:to-teal-200">
-              <Camera className="h-4 w-4 stroke-[2.5]" />
-              <span>{isHi ? "कैमरा से फोटो खींचें" : "Take Photo with Camera"}</span>
-              <ArrowRight className="h-4 w-4 stroke-[2.5]" />
+            {/* Side-by-Side 2-Column Buttons */}
+            <div className="mt-3.5 grid grid-cols-2 gap-2">
+              <AppLink
+                href="/ai-doctor"
+                onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_photo_scan" })}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 py-2.5 px-2 text-center text-[12px] font-black text-emerald-950 shadow-md transition-all hover:from-emerald-300 hover:to-teal-200 active:scale-[0.98]"
+              >
+                <Camera className="h-4 w-4 shrink-0 stroke-[2.5]" />
+                <span className="truncate">{isHi ? "कैमरा से फोटो खींचें" : "Take Photo"}</span>
+              </AppLink>
+
+              <AppLink
+                href="/crop-problems"
+                onClick={() => track("tool_open", { href: "/crop-problems", label: "home_browse_crop_problems" })}
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-white/20 bg-white/15 py-2.5 px-2 text-center text-[12px] font-black text-white shadow-sm backdrop-blur-xs transition hover:bg-white/25 active:scale-[0.98]"
+              >
+                <span className="truncate">{isHi ? "रोग व कीट डायरेक्टरी →" : "Directory →"}</span>
+              </AppLink>
             </div>
           </div>
         </div>
-      </AppLink>
-
-      {/* Secondary option for farmers to browse all crop diseases/problems */}
-      <div className="relative z-10 mt-2.5 flex items-center justify-between px-1 text-[11.5px] font-medium text-emerald-200/85">
-        <span>{isHi ? "या सभी रोग व कीट देखें:" : "Or browse all problems:"}</span>
-        <AppLink
-          href="/crop-problems"
-          onClick={() => track("tool_open", { href: "/crop-problems", label: "home_browse_crop_problems" })}
-          className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 font-bold text-white backdrop-blur-xs transition hover:bg-white/25 active:scale-95"
-        >
-          <span>{isHi ? "फसल रोग व कीट डायरेक्ट्री →" : "Crop Problems Directory →"}</span>
-        </AppLink>
       </div>
     </div>
   );
@@ -213,7 +210,7 @@ const MORE_JOBS: {
   },
   {
     id: "mix",
-    hi: "दवा मिलाएँ (टैंक-मिक्स)",
+    hi: "दवा मिश्रण जांच (घोल सुरक्षा)",
     en: "Tank Mix Advisor",
     subHi: "दो दवाएँ मिलाने से पहले सुरक्षा जाँचें",
     subEn: "Check compatibility before mixing",
@@ -427,8 +424,8 @@ export default function AgriVedaHome() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/15" />
                 <div className="relative flex h-full min-h-[148px] flex-col justify-end p-3.5">
-                  <span className="mb-auto flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white shadow-sm backdrop-blur-sm">
-                    <Icon className="h-5 w-5" strokeWidth={2.25} />
+                  <span className="mb-auto ml-auto flex h-7 w-7 items-center justify-center rounded-lg bg-black/35 text-white shadow-sm backdrop-blur-md border border-white/20">
+                    <Icon className="h-4 w-4" strokeWidth={2.25} />
                   </span>
                   <p className="mt-3 text-[14px] font-bold leading-snug text-white drop-shadow-sm">
                     {isHi ? job.hi : job.en}
@@ -505,13 +502,10 @@ export default function AgriVedaHome() {
 
         {/* Farm tools & utilities — clean balanced grid */}
         <motion.section {...fade(0.07)}>
-          <div className="mb-3 flex items-center justify-between px-1 mt-4">
+          <div className="mb-3 px-1 mt-4">
             <h2 className="text-[16px] font-extrabold tracking-tight text-[var(--av-text-primary)]">
               {isHi ? "खेत के अन्य टूल्स (Farm Tools)" : "Farm Tools & Services"}
             </h2>
-            <span className="text-[11px] font-semibold text-[var(--av-text-muted)]">
-              {isHi ? "8 सुविधाएँ" : "8 Tools"}
-            </span>
           </div>
           
           <div className="grid grid-cols-1 gap-2.5 px-0.5 sm:grid-cols-2">

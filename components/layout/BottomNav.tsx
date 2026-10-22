@@ -112,8 +112,8 @@ export default function BottomNav() {
   const reduced = useReducedMotion();
   const aiActive = pathname.startsWith("/ai-doctor");
 
-  // Hide BottomNav on inner scheme detail/guide screens where a dedicated sticky CTA is present
-  if (pathname.startsWith("/schemes/")) {
+  // Hide BottomNav on inner scheme detail/guide screens and dedicated expert chat
+  if (pathname.startsWith("/schemes/") || pathname === "/ask-query") {
     return null;
   }
 

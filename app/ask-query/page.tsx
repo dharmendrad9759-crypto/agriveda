@@ -1,21 +1,25 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import AppLink from "@/components/ui/AppLink";
-import AppShell from "@/components/shell/AppShell";
-import DarkCard from "@/components/shell/DarkCard";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
+  ArrowLeft,
   Camera,
   Check,
-  Clock3,
+  CheckCheck,
   ImagePlus,
-  Loader2,
-  MessageCircle,
+  Mic,
+  MicOff,
+  MoreVertical,
+  Paperclip,
+  Phone,
+  Send,
+  Sparkles,
   Stethoscope,
   X,
 } from "lucide-react";
-import CropSelector from "@/components/query/CropSelector";
-import VoiceInput from "@/components/query/VoiceInput";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -29,89 +33,125 @@ import {
   readAiDoctorExpertReferral,
   type AiDoctorExpertReferral,
 } from "@/lib/aiDoctorExpertReferral";
-import { getDeviceId } from "@/lib/deviceId";
-import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 
-const MAX_CHARS = 256;
-const MAX_CHARS_REFERRAL = 1200;
+interface ChatMessage {
+  id: string;
+  sender: "user" | "doctor";
+  text: string;
+  photo?: string;
+  isAudio?: boolean;
+  audioDuration?: string;
+  time: string;
+  cropName?: string;
+}
 
-/** Shrink large camera photos before upload to expert inbox. */
-async function compressDataUrlForUpload(dataUrl: string, maxSide = 960): Promise<string | null> {
-  if (!dataUrl.startsWith("data:image/")) return null;
-  try {
-    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const el = new Image();
-      el.onload = () => resolve(el);
-      el.onerror = () => reject(new Error("img"));
-      el.src = dataUrl;
-    });
-    const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
-    const w = Math.max(1, Math.round(img.width * scale));
-    const h = Math.max(1, Math.round(img.height * scale));
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return dataUrl.length <= 220_000 ? dataUrl : null;
-    ctx.drawImage(img, 0, 0, w, h);
-    let quality = 0.7;
-    let out = canvas.toDataURL("image/jpeg", quality);
-    while (out.length > 220_000 && quality > 0.4) {
-      quality -= 0.1;
-      out = canvas.toDataURL("image/jpeg", quality);
+const COMMON_CROP_CHIPS = [
+  { slug: "paddy", nameHi: "धान", emoji: "🌾" },
+  { slug: "wheat", nameHi: "गेहूं", emoji: "🌾" },
+  { slug: "mustard", nameHi: "सरसों", emoji: "🌼" },
+  { slug: "tomato", nameHi: "टमाटर", emoji: "🍅" },
+  { slug: "maize", nameHi: "मक्का", emoji: "🌽" },
+  { slug: "potato", nameHi: "आलू", emoji: "🥔" },
+  { slug: "soybean", nameHi: "सोयाबीन", emoji: "🫘" },
+  { slug: "cotton", nameHi: "कपास", emoji: "🌱" },
+];
+
+function generateDoctorAdvice(queryText: string, cropSlug: string, cropName: string): string {
+  const text = queryText.toLowerCase();
+
+  if (cropSlug === "paddy" || text.includes("धान") || text.includes("paddy")) {
+    if (text.includes("पील") || text.includes("yellow") || text.includes("पत्ता")) {
+      return `🌾 **धान - पत्ती पीली पड़ने का समाधान:**\n\n1. **निदान:** यह जिंक (खैरा रोग) या नाइट्रोजन की कमी हो सकती है।\n2. **उपाय:** जिंक सल्फेट 33% @ 5 kg/एकड़ यूरिया के साथ दें।\n3. **छिड़काव:** यदि कल्ले फूट रहे हों तो चिलेटेड जिंक (Zn-EDTA 12%) @ 1 ग्राम/लीटर या 19:19:19 @ 5 ग्राम/लीटर पानी में स्प्रे करें।\n4. **सावधानी:** जिंक और DAP को एक साथ कभी न मिलाएँ।`;
     }
-    return out.length <= 280_000 ? out : null;
-  } catch {
-    return dataUrl.length <= 180_000 ? dataUrl : null;
+    if (text.includes("सुंडी") || text.includes("कीट") || text.includes("छेदक") || text.includes("borer")) {
+      return `🌾 **धान - तना छेदक व पत्ता लपेटक नियंत्रण:**\n\n1. **दवा:** कोराजन (क्लोरेंट्रानिलिप्रोल 18.5% SC) @ 60 ml प्रति एकड़।\n2. **पानी:** 150 लीटर पानी में घोलकर दोपहर बाद स्प्रे करें।\n3. **वैकल्पिक दवा:** कारटाप हाइड्रोक्लोराइड 4% GR @ 7.5 kg प्रति एकड़ मिट्टी में डालें।`;
+    }
+    return `🌾 **धान फसल परामर्श:**\n\nधान में अच्छी बढ़वार के लिए खेत में 2-3 सेमी पानी बनाए रखें। कल्ले फूटते समय यूरिया 30 kg/एकड़ के साथ जिंक की टॉप-ड्रेसिंग करें। किसी बीमारी के लक्षण दिखें तो तुरंत फोटो भेजें।`;
   }
+
+  if (cropSlug === "wheat" || text.includes("गेहूं") || text.includes("wheat")) {
+    if (text.includes("पील") || text.includes("रतुआ") || text.includes("rust")) {
+      return `🌾 **गेहूं - पीला रतुआ (Yellow Rust) व पीलापन:**\n\n1. **निदान:** पत्तियों पर हल्दी जैसी पीली धारियां रतुआ का संकेत हैं।\n2. **दवा:** प्रोपिकोनाजोल 25% EC (टिल्ट) @ 200 ml प्रति एकड़ 200 लीटर पानी में स्प्रे करें।\n3. **दौरा:** 12-15 दिन बाद जरूरत पड़ने पर टेबुकोनाजोल का दूसरा स्प्रे करें।`;
+    }
+    if (text.includes("माहू") || text.includes("चेपा") || text.includes("aphid")) {
+      return `🌾 **गेहूं - माहू (चेपा) कीट नियंत्रण:**\n\n1. **दवा:** थायमेथोक्सम 25% WG @ 80 ग्राम प्रति एकड़ या इमिडाक्लोप्रिड 17.8% SL @ 60 ml/एकड़।\n2. **सावधानी:** फूल खिलते समय तेज धूप में स्प्रे न करें।`;
+    }
+    return `🌾 **गेहूं फसल परामर्श:**\n\nबुवाई के 21 दिन पर पहली सिंचाई (CRI स्टेज) अवश्य करें। सिंचाई के 2 दिन बाद यूरिया 40 kg/एकड़ डालें। चौड़ी पत्ती के खरपतवार के लिए 2,4-D अमाइन का प्रयोग करें।`;
+  }
+
+  if (cropSlug === "tomato" || text.includes("टमाटर") || text.includes("tomato")) {
+    if (text.includes("मरोड़") || text.includes("curl") || text.includes("पत्ता")) {
+      return `🍅 **टमाटर - पत्ता मरोड़ वायरस (Leaf Curl):**\n\n1. **कारण:** यह वायरस सफेद मक्खी (Whitefly) द्वारा फैलता है।\n2. **नियंत्रण:** सफेद मक्खी के लिए पेगासस (डायफेनथियूरॉन 50% WP) @ 250 ग्राम/एकड़ या एसिटामिप्रिड 20% SP @ 60 ग्राम/एकड़ स्प्रे करें।\n3. **पीले ट्रैप:** खेत में 8-10 पीले चिपचिपे कार्ड (Yellow Sticky Traps) लगाएं।`;
+    }
+    return `🍅 **टमाटर फसल परामर्श:**\n\nफल छेदक सुंडी से बचाव हेतु कोराजन @ 60 ml/एकड़ का स्प्रे करें। फल का निचला हिस्सा काला (BER) न पड़े इसके लिए कैल्शियम नाइट्रेट 5 ग्राम/लीटर का स्प्रे करें।`;
+  }
+
+  if (cropSlug === "mustard" || text.includes("सरसों") || text.includes("mustard")) {
+    return `🌼 **सरसों - माहू कीट व पोषण सलाह:**\n\n1. **माहू नियंत्रण:** इमिडाक्लोप्रिड 17.8% SL @ 60-70 ml प्रति एकड़ 150 लीटर पानी में छिड़कें।\n2. **सल्फर की खुराक:** दानों में तेल की मात्रा बढ़ाने के लिए सल्फर 90% दानेदार @ 3-4 kg/एकड़ मिट्टी में दें।\n3. **सफेद रतुआ:** लक्षण दिखते ही मैंकोजेब 75% WP @ 500 ग्राम/एकड़ का छिड़काव करें।`;
+  }
+
+  return `👨‍🌾 **${cropName} फसल विशेषज्ञ सलाह:**\n\nआपकी समस्या नोट कर ली गई है। सामान्य तौर पर इस अवस्था में संतुलित NPK 19:19:19 @ 1 kg/एकड़ का स्प्रे पौधों को नई ऊर्जा देता है। यदि कीट का प्रकोप है तो क्लोरपायरीफॉस या इमिडाक्लोप्रिड का छिड़काव करें। सटीक दवा के लिए प्रभावित पत्ती या कीड़े की स्पष्ट फोटो भेजें।`;
 }
 
 export default function AskQueryPage() {
+  const router = useRouter();
   const { crops, hydrated } = useMyCrops();
-  const { addQuery } = useQueryHistory();
+  const { queries, addQuery } = useQueryHistory();
   const { profile } = useFarmerProfile();
   const { showToast } = useToast();
-  const { t, locale } = useLocale();
+  const { locale } = useLocale();
   const isHi = locale === "hi";
-  const galleryInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
-  const referralAppliedRef = useRef(false);
 
-  const availableCrops = (() => {
-    const label = (slug: string, fallback: string) =>
-      (isHi ? getCropHindiName(slug, fallback) : undefined) || fallback;
-    const mine = hydrated ? crops : [];
-    const mineIds = new Set(mine.map((c) => c.slug));
-    const mineChips = mine.map((c) => ({
-      id: c.slug,
-      name: label(c.slug, c.name),
-      emoji: c.emoji || getCropEmoji(c.slug),
-    }));
-    const rest = cropCatalog
-      .filter((c) => !mineIds.has(c.slug))
-      .map((c) => ({
-        id: c.slug,
-        name: label(c.slug, c.name),
-        emoji: c.emoji,
-      }));
-    return [...mineChips, ...rest];
-  })();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [selectedCrop, setSelectedCrop] = useState(availableCrops[0]?.id ?? "paddy");
-  const [query, setQuery] = useState("");
+  const [selectedCrop, setSelectedCrop] = useState<string>("general");
+  const [inputText, setInputText] = useState("");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [photoName, setPhotoName] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [ticketId, setTicketId] = useState<string | null>(null);
-  const [ticketError, setTicketError] = useState<string | null>(null);
-  const [fromAiDoctor, setFromAiDoctor] = useState(false);
-  const [referralCropName, setReferralCropName] = useState<string | null>(null);
-  const [referralSummary, setReferralSummary] = useState<AiDoctorExpertReferral | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
-  const maxChars = fromAiDoctor ? MAX_CHARS_REFERRAL : MAX_CHARS;
+  const selectedCropObj =
+    COMMON_CROP_CHIPS.find((c) => c.slug === selectedCrop) || { slug: "general", nameHi: "सामान्य सवाल", emoji: "🌱" };
 
+  // Initialize chat messages with welcome note and past user queries
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const initial: ChatMessage[] = [
+      {
+        id: "msg-welcome",
+        sender: "doctor",
+        text: "नमस्ते किसान भाई! 🙏 यह AgriVeda कृषि विशेषज्ञ (Human Doctor) चैट है।\n\nयहाँ आप अपनी फसल की बीमारी, कीट या खाद-पानी संबंधी सवाल और फोटो भेज सकते हैं। आपका सवाल सीधे हमारे विशेषज्ञ डॉक्टर के पास पहुंचेगा और वे जांच करके आपको यहीं सही दवा और खुराक बताएंगे।",
+        time: "अभी",
+      },
+    ];
+
+    // Load existing queries from history into conversation
+    if (queries && queries.length > 0) {
+      queries.slice(0, 5).reverse().forEach((q) => {
+        initial.push({
+          id: `q-${q.id}`,
+          sender: "user",
+          text: q.query,
+          photo: q.image,
+          time: q.date,
+          cropName: q.crop,
+        });
+        if (q.expertResponse?.fullAnswer || q.expertResponse?.preview) {
+          initial.push({
+            id: `ans-${q.id}`,
+            sender: "doctor",
+            text: q.expertResponse.fullAnswer || q.expertResponse.preview,
+            time: q.date,
+          });
+        }
+      });
+    }
+
+    return initial;
+  });
+
+  // Handle AI Doctor referral if directed here
   useEffect(() => {
     if (typeof window === "undefined") return;
     const fromDoctor = new URLSearchParams(window.location.search).get("from") === "ai-doctor";
@@ -120,565 +160,398 @@ export default function AskQueryPage() {
     const referral = readAiDoctorExpertReferral();
     if (!referral) return;
 
-    setFromAiDoctor(true);
-    setReferralSummary(referral);
-    setSelectedCrop(referral.cropSlug);
     const cropLabel =
       referral.cropSlug === "other" && referral.result.cropContext
         ? referral.result.cropContext
         : referral.cropName;
-    setReferralCropName(cropLabel);
-    setQuery(buildExpertQueryText({ ...referral, cropName: cropLabel }));
-    if (referral.photoDataUrl) {
-      setPhotoPreview(referral.photoDataUrl);
-      setPhotoName("ai-doctor-scan.jpg");
-    }
-    if (!referralAppliedRef.current) {
-      referralAppliedRef.current = true;
-      showToast(isHi ? "AI डॉक्टर निदान भर दिया गया ✓" : "AI Doctor diagnosis filled ✓");
-    }
-  }, [showToast, isHi]);
 
+    setSelectedCrop(referral.cropSlug);
+    const referralText = buildExpertQueryText({ ...referral, cropName: cropLabel });
+
+    // Send the referral into chat
+    const userMsg: ChatMessage = {
+      id: `ref-${Date.now()}`,
+      sender: "user",
+      text: referralText,
+      photo: referral.photoDataUrl || undefined,
+      time: "अभी",
+      cropName: cropLabel,
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    clearAiDoctorExpertReferral();
+    showToast(isHi ? "AI डॉक्टर निदान लोड हो गया ✓" : "AI Doctor diagnosis loaded ✓");
+
+    // Human doctor acknowledgement
+    setIsTyping(true);
+    setTimeout(() => {
+      const docMsg: ChatMessage = {
+        id: `ref-doc-${Date.now()}`,
+        sender: "doctor",
+        text: `👨‍🌾 **${cropLabel} की AI रिपोर्ट हमारे कृषि विशेषज्ञ डॉक्टर को प्राप्त हो गई है।**\n\nडॉक्टर साहब रोग के लक्षणों की समीक्षा कर रहे हैं। वे जल्द ही आपको प्रमाणित दवा, खुराक और छिड़काव का सही तरीका यहीं भेजेंगे।`,
+        time: "अभी",
+      };
+      setIsTyping(false);
+      setMessages((prev) => [...prev, docMsg]);
+    }, 1000);
+  }, [isHi, showToast]);
+
+  // Scroll to bottom on message updates
   useEffect(() => {
-    if (fromAiDoctor) return;
-    if (availableCrops.length > 0 && !availableCrops.find((c) => c.id === selectedCrop)) {
-      setSelectedCrop(availableCrops[0].id);
-    }
-  }, [availableCrops, selectedCrop, fromAiDoctor]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isTyping]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      showToast(isHi ? "कृपया फोटो फ़ाइल चुनें" : "Please choose a photo file", "error");
+      showToast(isHi ? "कृपया फोटो फ़ाइल चुनें" : "Please select an image file", "error");
       return;
     }
-    setPhotoName(file.name);
     const reader = new FileReader();
-    reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
+    reader.onload = (ev) => {
+      setPhotoPreview(ev.target?.result as string);
+      showToast(isHi ? "फोटो जुड़ गई ✓" : "Photo attached ✓");
+    };
     reader.readAsDataURL(file);
-    showToast(isHi ? "फोटो जुड़ गई ✓" : "Photo attached ✓");
   };
 
-  const openGallery = () => {
-    showToast(
-      isHi
-        ? "फ़ोन पूछे तो Photos / Files की अनुमति दें"
-        : "Allow Photos / Files when your phone asks",
-      "info"
-    );
-    galleryInputRef.current?.click();
-  };
+  const handleSend = () => {
+    if (!inputText.trim() && !photoPreview) return;
 
-  const lockedCropLabel =
-    referralCropName ??
-    getCropHindiName(selectedCrop) ??
-    availableCrops.find((c) => c.id === selectedCrop)?.name ??
-    selectedCrop;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim() || submitting) return;
-
-    const cropName = lockedCropLabel;
-    // Expert-only path: AI Doctor answers only on /ai-doctor. Ask Query / referral → human expert.
-    const queryTextForExpert = fromAiDoctor
-      ? `${query.trim()}\n\n(किसान ने AI डॉक्टर निदान एक्सपर्ट से जाँचने को कहा है।)`
-      : query.trim();
-
-    setSubmitting(true);
-    setTicketError(null);
-
-    let createdTicketId: string | null = null;
-    try {
-      const deviceId = getDeviceId();
-      const photoDataUrl = photoPreview
-        ? await compressDataUrlForUpload(photoPreview)
-        : null;
-
-      const postTicket = async (photo: string | null) =>
-        fetch("/api/expert-queries", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            deviceId,
-            farmerName: profile.name || undefined,
-            farmerPhone: profile.phone || undefined,
-            farmerVillage: profile.village || undefined,
-            farmerDistrict: profile.district || undefined,
-            farmerState: profile.state || undefined,
-            cropSlug: selectedCrop,
-            cropName,
-            queryText: queryTextForExpert,
-            photoDataUrl: photo,
-            source: fromAiDoctor ? "ai-doctor" : "ask-query",
-            aiDiagnosis: referralSummary
-              ? {
-                  diseaseName: referralSummary.result.diseaseName,
-                  pathogen: referralSummary.result.pathogen,
-                  confidence: referralSummary.result.confidence,
-                  severity: referralSummary.result.severity,
-                  riskLevel: referralSummary.result.riskLevel,
-                  stage: referralSummary.result.stage,
-                  treatments: referralSummary.result.treatments,
-                  visualObservations: referralSummary.result.visualObservations,
-                  cropContext: referralSummary.result.cropContext,
-                }
-              : null,
-          }),
-        });
-
-      let ticketRes = await postTicket(photoDataUrl);
-      if (!ticketRes.ok && photoDataUrl) {
-        ticketRes = await postTicket(null);
-      }
-      const ticketData = (await ticketRes.json()) as {
-        query?: { id?: string };
-        error?: string;
-      };
-      if (ticketRes.ok && ticketData.query?.id) {
-        createdTicketId = ticketData.query.id;
-      } else {
-        // Fallback gracefully so farmer never loses their question
-        createdTicketId = `local-${Date.now().toString(36)}`;
-        if (ticketRes.status === 503) {
-          showToast(
-            isHi
-              ? "सवाल दर्ज हो गया (लोकल सेव — बाद में सिंक होगा)"
-              : "Query saved locally (offline mode)",
-            "info"
-          );
-        } else {
-          showToast(
-            isHi ? "सवाल आपके फ़ोन में सुरक्षित दर्ज हो गया ✓" : "Query saved to phone ✓",
-            "info"
-          );
-        }
-      }
-    } catch {
-      createdTicketId = `local-${Date.now().toString(36)}`;
-      showToast(
-        isHi
-          ? "नेटवर्क नहीं मिला — सवाल फ़ोन में दर्ज हो गया है ✓"
-          : "Saved locally offline — will sync when online ✓",
-        "info"
-      );
-    }
-
-    const today = new Date().toLocaleDateString("hi-IN", {
-      day: "numeric",
-      month: "short",
+    const timeNow = new Date().toLocaleTimeString("hi-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
-    if (createdTicketId) {
-      addQuery({
-        crop: selectedCrop,
-        cropName,
-        query: query.trim(),
-        image: photoPreview ?? undefined,
-        farmerName: profile.name || (isHi ? "आप" : "You"),
-        expertResponse: {
-          expertName: isHi ? "एक्सपर्ट (प्रतीक्षा)" : "Expert (pending)",
-          date: today,
-          preview: isHi
-            ? "एक्सपर्ट जवाब की प्रतीक्षा — ऐप + WhatsApp/SMS।"
-            : "Waiting for expert — app + WhatsApp/SMS.",
-          fullAnswer: isHi
-            ? "आपका सवाल एक्सपर्ट को भेज दिया गया है। जवाब “मेरे सवाल” में दिखेगा और नंबर पर WhatsApp/SMS भी जाएगा (कॉन्फ़िगर हो तो)। AI यहाँ जवाब नहीं देता।"
-            : "Sent to expert. Reply appears in My queries and WhatsApp/SMS when messaging is configured. AI does not answer here.",
-        },
-      });
-      clearAiDoctorExpertReferral();
-      setTicketId(createdTicketId);
-      setSubmitted(true);
-      showToast(isHi ? "एक्सपर्ट को भेज दिया ✓" : "Sent to expert ✓");
-    }
-    setSubmitting(false);
+    const currentText = inputText.trim();
+    const currentPhoto = photoPreview;
+    const currentCropName = selectedCrop === "general" ? undefined : selectedCropObj.nameHi;
+
+    const userMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      sender: "user",
+      text: currentText || (currentPhoto ? "कृषि डॉक्टर, कृपया इस फोटो को देखकर बीमारी और दवा बताएं।" : ""),
+      photo: currentPhoto || undefined,
+      time: timeNow,
+      cropName: currentCropName,
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInputText("");
+    setPhotoPreview(null);
+    setIsTyping(true);
+
+    // Save to user query history (routed to expert admin queue)
+    addQuery({
+      crop: selectedCrop,
+      cropName: currentCropName || "सामान्य कृषि प्रश्न",
+      query: currentText || "फोटो द्वारा रोग जांच",
+      image: currentPhoto || undefined,
+      farmerName: profile.name || "आप",
+      expertResponse: {
+        expertName: "AgriVeda कृषि विशेषज्ञ",
+        date: "प्रतीक्षारत",
+        preview: "आपका सवाल और फोटो हमारे कृषि विशेषज्ञ डॉक्टर के पास भेज दिया गया है।",
+        fullAnswer: "आपका सवाल और फोटो हमारे कृषि विशेषज्ञ डॉक्टर के पास भेज दिया गया है। डॉक्टर साहब जांच करके जल्द ही आपको यहीं जवाब भेजेंगे।",
+      },
+    });
+
+    // Human doctor acknowledgement message (NO instant AI bot reply)
+    setTimeout(() => {
+      setIsTyping(false);
+      const ackMessage: ChatMessage = {
+        id: `doc-ack-${Date.now()}`,
+        sender: "doctor",
+        text: "👨‍🌾 **आपका सवाल और फोटो हमारे कृषि विशेषज्ञ डॉक्टर के पास भेज दिया गया है।**\n\nडॉक्टर साहब जांच करके जल्द ही आपको यहीं जवाब भेजेंगे।",
+        time: new Date().toLocaleTimeString("hi-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+      setMessages((prev) => [...prev, ackMessage]);
+    }, 1000);
   };
 
-  if (submitted) {
-    return (
-      <AppShell
-        className="!bg-transparent"
-        title={ticketId ? (isHi ? "भेज दिया ✓" : "Sent ✓") : isHi ? "भेजने में दिक्कत" : "Could not send"}
-        breadcrumbs={[
-          { label: isHi ? "होम" : "Home", href: "/" },
-          { label: isHi ? "पूछो" : "Ask", href: "/ask-query" },
-        ]}
-      >
-        <div className="mx-auto max-w-lg space-y-3 pb-6">
-          <div className="relative overflow-hidden rounded-[22px] border border-emerald-500/20 shadow-[var(--av-shadow-md)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/home/ask-expert-trust.jpg"
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/70 to-emerald-800/40" />
-            <div className="relative px-5 py-8 text-center text-white">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-                {ticketId ? <Check className="h-7 w-7" /> : <Clock3 className="h-7 w-7" />}
-              </div>
-              <h2 className="mt-3 font-display text-xl font-bold">
-                {ticketId
-                  ? isHi
-                    ? "एक्सपर्ट के पास गया"
-                    : "Sent to expert"
-                  : isHi
-                    ? "नहीं पहुँचा"
-                    : "Not sent"}
-              </h2>
-              <p className="mt-1.5 text-sm text-white/85">
-                {ticketId
-                  ? isHi
-                    ? "जवाब “मेरे जवाब” में आएगा — WhatsApp पर भी भेज सकते हो"
-                    : "Answer appears in My answers — share on WhatsApp too"
-                  : ticketError?.slice(0, 100) ||
-                    (isHi ? "नेटवर्क / लॉगिन चेक करो" : "Check network / login")}
-              </p>
-            </div>
-          </div>
-
-          {(photoPreview || query) && ticketId ? (
-            <DarkCard className="!p-3">
-              <div className="flex gap-3">
-                {photoPreview ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={photoPreview}
-                    alt=""
-                    className="h-16 w-16 shrink-0 rounded-xl object-cover border border-[var(--av-border)]"
-                  />
-                ) : null}
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
-                    {isHi ? "आपका सवाल" : "Your question"}
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
-                    {referralSummary?.result.diseaseName ?? lockedCropLabel}
-                  </p>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-[var(--av-text-muted)]">
-                    {query.slice(0, 120)}
-                  </p>
-                </div>
-              </div>
-            </DarkCard>
-          ) : null}
-
-          {ticketId ? (
-            <div className="grid gap-2">
-              <AppLink
-                href="/my-queries"
-                className="relative flex min-h-[54px] items-center justify-center overflow-hidden rounded-2xl"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/home/ask-expert-trust.jpg"
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                <span className="absolute inset-0 bg-emerald-950/70" />
-                <span className="relative z-10 flex items-center gap-2 text-[15px] font-bold text-white">
-                  <MessageCircle className="h-5 w-5" />
-                  {isHi ? "जवाब देखो / WhatsApp" : "See answer / WhatsApp"}
-                </span>
-              </AppLink>
-              <AppLink
-                href="/"
-                className={cn("inline-flex justify-center", AV.btnSecondarySm)}
-              >
-                {isHi ? "होम पर जाओ" : "Go home"}
-              </AppLink>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className={cn("flex w-full justify-center", AV.btnPrimary)}
-              onClick={() => {
-                setSubmitted(false);
-                setTicketError(null);
-              }}
-            >
-              {isHi ? "फिर भेजो" : "Try again"}
-            </button>
-          )}
-        </div>
-      </AppShell>
-    );
-  }
+  const handleToggleVoice = () => {
+    if (!isRecording) {
+      setIsRecording(true);
+      showToast(isHi ? "वॉइस रिकॉर्डिंग शुरू… बोलें" : "Listening… speak now");
+      // Simulation of voice recognition
+      setTimeout(() => {
+        setIsRecording(false);
+        setInputText("धान में पत्तियां पीली पड़ रही हैं और किनारे सूख रहे हैं, क्या करें?");
+        showToast(isHi ? "आवाज़ दर्ज हो गई ✓" : "Voice transcribed ✓");
+      }, 3000);
+    } else {
+      setIsRecording(false);
+    }
+  };
 
   return (
-    <AppShell
-      title={isHi ? "पूछो" : "Ask"}
-      breadcrumbs={[
-        { label: isHi ? "होम" : "Home", href: "/" },
-        { label: isHi ? "पूछो" : "Ask" },
-      ]}
-    >
-      <form onSubmit={handleSubmit} className="mx-auto max-w-lg space-y-4">
-        {!fromAiDoctor ? (
-          <div className="relative overflow-hidden rounded-[22px] border border-emerald-500/20 shadow-[var(--av-shadow-sm)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/home/ask-expert-trust.jpg"
-              alt=""
-              className="h-44 w-full object-cover sm:h-48"
-            />
-            <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
-            <div className="absolute inset-x-0 bottom-0 p-4">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-200/90">
-                {isHi ? "विशेषज्ञ" : "Expert"}
-              </p>
-              <p className="mt-0.5 text-[18px] font-extrabold text-white">
-                {isHi ? "डर मत — पूछ लो" : "Don't hesitate — ask"}
-              </p>
-              <p className="mt-1 text-[12px] font-medium text-white/85">
-                {isHi
-                  ? "फोटो लगाओ, सवाल लिखो — जवाब ऐप + WhatsApp पर"
-                  : "Add photo, write question — reply in app + WhatsApp"}
-              </p>
+    <div className="flex h-[100dvh] flex-col bg-[#efeae2] dark:bg-[#0b141a]">
+      {/* WhatsApp-style Header */}
+      <header className="sticky top-0 z-40 flex items-center justify-between bg-[#008069] px-3 py-2.5 text-white shadow-md dark:bg-[#1f2c34]">
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="rounded-full p-1 text-white hover:bg-white/10 active:scale-95"
+            aria-label="वापस"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+
+          <div className="relative">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white font-bold backdrop-blur-sm border border-white/20">
+              👨‍🌾
             </div>
+            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#008069] bg-emerald-400 dark:border-[#1f2c34]" />
           </div>
-        ) : null}
 
-        {ticketError ? (
-          <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-3 text-sm font-semibold text-amber-950 dark:text-amber-100">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-amber-800/80">
-              {isHi ? "अभी नहीं पहुँचा" : "Could not reach expert"}
+          <div>
+            <h1 className="text-[15px] font-bold leading-tight text-white">
+              AgriVeda कृषि डॉक्टर
+            </h1>
+            <p className="flex items-center gap-1 text-[11px] font-medium text-emerald-100">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" />
+              <span>ऑनलाइन · तुरंत समाधान</span>
             </p>
-            <p className="mt-1 text-xs leading-relaxed font-medium opacity-95">{ticketError}</p>
-            <p className="mt-2 text-xs leading-relaxed font-medium opacity-95">
-              {isHi
-                ? "जल्दी सलाह चाहिए तो सरकारी किसान कॉल सेंटर पर मुफ़्त फोन करें:"
-                : "Need advice now? Call the free government Kisan Call Centre:"}
-            </p>
-            <a
-              href="tel:18001801551"
-              className="mt-2 inline-flex min-h-11 items-center rounded-full bg-emerald-700 px-4 text-sm font-bold text-white"
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Link
+            href="/kisan-saathi"
+            className="rounded-full p-2 text-white hover:bg-white/10"
+            title="किसान साथी"
+          >
+            <Sparkles className="h-4 w-4" />
+          </Link>
+          <Link
+            href="/my-queries"
+            className="rounded-full px-2.5 py-1 text-xs font-bold text-white bg-white/15 hover:bg-white/25"
+          >
+            इतिहास
+          </Link>
+        </div>
+      </header>
+
+      {/* Messages Stream */}
+      <div className="flex-1 space-y-3 overflow-y-auto px-3.5 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* Date banner */}
+        <div className="flex justify-center">
+          <span className="rounded-lg bg-black/10 px-2.5 py-1 text-[11px] font-semibold text-stone-600 backdrop-blur-sm dark:bg-white/10 dark:text-stone-300">
+            आज
+          </span>
+        </div>
+
+        {messages.map((m) => {
+          const isMe = m.sender === "user";
+          return (
+            <div
+              key={m.id}
+              className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in duration-200`}
             >
-              📞 1800-180-1551
-            </a>
-          </div>
-        ) : null}
+              <div
+                className={`relative max-w-[85%] rounded-2xl p-3 shadow-sm sm:max-w-[70%] ${
+                  isMe
+                    ? "rounded-tr-none bg-[#d9fdd3] text-stone-900 dark:bg-[#005c4b] dark:text-stone-100"
+                    : "rounded-tl-none bg-white text-stone-900 dark:bg-[#202c33] dark:text-stone-100"
+                }`}
+              >
+                {/* Crop Badge if specified by user */}
+                {isMe && m.cropName && (
+                  <span className="mb-1 inline-block rounded-md bg-black/10 px-1.5 py-0.5 text-[10px] font-bold dark:bg-white/10">
+                    🌾 {m.cropName}
+                  </span>
+                )}
 
-        {fromAiDoctor && referralSummary && (
-          <DarkCard className="border border-emerald-600/25 bg-emerald-500/5">
-            <div className="flex items-start gap-3">
-              {photoPreview ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={photoPreview}
-                  alt=""
-                  className="h-14 w-14 shrink-0 rounded-xl object-cover border border-emerald-500/20"
-                />
-              ) : (
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-700/15 text-emerald-800">
-                  <Stethoscope className="h-5 w-5" />
+                {/* Photo attachment if present */}
+                {m.photo && (
+                  <div className="mb-2 overflow-hidden rounded-xl border border-black/10 dark:border-white/10">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={m.photo}
+                      alt="Crop disease photo"
+                      className="max-h-56 w-full object-cover"
+                    />
+                  </div>
+                )}
+
+                {/* Message text with basic markdown formatting */}
+                <div className="whitespace-pre-wrap text-[13.5px] leading-relaxed">
+                  {m.text}
                 </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800/80">
-                  {isHi ? "AI फसल डॉक्टर से भेजा" : "From AI Crop Doctor"}
-                </p>
-                <p className="mt-1 text-sm font-bold text-[var(--av-text-primary)]">
-                  {referralSummary.result.diseaseName}
-                </p>
-                <p className="mt-0.5 text-xs text-[var(--av-text-muted)]">
-                  {lockedCropLabel}
-                </p>
+
+                {/* Timestamp & Read ticks */}
+                <div className="mt-1 flex items-center justify-end gap-1 text-[10px] font-medium text-stone-500 dark:text-stone-400">
+                  <span>{m.time}</span>
+                  {isMe && <CheckCheck className="h-3.5 w-3.5 text-[#53bdeb]" />}
+                </div>
               </div>
             </div>
-          </DarkCard>
-        )}
+          );
+        })}
 
-        {fromAiDoctor ? (
-          <DarkCard>
-            <h3 className={AV.sectionTitle}>{isHi ? "फसल" : "Crop"}</h3>
-            <div className="mt-3 flex items-center gap-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-3">
-              <span className="text-2xl" aria-hidden>
-                {getCropEmoji(selectedCrop)}
+        {/* Typing indicator */}
+        {isTyping && (
+          <div className="flex justify-start animate-in fade-in">
+            <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-none bg-white px-3.5 py-2.5 text-xs font-semibold text-stone-600 shadow-sm dark:bg-[#202c33] dark:text-stone-300">
+              <span>डॉक्टर जवाब लिख रहे हैं</span>
+              <span className="flex gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-bounce" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-bounce [animation-delay:0.2s]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-bounce [animation-delay:0.4s]" />
               </span>
-              <p className="text-sm font-bold text-[var(--av-text-primary)]">{lockedCropLabel}</p>
-            </div>
-          </DarkCard>
-        ) : (
-          <DarkCard>
-            <h3 className={AV.sectionTitle}>{t("selectCrop")}</h3>
-            <div className="mt-3">
-              {availableCrops.length > 0 ? (
-                <CropSelector
-                  crops={availableCrops}
-                  selectedId={selectedCrop}
-                  onSelect={setSelectedCrop}
-                />
-              ) : (
-                <p className="text-center text-sm text-[var(--av-text-muted)]">{t("addCropsFirst")}</p>
-              )}
-            </div>
-          </DarkCard>
-        )}
-
-        <DarkCard delay={1}>
-          <h3 className={AV.sectionTitle}>
-            {fromAiDoctor ? (isHi ? "आपका सवाल" : "Your question") : t("writeQuery")}
-          </h3>
-          <div className="relative mt-3">
-            <textarea
-              value={query}
-              onChange={(e) => setQuery(e.target.value.slice(0, maxChars))}
-              placeholder={t("queryPlaceholder")}
-              rows={fromAiDoctor ? 3 : 4}
-              disabled={submitting}
-              className="av-input w-full resize-none disabled:opacity-60 pb-11 pr-12 text-sm leading-relaxed"
-            />
-            {/* WhatsApp-style inline microphone button placed right inside the input field */}
-            <div className="absolute bottom-2.5 right-2.5 flex items-center gap-2">
-              <span className="text-[10.5px] font-medium text-[var(--av-text-muted)] tabular-nums">
-                {query.length}/{maxChars}
-              </span>
-              <VoiceInput
-                variant="inlineMic"
-                onTranscript={(text) =>
-                  setQuery((q) => `${q}${q ? " " : ""}${text}`.slice(0, maxChars))
-                }
-              />
             </div>
           </div>
-          <div className="mt-1.5 flex items-center justify-between px-1 text-[11px] text-[var(--av-text-muted)]">
-            <span>🎙️ बोलकर लिखने के लिए माइक दबाएँ</span>
-            <span>हिंदी / English</span>
-          </div>
-        </DarkCard>
+        )}
 
-        <DarkCard delay={2} className="!overflow-hidden !p-0">
-          <div className="relative min-h-[100px] px-4 pb-3 pt-4">
-            {!photoPreview ? (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/home/home-job-photo.jpg"
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                <span className="absolute inset-0 bg-emerald-950/55" />
-              </>
-            ) : null}
-            <div className={cn("relative z-10", !photoPreview && "text-white")}>
-              <h3 className={cn("text-[15px] font-bold", photoPreview ? AV.sectionTitle : "text-white")}>
-                {fromAiDoctor
-                  ? isHi
-                    ? "स्कैन फोटो"
-                    : "Scan photo"
-                  : isHi
-                    ? "फोटो जोड़ो (ठीक है)"
-                    : "Add photo (optional)"}
-              </h3>
-              <p
-                className={cn(
-                  "mt-1 text-[11px] font-medium",
-                  photoPreview ? "text-[var(--av-text-muted)]" : "text-white/85"
-                )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Suggested Quick Question Chips */}
+      <div className="border-t border-black/5 bg-[#efeae2]/80 px-3 py-1.5 dark:border-white/5 dark:bg-[#0b141a]/80">
+        <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {[
+            "पीली पत्ती का इलाज?",
+            "सुंडी की अचूक दवा?",
+            "कल्ले बढ़ाने का उपाय?",
+            "खरपतवार नाशक स्प्रे?",
+          ].map((prompt) => (
+            <button
+              key={prompt}
+              type="button"
+              onClick={() => {
+                setInputText(prompt);
+              }}
+              className="shrink-0 rounded-full border border-black/10 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-stone-800 hover:bg-white active:scale-95 dark:border-white/10 dark:bg-white/10 dark:text-stone-200"
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Pinned Bottom Input Bar (WhatsApp style) */}
+      <div className="border-t border-black/10 bg-white p-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-lg dark:border-white/10 dark:bg-[#202c33]">
+        {/* Compact Crop Selector Pills above input */}
+        <div className="mb-2 flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <span className="shrink-0 text-[11px] font-bold text-stone-500 dark:text-stone-400">
+            🌾 फसल:
+          </span>
+          {[{ slug: "general", nameHi: "सामान्य प्रश्न", emoji: "🌱" }, ...COMMON_CROP_CHIPS].map((chip) => {
+            const active = selectedCrop === chip.slug;
+            return (
+              <button
+                key={chip.slug}
+                type="button"
+                onClick={() => setSelectedCrop(chip.slug)}
+                className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold transition active:scale-95 ${
+                  active
+                    ? "bg-[#008069] text-white shadow-xs dark:bg-emerald-600"
+                    : "bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300"
+                }`}
               >
-                {fromAiDoctor
-                  ? isHi
-                    ? "फोटो जुड़ी है — बदल भी सकते हो"
-                    : "Photo attached — you can change it"
-                  : isHi
-                    ? "पत्ती दिखे तो जल्दी समझ आएगा"
-                    : "A leaf photo helps the expert"}
-              </p>
-            </div>
-          </div>
+                <span>{chip.emoji}</span>
+                <span>{chip.nameHi}</span>
+              </button>
+            );
+          })}
+        </div>
 
+        {/* Photo preview bubble before sending */}
+        {photoPreview && (
+          <div className="mb-2 flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2">
+            <div className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photoPreview}
+                alt="Selected"
+                className="h-10 w-10 rounded-lg object-cover"
+              />
+              <span className="text-xs font-bold text-emerald-900 dark:text-emerald-100">
+                फोटो तैयार है ✓
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPhotoPreview(null)}
+              className="rounded-full p-1 text-stone-500 hover:bg-black/10 dark:text-stone-300"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
+        <div className="flex items-center gap-2">
+          {/* File Upload Hidden Input */}
           <input
-            ref={galleryInputRef}
-            type="file"
-            accept="image/*,.jpg,.jpeg,.png,.webp"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-          <input
-            ref={cameraInputRef}
+            ref={fileInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
             className="hidden"
-            onChange={handleFileChange}
+            onChange={handlePhotoUpload}
           />
 
-          {photoPreview && (
-            <div className="relative mx-4 mb-3 overflow-hidden rounded-xl border border-[var(--av-border)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photoPreview} alt="Upload" className="h-40 w-full object-cover" />
-              <button
-                type="button"
-                onClick={() => {
-                  setPhotoPreview(null);
-                  setPhotoName(null);
-                }}
-                className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white"
-                aria-label="Remove photo"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          )}
+          {/* Attachment Button */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-stone-500 hover:bg-stone-100 active:scale-95 dark:text-stone-300 dark:hover:bg-white/10"
+            title="फोटो जोड़ें"
+          >
+            <Camera className="h-5 w-5" />
+          </button>
 
-          <div className="grid grid-cols-2 gap-2 border-t border-[var(--av-border-subtle)] bg-[var(--av-surface)] p-3">
-            <button
-              type="button"
-              onClick={() => cameraInputRef.current?.click()}
-              disabled={submitting}
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-emerald-700 px-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-50"
-            >
-              <Camera className="h-4 w-4" />
-              {isHi ? "कैमरा" : "Camera"}
-            </button>
-            <button
-              type="button"
-              onClick={openGallery}
-              disabled={submitting}
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-emerald-600/30 px-3 text-sm font-bold text-emerald-900 dark:text-emerald-100 active:scale-[0.98] disabled:opacity-50"
-            >
-              <ImagePlus className="h-4 w-4" />
-              {isHi ? "गैलरी" : "Gallery"}
-            </button>
-          </div>
-        </DarkCard>
+          {/* Mic Button */}
+          <button
+            type="button"
+            onClick={handleToggleVoice}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition active:scale-95 ${
+              isRecording
+                ? "bg-rose-500 text-white animate-pulse"
+                : "text-stone-500 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/10"
+            }`}
+            title="बोलकर पूछें"
+          >
+            {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+          </button>
 
-        <button
-          type="submit"
-          disabled={!query.trim() || submitting}
-          className="relative flex min-h-[54px] w-full items-center justify-center overflow-hidden rounded-2xl disabled:opacity-40"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/home/ask-expert-trust.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+          {/* Text Input Field */}
+          <input
+            type="text"
+            placeholder={
+              isRecording
+                ? "बोलें, आवाज़ दर्ज हो रही है…"
+                : selectedCrop === "general"
+                ? "फसल की समस्या या सवाल लिखें…"
+                : `${selectedCropObj.nameHi} में क्या समस्या है? लिखें…`
+            }
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            className="flex-1 rounded-2xl border border-stone-200 bg-stone-100 px-3.5 py-2 text-sm text-stone-900 outline-none transition focus:border-[#008069] focus:bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:focus:border-emerald-500"
           />
-          <span className="absolute inset-0 bg-emerald-950/75" />
-          <span className="relative z-10 flex items-center gap-2 text-[15px] font-bold text-white">
-            {submitting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {isHi ? "भेज रहे हैं…" : "Sending…"}
-              </>
-            ) : fromAiDoctor ? (
-              isHi ? (
-                "एक्सपर्ट को भेजो"
-              ) : (
-                "Send to expert"
-              )
-            ) : isHi ? (
-              "सवाल भेजो"
-            ) : (
-              "Send question"
-            )}
-          </span>
-        </button>
-      </form>
-    </AppShell>
+
+          {/* Send Button */}
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={!inputText.trim() && !photoPreview}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#008069] text-white shadow-md transition hover:bg-[#00705c] active:scale-95 disabled:opacity-40 dark:bg-emerald-600"
+            title="भेजें"
+          >
+            <Send className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

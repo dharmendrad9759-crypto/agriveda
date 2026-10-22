@@ -206,13 +206,6 @@ function LogSprayForm() {
       </DarkCard>
 
       <div className="mt-4 space-y-4">
-        {fromMixAdvisor && (
-          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-[12px] font-bold text-emerald-950 dark:text-emerald-100 flex items-center justify-between">
-            <span>✨ टैंक-मिक्स से जानकारी स्वतः भर दी गई है</span>
-            <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-semibold">Auto-filled</span>
-          </div>
-        )}
-
         <DarkCard delay={1}>
           <label className="block">
             <span className={AV.label}>{t(locale, "selectCrop")}</span>

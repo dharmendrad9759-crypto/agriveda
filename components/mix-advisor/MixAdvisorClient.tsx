@@ -170,34 +170,79 @@ function MixAdvisorInner() {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [step]);
 
-  // Restore step and mix state only if returning with step=guide or restore query
+  // Save mix state continuously to prevent blank screen or state loss on browser back
+  useEffect(() => {
+    if (meds.length > 0 && plan) {
+      try {
+        sessionStorage.setItem(
+          "agriveda_mix_state",
+          JSON.stringify({
+            cropSlug,
+            stage,
+            problemIds,
+            meds,
+            plan,
+            step,
+          })
+        );
+      } catch {}
+    }
+  }, [cropSlug, stage, problemIds, meds, plan, step]);
+
+  // Restore step and mix state on mount or popstate
   useEffect(() => {
     try {
-      const urlStep = searchParams?.get("step");
-      const urlRestore = searchParams?.get("restore");
-      if (urlStep === "guide" || urlRestore) {
-        const saved = sessionStorage.getItem("agriveda_mix_state");
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.cropSlug) setCropSlug(parsed.cropSlug);
-          if (parsed.stage) setStage(parsed.stage);
-          if (parsed.problemIds && Array.isArray(parsed.problemIds) && parsed.problemIds.length > 0) {
-            setProblemIds(parsed.problemIds);
-          }
-          if (parsed.meds && Array.isArray(parsed.meds) && parsed.meds.length > 0) setMeds(parsed.meds);
-          if (parsed.plan) setPlan(parsed.plan);
-          if (urlStep === "guide" || parsed.step === "guide") {
-            setStep("guide");
-          }
+      const saved = sessionStorage.getItem("agriveda_mix_state");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.cropSlug) setCropSlug(parsed.cropSlug);
+        if (parsed.stage) setStage(parsed.stage);
+        if (parsed.problemIds && Array.isArray(parsed.problemIds) && parsed.problemIds.length > 0) {
+          setProblemIds(parsed.problemIds);
+        }
+        if (parsed.meds && Array.isArray(parsed.meds) && parsed.meds.length > 0) setMeds(parsed.meds);
+        if (parsed.plan) setPlan(parsed.plan);
+        if (parsed.step && (parsed.step === "mix" || parsed.step === "guide")) {
+          setStep(parsed.step);
         }
       }
     } catch {}
-  }, [searchParams]);
+  }, []);
+
+  // Safety guard against blank white screen
+  useEffect(() => {
+    if ((step === "mix" || step === "guide") && (meds.length === 0 || !plan)) {
+      if (problemIds.length > 0) {
+        const curCrop = CROP_PROBLEM_CROPS.find((c) => c.slug === cropSlug) || CROP_PROBLEM_CROPS[0];
+        const selectedProbs = curCrop.problems.filter((p) => problemIds.includes(p.id));
+        if (selectedProbs.length > 0) {
+          const autoPlan = buildMixPlanFromProblems(cropSlug, selectedProbs);
+          if (autoPlan && autoPlan.medicines.length > 0) {
+            setPlan(autoPlan);
+            setMeds(autoPlan.medicines);
+            return;
+          }
+        }
+      }
+      setStep("problem");
+    }
+  }, [step, meds.length, plan, problemIds, cropSlug]);
 
   // Modal / drawer states
   const [pickSlot, setPickSlot] = useState<number | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addCategoryTab, setAddCategoryTab] = useState<"fungicide" | "insecticide" | "tonic">("insecticide");
+
+  // Lock body scroll when modal is open to prevent background bouncing glitch
+  useEffect(() => {
+    if (pickSlot !== null || showAddModal) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [pickSlot, showAddModal]);
 
   // Weather state
   const [weatherLine, setWeatherLine] = useState("मौसम लोड हो रहा है…");
@@ -380,10 +425,10 @@ function MixAdvisorInner() {
   return (
     <AppShell
       variant="hub"
-      title="दवा मिलाएँ (Tank Mix Advisor)"
+      title="दवा मिश्रण जांच (घोल सुरक्षा)"
       onBack={handleBackStep}
     >
-      <div className="mx-auto max-w-xl space-y-4 px-2 pb-12">
+      <div className="mx-auto max-w-xl space-y-4 px-2 pb-4">
         <Stepper step={step} />
 
         <AnimatePresence mode="wait">
@@ -634,11 +679,6 @@ function MixAdvisorInner() {
                           <span className="line-clamp-1 text-[10px] font-medium text-[var(--av-text-muted)]">
                             {p.nameEn}
                           </span>
-                          {p.specialFactHi && (
-                            <span className="mt-1 block text-[9.5px] font-semibold text-amber-800 dark:text-amber-300 line-clamp-1">
-                              💡 {p.specialFactHi}
-                            </span>
-                          )}
                         </span>
                       </button>
                     );
@@ -884,15 +924,6 @@ function MixAdvisorInner() {
                             <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-black text-emerald-900 dark:text-emerald-200">
                               दवा {idx + 1}
                             </span>
-                            {m.levelLabelHi ? (
-                              <span className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[10px] font-extrabold text-blue-900 dark:text-blue-200">
-                                {m.levelLabelHi}
-                              </span>
-                            ) : m.level ? (
-                              <span className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[10px] font-extrabold text-blue-900 dark:text-blue-200">
-                                स्तर {m.level}
-                              </span>
-                            ) : null}
                             {m.isTopPerformer && (
                               <span className="rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
                                 🔥 बेस्ट ट्रायल रिजल्ट (Top Performer)
@@ -1086,7 +1117,7 @@ function MixAdvisorInner() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-2 sm:items-center"
+                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-xs p-0 sm:p-4 sm:items-center overflow-y-auto overscroll-contain touch-none"
                     onClick={() => setPickSlot(null)}
                   >
                     <motion.div
@@ -1094,7 +1125,7 @@ function MixAdvisorInner() {
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: 24, opacity: 0 }}
                       transition={{ duration: 0.22, ease: EASE_OUT }}
-                      className="max-h-[80vh] w-full max-w-lg overflow-hidden rounded-3xl bg-[var(--av-surface)] shadow-2xl"
+                      className="max-h-[85vh] w-full max-w-lg flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-[var(--av-surface)] shadow-2xl overscroll-contain touch-auto border border-[var(--av-border)]"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex items-center justify-between border-b border-[var(--av-border)] px-4 py-3.5">
@@ -1228,7 +1259,7 @@ function MixAdvisorInner() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-2 sm:items-center"
+                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-xs p-0 sm:p-4 sm:items-center overflow-y-auto overscroll-contain touch-none"
                     onClick={() => setShowAddModal(false)}
                   >
                     <motion.div
@@ -1236,7 +1267,7 @@ function MixAdvisorInner() {
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: 24, opacity: 0 }}
                       transition={{ duration: 0.22, ease: EASE_OUT }}
-                      className="max-h-[82vh] w-full max-w-lg overflow-hidden rounded-3xl bg-[var(--av-surface)] shadow-2xl"
+                      className="max-h-[85vh] w-full max-w-lg flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-[var(--av-surface)] shadow-2xl overscroll-contain touch-auto border border-[var(--av-border)]"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex items-center justify-between border-b border-[var(--av-border)] px-4 py-3.5">
@@ -1430,6 +1461,10 @@ function MixAdvisorInner() {
                         const brand = !m.isAdjuvant
                           ? m.brandHi || (m.brands && m.brands.length > 0 ? m.brands[0].split("(")[0].trim() : null)
                           : null;
+                        const isSolidMed = /WP|WG|WDG|DF|SP|SG|GR/i.test(m.technical || m.formCode);
+                        const cleanUnit = isSolidMed ? "ग्राम" : "मिली";
+                        const cleanDoseLiter = (m.dosePerLiter || "—").replace(/मिली\/ग्राम|ग्राम\/मिली/g, cleanUnit);
+                        const cleanDoseAcre = (m.dosePerAcre || m.doseHi || "—").replace(/मिली\/ग्राम|ग्राम\/मिली/g, cleanUnit);
                         return (
                           <tr key={m.technical}>
                             <td className="px-3 py-2.5">
@@ -1448,10 +1483,10 @@ function MixAdvisorInner() {
                               )}
                             </td>
                             <td className="px-3 py-2.5 font-bold text-emerald-800 dark:text-emerald-300">
-                              {m.dosePerLiter || "—"}
+                              {cleanDoseLiter}
                             </td>
                             <td className="px-3 py-2.5 font-black text-emerald-800 dark:text-emerald-300">
-                              {m.dosePerAcre || m.doseHi}
+                              {cleanDoseAcre}
                             </td>
                           </tr>
                         );

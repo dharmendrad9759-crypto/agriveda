@@ -223,8 +223,9 @@ export function isTrapText(text: string): boolean {
     );
 
   const hasHeavyChemical =
-    /@\s*\d/i.test(text) &&
-    /\b(?:WP|EC|SC|SG|WG|SL|SP|FS|OD|DF|GR)\b/i.test(text);
+    /\b(?:WP|WDG|EC|SC|SE|SG|WG|SL|SP|FS|OD|DF|GR|ZC|CS|DC|WS)\b/i.test(text) ||
+    /@\s*\d/.test(text) ||
+    /\d+(?:\.\d+)?\s*(?:मिली|ग्राम)\s*(?:\/|प्रति)\s*लीटर/.test(text);
 
   return hasTrapWord && !hasHeavyChemical;
 }
@@ -416,8 +417,14 @@ export function isTankMixText(text: string): boolean {
   const hasSpreader = /सिलिकॉन|स्प्रेडर|स्टीकर|चिपको|silicon/i.test(text);
   const parenDoses = (text.match(/\([^)]*(?:मिली|ग्राम|ml|g|gm)[^)]*\)/gi) || []).length;
   const atDoses = (text.match(/@/g) || []).length;
+  const APPLIED_DOSE =
+    /\d+(?:\.\d+)?\s*(?:मिली|ग्राम|ml|gm|g)(?![A-Za-z])\s*(?:\/|प्रति)?\s*(?:लीटर|l|एकड़)?/i;
+  const doseCount = text
+    .split(/\s*\+\s*/)
+    .filter((p) => APPLIED_DOSE.test(p) && !/सिलिकॉन|स्प्रेडर|स्टीकर|चिपको|silicon/i.test(p))
+    .length;
 
-  return hasSpreader || parenDoses >= 2 || atDoses >= 2;
+  return hasSpreader || parenDoses >= 2 || atDoses >= 2 || doseCount >= 2;
 }
 
 /**
@@ -450,12 +457,16 @@ export function parseTankMix(
       const doseMatch = pTrim.match(
         /(\d+(?:\.\d+)?)\s*(?:मिली|ml|ग्राम|gm)(?:\s*(?:\/|प्रति)?\s*(?:लीटर|l))?/i
       );
+      const isPerLiter = !!doseMatch && /(?:\/|प्रति)\s*(?:लीटर|l)/i.test(doseMatch[0]);
       const doseNum = doseMatch ? parseFloat(doseMatch[1]) : 1;
-      const perTank =
-        doseNum <= 1 ? "8-10 मिली प्रति 16L पंप" : `${doseNum * 8} मिली प्रति 16L पंप`;
+      const perTank = isPerLiter
+        ? `${Math.round(doseNum * 16)} मिली प्रति 16L पंप`
+        : doseNum <= 1
+        ? "8-10 मिली प्रति 16L पंप"
+        : `${doseNum * 8} मिली प्रति 16L पंप`;
       spreaderInfo = {
         nameHi: "सिलिकॉन स्प्रेडर (चिपको / Silicon Sticker)",
-        dosePerLiter: `${doseNum} मिली प्रति 2 लीटर पानी`,
+        dosePerLiter: isPerLiter ? `${doseNum} मिली प्रति लीटर पानी` : `${doseNum} मिली प्रति 2 लीटर पानी`,
         dosePerTank: perTank,
         purpose:
           "दवा के घोल को पत्तियों व तने पर तुरंत फैलाकर कीट के छेद तक पहुंचाता है (बारिश से धुलने से बचाता है)।",
@@ -488,7 +499,9 @@ export function parseTankMix(
       .trim();
 
     const hit = lookupChemBottle(cleanName) || lookupChemBottle(pTrim);
-    const category = hit?.category ?? bottleCategory(cleanName) ?? "insecticide";
+    const fallbackCategory: ChemBottleCategory =
+      defaultKind === "disease" ? "fungicide" : "insecticide";
+    const category = hit?.category ?? bottleCategory(cleanName) ?? fallbackCategory;
     const farmerDose = calculateFarmerDose(doseStr);
 
     // Extract genuine brand if present (e.g. (Delegate) or (Curacron))
@@ -568,7 +581,7 @@ export function parseTankMix(
       perTank: components.map((c) => `${c.nameHi}: ${c.dosePerTank}`).join(" | "),
       perAcre: components.map((c) => `${c.nameHi}: ${c.dosePerAcre}`).join(" | "),
     },
-    category: "insecticide",
+    category: components[0]?.category ?? (defaultKind === "disease" ? "fungicide" : "insecticide"),
     categoryLabelHi: "संयुक्त टैंक मिश्रण (Tank Mix Combo)",
     fullNote: text,
     tankMix,

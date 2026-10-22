@@ -128,10 +128,6 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "प्रोफेनोफॉस 50%": "profenofos-50-ec",
   "प्रोफेनोफॉस": "profenofos-50-ec",
   "क्यूराक्रॉन": "profenofos-50-ec",
-  "सिलिकॉन स्प्रेडर": "silicon-spreader",
-  "सिलिकॉन स्टीकर": "silicon-spreader",
-  "सिलिकॉन": "silicon-spreader",
-  "चिपको": "silicon-spreader",
   "प्रोफेक्स": "profenofos-cypermethrin-ec",
   "एसिटामिप्रिड": "acetamiprid-20-sp",
   "प्राइड": "acetamiprid-20-sp",
@@ -242,6 +238,12 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "लिहोसिन": "chlormequat-chloride-50-sl",
   "होमोब्रासिनोलाइड": "homobrassinolide-004",
   "सीवीड": "seaweed-amino",
+
+  // Adjuvants — keep last so real actives win
+  "सिलिकॉन स्प्रेडर": "silicon-spreader",
+  "सिलिकॉन स्टीकर": "silicon-spreader",
+  "सिलिकॉन": "silicon-spreader",
+  "चिपको": "silicon-spreader",
 };
 
 /** Prefer the earliest and longest alias match so "एसीफेट 50% + इमिडाक्लोप्रिड 1.8% SP" matches Acephate and "chlorantraniliprole 0.4% gr" beats generic name. */
@@ -280,8 +282,29 @@ export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
   let bestIdx = Infinity;
   for (const [key, entry] of byAlias) {
     if (key.length < 4) continue;
+    // Guard: wettable sulphur must never match herbicides or weeds with sulf- in name
+    if (entry.slug === "wettable-sulphur-80-wdg") {
+      if (
+        n.includes("uron") ||
+        n.includes("sulfuron") ||
+        n.includes("sulfone") ||
+        n.includes("herbicide") ||
+        n.includes("weed") ||
+        n.includes("घास") ||
+        n.includes("खरपतवार")
+      ) {
+        continue;
+      }
+    }
     const idx = n.indexOf(key);
     if (idx !== -1) {
+      // Require whole word boundary match so "sulfur" does not match within "sulfosulfuron"
+      const charBefore = idx > 0 ? n[idx - 1] : " ";
+      const charAfter = idx + key.length < n.length ? n[idx + key.length] : " ";
+      if (charBefore !== " " || charAfter !== " ") {
+        continue;
+      }
+
       if (key.length > bestLen || (key.length === bestLen && idx < bestIdx)) {
         best = entry;
         bestLen = key.length;

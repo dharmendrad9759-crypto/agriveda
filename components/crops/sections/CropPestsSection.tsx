@@ -207,7 +207,6 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
               <ThreatBrowseCard
                 index={i + 1}
                 title={pest.name}
-                scientific={sci || undefined}
                 image={img}
                 href={href}
                 accent="pest"

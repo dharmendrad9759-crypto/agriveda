@@ -186,3 +186,24 @@ export function matchesSeasonFilter(crop: Crop, season: "All Seasons" | SeasonTa
   if (season === "Summer") return allowed.includes("zaid");
   return true;
 }
+
+export function getCropSeasonBadge(crop: { slug?: string; suitableSeason?: string }): { label: string; icon: string } {
+  const s = (crop.suitableSeason || "").toLowerCase();
+  const slug = (crop.slug || "").toLowerCase();
+
+  if (/rabi|रबी|रवि/.test(s) || /wheat|mustard|chana|gram|potato|barley|garlic|onion|pea|sarson/.test(slug)) {
+    if (/kharif|खरीफ/.test(s)) return { label: "रबी / खरीफ", icon: "🌾" };
+    return { label: "रबी", icon: "🌾" };
+  }
+  if (/kharif|खरीफ|खर[ीि]फ/.test(s) || /paddy|rice|cotton|soybean|groundnut|bajra|jowar|maize/.test(slug)) {
+    return { label: "खरीफ", icon: "🌧️" };
+  }
+  if (/zaid|jayad|जायद|summer|spring|वसंत|गर्मी/.test(s) || /cucumber|watermelon|moong|urad|muskmelon/.test(slug)) {
+    return { label: "जायद", icon: "☀️" };
+  }
+  if (/all|साल\s*भर|वर्ष\s*भर/.test(s)) {
+    return { label: "सभी मौसम", icon: "🌱" };
+  }
+  return { label: crop.suitableSeason || "रबी", icon: "🌾" };
+}
+

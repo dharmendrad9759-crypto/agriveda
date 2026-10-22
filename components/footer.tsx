@@ -1,10 +1,34 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BRAND } from "@/lib/brand";
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/appMeta";
 
+const HIDE_FOOTER_ROUTES = [
+  "/mix-advisor",
+  "/my-farm",
+  "/spray-rotation",
+  "/ai-doctor",
+  "/kisan-saathi",
+  "/field-advisor",
+  "/crop-calendar",
+  "/alerts",
+  "/crops",
+  "/crop-problems",
+  "/deficiencies",
+  "/settings",
+];
+
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname && HIDE_FOOTER_ROUTES.some((route) => pathname.startsWith(route))) {
+    return null;
+  }
+
   return (
-    <footer className="mt-10 w-full border-t border-[var(--panel-border)] bg-[var(--panel-bg)] py-5 backdrop-blur-md sm:mt-16 sm:py-8">
+    <footer className="mt-6 w-full border-t border-[var(--panel-border)] bg-[var(--panel-bg)] py-4 backdrop-blur-md sm:mt-12 sm:py-6">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 text-xs theme-text-muted sm:gap-4 sm:px-6 lg:flex-row lg:px-8">
         <div className="flex flex-wrap items-center justify-center gap-2">
           <span className="agriveda-gradient-text font-bold">{BRAND}</span>

@@ -906,9 +906,10 @@ const legacyDetailedCrops: Crop[] = [
       control: ["अनुशंसित फफूंदनाशक और खरपतवारनाशक"],
     },
     nutrientDeficiencies: [
-      { nutrient: "Nitrogen", symptoms: "पत्तियां फीकी", cause: "नाइट्रोजन कम", solution: "urea को विभाजित मात्रा में डालें" },
-      { nutrient: "Zinc", symptoms: "वृद्धि रुकना", cause: "जिंक कम", solution: "zinc sulfate डालें" },
-      { nutrient: "Sulphur", symptoms: "नई पत्तियां फीकी", cause: "सल्फर कम", solution: "sulfur उर्वरक दें" },
+      { nutrient: "Nitrogen", symptoms: "नीचे की पत्तियां पीली पड़ना", cause: "नाइट्रोजन की कमी", solution: "यूरिया (Urea) को सिंचाई के बाद 2-3 बराबर भागों में डालें" },
+      { nutrient: "Zinc", symptoms: "तीसरी-चौथी पत्ती पर सफेद-भूरे धब्बे व कल्ले कम बनना", cause: "जिंक की कमी", solution: "जिंक सल्फेट 21% (5 किग्रा/एकड़) या चेलेटेड जिंक 12% (1 ग्राम/लीटर) स्प्रे करें" },
+      { nutrient: "Sulphur", symptoms: "ऊपर की नई पत्तियां पीली पड़ना", cause: "सल्फर (गंधक) की कमी", solution: "सल्फर 80% WDG (3 किग्रा/एकड़) या 2.5 ग्राम/लीटर पानी में स्प्रे करें" },
+      { nutrient: "Magnesium", symptoms: "पुरानी पत्तियों में नसों के बीच पीलापन, नसें हरी", cause: "मैग्नीशियम की कमी", solution: "मैग्नीशियम सल्फेट (MgSO4): 5 ग्राम प्रति लीटर पानी में मिलाकर स्प्रे करें" },
     ],
     harvestAndYield: {
       harvestingTime: "बुवाई के 120-135 दिन बाद",
@@ -917,7 +918,7 @@ const legacyDetailedCrops: Crop[] = [
       storageTips: ["भंडारण से पहले सुखाएं", "साफ बोरियों में रखें"],
     },
     marketInformation: {
-      majorMarkets: ["Grain mandis", "Flour mills", "Cooperative centers"],
+      majorMarkets: ["अनाज मंडी", "आटा मिल", "सरकारी खरीद केंद्र"],
       demand: "खरीद में मजबूत मांग",
       msp: "वर्तमान MSP देखें",
       priceTrend: "आम तौर पर स्थिर, खरीद से चलता है",

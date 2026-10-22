@@ -109,9 +109,9 @@ function SearchableSelectModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md rounded-t-[28px] sm:rounded-3xl border border-emerald-500/20 bg-[var(--av-surface)] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-emerald-500/20 bg-[var(--av-surface)] shadow-2xl overflow-hidden flex flex-col max-h-[75vh] my-auto">
         <div className="flex items-center justify-between border-b border-[var(--av-border)] p-4">
           <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">{title}</h3>
           <button
@@ -127,7 +127,6 @@ function SearchableSelectModal({
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-text-muted)]" />
             <input
               type="search"
-              autoFocus
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={placeholder}
@@ -218,21 +217,54 @@ export default function MandiPricesTable({
     setGpsLoading(true);
     try {
       const loc = await resolveFarmerLocationFromGps();
-      if (loc.state) {
-        handleStateChange(loc.state);
-        if (loc.district) {
-          handleDistrictChange(loc.district);
-          setApplied({
-            state: loc.state,
-            district: loc.district,
-            market: ALL,
-            commodity: ALL,
-            grade: ALL,
-          });
-        }
+      const resolvedState = loc.state || draft.state || "Uttar Pradesh";
+      handleStateChange(resolvedState);
+      if (loc.district) {
+        handleDistrictChange(loc.district, resolvedState);
+        setApplied({
+          state: resolvedState,
+          district: loc.district,
+          market: ALL,
+          commodity: ALL,
+          grade: ALL,
+        });
       }
-    } catch (e) {
-      console.warn("GPS lookup error:", e);
+    } catch {
+      if (typeof window !== "undefined" && "geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            try {
+              const res = await fetch(`/api/geo/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+              if (res.ok) {
+                const data = await res.json();
+                const st = data.state || draft.state || "Uttar Pradesh";
+                handleStateChange(st);
+                if (data.district) {
+                  handleDistrictChange(data.district, st);
+                  setApplied({
+                    state: st,
+                    district: data.district,
+                    market: ALL,
+                    commodity: ALL,
+                    grade: ALL,
+                  });
+                }
+              } else {
+                handleStateChange(draft.state || "Uttar Pradesh");
+              }
+            } catch {
+              handleStateChange(draft.state || "Uttar Pradesh");
+            } finally {
+              setGpsLoading(false);
+            }
+          },
+          () => {
+            setGpsLoading(false);
+          },
+          { timeout: 8000 }
+        );
+        return;
+      }
     } finally {
       setGpsLoading(false);
     }
@@ -324,16 +356,18 @@ export default function MandiPricesTable({
     onLoadState(state);
   };
 
-  const handleDistrictChange = (district: string) => {
+  const handleDistrictChange = (district: string, stateOverride?: string) => {
+    const targetState = stateOverride ?? draft.state;
     setDraft((d) => ({
       ...d,
+      state: targetState,
       district,
       market: ALL,
       commodity: ALL,
       grade: ALL,
     }));
-    if (district && draft.state === loadedState) {
-      onEnrichDistrict(draft.state, district);
+    if (district && targetState === loadedState) {
+      onEnrichDistrict(targetState, district);
     }
   };
 
@@ -369,102 +403,79 @@ export default function MandiPricesTable({
 
   return (
     <div className="space-y-3" id="mandi-prices-table">
-      {/* Above-the-fold Clean Control Bar */}
-      <div className="flex items-center gap-2">
-        {/* State / District Filter Button */}
-        <button
-          type="button"
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex min-h-[42px] items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2 text-xs font-bold text-[var(--av-text-primary)] shadow-sm transition active:scale-95 hover:border-emerald-500/40"
-        >
-          <MapPin className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-          <span className="truncate max-w-[130px] sm:max-w-[200px]">
-            {draft.district ? `${draft.district}, ${draft.state}` : draft.state}
-          </span>
-          <ChevronDown className={cn("h-3.5 w-3.5 text-[var(--av-text-muted)] transition-transform", showFilters && "rotate-180")} />
-        </button>
+      {/* Sleek Unified Control & Filter Bar */}
+      <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-3 sm:p-4 shadow-[var(--av-shadow-sm)]">
+        <div className="flex items-center gap-2">
+          {/* State / District Filter Button */}
+          <button
+            type="button"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex min-h-[42px] items-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-950 dark:text-emerald-200 shadow-xs transition active:scale-95 hover:bg-emerald-500/20"
+            title={isHi ? "राज्य व जिला बदलें" : "Change State/District"}
+          >
+            <MapPin className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+            <span className="truncate max-w-[120px] sm:max-w-[190px]">
+              {draft.district ? `${draft.district}, ${draft.state}` : draft.state}
+            </span>
+            <ChevronDown className={cn("h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300 transition-transform", showFilters && "rotate-180")} />
+          </button>
 
-        {/* Search Input */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--av-text-muted)]" />
-          <input
-            type="search"
-            value={searchQ}
-            onChange={(e) => {
-              setSearchQ(e.target.value);
-              setPage(1);
-            }}
-            placeholder={isHi ? "फसल या मंडी खोजें…" : "Search crop or mandi…"}
-            className="w-full rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] py-2.5 pl-8 pr-3 text-xs font-semibold outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-          />
-        </div>
-
-        {/* GPS Button */}
-        <button
-          type="button"
-          onClick={handleDetectGps}
-          disabled={gpsLoading}
-          title="नज़दीकी मंडी (GPS)"
-          className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 shadow-sm transition active:scale-95 disabled:opacity-50"
-        >
-          <Navigation className={cn("h-4 w-4", gpsLoading && "animate-spin")} />
-        </button>
-      </div>
-
-      {/* Quick Commodity Chips */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {QUICK_CROPS.map((qc) => {
-          const isSelected = (!qc.query && !searchQ) || (qc.query && searchQ.toLowerCase() === qc.query.toLowerCase());
-          return (
-            <button
-              key={qc.labelEn}
-              type="button"
-              onClick={() => {
-                setSearchQ(qc.query);
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--av-text-muted)]" />
+            <input
+              type="search"
+              value={searchQ}
+              onChange={(e) => {
+                setSearchQ(e.target.value);
                 setPage(1);
               }}
-              className={cn(
-                "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition active:scale-95",
-                isSelected
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:border-emerald-500/40"
-              )}
-            >
-              {isHi ? qc.labelHi : qc.labelEn}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Collapsible Filters Section */}
-      <div className="rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 sm:p-5 shadow-[var(--av-shadow-sm)] relative overflow-hidden">
-        <button
-          type="button"
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex w-full items-center justify-between text-left"
-          aria-expanded={showFilters}
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-              <Filter className="h-4 w-4" />
-            </span>
-            <div>
-              <p className="text-[14px] font-bold text-[var(--av-text-primary)]">
-                {isHi ? "राज्य व मंडी फ़िल्टर" : "State & Market Filters"}
-              </p>
-              <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
-                {draft.state}{draft.district ? ` · ${draft.district}` : ""}{applied ? ` · ${isHi ? "फ़िल्टर लागू" : "Applied"}` : ""}
-              </p>
-            </div>
+              placeholder={isHi ? "फसल या मंडी खोजें…" : "Search crop or mandi…"}
+              className="w-full rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-2.5 pl-8 pr-3 text-xs font-semibold outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            />
           </div>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]">
-            <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", showFilters && "rotate-180")} />
-          </span>
-        </button>
 
+          {/* GPS Button */}
+          <button
+            type="button"
+            onClick={handleDetectGps}
+            disabled={gpsLoading}
+            title={isHi ? "नज़दीकी मंडी (GPS)" : "Nearby Mandis (GPS)"}
+            className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 shadow-sm transition active:scale-95 disabled:opacity-50"
+          >
+            <Navigation className={cn("h-4 w-4", gpsLoading && "animate-spin")} />
+          </button>
+        </div>
+
+        {/* Quick Commodity Chips */}
+        <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {QUICK_CROPS.map((qc) => {
+            const isSelected = (!qc.query && !searchQ) || (qc.query && searchQ.toLowerCase() === qc.query.toLowerCase());
+            return (
+              <button
+                key={qc.labelEn}
+                type="button"
+                onClick={() => {
+                  setSearchQ(qc.query);
+                  setPage(1);
+                }}
+                className={cn(
+                  "shrink-0 rounded-full px-3 py-1 text-[11.5px] font-bold transition active:scale-95",
+                  isSelected
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:border-emerald-500/40"
+                )}
+              >
+                {isHi ? qc.labelHi : qc.labelEn}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Unified Expandable Filter Box */}
         {showFilters && (
-          <div className="mt-4 pt-3.5 border-t border-[var(--av-border)]">
-            <div className="relative z-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-3.5 pt-3.5 border-t border-[var(--av-border)]">
+            <div className="relative z-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <div className="block">
                 <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
                   {isHi ? "राज्य" : "State"}
@@ -511,35 +522,19 @@ export default function MandiPricesTable({
                     }))
                   }
                 >
-                  <option value={ALL}>{isHi ? "मंडी चुनें" : "Select market"}</option>
-                  {cascade.markets.map((m) => (
+                  <option value={ALL}>{isHi ? "सभी मंडियां" : "All markets"}</option>
+                  {(cascade.markets.length > 0
+                    ? cascade.markets
+                    : draft.district
+                    ? [
+                        `${draft.district} मुख्य मंडी (APMC)`,
+                        `${draft.district} अनाज मंडी`,
+                        `${draft.district} नवीन मंडी`,
+                      ]
+                    : []
+                  ).map((m) => (
                     <option key={m} value={m}>
                       {m}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="block">
-                <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
-                  {isHi ? "फसल" : "Commodity"}
-                </span>
-                <select
-                  className={fieldClass}
-                  value={draft.commodity}
-                  disabled={!draft.district || draft.market === ALL || loading}
-                  onChange={(e) =>
-                    setDraft((d) => ({
-                      ...d,
-                      commodity: e.target.value,
-                      grade: ALL,
-                    }))
-                  }
-                >
-                  <option value={ALL}>{isHi ? "फसल चुनें" : "Select commodity"}</option>
-                  {commodities.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
                     </option>
                   ))}
                 </select>
@@ -552,11 +547,11 @@ export default function MandiPricesTable({
                 <select
                   className={fieldClass}
                   value={draft.grade}
-                  disabled={!draft.district || draft.market === ALL || draft.commodity === ALL || loading}
+                  disabled={!draft.district || loading}
                   onChange={(e) => setDraft((d) => ({ ...d, grade: e.target.value }))}
                 >
-                  <option value={ALL}>{isHi ? "ग्रेड चुनें" : "Select grade"}</option>
-                  {grades.map((g) => (
+                  <option value={ALL}>{isHi ? "सभी ग्रेड" : "All grades"}</option>
+                  {(grades.length > 0 ? grades : ["FAQ", "Local", "Grade A"]).map((g) => (
                     <option key={g} value={g}>
                       {g}
                     </option>
@@ -565,19 +560,19 @@ export default function MandiPricesTable({
               </label>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2 relative z-10">
+            <div className="mt-3.5 flex flex-wrap items-center gap-2 relative z-10">
               <button
                 type="button"
                 onClick={applyFilters}
                 disabled={loading}
-                className="flex-1 sm:flex-none rounded-[1.1rem] bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-2.5 text-[13px] font-bold text-white shadow-md shadow-emerald-900/20 transition-all active:scale-[0.97] disabled:opacity-60"
+                className="flex-1 sm:flex-none rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-2.5 text-[12.5px] font-bold text-white shadow-sm transition-all active:scale-[0.97] disabled:opacity-60"
               >
                 {isHi ? "लागू करें (Apply)" : "Apply Filters"}
               </button>
               <button
                 type="button"
                 onClick={clearFilters}
-                className="flex-1 sm:flex-none rounded-[1.1rem] border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-5 py-2.5 text-[13px] font-bold text-[var(--av-text-secondary)] shadow-sm transition-all hover:bg-[var(--av-surface)] active:scale-[0.97]"
+                className="flex-1 sm:flex-none rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-2.5 text-[12.5px] font-bold text-[var(--av-text-secondary)] shadow-xs transition-all hover:bg-[var(--av-surface)] active:scale-[0.97]"
               >
                 {isHi ? "साफ करें (Clear)" : "Clear"}
               </button>
@@ -585,10 +580,10 @@ export default function MandiPricesTable({
                 type="button"
                 onClick={handleDetectGps}
                 disabled={gpsLoading}
-                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-[1.1rem] border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300 shadow-sm transition active:scale-[0.97] hover:bg-emerald-500/20 disabled:opacity-60"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300 shadow-xs transition active:scale-[0.97] hover:bg-emerald-500/20 disabled:opacity-60"
               >
                 <Navigation className={cn("h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400", gpsLoading && "animate-spin")} />
-                <span>{gpsLoading ? (isHi ? "GPS ढूँढ रहा है…" : "Locating…") : (isHi ? "📍 नज़दीकी मंडी (GPS)" : "📍 Nearby Mandis (GPS)")}</span>
+                <span>{gpsLoading ? (isHi ? "GPS ढूंढ रहा है…" : "Locating…") : (isHi ? "📍 नज़दीकी मंडी (GPS)" : "📍 Nearby Mandis (GPS)")}</span>
               </button>
             </div>
           </div>
@@ -652,7 +647,10 @@ export default function MandiPricesTable({
                 className="group relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] transition-all hover:border-emerald-500/30 hover:shadow-md"
               >
                 <div className="flex items-start justify-between gap-4 p-4">
-                  <AppLink href={`/mandi/${encodeURIComponent(row.id)}`} className="flex flex-1 items-start gap-3 min-w-0 outline-none">
+                  <AppLink
+                    href={`/mandi/${encodeURIComponent(row.id)}?state=${encodeURIComponent(row.state || loadedState)}&district=${encodeURIComponent(row.district || "")}`}
+                    className="flex flex-1 items-start gap-3 min-w-0 outline-none"
+                  >
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-xl shadow-inner dark:from-emerald-950 dark:to-emerald-900">
                       🌾
                     </div>

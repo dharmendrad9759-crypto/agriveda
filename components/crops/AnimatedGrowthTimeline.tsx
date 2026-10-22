@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CalendarDays, Sprout } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -11,6 +11,7 @@ import GrowthStageImage, {
 import CropGrowthHonestySection from "@/components/crops/sections/CropGrowthHonestySection";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useFarmData } from "@/hooks/useFarmData";
 import { useToast } from "@/components/ui/Toast";
 import {
   getGrowthStageCropBadge,
@@ -59,7 +60,40 @@ export default function AnimatedGrowthTimeline({ stages, cropSlug, cropName }: P
   const hi = locale === "hi";
   const { showToast } = useToast();
   const { profile, hydrated, setSowingDate } = useFarmerProfile();
-  const savedSowing = profile.sowingDates[cropSlug] || "";
+  const { data: farmData } = useFarmData();
+
+  const savedSowing = useMemo(() => {
+    if (profile.sowingDates[cropSlug]) {
+      return profile.sowingDates[cropSlug];
+    }
+    const fieldMatch =
+      farmData.fields.find(
+        (f) =>
+          (f.cropSlug && f.cropSlug.toLowerCase() === cropSlug.toLowerCase()) ||
+          (f.crop && f.crop.toLowerCase().includes(cropSlug.toLowerCase()))
+      ) || farmData.fields[0];
+
+    if (fieldMatch) {
+      if (fieldMatch.sowingDateIso) return fieldMatch.sowingDateIso;
+      if (fieldMatch.sowingDate && /^\d{4}-\d{2}-\d{2}$/.test(fieldMatch.sowingDate)) {
+        return fieldMatch.sowingDate;
+      }
+      const parsed = Date.parse(fieldMatch.sowingDate);
+      if (!isNaN(parsed)) {
+        const d = new Date(parsed);
+        return d.toISOString().split("T")[0];
+      }
+    }
+    const anyDate = Object.values(profile.sowingDates).find(Boolean);
+    return anyDate || "";
+  }, [profile.sowingDates, cropSlug, farmData.fields]);
+
+  useEffect(() => {
+    if (savedSowing && !profile.sowingDates[cropSlug]) {
+      setSowingDate(cropSlug, savedSowing);
+    }
+  }, [savedSowing, cropSlug, profile.sowingDates, setSowingDate]);
+
   const [draftDate, setDraftDate] = useState("");
   const [editingDate, setEditingDate] = useState(false);
 

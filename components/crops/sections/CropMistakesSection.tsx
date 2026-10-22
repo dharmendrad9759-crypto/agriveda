@@ -214,7 +214,7 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
                           <span className="text-[11px] font-black uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
-                            {hi ? "✅ सही तरीका (Best Practice)" : "✅ Correct Method"}
+                            {hi ? "✅ सही तरीका व वैज्ञानिक उपाय" : "✅ Correct Method"}
                           </span>
                         </div>
                         <p className="mt-1 text-xs sm:text-[14px] font-bold leading-snug text-emerald-950 dark:text-emerald-100">

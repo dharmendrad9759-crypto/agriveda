@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import { getCropHindiName, getCropImageUrl } from "@/lib/crops/crop-display";
+import { getCropHindiName, getCropImageUrl, getCropSeasonBadge } from "@/lib/crops/crop-display";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { Crop } from "@/types/crop";
 import { motion, useReducedMotion } from "framer-motion";
@@ -68,38 +68,19 @@ export default function CropPremiumHero({ crop }: Props) {
             <span className="crop-premium-badge">
               {hi ? CATEGORY_LABEL_HI[crop.category] : CATEGORY_LABEL_EN[crop.category]}
             </span>
-            {crop.suitableSeason && (
-              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                🌿 {crop.suitableSeason}
-              </span>
-            )}
+            {(() => {
+              const badge = getCropSeasonBadge(crop);
+              return (
+                <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  {badge.icon} {badge.label}
+                </span>
+              );
+            })()}
           </div>
           <h1 className="mt-1 text-[clamp(1.25rem,4.2vw,1.7rem)] font-black leading-tight tracking-tight text-[var(--av-text-primary)]">
             {title}
           </h1>
           <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">{subtitle}</p>
-
-          {/* Quick Crop Metrics Strip */}
-          <div className="mt-2.5 flex flex-wrap gap-1.5 sm:gap-2">
-            {crop.estimatedYield && (
-              <div className="inline-flex items-center gap-1 rounded-xl border border-emerald-500/20 bg-emerald-50/70 px-2 py-1 text-[11px] font-bold text-emerald-900 dark:border-emerald-800/40 dark:bg-emerald-950/40 dark:text-emerald-200 shadow-2xs">
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">पैदावार:</span>
-                <span>{crop.estimatedYield}</span>
-              </div>
-            )}
-            {crop.durationDays && (
-              <div className="inline-flex items-center gap-1 rounded-xl border border-slate-200/80 bg-white/80 px-2 py-1 text-[11px] font-bold text-slate-800 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200 shadow-2xs">
-                <span className="text-[10px] text-slate-500 font-medium">अवधि:</span>
-                <span>{crop.durationDays}</span>
-              </div>
-            )}
-            {crop.sowingGuide?.bestSowingTime && (
-              <div className="inline-flex items-center gap-1 rounded-xl border border-slate-200/80 bg-white/80 px-2 py-1 text-[11px] font-bold text-slate-800 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200 shadow-2xs">
-                <span className="text-[10px] text-slate-500 font-medium">बुवाई:</span>
-                <span>{crop.sowingGuide.bestSowingTime}</span>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </motion.section>

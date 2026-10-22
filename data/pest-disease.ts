@@ -99,7 +99,7 @@ export const cropPestDiseaseData: Record<string, CropPestDiseaseData> = {
       { id: "d7", name: "सिर झुलसा / स्कैब (Head Blight)", pathogen: "Fusarium graminearum", image: IMG, stage: "फूल–दाना भरना", fracGroup: "FRAC 3", control: "Tebuconazole फूल आने पर; संक्रमित बालियाँ हटाएँ" },
     ],
     weeds: [
-      { id: "w1", name: "गुल्ली-डंडा (Phalaris minor)", scientificName: "Phalaris minor", type: "Grassy", criticalPeriod: "20–60 DAS", preEmergence: "Pendimethalin @ 1.0 kg/ha", postEmergence: "Clodinafop @ 60 g/ha", culturalControl: "गहरी जुताई, साफ बीज" },
+      { id: "w1", name: "गुल्ली-डंडा (Phalaris minor)", scientificName: "Phalaris minor", type: "Grassy", criticalPeriod: "20–60 DAS", preEmergence: "Pendimethalin 30% EC @ 1–1.3 L/एकड़ (0–3 दिन)", postEmergence: "Clodinafop-propargyl 15% WP @ 160 g/एकड़ (30–35 दिन) या Sulfosulfuron 75% WG @ 13.5 g/एकड़", culturalControl: "गहरी जुताई, साफ प्रमाणित बीज" },
       { id: "w2", name: "जंगली जई (Wild Oat)", scientificName: "Avena fatua", type: "Grassy", criticalPeriod: "25–55 DAS", preEmergence: "Pendimethalin", postEmergence: "Clodinafop propargyl", culturalControl: "दलहनी फसलों के साथ फसल चक्र" },
       { id: "w3", name: "बथुआ (Chenopodium)", scientificName: "Chenopodium album", type: "Broadleaf", criticalPeriod: "15–45 DAS", preEmergence: "Pendimethalin", postEmergence: "Metsulfuron methyl @ 4 g/ha", culturalControl: "30 DAS पर एक बार हाथ से निराई" },
     ],

@@ -301,9 +301,10 @@ export function buildCropScope(
       ? simplifyFarmerHi(crop.prevention, 85)
       : farmer.bachav[0] ?? "",
     cropCause: crop?.cause ? simplifyFarmerHi(crop.cause, 95) : "",
-    cropStage: crop?.stage
-      ? simplifyFarmerHi(crop.stage, 40)
-      : "खेत में देखकर समझें",
+    cropStage:
+      crop?.stage && !/field observation/i.test(crop.stage)
+        ? simplifyFarmerHi(crop.stage, 40)
+        : "वानस्पतिक बढ़वार (खड़ी फसल)",
     symptoms: focusSymptoms,
     causes: causes.slice(0, 5),
     preventionDos: farmer.bachav.map((b) => simplifyFarmerHi(b, 75)),

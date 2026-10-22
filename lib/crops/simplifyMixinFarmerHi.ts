@@ -57,6 +57,11 @@ export function simplifyMixinFarmerHi(raw: string): string {
       "नाइट्रोजन $1–$2 किलो (यूरिया में गिनी जाती है)",
     ],
     [/(\d+(?:\.\d+)?)\s*kg\s*N\b/gi, "नाइट्रोजन $1 किलो (यूरिया में गिनी जाती है)"],
+    [/band[-\s]?placed/gi, "कतार में पौधों के पास"],
+    [/microbial\s*P[-\s]?solubili[sz]er/gi, "फास्फोरस घोलक जैव कल्चर (PSB)"],
+    [/polyhouse/gi, "पॉलीहाउस (संरक्षित खेती)"],
+    [/\bvegetative\b/gi, "बढ़वार अवस्था"],
+    [/\bchelated\b/gi, "आसानी से पचने वाला (चिलेटेड)"],
   ];
 
   for (const [re, rep] of phrases) t = t.replace(re, rep);
@@ -67,10 +72,10 @@ export function simplifyMixinFarmerHi(raw: string): string {
     [/\bzone\b/gi, "जगह"],
     [/\bgranular\b/gi, "दानेदार"],
     [/\bpowder\b/gi, "पाउडर"],
-    [/\bdrench(ing)?\b/gi, "जड़ के पास घोल"],
-    [/\bfoliar\b/gi, "पत्ती पर छिड़काव"],
-    [/बेसल/gi, "रोपाई के समय"],
-    [/\bbasal\b/gi, "रोपाई के समय"],
+    [/\bdrench(ing)?\b/gi, "जड़ों में घोल डालना (ड्रेंचिंग)"],
+    [/\bfoliar\b/gi, "पत्तियों पर स्प्रे (फोलियर)"],
+    [/बेसल/gi, "बुवाई/रोपाई के समय (बेसल)"],
+    [/\bbasal\b/gi, "बुवाई/रोपाई के समय (बेसल)"],
     [/\bPGR\b/gi, "बढ़वार दवा"],
     [/\bDAT\b/g, "दिन"],
     [/\bDAS\b/g, "दिन"],

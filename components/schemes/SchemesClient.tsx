@@ -288,11 +288,11 @@ function StateSelectModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in"
       onClick={onClose}
     >
       <div
-        className="relative flex max-h-[85vh] w-full max-w-md flex-col rounded-3xl border border-stone-200 bg-white p-5 shadow-2xl dark:border-stone-800 dark:bg-stone-900"
+        className="relative my-auto flex max-h-[75vh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white p-5 shadow-2xl dark:border-stone-800 dark:bg-stone-900"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
@@ -380,10 +380,10 @@ function SchemeListCard({
     schemeMeta?.windowStatus === "open"
       ? { text: hi ? "🟢 आवेदन चालू" : "🟢 Open", color: "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40" }
       : schemeMeta?.windowStatus === "seasonal"
-      ? { text: hi ? "🟡 मौसमी विंडो" : "🟡 Seasonal", color: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40" }
+      ? { text: hi ? "🟡 मौसमी विंडो (जल्द शुरू)" : "🟡 Seasonal Window", color: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40" }
       : schemeMeta?.windowStatus === "quota"
-      ? { text: hi ? "🔵 टोकन कोटा" : "🔵 Quota", color: "bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40" }
-      : { text: hi ? "🟢 सक्रिय" : "🟢 Active", color: "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40" };
+      ? { text: hi ? "🔵 टोकन कोटा आधारित" : "🔵 Quota / Token", color: "bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40" }
+      : { text: hi ? "🟢 आवेदन चालू" : "🟢 Active", color: "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40" };
 
   return (
     <article className="overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-xs transition hover:border-emerald-500/40 hover:shadow-md dark:border-stone-800 dark:bg-stone-900">
@@ -507,15 +507,10 @@ export default function SchemesClient() {
   const filteredSchemes = useMemo(() => {
     let pool = farmerSchemes;
 
-    // Filter by Level (all, central, state)
-    if (level !== "all") {
-      pool = pool.filter((scheme) => scheme.level === level);
-    }
-
     // Filter by State if specific state selected
     if (selectedState !== "all") {
       pool = pool.filter((scheme) => {
-        // Central schemes apply in all states
+        // Central all-India schemes apply in all states without exception
         if (scheme.level === "central") return true;
 
         // State schemes: match state name or multi-state notes
@@ -534,8 +529,29 @@ export default function SchemesClient() {
           return meta.applicableStates.some((s) => s.toLowerCase() === selectedState.toLowerCase());
         }
 
+        // Generic state schemes with no single state restriction
+        if (!scheme.state && (!meta || meta.applicableStates === "all")) {
+          return true;
+        }
+
         return false;
       });
+    }
+
+    // Filter by Level (all, central, state)
+    if (level === "central") {
+      pool = pool.filter((scheme) => scheme.level === "central");
+    } else if (level === "state") {
+      // In state filter, show state schemes; and if none or in mixed categories, keep central schemes that are administered through states
+      const stateOnly = pool.filter((scheme) => scheme.level === "state");
+      if (stateOnly.length > 0) {
+        // Keep state schemes + core central schemes (SMAM, PM-KUSUM, KCC, PM-Kisan) which are executed at state level
+        pool = pool.filter(
+          (scheme) =>
+            scheme.level === "state" ||
+            ["pm-kisan", "pm-kusum", "smam", "kcc", "pmfby", "pmksy"].includes(scheme.id)
+        );
+      }
     }
 
     return pool;
@@ -566,12 +582,21 @@ export default function SchemesClient() {
   const groupCounts = useMemo(() => {
     return SCHEME_GROUPS.reduce(
       (acc, group) => {
-        acc[group.id] = farmerSchemes.filter((scheme) => matchesGroup(scheme, group)).length;
+        const count = filteredSchemes.filter((scheme) => matchesGroup(scheme, group)).length;
+        if (count === 0) {
+          // If state/level filter yielded 0 for this category, count available all-India central schemes
+          const fallbackCount = farmerSchemes.filter(
+            (scheme) => matchesGroup(scheme, group) && scheme.level === "central"
+          ).length;
+          acc[group.id] = fallbackCount > 0 ? fallbackCount : 0;
+        } else {
+          acc[group.id] = count;
+        }
         return acc;
       },
       {} as Record<SchemeGroupId, number>
     );
-  }, []);
+  }, [filteredSchemes]);
 
   const recommended = useMemo(() => {
     const state = (selectedState !== "all" ? selectedState : profile.state || "").toLowerCase();
@@ -609,9 +634,18 @@ export default function SchemesClient() {
   }, [selectedState, profile.state]);
 
   const activeGroup = SCHEME_GROUPS.find((group) => group.id === view) ?? null;
-  const activeGroupSchemes = activeGroup
-    ? filteredSchemes.filter((scheme) => matchesGroup(scheme, activeGroup))
-    : [];
+  const activeGroupSchemes = useMemo(() => {
+    if (!activeGroup) return [];
+    let list = filteredSchemes.filter((scheme) => matchesGroup(scheme, activeGroup));
+    // If filtering by state or level caused a category (like equipment/machine-solar) to have 0 results,
+    // ensure all-India Central schemes for this category are included so farmer always gets practical schemes!
+    if (list.length === 0) {
+      list = farmerSchemes.filter(
+        (scheme) => matchesGroup(scheme, activeGroup) && scheme.level === "central"
+      );
+    }
+    return list;
+  }, [activeGroup, filteredSchemes]);
   const hasSearch = q.trim().length > 0;
   const listForView =
     view === "all" ? searched : forYou && view === "overview" ? forYou : searched;

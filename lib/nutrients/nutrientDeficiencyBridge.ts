@@ -153,7 +153,7 @@ function mapCropSpecific(record: NutrientPageRecord) {
     return {
       cropName: row.crop,
       symptoms: [row.symptoms],
-      stage: "Field observation",
+      stage: "वानस्पतिक बढ़वार (खड़ी फसल)",
       cause: record.whyDeficiencyHappens?.[0]
         ? `${record.whyDeficiencyHappens[0].condition}: ${record.whyDeficiencyHappens[0].why}`
         : "Soil or uptake limitation",

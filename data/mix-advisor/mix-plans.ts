@@ -620,6 +620,20 @@ function cleanActiveId(technical: string): string {
   return norm || "approved-technical";
 }
 
+/** Clean problem target text to prevent duplicated parentheses */
+export function formatCleanProblemTarget(nameHi: string, nameEn?: string): string {
+  if (!nameHi) return "";
+  const cleanHi = nameHi.trim();
+  // If nameHi already contains parentheses (e.g. "तना छेदक (Stem Borer)"), do not add duplicate nameEn
+  if (cleanHi.includes("(") && cleanHi.includes(")")) {
+    return cleanHi;
+  }
+  if (nameEn && nameEn.trim()) {
+    return `${cleanHi} (${nameEn.trim()})`;
+  }
+  return cleanHi;
+}
+
 /** Convert CurativeMedicine from cropProblemMedicines into MixMedicine */
 export function curativeToMixMedicine(
   curative: CurativeMedicine,
@@ -648,15 +662,34 @@ export function curativeToMixMedicine(
   else if (category === "bactericide") kindHi = "जीवाणुनाशक (Bactericide)";
   else if (category === "tonic") kindHi = "पोषक टॉनिक (Tonic)";
 
-  // Parse doses
-  let dosePerLiter = "1–2 मिली/ग्राम प्रति लीटर पानी";
-  let dosePerAcre = curative.dosePerAcre || "200–300 मिली/ग्राम प्रति एकड़";
+  // Strict Formulation Units: Solid -> Gram (g), Liquid -> ML (ml)
+  const isSolid = /WP|WG|WDG|DF|SP|SG|GR/i.test(curative.technical || formCode);
+  const solidOrLiquidUnit = isSolid ? "ग्राम" : "मिली";
 
-  const literMatch = curative.dose.match(/([0-9.]+(?:\s*(?:से|-)\s*[0-9.]+)?\s*(?:मिली|ग्राम|मि\.ली\.|g|ml)[^,(]*\/[^,(]*लीटर)/i);
-  if (literMatch) dosePerLiter = literMatch[1].trim();
+  // Parse doses with accurate fallback and multi-molecule support
+  let dosePerLiter = isSolid ? "1.5–2 ग्राम प्रति लीटर पानी" : "1.5–2 मिली प्रति लीटर पानी";
+  let dosePerAcre = curative.dosePerAcre || (isSolid ? "250–350 ग्राम प्रति एकड़" : "250–350 मिली प्रति एकड़");
 
-  const acreMatch = curative.dose.match(/([0-9.]+(?:\s*(?:से|-)\s*[0-9.]+)?\s*(?:मिली|ग्राम|किग्रा|g|ml|kg)[^,()]*प्रति\s*एकड़)/i);
-  if (acreMatch && !curative.dosePerAcre) dosePerAcre = acreMatch[1].trim();
+  if (/copper.*strepto/i.test(curative.technical) || /strepto.*copper/i.test(curative.technical)) {
+    dosePerLiter = "कॉपर: 2 g/L + स्ट्रेप्टो: 1 g प्रति 10 L पानी";
+    dosePerAcre = "350 g + 18 g / एकड़";
+  } else if (/kasugamycin.*copper/i.test(curative.technical) || /कासु-बी.*ब्लाइटॉक्स/i.test(curative.nameHi)) {
+    dosePerLiter = "कासुगामाइसिन: 2 ml/L + कॉपर: 2 g/L पानी";
+    dosePerAcre = "400 ml + 400 g / एकड़";
+  } else {
+    const literMatch = curative.dose.match(/([0-9.]+(?:\s*(?:से|-)\s*[0-9.]+)?\s*(?:मिली|ग्राम|मि\.ली\.|g|ml)[^,(]*\/[^,(]*लीटर)/i);
+    if (literMatch) {
+      dosePerLiter = literMatch[1].trim();
+    }
+    const acreMatch = curative.dose.match(/([0-9.]+(?:\s*(?:से|-)\s*[0-9.]+)?\s*(?:मिली|ग्राम|किग्रा|g|ml|kg)[^,()]*प्रति\s*एकड़)/i);
+    if (acreMatch && !curative.dosePerAcre) {
+      dosePerAcre = acreMatch[1].trim();
+    }
+  }
+
+  // Remove any conflicting "मिली/ग्राम" or "ग्राम/मिली"
+  dosePerLiter = dosePerLiter.replace(/मिली\/ग्राम|ग्राम\/मिली/g, solidOrLiquidUnit);
+  dosePerAcre = dosePerAcre.replace(/मिली\/ग्राम|ग्राम\/मिली/g, solidOrLiquidUnit);
 
   return {
     activeId,
@@ -672,7 +705,7 @@ export function curativeToMixMedicine(
     dosePerLiter,
     dosePerAcre,
     targetProblemId: problem.id,
-    targetProblemHi: `${problem.nameHi} (${problem.nameEn})`,
+    targetProblemHi: formatCleanProblemTarget(problem.nameHi, problem.nameEn),
     brands: curative.brands,
     safetyHi: curative.safety,
     level: curative.level,
@@ -756,11 +789,11 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
         const ecMed = isCopper(a) ? b : a;
         return {
           status: "incompatible",
-          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
-          badgeHi: "🔴 गंभीर खतरा (Curdling & Leaf Burn)",
-          messageHi: `खतरा: ${copperMed.nameHi} (कॉपर/बोर्डो) को ${ecMed.nameHi} (EC तेल आधारित फॉर्मूलेशन) के साथ टैंक में कभी न मिलाएँ। घोल तुरंत फटकर दही जैसा हो जाएगा और फसल जल (Phytotoxicity) सकती है।`,
-          conflictReason: "कॉपर साल्ट और इमल्शन विलायक आपस में रासायनिक क्रिया करके अवक्षेप बना देते हैं।",
-          remedyHi: "कॉपर को केवल WP/SC पाउडर के साथ मिलाएँ, या इस EC दवा को 3 दिन बाद अलग स्प्रे करें।",
+          title: "❌ यह घोल फट जाएगा / पत्तियां झुलस जाएंगी!",
+          badgeHi: "🔴 गंभीर खतरा: घोल फटने व पत्ती झुलसने का डर",
+          messageHi: `गंभीर खतरा: यह घोल फट जाएगा और फसल की पत्तियां झुलस जाएंगी! ${copperMed.nameHi} (कॉपर) को ${ecMed.nameHi} (तेल आधारित तरल दवा) के साथ टैंक में कभी न मिलाएँ। घोल तुरंत फटकर दही जैसा हो जाएगा और फसल जल सकती है।`,
+          conflictReason: "कॉपर और तेल आधारित तरल दवा आपस में मिलकर घोल फाड़ देते हैं।",
+          remedyHi: "कॉपर को केवल पाउडर या सुरक्षित तरल के साथ मिलाएँ, या इस दवा को 3 दिन बाद अलग छिड़कें।",
           badPair: [a, b],
         };
       }
@@ -771,11 +804,11 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
       if ((isCopper(a) && isOP(b)) || (isCopper(b) && isOP(a))) {
         return {
           status: "incompatible",
-          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
-          badgeHi: "🔴 असंगत रासायनिक मिश्रण (Alkaline Hydrolysis)",
-          messageHi: `खतरा: कॉपर की क्षारीय प्रकृति से आर्गेनोफॉस्फेट कीटनाशक (${isOP(a) ? a.nameHi : b.nameHi}) का क्षारीय अपघटन हो जाता है, जिससे घोल फट सकता है, कीटनाशक असर खत्म हो जाता है और फसल झुलस सकती है।`,
-          conflictReason: "Alkaline Hydrolysis",
-          remedyHi: "इन दोनों का अलग-अलग छिड़काव करें।",
+          title: "❌ यह घोल फट जाएगा / पत्तियां झुलस जाएंगी!",
+          badgeHi: "🔴 गंभीर खतरा: दवा बेअसर व फसल झुलसने का डर",
+          messageHi: `खतरा: कॉपर के क्षारीय स्वभाव से कीटनाशक (${isOP(a) ? a.nameHi : b.nameHi}) का असर खत्म हो जाता है, घोल फट सकता है और फसल की पत्तियां झुलस सकती हैं।`,
+          conflictReason: "कॉपर और कीटनाशक का मेल दवा को बेअसर कर देता है।",
+          remedyHi: "इन दोनों दवाओं का अलग-अलग छिड़काव करें।",
           badPair: [a, b],
         };
       }
@@ -786,11 +819,11 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
       if ((isCopper(a) && isSulphur(b)) || (isCopper(b) && isSulphur(a))) {
         return {
           status: "incompatible",
-          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
-          badgeHi: "🔴 बहुत खतरनाक (Phytotoxicity)",
-          messageHi: "खतरा: कॉपर और सल्फर का एक साथ छिड़काव करने से तेज धूप में पत्तियां बुरी तरह जल जाती हैं। कृषि वैज्ञानिक इसे कभी मिलाने की अनुमति नहीं देते।",
-          conflictReason: "Copper + Sulphur extreme phytotoxicity reaction",
-          remedyHi: "कभी एक साथ न मिलाएँ; 15 दिन का अंतर रखें।",
+          title: "❌ पत्तियां बुरी तरह जल जाएंगी!",
+          badgeHi: "🔴 बहुत खतरनाक: फसल झुलसने का भारी जोखिम",
+          messageHi: "खतरा: कॉपर और सल्फर को एक साथ मिलाकर छिड़कने से तेज धूप में फसल की पत्तियां बुरी तरह झुलस जाती हैं। इन्हें कभी साथ न मिलाएं।",
+          conflictReason: "कॉपर और सल्फर का मेल पत्तियां जला देता है।",
+          remedyHi: "कभी एक साथ न मिलाएँ; दोनों में कम से कम 12 से 15 दिन का अंतर रखें।",
           badPair: [a, b],
         };
       }
@@ -799,11 +832,11 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
       if ((isSulphur(a) && isEC(b)) || (isSulphur(b) && isEC(a))) {
         return {
           status: "incompatible",
-          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
-          badgeHi: "🔴 असंगत (Crop Scorch Risk)",
-          messageHi: `खतरा: सल्फर को तेल आधारित EC कीटनाशक (${isEC(a) ? a.nameHi : b.nameHi}) के साथ मिलाने से पत्तों पर मोमी परत नष्ट हो जाती है और फसल जल सकती है।`,
-          conflictReason: "Sulphur oil interaction",
-          remedyHi: "सल्फर के साथ केवल WP/WDG या SC फॉर्मूलेशन का ही इस्तेमाल करें।",
+          title: "❌ पत्तियां झुलसने का खतरा!",
+          badgeHi: "🔴 असंगत: पत्तियां झुलसने का खतरा",
+          messageHi: `खतरा: सल्फर को तेल आधारित तरल कीटनाशक (${isEC(a) ? a.nameHi : b.nameHi}) के साथ मिलाने से पत्तों की सुरक्षा परत नष्ट हो जाती है और फसल जल सकती है।`,
+          conflictReason: "सल्फर और तेल आधारित दवा का मेल पत्ते जला देता है।",
+          remedyHi: "सल्फर के साथ केवल पाउडर (WP/WDG) या सुरक्षित तरल (SC) ही इस्तेमाल करें।",
           badPair: [a, b],
         };
       }
@@ -814,10 +847,10 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
       if ((isCalcium(a) && isSulphateOrPhos(b)) || (isCalcium(b) && isSulphateOrPhos(a))) {
         return {
           status: "incompatible",
-          title: "❌ यह घोल फट जाएगा / पत्तियां जला देगा!",
-          badgeHi: "🔴 अवक्षेप (Gypsum / Insoluble Sludge)",
-          messageHi: "खतरा: कैल्शियम और सल्फेट/फॉस्फेट आपस में मिलकर अघुलनशील जिप्सम (चूने की मोटी परत) बना देते हैं। घोल तुरंत फट जाता है और नोजल चोक हो जाता है।",
-          conflictReason: "Calcium Sulphate / Phosphate precipitation",
+          title: "❌ घोल फट जाएगा व नोजल जाम हो जाएगा!",
+          badgeHi: "🔴 गंभीर खतरा: घोल फटेगा व नोजल जाम होगा",
+          messageHi: "खतरा: कैल्शियम और सल्फेट/फॉस्फेट मिलकर सफेद चूने जैसा गाढ़ा थक्का बना देते हैं। घोल तुरंत फट जाता है और स्प्रे पंप का नोजल चोक हो जाता है।",
+          conflictReason: "कैल्शियम और सल्फेट/फॉस्फेट अघुलनशील थक्का बना देते हैं।",
           remedyHi: "कैल्शियम नाइट्रेट का हमेशा अलग छिड़काव करें।",
           badPair: [a, b],
         };
@@ -1055,6 +1088,128 @@ export function getProblemSpecificAlternatives(
 }
 
 // --------------------------------------------------------------------------
+// Broad-Spectrum Agronomic Consolidation Rules
+// --------------------------------------------------------------------------
+
+interface BroadSpectrumRule {
+  cropSlug: string;
+  problemIds: string[];
+  medicine: CurativeMedicine;
+  combinedTargetHi: string;
+  category: MedicineCategory;
+}
+
+const BROAD_SPECTRUM_RULES: BroadSpectrumRule[] = [
+  // Paddy: Stem Borer + Leaf Folder
+  {
+    cropSlug: "paddy",
+    problemIds: ["stem-borer", "leaf-folder"],
+    medicine: {
+      nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन / बायेगो)",
+      technical: "Chlorantraniliprole 18.5% SC",
+      dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+      brands: ["Coragen (FMC)", "Vayego (Bayer)"],
+      safety: "एक ही ब्रॉड-स्पेक्ट्रम दवा से तना छेदक और पत्ती लपेटक दोनों पर संपूर्ण नियंत्रण।",
+      level: 3,
+      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+      dosePerAcre: "60 मिली / एकड़",
+      isTopPerformer: true,
+    },
+    combinedTargetHi: "तना छेदक + पत्ती लपेटक",
+    category: "insecticide",
+  },
+  // Paddy: Sheath Blight + Blast
+  {
+    cropSlug: "paddy",
+    problemIds: ["sheath-blight", "blast"],
+    medicine: {
+      nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+      technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+      dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+      brands: ["Amistar Top (Syngenta)"],
+      safety: "शीथ ब्लाइट और ब्लास्ट (झोंका) दोनों फफूंद रोगों का एक ही स्प्रे में संपूर्ण खात्मा।",
+      level: 3,
+      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+      dosePerAcre: "200 मिली / एकड़",
+      isTopPerformer: true,
+    },
+    combinedTargetHi: "शीथ ब्लाइट + ब्लास्ट (झोंका)",
+    category: "fungicide",
+  },
+  // Tomato: Early Blight + Late Blight
+  {
+    cropSlug: "tomato",
+    problemIds: ["early-blight", "late-blight"],
+    medicine: {
+      nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप / कस्टोडिया)",
+      technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+      dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+      brands: ["Amistar Top (Syngenta)", "Custodia (Adama)"],
+      safety: "अगेती और पछेती दोनों झुलसा रोगों पर ब्रॉड-स्पेक्ट्रम दोहरी मार।",
+      level: 3,
+      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+      dosePerAcre: "200 मिली / एकड़",
+      isTopPerformer: true,
+    },
+    combinedTargetHi: "अगेती झुलसा + पछेती झुलसा",
+    category: "fungicide",
+  },
+  // Tomato: Leafminer / Whitefly
+  {
+    cropSlug: "tomato",
+    problemIds: ["leaf-miner", "whitefly"],
+    medicine: {
+      nameHi: "साइएंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
+      technical: "Cyantraniliprole 10.26% OD",
+      dose: "1.8 मिली / लीटर पानी (360 मिली प्रति एकड़)",
+      brands: ["Benevia (FMC)"],
+      safety: "पत्ती सुरंगक और सफेद मक्खी दोनों रस चूसक व छेदक कीटों पर अचूक असर।",
+      level: 3,
+      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+      dosePerAcre: "360 मिली / एकड़",
+      isTopPerformer: true,
+    },
+    combinedTargetHi: "पत्ती सुरंगक + सफेद मक्खी",
+    category: "insecticide",
+  },
+  // Chilli: Thrips + Mites
+  {
+    cropSlug: "chilli",
+    problemIds: ["thrips", "broad-mite"],
+    medicine: {
+      nameHi: "डायाफेंथियूरॉन 50% WP (पेगासस / पोलो)",
+      technical: "Diafenthiuron 50% WP",
+      dose: "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़)",
+      brands: ["Pegasus (Syngenta)", "Polo"],
+      safety: "थ्रिप्स (माथा बंधना) और माइट्स (पीली मकड़ी) दोनों पर एक साथ ब्रॉड-स्पेक्ट्रम नियंत्रण।",
+      level: 3,
+      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+      dosePerAcre: "250 ग्राम / एकड़",
+      isTopPerformer: true,
+    },
+    combinedTargetHi: "थ्रिप्स + माइट्स (मकड़ी)",
+    category: "insecticide",
+  },
+  // Wheat: Yellow Rust + Spot Blotch
+  {
+    cropSlug: "wheat",
+    problemIds: ["yellow-rust", "spot-blotch"],
+    medicine: {
+      nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट / बंपर)",
+      technical: "Propiconazole 25% EC",
+      dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+      brands: ["Tilt (Syngenta)", "Bumper (Adama)"],
+      safety: "पीला रतुआ और पत्ती धब्बा दोनों फफूंद रोगों पर एक साथ संपूर्ण नियंत्रण।",
+      level: 2,
+      levelLabelHi: "स्तर 2 · मध्यम स्तर",
+      dosePerAcre: "200 मिली / एकड़",
+    },
+    combinedTargetHi: "पीला रतुआ + पत्ती धब्बा",
+    category: "fungicide",
+  },
+];
+
+// --------------------------------------------------------------------------
 // Build Complete Mix Plan from Selected Problems
 // --------------------------------------------------------------------------
 
@@ -1081,8 +1236,49 @@ export function buildMixPlanFromProblems(
     return false;
   };
 
-  // For each selected problem, find the authoritative ICAR curative recommendation
+  const handledProblemIds = new Set<string>();
+
+  // 1. Check Broad-Spectrum Consolidation Rules (Consolidate multiple targets into 1 common molecule)
+  for (const rule of BROAD_SPECTRUM_RULES) {
+    if (rule.cropSlug === cropSlug) {
+      const matchCount = rule.problemIds.filter((id) => selected.some((p) => p.id === id)).length;
+      if (matchCount >= 2 && !rule.problemIds.some((id) => handledProblemIds.has(id))) {
+        const dummyProb: CropProblemItem = {
+          id: rule.problemIds.join("+"),
+          nameHi: rule.combinedTargetHi,
+          nameEn: "",
+          tagHi: rule.category === "insecticide" ? "कीट नियंत्रण" : "फफूंद नियंत्रण",
+          image: "",
+          stageHi: "",
+          whatHi: "",
+          whyHi: [],
+          cureOrganicHi: [],
+          cureChemicalHi: [],
+          whenToActHi: "",
+          tipHi: "",
+        };
+        const consolidatedMed = curativeToMixMedicine(rule.medicine, dummyProb);
+        consolidatedMed.targetProblemHi = rule.combinedTargetHi;
+        recommendedMedicines.push(consolidatedMed);
+        rule.problemIds.forEach((id) => handledProblemIds.add(id));
+      }
+    }
+  }
+
+  // 2. For each selected problem, find the authoritative ICAR curative recommendation
   for (const prob of selected) {
+    if (handledProblemIds.has(prob.id)) {
+      // Add its curatives to alternatives pool so farmer can view/swap
+      const curatives = cropMedsRecord[prob.id] ?? [];
+      for (const c of curatives) {
+        const altMed = curativeToMixMedicine(c, prob);
+        if (!alternativesPool.some((a) => isSameMed(a, altMed))) {
+          alternativesPool.push(altMed);
+        }
+      }
+      continue;
+    }
+
     const curatives = cropMedsRecord[prob.id];
     if (curatives && curatives.length > 0) {
       // Find the first curative option not yet present in recommendedMedicines
@@ -1099,7 +1295,7 @@ export function buildMixPlanFromProblems(
         const primaryMed = curativeToMixMedicine(curatives[0], prob);
         const existing = recommendedMedicines.find((m) => isSameMed(m, primaryMed));
         if (existing && existing.targetProblemHi && !existing.targetProblemHi.includes(prob.nameHi)) {
-          existing.targetProblemHi = `${existing.targetProblemHi} + ${prob.nameHi}`;
+          existing.targetProblemHi = `${existing.targetProblemHi} + ${formatCleanProblemTarget(prob.nameHi)}`;
         }
       }
 
@@ -1125,7 +1321,7 @@ export function buildMixPlanFromProblems(
       const withTarget: MixMedicine = {
         ...fallback,
         targetProblemId: prob.id,
-        targetProblemHi: `${prob.nameHi} (${prob.nameEn})`,
+        targetProblemHi: formatCleanProblemTarget(prob.nameHi, prob.nameEn),
         isVirusTarget: isVirus,
       };
       if (!recommendedMedicines.some((m) => isSameMed(m, withTarget))) {
@@ -1133,7 +1329,7 @@ export function buildMixPlanFromProblems(
       } else {
         const existing = recommendedMedicines.find((m) => isSameMed(m, withTarget));
         if (existing && existing.targetProblemHi && !existing.targetProblemHi.includes(prob.nameHi)) {
-          existing.targetProblemHi = `${existing.targetProblemHi} + ${prob.nameHi}`;
+          existing.targetProblemHi = `${existing.targetProblemHi} + ${formatCleanProblemTarget(prob.nameHi)}`;
         }
       }
     }

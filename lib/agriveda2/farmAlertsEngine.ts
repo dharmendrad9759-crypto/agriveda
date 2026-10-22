@@ -36,11 +36,11 @@ export function buildPredictiveAlerts(input: {
       alerts.push({
         id: `bph-${input.cropSlug}`,
         severity: "warning",
-        title: "Brown Planthopper risk — 3–5 days ahead",
-        body: `Your ${profile?.name ?? "paddy"} is ~${das} DAS (tillering). Humid/warm spell favours BPH. Spray Buprofezin toward plant base before outbreak.`,
+        title: "भूरा फुदका (BPH) का खतरा — अगले 3–5 दिन",
+        body: `आपकी धान फसल ~${das} दिन (कल्ले फूटना) की है। उमस और गर्मी से BPH का प्रकोप बढ़ सकता है। पौधे के आधार पर बुप्रोफेजिन का छिड़काव करें।`,
         cropSlug: input.cropSlug,
         fieldName: input.fieldName,
-        actionLabel: "Spray schedule",
+        actionLabel: "स्प्रे सलाह",
         actionHref: "/weather/spray-advisory",
         daysAhead: 4,
       });
@@ -51,11 +51,11 @@ export function buildPredictiveAlerts(input: {
     alerts.push({
       id: `blight-${input.cropSlug}`,
       severity: "info",
-      title: "Early blight watch — fruiting stage",
-      body: "Leaf wetness + warm nights increase Alternaria risk. Scout lower leaves; keep FRAC rotation ready.",
+      title: "अगेती झुलसा चेतावनी — फल बनने की अवस्था",
+      body: "पत्तियों पर नमी व गर्म रात से अल्टरनेरिया झुलसा का खतरा है। निचली पत्तियों की जांच करें व कवकनाशी तैयार रखें।",
       cropSlug: input.cropSlug,
       fieldName: input.fieldName,
-      actionLabel: "Symptom solver",
+      actionLabel: "कीट-रोग जांच",
       actionHref: "/pest-solver",
       daysAhead: 3,
     });
@@ -65,11 +65,11 @@ export function buildPredictiveAlerts(input: {
     alerts.push({
       id: `faw-${input.cropSlug}`,
       severity: "critical",
-      title: "Fall Armyworm alert — vegetative stage",
-      body: "Regional reports show FAW pressure. Evening scout in whorl; Chlorantraniliprole or Spinosad if larvae seen.",
+      title: "फॉल आर्मीवर्म चेतावनी — वानस्पतिक अवस्था",
+      body: "क्षेत्रीय रिपोर्ट में FAW का दबाव देखा गया है। शाम को गोभ में जांच करें; सुंडी दिखने पर क्लोरएंट्रानिलिप्रोल का छिड़काव करें।",
       cropSlug: input.cropSlug,
       fieldName: input.fieldName,
-      actionLabel: "AI scan",
+      actionLabel: "AI डॉक्टर स्कैन",
       actionHref: "/ai-doctor",
       daysAhead: 2,
     });
@@ -83,10 +83,10 @@ export function buildPredictiveAlerts(input: {
     alerts.push({
       id: `sow-${input.cropSlug}`,
       severity: "info",
-      title: "Green sowing window open",
-      body: sowing.messageEn,
+      title: "बुवाई का सही समय शुरू",
+      body: sowing.messageHi || sowing.messageEn,
       cropSlug: input.cropSlug,
-      actionLabel: "Sowing guide",
+      actionLabel: "बुवाई गाइड",
       actionHref: `/sowing-window?crop=${input.cropSlug}`,
     });
   }
@@ -110,20 +110,21 @@ export function buildFieldAlerts(
   const dashboard = getCropDashboard(field.cropSlug);
   const das = sowingDate ? daysAfterSowing(sowingDate) : null;
 
-  if (das != null && dashboard.irrigationManagement?.tips?.length) {
-    const tip = dashboard.irrigationManagement.tips[0];
-    if (das % 4 === 0) {
-      alerts.push({
-        id: `irr-${field.cropSlug}-${field.name}`,
-        severity: "info",
-        title: "Irrigation due soon",
-        body: `Based on stage (Day ${das}): ${tip}`,
-        fieldName: field.name,
-        cropSlug: field.cropSlug,
-        actionHref: `/crops/${field.cropSlug}/care/irrigation`,
-        actionLabel: "Water guide",
-      });
-    }
+  if (das != null) {
+    const tip = dashboard.irrigationManagement?.tips?.[0] || "उचित नमी बनाए रखें";
+    const isWheatFirstIrr = field.cropSlug === "wheat" && das >= 18 && das <= 28;
+    alerts.push({
+      id: `irr-${field.cropSlug}-${field.name}`,
+      severity: "info",
+      title: "सिंचाई का समय आ गया है",
+      body: isWheatFirstIrr
+        ? "पहली सिंचाई (CRI अवस्था 20–25 दिन) तुरंत दें — क्राउन रूट बनते समय पानी की कमी से कल्ले कम बनते हैं।"
+        : `फसल की अवस्था अनुसार (दिन ${das}): ${tip}`,
+      fieldName: field.name,
+      cropSlug: field.cropSlug,
+      actionHref: `/crops/${field.cropSlug}/care/irrigation`,
+      actionLabel: "सिंचाई गाइड →",
+    });
   }
 
   return alerts.map((a) => ({ ...a, fieldName: a.fieldName ?? field.name }));

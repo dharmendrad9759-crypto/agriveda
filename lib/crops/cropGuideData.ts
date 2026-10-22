@@ -4,6 +4,9 @@
  * Mapped to multi-batch active ingredients (FRAC / IRAC groups).
  */
 
+import { cropCatalog } from "@/data/crop-catalog";
+import { getCropPestDisease } from "@/data/pest-disease";
+
 export interface ChemicalControlItem {
   chemical_name: string;
   active_ingredient?: string;
@@ -289,16 +292,539 @@ export const TOMATO_CROP_GUIDE: CropGuideData = {
   ]
 };
 
+export const PADDY_CROP_GUIDE: CropGuideData = {
+  crop_id: "CR_PADDY_001",
+  crop_slug: "paddy",
+  crop_name: "Paddy",
+  crop_name_hi: "धान",
+  crop_scientific_name: "Oryza sativa",
+  cover_image: "/images/crops/paddy.jpg",
+  stages: [
+    {
+      stage_id: "shuruat",
+      stage_name: "Shuruat (Nursery & Seed Treatment)",
+      stage_name_hi: "1. शुरुआत (बीज शोधन व नर्सरी)",
+      stage_period: "दिन 0–25 (बीज उपचार व पौध तैयार करना)",
+      summary: "उन्नत बीजों का नमक पानी से चयन, फफूंदनाशक व जीवाणु शोधन और 20-25 दिन में स्वस्थ पौध तैयार करना।",
+      parameters: {
+        "बीज दर (Seed Rate)": "15-20 किग्रा/एकड़ (संकर) या 25 किग्रा (देसी)",
+        "नर्सरी क्षेत्रफल": "1 एकड़ रोपाई हेतु 1/10 एकड़ (400 वर्ग मीटर)",
+        "तापमान (Temperature)": "25°C - 35°C (आदर्श अंकुरण)",
+        "बीज शोधन": "कार्बेंडाजिम + मेंकोजेब @ 2 ग्राम/किग्रा बीज"
+      },
+      activities: [
+        "10% नमक के घोल में बीज डालकर हल्के व तैरते बीजों को अलग करें, फिर साफ पानी से 2 बार धोएं।",
+        "कार्बेंडाजिम 2g/kg या ट्राइकोडर्मा 5g/kg से बीज उपचार कर 24 घंटे गीली बोरी में अंकुरित करें।",
+        "नर्सरी में 10 दिन पर जिंक सल्फेट 0.5% का स्प्रे करें ताकि खैरा रोग से बचाव रहे।"
+      ],
+      advisories: [
+        "नर्सरी में जलभराव न होने दें; शाम को हल्का पानी दें और सुबह अतिरिक्त पानी निकालें।",
+        "पौध रोपाई से 5 दिन पहले नर्सरी में कार्बोफ्यूरान 3G या फिप्रोनिल 0.3G दानेदार डालें।"
+      ]
+    },
+    {
+      stage_id: "lagana",
+      stage_name: "Lagana (Field Prep & Transplanting)",
+      stage_name_hi: "2. लगाना (खेत तैयारी व रोपाई)",
+      stage_period: "दिन 25–40 (रोपाई से 15 दिन तक)",
+      summary: "खेत की पडलिंग (लेव लगाना), कतार में 20x15 सेमी पर 2-3 पौध रोपाई और बेसल उर्वरक प्रबंधन।",
+      parameters: {
+        "पौध उम्र (Age)": "21–25 दिन की स्वस्थ हरी पौध",
+        "पौध दूरी": "20 सेमी कतार से कतार, 15 सेमी पौध से पौध",
+        "पौध प्रति हिल": "2 से 3 स्वस्थ पौधे प्रति स्थान",
+        "बेसल खाद (Basal)": "DAP 50 kg + MOP 20 kg + Zinc Sulphate (21%) 10 kg/एकड़"
+      },
+      activities: [
+        "खेत में पानी भरकर 2 बार कल्टीवेटर व पाटा चलाकर अच्छी तरह लेव (Puddling) लगाएं।",
+        "रोपाई 2–3 सेमी की उथली गहराई पर करें; गहरी रोपाई से कल्ले कम फूटते हैं।",
+        "रोपाई के 3 दिन के अंदर खरपतवार नियंत्रण हेतु प्रेटिलाक्लोर 50 EC @ 500 मिली/एकड़ रेत में मिलाकर छिड़कें।"
+      ],
+      advisories: [
+        "रोपाई के पहले हफ्ते खेत में 2-3 सेमी स्थिर पानी रखें ताकि जड़ें जल्दी पकड़ें।",
+        "जिंक सल्फेट को कभी भी डीएपी (फॉस्फोरस) के साथ मिलाकर न डालें, 3 दिन का अंतर रखें।"
+      ]
+    },
+    {
+      stage_id: "dekhbhal",
+      stage_name: "Dekhbhal (Tillering & Nutrition)",
+      stage_name_hi: "3. देखभाल (कल्ले फूटना व यूरिया टॉप-ड्रेसिंग)",
+      stage_period: "दिन 40–80 (कल्ले फूटने से गाभा अवस्था)",
+      summary: "उचित जल स्तर (3-5 सेमी), 20-25 दिन पर पहली यूरिया टॉप ड्रेसिंग और कल्ले बढ़ाने हेतु सूक्ष्म पोषक तत्व।",
+      parameters: {
+        "पहली टॉप ड्रेसिंग": "रोपाई के 20-25 दिन: यूरिया 35 किग्रा/एकड़",
+        "दूसरी टॉप ड्रेसिंग": "रोपाई के 40-45 दिन (गाभा पूर्व): यूरिया 35 किग्रा/एकड़",
+        "जल प्रबंधन": "कल्ले फूटते समय 3-5 सेमी पानी, दाना पकते समय नमी",
+        "एनपीके फोलियर": "19:19:19 @ 1 किग्रा/एकड़ (30 दिन पर)"
+      },
+      activities: [
+        "रोपाई के 20-25 दिन पर खेत से अतिरिक्त पानी निकालकर यूरिया की पहली खुराक दें।",
+        "खेत में खैरा रोग (पत्तियां कत्थई/पीली) दिखने पर चिलेटेड जिंक @ 1 ग्राम/लीटर का स्प्रे करें।",
+        "गाभा अवस्था (Panicle Initiation) पर पानी की कमी बिल्कुल न होने दें।"
+      ],
+      advisories: [
+        "फूल आने की अवस्था (Flowering) पर किसी भी दवा का तेज दोपहर में छिड़काव न करें।",
+        "खेत में लगातार पानी न भरे रहने दें, बीच-बीच में 1-2 दिन हवा लगने दें (AWD विधि)।"
+      ]
+    },
+    {
+      stage_id: "suraksha",
+      stage_name: "Suraksha (Pest & Disease Control)",
+      stage_name_hi: "4. सुरक्षा और कटाई (कीट, रोग नियंत्रण व कटाई)",
+      stage_period: "दिन 80–135 (फूल, दाना भराव व कटाई)",
+      summary: "तना छेदक, पत्ता लपेटक, बीपीएच (भूरा फुदका) और ब्लास्ट रोग का वैज्ञानिक रासायनिक नियंत्रण।",
+      parameters: {
+        "कटाई का सही समय": "बाली के 80-85% दाने सुनहरे पीले पड़ जाने पर",
+        "कटाई पूर्व जल निकासी": "कटाई से 10-12 दिन पहले खेत का पानी निकाल दें",
+        "दाना नमी": "भंडारण हेतु दानों में नमी 12-14% होनी चाहिए"
+      },
+      activities: [
+        "खेत में तना छेदक के पतंगे या सूखी गोभ (Dead Heart) दिखने पर तुरंत अनुशंसित कीटनाशक डालें।",
+        "भूरा फुदका (BPH) के लिए पौधों के तने के निचले हिस्से में पानी की सतह के पास निगरानी करें।",
+        "बाली निकलने पर ब्लास्ट या शीथ ब्लाइट से बचाव हेतु सुरक्षात्मक फफूंदनाशक स्प्रे करें।"
+      ],
+      advisories: [
+        "कीटनाशक छिड़कते समय नोजल को पौधों के तने की तरफ रखें ताकि फुदका नियंत्रित हो।",
+        "कटाई के बाद पराली न जलाएं, पूसा डीकंपोजर डालकर खेत में जुताई कर दें।"
+      ],
+      pests_and_diseases: [
+        {
+          pest_id: "paddy_stem_borer",
+          pest_name: "तना छेदक (Yellow Stem Borer)",
+          scientific_name: "Scirpophaga incertulas",
+          category: "pest",
+          identification_text: "सफेद या पीला पतंगा, फसल में बीच की गोभ सूख जाना (Dead heart) और बाली निकलने पर सफेद बाली (White earhead) दिखना।",
+          damage_nature: "इल्ली तने के अंदर घुसकर ऊतकों को खाती है जिससे तना खोखला हो जाता है और दाना नहीं बनता।",
+          images: ["/images/crops/paddy.jpg"],
+          organic_control: "प्रति एकड़ 4-5 फेरोमोन ट्रैप लगाएं। ट्राइकोग्रामा जैपोनिकम परजीवी ततैया के 50,000 अंडे/एकड़ छोड़ें।",
+          etl_threshold: "5% सूखी गोभ (Dead Heart) या 1 पतंगा प्रति वर्ग मीटर दिखने पर",
+          chemical_control: [
+            {
+              chemical_name: "Chlorantraniliprole 18.5% SC (Coragen / Voliam Flexi)",
+              active_ingredient: "Chlorantraniliprole 18.5% SC",
+              frac_irac_group: "IRAC 28 (Ryanodine Receptor Modulator)",
+              dosage: "60 मिली",
+              volume: "प्रति एकड़ (150-200 लीटर पानी)",
+              per_volume: "0.4 मिली/लीटर",
+              waiting_period_days: 14,
+              safety_note: "लंबे समय (21-25 दिन) तक तना छेदक व पत्ता लपेटक दोनों पर असरदार।"
+            },
+            {
+              chemical_name: "Cartap Hydrochloride 50% SP (Caldan / Padan)",
+              active_ingredient: "Cartap Hydrochloride 50% SP",
+              frac_irac_group: "IRAC 14 (Nicotinic Acetylcholine Receptor Channel Blocker)",
+              dosage: "400 ग्राम",
+              volume: "प्रति एकड़ (200 लीटर पानी)",
+              per_volume: "2 ग्राम/लीटर",
+              waiting_period_days: 15,
+              safety_note: "सिस्टमिक व संपर्क दोनों क्रिया से तुरंत कीड़ों को मारता है।"
+            },
+            {
+              chemical_name: "Fipronil 0.3% GR (Regent Granules)",
+              active_ingredient: "Fipronil 0.3% GR",
+              frac_irac_group: "IRAC 2B (GABA-gated Chloride Channel Blocker)",
+              dosage: "7.5–10 किग्रा",
+              volume: "प्रति एकड़ (खेत में बखेरें)",
+              per_volume: "सीधे खेत में डालें",
+              waiting_period_days: 21,
+              safety_note: "रोपाई के 15-25 दिन पर खेत में 2-3 सेमी पानी होने पर रेत के साथ बखेरें।"
+            }
+          ]
+        },
+        {
+          pest_id: "paddy_bph",
+          pest_name: "भूरा फुदका (Brown Plant Hopper - BPH)",
+          scientific_name: "Nilaparvata lugens",
+          category: "pest",
+          identification_text: "पौधों के तने पर पानी की सतह के पास छोटे भूरे रंग के फुदके, पौधों का सूखकर जलने जैसा (Hopper Burn) हो जाना।",
+          damage_nature: "हजारों की संख्या में रस चूसते हैं जिससे पूरा खेत बीच-बीच में गोल चक्करों में सूखा दिखाई देता है।",
+          images: ["/images/crops/paddy.jpg"],
+          organic_control: "खेत से पानी निकाल दें (Dry alternate wetting)। नीम का तेल (Azadirachtin 10000 ppm) @ 2 मिली/लीटर छिड़कें।",
+          etl_threshold: "5-10 फुदके प्रति हिल (पौधे का गुच्छा) दिखने पर",
+          chemical_control: [
+            {
+              chemical_name: "Triflumezopyrim 106 SC (Pexalon)",
+              active_ingredient: "Triflumezopyrim 106 SC",
+              frac_irac_group: "IRAC 4E (Nicotinic Acetylcholine Receptor Allosteric Modulator)",
+              dosage: "94 मिली",
+              volume: "प्रति एकड़ (200-250 लीटर पानी)",
+              per_volume: "0.5 मिली/लीटर",
+              waiting_period_days: 14,
+              safety_note: "फुदके पर तुरंत नॉकडाउन असर और 20 दिन की लंबी सुरक्षा। स्प्रे नोजल तने की तरफ रखें।"
+            },
+            {
+              chemical_name: "Pymetrozine 50% WG (Chess / Osheen)",
+              active_ingredient: "Pymetrozine 50% WG",
+              frac_irac_group: "IRAC 9B (Chordotonal Organ TRPV Channel Modulator)",
+              dosage: "120 ग्राम",
+              volume: "प्रति एकड़ (200 लीटर पानी)",
+              per_volume: "0.6 ग्राम/लीटर",
+              waiting_period_days: 12,
+              safety_note: "फुदके का सूंड सुन्न कर देता है जिससे वह रस नहीं चूस पाता।"
+            }
+          ]
+        },
+        {
+          pest_id: "paddy_blast",
+          pest_name: "ब्लास्ट / झोंका रोग (Rice Blast)",
+          scientific_name: "Pyricularia oryzae",
+          category: "disease",
+          identification_text: "पत्तियों पर आंख या नाव के आकार के बीच में भूरे व किनारे कत्थई धब्बे। बाली की गर्दन काली पड़ना (Neck Blast)।",
+          damage_nature: "गर्दन टूटने से बाली सूख जाती है और दाने काले व खोखले रह जाते हैं।",
+          images: ["/images/crops/paddy.jpg"],
+          organic_control: "नाइट्रोजन (यूरिया) का अत्यधिक उपयोग रोकें। स्यूडोमोनास फ्लोरेसेंस @ 5 ग्राम/लीटर का स्प्रे करें।",
+          etl_threshold: "पत्ती पर 1-2 आंखनुमा धब्बे या मौसम में ठंड व बादल दिखने पर",
+          chemical_control: [
+            {
+              chemical_name: "Tricyclazole 75% WP (Baan / Beam)",
+              active_ingredient: "Tricyclazole 75% WP",
+              frac_irac_group: "FRAC 16.1 (Melanin Biosynthesis Inhibitor)",
+              dosage: "120–150 ग्राम",
+              volume: "प्रति एकड़ (150-200 लीटर पानी)",
+              per_volume: "0.75 ग्राम/लीटर",
+              waiting_period_days: 15,
+              safety_note: "ब्लास्ट (झोंका) रोग के लिए सबसे अचूक दवा। बाली निकलते समय सुरक्षात्मक स्प्रे करें।"
+            },
+            {
+              chemical_name: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC (Amistar Top)",
+              active_ingredient: "Azoxystrobin + Difenoconazole",
+              frac_irac_group: "FRAC 11 + FRAC 3 (Dual Action Systemic)",
+              dosage: "200 मिली",
+              volume: "प्रति एकड़ (200 लीटर पानी)",
+              per_volume: "1 मिली/लीटर",
+              waiting_period_days: 10,
+              safety_note: "ब्लास्ट और शीथ ब्लाइट दोनों रोगों को एक साथ रोकता है।"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+export const WHEAT_CROP_GUIDE: CropGuideData = {
+  crop_id: "CR_WHEAT_001",
+  crop_slug: "wheat",
+  crop_name: "Wheat",
+  crop_name_hi: "गेहूँ",
+  crop_scientific_name: "Triticum aestivum",
+  cover_image: "/images/crops/wheat.jpg",
+  stages: [
+    {
+      stage_id: "shuruat",
+      stage_name: "Shuruat (Seed Selection & Treatment)",
+      stage_name_hi: "1. शुरुआत (बीज चयन व उपचार)",
+      stage_period: "दिन 0–10 (बुवाई पूर्व तैयारी)",
+      summary: "उन्नत सिंचित किस्मों (DBW 187, HD 2967) का चयन, फफूंद व दीमक से बीज शोधन।",
+      parameters: {
+        "बीज दर (Seed Rate)": "40-45 किग्रा/एकड़ (समय पर बुवाई)",
+        "कतार दूरी": "20 सेमी कतार से कतार",
+        "बुवाई गहराई": "4–5 सेमी (अधिक गहरी बुवाई न करें)",
+        "बीज उपचार": "कार्बेन्डाजिम + मेंकोजेब @ 2.5 ग्राम + क्लोरपायरीफॉस @ 4 मिली/किग्रा"
+      },
+      activities: [
+        "स्वस्थ प्रमाणित बीज का प्रयोग करें, कंडुआ रोग से बचाव हेतु बीटावैक्स 2g/kg से शोधन करें।",
+        "दीमक प्रभावित क्षेत्रों में थायमेथॉक्सम 70 WS @ 2g/kg बीज से उपचार अवश्य करें।"
+      ],
+      advisories: [
+        "बुवाई के समय मिट्टी में पर्याप्त ओट (नमी) होनी चाहिए ताकि एकसार जमाव हो।"
+      ]
+    },
+    {
+      stage_id: "lagana",
+      stage_name: "Lagana (Sowing & Basal Fertilizer)",
+      stage_name_hi: "2. लगाना (बुवाई व बेसल खाद)",
+      stage_period: "दिन 0–21 (अंकुरण व शुरुआती बढ़वार)",
+      summary: "सीडड्रिल से बुवाई, संतुलित बेसल उर्वरक और दीमक रोकथाम।",
+      parameters: {
+        "बेसल खाद (Basal)": "DAP 55 kg + MOP 20 kg + Urea 20 kg/एकड़",
+        "जिंक सल्फेट (33%)": "7 किग्रा/एकड़ (आखिरी जुताई पर)"
+      },
+      activities: [
+        "सीड-कम-फर्टिलाइजर ड्रिल से बुवाई करें जिससे खाद बीज से 2-3 सेमी नीचे पड़े।",
+        "बुवाई के तुरंत बाद पलेवा या नमी का ध्यान रखें।"
+      ],
+      advisories: [
+        "गेहूं की बुवाई 15 नवंबर से 25 नवंबर के मध्य पूरी कर लें, देर होने पर पैदावार घटती है।"
+      ]
+    },
+    {
+      stage_id: "dekhbhal",
+      stage_name: "Dekhbhal (CRI Stage & Tillering)",
+      stage_name_hi: "3. देखभाल (CRI पहली सिंचाई व कल्ले)",
+      stage_period: "दिन 21–60 (शिखर जड़ से गाभा अवस्था)",
+      summary: "21 दिन पर सबसे महत्वपूर्ण ताज जड़ (CRI) सिंचाई, खरपतवार नियंत्रण व यूरिया टॉप-ड्रेसिंग।",
+      parameters: {
+        "पहली सिंचाई (CRI)": "बुवाई के 20–22 दिन बाद (सबसे क्रांतिक अवस्था)",
+        "पहली टॉप ड्रेसिंग": "CRI सिंचाई के बाद ओट आने पर: यूरिया 45 किग्रा/एकड़",
+        "खरपतवार नियंत्रण": "30-35 दिन पर क्लोडिनाफॉप 15 WP (घास) या 2,4-D (चौड़ी पत्ती)"
+      },
+      activities: [
+        "21 दिन वाली सिंचाई कभी न छोड़ें, यह नहीं देने पर कल्ले नहीं फूटते।",
+        "गुल्ली डंडा (मंडूसी) की रोकथाम हेतु क्लोडिनाफॉप 15% WP @ 160g/एकड़ 150L पानी में स्प्रे करें।"
+      ],
+      advisories: [
+        "हल्की सिंचाई करें, खेत में पानी खड़ा न रहने दें।"
+      ]
+    },
+    {
+      stage_id: "suraksha",
+      stage_name: "Suraksha (Rust & Aphid Control)",
+      stage_name_hi: "4. सुरक्षा और कटाई (पीला रतुआ, माहू व कटाई)",
+      stage_period: "दिन 60–125 (फूल, दाना भराव व कटाई)",
+      summary: "पीला रतुआ (Yellow Rust) और माहू (Aphid) से सुरक्षा एवं समय पर कटाई।",
+      parameters: {
+        "कटाई का सही समय": "दाना कड़ा होने व बालियां सुनहरी पीली होने पर",
+        "दाना नमी": "भंडारण हेतु 10-12% नमी"
+      },
+      activities: [
+        "जनवरी-फरवरी में पत्तियों पर पीला पाउडर दिखने पर तुरंत रतुआ रोधी स्प्रे करें।",
+        "दूधिया व दाना भराव अवस्था पर खेत में पर्याप्त नमी रखें।"
+      ],
+      advisories: [
+        "पछुआ हवा चलने पर सिंचाई बंद रखें ताकि फसल न गिरे।"
+      ],
+      pests_and_diseases: [
+        {
+          pest_id: "wheat_yellow_rust",
+          pest_name: "पीला रतुआ (Yellow Rust / Stripe Rust)",
+          scientific_name: "Puccinia striiformis",
+          category: "disease",
+          identification_text: "पत्तियों की ऊपरी सतह पर हल्दी जैसा चमकीला पीला पाउडर धारियों में दिखना, छूने पर उंगली पीली होना।",
+          damage_nature: "पत्तियों का हरापन नष्ट होता है जिससे प्रकाश संश्लेषण रुक जाता है और दाने सिकुड़ जाते हैं।",
+          images: ["/images/crops/wheat.jpg"],
+          organic_control: "प्रतिरोधी किस्में (DBW 187, DBW 222) लगाएं। गौमूत्र + हींग का घोल सुरक्षात्मक रूप से छिड़कें।",
+          etl_threshold: "खेत में पहली बार पीला पाउडर का लक्षण दिखते ही",
+          chemical_control: [
+            {
+              chemical_name: "Propiconazole 25% EC (Tilt / Bumper)",
+              active_ingredient: "Propiconazole 25% EC",
+              frac_irac_group: "FRAC 3 (DMI-Fungicide / Triazole)",
+              dosage: "200 मिली",
+              volume: "प्रति एकड़ (200 लीटर पानी)",
+              per_volume: "1 मिली/लीटर",
+              waiting_period_days: 20,
+              safety_note: "पीला रतुआ आते ही तुरंत पूरे खेत में स्प्रे करें, 15 दिन बाद आवश्यकतानुसार दोहराएं।"
+            },
+            {
+              chemical_name: "Tebuconazole 25.9% EC (Folicur)",
+              active_ingredient: "Tebuconazole 25.9% EC",
+              frac_irac_group: "FRAC 3 (Triazole Systemic)",
+              dosage: "200 मिली",
+              volume: "प्रति एकड़ (200 लीटर पानी)",
+              per_volume: "1 मिली/लीटर",
+              waiting_period_days: 18,
+              safety_note: "रतुआ और करनाल बंट दोनों पर उत्कृष्ट सुरक्षात्मक व उपचारात्मक असर।"
+            }
+          ]
+        },
+        {
+          pest_id: "wheat_aphid",
+          pest_name: "माहू / चेपा (Wheat Aphid)",
+          scientific_name: "Rhopalosiphum padi",
+          category: "pest",
+          identification_text: "बालियों और पत्तियों पर चिपके हुए छोटे हरे-काले कीड़े, चिपचिपा लसदार पदार्थ छोड़ना।",
+          damage_nature: "बालियों से रस चूसते हैं जिससे दाना कमजोर और हल्का बनता है।",
+          images: ["/images/crops/wheat.jpg"],
+          organic_control: "नीम का तेल @ 3 मिली/लीटर पानी का स्प्रे। पीले चिपचिपे ट्रैप (Yellow Sticky Trap) लगाएं।",
+          etl_threshold: "5-10 माहू प्रति बाली दिखने पर",
+          chemical_control: [
+            {
+              chemical_name: "Thiamethoxam 25% WG (Actara)",
+              active_ingredient: "Thiamethoxam 25% WG",
+              frac_irac_group: "IRAC 4A (Neonicotinoid)",
+              dosage: "40–50 ग्राम",
+              volume: "प्रति एकड़ (150-200 लीटर पानी)",
+              per_volume: "0.25 ग्राम/लीटर",
+              waiting_period_days: 14,
+              safety_note: "सिस्टमिक कीटनाशक, पौधे के अंदर पहुंचकर माहू का तुरंत खात्मा करता है।"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
 export function getCropGuideBySlug(slug: string): CropGuideData {
-  if (slug === "tomato") {
+  const s = slug.toLowerCase();
+  if (s === "tomato") {
     return TOMATO_CROP_GUIDE;
   }
-  // Generic fallback built with structure
+  if (s === "paddy" || s === "rice") {
+    return PADDY_CROP_GUIDE;
+  }
+  if (s === "wheat") {
+    return WHEAT_CROP_GUIDE;
+  }
+
+  // Dynamic builder for other crops (Soybean, Cotton, Maize, Chilli, Potato, etc.)
+  const crop = cropCatalog.find((c) => c.slug === s);
+  const cropName = crop?.name ?? s.charAt(0).toUpperCase() + s.slice(1);
+  const cropNameHi = crop?.nameHi ?? cropName;
+  const threatData = getCropPestDisease(s);
+  const coverImg = `/images/crops/${s}.jpg`;
+
+  const pestsList: PestAndDiseaseItem[] = [];
+
+  // Add real pests from threat database
+  if (threatData?.pests && threatData.pests.length > 0) {
+    threatData.pests.slice(0, 3).forEach((p) => {
+      pestsList.push({
+        pest_id: `${s}_pest_${p.id}`,
+        pest_name: `${p.name}`,
+        scientific_name: p.scientificName,
+        category: "pest",
+        identification_text: `${p.name} के प्रकोप से पत्तियों व तने पर क्षति दिखती है।`,
+        damage_nature: "फसल के ऊतकों को नुकसान पहुंचाता है जिससे उपज में कमी आती है।",
+        images: [coverImg],
+        organic_control: "नीम का तेल (10000 ppm) @ 2-3 मिली/लीटर पानी का छिड़काव करें। फेरोमोन ट्रैप लगाएं।",
+        etl_threshold: "खेत में कीड़ों का शुरुआती संक्रमण दिखते ही",
+        chemical_control: [
+          {
+            chemical_name: p.control || "Chlorantraniliprole 18.5% SC (कोराजन)",
+            dosage: "60 मिली",
+            volume: "प्रति एकड़ (150-200 लीटर पानी)",
+            per_volume: "0.4 मिली/लीटर",
+            waiting_period_days: 14,
+            safety_note: "सटीक मात्रा में साफ पानी के साथ शाम के समय छिड़काव करें।"
+          }
+        ]
+      });
+    });
+  }
+
+  // Add real diseases from threat database
+  if (threatData?.diseases && threatData.diseases.length > 0) {
+    threatData.diseases.slice(0, 2).forEach((d) => {
+      pestsList.push({
+        pest_id: `${s}_dis_${d.id}`,
+        pest_name: `${d.name}`,
+        scientific_name: d.pathogen,
+        category: "disease",
+        identification_text: `${d.name} के शुरुआती धब्बे पत्तियों या तनों पर दिखाई देते हैं।`,
+        damage_nature: "पौधों का हरापन कम होता है और दाना भराव प्रभावित होता है।",
+        images: [coverImg],
+        organic_control: "ट्राइकोडर्मा विरिडी @ 5 ग्राम/लीटर का पर्णीय छिड़काव करें। जलभराव रोकें।",
+        etl_threshold: "पत्तियों पर पहला रोग लक्षण दिखने पर",
+        chemical_control: [
+          {
+            chemical_name: d.control || "Azoxystrobin 18.2% + Difenoconazole 11.4% SC (अमिस्टार टॉप)",
+            dosage: "200 मिली",
+            volume: "प्रति एकड़ (200 लीटर पानी)",
+            per_volume: "1 मिली/लीटर",
+            waiting_period_days: 10,
+            safety_note: "रोग के लक्षण दिखते ही सुरक्षात्मक स्प्रे करें।"
+          }
+        ]
+      });
+    });
+  }
+
+  // Fallback if no specific pests found
+  if (pestsList.length === 0) {
+    pestsList.push({
+      pest_id: `${s}_curative_protection`,
+      pest_name: `${cropNameHi} कीट व इल्ली नियंत्रण`,
+      category: "pest",
+      identification_text: `${cropNameHi} में रस चूसक कीट व इल्ली का प्रकोप।`,
+      damage_nature: "पत्तियों का रस चूसना व कोमल शाखाओं को काटना।",
+      images: [coverImg],
+      organic_control: "नीम का तेल @ 3 मिली/लीटर का छिड़काव।",
+      chemical_control: [
+        {
+          chemical_name: "Chlorantraniliprole 18.5% SC (Coragen)",
+          dosage: "60 मिली",
+          volume: "प्रति एकड़ (150-200 लीटर पानी)",
+          per_volume: "0.4 मिली/लीटर",
+          waiting_period_days: 14,
+          safety_note: "कीट नियंत्रण हेतु प्रमाणित दवा।"
+        }
+      ]
+    });
+  }
+
   return {
-    ...TOMATO_CROP_GUIDE,
-    crop_id: `CR_${slug.toUpperCase()}_001`,
-    crop_slug: slug,
-    crop_name: slug.charAt(0).toUpperCase() + slug.slice(1),
-    crop_name_hi: slug,
+    crop_id: `CR_${s.toUpperCase()}_001`,
+    crop_slug: s,
+    crop_name: cropName,
+    crop_name_hi: cropNameHi,
+    crop_scientific_name: "",
+    cover_image: coverImg,
+    stages: [
+      {
+        stage_id: "shuruat",
+        stage_name: "Shuruat (Seed Selection & Treatment)",
+        stage_name_hi: "1. शुरुआत (बीज चयन व उपचार)",
+        stage_period: "दिन 0–20 (बुवाई पूर्व तैयारी)",
+        summary: `उन्नत किस्मों का चयन, बीज शोधन एवं ${cropNameHi} की बुवाई पूर्व तैयारी।`,
+        parameters: {
+          "बीज दर (Seed Rate)": "अनुशंसित मानक मात्रा",
+          "बीज उपचार": "फफूंदनाशक @ 2g/kg से शोधन",
+          "बुवाई का सही समय": "मौसम अनुसार"
+        },
+        activities: [
+          "प्रमाणित बीज का उपयोग करें और फफूंदनाशक से बीज शोधन अवश्य करें।",
+          "खेत की 2-3 गहरी जुताई कर पर्याप्त गोबर की खाद मिलाएं।"
+        ],
+        advisories: [
+          "बुवाई के समय खेत में पर्याप्त नमी का होना अनिवार्य है।"
+        ]
+      },
+      {
+        stage_id: "lagana",
+        stage_name: "Lagana (Sowing & Basal Fertilizer)",
+        stage_name_hi: "2. लगाना (बुवाई व बेसल खाद)",
+        stage_period: "दिन 20–40 (बुवाई व अंकुरण)",
+        summary: `कतारों में बुवाई, उचित दूरी और ${cropNameHi} हेतु संतुलित बेसल उर्वरक प्रबंधन।`,
+        parameters: {
+          "कतार दूरी": "मानक दूरी",
+          "बेसल खाद": "DAP + MOP + Zinc"
+        },
+        activities: [
+          "सीड ड्रिल से उचित दूरी और गहराई पर बुवाई करें।",
+          "बेसल खाद को बीज से 2-3 सेमी नीचे डालें।"
+        ],
+        advisories: [
+          "खरपतवार नियंत्रण हेतु बुवाई के 48 घंटे में प्री-इमर्जेंस दवा का छिड़काव करें।"
+        ]
+      },
+      {
+        stage_id: "dekhbhal",
+        stage_name: "Dekhbhal (Growth & Nutrition)",
+        stage_name_hi: "3. देखभाल (सिंचाई व पोषण)",
+        stage_period: "दिन 40–80 (वानस्पतिक बढ़वार)",
+        summary: `${cropNameHi} में समय पर सिंचाई, निराई-गुड़ाई एवं टॉप ड्रेसिंग खाद प्रबंधन।`,
+        parameters: {
+          "सिंचाई की आवश्यकता": "आवश्यकतानुसार",
+          "क्रांतिक अवस्थाएं": "फूल व दाना भराव"
+        },
+        activities: [
+          "क्रांतिक अवस्थाओं पर सिंचाई में देरी न करें।",
+          "कल्ले/शाखाएं फूटते समय यूरिया की पहली टॉप ड्रेसिंग दें।"
+        ],
+        advisories: [
+          "अत्यधिक जलभराव से बचें और खेत में जलनिकासी की उचित व्यवस्था रखें।"
+        ]
+      },
+      {
+        stage_id: "suraksha",
+        stage_name: "Suraksha (Pest & Disease Control)",
+        stage_name_hi: "4. सुरक्षा और कटाई (कीट, रोग नियंत्रण व कटाई)",
+        stage_period: "दिन 80–130 (फूल, फल/दाना भराव व कटाई)",
+        summary: `${cropNameHi} के कीट-रोगों का समय पर रासायनिक व जैविक नियंत्रण और कटाई।`,
+        parameters: {
+          "कटाई का समय": "80-85% दाने/फल पकने पर",
+          "भंडारण नमी": "10-12% सुरक्षित नमी"
+        },
+        activities: [
+          "फसल में कीट या रोग का प्रकोप दिखते ही तुरंत अनुशंसित दवा का स्प्रे करें।",
+          "कटाई से 10-15 दिन पहले सिंचाई बंद कर दें।"
+        ],
+        advisories: [
+          "कीटनाशक छिड़कते समय सुरक्षात्मक मास्क और दस्तानों का प्रयोग करें।"
+        ],
+        pests_and_diseases: pestsList
+      }
+    ]
   };
 }

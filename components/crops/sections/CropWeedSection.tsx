@@ -391,7 +391,7 @@ function FieldDoctorWeedCards({
 
   const nav = [
     { id: "weed-id", label: hi ? "पहचान" : "ID" },
-    { id: "weed-critical", label: hi ? "कड़ा समय" : "Critical" },
+    { id: "weed-critical", label: hi ? "ज़रूरी समय" : "Critical" },
     { id: "weed-pre", label: hi ? "पहले" : "Pre" },
     { id: "weed-post", label: hi ? "बाद" : "Post" },
     { id: "weed-tips", label: hi ? "बातें" : "Tips" },
@@ -415,7 +415,7 @@ function FieldDoctorWeedCards({
             </p>
             <p className="mt-1 text-xs text-emerald-100/85">
               {hi
-                ? `कड़ा समय: ${farmerWeedHi(guide.criticalPeriodHi)} तक खेत साफ रखना सबसे जरूरी है।`
+                ? `खरपतवार निकालने का सबसे ज़रूरी समय: ${farmerWeedHi(guide.criticalPeriodHi)} तक खेत साफ रखना सबसे जरूरी है।`
                 : `Critical period: Keep field clean during ${guide.criticalPeriodHi}.`}
             </p>
           </div>
@@ -538,10 +538,10 @@ function FieldDoctorWeedCards({
       <SectionShell
         id="weed-critical"
         icon={<Clock3 className="h-4 w-4" />}
-        title={hi ? "2. कड़ा समय" : "2. Critical period"}
+        title={hi ? "2. खरपतवार निकालने का सबसे ज़रूरी समय (30-45 दिन)" : "2. Critical weed-free period (30-45 days)"}
         subtitle={
           hi
-            ? "इतने दिनों तक खेत साफ रखना ज़रूरी"
+            ? "इतने दिनों तक खेत साफ रखना सबसे ज़रूरी है"
             : "Keep field weed-free here"
         }
         accent="bg-gradient-to-r from-emerald-900 to-teal-900 border-emerald-900/20"
@@ -943,7 +943,7 @@ function LegacyWeedSection({ crop }: { crop: Crop }) {
         <div>
           {program?.criticalPeriod ? (
             <p className="mb-2 text-[10px] text-[var(--av-text-muted)]">
-              {hi ? "कड़ा समय" : "Critical"}: {program.criticalPeriod}
+              {hi ? "खरपतवार नियंत्रण का सबसे ज़रूरी समय" : "Critical weed-free period"}: {program.criticalPeriod}
             </p>
           ) : null}
           <CropSprayMedicineList products={herbicideCards} hi={hi} />

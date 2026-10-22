@@ -474,15 +474,21 @@ export default function NutrientDetailExperience({
                     : ""}
                 </p>
               </div>
+              {scope.cropFix ? (
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] p-3 text-[12px] leading-relaxed text-emerald-950 dark:text-emerald-100">
+                  <span className="font-bold">🌾 {scope.labelHi} के लिए विशेष सलाह: </span>
+                  {scope.cropFix}
+                </div>
+              ) : null}
               {fixList.map((fix, i) => (
                 <FertilizerCard
                   key={fix.fertilizer + i}
+                  index={i + 1}
                   fix={fix}
                   expanded={expandedFix === fix.fertilizer}
                   onToggle={() =>
                     setExpandedFix(expandedFix === fix.fertilizer ? null : fix.fertilizer)
                   }
-                  cropNote={scope.cropFix}
                 />
               ))}
             </div>
@@ -747,9 +753,9 @@ function CauseCard({
 
 function FertilizerCard({
   fix,
+  index,
   expanded,
   onToggle,
-  cropNote,
 }: {
   fix: {
     fertilizer: string;
@@ -763,10 +769,11 @@ function FertilizerCard({
     precautions?: string;
     waterQuantity?: string;
   };
+  index: number;
   expanded: boolean;
   onToggle: () => void;
-  cropNote: string;
 }) {
+  const isSpray = Boolean(fix.foliarSprayDose && fix.foliarSprayDose !== "NA");
   const doseRaw =
     fix.foliarSprayDose && fix.foliarSprayDose !== "NA"
       ? fix.foliarSprayDose
@@ -778,16 +785,21 @@ function FertilizerCard({
   const content = fix.nutrientContent
     ? simplifyFarmerHi(fix.nutrientContent, 50)
     : null;
-  const stage = fix.bestCropStage
-    ? simplifyFarmerHi(fix.bestCropStage, 70)
+  const stageRaw = fix.bestCropStage
+    ? (/field observation/i.test(fix.bestCropStage) ? "वानस्पतिक बढ़वार (खड़ी फसल)" : fix.bestCropStage)
     : null;
-  const note = cropNote ? simplifyFarmerHi(cropNote, 100) : "";
+  const stage = stageRaw ? simplifyFarmerHi(stageRaw, 70) : null;
 
   return (
     <AvCard>
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-base font-bold text-[var(--av-text-primary)]">{name}</p>
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-200">
+              विकल्प {index}: {isSpray ? "छिड़काव (स्प्रे)" : "मिट्टी में (बेसल)"}
+            </span>
+          </div>
+          <p className="mt-1 text-base font-bold text-[var(--av-text-primary)]">{name}</p>
           {content ? (
             <p className="mt-0.5 text-[12px] font-semibold text-emerald-800 dark:text-emerald-200">
               {content}
@@ -798,11 +810,6 @@ function FertilizerCard({
       <p className="mt-2.5 text-sm font-semibold text-[var(--av-text-primary)]">{dose}</p>
       {stage ? (
         <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">समय: {stage}</p>
-      ) : null}
-      {note ? (
-        <p className="mt-2 border-l-2 border-emerald-500/30 pl-2.5 text-[11px] leading-snug text-[var(--av-text-secondary)]">
-          इस फसल में: {note}
-        </p>
       ) : null}
       <button
         type="button"

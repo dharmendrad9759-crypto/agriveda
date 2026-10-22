@@ -215,7 +215,6 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
               <ThreatBrowseCard
                 index={i + 1}
                 title={d.name}
-                scientific={sci || undefined}
                 image={img}
                 href={href}
                 accent="disease"

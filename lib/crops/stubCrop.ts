@@ -158,8 +158,26 @@ export function listCropsWithCatalogStubs(detailed: Crop[]): Crop[] {
   return out;
 }
 
+const CROP_RESOLVE_ALIASES: Record<string, string> = {
+  rice: "paddy",
+  dhan: "paddy",
+  dhaan: "paddy",
+  gram: "chana",
+  chickpea: "chana",
+  tur: "pulses",
+  pigeonpea: "pulses",
+  arhar: "pulses",
+  groundnut: "moongfali",
+  peanut: "moongfali",
+  okra: "bhindi",
+  eggplant: "brinjal",
+  corn: "maize",
+  makka: "maize",
+};
+
 export function resolveCropOrStub(slug: string, detailed: Crop[]): Crop | undefined {
-  const key = slug.trim().toLowerCase();
+  const rawKey = slug.trim().toLowerCase();
+  const key = CROP_RESOLVE_ALIASES[rawKey] ?? rawKey;
   const found = detailed.find((c) => c.slug === key);
   if (found) return found;
   const entry = cropCatalog.find((c) => c.slug === key);

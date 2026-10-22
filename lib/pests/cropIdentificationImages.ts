@@ -1106,7 +1106,6 @@ export const PROBLEM_META: Record<string, CropIdentificationProblemMeta> = {
     stageHi: "कल्ले–बाली व दूधिया अवस्था",
     symptomHi: "गेहूँ की हरी बाली और झंडा पत्ती पर हरे-भूरे माहू कॉलोनी बनाकर दानों का रस चूसते हैं और चिपचिपा पदार्थ छोड़ते हैं।",
     keywords: ["earhead_aphid", "aphid", "aphids", "sitobion avenae", "माहू", "बाली का माहू", "एफिड"],
-    pairedSlugs: ["root_aphid"],
   },
   root_aphid: {
     problemSlug: "root_aphid",
@@ -1117,7 +1116,6 @@ export const PROBLEM_META: Record<string, CropIdentificationProblemMeta> = {
     stageHi: "अंकुर–कल्ले फूटना",
     symptomHi: "मिट्टी की सतह के नीचे तने के आधार और जड़ों पर गोल भूरे-हरे माहू चिपककर रस चूसते हैं जिससे पौधा पीला पड़कर सूखने लगता है।",
     keywords: ["root_aphid", "root aphid", "rhopalosiphum rufiabdominale", "जड़ का माहू", "जड़ माहू"],
-    pairedSlugs: ["earhead_aphid"],
   },
   woolly_aphid: {
     problemSlug: "woolly_aphid",

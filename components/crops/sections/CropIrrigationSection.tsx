@@ -145,9 +145,17 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
               {hi ? `${cropLabel} को पानी कब दें` : `When to water ${cropLabel}`}
             </h2>
             <p className="mt-1 text-xs font-semibold text-cyan-100/80">
-              {hi
-                ? `कुल ${farmerIrrigationHi(guide.irrigationsHi)} · ${farmerIrrigationHi(guide.methodHi)}`
-                : `${guide.irrigationsEn} · ${guide.methodEn}`}
+              {hi ? (
+                <>
+                  {/^\d/.test(farmerIrrigationHi(guide.irrigationsHi))
+                    ? `कुल ${farmerIrrigationHi(guide.irrigationsHi)}`
+                    : farmerIrrigationHi(guide.irrigationsHi)}
+                  {" · "}
+                  {farmerIrrigationHi(guide.methodHi)}
+                </>
+              ) : (
+                `${guide.irrigationsEn} · ${guide.methodEn}`
+              )}
             </p>
           </div>
           <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 border-white/20 bg-white/10 shadow-md sm:h-24 sm:w-24">

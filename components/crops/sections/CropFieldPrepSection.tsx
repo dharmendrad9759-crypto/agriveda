@@ -161,18 +161,119 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
   return (
     <div className="space-y-4">
       {seedTreatmentLines.length > 0 ? (
-        <DarkCard>
-          <button type="button" onClick={() => setTreatOpen(true)} className="w-full text-left">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-violet-600" />
-              <SectionHeader title={hi ? "बीज उपचार" : "Seed treatment"} />
+        <section className="overflow-hidden rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/10 via-[var(--av-surface)] to-[var(--av-surface)] p-4 shadow-sm dark:border-violet-400/20">
+          <div className="flex items-center justify-between gap-2 border-b border-violet-500/15 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/20 text-violet-700 dark:text-violet-300">
+                <Shield className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="text-[15px] font-black text-[var(--av-text-primary)]">
+                  {hi ? "बीज उपचार (Seed Treatment)" : "Seed Treatment"}
+                </h3>
+                <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                  {hi ? "बीज जनित रोगों व कीटों से 100% सुरक्षा" : "Protection against seed-borne pests & diseases"}
+                </p>
+              </div>
             </div>
-            <ListBlock items={seedTreatmentLines} />
-            <p className="mt-2 text-[13px] font-black text-emerald-800">
-              {hi ? "कैसे करें" : "How to do it"}
-            </p>
+          </div>
+
+          <div className="mt-3.5 space-y-2.5">
+            {plan.fungus.length > 0 && (
+              <div className="rounded-xl border border-violet-500/20 bg-violet-50/50 p-3 dark:bg-violet-950/20">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block rounded-md bg-violet-600 px-2 py-0.5 text-[10px] font-black text-white">
+                    {hi ? "चरण 1: फफूंदनाशक" : "Step 1: Fungicide"}
+                  </span>
+                  <span className="text-[11px] font-bold text-violet-800 dark:text-violet-300">
+                    {hi ? "सड़न व गलन से बचाव" : "Against Rot & Blight"}
+                  </span>
+                </div>
+                <div className="mt-1.5 space-y-1">
+                  {plan.fungus.map((f, i) => (
+                    <p key={i} className="text-[12px] font-bold text-[var(--av-text-primary)] leading-relaxed">
+                      • {f}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {plan.insect.length > 0 && (
+              <div className="rounded-xl border border-amber-500/20 bg-amber-50/50 p-3 dark:bg-amber-950/20">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block rounded-md bg-amber-600 px-2 py-0.5 text-[10px] font-black text-white">
+                    {hi ? "चरण 2: कीटनाशक" : "Step 2: Insecticide"}
+                  </span>
+                  <span className="text-[11px] font-bold text-amber-800 dark:text-amber-300">
+                    {hi ? "दीमक, लट व रस चूसक कीटों से सुरक्षा" : "Against Termites & Sucking Pests"}
+                  </span>
+                </div>
+                <div className="mt-1.5 space-y-1">
+                  {plan.insect.map((ins, i) => (
+                    <p key={i} className="text-[12px] font-bold text-[var(--av-text-primary)] leading-relaxed">
+                      • {ins}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {plan.bio.length > 0 && (
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-3 dark:bg-emerald-950/20">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-black text-white">
+                    {hi ? "चरण 3: जैव संवर्धन" : "Step 3: Bio Culture"}
+                  </span>
+                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                    {hi ? "राइजोबियम / PSB से जड़ों का विकास" : "Rhizobium / PSB for root vigor"}
+                  </span>
+                </div>
+                <div className="mt-1.5 space-y-1">
+                  {plan.bio.map((b, i) => (
+                    <p key={i} className="text-[12px] font-bold text-[var(--av-text-primary)] leading-relaxed">
+                      • {b}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(plan.fungus.length > 0 || plan.insect.length > 0 || plan.bio.length > 0) &&
+              (plan.order.length > 0 || plan.other.length > 0) && (
+              <div className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3">
+                <span className="inline-block rounded-md bg-slate-600 px-2 py-0.5 text-[10px] font-black text-white">
+                  {hi ? "संयुक्त / अन्य उपचार" : "Combined / Other Treatment"}
+                </span>
+                <div className="mt-1.5 space-y-1">
+                  {[...plan.order, ...plan.other].map((line, i) => (
+                    <p key={i} className="text-[12px] font-bold text-[var(--av-text-primary)] leading-relaxed">
+                      • {line}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {plan.fungus.length === 0 && plan.insect.length === 0 && plan.bio.length === 0 && (
+              <div className="space-y-1.5">
+                {seedTreatmentLines.map((line, i) => (
+                  <div key={i} className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-2.5 text-xs font-bold text-[var(--av-text-primary)]">
+                    • {line}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setTreatOpen(true)}
+            className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-violet-500/30 bg-violet-500/10 py-2 text-xs font-black text-violet-800 dark:text-violet-300 hover:bg-violet-500/20 active:scale-[0.99] transition"
+          >
+            {hi ? "💡 बीज उपचार का सही क्रम व सावधानियां देखें →" : "View Step-by-Step Treatment Guide →"}
           </button>
-        </DarkCard>
+        </section>
       ) : null}
 
       {hasNursery ? (
@@ -256,11 +357,41 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
       ) : null}
 
       <DarkCard>
-        <div className="flex items-center gap-2">
-          <Tractor className="h-4 w-4 text-emerald-600" />
-          <SectionHeader title={hi ? "ज़मीन की तैयारी" : "Land preparation"} />
+        <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border)] pb-3">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+              <Tractor className="h-5 w-5" />
+            </span>
+            <div>
+              <h3 className="text-[15px] font-black text-[var(--av-text-primary)]">
+                {hi ? "खेत की तैयारी (क्रमवार चरण)" : "Land Preparation Steps"}
+              </h3>
+              <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                {hi ? "गहरी जुताई, पाटा व भुरभुरी मिट्टी" : "Ploughing, leveling & soil tilth"}
+              </p>
+            </div>
+          </div>
+          <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-black text-emerald-700 dark:text-emerald-300">
+            {landPrep.length} {hi ? "चरण" : "Steps"}
+          </span>
         </div>
-        <ListBlock items={landPrep} />
+        <div className="mt-3.5 space-y-2">
+          {landPrep.map((step, idx) => (
+            <div
+              key={idx}
+              className="flex items-start gap-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)] shadow-2xs"
+            >
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-[11px] font-black text-white shadow-xs">
+                {idx + 1}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[12.5px] font-bold text-[var(--av-text-primary)] leading-snug">
+                  {step}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </DarkCard>
 
       <DarkCard>
@@ -321,7 +452,7 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
         </dl>
       </DarkCard>
 
-      {transplanting.length > 0 ? (
+      {!isDirectSown && transplanting.length > 0 ? (
         <DarkCard>
           <div className="flex items-center gap-2">
             <Sprout className="h-4 w-4 text-emerald-600" />
@@ -331,7 +462,7 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
         </DarkCard>
       ) : null}
 
-      {mulchingDrip.length > 0 ? (
+      {!isDirectSown && mulchingDrip.length > 0 ? (
         <DarkCard>
           <div className="flex items-center gap-2">
             <Droplets className="h-4 w-4 text-cyan-600" />
@@ -345,12 +476,12 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
 
       {nurseryOpen && sheetReady && nurseryProcess
         ? createPortal(
-            <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40" role="presentation" onClick={() => setNurseryOpen(false)}>
+            <div className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm" role="presentation" onClick={() => setNurseryOpen(false)}>
               <div
                 role="dialog"
                 aria-modal="true"
                 aria-label={hi ? "नर्सरी की प्रक्रिया" : "Nursery steps"}
-                className="max-h-[86vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-[#fffaf3] px-4 pb-8 pt-3 shadow-2xl"
+                className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-[#fffaf3] p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-amber-900/20" />
@@ -391,23 +522,22 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
 
       {treatOpen && sheetReady
         ? createPortal(
-            <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40" role="presentation" onClick={() => setTreatOpen(false)}>
+            <div className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm" role="presentation" onClick={() => setTreatOpen(false)}>
               <div
                 role="dialog"
                 aria-modal="true"
                 aria-label={hi ? "बीज उपचार का तरीका" : "How to treat seed"}
-                className="max-h-[86vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white px-4 pb-8 pt-3 shadow-2xl"
+                className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
                 onClick={(event) => event.stopPropagation()}
               >
-                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-emerald-900/15" />
-                <div className="mb-3 flex items-start justify-between gap-3">
+                <div className="mb-3 flex items-start justify-between gap-3 border-b border-emerald-900/10 pb-3">
                   <div>
-                    <h2 className="text-[18px] font-black text-[#0B3D28]">{hi ? "बीज का इलाज, आसान क्रम" : "Treat the seed, simply"}</h2>
-                    <p className="mt-1 text-[14px] font-semibold leading-snug text-[#34584a]">
+                    <h2 className="text-[18px] font-black text-[#0B3D28]">{hi ? "बीज उपचार का सही क्रम" : "Seed Treatment Order"}</h2>
+                    <p className="mt-1 text-[13px] font-semibold leading-snug text-[#34584a]">
                       {hi ? "दवा एक साथ मत मिलाएँ। पहले फफूंद, सूखने दें, फिर कीट।" : "Do not mix both medicines together. Fungicide first, dry, then insecticide."}
                     </p>
                   </div>
-                  <button type="button" onClick={() => setTreatOpen(false)} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-50 text-[#0B3D28]" aria-label={hi ? "बंद करें" : "Close"}>
+                  <button type="button" onClick={() => setTreatOpen(false)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-50 text-[#0B3D28] hover:bg-emerald-100 transition-colors" aria-label={hi ? "बंद करें" : "Close"}>
                     <X className="h-5 w-5" />
                   </button>
                 </div>
@@ -459,9 +589,9 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
                       <p className="text-[14px] leading-snug text-[#0B3D28]">{line}</p>
                     </li>
                   ))}
-                  <li className="rounded-2xl bg-emerald-50 px-3 py-2.5">
+                  <li className="rounded-2xl bg-emerald-50 px-3.5 py-3">
                     <p className="text-[15px] font-black text-[#0B3D28]">{hi ? "कब बोएँ" : "When to sow"}</p>
-                    <p className="mt-1 text-[14px] leading-snug text-[#34584a]">{hi ? "इलाज वाला बीज उसी दिन या अगली सुबह बो दें। कई दिन बंद डिब्बे में मत रखें।" : "Sow treated seed the same day or the next morning. Do not store it for many days."}</p>
+                    <p className="mt-1 text-[14px] leading-snug text-[#34584a]">{hi ? "उपचारित बीज को उसी दिन या अगली सुबह बो दें। कई दिन बंद डिब्बे में मत रखें।" : "Sow treated seed the same day or the next morning. Do not store it for many days."}</p>
                   </li>
                 </ol>
               </div>

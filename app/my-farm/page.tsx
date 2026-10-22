@@ -17,10 +17,12 @@ import {
   BookOpen,
   CalendarDays,
   CloudSun,
+  FlaskConical,
   Leaf,
   MapPin,
   MessageCircle,
   Plus,
+  RefreshCw,
   Search,
   Sprout,
   type LucideIcon,
@@ -73,12 +75,12 @@ const FARM_LINKS: {
   href: string;
   icon: LucideIcon;
 }[] = [
-  { id: "advisor", hi: "सलाह", en: "Advice", href: "/field-advisor", icon: Sprout },
+  { id: "advisor", hi: "खेत सलाह", en: "Advice", href: "/field-advisor", icon: Sprout },
   { id: "weather", hi: "मौसम", en: "Weather", href: "/weather", icon: CloudSun },
   { id: "calendar", hi: "कैलेंडर", en: "Calendar", href: "/crop-calendar", icon: CalendarDays },
   { id: "alerts", hi: "अलर्ट", en: "Alerts", href: "/alerts", icon: Bell },
-  { id: "nutrients", hi: "पोषक", en: "Nutrients", href: "/deficiencies", icon: Leaf },
-  { id: "crops", hi: "गाइड", en: "Guide", href: "/crops", icon: BookOpen },
+  { id: "rotation", hi: "स्प्रे चक्र", en: "Rotation", href: "/spray-rotation", icon: RefreshCw },
+  { id: "mix", hi: "दवा मिश्रण जांच", en: "Tank Mix", href: "/mix-advisor", icon: FlaskConical },
 ];
 
 export default function MyFarmPage() {
@@ -228,7 +230,7 @@ export default function MyFarmPage() {
   };
 
   return (
-    <div className="relative mx-auto min-w-0 max-w-lg overflow-x-hidden pb-8 sm:max-w-2xl">
+    <div className="relative mx-auto min-w-0 max-w-lg overflow-x-hidden pb-2 sm:max-w-2xl">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-[-20px] top-0 h-[280px] overflow-hidden"
@@ -694,35 +696,41 @@ export default function MyFarmPage() {
                         )}
                       </div>
 
-                      <div className="grid grid-cols-3 gap-1.5">
+                      <div className="grid grid-cols-2 gap-2">
                         <AppLink
                           href={cropHref}
-                          className="flex flex-col items-center gap-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-1 py-2 text-center active:scale-[0.98]"
+                          className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-2 text-center active:scale-[0.98]"
                         >
                           <BookOpen className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
-                          <span className="text-[10px] font-bold text-[var(--av-text-primary)]">
-                            {isHi ? "गाइड" : "Guide"}
+                          <span className="text-[11px] font-bold text-[var(--av-text-primary)]">
+                            {isHi ? "फसल सुरक्षा गाइड" : "Crop Guide"}
                           </span>
                         </AppLink>
                         <AppLink
-                          href={nutrientHref}
-                          className="flex flex-col items-center gap-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-1 py-2 text-center active:scale-[0.98]"
+                          href={f.cropSlug ? `/crops/${f.cropSlug}/care/fertilizer` : "/crops"}
+                          className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-2 text-center active:scale-[0.98]"
                         >
                           <Leaf className="h-3.5 w-3.5 text-lime-700 dark:text-lime-300" />
-                          <span className="text-[10px] font-bold text-[var(--av-text-primary)]">
-                            {isHi ? "पोषक" : "Nutrients"}
-                          </span>
-                        </AppLink>
-                        <AppLink
-                          href="/field-advisor"
-                          className="flex flex-col items-center gap-1 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-1 py-2 text-center active:scale-[0.98]"
-                        >
-                          <Sprout className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
-                          <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-200">
-                            {isHi ? "सलाह" : "Advice"}
+                          <span className="text-[11px] font-bold text-[var(--av-text-primary)]">
+                            {isHi ? "खाद-पानी तालिका" : "Fertilizer"}
                           </span>
                         </AppLink>
                       </div>
+
+                      <AppLink
+                        href={
+                          f.cropSlug
+                            ? `/field-advisor?crop=${f.cropSlug}&sowing=${f.sowingDate || ""}&name=${encodeURIComponent(f.name)}`
+                            : "/field-advisor"
+                        }
+                        className="flex items-center justify-between rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-[12px] font-bold text-emerald-900 dark:text-emerald-100 transition hover:bg-emerald-500/15"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <Sprout className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
+                          {isHi ? "इस अवस्था में आज और इस हफ्ते का काम" : "Today & this week's action"}
+                        </span>
+                        <ArrowRight className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
+                      </AppLink>
                     </div>
                   </motion.article>
                 );

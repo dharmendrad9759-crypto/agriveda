@@ -19,7 +19,7 @@ export function fertilizerProductImage(name: string): string {
   if (/ssp|एसएसपी|tsp|टीएसपी|10\s*:\s*26\s*:\s*26/.test(t))
     return `${FERT_IMG}/fert-bag-dap.webp`;
   if (/borax|बोरेक्स|boron|बोरॉन|00\s*:\s*52\s*:\s*34/.test(t))
-    return `${FERT_IMG}/fert-foliar-cob.webp`;
+    return `${FERT_IMG}/fert-foliar-green.webp`;
   if (/19\s*:\s*19|20\s*:\s*20|घुलनशील|npk|स्प्रे|लिक्विड|अमीनो/.test(t))
     return `${FERT_IMG}/fert-foliar-green.webp`;
   if (/गोबर|वर्मी|नीम|माइकोराइजा|ह्यूमिक|जाइम|सागरिका|राइजोबियम|ट्राइकोडर्मा/.test(t))
@@ -29,16 +29,12 @@ export function fertilizerProductImage(name: string): string {
 
 export function foliarCardImage(title: string, medicine: string): string {
   const t = `${title} ${medicine}`.toLowerCase();
-  if (/zinc|जिंक|पीला|yellow|सफ़ेद\s*कलिका/.test(t)) {
+  if (/zinc|जिंक|पीला|yellow|सफ़ेद\s*कलिका|iron|आयरन|फेरस/.test(t)) {
     return `${FERT_IMG}/fert-foliar-yellow-leaf.webp`;
   }
-  if (/boron|बोरॉन|बोरेक्स|दाने|cob|परागण|grain|00:52:34/.test(t)) {
+  if (/cob|मक्का|भुट्टा|corn/.test(t)) {
     return `${FERT_IMG}/fert-foliar-cob.webp`;
   }
-  if (/19\s*:\s*19|हरियाली|green|ग्रोथ|growth|npk/.test(t)) {
-    return `${FERT_IMG}/fert-foliar-green.webp`;
-  }
-  if (/iron|आयरन|पीली|फेरस/.test(t)) return `${FERT_IMG}/fert-foliar-yellow-leaf.webp`;
   return `${FERT_IMG}/fert-foliar-green.webp`;
 }
 

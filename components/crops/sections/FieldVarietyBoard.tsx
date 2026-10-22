@@ -86,18 +86,17 @@ function Sheet({
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40" role="presentation" onClick={onClose}>
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm" role="presentation" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="max-h-[86vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white px-4 pb-8 pt-3 shadow-2xl"
+        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-emerald-900/15" />
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="mb-3 flex items-center justify-between gap-3 border-b border-emerald-900/10 pb-3">
           <h2 className="text-[18px] font-black text-[#0B3D28]">{title}</h2>
-          <button type="button" onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full bg-emerald-50 text-[#0B3D28]" aria-label="बंद करें">
+          <button type="button" onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full bg-emerald-50 text-[#0B3D28] hover:bg-emerald-100 transition-colors" aria-label="बंद करें">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -225,7 +224,7 @@ export default function FieldVarietyBoard({
           </button>
       </div>
 
-      {situation ? (
+      {situation && list.length > 0 ? (
         <div className="rounded-2xl border border-emerald-900/10 bg-emerald-50 px-3.5 py-3">
           <p className="text-[16px] font-black text-[#0B3D28]">{situation.pick}</p>
           <p className="mt-1 text-[14px] font-semibold text-[#34584a]">{hi ? `न मिले तो ${situation.backup}` : `If missing: ${situation.backup}`}</p>
@@ -366,14 +365,14 @@ export default function FieldVarietyBoard({
           <p className="mt-1 text-[15px] leading-snug text-[#0B3D28]">{openVariety.weak}</p>
           <h3 className="mt-4 text-[16px] font-black text-[#0B3D28]">{hi ? "किस खेत में फिट" : "Where it fits"}</h3>
           <p className="mt-1 text-[15px] leading-snug text-[#0B3D28]">{openVariety.fit}</p>
-          <p className="mt-4 rounded-2xl bg-emerald-50 px-3 py-3 text-[15px] font-semibold leading-snug text-[#0B3D28]">
+          <p className="mt-4 rounded-2xl bg-emerald-50 px-3.5 py-3 text-[14px] font-semibold leading-relaxed text-[#0B3D28]">
             {stateId !== "all" && openVariety.states.some((name) => name.toLowerCase() === stateId.toLowerCase())
               ? hi
-                ? "यह किस्म आपके चुने हुए राज्य की सूची में है। बाकी हालत ऊपर लिखी बात से मिला लें।"
-                : "This variety is listed for the state you chose. Match the note above with your field."
+                ? "यह किस्म आपके राज्य के लिए उपयुक्त और अनुमोदित है। बुवाई समय और खेत की स्थिति अनुसार चयन करें।"
+                : "This variety is recommended for your state. Match the sowing time and conditions above."
               : hi
-                ? "यह किस्म हर राज्य के लिए नहीं लिखी। अपना राज्य ऊपर से मिला लें।"
-                : "This variety is not listed for every state. Check your state."}
+                ? "यह किस्म मुख्य रूप से अन्य राज्यों के लिए अनुशंसित है। अपने क्षेत्र अनुसार उपयुक्त किस्म चुनें।"
+                : "This variety is primarily listed for other states. Please verify suitability for your region."}
           </p>
         </Sheet>
       ) : null}

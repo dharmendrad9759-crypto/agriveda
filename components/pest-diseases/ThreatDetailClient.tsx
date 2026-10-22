@@ -122,31 +122,146 @@ function weedIdentifyTips(threat: EnrichedThreat, hi: boolean): string[] {
   return hi
     ? [
         typeHint,
-        `कड़ा समय: ${threat.stage || "2–4 पत्ती / शुरू के 30–45 दिन"}`,
+        `खरपतवार निकालने का सबसे ज़रूरी समय: ${threat.stage || "2–4 पत्ती / शुरू के 30–45 दिन"}`,
         "जड़ या गांठ निकालकर अपनी फसल से मिलाओ",
         "शक हो तो साफ फोटो AI Doctor को भेजो",
       ]
     : [
         typeHint,
-        `Critical: ${threat.stage || "2–4 leaf / first 30–45 days"}`,
+        `Critical period: ${threat.stage || "2–4 leaf / first 30–45 days"}`,
         "Pull root/tiller and compare with your crop",
         "If unsure, send a clear photo to AI Doctor",
       ];
 }
 
-function weedChemCards(lines: string[], hi: boolean): {
+function weedChemCards(
+  lines: string[],
+  hi: boolean,
+  threat?: EnrichedThreat
+): {
   technical: string;
   dose: string;
   stage: string;
   timing: string;
+  group: "pre" | "post";
 }[] {
-  return lines.slice(0, 4).map((line) => {
-    const formatted = formatFarmerChemicalLine(line, hi);
+  const threatName = `${threat?.name || ""} ${threat?.scientificName || ""}`.toLowerCase();
+
+  // Wheat Gullidanda (Phalaris minor)
+  if (/phalaris|गुल्ली/i.test(threatName) && threat?.cropSlug === "wheat") {
+    return [
+      {
+        technical: "Pendimethalin 30% EC (पेंडीमेथालिन 30% EC - जैसे Stomp)",
+        dose: hi ? "1.0–1.3 लीटर प्रति एकड़ | 200 लीटर पानी" : "1.0–1.3 L/acre in 200 L water",
+        stage: hi ? "बुवाई के 0–3 दिन अंदर (उगने से पहले)" : "0–3 DAS (before emergence)",
+        timing: hi ? "उगने से पहले (PRE)" : "Pre-emergence (PRE)",
+        group: "pre",
+      },
+      {
+        technical: "Pyroxasulfone 85% WG (पाइरॉक्सासल्फोन 85% WG - जैसे Yamato)",
+        dose: hi ? "60 ग्राम प्रति एकड़ | 150 लीटर पानी" : "60 g/acre | 150 L water",
+        stage: hi ? "बुवाई के 0–3 दिन अंदर (उगने से पहले)" : "0–3 DAS (PRE)",
+        timing: hi ? "उगने से पहले (PRE)" : "Pre-emergence (PRE)",
+        group: "pre",
+      },
+      {
+        technical: "Clodinafop-propargyl 15% WP (क्लोडिनाफॉप 15% WP - जैसे Topik)",
+        dose: hi ? "160 ग्राम प्रति एकड़ (8 पाउच) | 120–150 लीटर पानी" : "160 g/acre | 120–150 L water",
+        stage: hi ? "पहली सिंचाई के बाद (30–35 दिन, 2–4 पत्ती)" : "30–35 DAS (2–4 leaf)",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post",
+      },
+      {
+        technical: "Sulfosulfuron 75% WG (सल्फोसल्फ्यूरॉन 75% WG - जैसे Leader)",
+        dose: hi ? "13.5 ग्राम प्रति एकड़ | 120–150 लीटर पानी" : "13.5 g/acre | 120–150 L water",
+        stage: hi ? "पहली सिंचाई के बाद (25–30 दिन, 2–4 पत्ती)" : "25–30 DAS (2–4 leaf)",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post",
+      },
+    ];
+  }
+
+  // Bathua (Chenopodium album) - single clean Pendimethalin PRE + Metsulfuron/2,4-D POST
+  if (/chenopodium|बथुआ|bathua/i.test(threatName)) {
+    return [
+      {
+        technical: "Pendimethalin 30% EC (पेंडीमेथालिन 30% EC - जैसे Stomp)",
+        dose: hi ? "1.0–1.2 लीटर प्रति एकड़ | 200 लीटर पानी" : "1.0–1.2 L/acre | 200 L water",
+        stage: hi ? "बुवाई के तुरंत बाद (0–3 दिन अंदर)" : "0–3 DAS (Pre-emergence)",
+        timing: hi ? "उगने से पहले (PRE)" : "Pre-emergence (PRE)",
+        group: "pre",
+      },
+      {
+        technical: "Metsulfuron-methyl 20% WP (मेटसल्फ्यूरॉन 20% WP - जैसे Algrip)",
+        dose: hi ? "8 ग्राम प्रति एकड़ | 150 लीटर पानी" : "8 g/acre | 150 L water",
+        stage: hi ? "बुवाई के 30–35 दिन बाद (2–4 पत्ती अवस्था)" : "30–35 DAS (2–4 leaf)",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post",
+      },
+      {
+        technical: "2,4-D Amine Salt 58% SL (2,4-डी अमीन 58% SL)",
+        dose: hi ? "400 मिली प्रति एकड़ | 150 लीटर पानी" : "400 ml/acre | 150 L water",
+        stage: hi ? "बुवाई के 32–35 दिन बाद (कल्ले फूटने के बाद)" : "32–35 DAS (after tillering)",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post",
+      },
+    ];
+  }
+
+  // Motha / Nagarmotha (Cyperus rotundus) - single Pretilachlor PRE (paddy) + Halosulfuron/Ethoxysulfuron POST
+  if (/cyperus|मोथा|मोटा|nagarmotha|nutsedge/i.test(threatName)) {
+    const isPaddy = threat?.cropSlug === "paddy";
+    const cards: {
+      technical: string;
+      dose: string;
+      stage: string;
+      timing: string;
+      group: "pre" | "post";
+    }[] = [];
+
+    if (isPaddy) {
+      cards.push({
+        technical: "Pretilachlor 50% EC (प्रेटिलाक्लोर 50% EC - जैसे Rifit)",
+        dose: hi ? "500 मिली प्रति एकड़ | 150 लीटर पानी" : "500 ml/acre | 150 L water",
+        stage: hi ? "रोपाई के 0–3 दिन अंदर (पानी भरा हो)" : "0–3 DAT (standing water)",
+        timing: hi ? "उगने से पहले (PRE)" : "Pre-emergence (PRE)",
+        group: "pre",
+      });
+      cards.push({
+        technical: "Ethoxysulfuron 15% WDG (इथोक्सीसल्फ्यूरॉन 15% WDG - जैसे Sunrice)",
+        dose: hi ? "50 ग्राम प्रति एकड़ | 150 लीटर पानी" : "50 g/acre | 150 L water",
+        stage: hi ? "रोपाई के 15–20 दिन बाद (सक्रिय वृद्धि)" : "15–20 DAT (active growth)",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post",
+      });
+    }
+
+    cards.push({
+      technical: "Halosulfuron-methyl 75% WG (हैलोसल्फ्यूरॉन 75% WG - जैसे Sempra)",
+      dose: hi ? "36 ग्राम प्रति एकड़ | 150 लीटर पानी" : "36 g/acre | 150 L water",
+      stage: hi ? "मोथा की 3–4 पत्ती अवस्था (20–25 दिन)" : "3–4 leaf stage (20–25 DAS)",
+      timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+      group: "post",
+    });
+
+    return cards;
+  }
+
+  const rawCards = lines.slice(0, 6).map((line) => {
+    const cleanLine = line
+      .replace(/^रासायनिक\s*[—–:]\s*(?:(?:Pre|Post)-emergence)?\s*[:—–]?\s*/i, "")
+      .replace(/^Chemical:\s*(?:(?:Pre|Post)-emergence)?\s*[:—–]?\s*/i, "")
+      .trim();
+
+    const formatted = formatFarmerChemicalLine(cleanLine, hi);
     const doseMatch =
       formatted.match(
-        /(\d+(?:\.\d+)?(?:\s*[–\-]\s*\d+(?:\.\d+)?)?\s*(?:ml|g)(?:\/लीटर\s*पानी|\/L\s*water))/i
+        /(\d+(?:\.\d+)?(?:\s*[–\-]\s*\d+(?:\.\d+)?)?\s*(?:ml|g|ली|लीटर|ग्राम)(?:\/लीटर\s*पानी|\/L\s*water|\/एकड़|\/acre)?)/i
       ) || formatted.match(/@\s*([^—(·]+)/i);
     const stageMatch = line.match(/\(([^)]+)\)/);
+
+    const isPre = /pre-emergence|PRE\b|बुवाई के (?:तुरंत|0[–-]3)|0[–-]3\s*DAS/i.test(line);
+
     const technical = stripMoaCodes(
       formatted
         .split(/·|@/)[0]
@@ -154,13 +269,41 @@ function weedChemCards(lines: string[], hi: boolean): {
         .replace(/—.*$/, "")
         .trim() || formatted.slice(0, 40)
     );
+
     return {
-      technical: technical.slice(0, 48),
+      technical: technical.slice(0, 56),
       dose: doseMatch?.[1]?.trim() || doseMatch?.[0]?.trim() || (hi ? "लेबल अनुसार" : "Follow label"),
-      stage: hi ? "2–4 पत्ती अवस्था" : "2–4 leaf stage",
-      timing: stripMoaCodes(stageMatch?.[1]?.trim() || (hi ? "15–25 दिन" : "15–25 DAS")),
+      stage: isPre
+        ? hi
+          ? "बुवाई के तुरंत बाद (0–3 दिन, खरपतवार उगने से पहले)"
+          : "0–3 DAS (Pre-emergence)"
+        : hi
+        ? "2–4 पत्ती अवस्था (15–30 दिन)"
+        : "2–4 leaf stage (15–30 DAS)",
+      timing: stripMoaCodes(
+        stageMatch?.[1]?.trim() ||
+          (isPre
+            ? hi
+              ? "उगने से पहले (PRE)"
+              : "Pre-emergence (PRE)"
+            : hi
+            ? "उगने के बाद (POST)"
+            : "Post-emergence (POST)")
+      ),
+      group: isPre ? ("pre" as const) : ("post" as const),
     };
   });
+
+  // Deduplicate active ingredients
+  const seenTechnical = new Set<string>();
+  const out: typeof rawCards = [];
+  for (const c of rawCards) {
+    const norm = c.technical.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 10);
+    if (seenTechnical.has(norm)) continue;
+    seenTechnical.add(norm);
+    out.push(c);
+  }
+  return out;
 }
 
 function chemicalLinesForWeed(threat: EnrichedThreat): string[] {
@@ -325,7 +468,6 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
     : identifyTips.length
       ? "identify"
       : "control";
-  const [tabHistory, setTabHistory] = useState<PestTab[]>([defaultPestTab]);
   const [pestTab, setPestTab] = useState<PestTab>(defaultPestTab);
   const [lightbox, setLightbox] = useState<string | null>(null);
 
@@ -363,45 +505,23 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
   const switchTab = (nextTab: PestTab) => {
     if (nextTab === pestTab) return;
     setPestTab(nextTab);
-    setTabHistory((prev) => [...prev, nextTab]);
     if (typeof window !== "undefined") {
-      window.history.pushState({ pestTab: nextTab }, "", `#${nextTab}`);
+      window.history.replaceState(null, "", `#${nextTab}`);
     }
   };
 
   useEffect(() => {
-    const handlePopState = (e: PopStateEvent) => {
-      const stateTab = e.state?.pestTab as PestTab | undefined;
+    if (typeof window !== "undefined" && window.location.hash) {
       const hashTab = window.location.hash.replace("#", "") as PestTab;
-      const target =
-        stateTab ||
-        (["identify", "spray", "control"].includes(hashTab) ? hashTab : undefined);
-
-      if (target && target !== pestTab) {
-        setPestTab(target);
-        setTabHistory((prev) => (prev.length > 1 ? prev.slice(0, -1) : [target]));
+      if (["identify", "spray", "control"].includes(hashTab) && hashTab !== pestTab) {
+        setPestTab(hashTab);
       }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [pestTab]);
-
-  const handleBack = () => {
-    if (tabHistory.length > 1) {
-      const updated = [...tabHistory];
-      updated.pop();
-      const prevTab = updated[updated.length - 1];
-      setTabHistory(updated);
-      setPestTab(prevTab);
-      if (typeof window !== "undefined") {
-        window.history.replaceState({ pestTab: prevTab }, "", `#${prevTab}`);
-      }
-      return;
     }
-  };
+  }, []);
 
-  const chemCards = useMemo(() => weedChemCards(weedChems, hi), [weedChems, hi]);
+  const chemCards = useMemo(() => weedChemCards(weedChems, hi, threat), [weedChems, hi, threat]);
+  const preCards = useMemo(() => chemCards.filter((c) => c.group === "pre"), [chemCards]);
+  const postCards = useMemo(() => chemCards.filter((c) => c.group === "post"), [chemCards]);
 
   const farmerChemLines = useMemo(() => {
     if (isWeed) return [];
@@ -418,7 +538,6 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
   return (
     <AppShell
       backHref={backHref}
-      onBack={tabHistory.length > 1 ? handleBack : undefined}
       breadcrumbs={[
         { label: hi ? "होम" : "Home", href: "/" },
         { label: cropListLabel, href: `/crops/${threat.cropSlug}` },
@@ -742,26 +861,6 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
               )}
             </section>
           ) : null}
-
-          <AppLink
-            href="/ai-doctor"
-            className="flex items-center justify-between gap-3 rounded-2xl bg-emerald-950 px-4 py-3.5 text-white shadow-[0_16px_36px_-20px_rgba(6,78,59,0.85)]"
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-400/20">
-                <Sparkles className="h-4 w-4 text-emerald-300" />
-              </span>
-              <span>
-                <span className="block text-[13px] font-bold">
-                  {hi ? "फोटो से पहचान चेक करें" : "Check with a photo"}
-                </span>
-                <span className="block text-[10px] font-medium text-emerald-100/70">
-                  {hi ? "AI Doctor · खेत की फोटो भेजो" : "AI Doctor · send a field photo"}
-                </span>
-              </span>
-            </span>
-            <span className="text-[11px] font-bold text-emerald-300">→</span>
-          </AppLink>
         </div>
       ) : (
         /* ─── WEED PATH (kept, lightly cleaned) ─── */
@@ -894,41 +993,98 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
             </ul>
           </div>
 
-          <div>
-            <p className="mb-2 flex items-center gap-1.5 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">
+          <div className="space-y-3.5">
+            <p className="flex items-center gap-1.5 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">
               <FlaskConical className="h-4 w-4 text-emerald-700" />
-              {hi ? "रासायनिक दवा" : "Chemical spray"}
+              {hi ? "रासायनिक खरपतवार नाशक दवा (सही समय व खुराक)" : "Chemical weed spray guide"}
             </p>
+
             {chemCards.length > 0 ? (
-              <ul className="space-y-2.5">
-                {chemCards.map((card, i) => (
-                  <li
-                    key={`${card.technical}-${i}`}
-                    className="flex gap-3 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]"
-                  >
-                    <div className="relative shrink-0 overflow-hidden bg-emerald-50">
-                      <ChemBottleThumb technical={card.technical} size="sm" />
+              <div className="space-y-4">
+                {preCards.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between rounded-xl border border-teal-600/25 bg-teal-50/80 px-3 py-1.5 dark:bg-teal-950/40">
+                      <span className="text-[12px] font-black text-teal-950 dark:text-teal-200">
+                        🌱 {hi ? "1. उगने से पहले (Pre-emergence)" : "1. Pre-emergence"}
+                      </span>
+                      <span className="text-[11px] font-bold text-teal-800 dark:text-teal-300">
+                        {hi ? "बुवाई के 0–3 दिन अंदर" : "0–3 DAS"}
+                      </span>
                     </div>
-                    <div className="min-w-0 flex-1 py-3 pr-3">
-                      <p className="text-[10px] font-bold tracking-wide text-emerald-800">
-                        {hi ? `विकल्प ${i + 1}` : `Option ${i + 1}`}
-                      </p>
-                      <p className="mt-0.5 text-[14px] font-extrabold leading-snug text-[var(--av-text-primary)]">
-                        {hi ? bilingualAgriName(card.technical) : card.technical}
-                      </p>
-                      <p className="mt-1.5 text-[12px] font-bold text-emerald-800">
-                        {hi ? "खुराक" : "Dose"}: {card.dose}
-                      </p>
-                      <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-                        {hi ? "अवस्था" : "Stage"}: {card.stage}
-                      </p>
-                      <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
-                        {hi ? "कब" : "When"}: {card.timing}
-                      </p>
+                    <ul className="space-y-2">
+                      {preCards.map((card, i) => (
+                        <li
+                          key={`${card.technical}-${i}`}
+                          className="flex gap-3 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]"
+                        >
+                          <div className="relative shrink-0 overflow-hidden bg-emerald-50">
+                            <ChemBottleThumb technical={card.technical} size="sm" />
+                          </div>
+                          <div className="min-w-0 flex-1 py-3 pr-3">
+                            <span className="inline-block rounded-md bg-teal-100 dark:bg-teal-900/60 px-2 py-0.5 text-[10px] font-extrabold text-teal-900 dark:text-teal-200">
+                              {hi ? "उगने से पहले" : "Pre-emergence"}
+                            </span>
+                            <p className="mt-1 text-[14px] font-extrabold leading-snug text-[var(--av-text-primary)]">
+                              {hi ? bilingualAgriName(card.technical) : card.technical}
+                            </p>
+                            <p className="mt-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300">
+                              {hi ? "खुराक" : "Dose"}: {card.dose}
+                            </p>
+                            <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+                              {hi ? "अवस्था" : "Stage"}: {card.stage}
+                            </p>
+                            <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+                              {hi ? "समय" : "When"}: {card.timing}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {postCards.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between rounded-xl border border-emerald-600/25 bg-emerald-50/80 px-3 py-1.5 dark:bg-emerald-950/40">
+                      <span className="text-[12px] font-black text-emerald-950 dark:text-emerald-200">
+                        🌿 {hi ? "2. उगने के बाद (Post-emergence)" : "2. Post-emergence"}
+                      </span>
+                      <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                        {hi ? "2–4 पत्ती / पहली सिंचाई बाद" : "2–4 leaf / post-irrigation"}
+                      </span>
                     </div>
-                  </li>
-                ))}
-              </ul>
+                    <ul className="space-y-2">
+                      {postCards.map((card, i) => (
+                        <li
+                          key={`${card.technical}-${i}`}
+                          className="flex gap-3 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]"
+                        >
+                          <div className="relative shrink-0 overflow-hidden bg-emerald-50">
+                            <ChemBottleThumb technical={card.technical} size="sm" />
+                          </div>
+                          <div className="min-w-0 flex-1 py-3 pr-3">
+                            <span className="inline-block rounded-md bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 text-[10px] font-extrabold text-emerald-900 dark:text-emerald-200">
+                              {hi ? "उगने के बाद" : "Post-emergence"}
+                            </span>
+                            <p className="mt-1 text-[14px] font-extrabold leading-snug text-[var(--av-text-primary)]">
+                              {hi ? bilingualAgriName(card.technical) : card.technical}
+                            </p>
+                            <p className="mt-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300">
+                              {hi ? "खुराक" : "Dose"}: {card.dose}
+                            </p>
+                            <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+                              {hi ? "अवस्था" : "Stage"}: {card.stage}
+                            </p>
+                            <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+                              {hi ? "समय" : "When"}: {card.timing}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             ) : (
               <p className="rounded-2xl border border-dashed border-[var(--av-border)] px-3 py-4 text-center text-xs text-[var(--av-text-muted)]">
                 {hi
@@ -937,19 +1093,6 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
               </p>
             )}
           </div>
-
-          <AppLink
-            href="/ai-doctor"
-            className="flex items-center justify-between gap-3 rounded-2xl bg-emerald-950 px-4 py-3.5 text-white"
-          >
-            <span className="flex items-center gap-2.5">
-              <Sparkles className="h-4 w-4 text-emerald-300" />
-              <span className="text-[13px] font-bold">
-                {hi ? "AI Doctor से फोटो चेक करें" : "Check photo with AI Doctor"}
-              </span>
-            </span>
-            <span className="text-emerald-300">→</span>
-          </AppLink>
         </div>
       )}
 

@@ -364,21 +364,45 @@ export default function SettingsPage() {
             tone="bg-amber-500/15 text-amber-700 dark:text-amber-300"
             title={t("settingsFieldMode")}
             hint={t("settingsFieldModeHint")}
-            toggle={{ on: settings.fieldMode, onChange: (v) => update({ fieldMode: v }) }}
+            toggle={{
+              on: settings.fieldMode,
+              onChange: (v) => {
+                update({ fieldMode: v });
+                showToast(
+                  `${t("settingsFieldMode")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
+                );
+              },
+            }}
           />
           <Stick
             icon={CloudSun}
             tone="bg-sky-500/15 text-sky-700 dark:text-sky-300"
             title={t("settingsWeatherAlerts")}
             hint={isHi ? "बारिश और स्प्रे का इशारा" : "Rain and spray hints"}
-            toggle={{ on: settings.weatherAlerts, onChange: (v) => update({ weatherAlerts: v }) }}
+            toggle={{
+              on: settings.weatherAlerts,
+              onChange: (v) => {
+                update({ weatherAlerts: v });
+                showToast(
+                  `${t("settingsWeatherAlerts")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
+                );
+              },
+            }}
           />
           <Stick
             icon={Bug}
             tone="bg-rose-500/15 text-rose-700 dark:text-rose-300"
             title={t("settingsPestAlerts")}
             hint={isHi ? "आस-पास कीट-रोग खबर" : "Nearby pest news"}
-            toggle={{ on: settings.pestAlerts, onChange: (v) => update({ pestAlerts: v }) }}
+            toggle={{
+              on: settings.pestAlerts,
+              onChange: (v) => {
+                update({ pestAlerts: v });
+                showToast(
+                  `${t("settingsPestAlerts")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
+                );
+              },
+            }}
           />
           <Stick
             icon={Sprout}
@@ -387,7 +411,12 @@ export default function SettingsPage() {
             hint={isHi ? "खाद का समय याद रहे" : "Fertilizer timing"}
             toggle={{
               on: settings.fertilizerReminders,
-              onChange: (v) => update({ fertilizerReminders: v }),
+              onChange: (v) => {
+                update({ fertilizerReminders: v });
+                showToast(
+                  `${t("settingsFertilizerReminders")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
+                );
+              },
             }}
           />
           <Stick
@@ -395,7 +424,15 @@ export default function SettingsPage() {
             tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
             title={t("settingsMarketAlerts")}
             hint={isHi ? "मंडी भाव ऊपर-नीचे" : "Mandi price moves"}
-            toggle={{ on: priceSettings.masterEnabled, onChange: setMasterEnabled }}
+            toggle={{
+              on: priceSettings.masterEnabled,
+              onChange: (v) => {
+                setMasterEnabled(v);
+                showToast(
+                  `${t("settingsMarketAlerts")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
+                );
+              },
+            }}
           />
           <Stick
             icon={Bell}
@@ -411,7 +448,12 @@ export default function SettingsPage() {
             hint={isHi ? "रात 10 से सुबह 6 तक शांत" : "10 PM to 6 AM quiet"}
             toggle={{
               on: settings.quietHoursEnabled,
-              onChange: (v) => update({ quietHoursEnabled: v }),
+              onChange: (v) => {
+                update({ quietHoursEnabled: v });
+                showToast(
+                  `${t("settingsQuietHours")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
+                );
+              },
             }}
           />
         </Section>

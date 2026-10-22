@@ -395,74 +395,72 @@ export default function CropProblemDetailClient({
                   {/* Expanded Body Details */}
                   {isExpanded && (
                     <div className="border-t border-emerald-900/8 px-3 pb-3 pt-2.5 space-y-2.5 animate-in fade-in duration-200">
-                      <div className="flex items-start gap-2.5">
-                        <ChemBottleThumb technical={c.technical} size="md" className="rounded-xl shrink-0 mt-0.5 shadow-xs" />
-                        <div className="min-w-0 flex-1">
-                          {/* 3 Prominent Stat Pills tailored to application method */}
-                          <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-2 space-y-1.5">
-                            <div className="flex items-center justify-between text-[9.5px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
-                              <span className="flex items-center gap-1.5">
-                                <span className="h-2 w-2 rounded-full bg-amber-600 animate-pulse" />
-                                <span>सटीक डोज़ — {parsed.methodLabel}:</span>
+                      {/* Product Photo & Brands Row */}
+                      <div className="flex items-center gap-3 bg-stone-50/80 dark:bg-slate-800/50 p-2.5 rounded-xl border border-stone-200/70 dark:border-slate-700/60">
+                        <ChemBottleThumb technical={c.technical} size="sm" className="rounded-xl shrink-0 shadow-xs" />
+                        <div className="min-w-0 flex-1 space-y-1.5">
+                          {c.brands && c.brands.length > 0 ? (
+                            <div>
+                              <span className="block text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                                🏷️ बाज़ार में प्रसिद्ध ब्रांड्स:
                               </span>
-                              <span>3-4 दिन में असर</span>
+                              <p className="text-[12px] font-bold text-slate-900 dark:text-slate-100 leading-snug mt-0.5">
+                                {c.brands.join(" · ")}
+                              </p>
                             </div>
-
-                            <div className="grid grid-cols-3 gap-1.5 text-center">
-                              {/* Pill 1 */}
-                              <div
-                                className={`rounded-xl bg-white dark:bg-slate-900 border-2 p-1.5 shadow-xs ${
-                                  parsed.isSpray ? "border-emerald-600/40" : "border-amber-600/40"
-                                }`}
-                              >
-                                <span className="block text-[8.5px] font-black uppercase text-emerald-800 dark:text-emerald-300">
-                                  {parsed.pill1.icon} {parsed.pill1.label}
-                                </span>
-                                <span className="block text-[11.5px] sm:text-[12.5px] font-black text-emerald-950 dark:text-emerald-100 mt-0.5 leading-tight">
-                                  {parsed.pill1.value}
-                                </span>
-                                <span className="block text-[8px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
-                                  {parsed.pill1.subtext}
-                                </span>
-                              </div>
-
-                              {/* Pill 2 */}
-                              <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/30 p-1.5 shadow-2xs">
-                                <span className="block text-[8.5px] font-black uppercase text-amber-800 dark:text-amber-300">
-                                  {parsed.pill2.icon} {parsed.pill2.label}
-                                </span>
-                                <span className="block text-[11.5px] sm:text-[12.5px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
-                                  {parsed.pill2.value}
-                                </span>
-                                <span className="block text-[8px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
-                                  {parsed.pill2.subtext}
-                                </span>
-                              </div>
-
-                              {/* Pill 3 */}
-                              <div className="rounded-xl bg-white dark:bg-slate-900 border border-sky-500/35 p-1.5 shadow-2xs">
-                                <span className="block text-[8.5px] font-black uppercase text-sky-800 dark:text-sky-300">
-                                  {parsed.pill3.icon} {parsed.pill3.label}
-                                </span>
-                                <span className="block text-[11.5px] sm:text-[12.5px] font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
-                                  {parsed.pill3.value}
-                                </span>
-                                <span className="block text-[8px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
-                                  {parsed.pill3.subtext}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
+                          ) : null}
+                          <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                            💡 फोटो पर टैप करके असली पैकेट / बोतल देख सकते हैं
+                          </p>
                         </div>
                       </div>
 
-                      {/* Market Brands */}
-                      {c.brands && c.brands.length > 0 && (
-                        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1.5 text-[11px]">
-                          <span className="font-black text-emerald-950 dark:text-emerald-100">🏷️ बाज़ार में प्रसिद्ध ब्रांड्स: </span>
-                          <span className="font-bold text-emerald-800 dark:text-emerald-200">{c.brands.join(" · ")}</span>
+                      {/* Full-Width 3-Column Compact Dosage Grid */}
+                      <div className="w-full rounded-xl bg-amber-500/10 border border-amber-500/30 p-2.5 space-y-2">
+                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                          <span className="flex items-center gap-1.5">
+                            <span className="h-2 w-2 rounded-full bg-amber-600 animate-pulse" />
+                            <span>सटीक डोज़ — {parsed.methodLabel}:</span>
+                          </span>
+                          <span className="font-bold text-emerald-700 dark:text-emerald-300">⚡ 3-4 दिन में असर</span>
                         </div>
-                      )}
+
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                          {/* Pill 1 */}
+                          <div
+                            className={`rounded-xl bg-white dark:bg-slate-900 border-2 py-2 px-1.5 shadow-xs ${
+                              parsed.isSpray ? "border-emerald-600/40" : "border-amber-600/40"
+                            }`}
+                          >
+                            <span className="block text-[9px] font-black uppercase tracking-tight text-emerald-800 dark:text-emerald-300 truncate">
+                              {parsed.pill1.icon} {parsed.pill1.label}
+                            </span>
+                            <span className="block text-[12.5px] sm:text-[13.5px] font-black text-emerald-950 dark:text-emerald-100 mt-1 leading-tight">
+                              {parsed.pill1.value}
+                            </span>
+                          </div>
+
+                          {/* Pill 2 */}
+                          <div className="rounded-xl bg-white dark:bg-slate-900 border border-amber-500/40 py-2 px-1.5 shadow-2xs">
+                            <span className="block text-[9px] font-black uppercase tracking-tight text-amber-800 dark:text-amber-300 truncate">
+                              {parsed.pill2.icon} {parsed.pill2.label}
+                            </span>
+                            <span className="block text-[12.5px] sm:text-[13.5px] font-black text-slate-900 dark:text-white mt-1 leading-tight">
+                              {parsed.pill2.value}
+                            </span>
+                          </div>
+
+                          {/* Pill 3 */}
+                          <div className="rounded-xl bg-white dark:bg-slate-900 border border-sky-500/40 py-2 px-1.5 shadow-2xs">
+                            <span className="block text-[9px] font-black uppercase tracking-tight text-sky-800 dark:text-sky-300 truncate">
+                              {parsed.pill3.icon} {parsed.pill3.label}
+                            </span>
+                            <span className="block text-[12.5px] sm:text-[13.5px] font-black text-slate-900 dark:text-white mt-1 leading-tight">
+                              {parsed.pill3.value}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
                       {/* Practical Agronomist Doctor Advice */}
                       <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2 text-[11px] space-y-0.5">

@@ -1,38 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
-  Bug,
   CheckCircle2,
   CloudRain,
   Droplets,
   FlaskConical,
-  Leaf,
   Loader2,
   Pill,
-  Search,
   ShieldAlert,
-  Sprout,
   Sun,
   Sunrise,
   Sunset,
   Wind,
-  X,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import {
-  checkTankMixByActives,
-  formatMoleculeOption,
-  getMoleculesForCategory,
-  getTankMixCategories,
-  type TankMixCategory,
-  type TankMixCheckResult,
-} from "@/lib/tankMixCompatibility";
 import { fetchSprayWeatherFromSaved } from "@/lib/sprayWeatherApi";
 import { buildSprayWindowAnalysis, getSprayWindowStatus } from "@/lib/sprayWindow";
 import type { SprayWindowStatusLevel } from "@/types/spray-window";
@@ -50,9 +36,9 @@ interface DayPartWindow {
 function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
   if (status === "GOOD") {
     return {
-      title: "आज स्प्रे करो",
+      title: "आज छिड़काव करें",
       subtitle: reasonHi || "सुबह 7–11 बजे अच्छा समय",
-      verb: "करो",
+      verb: "करें",
       image: "/images/jobs/job-spray.jpg",
       tint: "from-[#042f1a]/92 via-[#0a3d24]/55 to-[#04140f]/25",
       accent: "emerald" as const,
@@ -63,8 +49,8 @@ function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
   }
   if (status === "CAUTION") {
     return {
-      title: "आज सावधानी से",
-      subtitle: reasonHi || "हवा/नमी सीमा पर — बड़ी बूँद डालो",
+      title: "आज सावधानी से छिड़काव करें",
+      subtitle: reasonHi || "हवा/नमी सीमा पर — मोटी फुहार (बड़ी बूँद) रखें",
       verb: "ध्यान",
       image: "/images/jobs/job-spray.jpg",
       tint: "from-[#3b2108]/92 via-[#5c3a12]/50 to-[#1a1208]/30",
@@ -75,8 +61,8 @@ function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
     };
   }
   return {
-    title: "आज स्प्रे मत करो",
-    subtitle: reasonHi || "बारिश या तेज़ हवा — कल देखो",
+    title: "आज छिड़काव न करें",
+    subtitle: reasonHi || "बारिश या तेज़ हवा — कल का मौसम देखें",
     verb: "मत",
     image: "/images/jobs/job-spray-avoid.jpg",
     tint: "from-[#3f0a14]/92 via-[#5c1220]/50 to-[#1a080c]/30",
@@ -86,17 +72,6 @@ function heroCopy(status: SprayWindowStatusLevel, reasonHi: string) {
     chip: "bg-rose-300 text-rose-950",
   };
 }
-
-const MIX_CAT_META: Record<TankMixCategory, { hint: string; Icon: LucideIcon }> = {
-  "insecticide+fungicide": { hint: "कीड़े और फंगस एक साथ", Icon: Bug },
-  "insecticide+insecticide": { hint: "दो कीटनाशक मिलाएँ", Icon: Bug },
-  "fungicide+fungicide": { hint: "दो फफूंदनाशक मिलाएँ", Icon: Leaf },
-  "herbicide+herbicide": { hint: "दो खरपतवारनाशक मिलाएँ", Icon: Sprout },
-  "chem+fertilizer": { hint: "दवा + खाद", Icon: FlaskConical },
-  "micro+pgr": { hint: "माइक्रो / हॉर्मोन", Icon: Sprout },
-  biological: { hint: "जैव + दवा", Icon: Leaf },
-  npk: { hint: "दो खाद", Icon: Sprout },
-};
 
 function buildDayPartWindows(
   status: SprayWindowStatusLevel,
@@ -139,33 +114,12 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
   const [sprayStatus, setSprayStatus] = useState<SprayWindowStatusLevel>("CAUTION");
   const [statusReason, setStatusReason] = useState("");
 
-  const [mixCategory, setMixCategory] = useState<TankMixCategory>("insecticide+fungicide");
-  const [chem1, setChem1] = useState("");
-  const [chem2, setChem2] = useState("");
-  const [form1, setForm1] = useState("");
-  const [form2, setForm2] = useState("");
-  const [mixResult, setMixResult] = useState<TankMixCheckResult | null>(null);
-  const [mixQuery, setMixQuery] = useState("");
-  const [pickSlot, setPickSlot] = useState<1 | 2>(1);
-
-  const mixMolecules = useMemo(() => getMoleculesForCategory(mixCategory), [mixCategory]);
-  const mixCategories = useMemo(() => getTankMixCategories(), []);
-  const mol1 = mixMolecules.find((m) => m.id === chem1);
-  const mol2 = mixMolecules.find((m) => m.id === chem2);
-  const mixFiltered = useMemo(() => {
-    const q = mixQuery.trim().toLowerCase();
-    if (!q) return mixMolecules.slice(0, 24);
-    return mixMolecules
-      .filter((m) => formatMoleculeOption(m).toLowerCase().includes(q))
-      .slice(0, 24);
-  }, [mixMolecules, mixQuery]);
-
   const loadWeather = useCallback(async () => {
     setWeatherLoading(true);
     try {
       const bundle = await fetchSprayWeatherFromSaved();
       if (!bundle) {
-        setStatusReason("स्प्रे सलाह के लिए पहले मौसम पेज पर स्थान डालें।");
+        setStatusReason("छिड़काव सलाह के लिए पहले मौसम पेज पर स्थान चुनें।");
         setSprayStatus("CAUTION");
         return;
       }
@@ -188,24 +142,6 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
     loadWeather();
   }, [loadWeather]);
 
-  useEffect(() => {
-    setChem1("");
-    setChem2("");
-    setForm1("");
-    setForm2("");
-    setMixResult(null);
-    setMixQuery("");
-    setPickSlot(1);
-  }, [mixCategory]);
-
-  useEffect(() => {
-    setForm1(mol1?.forms?.[0] || "");
-  }, [chem1, mol1?.forms?.[0]]);
-
-  useEffect(() => {
-    setForm2(mol2?.forms?.[0] || "");
-  }, [chem2, mol2?.forms?.[0]]);
-
   const hero = heroCopy(sprayStatus, statusReason);
   const HeroIcon = hero.Icon;
   const windows = buildDayPartWindows(sprayStatus, windKmh, humidity, rainPct);
@@ -216,34 +152,6 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
     month: "long",
     year: "numeric",
   });
-
-  useEffect(() => {
-    if (!chem1 || !chem2) {
-      setMixResult(null);
-      return;
-    }
-    if (chem1 === chem2) {
-      setMixResult({
-        status: "incompatible",
-        title: "न मिलाएँ",
-        message: "दो अलग दवा चुनो। एक ही दवा दो बार नहीं।",
-      });
-      return;
-    }
-    setMixResult(
-      checkTankMixByActives(chem1, chem2, mixCategory, form1 || undefined, form2 || undefined)
-    );
-  }, [chem1, chem2, mixCategory, form1, form2]);
-
-  const pickMolecule = (id: string) => {
-    if (pickSlot === 1) {
-      setChem1(id);
-      setPickSlot(2);
-    } else {
-      setChem2(id);
-    }
-    setMixQuery("");
-  };
 
   return (
     <div className={embedded ? "space-y-5" : "min-h-screen bg-[#f3f5f7] text-gray-900"}>
@@ -490,215 +398,30 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
           </ol>
         </section>
 
-        {/* Mix two medicines — tap type, tap two names, instant yes/no */}
-        <section className="overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 shadow-lg shadow-emerald-900/25">
-          <div className="relative min-h-[92px] overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/jobs/job-spray.jpg"
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover object-[center_30%]"
-            />
-            <span className="absolute inset-0 bg-gradient-to-r from-emerald-950 via-emerald-950/85 to-emerald-950/40" />
-            <div className="relative z-10 px-4 py-4">
-              <p className="inline-flex items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-100/90">
-                <FlaskConical className="h-3 w-3" />
-                टैंक मिक्स
+        {/* Tank Mix Advisor Link Card */}
+        <section className="overflow-hidden rounded-2xl border border-emerald-800/20 bg-gradient-to-br from-emerald-950 via-[#06331e] to-emerald-950 p-5 shadow-lg shadow-emerald-950/20 text-white">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-1.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-[11px] font-bold text-emerald-300 ring-1 ring-emerald-400/30">
+                <FlaskConical className="h-3.5 w-3.5" />
+                दवा मिश्रण जांच (घोल सुरक्षा)
+              </span>
+              <h3 className="text-lg font-bold leading-snug">
+                क्या दो या तीन दवाएं एक साथ मिला सकते हैं?
+              </h3>
+              <p className="text-xs text-emerald-100/80 leading-relaxed">
+                फसल और बीमारी/कीट चुनकर सुरक्षित घोल, सही क्रम (WALES नियम) और सटीक डोज़ जानें।
               </p>
-              <h2 className="mt-1.5 text-[18px] font-bold leading-tight text-white">
-                दो दवा मिलाऊँ?
-              </h2>
-              <Link
-                href="/mix-advisor"
-                className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-white px-3 py-2 text-[12px] font-bold text-emerald-950"
-              >
-                फसल से शुरू करें
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
             </div>
           </div>
-
-          <div className="space-y-3 p-3.5">
-            <div className="grid grid-cols-2 gap-2">
-              {mixCategories.map((c) => {
-                const meta = MIX_CAT_META[c.id];
-                const Icon = meta.Icon;
-                const on = mixCategory === c.id;
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => setMixCategory(c.id)}
-                    className={`flex min-h-[52px] items-center gap-2 rounded-xl px-3 py-2.5 text-left transition active:scale-[0.99] ${
-                      on
-                        ? "bg-white text-emerald-950 shadow-md"
-                        : "bg-white/10 text-emerald-50 ring-1 ring-white/10"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2.4} />
-                    <span>
-                      <span className="block text-[12px] font-bold leading-tight">{c.hi}</span>
-                      <span className={`block text-[10px] font-medium ${on ? "text-emerald-800" : "text-emerald-100/70"}`}>
-                        {meta.hint}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              {([1, 2] as const).map((slot) => {
-                const selected = slot === 1 ? mol1 : mol2;
-                const active = pickSlot === slot;
-                return (
-                  <div
-                    key={slot}
-                    className={`relative min-h-[64px] rounded-xl px-3 py-2.5 text-left ${
-                      active
-                        ? "bg-white/15 ring-2 ring-white"
-                        : selected
-                          ? "bg-white/10 ring-1 ring-emerald-300/40"
-                          : "bg-white/5 ring-1 ring-white/10"
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setPickSlot(slot)}
-                      className="w-full pr-6 text-left"
-                    >
-                      <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-200/90">
-                        दवा {slot}
-                        {active ? " · अब चुनो" : ""}
-                      </span>
-                      <span className="mt-0.5 block line-clamp-2 text-[13px] font-bold leading-snug text-white">
-                        {selected ? formatMoleculeOption(selected) : "चुनें"}
-                      </span>
-                    </button>
-                    {selected ? (
-                      <button
-                        type="button"
-                        aria-label={`दवा ${slot} हटाएँ`}
-                        onClick={() => {
-                          if (slot === 1) setChem1("");
-                          else setChem2("");
-                          setPickSlot(slot);
-                          setMixResult(null);
-                        }}
-                        className="absolute right-2 top-2 rounded-full bg-black/30 p-1 text-white/80"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-
-            <label className="relative block">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-200/70" />
-              <input
-                value={mixQuery}
-                onChange={(e) => setMixQuery(e.target.value)}
-                placeholder={pickSlot === 1 ? "दवा 1 खोजो…" : "दवा 2 खोजो…"}
-                className="w-full rounded-xl border-0 bg-white/10 py-2.5 pl-11 pr-3 text-[13px] font-semibold text-white outline-none placeholder:text-emerald-100/50 ring-1 ring-white/10"
-              />
-            </label>
-
-            <div className="max-h-[220px] overflow-y-auto rounded-xl bg-black/20 p-1.5">
-              <div className="flex flex-wrap gap-1.5">
-                {mixFiltered.map((m) => {
-                  const picked = m.id === chem1 || m.id === chem2;
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => pickMolecule(m.id)}
-                      disabled={picked}
-                      className={`rounded-full px-3 py-2 text-left text-[12px] font-bold leading-tight transition active:scale-[0.98] ${
-                        picked
-                          ? "bg-emerald-400/30 text-emerald-50"
-                          : "bg-white/90 text-emerald-950"
-                      }`}
-                    >
-                      {formatMoleculeOption(m)}
-                    </button>
-                  );
-                })}
-              </div>
-              {mixFiltered.length === 0 ? (
-                <p className="px-2 py-4 text-center text-[12px] font-semibold text-emerald-100/70">
-                  नाम नहीं मिला — दूसरे शब्द से खोजो
-                </p>
-              ) : null}
-            </div>
-
-            {(mol1?.forms?.length || 0) > 1 || (mol2?.forms?.length || 0) > 1 ? (
-              <div className="grid gap-2 sm:grid-cols-2">
-                {(mol1?.forms?.length || 0) > 1 ? (
-                  <div>
-                    <p className="mb-1 text-[10px] font-bold uppercase text-emerald-200/80">फॉर्म 1</p>
-                    <div className="flex flex-wrap gap-1">
-                      {mol1!.forms.map((f) => (
-                        <button
-                          key={f}
-                          type="button"
-                          onClick={() => setForm1(f)}
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                            form1 === f ? "bg-white text-emerald-950" : "bg-white/10 text-white"
-                          }`}
-                        >
-                          {f}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-                {(mol2?.forms?.length || 0) > 1 ? (
-                  <div>
-                    <p className="mb-1 text-[10px] font-bold uppercase text-emerald-200/80">फॉर्म 2</p>
-                    <div className="flex flex-wrap gap-1">
-                      {mol2!.forms.map((f) => (
-                        <button
-                          key={f}
-                          type="button"
-                          onClick={() => setForm2(f)}
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                            form2 === f ? "bg-white text-emerald-950" : "bg-white/10 text-white"
-                          }`}
-                        >
-                          {f}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-
-            {mixResult ? (
-              <div
-                className={`rounded-xl p-3.5 ${
-                  mixResult.status === "safe"
-                    ? "bg-white text-emerald-950"
-                    : "bg-rose-600 text-white"
-                }`}
-                role="alert"
-              >
-                <p className="text-[20px] font-black leading-tight">{mixResult.title}</p>
-                <p className="mt-1 whitespace-pre-line text-[12px] font-medium leading-snug opacity-90">
-                  {mixResult.message}
-                </p>
-              </div>
-            ) : (
-              <p className="text-center text-[12px] font-semibold text-emerald-100/80">
-                {chem1 ? "दूसरी दवा चुनें" : "दो दवा चुनें"}
-              </p>
-            )}
-
-            <p className="text-[10px] leading-relaxed text-emerald-100/65">
-              शक या शर्त = न मिलाएँ। उत्पाद लेबल निर्देश अंतिम हैं। कॉपर+सल्फर, Ca+फॉस्फेट, ट्राइकोडर्मा+फफूंदनाशक — न मिलाएँ।
-            </p>
+          <div className="mt-4">
+            <Link
+              href="/mix-advisor"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-emerald-950 shadow-md transition active:scale-[0.99] hover:bg-emerald-50"
+            >
+              घोल सुरक्षा जांचें
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </section>
 

@@ -74,7 +74,7 @@ export default function AppShell({
 
   if (isHub) {
     return (
-      <div className={cn("crop-premium-page relative min-h-screen pb-28", className)}>
+      <div className={cn("crop-premium-page relative min-h-screen pb-6", className)}>
         <div className="relative z-10">
           <header
             className={cn(

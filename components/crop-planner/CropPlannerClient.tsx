@@ -499,21 +499,73 @@ export default function CropPlannerClient() {
         4,
         160
       );
-      const fertLines = farmerSpeakLines(
-        fertPlan?.schedule?.length
-          ? fertPlan.schedule.map((s) => `${s.time}: ${s.apply}`)
-          : [
-              ...crop.fertilizerSchedule.basalDose,
-              ...crop.fertilizerSchedule.stageWise.flatMap((s) =>
-                s.details.map((d) => `${s.stage}: ${d}`)
-              ),
-            ],
-        6,
-        180
-      );
-      
+
       return (
         <div className="xl:col-span-12 space-y-4">
+          {/* Fertilizer Stage-wise Plan */}
+          <PlanPanel eyebrow="संतुलित खाद योजना (स्टेज-वाइज खुराक)" accent="emerald">
+            <div className="space-y-3">
+              {/* Basal Dose Stage */}
+              <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-xs font-black text-white">
+                      1
+                    </span>
+                    <h4 className="text-sm font-black text-[var(--av-text-primary)]">
+                      बुवाई के समय (बेसल खुराक)
+                    </h4>
+                  </div>
+                  <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                    0 दिन पर
+                  </span>
+                </div>
+                <div className="mt-2.5 space-y-1.5 pl-8">
+                  {crop.fertilizerSchedule.basalDose.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs font-semibold text-[var(--av-text-primary)]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-2 pl-8 text-[11px] text-[var(--av-text-muted)]">
+                  💡 विधि: आखिरी जुताई पर खेत में समान रूप से बखेरें या सीडड्रिल से बीज के 2-3 सेमी नीचे डालें।
+                </p>
+              </div>
+
+              {/* Stage-wise Top Dressing */}
+              {crop.fertilizerSchedule.stageWise.map((stage, idx) => (
+                <div key={idx} className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-600/20 text-xs font-black text-sky-800 dark:text-sky-300">
+                        {idx + 2}
+                      </span>
+                      <h4 className="text-sm font-black text-[var(--av-text-primary)]">
+                        {stage.stage}
+                      </h4>
+                    </div>
+                    <span className="rounded-md bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold text-sky-800 dark:text-sky-300">
+                      खड़ी फसल
+                    </span>
+                  </div>
+                  <div className="mt-2.5 space-y-1.5 pl-8">
+                    {stage.details.map((detail, dIdx) => (
+                      <div key={dIdx} className="flex items-center gap-2 text-xs font-semibold text-[var(--av-text-primary)]">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-500" />
+                        <span>{detail}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-2 pl-8 text-[11px] text-[var(--av-text-muted)]">
+                    💡 विधि: सिंचाई के बाद खेत में ओट (हल्की नमी) आने पर यूरिया का बखेर कर छिड़काव करें।
+                  </p>
+                </div>
+              ))}
+            </div>
+          </PlanPanel>
+
+          {/* Irrigation Schedule */}
           <PlanPanel eyebrow={t("plannerTabWater")} accent="sky">
             <ul className="space-y-2">
               {waterLines.map((line) => (
@@ -527,61 +579,115 @@ export default function CropPlannerClient() {
               ))}
             </ul>
           </PlanPanel>
-          <PlanPanel eyebrow={t("plannerTabFert")} accent="emerald">
-            {/* We omitted FertilizerBags import if it was there, assuming it's available or not needed. Wait, FertilizerBags is in this file? It is not imported at the top, but we'll see if it exists. Ah, it might be in the same file. */}
-            {typeof FertilizerBags !== "undefined" && (
-              <FertilizerBags bags={fertPlan?.bags?.length ? fertPlan.bags : inferBagsFromLines(fertLines)} />
-            )}
-            <ul className="mt-3 space-y-2">
-              {fertLines.map((line) => (
-                <li
-                  key={line}
-                  className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5 text-sm font-medium"
-                >
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </PlanPanel>
         </div>
       );
     }
 
     if (activeTab === "Protection") {
-      const pests = mgmt?.pestManagement?.slice(0, 3) ?? [];
-      const diseases = mgmt?.diseaseManagement?.slice(0, 3) ?? [];
+      const pests = mgmt?.pestManagement?.slice(0, 4) ?? [];
+      const diseases = mgmt?.diseaseManagement?.slice(0, 4) ?? [];
       const weeds = mgmt?.weedManagement?.slice(0, 2) ?? [];
 
       return (
         <div className="xl:col-span-12 space-y-4">
           {pests.length > 0 && (
-            <PlanPanel eyebrow={t("plannerTabPest")} accent="amber">
-              <ul className="space-y-2">
-                {pests.map((p) => (
-                  <li key={p.pestName} className="rounded-2xl border border-amber-500/20 bg-amber-500/5 px-3 py-2.5">
-                    <p className="text-sm font-bold text-[var(--av-text-primary)]">
-                      {farmerSpeak(p.pestName, 48)}
-                    </p>
-                    <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                      {farmerSpeak(`${p.activeIngredient} ${p.dose}`, 90)}
-                    </p>
-                  </li>
-                ))}
+            <PlanPanel eyebrow="🐛 कीट प्रबंधन (दवा, प्रति एकड़ खुराक व समय)" accent="amber">
+              <ul className="space-y-2.5">
+                {pests.map((p) => {
+                  const ai = (p.activeIngredient ?? "").toLowerCase();
+                  const dose =
+                    p.dose ||
+                    (ai.includes("chlorantraniliprole") || ai.includes("coragen")
+                      ? "60 मिली प्रति एकड़ (150-200 लीटर पानी)"
+                      : ai.includes("emamectin") || ai.includes("इमामेक्टिन")
+                        ? "80-100 ग्राम प्रति एकड़ (150L पानी)"
+                        : ai.includes("thiamethoxam") || ai.includes("थायमेथॉक्सम")
+                          ? "40-50 ग्राम प्रति एकड़ (150L पानी)"
+                          : ai.includes("fipronil") || ai.includes("फिप्रोनिल")
+                            ? "400 मिली प्रति एकड़ (लिक्विड) या 8-10 kg दानेदार"
+                            : "1.5 से 2 मिली/ग्राम प्रति लीटर पानी (150-200L/एकड़)");
+
+                  return (
+                    <li key={p.pestName} className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-3.5">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-black text-[var(--av-text-primary)]">
+                          🐛 {farmerSpeak(p.pestName, 48)}
+                        </p>
+                        <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-900 dark:text-amber-200">
+                          कीट नियंत्रण
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs font-bold text-[var(--av-text-secondary)]">
+                        दवा / तकनीकी: {p.activeIngredient}
+                      </p>
+                      <div className="mt-2 rounded-xl bg-amber-500/10 p-2 text-xs">
+                        <p className="font-extrabold text-amber-950 dark:text-amber-200">
+                          💧 प्रति एकड़ सटीक खुराक: {dose}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
+                          ⏱️ छिड़काव समय: कीट का प्रकोप शुरू होते ही शाम 4 बजे के बाद
+                        </p>
+                      </div>
+                      <AppLink
+                        href={`/mix-advisor?crop=${crop.slug}`}
+                        className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"
+                      >
+                        दवा मिलाकर घोल (Tank Mix) तैयार करें →
+                      </AppLink>
+                    </li>
+                  );
+                })}
               </ul>
             </PlanPanel>
           )}
           
           {diseases.length > 0 && (
-            <PlanPanel eyebrow={t("plannerTabDisease")} accent="rose">
-              <ul className="space-y-2">
-                {diseases.map((d) => (
-                  <li key={d.diseaseName} className="rounded-2xl border border-rose-500/20 bg-rose-500/5 px-3 py-2.5">
-                    <p className="text-sm font-bold text-[var(--av-text-primary)]">{farmerSpeak(d.diseaseName, 48)}</p>
-                    <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                      {farmerSpeak(`${d.activeIngredient} ${d.dose}`, 90)}
-                    </p>
-                  </li>
-                ))}
+            <PlanPanel eyebrow="🦠 रोग प्रबंधन (फफूंदनाशक, खुराक व समय)" accent="rose">
+              <ul className="space-y-2.5">
+                {diseases.map((d) => {
+                  const ai = (d.activeIngredient ?? "").toLowerCase();
+                  const dose =
+                    d.dose ||
+                    (ai.includes("tricyclazole") || ai.includes("ट्राइसाइक्लाज़ोल")
+                      ? "120-150 ग्राम प्रति एकड़ (150-200 लीटर पानी)"
+                      : ai.includes("azoxystrobin") || ai.includes("एज़ोक्सीस्ट्रोबिन")
+                        ? "200 मिली प्रति एकड़ (200 लीटर पानी)"
+                        : ai.includes("propiconazole") || ai.includes("प्रोपिकोनाज़ोल") || ai.includes("tebuconazole") || ai.includes("टेबुकोनाज़ोल")
+                          ? "200 मिली प्रति एकड़ (200 लीटर पानी)"
+                          : ai.includes("mancozeb") || ai.includes("मैंकोजेब")
+                            ? "500-600 ग्राम प्रति एकड़ (200L पानी)"
+                            : "2 ग्राम अथवा 1 मिली प्रति लीटर पानी (150-200L/एकड़)");
+
+                  return (
+                    <li key={d.diseaseName} className="rounded-2xl border border-rose-500/25 bg-rose-500/5 p-3.5">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-black text-[var(--av-text-primary)]">
+                          🦠 {farmerSpeak(d.diseaseName, 48)}
+                        </p>
+                        <span className="rounded-md bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-900 dark:text-rose-200">
+                          रोग नियंत्रण
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs font-bold text-[var(--av-text-secondary)]">
+                        फफूंदनाशक: {d.activeIngredient}
+                      </p>
+                      <div className="mt-2 rounded-xl bg-rose-500/10 p-2 text-xs">
+                        <p className="font-extrabold text-rose-950 dark:text-rose-200">
+                          💧 प्रति एकड़ सटीक खुराक: {dose}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
+                          ⏱️ छिड़काव समय: पत्ती पर शुरुआती धब्बे दिखते ही या नमी/बादल होने पर
+                        </p>
+                      </div>
+                      <AppLink
+                        href={`/mix-advisor?crop=${crop.slug}`}
+                        className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"
+                      >
+                        दवा मिलाकर घोल (Tank Mix) तैयार करें →
+                      </AppLink>
+                    </li>
+                  );
+                })}
               </ul>
             </PlanPanel>
           )}
@@ -591,13 +697,15 @@ export default function CropPlannerClient() {
               <ul className="space-y-2">
                 {weeds.map((w) => (
                   <li key={w.weedName} className="rounded-2xl border border-lime-500/20 bg-lime-500/5 px-3 py-2.5">
-                    <p className="text-sm font-bold text-[var(--av-text-primary)]">{farmerSpeak(w.weedName, 48)}</p>
-                    <p className="mt-1 text-xs text-[var(--av-text-secondary)]">
-                      {farmerSpeak(
-                        `${w.postEmergenceHerbicide || w.preEmergenceHerbicide} ${w.dose}`,
-                        120
-                      )}
+                    <p className="text-sm font-bold text-[var(--av-text-primary)]">🌿 {farmerSpeak(w.weedName, 48)}</p>
+                    <p className="mt-1 text-xs font-bold text-[var(--av-text-secondary)]">
+                      दवा: {w.postEmergenceHerbicide || w.preEmergenceHerbicide}
                     </p>
+                    <div className="mt-1.5 rounded-lg bg-lime-500/10 p-2 text-xs">
+                      <p className="font-extrabold text-lime-950 dark:text-lime-200">
+                        💧 प्रति एकड़ खुराक: {w.dose || "पैकेट पर दिए निर्देशानुसार (150L पानी)"}
+                      </p>
+                    </div>
                   </li>
                 ))}
               </ul>

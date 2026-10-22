@@ -8,6 +8,7 @@ import { cottonProfile } from "@/data/cotton-profile";
 import { soybeanProfile } from "@/data/soybean-profile";
 import { bajraProfile } from "@/data/bajra-profile";
 import { moongfaliProfile } from "@/data/moongfali-profile";
+import { buildCropFaqs } from "@/lib/crops/buildCropFaqs";
 
 const tomatoProfile: CropManagementProfile = {
   slug: "tomato",
@@ -409,12 +410,7 @@ function mapLegacyCrop(crop: LegacyCrop): CropManagementProfile {
     yield: crop.harvestAndYield.yield,
     storage: crop.harvestAndYield.storageTips,
     marketInformation: crop.marketInformation,
-    faqs: [
-      {
-        question: "How to manage this crop effectively?",
-        answer: "Follow balanced nutrition, timely irrigation and recommended crop protection schedules.",
-      },
-    ],
+    faqs: buildCropFaqs(crop),
   };
 }
 

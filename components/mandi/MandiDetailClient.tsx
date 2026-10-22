@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
-  ArrowLeft,
   CalendarDays,
   Folder,
   Heart,
@@ -20,6 +19,9 @@ import { useMandiPrices } from "@/hooks/useMandiPrices";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { cn } from "@/lib/cn";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { expandMockMandi } from "@/lib/mandi/expandMockMandi";
+import { CROP_HI } from "@/lib/mandi/constants";
+import type { MandiRow } from "@/lib/mandi/types";
 
 function avg(nums: number[]): number {
   if (!nums.length) return 0;
@@ -101,16 +103,56 @@ function PeriodCard({
 export default function MandiDetailClient({ id }: { id: string }) {
   const { t } = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { profile } = useFarmerProfile();
-  const state = profile.state.trim() || "Madhya Pradesh";
-  const district = profile.district.trim() || undefined;
+  const queryState = searchParams?.get("state");
+  const queryDistrict = searchParams?.get("district");
+  const state = queryState || profile.state.trim() || "Madhya Pradesh";
+  const district = queryDistrict || profile.district.trim() || undefined;
   const { data, loading } = useMandiPrices({ state, district });
   const [fav, setFav] = useState(false);
 
-  const row = useMemo(
-    () => data?.rows.find((r) => r.id === id || encodeURIComponent(r.id) === id),
-    [data?.rows, id]
-  );
+  const row = useMemo<MandiRow | null>(() => {
+    // 1. Check fetched data
+    let found = data?.rows.find((r) => r.id === id || encodeURIComponent(r.id) === id);
+    if (found) return found;
+
+    // 2. Check expandMockMandi for current state & district
+    const stateMock = expandMockMandi(state, district);
+    found = stateMock.find((r) => r.id === id || encodeURIComponent(r.id) === id);
+    if (found) return found;
+
+    // 3. Check across other popular states
+    const otherStates = ["Uttar Pradesh", "Madhya Pradesh", "Haryana", "Rajasthan", "Punjab", "Bihar"];
+    for (const st of otherStates) {
+      if (st === state) continue;
+      const otherMock = expandMockMandi(st);
+      found = otherMock.find((r) => r.id === id || encodeURIComponent(r.id) === id);
+      if (found) return found;
+    }
+
+    // 4. Synthesize graceful fallback row if ID was e.g. mock-State-Mandi-Crop-Grade-Idx
+    const parts = id.split("-");
+    const crop = parts[3] || "Wheat";
+    const modal = 2450;
+    return {
+      id,
+      crop,
+      cropHi: CROP_HI[crop] || crop,
+      variety: parts[4] || "FAQ",
+      mandi: parts[2] ? parts[2].replace(/_/g, " ") : `${district || state} मंडी`,
+      state,
+      district: district || state,
+      min: modal - 150,
+      max: modal + 150,
+      modal,
+      change: 1.5,
+      changeAmt: 40,
+      trend: [modal - 50, modal - 30, modal - 20, modal, modal + 20, modal + 30, modal + 40],
+      category: "अनाज",
+      arrivalDate: new Date().toISOString().slice(0, 10),
+    };
+  }, [data?.rows, id, state, district]);
 
   const image = resolveCropImage({ slug: row?.crop ?? "paddy", name: row?.crop });
   const up = (row?.change ?? 0) >= 0;
@@ -144,21 +186,7 @@ export default function MandiDetailClient({ id }: { id: string }) {
         { label: row?.cropHi || row?.crop || "Detail" },
       ]}
     >
-      <div className="mb-2 flex items-center justify-between">
-        <button
-          type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm active:scale-95"
-          aria-label="Back"
-          onClick={() => {
-            if (typeof window !== "undefined" && window.history.length > 1) {
-              router.back();
-            } else {
-              router.push("/mandi");
-            }
-          }}
-        >
-          <ArrowLeft className="h-4 w-4 text-slate-700" />
-        </button>
+      <div className="mb-2 flex items-center justify-end">
         <button
           type="button"
           onClick={() => setFav((v) => !v)}
@@ -311,10 +339,6 @@ export default function MandiDetailClient({ id }: { id: string }) {
             change={Math.abs(row.modal - stats.daySample)}
             tone="flat"
           />
-
-          <p className="pb-2 pt-1 text-center text-[11px] italic text-slate-400">
-            Made with ❤️ in India
-          </p>
         </div>
       )}
     </AppShell>

@@ -37,9 +37,32 @@ const PADDY = ["paddy"];
 const COTTON = ["cotton"];
 const MAIZE = ["maize"];
 const GROUNDNUT = ["moongfali", "groundnut"];
-const ALL_FOUR = [...PADDY, ...COTTON, ...MAIZE, ...GROUNDNUT];
+const WHEAT = ["wheat"];
+const POTATO = ["potato"];
+const ALL_FOUR = [...PADDY, ...COTTON, ...MAIZE, ...GROUNDNUT, ...WHEAT, ...POTATO];
 
 const BASE_SPRAY_PRODUCTS: SprayProduct[] = [
+  // ─── POTATO FUNGICIDES (LATE BLIGHT / BLACK SCURF) ───
+  p("po01", "Curzate M8 68 WP", "Cymoxanil 8% + Mancozeb 64% WP", "fungicide", "FRAC", "27+M3", POTATO, { diseases: ["d1"] }, "2.5 g/L"),
+  p("po02", "Acrobat 50 WP", "Dimethomorph 50% WP", "fungicide", "FRAC", "40", POTATO, { diseases: ["d1"] }, "1–1.5 g/L"),
+  p("po03", "Revus 250 SC", "Mandipropamid 23.4% SC", "fungicide", "FRAC", "40", POTATO, { diseases: ["d1"] }, "0.8 ml/L"),
+  p("po04", "Equation Pro", "Famoxadone 16.6% + Cymoxanil 22.1% SC", "fungicide", "FRAC", "11+27", POTATO, { diseases: ["d1"] }, "1 ml/L"),
+  p("po05", "Zampro 525 SC", "Ametoctradin 27% + Dimethomorph 20.27% SC", "fungicide", "FRAC", "45+40", POTATO, { diseases: ["d1"] }, "1.5–2 ml/L"),
+  p("po06", "Custodia 325 SC", "Azoxystrobin 11% + Tebuconazole 18.3% SC", "fungicide", "FRAC", "11+3", POTATO, { diseases: ["d1", "d2"] }, "1.25 ml/L"),
+  p("po07", "Emesto Prime 240 FS", "Penflufen 240 FS", "fungicide", "FRAC", "7", POTATO, { diseases: ["d2"] }, "100 ml / 100 kg बीज"),
+
+  // ─── WHEAT INSECTICIDES & FUNGICIDES ───
+  p("wh01", "Actara 25 WG", "Thiamethoxam 25% WG", "insecticide", "IRAC", "4A", WHEAT, { pests: ["p1"] }, "0.2 g/L"),
+  p("wh02", "Rogor 30 EC", "Dimethoate 30% EC", "insecticide", "IRAC", "1B", WHEAT, { pests: ["p1"] }, "1.5 ml/L"),
+  p("wh03", "Dursban 20 EC", "Chlorpyrifos 20% EC", "insecticide", "IRAC", "1B", WHEAT, { pests: ["p2"] }, "2.5 ml/L"),
+  p("wh04", "Padan 50 SP", "Cartap Hydrochloride 50% SP", "insecticide", "IRAC", "14", WHEAT, { pests: ["p3"] }, "2 g/L"),
+  p("wh05", "Proclaim 5 SG", "Emamectin Benzoate 5% SG", "insecticide", "IRAC", "6", WHEAT, { pests: ["p4"] }, "0.5 g/L"),
+  p("wh06", "Tilt 25 EC", "Propiconazole 25% EC", "fungicide", "FRAC", "3", WHEAT, { diseases: ["d1", "d4", "d5", "d6"] }, "1 ml/L"),
+  p("wh07", "Folicur 250 EC", "Tebuconazole 25.9% EC", "fungicide", "FRAC", "3", WHEAT, { diseases: ["d1", "d2", "d7"] }, "1 ml/L"),
+  p("wh08", "Amistar Top 325 SC", "Azoxystrobin 18.2% + Difenoconazole 11.4% SC", "fungicide", "FRAC", "11+3", WHEAT, { diseases: ["d1", "d4"] }, "1 ml/L"),
+  p("wh09", "Indofil M-45 75 WP", "Mancozeb 75% WP", "fungicide", "FRAC", "M3", WHEAT, { diseases: ["d1", "d4"] }, "2 g/L"),
+  p("wh10", "Elatus Plus 100 EC", "Benzovindiflupyr 100 EC", "fungicide", "FRAC", "7", WHEAT, { diseases: ["d1"] }, "0.5 ml/L"),
+
   // ─── PADDY INSECTICIDES ───
   p("p01", "Pexalon 106 SC", "Triflumezopyrim", "insecticide", "IRAC", "4E", PADDY, { pests: ["p1", "p2"] }, "0.5 ml/L"),
   p("p02", "Regent 0.3 GR", "Fipronil", "insecticide", "IRAC", "2B", PADDY, { pests: ["p1"] }, "8 kg/ha granules"),
