@@ -27,7 +27,9 @@ import {
   Plus,
   RefreshCw,
   Search,
+  ShieldAlert,
   Sprout,
+  TrendingUp,
   type LucideIcon,
   X,
 } from "lucide-react";
@@ -110,13 +112,14 @@ const FARM_LINKS: {
   hi: string;
   en: string;
   href: string;
+  icon3d?: string;
   icon: LucideIcon;
 }[] = [
-  { id: "advisor", hi: "खेत सलाह", en: "Advice", href: "/field-advisor", icon: Sprout },
-  { id: "fertilizer", hi: "खाद कैलकुलेटर", en: "Fertilizer", href: "/services/fertilizer-calculator", icon: Calculator },
-  { id: "calendar", hi: "कैलेंडर", en: "Calendar", href: "/crop-calendar", icon: CalendarDays },
-  { id: "alerts", hi: "अलर्ट", en: "Alerts", href: "/alerts", icon: Bell },
-  { id: "rotation", hi: "स्प्रे चक्र", en: "Rotation", href: "/spray-rotation", icon: RefreshCw },
+  { id: "advisor", hi: "खेत सलाह", en: "Advice", href: "/field-advisor", icon3d: "/images/icons/3d/my-farm.jpg", icon: Sprout },
+  { id: "fertilizer", hi: "खाद कैलकुलेटर", en: "Fertilizer", href: "/services/fertilizer-calculator", icon3d: "/images/icons/3d/fertilizer.jpg", icon: Calculator },
+  { id: "doctor", hi: "फसल डॉक्टर", en: "Crop Doctor", href: "/ai-doctor", icon3d: "/images/icons/3d/crop-doctor.jpg", icon: ShieldAlert },
+  { id: "weather", hi: "मौसम सलाह", en: "Weather", href: "/weather", icon3d: "/images/icons/3d/weather.jpg", icon: CloudSun },
+  { id: "mandi", hi: "मंडी भाव", en: "Mandi", href: "/mandi", icon3d: "/images/icons/3d/mandi.jpg", icon: TrendingUp },
   { id: "mix", hi: "दवा मिश्रण जांच", en: "Tank Mix", href: "/mix-advisor", icon: FlaskConical },
 ];
 
@@ -510,10 +513,18 @@ export default function MyFarmPage() {
                   {selectedCrop && !cropPickerOpen ? (
                     <div className="flex items-center justify-between rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-2.5 dark:bg-emerald-950/30">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{selectedCrop.emoji ?? "🌾"}</span>
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-emerald-500/30 shadow-sm">
+                          <Image
+                            src={resolveCropImage({ slug: selectedCrop.slug, name: selectedCrop.name })}
+                            alt=""
+                            fill
+                            sizes="40px"
+                            className="object-cover"
+                          />
+                        </div>
                         <div>
                           <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-                            {isHi ? "🌾 चुनी गई फसल" : "🌾 Selected Crop"}
+                            {isHi ? "चुनी गई फसल" : "Selected Crop"}
                           </span>
                           <p className="text-[15px] font-bold text-[var(--av-text-primary)]">
                             {isHi
@@ -527,10 +538,10 @@ export default function MyFarmPage() {
                       <button
                         type="button"
                         onClick={() => setCropPickerOpen(true)}
-                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-600/30 bg-[var(--av-surface)] px-2.5 py-1.5 text-xs font-bold text-emerald-700 shadow-sm hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/50 active:scale-95 transition"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-600/30 bg-[var(--av-surface)] px-2.5 py-1.5 text-xs font-bold text-emerald-700 shadow-sm hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/50 active:scale-95 transition"
                       >
                         <Pencil className="h-3.5 w-3.5" />
-                        {isHi ? "फसल बदलें ✏️" : "Change crop ✏️"}
+                        {isHi ? "फसल बदलें" : "Change crop"}
                       </button>
                     </div>
                   ) : (
@@ -804,7 +815,8 @@ export default function MyFarmPage() {
                   onClick={handleAddField}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#15803d] hover:bg-[#166534] py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-900/30 active:scale-[0.99] transition"
                 >
-                  <span>{isHi ? "✅ खेत सुरक्षित करें" : "✅ Save Field"}</span>
+                  <Check className="h-5 w-5" />
+                  <span>{isHi ? "खेत सुरक्षित करें" : "Save Field"}</span>
                 </button>
               </div>
             </div>
@@ -872,7 +884,9 @@ export default function MyFarmPage() {
                             {f.name}
                           </p>
                           <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-emerald-100">
-                            <span>{f.emoji}</span>
+                            <span className="flex h-5 w-5 items-center justify-center rounded-md bg-white/20 text-white backdrop-blur-sm">
+                              <Sprout className="h-3 w-3" />
+                            </span>
                             <span>{hi}</span>
                             {f.variety ? (
                               <span className="rounded-md bg-white/20 px-1.5 py-0.5 text-[11px] font-bold text-white backdrop-blur-sm">
@@ -958,9 +972,15 @@ export default function MyFarmPage() {
             onClick={() => track("tool_open", { href: "/weather", label: "farm_weather_strip" })}
             className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3.5 py-3 active:scale-[0.99]"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/12 text-sky-700 dark:text-sky-300">
-              <CloudSun className="h-5 w-5" />
-            </span>
+            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-sky-500/20 bg-sky-500/10 shadow-sm">
+              <Image
+                src="/images/icons/3d/weather.jpg"
+                alt=""
+                fill
+                sizes="44px"
+                className="object-cover"
+              />
+            </div>
             <span className="min-w-0 flex-1">
               <span className="block text-[13px] font-bold text-[var(--av-text-primary)]">
                 {weatherLoading
@@ -984,11 +1004,21 @@ export default function MyFarmPage() {
                   key={link.id}
                   href={link.href}
                   onClick={() => track("tool_open", { href: link.href, label: `farm_${link.id}` })}
-                  className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-2.5 text-center active:scale-[0.98]"
+                  className="group flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2 text-center transition hover:border-emerald-500/40 active:scale-[0.98]"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-                    <Icon className="h-4 w-4" />
-                  </span>
+                  <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-emerald-500/15 bg-emerald-500/10 shadow-sm">
+                    {link.icon3d ? (
+                      <Image
+                        src={link.icon3d}
+                        alt=""
+                        fill
+                        sizes="40px"
+                        className="object-cover transition duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <Icon className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+                    )}
+                  </div>
                   <span className="text-[10px] font-bold text-[var(--av-text-primary)]">
                     {isHi ? link.hi : link.en}
                   </span>
@@ -1116,7 +1146,11 @@ export default function MyFarmPage() {
                       <span className="min-w-0 flex-1">
                         <span className="block text-[13px] font-bold text-[var(--av-text-primary)]">
                           {n.title}
-                          {n.pinned ? " 📌" : ""}
+                          {n.pinned ? (
+                            <span className="ml-1.5 inline-flex items-center rounded-md bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-800 dark:text-amber-200">
+                              {isHi ? "पिन" : "PINNED"}
+                            </span>
+                          ) : null}
                         </span>
                         <span className="mt-0.5 line-clamp-2 block text-[11px] text-[var(--av-text-muted)]">
                           {n.body}
@@ -1135,20 +1169,28 @@ export default function MyFarmPage() {
           <AppLink
             href="/kisan-saathi"
             onClick={() => track("tool_open", { href: "/kisan-saathi", label: "farm_saathi" })}
-            className="flex min-h-[52px] w-full items-center justify-between gap-2 rounded-xl border border-emerald-700/30 bg-gradient-to-r from-emerald-900 to-emerald-800 px-4 py-3 text-white shadow-md shadow-emerald-900/20 active:scale-[0.99]"
+            className="group flex min-h-[58px] w-full items-center justify-between gap-3 overflow-hidden rounded-2xl border border-emerald-700/30 bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800 p-3 text-white shadow-md shadow-emerald-900/20 active:scale-[0.99]"
           >
-            <span className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 shrink-0 text-emerald-200" />
-              <span>
+            <div className="flex items-center gap-3">
+              <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-emerald-400/30 bg-white/10 shadow-sm">
+                <Image
+                  src="/images/icons/3d/kisan-saathi.jpg"
+                  alt=""
+                  fill
+                  sizes="44px"
+                  className="object-cover transition duration-300 group-hover:scale-105"
+                />
+              </div>
+              <div>
                 <span className="block text-[14px] font-bold leading-tight">
                   {isHi ? "किसान साथी से पूछो" : "Ask Kisan Saathi"}
                 </span>
                 <span className="block text-[11px] font-medium text-emerald-100/90">
-                  {isHi ? "खेत के लिए तुरंत सलाह" : "Instant farm advice"}
+                  {isHi ? "खेत के लिए 24/7 AI सलाह" : "Instant 24/7 AI farm advice"}
                 </span>
-              </span>
-            </span>
-            <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200" />
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200 transition group-hover:translate-x-0.5" />
           </AppLink>
         </motion.section>
       </div>

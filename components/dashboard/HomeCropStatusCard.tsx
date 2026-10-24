@@ -159,21 +159,21 @@ export default function HomeCropStatusCard({
           className="pointer-events-none absolute -left-16 -bottom-16 h-48 w-48 rounded-full bg-teal-400/10 blur-3xl dark:bg-teal-500/5"
         />
 
-        {/* ── CARD HEADER: Crop Identity & Sowing Pill ── */}
-        <div className="relative z-10 p-3.5 pb-2.5 sm:p-4 sm:pb-3">
-          <div className="flex items-start justify-between gap-3">
-            {/* Left: Thumbnail + Crop Title + Field Name */}
-            <div className="flex min-w-0 flex-1 items-center gap-3">
+        {/* ── CARD HEADER: Crop Identity & Sowing Info (Categorized & Compact) ── */}
+        <div className="relative z-10 p-3 pb-2 sm:p-3.5 sm:pb-2.5">
+          <div className="flex items-center justify-between gap-2.5">
+            {/* Left: Thumbnail + Crop Title + Inline Field & Sowing Date */}
+            <div className="flex min-w-0 flex-1 items-center gap-2.5">
               <AppLink
                 href={cropSlug ? `/crops/${cropSlug}` : "/my-farm"}
-                className="relative h-15 w-15 shrink-0 overflow-hidden rounded-2xl ring-2 ring-emerald-600/20 shadow-sm transition-transform active:scale-95"
+                className="relative h-13 w-13 shrink-0 overflow-hidden rounded-2xl ring-2 ring-emerald-600/20 shadow-sm transition-transform active:scale-95"
                 aria-label={isHi ? `${cropDisplayName} का विवरण देखें` : `View ${cropDisplayName}`}
               >
                 <Image
                   src={field.img}
                   alt={cropDisplayName}
                   fill
-                  sizes="64px"
+                  sizes="52px"
                   quality={85}
                   priority
                   className="object-cover"
@@ -181,10 +181,10 @@ export default function HomeCropStatusCard({
               </AppLink>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <AppLink
                     href={cropSlug ? `/crops/${cropSlug}` : "/my-farm"}
-                    className="truncate font-display text-[18px] sm:text-[19px] font-black leading-tight tracking-tight text-[var(--av-text-primary)] hover:text-emerald-700 dark:hover:text-emerald-300"
+                    className="truncate font-display text-[17px] sm:text-[18px] font-black leading-tight tracking-tight text-[var(--av-text-primary)] hover:text-emerald-700 dark:hover:text-emerald-300"
                   >
                     {cropDisplayName}
                   </AppLink>
@@ -197,26 +197,51 @@ export default function HomeCropStatusCard({
                   </AppLink>
                 </div>
 
-                <p className="mt-0.5 truncate text-[12px] font-semibold text-[var(--av-text-secondary)]">
-                  {field.name || (isHi ? "मुख्य खेत" : "Main Field")}
-                </p>
+                {/* Categorized Subline: Field Name · Sowing Date */}
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11.5px] font-semibold text-[var(--av-text-secondary)]">
+                  <span className="truncate max-w-[110px]">
+                    {field.name || (isHi ? "मुख्य खेत" : "Main Field")}
+                  </span>
+                  <span className="opacity-35">·</span>
+                  {timeline.hasSowingDate ? (
+                    <button
+                      type="button"
+                      onClick={openDatePicker}
+                      className="inline-flex items-center gap-1 text-[var(--av-text-muted)] transition-colors hover:text-emerald-700 dark:hover:text-emerald-300"
+                      title={isHi ? "बुवाई की तारीख बदलें" : "Change sowing date"}
+                    >
+                      <span>
+                        {isHi ? "बुवाई:" : "Sown:"} {timeline.sowingDateFormatted}
+                      </span>
+                      <Edit3 className="h-2.5 w-2.5 opacity-60" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={openDatePicker}
+                      className="font-bold text-amber-700 underline decoration-amber-500/50 hover:text-amber-800 dark:text-amber-300"
+                    >
+                      {isHi ? "+ बुवाई तारीख डालें" : "+ Set Date"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Right: Interactive Sowing Date Pill + Speaker Button */}
+            {/* Right: Days Pill + Speaker Button */}
             <div className="flex shrink-0 items-center gap-1.5">
               {/* SOWING DATE PILL - TAPPING OPENS MODAL DIRECTLY */}
               <button
                 type="button"
                 onClick={openDatePicker}
-                className={`group/btn relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black transition-all active:scale-95 ${
+                className={`group/btn relative flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black transition-all active:scale-95 ${
                   timeline.hasSowingDate
-                    ? "bg-emerald-600 text-white shadow-sm shadow-emerald-700/25 hover:bg-emerald-700"
+                    ? "bg-emerald-600 text-white shadow-xs shadow-emerald-700/25 hover:bg-emerald-700"
                     : "animate-pulse border border-amber-500/40 bg-amber-500/15 text-amber-900 hover:bg-amber-500/25 dark:text-amber-200"
                 }`}
                 title={isHi ? "बुवाई की तारीख बदलें" : "Change sowing date"}
               >
-                <Calendar className="h-3.5 w-3.5" />
+                <Calendar className="h-3 w-3" />
                 <span>
                   {timeline.hasSowingDate
                     ? isHi
@@ -226,7 +251,7 @@ export default function HomeCropStatusCard({
                       ? "तारीख डालें"
                       : "Set Date"}
                 </span>
-                <Edit3 className="h-3 w-3 opacity-75 group-hover/btn:opacity-100" />
+                <Edit3 className="h-2.5 w-2.5 opacity-75 group-hover/btn:opacity-100" />
               </button>
 
               {/* TTS Listen Button */}
@@ -235,56 +260,35 @@ export default function HomeCropStatusCard({
                 onClick={handleSpeak}
                 disabled={isSpeaking}
                 aria-label={isHi ? "फसल सलाह सुनें" : "Listen to advice"}
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-all active:scale-95 ${
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all active:scale-95 ${
                   isSpeaking
                     ? "bg-emerald-600 text-white ring-2 ring-emerald-400"
                     : "bg-emerald-100/70 text-emerald-800 ring-1 ring-emerald-600/20 hover:bg-emerald-200/80 dark:bg-emerald-950/60 dark:text-emerald-200"
                 }`}
               >
-                <Volume2 className={`h-4 w-4 ${isSpeaking ? "animate-pulse" : ""}`} />
+                <Volume2 className={`h-3.5 w-3.5 ${isSpeaking ? "animate-pulse" : ""}`} />
               </button>
             </div>
-          </div>
-
-          {/* Sowing Date Subtitle */}
-          <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-emerald-900/8 pt-2 text-[11.5px] dark:border-emerald-500/10">
-            <span className="flex items-center gap-1 text-[var(--av-text-secondary)]">
-              <span className="font-bold text-[var(--av-text-muted)]">
-                {isHi ? "बुवाई:" : "Sown:"}
-              </span>{" "}
-              {timeline.sowingDateFormatted}
-            </span>
-            {!timeline.hasSowingDate ? (
-              <button
-                type="button"
-                onClick={openDatePicker}
-                className="font-extrabold text-emerald-700 hover:underline dark:text-emerald-400"
-              >
-                {isHi
-                  ? "यहाँ क्लिक कर तारीख डालें →"
-                  : "Click to set date →"}
-              </button>
-            ) : null}
           </div>
         </div>
 
         {/* ── STAGE MICRO-PROGRESS BAR ── */}
-        <div className="relative z-10 px-3.5 sm:px-4">
-          <div className="rounded-xl border border-emerald-600/15 bg-white/80 p-2.5 backdrop-blur-xs dark:bg-slate-900/60">
+        <div className="relative z-10 px-3 sm:px-3.5">
+          <div className="rounded-xl border border-emerald-600/15 bg-white/80 px-2.5 py-2 backdrop-blur-xs dark:bg-slate-900/60">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 min-w-0">
                 <Sprout className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                <span className="truncate text-[12px] font-black text-emerald-950 dark:text-emerald-200">
+                <span className="truncate text-[11.5px] sm:text-[12px] font-black text-emerald-950 dark:text-emerald-200">
                   {timeline.stageName}
                 </span>
               </div>
-              <span className="shrink-0 text-[10.5px] font-extrabold text-[var(--av-text-muted)]">
+              <span className="shrink-0 text-[10px] sm:text-[10.5px] font-extrabold text-[var(--av-text-muted)]">
                 {timeline.stageSubtitle}
               </span>
             </div>
 
             {/* Lifecycle Progress line */}
-            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-emerald-900/10 dark:bg-emerald-950/60">
+            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-emerald-900/10 dark:bg-emerald-950/60">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700"
                 style={{ width: `${Math.max(8, timeline.stageProgressPct)}%` }}
@@ -294,22 +298,22 @@ export default function HomeCropStatusCard({
         </div>
 
         {/* ── BOTTOM ACTIONS STRIP (COMPACT TWO-BUTTON ROW WITH GATEKEEPER LOGIC) ── */}
-        <div className="relative z-10 mt-2.5 grid grid-cols-2 divide-x divide-emerald-900/10 border-t border-emerald-900/10 bg-emerald-50/70 text-center dark:divide-emerald-500/15 dark:border-emerald-500/15 dark:bg-emerald-950/30">
+        <div className="relative z-10 mt-2 grid grid-cols-2 divide-x divide-emerald-900/10 border-t border-emerald-900/10 bg-emerald-50/70 text-center dark:divide-emerald-500/15 dark:border-emerald-500/15 dark:bg-emerald-950/30">
           {timeline.hasSowingDate ? (
             <AppLink
               href={cropSlug ? `/crops/${cropSlug}/care/fertilizer?das=${timeline.days}` : "/services/fertilizer-calculator"}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 text-[12px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
             >
-              <Droplets className="h-4 w-4 shrink-0 text-emerald-600" />
+              <Droplets className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
               <span>{isHi ? "अभी कौन-सी खाद डालें →" : "Fertilizer for now →"}</span>
             </AppLink>
           ) : (
             <button
               type="button"
               onClick={openDatePicker}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 text-[12px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
             >
-              <Droplets className="h-4 w-4 shrink-0 text-emerald-600" />
+              <Droplets className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
               <span>{isHi ? "अभी कौन-सी खाद डालें →" : "Fertilizer for now →"}</span>
             </button>
           )}
@@ -317,18 +321,18 @@ export default function HomeCropStatusCard({
           {timeline.hasSowingDate ? (
             <AppLink
               href={cropSlug ? `/crops/${cropSlug}/care/calendar?das=${timeline.days}` : "/crop-calendar"}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 text-[12px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
             >
-              <Calendar className="h-4 w-4 shrink-0 text-emerald-600" />
+              <Calendar className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
               <span>{isHi ? "इस हफ्ते का काम →" : "This week's tasks →"}</span>
             </AppLink>
           ) : (
             <button
               type="button"
               onClick={openDatePicker}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-[12.5px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 text-[12px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
             >
-              <Calendar className="h-4 w-4 shrink-0 text-emerald-600" />
+              <Calendar className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
               <span>{isHi ? "इस हफ्ते का काम →" : "This week's tasks →"}</span>
             </button>
           )}

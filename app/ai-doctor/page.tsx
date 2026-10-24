@@ -594,7 +594,7 @@ export default function AIDoctorPage() {
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-black text-white">✓</span>
                         <span className="truncate font-semibold text-emerald-900 dark:text-emerald-200">
-                          {previewUrl ? "📷 फोटो" : "📝 लक्षण"} · 🌾 {aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}
+                          {previewUrl ? "फोटो" : "लक्षण"} · {aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -681,7 +681,7 @@ export default function AIDoctorPage() {
                       ← नई फोटो / दूसरी जाँच करें
                     </button>
                     <span className="text-[11px] font-semibold text-slate-500">
-                      🌾 {aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}
+                      {aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}
                     </span>
                   </div>
 
@@ -706,13 +706,13 @@ export default function AIDoctorPage() {
                               .map((a) => `• ${a.name} (${formatFarmerDose(a.dose)})`)
                               .join("\n");
                             const msg =
-                              `🌾 *AgriVeda AI फसल डॉक्टर रिपोर्ट*\n\n` +
+                              `*AgriVeda AI फसल डॉक्टर रिपोर्ट*\n\n` +
                               `*फसल:* ${aiDoctorCropLabel(selectedCrop || OTHER_CROP.slug)}\n` +
                               `*पहचाना गया रोग:* ${result.diseaseName}\n` +
                               (result.pathogen && result.pathogen !== "—" ? `*रोग कारक:* ${result.pathogen}\n` : "") +
                               `*गंभीरता:* ${severityHi(result.severity)}\n\n` +
-                              `💊 *अनुशंसित दवा व खुराक:*\n${meds || "विशेषज्ञ सलाह लें"}\n\n` +
-                              `💧 *स्प्रे पानी:* 150–200 लीटर/एकड़ साफ़ पानी\n\n` +
+                              `*अनुशंसित दवा व खुराक:*\n${meds || "विशेषज्ञ सलाह लें"}\n\n` +
+                              `*स्प्रे पानी:* 150–200 लीटर/एकड़ साफ़ पानी\n\n` +
                               `_AgriVeda किसान सहायता ऐप_`;
                             const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
                             if (typeof window !== "undefined") window.open(url, "_blank");

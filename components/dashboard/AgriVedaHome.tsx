@@ -35,10 +35,10 @@ import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 
 
 
-/** Unified Crop Disease & Doctor Hero Card — Photo-first, farmer-friendly, clean single hero */
+/** Unified Crop Disease & Doctor Hero Card — 2-Column Split Photo Cards, High-Affordance, Futuristic & Clean */
 function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/25 bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 p-4 sm:p-5 text-white shadow-[0_18px_40px_-14px_rgba(5,70,45,0.45)]">
+    <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/25 bg-gradient-to-br from-emerald-850 via-emerald-900 to-teal-950 p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-12px_rgba(5,70,45,0.45)]">
       {/* Background ambient glow */}
       <div
         aria-hidden
@@ -49,90 +49,135 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
         className="pointer-events-none absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-teal-400/15 blur-3xl"
       />
 
-      {/* Header section — Clean Hindi, zero AI jargon */}
+      {/* Header section — Clean badges + punchy heading */}
       <div className="relative z-10 flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/20 border border-emerald-300/35 px-3 py-1 text-[11px] font-extrabold tracking-wide text-emerald-200">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/20 border border-emerald-300/35 px-2.5 py-0.5 text-[10.5px] font-extrabold tracking-wide text-emerald-200">
           <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
           {isHi ? "फसल डॉक्टर" : "Crop Doctor"}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-[10.5px] font-bold text-emerald-200 backdrop-blur-xs">
+        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-200 backdrop-blur-xs">
           {isHi ? "⚡ 2 सेकंड में पहचान" : "⚡ 2s Instant Check"}
         </span>
       </div>
 
-      <div className="relative z-10 mt-2">
-        <h2 className="text-[19px] sm:text-[22px] font-black leading-tight text-white tracking-tight">
+      <div className="relative z-10 mt-1.5">
+        <h2 className="text-[17px] sm:text-[19px] font-black leading-tight text-white tracking-tight">
           {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop Disease or Pest Issue?"}
         </h2>
-        <p className="mt-1 text-[12px] sm:text-[13px] font-medium leading-relaxed text-emerald-100/85">
+        <p className="mt-0.5 text-[11px] sm:text-[12px] font-medium leading-normal text-emerald-100/85">
           {isHi
-            ? "खराब पत्ती या कीट की फोटो खींचें — तुरंत रोग की सटीक पहचान व असली दवा पाएँ।"
-            : "Take a photo of the damaged leaf — get instant diagnosis & verified spray medicine."}
+            ? "फोटो खींचें या लक्षणों से पहचानें — तुरंत सटीक इलाज व असली दवा।"
+            : "Snap photo or browse symptoms — get instant cure & verified medicine."}
         </p>
       </div>
 
-      {/* Hero Action Card — Photo + side-by-side action buttons */}
-      <div className="relative z-10 mt-3.5 overflow-hidden rounded-2xl border border-emerald-400/35 bg-emerald-950/70 backdrop-blur-md shadow-lg">
-        <div className="flex flex-col sm:flex-row sm:items-stretch">
-          {/* Dedicated Photo Window */}
-          <div className="relative h-36 sm:h-auto sm:w-44 shrink-0 overflow-hidden bg-slate-900">
+      {/* Dual Split Cards: 1) Camera Photo Scan, 2) Symptoms & Disease Directory */}
+      <div className="relative z-10 mt-3 grid grid-cols-2 gap-2.5 sm:gap-3">
+        {/* Card 1: AI Camera Scan */}
+        <AppLink
+          href="/ai-doctor"
+          onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_photo_scan" })}
+          className="group relative flex flex-col overflow-hidden rounded-2xl border border-emerald-400/30 bg-emerald-950/70 backdrop-blur-md shadow-md transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-950/90 hover:shadow-xl active:scale-[0.97]"
+        >
+          {/* Prominent Photo Window */}
+          <div className="relative h-28 sm:h-34 w-full overflow-hidden bg-slate-900">
             <Image
               src="/images/home/home-cta-scan.jpg"
-              alt="Farmer taking leaf photo"
+              alt={isHi ? "कैमरा से पत्ती की जाँच" : "Camera scan"}
               fill
-              sizes="(max-width: 640px) 100vw, 200px"
+              sizes="(max-width: 640px) 50vw, 240px"
               quality={85}
               priority
-              className="object-cover object-[center_25%]"
+              className="object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105"
             />
-            {/* Camera Floating Reticle Pill */}
-            <div className="absolute left-2.5 top-2.5 z-10">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-950/80 px-2.5 py-1 text-[10px] font-black text-white backdrop-blur-md border border-white/20 shadow-md">
-                <Camera className="h-3.5 w-3.5 text-emerald-300 animate-pulse" />
-                {isHi ? "कैमरा जाँच" : "Camera Scan"}
+            {/* Top floating glass badge */}
+            <div className="absolute left-2 top-2 z-10">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/75 px-2 py-0.5 text-[9.5px] font-extrabold text-white backdrop-blur-md border border-white/20 shadow-xs">
+                <Camera className="h-3 w-3 text-emerald-300 animate-pulse" />
+                {isHi ? "कैमरा जाँच" : "Camera"}
               </span>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-transparent to-transparent sm:hidden" />
+            {/* Live AI Pill Top-Right */}
+            <div className="absolute right-2 top-2 z-10">
+              <span className="rounded-full bg-emerald-500/85 px-1.5 py-0.5 text-[8.5px] font-black text-slate-950 shadow-xs uppercase tracking-wider backdrop-blur-xs">
+                AI 2s
+              </span>
+            </div>
+            {/* Bottom edge transition */}
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-emerald-950/90 to-transparent" />
           </div>
 
-          {/* Value Props & Side-by-Side Tap Actions */}
-          <div className="flex flex-1 flex-col justify-between p-3.5 sm:p-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-[12px] font-bold text-white">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                <span>{isHi ? "पत्ती या कीट की फोटो खींचें" : "Snap leaf or pest photo"}</span>
-              </div>
-              <div className="flex items-center gap-2 text-[12px] font-bold text-white">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                <span>{isHi ? "रोग का नाम व नुकसान का स्तर" : "Identify disease & damage"}</span>
-              </div>
-              <div className="flex items-center gap-2 text-[12px] font-bold text-white">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                <span>{isHi ? "दुकान पर मिलने वाली असली दवा व डोज" : "Market medicine & exact dose"}</span>
-              </div>
+          {/* Lower Content & High-Affordance CTA */}
+          <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1">
+            <div>
+              <h3 className="text-[13px] sm:text-[14px] font-black leading-tight text-white group-hover:text-emerald-200 transition-colors">
+                {isHi ? "पत्ती की फोटो लें" : "Take Leaf Photo"}
+              </h3>
+              <p className="mt-0.5 text-[10px] sm:text-[10.5px] font-medium leading-tight text-emerald-100/80 line-clamp-1">
+                {isHi ? "रोग पहचान व सही दवा" : "Diagnosis & medicine"}
+              </p>
             </div>
 
-            {/* Side-by-Side 2-Column Buttons */}
-            <div className="mt-3.5 grid grid-cols-2 gap-2">
-              <AppLink
-                href="/ai-doctor"
-                onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_photo_scan" })}
-                className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 py-2.5 px-2 text-center text-[12px] font-black text-emerald-950 shadow-md transition-all hover:from-emerald-300 hover:to-teal-200 active:scale-[0.98]"
-              >
-                <Camera className="h-4 w-4 shrink-0 stroke-[2.5]" />
-                <span className="truncate">{isHi ? "कैमरा से फोटो खींचें" : "Take Photo"}</span>
-              </AppLink>
-
-              <AppLink
-                href="/crop-problems"
-                onClick={() => track("tool_open", { href: "/crop-problems", label: "home_browse_crop_problems" })}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-white/20 bg-white/15 py-2.5 px-2 text-center text-[12px] font-black text-white shadow-sm backdrop-blur-xs transition hover:bg-white/25 active:scale-[0.98]"
-              >
-                <span className="truncate">{isHi ? "रोग व कीट डायरेक्टरी →" : "Directory →"}</span>
-              </AppLink>
+            {/* Clickable Action Pill Button */}
+            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 px-2.5 py-1.5 text-[11px] font-black text-emerald-950 shadow-sm transition-all group-hover:from-emerald-300 group-hover:to-teal-200">
+              <span>{isHi ? "फोटो खींचें" : "Take Photo"}</span>
+              <Camera className="h-3.5 w-3.5 stroke-[2.5]" />
             </div>
           </div>
-        </div>
+        </AppLink>
+
+        {/* Card 2: Symptoms & Disease Catalog */}
+        <AppLink
+          href="/crop-problems"
+          onClick={() => track("tool_open", { href: "/crop-problems", label: "home_browse_crop_problems" })}
+          className="group relative flex flex-col overflow-hidden rounded-2xl border border-teal-400/30 bg-teal-950/70 backdrop-blur-md shadow-md transition-all duration-300 hover:border-teal-300 hover:bg-teal-950/90 hover:shadow-xl active:scale-[0.97]"
+        >
+          {/* Prominent Photo Window */}
+          <div className="relative h-28 sm:h-34 w-full overflow-hidden bg-slate-900">
+            <Image
+              src="/images/home/home-job-crop-problems.jpg"
+              alt={isHi ? "रोग व कीट डायरेक्टरी" : "Crop diseases catalog"}
+              fill
+              sizes="(max-width: 640px) 50vw, 240px"
+              quality={85}
+              priority
+              className="object-cover object-[center_32%] transition-transform duration-500 group-hover:scale-105"
+            />
+            {/* Top floating glass badge */}
+            <div className="absolute left-2 top-2 z-10">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/75 px-2 py-0.5 text-[9.5px] font-extrabold text-white backdrop-blur-md border border-white/20 shadow-xs">
+                <ClipboardList className="h-3 w-3 text-teal-300" />
+                {isHi ? "रोग लाइब्रेरी" : "Library"}
+              </span>
+            </div>
+            {/* Crop tag Top-Right */}
+            <div className="absolute right-2 top-2 z-10">
+              <span className="rounded-full bg-teal-500/85 px-1.5 py-0.5 text-[8.5px] font-black text-slate-950 shadow-xs uppercase tracking-wider backdrop-blur-xs">
+                {isHi ? "फसल अनुसार" : "By Crop"}
+              </span>
+            </div>
+            {/* Bottom edge transition */}
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-teal-950/90 to-transparent" />
+          </div>
+
+          {/* Lower Content & High-Affordance CTA */}
+          <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1">
+            <div>
+              <h3 className="text-[13px] sm:text-[14px] font-black leading-tight text-white group-hover:text-teal-200 transition-colors">
+                {isHi ? "लक्षणों से पहचानें" : "Identify by Crop"}
+              </h3>
+              <p className="mt-0.5 text-[10px] sm:text-[10.5px] font-medium leading-tight text-teal-100/80 line-clamp-1">
+                {isHi ? "कीट व बीमारी डायरेक्टरी" : "Browse all pests"}
+              </p>
+            </div>
+
+            {/* Clickable Action Pill Button */}
+            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-gradient-to-r from-teal-400 to-cyan-300 px-2.5 py-1.5 text-[11px] font-black text-teal-950 shadow-sm transition-all group-hover:from-teal-300 group-hover:to-cyan-200">
+              <span>{isHi ? "डायरेक्टरी देखें" : "Directory"}</span>
+              <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
+            </div>
+          </div>
+        </AppLink>
       </div>
     </div>
   );
