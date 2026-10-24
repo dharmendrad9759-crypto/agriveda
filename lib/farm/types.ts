@@ -4,6 +4,7 @@ export interface FarmField {
   area: string;
   ownership: string;
   crop: string;
+  variety?: string;
   /** Crop catalog slug — used for alerts and my-crops sync */
   cropSlug?: string;
   status: string;
