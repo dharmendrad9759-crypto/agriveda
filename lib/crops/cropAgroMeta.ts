@@ -1,6 +1,5 @@
 import type { Crop } from "@/types/crop";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
-import { getCropManagementProfile } from "@/data/crop-management";
 import type { CropStageAlert } from "@/data/mock/crop-overview";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 
@@ -474,9 +473,8 @@ function hashPct(seed: string, base: number): number {
 
 export function getCropPestRisk(crop: Crop, detail?: EnrichedCropDetail): CropThreatRisk {
   const fromDetail = detail?.pests?.[0]?.name;
-  const fromMgmt = getCropManagementProfile(crop.slug)?.pestManagement?.[0]?.pestName;
   const fromCrop = crop.cropProtection.majorPests[0];
-  const top = fromDetail || fromMgmt || fromCrop || "Field pests";
+  const top = fromDetail || fromCrop || "Field pests";
   const level: RiskLevel =
     /borer|hopper|whitefly|thrips|caterpillar|fall army/i.test(top) ? "high" : "medium";
   return { top, level, pct: hashPct(crop.slug + top, level === "high" ? 55 : 40) };
@@ -484,9 +482,8 @@ export function getCropPestRisk(crop: Crop, detail?: EnrichedCropDetail): CropTh
 
 export function getCropDiseaseRisk(crop: Crop, detail?: EnrichedCropDetail): CropThreatRisk {
   const fromDetail = detail?.diseases?.[0]?.name;
-  const fromMgmt = getCropManagementProfile(crop.slug)?.diseaseManagement?.[0]?.diseaseName;
   const fromCrop = crop.cropProtection.majorDiseases[0];
-  const top = fromDetail || fromMgmt || fromCrop || "Field diseases";
+  const top = fromDetail || fromCrop || "Field diseases";
   const level: RiskLevel = /blast|blight|wilt|rust|mildew|rot|mosaic|leaf curl|powdery/i.test(top)
     ? "high"
     : /spot|smut|anthracnose/i.test(top)
@@ -541,8 +538,13 @@ export function getCropExpertTip(crop: Crop) {
   };
 }
 
-export function getCropStageAlerts(crop: Crop): CropStageAlert[] {
-  const stages = getCropManagementProfile(crop.slug)?.growthStages;
+export function getCropStageAlerts(
+  crop: Crop,
+  stagesOverride?: { title?: string }[]
+): CropStageAlert[] {
+  const stages =
+    stagesOverride ??
+    (crop as unknown as { growthStages?: { title?: string }[] }).growthStages;
   const pests = crop.cropProtection.majorPests.slice(0, 2);
   const diseases = crop.cropProtection.majorDiseases.slice(0, 2);
   const irrig = crop.irrigationManagement.criticalStages;

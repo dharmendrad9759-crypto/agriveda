@@ -25,7 +25,7 @@ export default function CropCalendarSection({ crop, detail }: Props) {
   const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
   const harvestStage = detail.growthStages[detail.growthStages.length - 1];
   const tasksDue = getCropTasksDue(crop);
-  const stageAlerts = getCropStageAlerts(crop);
+  const stageAlerts = getCropStageAlerts(crop, detail.growthStages);
 
   const stageName = (name: string) => (hi ? stageLabelHi(name) : name);
 
