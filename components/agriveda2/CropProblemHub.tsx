@@ -2,7 +2,8 @@
 
 import AppLink from "@/components/ui/AppLink";
 import { useRef, useState, type ChangeEvent, type ReactNode } from "react";
-import { Camera, ChevronRight, ListChecks, Mic, Sparkles, Loader2 } from "lucide-react";
+import { Camera, ChevronRight, ListChecks, Mic, Loader2 } from "lucide-react";
+import { CropDoctorSparkleIcon } from "@/components/brand/icons";
 import DarkCard from "@/components/shell/DarkCard";
 import SafeThumbnail from "@/components/ui/SafeThumbnail";
 import SolutionCard, { solutionFromIssue } from "@/components/agriveda2/SolutionCard";
@@ -136,7 +137,7 @@ export default function CropProblemHub() {
 
       <DarkCard className="p-4">
         <p className="flex items-center gap-2 text-xs font-black uppercase text-emerald-600">
-          <Sparkles className="h-4 w-4" />
+          <CropDoctorSparkleIcon className="h-4 w-4" />
           नमूना कार्ड
         </p>
       </DarkCard>

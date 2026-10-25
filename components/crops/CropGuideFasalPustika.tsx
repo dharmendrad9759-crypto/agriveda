@@ -11,7 +11,6 @@ import {
   Activity,
   Droplets,
   Stethoscope,
-  Sparkles,
   Info,
   CheckCircle2,
   AlertCircle,
@@ -20,6 +19,7 @@ import {
   Layers,
   ArrowRight,
 } from "lucide-react";
+import { CropDoctorSparkleIcon, FasalPustikaSparkleIcon } from "@/components/brand/icons";
 import {
   CropGuideData,
   CropStageItem,
@@ -393,7 +393,7 @@ export function StickyDoctorBanner({ cropName }: StickyDoctorBannerProps) {
           href="/ai-doctor"
           className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-2.5 text-xs font-black text-white shadow-md shadow-emerald-950/40 transition hover:from-emerald-400 hover:to-emerald-500 active:scale-95"
         >
-          <Sparkles className="h-3.5 w-3.5" />
+          <CropDoctorSparkleIcon className="h-3.5 w-3.5" />
           <span>कृषि डॉक्टर से बात करें</span>
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
@@ -427,7 +427,7 @@ export default function CropGuideScreen({ cropSlug = "tomato" }: CropGuideScreen
         <div className="flex items-center justify-between">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
-              <Layers className="h-3 w-3" />
+              <FasalPustikaSparkleIcon className="h-3 w-3" />
               फसल पुस्तिका (Fasal Pustika)
             </span>
             <h2 className="mt-1 font-display text-lg font-black text-slate-900 dark:text-white sm:text-xl">

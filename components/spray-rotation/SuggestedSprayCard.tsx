@@ -1,7 +1,8 @@
 "use client";
 
 import type { MoASuggestion } from "@/types/spray-rotation";
-import { Sparkles, CheckCircle2, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ShieldCheck } from "lucide-react";
+import { SprayRotationSparkleIcon } from "@/components/brand/icons";
 import GlassCard from "@/components/ui/GlassCard";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 
@@ -28,7 +29,7 @@ export default function SuggestedSprayCard({
   return (
     <GlassCard className="p-4">
       <div className="flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-emerald-500" />
+        <SprayRotationSparkleIcon className="h-4 w-4 text-emerald-500" />
         <p className="text-sm font-extrabold theme-text-primary">{title}</p>
       </div>
       <p className="mt-0.5 text-[11px] theme-text-muted">

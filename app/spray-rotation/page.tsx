@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
-import { Plus, Wifi, WifiOff, Droplets, Sparkles, BookOpen, ChevronRight, ShieldCheck } from "lucide-react";
+import { Plus, Wifi, WifiOff, Droplets, BookOpen, ChevronRight, ShieldCheck } from "lucide-react";
+import { SprayRotationSparkleIcon } from "@/components/brand/icons";
 import SprayTimeline from "@/components/spray-rotation/SprayTimeline";
 import RiskBanner from "@/components/spray-rotation/RiskBanner";
 import SuggestedSprayCard from "@/components/spray-rotation/SuggestedSprayCard";
@@ -212,7 +213,7 @@ export default function SprayRotationPage() {
       <DarkCard className="mt-4" delay={2}>
         <div className="border-b border-[var(--av-border)] pb-3">
           <h2 className="flex items-center gap-2 text-[15px] font-black text-[var(--av-text-primary)]">
-            <Sparkles className="h-4 w-4 text-amber-500" />
+            <SprayRotationSparkleIcon className="h-4 w-4 text-amber-500" />
             2. अगली बार कौन-सी बदलकर दवा डालें
           </h2>
           <p className="mt-1 text-[11px] font-medium text-[var(--av-text-muted)]">

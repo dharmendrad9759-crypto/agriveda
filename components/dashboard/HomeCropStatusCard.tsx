@@ -18,11 +18,11 @@ import {
   Edit3,
   FlaskConical,
   Info,
-  Sparkles,
   Sprout,
   Volume2,
   X,
 } from "lucide-react";
+import { CropGrowthSparkleIcon } from "@/components/brand/icons";
 
 export interface HomeCropStatusCardProps {
   field: {
@@ -389,7 +389,7 @@ export default function HomeCropStatusCard({
                 {/* Optimum Sowing Window Banner */}
                 <div className="mt-3.5 rounded-xl border border-emerald-500/25 bg-emerald-50/70 p-2.5 text-xs dark:bg-emerald-950/40">
                   <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-200">
-                    <Sparkles className="h-4 w-4 shrink-0 text-emerald-600" />
+                    <CropGrowthSparkleIcon className="h-4 w-4 shrink-0 text-emerald-600" />
                     <div>
                       <span className="font-black">
                         {isHi ? "उत्तम बुवाई समय:" : "Optimal Sowing Window:"}

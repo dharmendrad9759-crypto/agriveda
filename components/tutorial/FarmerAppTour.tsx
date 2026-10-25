@@ -5,7 +5,6 @@ import {
   X,
   ChevronRight,
   ChevronLeft,
-  Sparkles,
   Camera,
   Sprout,
   Scale,
@@ -15,6 +14,7 @@ import {
   ShieldCheck,
   CloudSun,
 } from "lucide-react";
+import { FarmerTourSparkleIcon } from "@/components/brand/icons";
 
 const TOUR_STORAGE_KEY = "agriveda_farmer_screen_tour_seen_v2";
 
@@ -131,7 +131,7 @@ const TOUR_STEPS: TourStep[] = [
         desc: "भारतीय किसानों के लिए बनाया गया सबसे सरल ऐप",
       },
       {
-        icon: Sparkles,
+        icon: FarmerTourSparkleIcon,
         title: "विशेषज्ञ कृषि सलाह",
         desc: "वैज्ञानिक रूप से प्रमाणित कृषि अनुसंधान पर आधारित",
       },
@@ -222,7 +222,7 @@ export default function FarmerAppTour({
         <header className="relative z-10 flex items-center justify-between border-b border-emerald-900/35 px-4.5 py-3">
           <div className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/40">
-              <Sparkles className="h-4 w-4" />
+              <FarmerTourSparkleIcon className="h-4 w-4" />
             </span>
             <div>
               <p className="text-[10px] font-black uppercase tracking-wider text-emerald-400">

@@ -7,10 +7,10 @@ import {
   Calculator,
   Calendar,
   LayoutDashboard,
-  Sparkles,
   Sprout,
   Stethoscope,
 } from "lucide-react";
+import { AgriAiQuerySparkleIcon } from "@/components/brand/icons";
 import GlassCard from "@/components/ui/GlassCard";
 import { BRAND } from "@/lib/brand";
 
@@ -52,7 +52,7 @@ const MODULES = [
   },
   {
     href: "/kisan-saathi",
-    icon: Sparkles,
+    icon: AgriAiQuerySparkleIcon,
     title: "Kisan Saathi",
     desc: "छोटे, सटीक AI जवाब",
     glow: "from-emerald-500/20 to-lime-500/10 border-lime-400/40",

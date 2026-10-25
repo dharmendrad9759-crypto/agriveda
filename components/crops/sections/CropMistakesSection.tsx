@@ -8,12 +8,12 @@ import {
   ArrowDown,
   Share2,
   Search,
-  Sparkles,
   Check,
   ShieldAlert,
   ChevronRight,
   Filter,
 } from "lucide-react";
+import { GovtSchemeSparkleIcon } from "@/components/brand/icons";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropCommonMistakes, type CropMistake, type MistakeWhen } from "@/lib/crops/cropCommonMistakes";
 import { getCropHindiName } from "@/lib/crops/crop-display";
@@ -228,7 +228,7 @@ export default function CropMistakesSection({ crop }: { crop: Crop }) {
                 {/* Footer Checklist & Impact Marker */}
                 <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-slate-800/80">
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                    <Sparkles className="h-3 w-3 text-amber-500" />
+                    <GovtSchemeSparkleIcon className="h-3 w-3 text-amber-500" />
                     {hi ? "समय व पैसे की बचत" : "Saves time & inputs"}
                   </span>
 

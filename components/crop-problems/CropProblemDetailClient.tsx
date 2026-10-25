@@ -17,7 +17,6 @@ import {
   VolumeX,
   Share2,
   FlaskConical,
-  Sparkles,
   ShieldAlert,
   ArrowRight,
   ShieldCheck,
@@ -25,6 +24,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { CropDoctorSparkleIcon } from "@/components/brand/icons";
 import { notFound } from "next/navigation";
 import ThreatPhotoGallery from "@/components/crops/ThreatPhotoGallery";
 
@@ -262,7 +262,7 @@ export default function CropProblemDetailClient({
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-400/30">
-                <Sparkles className="h-5 w-5" />
+                <CropDoctorSparkleIcon className="h-5 w-5" />
               </span>
               <div>
                 <div className="flex items-center gap-1.5">

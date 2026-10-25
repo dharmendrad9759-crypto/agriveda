@@ -18,8 +18,8 @@ import {
   Layers,
   Scissors,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
+import { CropMedicineSparkleIcon } from "@/components/brand/icons";
 
 const TIER_THEME = [
   {
@@ -107,7 +107,7 @@ export default function FieldMedicinePanel({
     <div className="space-y-2.5">
       {/* Friendly Farmer Advisory Banner */}
       <div className="flex items-center gap-2 rounded-xl border border-emerald-800/15 bg-emerald-50/80 px-3 py-2 dark:bg-emerald-950/30">
-        <Sparkles className="h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-300" />
+        <CropMedicineSparkleIcon className="h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-300" />
         <p className="text-[11.5px] font-bold text-emerald-950 dark:text-emerald-100">
           {hi
             ? "हर दवाई की बोतल पर असली 'टेक्निकल नाम' छपा होता है। दुकान पर यही नाम मांगें।"

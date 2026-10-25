@@ -8,7 +8,8 @@ import {
 import { fertilizerProductImage } from "@/lib/crops/fertilizerFarmerUi";
 import { simplifyMixinFarmerHi } from "@/lib/crops/simplifyMixinFarmerHi";
 import { cn } from "@/lib/cn";
-import { ChevronDown, Lightbulb, MapPin, Sparkles, AlertTriangle } from "lucide-react";
+import { ChevronDown, Lightbulb, MapPin, AlertTriangle } from "lucide-react";
+import { FertilizerNpkSparkleIcon } from "@/components/brand/icons";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
@@ -90,7 +91,7 @@ export default function CropFertilizerMixinPanel({
         <section className="overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent p-4 shadow-sm dark:from-emerald-950/40">
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-xs">
-              <Sparkles className="h-3.5 w-3.5" />
+              <FertilizerNpkSparkleIcon className="h-3.5 w-3.5" />
             </span>
             <p className="text-[13px] font-black tracking-tight text-emerald-950 dark:text-emerald-50">
               कुल संतुलित जरूरत ({acres} एकड़ के लिए)

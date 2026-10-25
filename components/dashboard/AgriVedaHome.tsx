@@ -10,13 +10,13 @@ import {
   ChevronRight,
   Droplets,
   MessageCircle,
-  Sparkles,
   Sprout,
   TrendingUp,
   Landmark,
   ClipboardList,
   type LucideIcon,
 } from "lucide-react";
+import { CropDoctorSparkleIcon, FieldAdviceSparkleIcon } from "@/components/brand/icons";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -42,7 +42,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
       {/* Header section — Clean badges + punchy heading */}
       <div className="relative z-10 flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/25 px-2.5 py-0.5 text-[10.5px] font-extrabold tracking-wide text-emerald-200">
-          <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
+          <CropDoctorSparkleIcon className="h-3.5 w-3.5 text-emerald-300" />
           {isHi ? "फसल डॉक्टर" : "Crop Doctor"}
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-200 backdrop-blur-xs">
@@ -524,7 +524,7 @@ export default function AgriVedaHome() {
             
             <div className="relative z-10 flex w-full items-center gap-4 p-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
-                <Sparkles className="h-6 w-6 text-emerald-100" />
+                <FieldAdviceSparkleIcon className="h-6 w-6 text-emerald-100" />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-[17px] font-extrabold tracking-tight text-white drop-shadow-sm">
@@ -556,7 +556,7 @@ export default function AgriVedaHome() {
                 />
               ) : (
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-700">
-                  <Sparkles className="h-4 w-4" />
+                  <CropDoctorSparkleIcon className="h-4 w-4" />
                 </span>
               )}
               <span className="min-w-0 flex-1">

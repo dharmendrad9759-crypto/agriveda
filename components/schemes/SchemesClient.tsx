@@ -17,10 +17,10 @@ import {
   Search,
   Shield,
   ShieldAlert,
-  Sparkles,
   Tractor,
   X,
 } from "lucide-react";
+import { GovtSchemeSparkleIcon } from "@/components/brand/icons";
 import AppShell from "@/components/shell/AppShell";
 import AppLink from "@/components/ui/AppLink";
 import OfficialLeaveConfirm, { useOfficialLeave } from "@/components/schemes/OfficialLeaveConfirm";
@@ -223,7 +223,7 @@ function BentoCategoryCard({
   onSelect: () => void;
 }) {
   const meta = BENTO_ICONS[group.id] || {
-    icon: Sparkles,
+    icon: GovtSchemeSparkleIcon,
     bg: "bg-stone-50 dark:bg-stone-800",
     color: "text-stone-700 dark:text-stone-300",
   };
@@ -430,7 +430,7 @@ function SchemeListCard({
 
           {scheme.benefitAmount && (
             <div className="mt-0.5 inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-black text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 w-fit">
-              <Sparkles className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <GovtSchemeSparkleIcon className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{scheme.benefitAmount}</span>
             </div>
           )}

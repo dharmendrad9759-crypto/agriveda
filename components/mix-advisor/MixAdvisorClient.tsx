@@ -23,10 +23,10 @@ import {
   Share2,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
   Trash2,
   X,
 } from "lucide-react";
+import { TankMixSparkleIcon } from "@/components/brand/icons";
 import AppShell from "@/components/shell/AppShell";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
@@ -686,7 +686,7 @@ function MixAdvisorInner() {
                 {selectedProblems.length > 0 && (
                   <div className="mt-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/30 p-3">
                     <div className="flex items-start gap-2">
-                      <Sparkles className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
+                      <TankMixSparkleIcon className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
                       <div className="text-[12px] leading-snug">
                         <span className="font-bold text-emerald-950 dark:text-emerald-100">
                           चुनी गई समस्याएँ:{" "}
@@ -921,7 +921,7 @@ function MixAdvisorInner() {
                             </span>
                             {m.isTopPerformer && (
                               <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
-                                <Sparkles className="h-3 w-3 text-amber-600" />
+                                <TankMixSparkleIcon className="h-3 w-3 text-amber-600" />
                                 बेस्ट ट्रायल रिजल्ट (Top Performer)
                               </span>
                             )}
@@ -1201,7 +1201,7 @@ function MixAdvisorInner() {
                                   )}
                                   {opt.isTopPerformer && (
                                     <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
-                                      <Sparkles className="h-3 w-3 text-amber-600" />
+                                      <TankMixSparkleIcon className="h-3 w-3 text-amber-600" />
                                       बेस्ट ट्रायल रिजल्ट
                                     </span>
                                   )}

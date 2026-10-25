@@ -16,10 +16,10 @@ import {
   Paperclip,
   Phone,
   Send,
-  Sparkles,
   Stethoscope,
   X,
 } from "lucide-react";
+import { AgriAiQuerySparkleIcon } from "@/components/brand/icons";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -326,7 +326,7 @@ export default function AskQueryPage() {
             className="rounded-full p-2 text-white hover:bg-white/10"
             title="किसान साथी"
           >
-            <Sparkles className="h-4 w-4" />
+            <AgriAiQuerySparkleIcon className="h-4 w-4" />
           </Link>
           <Link
             href="/my-queries"

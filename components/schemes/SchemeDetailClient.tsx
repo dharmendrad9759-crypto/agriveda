@@ -23,11 +23,11 @@ import {
   PhoneCall,
   RotateCcw,
   ShieldCheck,
-  Sparkles,
   Store,
   UserCheck,
   XCircle,
 } from "lucide-react";
+import { GovtSchemeSparkleIcon } from "@/components/brand/icons";
 import AppShell from "@/components/shell/AppShell";
 import AppLink from "@/components/ui/AppLink";
 import OfficialLeaveConfirm, { useOfficialLeave } from "@/components/schemes/OfficialLeaveConfirm";
@@ -232,7 +232,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
           <div className="mt-4 grid grid-cols-2 gap-2 border-t border-[var(--av-border)]/60 pt-3">
             <div className="flex items-center gap-2 rounded-xl bg-emerald-50/70 p-2.5 dark:bg-emerald-950/30">
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600/15 text-emerald-700 dark:text-emerald-300">
-                <Sparkles className="h-4 w-4" />
+                <GovtSchemeSparkleIcon className="h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--av-text-muted)]">
@@ -520,7 +520,7 @@ export default function SchemeDetailClient({ id }: { id: string }) {
               <div className="grid grid-cols-1 gap-2 pt-1 sm:grid-cols-2">
                 <div className="flex items-center gap-2.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2.5">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-                    <Sparkles className="h-3.5 w-3.5" />
+                    <GovtSchemeSparkleIcon className="h-3.5 w-3.5" />
                   </span>
                   <div className="text-[12px]">
                     <p className="font-extrabold text-[var(--av-text-primary)]">

@@ -12,7 +12,6 @@ import {
   IndianRupee,
   Stethoscope,
   Loader2,
-  Sparkles,
   ShieldCheck,
   Clock3,
   TrendingUp,

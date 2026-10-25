@@ -59,9 +59,9 @@ import {
   Plus,
   Share2,
   ShieldCheck,
-  Sparkles,
   XCircle,
 } from "lucide-react";
+import { FertilizerNpkSparkleIcon } from "@/components/brand/icons";
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
@@ -558,7 +558,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
           {/* Top category badges */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/35 bg-emerald-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-emerald-300 backdrop-blur-md">
-              <Sparkles className="h-3.5 w-3.5" />
+              <FertilizerNpkSparkleIcon className="h-3.5 w-3.5" />
               {hi ? "वैज्ञानिक + फील्ड-टेस्टेड (High-Yield)" : "Scientific + Field-Tested Plan"}
             </span>
             <span className="rounded-full bg-white/15 border border-white/20 px-2.5 py-0.5 text-[10.5px] font-extrabold text-white/90 backdrop-blur-md">
@@ -954,7 +954,7 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             )}
 
             <div className="mt-3.5 flex items-start gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3 text-[11.5px] font-semibold text-emerald-950 dark:text-emerald-100">
-              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+              <FertilizerNpkSparkleIcon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               <span>{scheduleTip}</span>
             </div>
           </DarkCard>

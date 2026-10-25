@@ -11,11 +11,11 @@ import {
   MapPin,
   Plus,
   Search,
-  Sparkles,
   Sprout,
   Tractor,
   Trash2,
 } from "lucide-react";
+import { FarmerTourSparkleIcon } from "@/components/brand/icons";
 import {
   categoryOrder,
   cropCatalog,
@@ -146,7 +146,7 @@ export default function FarmSetupStep({
       {/* Friendly greeting badge */}
       <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-emerald-600/10 to-teal-500/10 p-3.5 text-xs">
         <div className="flex items-center gap-2 font-bold text-emerald-800 dark:text-emerald-300">
-          <Sparkles className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <FarmerTourSparkleIcon className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span>{farmerName ? `${farmerName} जी, ` : ""}अपनी ज़मीन व फसलें जोड़ें</span>
         </div>
         <p className="mt-1 leading-relaxed text-emerald-950/80 dark:text-emerald-100/80">

@@ -16,10 +16,10 @@ import {
   Sprout,
   TrendingUp,
   IndianRupee,
-  Sparkles,
   ChevronRight,
   CheckCircle2,
 } from "lucide-react";
+import { CropDoctorSparkleIcon } from "@/components/brand/icons";
 
 type Feature = {
   icon: ReactNode;
@@ -87,7 +87,7 @@ const SLIDES: Slide[] = [
     id: "ai",
     hero: "/onboarding/02-ai-doctor-v2.jpg",
     badge: "24x7 एआई फसल डॉक्टर",
-    badgeIcon: <Sparkles className="h-3.5 w-3.5" />,
+    badgeIcon: <CropDoctorSparkleIcon className="h-3.5 w-3.5" />,
     floatingTag: "⚡ 10 सेकंड में रोग पहचान",
     titleHi: "एआई फसल डॉक्टर",
     titleEn: "AI Crop Doctor & Diagnosis",

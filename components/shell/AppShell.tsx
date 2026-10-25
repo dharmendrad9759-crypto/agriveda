@@ -3,7 +3,8 @@
 import { useEffect, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import { ArrowLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
+import { AgriVedaSparkleIcon } from "@/components/brand/icons";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import AppLink from "@/components/ui/AppLink";
 import { AV } from "@/lib/design/tokens";
@@ -105,15 +106,12 @@ export default function AppShell({
                   </button>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="relative flex h-4 w-4 shrink-0 overflow-hidden rounded-md border border-emerald-500/30 shadow-2xs">
-                    <Image
-                      src="/images/icons/3d/sparkle.jpg"
-                      alt=""
-                      width={16}
-                      height={16}
-                      className="h-full w-full object-cover"
-                    />
-                  </span>
+                  <AgriVedaSparkleIcon
+                    className={cn(
+                      "h-3.5 w-3.5 shrink-0",
+                      isGreenHub ? "text-emerald-300" : isAmberHub ? "text-amber-400" : "text-emerald-600"
+                    )}
+                  />
                   <span
                     className={cn(
                       "text-[10px] font-black tracking-wide",

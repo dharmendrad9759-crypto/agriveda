@@ -2,7 +2,8 @@
 
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { AgriVedaSparkleIcon } from "@/components/brand/icons";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { navigateBack } from "@/lib/navigationTracker";
@@ -69,7 +70,7 @@ export default function ProblemFlowShell({
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <Sparkles className="h-3 w-3 text-emerald-600" />
+              <AgriVedaSparkleIcon className="h-3 w-3 text-emerald-600" />
               <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-emerald-700/85">
                 AgriVeda
               </p>

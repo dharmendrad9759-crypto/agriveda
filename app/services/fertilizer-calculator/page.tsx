@@ -13,13 +13,13 @@ import {
   X,
   Plus,
   Minus,
-  Sparkles,
   CheckCircle2,
   FileText,
   Clock,
   Lightbulb,
   ShieldCheck,
 } from "lucide-react";
+import { FertilizerNpkSparkleIcon } from "@/components/brand/icons";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
 import { cropCatalog } from "@/data/crop-catalog";
 import {
@@ -789,7 +789,7 @@ function FertilizerCalculatorInner() {
                   onClick={handleViewPlan}
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-900/30 transition active:scale-[0.98] disabled:opacity-50"
                 >
-                  <Sparkles className="h-4 w-4" />
+                  <FertilizerNpkSparkleIcon className="h-4 w-4" />
                   <span>खाद योजना देखें</span>
                 </button>
               </motion.div>

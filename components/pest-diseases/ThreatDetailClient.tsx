@@ -8,7 +8,6 @@ import {
   Bug,
   Leaf,
   ShieldAlert,
-  Sparkles,
   Shield,
   Sprout,
   Eye,

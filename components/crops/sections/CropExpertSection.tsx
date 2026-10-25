@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Lightbulb, Sparkles, Zap } from "lucide-react";
+import { Lightbulb, Zap } from "lucide-react";
+import { FieldAdviceSparkleIcon } from "@/components/brand/icons";
 import DarkCard from "@/components/shell/DarkCard";
 import CropCollapsible from "@/components/crops/CropCollapsible";
 import { getCropDashboard } from "@/data/crop-dashboard";
@@ -55,7 +56,7 @@ export default function CropExpertSection({ crop }: { crop: Crop }) {
           </p>
           {pinned.action && (
             <Link href={pinned.action.href} className={`mt-3 inline-flex ${AV.btnPrimarySm}`}>
-              <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+              <FieldAdviceSparkleIcon className="mr-1.5 h-3.5 w-3.5" />
               {pinned.action.label}
             </Link>
           )}

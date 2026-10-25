@@ -16,7 +16,6 @@ import {
   MapPin,
   RefreshCw,
   Share2,
-  Sparkles,
   SprayCan,
   Sun,
   Thermometer,
@@ -24,6 +23,7 @@ import {
   Wind,
   type LucideIcon,
 } from "lucide-react";
+import { AgriWeatherSparkleIcon } from "@/components/brand/icons";
 import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import WeatherConditionIcon from "@/components/weather/WeatherConditionIcon";
@@ -386,7 +386,7 @@ export default function WeatherRedesign({
       {advisories.length > 0 ? (
         <section className="space-y-2">
           <div className="flex items-center gap-2 px-1">
-            <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <AgriWeatherSparkleIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <h2 className="font-[family-name:var(--font-display)] text-[14px] font-bold text-[var(--av-text-primary)]">
               {hi ? "खेत सलाह (Farm Advisory)" : "Farm Advisory"}
             </h2>

@@ -20,10 +20,10 @@ import {
   FlaskConical,
   MessageCircle,
   RefreshCw,
-  Sparkles,
   Sprout,
   Stethoscope,
 } from "lucide-react";
+import { FieldAdviceSparkleIcon } from "@/components/brand/icons";
 
 const COMMON_CROPS = [
   { slug: "paddy", nameHi: "धान", emoji: "🌾" },
@@ -161,7 +161,7 @@ function FieldAdvisorContent() {
         {/* Today's key task */}
         <div className="mt-3.5 rounded-xl border border-emerald-400/30 bg-white/10 p-3.5 backdrop-blur-md">
           <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-300">
-            <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
+            <FieldAdviceSparkleIcon className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
             आज क्या काम करना है?
           </p>
           <p className="mt-1.5 text-sm font-semibold leading-relaxed text-white">

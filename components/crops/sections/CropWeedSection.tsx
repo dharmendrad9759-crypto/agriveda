@@ -44,9 +44,9 @@ import {
   Leaf,
   Lightbulb,
   ShowerHead,
-  Sparkles,
   Sprout,
 } from "lucide-react";
+import { CropMedicineSparkleIcon } from "@/components/brand/icons";
 import Image from "next/image";
 import { useMemo, useState, type ReactNode } from "react";
 
@@ -692,7 +692,7 @@ function FieldDoctorWeedCards({
       </section>
 
       <div className="flex items-start gap-2 rounded-2xl border border-amber-500/20 bg-amber-50/80 px-3 py-2.5">
-        <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700" />
+        <CropMedicineSparkleIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700" />
         <p className="text-[10px] font-medium leading-relaxed text-amber-950/80">
           {hi
             ? "खुराक बोतल के लेबल से मिला लो। पास की फसल, अंतरफसल और किस्म का ध्यान रखो।"

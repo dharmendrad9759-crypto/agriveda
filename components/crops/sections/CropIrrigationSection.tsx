@@ -33,8 +33,8 @@ import {
   Eye,
   Grid2x2,
   Lightbulb,
-  Sparkles,
 } from "lucide-react";
+import { AgriWeatherSparkleIcon } from "@/components/brand/icons";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
@@ -210,7 +210,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
         <DarkCard className="border-violet-500/25 bg-gradient-to-br from-violet-500/10 to-transparent">
           <div className="flex gap-2.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-violet-700 dark:text-violet-300">
-              <Sparkles className="h-4 w-4" />
+              <AgriWeatherSparkleIcon className="h-4 w-4" />
             </span>
             <div className="min-w-0">
               <p className="text-[12px] font-extrabold text-violet-900 dark:text-violet-100">

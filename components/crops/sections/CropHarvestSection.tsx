@@ -6,7 +6,6 @@ import {
   Shovel,
   Wheat,
   Scissors,
-  Sparkles,
   Calendar,
   AlertTriangle,
   ChevronDown,
@@ -15,6 +14,7 @@ import {
   Warehouse,
   StickyNote,
 } from "lucide-react";
+import { GovtSchemeSparkleIcon } from "@/components/brand/icons";
 import DarkCard from "@/components/shell/DarkCard";
 import SectionHeader from "@/components/shell/SectionHeader";
 import { getCropManagementProfile } from "@/data/crop-management";
@@ -91,8 +91,9 @@ export default function CropHarvestSection({ crop }: { crop: Crop }) {
         {/* Yield Highlight Box */}
         <div className="mt-3.5 rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3">
           <div className="flex items-baseline justify-between gap-2">
-            <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">
-              {hi ? "औसत पैदावार (अनुमानित)" : "Estimated Average Yield"}
+            <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+              <GovtSchemeSparkleIcon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>{hi ? "औसत पैदावार (अनुमानित)" : "Estimated Average Yield"}</span>
             </span>
             <span className="text-xs text-[var(--av-text-muted)]">
               {hi ? "अच्छी देखरेख पर" : "With optimal care"}

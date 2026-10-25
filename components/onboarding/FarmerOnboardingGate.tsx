@@ -14,12 +14,12 @@ import {
   MapPin,
   Search,
   ShieldCheck,
-  Sparkles,
   Sprout,
   Tractor,
   TrendingUp,
   User,
 } from "lucide-react";
+import { FarmerTourSparkleIcon } from "@/components/brand/icons";
 import FarmSetupStep from "@/components/onboarding/FarmSetupStep";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -503,7 +503,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                     onClick={continueAsGuest}
                     className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-600/40 bg-emerald-600/10 py-3 text-xs font-bold text-emerald-800 transition hover:bg-emerald-600/15 active:scale-[0.99] dark:text-emerald-300"
                   >
-                    <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <FarmerTourSparkleIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <span>सीधे ऐप देखें (Explore Demo Mode)</span>
                   </button>
                 )}
