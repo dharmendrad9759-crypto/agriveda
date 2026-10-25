@@ -4,18 +4,20 @@ import { useEffect, useMemo, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { navigateBack } from "@/lib/navigationTracker";
+import Image from "next/image";
 import {
   AlertTriangle,
-  Apple,
   ArrowLeft,
   ArrowRight,
   Check,
   CheckCircle2,
   ChevronDown,
   CloudRain,
-  Flower2,
+  Droplets,
+  FlaskConical,
+  Gauge,
   Info,
-  Leaf,
+  Layers,
   Plus,
   RotateCcw,
   Share2,
@@ -59,12 +61,6 @@ const STEPS: { id: StepId; label: string; sub: string }[] = [
   { id: "mix", label: "स्मार्ट टैंक-मिक्स", sub: "3. दवाएँ" },
   { id: "guide", label: "घोल बनाने की विधि", sub: "4. गाइड" },
 ];
-
-const STAGE_ICON = {
-  vegetative: Leaf,
-  flowering: Flower2,
-  fruiting: Apple,
-} as const;
 
 const MAX_PROBLEMS = 4;
 
@@ -463,8 +459,9 @@ function MixAdvisorInner() {
                       <span className="block truncate text-[14px] font-black text-emerald-950 dark:text-emerald-100">
                         {crop.nameHi} <span className="text-[11px] font-medium text-[var(--av-text-muted)]">({crop.nameEn})</span>
                       </span>
-                      <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
-                        ✓ चयनित फसल
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        चयनित फसल
                       </span>
                     </div>
                   </div>
@@ -545,9 +542,8 @@ function MixAdvisorInner() {
               {/* Growth Stage Selection */}
               <div id="growth-stage-section">
                 <p className={AV.sectionTitle}>2. फसल का चरण (Growth Stage)</p>
-                <div className="mt-2 grid grid-cols-3 gap-2">
+                <div className="mt-2 grid grid-cols-3 gap-2 sm:gap-2.5">
                   {GROWTH_STAGES.map((s) => {
-                    const Icon = STAGE_ICON[s.id];
                     const active = stage === s.id;
                     return (
                       <button
@@ -555,20 +551,27 @@ function MixAdvisorInner() {
                         type="button"
                         onClick={() => setStage(s.id)}
                         className={cn(
-                          "flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-center transition active:scale-[0.98]",
+                          "group relative flex flex-col items-center gap-1.5 rounded-2xl border p-2 sm:p-2.5 text-center transition-all duration-200 active:scale-[0.97]",
                           active
-                            ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-500/30"
+                            ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-500/35 shadow-sm"
                             : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-emerald-500/30"
                         )}
                       >
-                        <Icon
-                          className={cn(
-                            "h-5 w-5",
-                            active ? "text-emerald-700 dark:text-emerald-300" : "text-[var(--av-text-muted)]"
-                          )}
-                        />
-                        <span className="text-[12px] font-bold text-[var(--av-text-primary)] leading-tight">
+                        <div className="relative h-11 w-11 sm:h-12 sm:w-12 shrink-0 overflow-hidden rounded-xl border border-black/5 dark:border-white/10 shadow-xs transition duration-300 group-hover:scale-105">
+                          <Image
+                            src={s.icon3d}
+                            alt={s.labelHi}
+                            fill
+                            sizes="48px"
+                            quality={75}
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="text-[12px] font-black text-[var(--av-text-primary)] leading-tight">
                           {s.labelHi}
+                        </span>
+                        <span className="text-[10px] font-semibold text-[var(--av-text-muted)]">
+                          {s.subHi}
                         </span>
                       </button>
                     );
@@ -598,7 +601,8 @@ function MixAdvisorInner() {
                         key={p.id}
                         className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-extrabold text-white shadow-xs"
                       >
-                        ✓ {p.nameHi}
+                        <Check className="h-3 w-3 stroke-[3]" />
+                        {p.nameHi}
                         <button
                           type="button"
                           onClick={(e) => {
@@ -880,8 +884,9 @@ function MixAdvisorInner() {
                     {/* Conflict remedy action if incompatible */}
                     {isIncompatible && (
                       <div className="mt-3 rounded-xl bg-white/40 dark:bg-black/30 p-2.5">
-                        <p className="text-[11px] font-extrabold text-rose-900 dark:text-rose-200">
-                          💡 समाधान: {mixVerdict.remedyHi || "असंगत रसायनों को अलग-अलग छिड़कें।"}
+                        <p className="text-[11px] font-extrabold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
+                          <Info className="h-3.5 w-3.5 shrink-0" />
+                          <span>समाधान: {mixVerdict.remedyHi || "असंगत रसायनों को अलग-अलग छिड़कें।"}</span>
                         </p>
                         <button
                           type="button"
@@ -915,18 +920,21 @@ function MixAdvisorInner() {
                               दवा {idx + 1}
                             </span>
                             {m.isTopPerformer && (
-                              <span className="rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
-                                🔥 बेस्ट ट्रायल रिजल्ट (Top Performer)
+                              <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
+                                <Sparkles className="h-3 w-3 text-amber-600" />
+                                बेस्ट ट्रायल रिजल्ट (Top Performer)
                               </span>
                             )}
                             {m.resistanceWarning && (
-                              <span className="rounded-md bg-rose-500/15 px-2 py-0.5 text-[9.5px] font-bold text-rose-800 dark:text-rose-300">
-                                ⚠️ पुराना / कम असरदार (Resistance Risk)
+                              <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/15 px-2 py-0.5 text-[9.5px] font-bold text-rose-800 dark:text-rose-300">
+                                <AlertTriangle className="h-3 w-3 text-rose-600" />
+                                पुराना / कम असरदार (Resistance Risk)
                               </span>
                             )}
                             {m.targetProblemHi && (
-                              <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-900 dark:text-amber-200">
-                                🎯 {m.targetProblemHi} हेतु
+                              <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-900 dark:text-amber-200">
+                                <ShieldCheck className="h-3 w-3 text-amber-700" />
+                                {m.targetProblemHi} हेतु
                               </span>
                             )}
                           </div>
@@ -959,8 +967,11 @@ function MixAdvisorInner() {
                           )}
                           {m.isVirusTarget && (
                             <div className="mt-2 rounded-xl bg-purple-500/10 border border-purple-500/20 p-2 text-[11px] font-medium text-purple-900 dark:text-purple-200 flex items-start gap-1.5">
-                              <span className="font-black text-purple-700 dark:text-purple-300">🛡️ वायरस विशेष:</span>
-                              <span>वायरस पर कोई फफूंदनाशक काम नहीं करता। केवल वेक्टर कीट नियंत्रण + वायरस रोधक ही वैज्ञानिक समाधान है।</span>
+                              <ShieldAlert className="h-3.5 w-3.5 text-purple-600 shrink-0 mt-0.5" />
+                              <div>
+                                <span className="font-black text-purple-700 dark:text-purple-300">वायरस विशेष: </span>
+                                <span>वायरस पर कोई फफूंदनाशक काम नहीं करता। केवल वेक्टर कीट नियंत्रण + वायरस रोधक ही वैज्ञानिक समाधान है।</span>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -968,16 +979,18 @@ function MixAdvisorInner() {
                         {/* Doses Grid */}
                         <div className="mt-2.5 grid grid-cols-2 gap-2 rounded-xl bg-[var(--av-surface-inset)] p-2">
                           <div>
-                            <span className="block text-[10px] font-semibold text-[var(--av-text-muted)]">
-                              💧 1 लीटर पानी में खुराक:
+                            <span className="flex items-center gap-1 text-[10px] font-semibold text-[var(--av-text-muted)]">
+                              <Droplets className="h-3 w-3 text-emerald-600" />
+                              1 लीटर पानी में खुराक:
                             </span>
                             <span className="text-[12px] font-black text-emerald-800 dark:text-emerald-300">
                               {m.dosePerLiter || m.doseHi.split("(")[0]}
                             </span>
                           </div>
                           <div>
-                            <span className="block text-[10px] font-semibold text-[var(--av-text-muted)]">
-                              🌾 1 एकड़ हेतु कुल दवा:
+                            <span className="flex items-center gap-1 text-[10px] font-semibold text-[var(--av-text-muted)]">
+                              <Layers className="h-3 w-3 text-emerald-600" />
+                              1 एकड़ हेतु कुल दवा:
                             </span>
                             <span className="text-[12px] font-black text-emerald-800 dark:text-emerald-300">
                               {m.dosePerAcre || "200 L पानी में स्प्रे"}
@@ -1125,8 +1138,9 @@ function MixAdvisorInner() {
                               दवा {pickSlot !== null ? pickSlot + 1 : ""}
                             </span>
                             {activeSlotMed?.targetProblemHi && (
-                              <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200">
-                                🎯 {activeSlotMed.targetProblemHi}
+                              <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200">
+                                <ShieldCheck className="h-3 w-3 text-amber-700" />
+                                {activeSlotMed.targetProblemHi}
                               </span>
                             )}
                           </div>
@@ -1151,8 +1165,12 @@ function MixAdvisorInner() {
                       </div>
 
                       {activeSlotMed?.isVirusTarget && (
-                        <div className="mx-3 mt-2.5 rounded-xl bg-purple-500/15 border border-purple-500/30 p-2.5 text-[11px] font-medium text-purple-900 dark:text-purple-200">
-                          🛡️ <span className="font-extrabold">वैज्ञानिक सलाह (वायरस):</span> वायरस पर कोई फफूंदनाशक काम नहीं करता। केवल वेक्टर (सफेद मक्खी) नियंत्रण व वायरस रोधक विकल्प ही चुनें।
+                        <div className="mx-3 mt-2.5 rounded-xl bg-purple-500/15 border border-purple-500/30 p-2.5 text-[11px] font-medium text-purple-900 dark:text-purple-200 flex items-center gap-1.5">
+                          <ShieldAlert className="h-4 w-4 text-purple-600 shrink-0" />
+                          <div>
+                            <span className="font-extrabold">वैज्ञानिक सलाह (वायरस): </span>
+                            <span>वायरस पर कोई फफूंदनाशक काम नहीं करता। केवल वेक्टर (सफेद मक्खी) नियंत्रण व वायरस रोधक विकल्प ही चुनें।</span>
+                          </div>
                         </div>
                       )}
 
@@ -1182,13 +1200,15 @@ function MixAdvisorInner() {
                                     </span>
                                   )}
                                   {opt.isTopPerformer && (
-                                    <span className="rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
-                                      🔥 बेस्ट ट्रायल रिजल्ट
+                                    <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
+                                      <Sparkles className="h-3 w-3 text-amber-600" />
+                                      बेस्ट ट्रायल रिजल्ट
                                     </span>
                                   )}
                                   {opt.resistanceWarning && (
-                                    <span className="rounded-md bg-rose-500/15 px-2 py-0.5 text-[9.5px] font-bold text-rose-800 dark:text-rose-300">
-                                      ⚠️ पुराना / कम असरदार
+                                    <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/15 px-2 py-0.5 text-[9.5px] font-bold text-rose-800 dark:text-rose-300">
+                                      <AlertTriangle className="h-3 w-3 text-rose-600" />
+                                      पुराना / कम असरदार
                                     </span>
                                   )}
                                 </div>
@@ -1210,9 +1230,9 @@ function MixAdvisorInner() {
 
                                 {/* Doses */}
                                 <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-black text-emerald-800 dark:text-emerald-300">
-                                  <span>💧 1L पानी: {opt.dosePerLiter || opt.doseHi.split("(")[0]}</span>
+                                  <span className="inline-flex items-center gap-1"><Droplets className="h-3 w-3 text-emerald-600" /> 1L पानी: {opt.dosePerLiter || opt.doseHi.split("(")[0]}</span>
                                   <span>•</span>
-                                  <span>🌾 1 एकड़: {opt.dosePerAcre || "200L पानी"}</span>
+                                  <span className="inline-flex items-center gap-1"><Layers className="h-3 w-3 text-emerald-600" /> 1 एकड़: {opt.dosePerAcre || "200L पानी"}</span>
                                 </div>
 
                                 {opt.safetyHi && (
@@ -1415,9 +1435,10 @@ function MixAdvisorInner() {
                           {s.items.map((it, idx) => (
                             <span
                               key={idx}
-                              className="inline-flex items-center rounded-lg bg-[var(--av-surface-inset)] border border-[var(--av-border)] px-2 py-0.5 text-[11px] font-bold text-[var(--av-text-primary)]"
+                              className="inline-flex items-center gap-1 rounded-lg bg-[var(--av-surface-inset)] border border-[var(--av-border)] px-2 py-0.5 text-[11px] font-bold text-[var(--av-text-primary)]"
                             >
-                              🧪 {it}
+                              <FlaskConical className="h-3 w-3 text-emerald-600" />
+                              {it}
                             </span>
                           ))}
                         </div>
@@ -1483,7 +1504,10 @@ function MixAdvisorInner() {
                       })}
                       <tr className="bg-emerald-500/8 font-bold">
                         <td className="px-3 py-2 text-emerald-950 dark:text-emerald-200">
-                          🚰 कुल पानी की मात्रा
+                          <span className="inline-flex items-center gap-1.5">
+                            <Droplets className="h-3.5 w-3.5 text-emerald-600" />
+                            कुल पानी की मात्रा
+                          </span>
                         </td>
                         <td colSpan={2} className="px-3 py-2 text-emerald-900 dark:text-emerald-300 font-black">
                           {plan.waterHi}
@@ -1491,7 +1515,10 @@ function MixAdvisorInner() {
                       </tr>
                       <tr className="bg-[var(--av-surface-inset)] font-bold">
                         <td className="px-3 py-2 text-[var(--av-text-secondary)]">
-                          🎯 नोजल प्रकार
+                          <span className="inline-flex items-center gap-1.5">
+                            <Gauge className="h-3.5 w-3.5 text-emerald-600" />
+                            नोजल प्रकार
+                          </span>
                         </td>
                         <td colSpan={2} className="px-3 py-2 text-[var(--av-text-primary)] font-black">
                           {plan.nozzleHi}

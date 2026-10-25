@@ -104,11 +104,27 @@ export type MixPlan = {
 export const GROWTH_STAGES: {
   id: GrowthStageId;
   labelHi: string;
-  hintHi: string;
+  subHi: string;
+  icon3d: string;
 }[] = [
-  { id: "vegetative", labelHi: "वनस्पति अवस्था", hintHi: "" },
-  { id: "flowering", labelHi: "फूल वाली अवस्था", hintHi: "" },
-  { id: "fruiting", labelHi: "फल और दाने वाली अवस्था", hintHi: "" },
+  {
+    id: "vegetative",
+    labelHi: "वनस्पति अवस्था",
+    subHi: "बढ़वार / पत्ती",
+    icon3d: "/images/icons/3d/stage-vegetative.jpg",
+  },
+  {
+    id: "flowering",
+    labelHi: "फूल अवस्था",
+    subHi: "कलियाँ व फूल",
+    icon3d: "/images/icons/3d/stage-flowering.jpg",
+  },
+  {
+    id: "fruiting",
+    labelHi: "फल व दाना",
+    subHi: "फल / बाली भराव",
+    icon3d: "/images/icons/3d/stage-fruiting.jpg",
+  },
 ];
 
 export const SILICONE_STICKER: MixMedicine = {
