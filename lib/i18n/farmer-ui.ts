@@ -447,7 +447,7 @@ const STRINGS = {
     settingsMarketAlerts: "Market price alerts",
     settingsManagePriceAlerts: "Manage price alerts",
     settingsQuietHours: "Quiet hours",
-    shareAgriveda: "Share Agriveda",
+    shareAgriveda: "Share AgriVeda with others",
     shareCopied: "Link copied to clipboard",
     shareDone: "Thanks — shared",
 
@@ -968,7 +968,7 @@ const STRINGS = {
     settingsMarketAlerts: "मंडी भाव अलर्ट",
     settingsManagePriceAlerts: "भाव अलर्ट प्रबंधित करें",
     settingsQuietHours: "शांत समय",
-    shareAgriveda: "एग्रिवेदा साझा करें",
+    shareAgriveda: "एग्रीवेदा को और लोगों तक पहुँचाएँ",
     shareCopied: "लिंक कॉपी हो गया",
     shareDone: "धन्यवाद — साझा हो गया",
 

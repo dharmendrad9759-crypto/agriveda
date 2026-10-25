@@ -9,7 +9,8 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
-import { shareAgriveda } from "@/lib/appEssentials";
+import { shareAgriveda, softTap } from "@/lib/appEssentials";
+import { ShareAgrivedaModal } from "@/components/share/ShareAgrivedaModal";
 import { SUPPORT_MAILTO } from "@/lib/appMeta";
 import { farmerPlaceLine } from "@/lib/farmerPlaceName";
 import { BRAND } from "@/lib/brand";
@@ -168,6 +169,7 @@ export default function SettingsPage() {
   const { locale, setLocale, t } = useLocale();
   const { showToast } = useToast();
   const [busy, setBusy] = useState<"logout" | "delete" | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
   const isHi = locale === "hi";
 
   const greetName = profile.name.trim()
@@ -222,9 +224,13 @@ export default function SettingsPage() {
   };
 
   const handleShare = async () => {
+    softTap();
     const result = await shareAgriveda();
-    if (result === "copied") showToast(t("shareCopied"), "success");
-    else if (result === true) showToast(t("shareDone"), "success");
+    if (result === "fallback") {
+      setShowShareModal(true);
+    } else if (result === "native") {
+      showToast(t("shareDone"), "success");
+    }
   };
 
   const langs: { code: AppLocale; label: string; mark: string }[] = [
@@ -496,9 +502,9 @@ export default function SettingsPage() {
           />
           <Stick
             icon={Share2}
-            tone="bg-amber-500/15 text-amber-800 dark:text-amber-300"
+            tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
             title={t("shareAgriveda")}
-            hint={isHi ? "गाँव के किसान भाई को भेजें" : "Send to another farmer"}
+            hint={isHi ? "व्हाट्सएप, मैसेज या अन्य ऐप्स पर साझा करें" : "Share via WhatsApp, SMS or apps"}
             onClick={() => void handleShare()}
           />
         </Section>
@@ -555,6 +561,11 @@ export default function SettingsPage() {
           </div>
         </section>
       </div>
+      <ShareAgrivedaModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        lang={locale}
+      />
     </AppShell>
   );
 }
