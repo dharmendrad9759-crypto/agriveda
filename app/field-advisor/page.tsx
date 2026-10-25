@@ -220,7 +220,7 @@ function FieldAdvisorContent() {
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-700 dark:text-purple-300">
               <FlaskConical className="h-5 w-5" />
             </span>
-            <span className="text-xs font-bold text-[var(--av-text-primary)]">दवा मिश्रण जांच</span>
+            <span className="text-xs font-bold text-[var(--av-text-primary)]">दवा घोल जांच</span>
             <span className="text-[10px] text-[var(--av-text-muted)]">घोल सुरक्षा चेक</span>
           </AppLink>
 

@@ -35,6 +35,11 @@ const LOCAL_CROP_PHOTOS: Record<string, string> = {
   urad: "/images/crops/urad.jpg",
   ginger: "/images/crops/ginger.jpg",
   garlic: "/images/crops/garlic.jpg",
+  capsicum: "/images/crops/capsicum.jpg",
+  cabbage: "/images/crops/cabbage.jpg",
+  arhar: "/images/crops/arhar.jpg",
+  tur: "/images/crops/arhar.jpg",
+  pigeonpea: "/images/crops/arhar.jpg",
 };
 
 /**

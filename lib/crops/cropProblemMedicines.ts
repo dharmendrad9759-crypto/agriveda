@@ -839,7 +839,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
   "soybean": {
     "stem-fly": [
           {
-                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "nameHi": "थियामेथोक्साम 25% WG",
                 "technical": "Thiamethoxam 25% WG",
                 "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
                 "brands": [
@@ -851,7 +851,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "100 ग्राम / एकड़"
           },
           {
-                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
+                "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC",
                 "technical": "Thiamethoxam 12.6% + Lambda-cyhalothrin 9.5% ZC",
                 "dose": "0.4 मिली / लीटर पानी (80 मिली प्रति एकड़)",
                 "brands": [
@@ -863,7 +863,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "80 मिली / एकड़"
           },
           {
-                "nameHi": "बीटा-साइफ्लूथ्रिन 8.49% + इमिडाक्लोप्रिड 19.81% OD (सोलोमन)",
+                "nameHi": "बीटा-साइफ्लूथ्रिन 8.49% + इमिडाक्लोप्रिड 19.81% OD",
                 "technical": "Beta-cyfluthrin 8.49% + Imidacloprid 19.81% OD",
                 "dose": "0.7 मिली / लीटर पानी (140 मिली प्रति एकड़)",
                 "brands": [
@@ -878,7 +878,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "charcoal-rot": [
           {
-                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP (साफ)",
+                "nameHi": "कार्बेन्डाजिम 12% + मैंकोजेब 63% WP",
                 "technical": "Carbendazim 12% + Mancozeb 63% WP",
                 "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़)",
                 "brands": [
@@ -891,7 +891,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "500 ग्राम / एकड़"
           },
           {
-                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC",
                 "technical": "Tebuconazole 25.9% EC",
                 "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
                 "brands": [
@@ -904,9 +904,9 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "250 मिली / एकड़"
           },
           {
-                "nameHi": "एज़ोक्सीस्ट्रोबिन + टेबुकोनाज़ोल SC (कस्टोडिया)",
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC",
                 "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
-                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़) या पेनफ्लूफेन+ट्राइफ्लॉक्सीस्ट्रोबिन",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
                 "brands": [
                       "Custodia (Adama)",
                       "EverGol Xtend"
@@ -933,7 +933,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "400 मिली / एकड़"
           },
           {
-                "nameHi": "थायक्लोप्रिड 21.7% SC (एलांटो)",
+                "nameHi": "थायक्लोप्रिड 21.7% SC",
                 "technical": "Thiacloprid 21.7% SC",
                 "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
                 "brands": [
@@ -945,7 +945,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "250 मिली / एकड़"
           },
           {
-                "nameHi": "क्लोरेंट्रानिलिप्रोल 9.3% + लैम्ब्डा-साइहेलोथ्रिन 4.6% ZC (एम्पलिगो)",
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 9.3% + लैम्ब्डा-साइहेलोथ्रिन 4.6% ZC",
                 "technical": "Chlorantraniliprole 9.3% + Lambda-cyhalothrin 4.6% ZC",
                 "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
                 "brands": [
@@ -6119,23 +6119,34 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "250 ग्राम + 500 ग्राम / एकड़"
           },
           {
-                "nameHi": "मैंडीप्रोपामिड 23.4% SC (रेवस) या अमिसुलब्रोम 17.7% SC",
-                "technical": "Mandipropamid 23.4% SC (160 ml) या Amisulbrom (150 ml)",
+                "nameHi": "मैंडीप्रोपामिड 23.4% SC",
+                "technical": "Mandipropamid 23.4% SC",
                 "dose": "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़)",
                 "brands": [
-                      "Revus (Syngenta)",
-                      "Amistar"
+                      "Revus (Syngenta)"
                 ],
                 "safety": "डाउनी मिल्ड्यू पर विश्व स्तरीय अत्याधुनिक मॉलिक्यूल, बारिश में 1 घंटे बाद भी नहीं धुलता।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "160 मिली / एकड़",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "अमिसुलब्रोम 17.7% SC",
+                "technical": "Amisulbrom 17.7% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
+                "brands": [
+                      "Leimay (Bharat Certis)"
+                ],
+                "safety": "कवक की सभी अवस्थाओं (स्पोर अंकुरण व जूस्पोर) पर अचूक क्रिया।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर",
+                "dosePerAcre": "150 मिली / एकड़"
           }
     ],
     "powdery-mildew": [
           {
-                "nameHi": "माइक्लोब्यूटानिल 10% WP (सिस्टेन)",
+                "nameHi": "माइक्लोब्यूटानिल 10% WP",
                 "technical": "Myclobutanil 10% WP",
                 "dose": "0.75 ग्राम / लीटर पानी (150 ग्राम प्रति एकड़)",
                 "brands": [
@@ -6149,12 +6160,11 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "resistanceWarning": "लगातार उपयोग से कवक में प्रतिरोध का खतरा।"
           },
           {
-                "nameHi": "टेट्राकोनाज़ोल 3.8% EW (डोमार्क) या डिफेनोकोनाज़ोल 25% EC (स्कोर)",
-                "technical": "Tetraconazole 3.8% EW (250 ml) या Difenoconazole 25% EC (100 ml)",
+                "nameHi": "टेट्राकोनाज़ोल 3.8% EW",
+                "technical": "Tetraconazole 3.8% EW",
                 "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
                 "brands": [
-                      "Domark (Isagro)",
-                      "Score (Syngenta)"
+                      "Domark (Isagro)"
                 ],
                 "safety": "अंगूर की त्वचा पर सुरक्षित, दानों पर कोई सफेद दाग नहीं छोड़ता।",
                 "level": 2,
@@ -6162,8 +6172,20 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "250 मिली / एकड़"
           },
           {
-                "nameHi": "मेट्राफेनोन 50% SC (विवांडो) या फ्लुक्सापाइरॉक्साड + डिफेनोकोनाज़ोल",
-                "technical": "Metrafenone 50% SC (100 ml) या Fluxapyroxad + Difenoconazole",
+                "nameHi": "डिफेनोकोनाज़ोल 25% EC",
+                "technical": "Difenoconazole 25% EC",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Score (Syngenta)"
+                ],
+                "safety": "सिस्टेमिक क्रिया द्वारा अंदरूनी कवक को नष्ट करता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 मिली / एकड़"
+          },
+          {
+                "nameHi": "मेट्राफेनोन 50% SC",
+                "technical": "Metrafenone 50% SC",
                 "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
                 "brands": [
                       "Vivando (BASF)"

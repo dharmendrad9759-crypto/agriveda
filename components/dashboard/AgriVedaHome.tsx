@@ -208,77 +208,131 @@ const QUICK_JOBS: {
   },
 ];
 
-const MORE_JOBS: {
+interface FarmToolItem {
   id: string;
   hi: string;
   en: string;
   subHi: string;
   subEn: string;
+  tagHi: string;
+  tagEn: string;
   href: string;
   imageSrc: string;
-}[] = [
+}
+
+interface FarmToolCategory {
+  id: string;
+  titleHi: string;
+  titleEn: string;
+  descHi: string;
+  descEn: string;
+  badgeHi: string;
+  badgeEn: string;
+  accent: string;
+  items: FarmToolItem[];
+}
+
+const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
   {
-    id: "farm",
-    hi: "मेरा खेत",
-    en: "My farm",
-    subHi: "खेत प्रोफाइल व फसलें",
-    subEn: "Farm profile & crops",
-    href: "/my-farm",
-    imageSrc: "/images/jobs/job-my-farm.jpg",
+    id: "protection",
+    titleHi: "फसल सुरक्षा व स्प्रे टूल्स",
+    titleEn: "Crop Protection & Spray Tools",
+    descHi: "दवा घोल जांच, खरपतवार व पोषण सुरक्षा",
+    descEn: "Spray safety, weed & nutrition solutions",
+    badgeHi: "सुरक्षा व स्प्रे",
+    badgeEn: "Protection",
+    accent: "emerald",
+    items: [
+      {
+        id: "mix",
+        hi: "दवा घोल जांच",
+        en: "Spray Mix Safety",
+        subHi: "दो दवाएँ मिलाने से पहले सुरक्षा जाँचें",
+        subEn: "Check compatibility before mixing",
+        tagHi: "स्मार्ट चेकर",
+        tagEn: "Smart Check",
+        href: "/mix-advisor",
+        imageSrc: "/images/jobs/job-spray.jpg",
+      },
+      {
+        id: "weeds",
+        hi: "खरपतवार नियंत्रण",
+        en: "Weeds Control",
+        subHi: "घास व खरपतवार नाशक दवाएं",
+        subEn: "Herbicide solutions",
+        tagHi: "खरपतवार नाशक",
+        tagEn: "Herbicides",
+        href: "/pest-diseases?type=weed",
+        imageSrc: "/images/threats/threat-weed.jpg",
+      },
+      {
+        id: "spray-rotation",
+        hi: "स्प्रे चक्र व डायरी",
+        en: "Spray Rotation & Log",
+        subHi: "दवा बदलने और स्प्रे डायरी का हिसाब",
+        subEn: "Track MoA & spray logs",
+        tagHi: "रोटेशन हिसाब",
+        tagEn: "MoA Tracker",
+        href: "/spray-rotation",
+        imageSrc: "/images/jobs/job-spray-avoid.jpg",
+      },
+      {
+        id: "leaf",
+        hi: "पत्ती पीली / खराब",
+        en: "Nutrient Deficiencies",
+        subHi: "पीले व बीमार पत्तों के पोषक तत्व",
+        subEn: "Nutrient solutions",
+        tagHi: "पोषण कमी",
+        tagEn: "Deficiency",
+        href: "/deficiencies",
+        imageSrc: "/images/home/home-job-yellow-leaf.jpg",
+      },
+    ],
   },
   {
-    id: "mix",
-    hi: "दवा मिश्रण जांच (घोल सुरक्षा)",
-    en: "Tank Mix Advisor",
-    subHi: "दो दवाएँ मिलाने से पहले सुरक्षा जाँचें",
-    subEn: "Check compatibility before mixing",
-    href: "/mix-advisor",
-    imageSrc: "/images/jobs/job-spray.jpg",
-  },
-  {
-    id: "weeds",
-    hi: "खरपतवार नियंत्रण",
-    en: "Weeds Control",
-    subHi: "घास व खरपतवार नाशक दवाएं",
-    subEn: "Herbicide solutions",
-    href: "/pest-diseases?type=weed",
-    imageSrc: "/images/threats/threat-weed.jpg",
-  },
-  {
-    id: "leaf",
-    hi: "पत्ती पीली / खराब",
-    en: "Nutrient Deficiencies",
-    subHi: "पीले व बीमार पत्तों के पोषक तत्व",
-    subEn: "Nutrient solutions",
-    href: "/deficiencies",
-    imageSrc: "/images/home/home-job-yellow-leaf.jpg",
-  },
-  {
-    id: "plan",
-    hi: "फसल प्लानर",
-    en: "Crop Planner",
-    subHi: "बुवाई से कटाई का पूरा कैलेंडर",
-    subEn: "Sowing to harvest schedule",
-    href: "/crop-calendar",
-    imageSrc: "/images/home/home-job-plan.jpg",
-  },
-  {
-    id: "alerts",
-    hi: "खेत अलर्ट",
-    en: "Farm alerts",
-    subHi: "मौसम, कीट व स्प्रे चेतावनी",
-    subEn: "Weather, pests & spray warnings",
-    href: "/alerts",
-    imageSrc: "/images/jobs/job-alerts.jpg",
-  },
-  {
-    id: "spray-rotation",
-    hi: "स्प्रे चक्र व डायरी",
-    en: "Spray Rotation & Log",
-    subHi: "दवा बदलने और स्प्रे डायरी का हिसाब",
-    subEn: "Track MoA & spray logs",
-    href: "/spray-rotation",
-    imageSrc: "/images/jobs/job-spray-avoid.jpg",
+    id: "management",
+    titleHi: "खेत व फसल प्रबंधन",
+    titleEn: "Farm & Crop Management",
+    descHi: "खेत प्रोफाइल, फसल कैलेंडर व मौसम अलर्ट",
+    descEn: "Farm records, calendar & weather alerts",
+    badgeHi: "खेत प्रबंधन",
+    badgeEn: "Management",
+    accent: "teal",
+    items: [
+      {
+        id: "farm",
+        hi: "मेरा खेत",
+        en: "My Farm",
+        subHi: "खेत प्रोफाइल, रकबा व फसलें",
+        subEn: "Farm profile & crops",
+        tagHi: "रकबा रिकॉर्ड",
+        tagEn: "Field Record",
+        href: "/my-farm",
+        imageSrc: "/images/jobs/job-my-farm.jpg",
+      },
+      {
+        id: "plan",
+        hi: "फसल प्लानर",
+        en: "Crop Planner",
+        subHi: "बुवाई से कटाई का पूरा कैलेंडर",
+        subEn: "Sowing to harvest schedule",
+        tagHi: "फसल कैलेंडर",
+        tagEn: "Calendar",
+        href: "/crop-calendar",
+        imageSrc: "/images/home/home-job-plan.jpg",
+      },
+      {
+        id: "alerts",
+        hi: "खेत अलर्ट",
+        en: "Farm Alerts",
+        subHi: "मौसम, कीट व स्प्रे चेतावनी",
+        subEn: "Weather, pests & spray warnings",
+        tagHi: "लाइव अलर्ट",
+        tagEn: "Live Alerts",
+        href: "/alerts",
+        imageSrc: "/images/jobs/job-alerts.jpg",
+      },
+    ],
   },
 ];
 
@@ -518,44 +572,80 @@ export default function AgriVedaHome() {
           </motion.section>
         ) : null}
 
-        {/* Farm tools & utilities — clean balanced grid */}
-        <motion.section {...fade(0.07)}>
-          <div className="mb-3 px-1 mt-4">
-            <h2 className="text-[16px] font-extrabold tracking-tight text-[var(--av-text-primary)]">
-              {isHi ? "खेत के अन्य टूल्स (Farm Tools)" : "Farm Tools & Services"}
-            </h2>
+        {/* Farm tools & utilities — Luxury Categorized Grid */}
+        <motion.section {...fade(0.07)} className="space-y-3.5 pt-1">
+          <div className="flex items-center justify-between px-1">
+            <div>
+              <h2 className="text-[16px] font-black tracking-tight text-[var(--av-text-primary)]">
+                {isHi ? "खेत के अन्य टूल्स (Farm Tools)" : "Farm Tools & Services"}
+              </h2>
+              <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                {isHi ? "फसल सुरक्षा, स्प्रे हिसाब और खेत प्रबंधन" : "Crop protection, spray logs and farm management"}
+              </p>
+            </div>
+            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10.5px] font-black text-emerald-800 dark:text-emerald-300 border border-emerald-500/25">
+              {isHi ? "7 स्मार्ट टूल्स" : "7 Smart Tools"}
+            </span>
           </div>
-          
-          <div className="grid grid-cols-1 gap-2.5 px-0.5 sm:grid-cols-2">
-            {MORE_JOBS.map((job) => (
-              <AppLink
-                key={job.id}
-                href={job.href}
-                onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
-                className="group flex items-center gap-3 overflow-hidden rounded-2xl border border-emerald-900/10 bg-[var(--av-surface)] p-2.5 shadow-[0_4px_16px_-8px_rgba(11,61,40,0.12)] transition hover:border-emerald-500/30 active:scale-[0.98] dark:border-emerald-800/20 dark:shadow-none"
+
+          <div className="space-y-3.5">
+            {FARM_TOOL_CATEGORIES.map((category) => (
+              <div
+                key={category.id}
+                className="rounded-3xl border border-emerald-900/10 bg-gradient-to-b from-[var(--av-surface)] to-[var(--av-surface-inset)]/40 p-3 shadow-[0_8px_24px_-12px_rgba(11,61,40,0.12)] dark:border-emerald-500/15 dark:shadow-none"
               >
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-black/5 dark:border-white/5">
-                  <Image
-                    src={job.imageSrc}
-                    alt=""
-                    fill
-                    sizes="48px"
-                    quality={50}
-                    className="object-cover transition duration-300 group-hover:scale-105"
-                  />
+                {/* Category Header */}
+                <div className="mb-2.5 flex items-center justify-between px-1 pt-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[13px] font-black tracking-tight text-[var(--av-text-primary)]">
+                      {isHi ? category.titleHi : category.titleEn}
+                    </span>
+                  </div>
+                  <span className="rounded-md bg-emerald-600/10 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                    {isHi ? category.badgeHi : category.badgeEn}
+                  </span>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14px] font-bold text-[var(--av-text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
-                    {isHi ? job.hi : job.en}
-                  </p>
-                  <p className="truncate text-[11px] font-semibold text-[var(--av-text-muted)]">
-                    {isHi ? job.subHi : job.subEn}
-                  </p>
+
+                {/* Items Grid */}
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {category.items.map((job) => (
+                    <AppLink
+                      key={job.id}
+                      href={job.href}
+                      onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
+                      className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-emerald-900/8 bg-[var(--av-surface)] p-2.5 shadow-[0_2px_10px_-4px_rgba(11,61,40,0.08)] transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md active:scale-[0.98] dark:border-white/5"
+                    >
+                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-black/5 dark:border-white/10 shadow-xs">
+                        <Image
+                          src={job.imageSrc}
+                          alt=""
+                          fill
+                          sizes="48px"
+                          quality={60}
+                          className="object-cover transition duration-300 group-hover:scale-110"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <p className="truncate text-[13.5px] font-black text-[var(--av-text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
+                            {isHi ? job.hi : job.en}
+                          </p>
+                          <span className="rounded-sm bg-emerald-500/10 px-1 py-0.2 text-[9px] font-black text-emerald-700 dark:text-emerald-300">
+                            {isHi ? job.tagHi : job.tagEn}
+                          </span>
+                        </div>
+                        <p className="truncate text-[11px] font-medium text-[var(--av-text-muted)]">
+                          {isHi ? job.subHi : job.subEn}
+                        </p>
+                      </div>
+                      <div className="mr-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-700 transition group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-500/20 dark:text-emerald-300">
+                        <ChevronRight className="h-4 w-4" />
+                      </div>
+                    </AppLink>
+                  ))}
                 </div>
-                <div className="mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400">
-                  <ChevronRight className="h-4 w-4" />
-                </div>
-              </AppLink>
+              </div>
             ))}
           </div>
         </motion.section>

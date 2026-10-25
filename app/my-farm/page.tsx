@@ -120,7 +120,7 @@ const FARM_LINKS: {
   { id: "doctor", hi: "फसल डॉक्टर", en: "Crop Doctor", href: "/ai-doctor", icon3d: "/images/icons/3d/crop-doctor.jpg", icon: ShieldAlert },
   { id: "weather", hi: "मौसम सलाह", en: "Weather", href: "/weather", icon3d: "/images/icons/3d/weather.jpg", icon: CloudSun },
   { id: "mandi", hi: "मंडी भाव", en: "Mandi", href: "/mandi", icon3d: "/images/icons/3d/mandi.jpg", icon: TrendingUp },
-  { id: "mix", hi: "दवा मिश्रण जांच", en: "Tank Mix", href: "/mix-advisor", icon: FlaskConical },
+  { id: "mix", hi: "दवा घोल जांच", en: "Tank Mix", href: "/mix-advisor", icon: FlaskConical },
 ];
 
 export default function MyFarmPage() {

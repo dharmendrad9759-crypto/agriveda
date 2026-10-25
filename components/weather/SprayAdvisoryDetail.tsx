@@ -404,7 +404,7 @@ export default function SprayAdvisoryDetail({ embedded = false }: { embedded?: b
             <div className="space-y-1.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-[11px] font-bold text-emerald-300 ring-1 ring-emerald-400/30">
                 <FlaskConical className="h-3.5 w-3.5" />
-                दवा मिश्रण जांच (घोल सुरक्षा)
+                दवा घोल जांच
               </span>
               <h3 className="text-lg font-bold leading-snug">
                 क्या दो या तीन दवाएं एक साथ मिला सकते हैं?

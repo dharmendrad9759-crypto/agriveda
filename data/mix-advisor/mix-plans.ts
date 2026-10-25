@@ -691,10 +691,25 @@ export function curativeToMixMedicine(
   dosePerLiter = dosePerLiter.replace(/मिली\/ग्राम|ग्राम\/मिली/g, solidOrLiquidUnit);
   dosePerAcre = dosePerAcre.replace(/मिली\/ग्राम|ग्राम\/मिली/g, solidOrLiquidUnit);
 
+  const cleanHi = curative.nameHi
+    ? curative.nameHi
+        .replace(/\s*\([^)]*[\u0900-\u097F\w\s/-]+\)\s*$/, "")
+        .replace(/\s*\(.*?\)\s*$/, "")
+        .replace(/\s*या\s+.*$/, "")
+        .trim()
+    : "";
+
+  const cleanTech = curative.technical
+    ? curative.technical
+        .replace(/\s*\([^)]*(?:ml|gm|g)\)\s*/gi, "")
+        .replace(/\s*या\s+.*$/, "")
+        .trim()
+    : curative.technical;
+
   return {
     activeId,
-    technical: curative.technical,
-    nameHi: curative.nameHi,
+    technical: cleanTech,
+    nameHi: cleanHi || curative.nameHi,
     formCode,
     formHi: `${formCode} फॉर्मूलेशन`,
     category,

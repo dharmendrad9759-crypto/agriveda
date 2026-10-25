@@ -425,7 +425,7 @@ function MixAdvisorInner() {
   return (
     <AppShell
       variant="hub"
-      title="दवा मिश्रण जांच (घोल सुरक्षा)"
+      title="दवा घोल जांच"
       onBack={handleBackStep}
     >
       <div className="mx-auto max-w-xl space-y-4 px-2 pb-4">
@@ -697,9 +697,6 @@ function MixAdvisorInner() {
                         <span className="font-semibold text-emerald-800 dark:text-emerald-200">
                           {selectedProblems.map((p) => p.nameHi).join(" + ")}
                         </span>
-                        <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-                          💡 चुनी गई समस्याओं के लिए सबसे असरदार व सुरक्षित दवाएँ अपने आप सुझाई जाएँगी।
-                        </p>
                       </div>
                     </div>
                   </div>
