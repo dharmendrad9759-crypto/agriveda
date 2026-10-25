@@ -38,20 +38,10 @@ import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 /** Unified Crop Disease & Doctor Hero Card — 2-Column Split Photo Cards, High-Affordance, Futuristic & Clean */
 function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/25 bg-gradient-to-br from-emerald-850 via-emerald-900 to-teal-950 p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-12px_rgba(5,70,45,0.45)]">
-      {/* Background ambient glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-emerald-400/20 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-teal-400/15 blur-3xl"
-      />
-
+    <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/20 bg-gradient-to-br from-[#063320] via-[#042416] to-[#02180e] p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-12px_rgba(2,24,14,0.5)]">
       {/* Header section — Clean badges + punchy heading */}
       <div className="relative z-10 flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/20 border border-emerald-300/35 px-2.5 py-0.5 text-[10.5px] font-extrabold tracking-wide text-emerald-200">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/25 px-2.5 py-0.5 text-[10.5px] font-extrabold tracking-wide text-emerald-200">
           <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
           {isHi ? "फसल डॉक्टर" : "Crop Doctor"}
         </span>
@@ -64,11 +54,6 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
         <h2 className="text-[17px] sm:text-[19px] font-black leading-tight text-white tracking-tight">
           {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop Disease or Pest Issue?"}
         </h2>
-        <p className="mt-0.5 text-[11px] sm:text-[12px] font-medium leading-normal text-emerald-100/85">
-          {isHi
-            ? "फोटो खींचें या लक्षणों से पहचानें — तुरंत सटीक इलाज व असली दवा।"
-            : "Snap photo or browse symptoms — get instant cure & verified medicine."}
-        </p>
       </div>
 
       {/* Dual Split Cards: 1) Camera Photo Scan, 2) Symptoms & Disease Directory */}
@@ -80,7 +65,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
           className="group relative flex flex-col overflow-hidden rounded-2xl border border-emerald-400/30 bg-emerald-950/70 backdrop-blur-md shadow-md transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-950/90 hover:shadow-xl active:scale-[0.97]"
         >
           {/* Prominent Photo Window */}
-          <div className="relative h-28 sm:h-34 w-full overflow-hidden bg-slate-900">
+          <div className="relative h-34 sm:h-40 w-full overflow-hidden bg-slate-900">
             <Image
               src="/images/home/home-cta-scan.jpg"
               alt={isHi ? "कैमरा से पत्ती की जाँच" : "Camera scan"}
@@ -97,20 +82,14 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
                 {isHi ? "कैमरा जाँच" : "Camera"}
               </span>
             </div>
-            {/* Live AI Pill Top-Right */}
-            <div className="absolute right-2 top-2 z-10">
-              <span className="rounded-full bg-emerald-500/85 px-1.5 py-0.5 text-[8.5px] font-black text-slate-950 shadow-xs uppercase tracking-wider backdrop-blur-xs">
-                AI 2s
-              </span>
-            </div>
             {/* Bottom edge transition */}
             <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-emerald-950/90 to-transparent" />
           </div>
 
           {/* Lower Content & High-Affordance CTA */}
-          <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1">
+          <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1.5">
             <div>
-              <h3 className="text-[13px] sm:text-[14px] font-black leading-tight text-white group-hover:text-emerald-200 transition-colors">
+              <h3 className="text-[13.5px] sm:text-[14.5px] font-black leading-tight text-white group-hover:text-emerald-200 transition-colors">
                 {isHi ? "पत्ती की फोटो लें" : "Take Leaf Photo"}
               </h3>
               <p className="mt-0.5 text-[10px] sm:text-[10.5px] font-medium leading-tight text-emerald-100/80 line-clamp-1">
@@ -133,7 +112,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
           className="group relative flex flex-col overflow-hidden rounded-2xl border border-teal-400/30 bg-teal-950/70 backdrop-blur-md shadow-md transition-all duration-300 hover:border-teal-300 hover:bg-teal-950/90 hover:shadow-xl active:scale-[0.97]"
         >
           {/* Prominent Photo Window */}
-          <div className="relative h-28 sm:h-34 w-full overflow-hidden bg-slate-900">
+          <div className="relative h-34 sm:h-40 w-full overflow-hidden bg-slate-900">
             <Image
               src="/images/home/home-job-crop-problems.jpg"
               alt={isHi ? "रोग व कीट डायरेक्टरी" : "Crop diseases catalog"}
@@ -147,13 +126,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
             <div className="absolute left-2 top-2 z-10">
               <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/75 px-2 py-0.5 text-[9.5px] font-extrabold text-white backdrop-blur-md border border-white/20 shadow-xs">
                 <ClipboardList className="h-3 w-3 text-teal-300" />
-                {isHi ? "रोग लाइब्रेरी" : "Library"}
-              </span>
-            </div>
-            {/* Crop tag Top-Right */}
-            <div className="absolute right-2 top-2 z-10">
-              <span className="rounded-full bg-teal-500/85 px-1.5 py-0.5 text-[8.5px] font-black text-slate-950 shadow-xs uppercase tracking-wider backdrop-blur-xs">
-                {isHi ? "फसल अनुसार" : "By Crop"}
+                {isHi ? "कीट व रोग" : "Pests & Disease"}
               </span>
             </div>
             {/* Bottom edge transition */}
@@ -161,19 +134,19 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
           </div>
 
           {/* Lower Content & High-Affordance CTA */}
-          <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1">
+          <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1.5">
             <div>
-              <h3 className="text-[13px] sm:text-[14px] font-black leading-tight text-white group-hover:text-teal-200 transition-colors">
-                {isHi ? "लक्षणों से पहचानें" : "Identify by Crop"}
+              <h3 className="text-[13.5px] sm:text-[14.5px] font-black leading-tight text-white group-hover:text-teal-200 transition-colors">
+                {isHi ? "लक्षणों से पहचानें" : "Identify by Symptoms"}
               </h3>
               <p className="mt-0.5 text-[10px] sm:text-[10.5px] font-medium leading-tight text-teal-100/80 line-clamp-1">
-                {isHi ? "कीट व बीमारी डायरेक्टरी" : "Browse all pests"}
+                {isHi ? "रोग, कीट व सही दवा" : "Pests & treatment"}
               </p>
             </div>
 
             {/* Clickable Action Pill Button */}
             <div className="mt-2.5 flex items-center justify-between rounded-xl bg-gradient-to-r from-teal-400 to-cyan-300 px-2.5 py-1.5 text-[11px] font-black text-teal-950 shadow-sm transition-all group-hover:from-teal-300 group-hover:to-cyan-200">
-              <span>{isHi ? "डायरेक्टरी देखें" : "Directory"}</span>
+              <span>{isHi ? "रोग देखें" : "View Diseases"}</span>
               <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
             </div>
           </div>
