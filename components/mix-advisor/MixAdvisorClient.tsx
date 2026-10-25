@@ -450,13 +450,6 @@ function MixAdvisorInner() {
               <div>
                 <div className="flex items-center justify-between">
                   <p className={AV.sectionTitle}>1. फसल चुनें (Crop)</p>
-                  <button
-                    type="button"
-                    onClick={() => setCropGridOpen((prev) => !prev)}
-                    className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"
-                  >
-                    {cropGridOpen ? "सूची समेटें ▴" : "सभी फसलें देखें ▾"}
-                  </button>
                 </div>
 
                 {/* Selected Crop Compact Banner */}
