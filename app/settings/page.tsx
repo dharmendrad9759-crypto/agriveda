@@ -10,6 +10,7 @@ import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { shareAgriveda, softTap } from "@/lib/appEssentials";
+import { registerFarmerPush } from "@/lib/push/farmerPush";
 import { ShareAgrivedaModal } from "@/components/share/ShareAgrivedaModal";
 import { SUPPORT_MAILTO } from "@/lib/appMeta";
 import { farmerPlaceLine } from "@/lib/farmerPlaceName";
@@ -388,10 +389,12 @@ export default function SettingsPage() {
             toggle={{
               on: settings.weatherAlerts,
               onChange: (v) => {
+                softTap();
                 update({ weatherAlerts: v });
                 showToast(
                   `${t("settingsWeatherAlerts")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
                 );
+                if (v) void registerFarmerPush();
               },
             }}
           />
@@ -403,10 +406,12 @@ export default function SettingsPage() {
             toggle={{
               on: settings.pestAlerts,
               onChange: (v) => {
+                softTap();
                 update({ pestAlerts: v });
                 showToast(
                   `${t("settingsPestAlerts")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
                 );
+                if (v) void registerFarmerPush();
               },
             }}
           />
@@ -418,10 +423,12 @@ export default function SettingsPage() {
             toggle={{
               on: settings.fertilizerReminders,
               onChange: (v) => {
+                softTap();
                 update({ fertilizerReminders: v });
                 showToast(
                   `${t("settingsFertilizerReminders")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
                 );
+                if (v) void registerFarmerPush();
               },
             }}
           />
@@ -433,10 +440,12 @@ export default function SettingsPage() {
             toggle={{
               on: priceSettings.masterEnabled,
               onChange: (v) => {
+                softTap();
                 setMasterEnabled(v);
                 showToast(
                   `${t("settingsMarketAlerts")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
                 );
+                if (v) void registerFarmerPush();
               },
             }}
           />
@@ -455,6 +464,7 @@ export default function SettingsPage() {
             toggle={{
               on: settings.quietHoursEnabled,
               onChange: (v) => {
+                softTap();
                 update({ quietHoursEnabled: v });
                 showToast(
                   `${t("settingsQuietHours")}: ${v ? (isHi ? "चालू किया ✓" : "Enabled ✓") : (isHi ? "बंद किया ✓" : "Disabled ✓")}`
@@ -464,30 +474,7 @@ export default function SettingsPage() {
           />
         </Section>
 
-        <Section title={isHi ? "स्थान और खेत" : "Place & fields"}>
-          <Stick
-            icon={MapPin}
-            tone="bg-rose-500/15 text-rose-700 dark:text-rose-300"
-            title={isHi ? "मेरा स्थान" : "My place"}
-            hint={place || (isHi ? "ज़िला जोड़ें — मौसम सही आएगा" : "Add district for weather")}
-            href="/profile/edit"
-          />
-          <Stick
-            icon={Sprout}
-            tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
-            title={isHi ? "खेत देखें" : "See fields"}
-            hint={
-              fieldCount
-                ? isHi
-                  ? `${fieldCount} खेत जुड़े`
-                  : `${fieldCount} fields`
-                : isHi
-                  ? "पहला खेत जोड़ें"
-                  : "Add first field"
-            }
-            href="/my-farm"
-          />
-        </Section>
+
 
         <Section title={isHi ? "निजता व सुरक्षा" : "Privacy & Security"}>
           <Stick

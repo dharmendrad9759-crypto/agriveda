@@ -21,7 +21,8 @@ export const EMPTY_FARM_DATA: FarmData = {
   notes: [],
 };
 
-export function cropSlugFromLabel(crop: string): string | undefined {
+export function cropSlugFromLabel(crop?: string): string | undefined {
+  if (!crop || typeof crop !== "string") return undefined;
   const base = crop.split("(")[0].trim().toLowerCase();
   const match = cropCatalog.find(
     (c) => c.slug === base || c.name.toLowerCase() === base
@@ -53,13 +54,16 @@ export function buildFarmFieldFromInput(input: OnboardingFieldInput, index: numb
   };
 }
 
-export function parseAreaAcres(area: string): number {
+export function parseAreaAcres(area?: string | number): number {
+  if (typeof area === "number") return Number.isFinite(area) ? area : 0;
+  if (!area || typeof area !== "string") return 0;
   const match = area.match(/([\d.]+)/);
   return match ? parseFloat(match[1]) : 0;
 }
 
-export function totalAreaAcres(fields: { area: string }[]): number {
-  return fields.reduce((sum, f) => sum + parseAreaAcres(f.area), 0);
+export function totalAreaAcres(fields?: { area?: string | number }[]): number {
+  if (!Array.isArray(fields)) return 0;
+  return fields.reduce((sum, f) => sum + parseAreaAcres(f?.area), 0);
 }
 
 export function syncSprayFieldsFromFarm(fields: FarmField[]) {

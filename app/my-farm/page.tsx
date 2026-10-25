@@ -90,9 +90,11 @@ function getPopularVarieties(slug: string): string[] {
 
 const ACRE_PRESETS = ["0.5", "1", "2", "3", "5"];
 
-function totalAreaLabel(fields: { area: string }[]) {
+function totalAreaLabel(fields?: { area?: string | number }[]) {
+  if (!Array.isArray(fields)) return "—";
   const acres = fields.reduce((sum, f) => {
-    const match = f.area.match(/([\d.]+)/);
+    const str = typeof f?.area === "string" ? f.area : "";
+    const match = str.match(/([\d.]+)/);
     return sum + (match ? parseFloat(match[1]) : 0);
   }, 0);
   return acres > 0 ? `${acres.toFixed(1)} एकड़` : "—";
@@ -895,7 +897,7 @@ export default function MyFarmPage() {
                             ) : null}
                           </div>
                           <p className="mt-1 text-[11px] font-medium text-white/80">
-                            {f.area.replace(/\s*Acre$/i, " एकड़")}
+                            {f.area ? String(f.area).replace(/\s*Acre$/i, " एकड़") : "—"}
                           </p>
                         </div>
                       </div>

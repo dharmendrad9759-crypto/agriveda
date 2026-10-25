@@ -21,8 +21,24 @@ export function sanitizeLegacyFarmData(stored: Partial<FarmData>): FarmData {
     return EMPTY_FARM_DATA;
   }
 
+  const cleanFields = fields.map((f, idx) => ({
+    id: f.id || `f-${Date.now()}-${idx}`,
+    name: f.name || `खेत ${idx + 1}`,
+    area: typeof f.area === "string" ? f.area : "1.0 Acre",
+    ownership: f.ownership || "Owned",
+    crop: f.crop || "गेहूँ (Wheat)",
+    cropSlug: f.cropSlug || "wheat",
+    status: f.status || "Active",
+    sowingDate: f.sowingDate || "",
+    sowingDateIso: f.sowingDateIso,
+    emoji: f.emoji || "🌾",
+    stage: f.stage || "सक्रिय",
+    variety: f.variety || "",
+    health: typeof f.health === "number" ? f.health : undefined,
+  }));
+
   return {
-    fields,
+    fields: cleanFields,
     activities: (stored.activities ?? []).filter((a) => !MOCK_ACTIVITY_IDS.has(a.id)),
     notes: stored.notes ?? [],
   };

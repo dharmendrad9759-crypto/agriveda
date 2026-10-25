@@ -38,7 +38,11 @@ export function useAppSettings() {
     setSettings(loaded);
     setHydrated(true);
     if (typeof document !== "undefined") {
-      document.documentElement.toggleAttribute("data-field-mode", Boolean(loaded.fieldMode));
+      if (loaded.fieldMode) {
+        document.documentElement.setAttribute("data-field-mode", "true");
+      } else {
+        document.documentElement.removeAttribute("data-field-mode");
+      }
     }
   }, []);
 
@@ -47,7 +51,11 @@ export function useAppSettings() {
       const next = { ...prev, ...patch };
       writeStorage(KEY, next);
       if (typeof document !== "undefined" && "fieldMode" in patch) {
-        document.documentElement.toggleAttribute("data-field-mode", Boolean(next.fieldMode));
+        if (next.fieldMode) {
+          document.documentElement.setAttribute("data-field-mode", "true");
+        } else {
+          document.documentElement.removeAttribute("data-field-mode");
+        }
       }
       return next;
     });

@@ -16,10 +16,10 @@ function defaultSettings(): PriceAlertSettings {
 function loadSettings(): PriceAlertSettings {
   if (typeof window === "undefined") return defaultSettings();
   const stored = readStorage<Partial<PriceAlertSettings> | null>(KEY, null);
-  if (!stored?.alerts?.length) return defaultSettings();
+  if (!stored) return defaultSettings();
   return {
-    masterEnabled: stored.masterEnabled ?? true,
-    alerts: stored.alerts,
+    masterEnabled: typeof stored.masterEnabled === "boolean" ? stored.masterEnabled : true,
+    alerts: Array.isArray(stored.alerts) ? stored.alerts : [],
   };
 }
 

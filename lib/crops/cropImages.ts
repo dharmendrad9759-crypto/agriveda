@@ -106,8 +106,8 @@ const SLUG_ALIASES: Record<string, string> = {
   "lady-finger": "bhindi",
 };
 
-export function normalizeCropSlug(slugOrName: string): string {
-  const raw = slugOrName.trim().toLowerCase().replace(/\s+/g, "-");
+export function normalizeCropSlug(slugOrName?: string): string {
+  const raw = (slugOrName || "").trim().toLowerCase().replace(/\s+/g, "-");
   return SLUG_ALIASES[raw] ?? raw;
 }
 

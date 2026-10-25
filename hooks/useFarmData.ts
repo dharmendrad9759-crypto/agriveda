@@ -104,25 +104,28 @@ export function useFarmData() {
   }, []);
 
   const stats = {
-    totalFields: data.fields.length,
-    activeFields: data.fields.filter((f) => f.status === "Active").length,
-    totalAreaAcres: totalAreaAcres(data.fields),
+    totalFields: data?.fields?.length ?? 0,
+    activeFields: (data?.fields ?? []).filter((f) => f?.status === "Active").length,
+    totalAreaAcres: totalAreaAcres(data?.fields ?? []),
     cropsGrowing: new Set(
-      data.fields.filter((f) => f.status === "Active").map((f) => f.crop.split("(")[0].trim())
+      (data?.fields ?? [])
+        .filter((f) => f?.status === "Active" && f?.crop)
+        .map((f) => (f.crop || "").split("(")[0].trim())
+        .filter(Boolean)
     ).size,
-    upcomingTasks: data.activities.length,
+    upcomingTasks: data?.activities?.length ?? 0,
     /** Only average fields that have a real health value — never invent 75% */
     healthScore: (() => {
-      const scored = data.fields.filter(
-        (f) => typeof f.health === "number" && Number.isFinite(f.health)
+      const scored = (data?.fields ?? []).filter(
+        (f) => typeof f?.health === "number" && Number.isFinite(f.health)
       );
       if (scored.length === 0) return null;
       return Math.round(
         scored.reduce((sum, f) => sum + (f.health as number), 0) / scored.length
       );
     })(),
-    hasRealHealth: data.fields.some(
-      (f) => typeof f.health === "number" && Number.isFinite(f.health)
+    hasRealHealth: (data?.fields ?? []).some(
+      (f) => typeof f?.health === "number" && Number.isFinite(f.health)
     ),
   };
 

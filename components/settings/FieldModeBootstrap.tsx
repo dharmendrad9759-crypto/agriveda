@@ -8,7 +8,11 @@ const KEY = "agriveda-app-settings";
 export default function FieldModeBootstrap() {
   useEffect(() => {
     const settings = readStorage(KEY, { fieldMode: false } as { fieldMode?: boolean });
-    document.documentElement.toggleAttribute("data-field-mode", Boolean(settings.fieldMode));
+    if (settings.fieldMode) {
+      document.documentElement.setAttribute("data-field-mode", "true");
+    } else {
+      document.documentElement.removeAttribute("data-field-mode");
+    }
   }, []);
 
   return null;

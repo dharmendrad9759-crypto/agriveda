@@ -1335,6 +1335,7 @@ body {
 }
 
 /* ── Field mode (खेत मोड) — sunlight readability ── */
+html[data-field-mode],
 html[data-field-mode="true"] {
   --av-text-primary: #0a0a0a;
   --av-text-secondary: #1a1a1a;
@@ -1343,6 +1344,9 @@ html[data-field-mode="true"] {
   font-size: 17px;
 }
 
+html[data-field-mode] .av-btn,
+html[data-field-mode] .av-btn-sm,
+html[data-field-mode] .av-btn-xs,
 html[data-field-mode="true"] .av-btn,
 html[data-field-mode="true"] .av-btn-sm,
 html[data-field-mode="true"] .av-btn-xs {
@@ -1351,17 +1355,22 @@ html[data-field-mode="true"] .av-btn-xs {
   font-weight: 700;
 }
 
+html[data-field-mode] .av-chip,
 html[data-field-mode="true"] .av-chip {
   min-height: 44px;
   font-size: 0.9375rem;
   padding: 0.5rem 1rem;
 }
 
+html[data-field-mode] .av-input,
 html[data-field-mode="true"] .av-input {
   min-height: 52px;
   font-size: 1rem;
 }
 
+html[data-field-mode] [class*="text-[10px]"],
+html[data-field-mode] [class*="text-[11px]"],
+html[data-field-mode] [class*="text-xs"],
 html[data-field-mode="true"] [class*="text-[10px]"],
 html[data-field-mode="true"] [class*="text-[11px]"],
 html[data-field-mode="true"] [class*="text-xs"] {
@@ -1369,6 +1378,7 @@ html[data-field-mode="true"] [class*="text-xs"] {
   line-height: 1.35 !important;
 }
 
+html[data-theme="dark"][data-field-mode],
 html[data-theme="dark"][data-field-mode="true"] {
   --av-text-primary: #ffffff;
   --av-text-secondary: #f1f5f9;
