@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const takeover = body.takeover === true;
+    const takeover = body.takeover !== false;
     const claim = await claimActiveDevice(user.localId, deviceId, email, { takeover });
     if (!claim.ok) {
       return NextResponse.json(

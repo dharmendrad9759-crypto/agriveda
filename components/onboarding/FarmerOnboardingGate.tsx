@@ -136,7 +136,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       body: JSON.stringify({
         googleIdToken,
         deviceId,
-        takeover: options?.takeover,
+        takeover: true,
       }),
     });
     const sessionBody = await sessionRes.json().catch(() => ({}));
@@ -220,7 +220,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       body: JSON.stringify({
         idToken,
         deviceId,
-        takeover: options?.takeover,
+        takeover: true,
       }),
     });
     const sessionBody = await sessionRes.json().catch(() => ({}));
@@ -599,71 +599,23 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                 </div>
               </div>
 
-              {/* Login or Device Conflict Transfer Card */}
+              {/* Login Actions */}
               <div className="space-y-2.5 pt-2">
-                {conflictData ? (
-                  <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 via-emerald-500/5 to-white/70 p-4 text-center shadow-lg backdrop-blur-md dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:to-slate-900/80">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
-                      <Smartphone className="h-6 w-6" />
-                    </div>
-                    <span className="mt-2.5 inline-block rounded-full bg-emerald-600/15 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300">
-                      सत्र स्थानांतरण • Device Transfer
-                    </span>
-                    <h3 className="mt-1 text-sm font-black text-gray-900 dark:text-white">
-                      यह खाता पहले से किसी डिवाइस पर सक्रिय है
-                    </h3>
-                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
-                      Google ID:{" "}
-                      <span className="font-bold text-emerald-700 dark:text-emerald-300">
-                        {conflictData.email || email}
-                      </span>
-                    </p>
-                    <p className="mt-2 text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
-                      सुरक्षा के लिए एक समय में एक ही डिवाइस पर लॉगिन रहता है। क्या आप इसे इस फ़ोन पर ट्रांसफर करना चाहते हैं? (पिछली डिवाइस अपने आप सुरक्षित लॉगआउट हो जाएगी)
-                    </p>
+                <button
+                  type="button"
+                  onClick={() => void loginWithGoogle()}
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white py-3.5 text-sm font-black text-gray-800 shadow-md transition hover:bg-gray-50 hover:shadow-lg active:scale-[0.99] disabled:opacity-50 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+                >
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
+                  ) : (
+                    <GoogleGlyph />
+                  )}
+                  <span>Google से सुरक्षित लॉगिन करें</span>
+                </button>
 
-                    <div className="mt-4 space-y-2">
-                      <button
-                        type="button"
-                        onClick={() => void handleConfirmTakeover()}
-                        disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-green-600 py-3 text-xs font-black text-white shadow-md shadow-emerald-700/25 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-50"
-                      >
-                        {loading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <CheckCircle2 className="h-4 w-4" />
-                        )}
-                        <span>हाँ, इस फ़ोन पर लॉगिन ट्रांसफर करें</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => void handleCancelConflict()}
-                        disabled={loading}
-                        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-300/80 bg-white/90 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-100 active:scale-[0.99] dark:border-gray-700 dark:bg-slate-800 dark:text-gray-300"
-                      >
-                        <span>रद्द करें / दूसरा खाता चुनें</span>
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => void loginWithGoogle()}
-                      disabled={loading}
-                      className="flex w-full items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white py-3.5 text-sm font-black text-gray-800 shadow-md transition hover:bg-gray-50 hover:shadow-lg active:scale-[0.99] disabled:opacity-50 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
-                    >
-                      {loading ? (
-                        <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
-                      ) : (
-                        <GoogleGlyph />
-                      )}
-                      <span>Google से सुरक्षित लॉगिन करें</span>
-                    </button>
-
-                    {allowGuestContinue && (
+                {allowGuestContinue && (
                       <button
                         type="button"
                         onClick={continueAsGuest}
@@ -673,8 +625,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                         <span>सीधे ऐप देखें (Explore Demo Mode)</span>
                       </button>
                     )}
-                  </>
-                )}
               </div>
 
               {/* Privacy Trust Footer */}

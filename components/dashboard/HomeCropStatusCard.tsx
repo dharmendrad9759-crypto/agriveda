@@ -11,6 +11,7 @@ import {
 } from "@/lib/crops/cropTimelineEngine";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import {
+  ArrowLeftRight,
   Calendar,
   CheckCircle2,
   ChevronRight,
@@ -24,6 +25,21 @@ import {
 } from "lucide-react";
 import { CropGrowthSparkleIcon } from "@/components/brand/icons";
 
+const POPULAR_CROPS = [
+  { slug: "wheat", nameHi: "गेहूं", emoji: "🌾", category: "अनाज" },
+  { slug: "paddy", nameHi: "धान", emoji: "🌾", category: "अनाज" },
+  { slug: "mustard", nameHi: "सरसों", emoji: "🌼", category: "तिलहन" },
+  { slug: "tomato", nameHi: "टमाटर", emoji: "🍅", category: "सब्जी" },
+  { slug: "potato", nameHi: "आलू", emoji: "🥔", category: "सब्जी" },
+  { slug: "maize", nameHi: "मक्का", emoji: "🌽", category: "अनाज" },
+  { slug: "soybean", nameHi: "सोयाबीन", emoji: "🫘", category: "दलहन" },
+  { slug: "cotton", nameHi: "कपास", emoji: "🌱", category: "नकदी" },
+  { slug: "chilli", nameHi: "मिर्च", emoji: "🌶️", category: "सब्जी" },
+  { slug: "onion", nameHi: "प्याज", emoji: "🧅", category: "सब्जी" },
+  { slug: "gram", nameHi: "चना", emoji: "🫘", category: "दलहन" },
+  { slug: "sugarcane", nameHi: "गन्ना", emoji: "🎋", category: "नकदी" },
+];
+
 export interface HomeCropStatusCardProps {
   field: {
     id: string;
@@ -36,14 +52,25 @@ export interface HomeCropStatusCardProps {
   };
   isHi: boolean;
   onUpdateSowingDate: (fieldId: string, newDateIso: string) => void;
+  onChangeCrop?: (cropSlug: string, cropName: string) => void;
+  allFields?: Array<{
+    id: string;
+    crop: string;
+    cropSlug?: string;
+    name?: string;
+    img?: string;
+  }>;
 }
 
 export default function HomeCropStatusCard({
   field,
   isHi,
   onUpdateSowingDate,
+  onChangeCrop,
+  allFields,
 }: HomeCropStatusCardProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showCropSwitcher, setShowCropSwitcher] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -181,7 +208,7 @@ export default function HomeCropStatusCard({
               </AppLink>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
                   <AppLink
                     href={cropSlug ? `/crops/${cropSlug}` : "/my-farm"}
                     className="font-display text-[17px] sm:text-[18.5px] font-black leading-snug tracking-tight text-[var(--av-text-primary)] hover:text-emerald-700 dark:hover:text-emerald-300"
@@ -195,6 +222,18 @@ export default function HomeCropStatusCard({
                   >
                     <ChevronRight className="h-4 w-4 shrink-0 stroke-[2.5]" />
                   </AppLink>
+
+                  {onChangeCrop && (
+                    <button
+                      type="button"
+                      onClick={() => setShowCropSwitcher(true)}
+                      className="inline-flex items-center gap-1 rounded-full border border-emerald-600/30 bg-emerald-50 px-2 py-0.5 text-[10.5px] font-extrabold text-emerald-800 shadow-2xs hover:bg-emerald-100 active:scale-95 dark:border-emerald-500/40 dark:bg-emerald-950/60 dark:text-emerald-300"
+                      title={isHi ? "दूसरी फसल चुनें या बदलें" : "Switch crop"}
+                    >
+                      <ArrowLeftRight className="h-2.5 w-2.5" />
+                      <span>{isHi ? "फ़सल बदलें" : "Change"}</span>
+                    </button>
+                  )}
                 </div>
 
                 {/* Subline: Field Name · Sowing Date (Clean, fully readable, no ellipsis truncation) */}
@@ -462,6 +501,124 @@ export default function HomeCropStatusCard({
                     <CheckCircle2 className="h-4 w-4 stroke-[2.5]" />
                     <span>{isHi ? "तारीख सुरक्षित करें" : "Save Sowing Date"}</span>
                   </button>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+
+      {/* ── CROP SWITCHER MODAL ── */}
+      {mounted && showCropSwitcher && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+              onClick={() => setShowCropSwitcher(false)}
+            >
+              <div
+                className="relative w-full max-w-lg rounded-t-[28px] sm:rounded-3xl border border-emerald-500/20 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#111c15] max-h-[85vh] flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5 shrink-0">
+                  <div>
+                    <h3 className="text-base font-black text-stone-900 dark:text-white flex items-center gap-1.5">
+                      <ArrowLeftRight className="h-4 w-4 text-emerald-600" />
+                      <span>{isHi ? "फ़सल बदलें / दूसरी फ़सल चुनें" : "Change Active Crop"}</span>
+                    </h3>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 font-medium mt-0.5">
+                      {isHi
+                        ? "होम स्क्रीन पर किस फ़सल की लाइव सलाह देखना चाहते हैं?"
+                        : "Choose crop to show on home screen"}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowCropSwitcher(false)}
+                    className="rounded-full p-1.5 text-stone-400 hover:bg-black/5 dark:hover:bg-white/5 active:scale-95"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Body with Crop Grid */}
+                <div className="overflow-y-auto py-3 space-y-3.5 flex-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  {/* Existing Farm Fields (if any) */}
+                  {allFields && allFields.length > 1 && (
+                    <div className="space-y-1.5">
+                      <p className="text-[11px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                        {isHi ? "आपके जुड़े हुए खेत:" : "Your Farm Fields:"}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {allFields.map((f) => {
+                          const isCurrent = f.id === field.id;
+                          return (
+                            <button
+                              key={f.id}
+                              type="button"
+                              onClick={() => {
+                                onChangeCrop?.(f.cropSlug || f.crop.toLowerCase(), f.crop);
+                                setShowCropSwitcher(false);
+                              }}
+                              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition active:scale-95 ${
+                                isCurrent
+                                  ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400"
+                                  : "bg-stone-100 text-stone-800 hover:bg-emerald-50 dark:bg-stone-800 dark:text-stone-200"
+                              }`}
+                            >
+                              <span>🌾</span>
+                              <span>
+                                {f.name || f.crop}: {f.crop}
+                              </span>
+                              {isCurrent && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Popular Crops Grid */}
+                  <div className="space-y-1.5">
+                    <p className="text-[11px] font-black uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                      {isHi ? "लोकप्रिय भारतीय फसलें:" : "Popular Crops:"}
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {POPULAR_CROPS.map((c) => {
+                        const isCurrent =
+                          cropSlug.toLowerCase() === c.slug.toLowerCase() ||
+                          field.crop.toLowerCase().includes(c.nameHi);
+                        return (
+                          <button
+                            key={c.slug}
+                            type="button"
+                            onClick={() => {
+                              onChangeCrop?.(c.slug, c.nameHi);
+                              setShowCropSwitcher(false);
+                            }}
+                            className={`flex flex-col items-center justify-center gap-1 rounded-2xl p-2.5 text-center transition active:scale-95 border ${
+                              isCurrent
+                                ? "border-emerald-600 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-200 dark:border-emerald-500"
+                                : "border-stone-200 bg-stone-50/60 text-stone-800 hover:border-emerald-400 hover:bg-emerald-50/30 dark:border-stone-800 dark:bg-stone-900/60 dark:text-stone-200"
+                            }`}
+                          >
+                            <span className="text-2xl leading-none">{c.emoji}</span>
+                            <span className="text-xs font-bold line-clamp-1">{c.nameHi}</span>
+                            <span className="text-[9.5px] font-medium text-stone-500 dark:text-stone-400">
+                              {c.category}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer hint */}
+                <div className="border-t border-black/5 pt-2.5 text-center text-[11px] text-stone-500 dark:text-stone-400 font-medium shrink-0">
+                  {isHi
+                    ? "💡 फसल बदलते ही होम स्क्रीन की सिंचाई, स्प्रे और मौसम सलाह बदल जाएगी।"
+                    : "💡 Switching updates all home advisories and timelines."}
                 </div>
               </div>
             </div>,

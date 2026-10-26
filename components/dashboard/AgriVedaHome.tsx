@@ -22,6 +22,7 @@ import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { useAIHistory } from "@/hooks/useAIHistory";
+import { useToast } from "@/components/ui/Toast";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { cropCatalog } from "@/data/crop-catalog";
@@ -376,6 +377,7 @@ export default function AgriVedaHome() {
   const isHi = locale === "hi";
   const reduced = useReducedMotion();
   const { profile } = useFarmerProfile();
+  const { showToast } = useToast();
   const { weather, loading: weatherLoading, error: weatherError } = useLiveWeather();
   const { data: farm, setFields, addField } = useFarmData();
   const { history: aiHistory } = useAIHistory();
@@ -409,6 +411,42 @@ export default function AgriVedaHome() {
       emoji: "🌱",
       stage: "सक्रिय",
     });
+  };
+
+  const handleChangeCrop = (cropSlug: string, cropName: string) => {
+    const existingIndex = farm.fields.findIndex(
+      (f) =>
+        (f.cropSlug && f.cropSlug.toLowerCase() === cropSlug.toLowerCase()) ||
+        f.crop.toLowerCase() === cropName.toLowerCase()
+    );
+
+    if (existingIndex > 0) {
+      const selected = farm.fields[existingIndex];
+      const others = farm.fields.filter((_, i) => i !== existingIndex);
+      setFields([selected, ...others]);
+    } else if (existingIndex === 0) {
+      // already primary
+    } else {
+      if (farm.fields.length > 0) {
+        const nextFields = farm.fields.map((f, i) => {
+          if (i === 0) {
+            return {
+              ...f,
+              crop: cropName,
+              cropSlug,
+            };
+          }
+          return f;
+        });
+        setFields(nextFields);
+      } else {
+        handleAddCropFromHome(cropSlug, cropName);
+      }
+    }
+    showToast(
+      isHi ? `सक्रिय फसल बदली: ${cropName} ✓` : `Active crop changed: ${cropName} ✓`,
+      "success"
+    );
   };
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
@@ -474,6 +512,8 @@ export default function AgriVedaHome() {
               field={primary}
               isHi={isHi}
               onUpdateSowingDate={handleUpdateSowingDate}
+              onChangeCrop={handleChangeCrop}
+              allFields={farm.fields}
             />
           ) : (
             <HomeAddCropHero

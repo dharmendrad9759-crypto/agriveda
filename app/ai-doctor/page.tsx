@@ -47,6 +47,7 @@ import {
 } from "@/lib/pendingAiScan";
 import {
     Camera,
+    CheckCircle2,
     ChevronDown,
     ChevronUp,
     Leaf,
@@ -669,6 +670,12 @@ export default function AIDoctorPage() {
               const hasUserPhoto = Boolean(previewUrl);
               const hasSecondPhoto = Boolean(previewUrl2);
               const hasRefPhoto = Boolean(referenceThreat?.image);
+              const isHealthy =
+                result.diseaseName.includes("स्वस्थ") ||
+                result.diseaseName.includes("कोई स्पष्ट समस्या नहीं") ||
+                result.diseaseName.toLowerCase().includes("healthy") ||
+                result.diseaseName.toLowerCase().includes("no disease") ||
+                result.diseaseName.toLowerCase().includes("no problem");
 
               return (
                 <div ref={resultRef} className="rounded-3xl border border-slate-200/70 bg-[#F8F9FA] p-2.5 sm:p-4 dark:border-slate-800/80 dark:bg-slate-950/60 animate-fade-in">
@@ -693,7 +700,9 @@ export default function AIDoctorPage() {
                           <Stethoscope className="h-3.5 w-3.5" />
                         </span>
                         <div>
-                          <h2 className="text-[13px] font-extrabold text-slate-900 dark:text-white">पहचाना गया रोग</h2>
+                          <h2 className="text-[13px] font-extrabold text-slate-900 dark:text-white">
+                            {isHealthy ? "जाँच परिणाम: पौधा स्वस्थ है ✓" : "पहचाना गया रोग"}
+                          </h2>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
@@ -722,17 +731,6 @@ export default function AIDoctorPage() {
                         >
                           <Share2 className="h-3 w-3 shrink-0" />
                           <span className="whitespace-nowrap">शेयर</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (typeof window !== "undefined") window.print();
-                          }}
-                          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition shrink-0 whitespace-nowrap"
-                          title="PDF / प्रिंट करें"
-                        >
-                          <Printer className="h-3 w-3 shrink-0" />
-                          <span className="whitespace-nowrap">PDF</span>
                         </button>
                       </div>
                     </div>
@@ -809,161 +807,187 @@ export default function AIDoctorPage() {
                     )}
                   </div>
 
-                  {/* Card 2: "दवा व अनुशंसित मात्रा" (Medicines & Dosage) */}
-                  <div className="mb-3 rounded-2xl border border-emerald-500/30 bg-white p-3.5 shadow-sm dark:border-emerald-500/30 dark:bg-slate-900 sm:p-4">
-                    <div className="flex items-center justify-between gap-2 pb-2 border-b border-emerald-500/15">
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
-                          <Pill className="h-4 w-4" />
-                        </span>
-                        <div>
-                          <h3 className="text-sm font-extrabold text-emerald-950 dark:text-emerald-200">
-                            दवा व अनुशंसित मात्रा
-                          </h3>
-                          <p className="text-[10px] text-emerald-800/80 dark:text-emerald-300/80 font-medium">
-                            रासायनिक व जैविक उपचार खुराक
-                          </p>
-                        </div>
+                  {isHealthy ? (
+                    <div className="mb-3 rounded-2xl border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-50/90 via-white to-green-50/70 p-4 text-center shadow-xs dark:border-emerald-500/30 dark:from-emerald-950/40 dark:via-slate-900 dark:to-emerald-950/20">
+                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
+                        <CheckCircle2 className="h-6 w-6" />
                       </div>
-                      <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 text-[9.5px] font-black text-emerald-800 dark:text-emerald-300">
-                        प्राथमिकता
-                      </span>
+                      <h3 className="mt-2.5 text-[16px] font-black text-emerald-950 dark:text-emerald-100">
+                        फसल पूरी तरह स्वस्थ और सुरक्षित है ✓
+                      </h3>
+                      <p className="mt-1 text-[13px] font-medium leading-relaxed text-emerald-900/90 dark:text-emerald-200">
+                        जाँच में कोई कीट या रोग नहीं मिला है। किसी भी रासायनिक या कीटनाशक दवा के छिड़काव की आवश्यकता नहीं है।
+                      </p>
+                      <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleReset}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 active:scale-95"
+                        >
+                          <Camera className="h-4 w-4" />
+                          <span>← दूसरी पत्ती / नई जाँच करें</span>
+                        </button>
+                      </div>
                     </div>
-
-                    <div className="mt-2.5 space-y-2.5">
-                      {result.activeIngredients.length > 0 ? (
-                        result.activeIngredients.map((ai, i) => (
-                          <div
-                            key={i}
-                            className="flex items-center gap-3 rounded-2xl border border-emerald-500/25 bg-gradient-to-r from-emerald-50/70 via-white to-emerald-50/40 p-3 dark:border-emerald-700/40 dark:from-emerald-950/40 dark:via-slate-900 dark:to-emerald-950/20 shadow-2xs"
-                          >
-                            <ChemBottleThumb technical={ai.name} size="sm" className="shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex flex-wrap items-center justify-between gap-1.5">
-                                <p className="text-[13px] font-extrabold text-emerald-950 dark:text-emerald-100 break-words min-w-[130px]">
-                                  {ai.name}
-                                </p>
-                                <span className="inline-block rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-black text-white whitespace-nowrap shrink-0 shadow-2xs">
-                                  {formatFarmerDose(ai.dose)}
-                                </span>
-                              </div>
-                              {ai.brands && ai.brands.length > 0 ? (
-                                <p className="mt-1.5 text-[11.5px] font-medium leading-snug text-slate-600 dark:text-slate-300">
-                                  <span className="font-bold text-amber-800 dark:text-amber-400">दुकान पर नाम: </span>
-                                  {ai.brands.join(" · ")}
-                                </p>
-                              ) : null}
+                  ) : (
+                    <>
+                      {/* Card 2: "दवा व अनुशंसित मात्रा" (Medicines & Dosage) */}
+                      <div className="mb-3 rounded-2xl border border-emerald-500/30 bg-white p-3.5 shadow-sm dark:border-emerald-500/30 dark:bg-slate-900 sm:p-4">
+                        <div className="flex items-center justify-between gap-2 pb-2 border-b border-emerald-500/15">
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
+                              <Pill className="h-4 w-4" />
+                            </span>
+                            <div>
+                              <h3 className="text-sm font-extrabold text-emerald-950 dark:text-emerald-200">
+                                दवा व अनुशंसित मात्रा
+                              </h3>
+                              <p className="text-[10px] text-emerald-800/80 dark:text-emerald-300/80 font-medium">
+                                रासायनिक व जैविक उपचार खुराक
+                              </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <p className="text-xs text-[var(--av-text-muted)]">
-                          {kind === "virus"
-                            ? "वायरस की सीधी दवा नहीं — वेक्टर (सफेद मक्खी / थ्रिप्स) नियंत्रण करें व विशेषज्ञ से पूछें।"
-                            : "दवा का सुझाव नहीं मिला — विशेषज्ञ से पूछें।"}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Water and per-acre guidance banner */}
-                    <div className="mt-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 p-2 text-[10.5px] font-bold text-amber-900 dark:text-amber-200">
-                      💧 1 एकड़ खेत के लिए पानी: अमूमन 150 से 200 लीटर साफ़ पानी में घोल बनाएँ (15 लीटर वाले नैपसैक पंप में 8–10 टंकी प्रति एकड़)। तेज धूप में छिड़काव न करें।
-                    </div>
-
-                    {result.spraySticker ? (
-                      <div className="mt-2 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2 dark:bg-sky-950/20">
-                        <p className="text-[10.5px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
-                        <p className="mt-0.5 text-xs text-sky-900 dark:text-sky-200">
-                          सिलिकॉन आधारित चिपको {formatFarmerDose(result.spraySticker)}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="mt-2 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2 dark:bg-sky-950/20">
-                        <p className="text-[10.5px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
-                        <p className="mt-0.5 text-xs text-sky-900 dark:text-sky-200">
-                          सिलिकॉन आधारित चिपको 0.5 मिली प्रति लीटर पानी में मिलाएँ।
-                        </p>
-                      </div>
-                    )}
-
-                    {result.recoveryTonics && result.recoveryTonics.length > 0 ? (
-                      <div className="mt-2 rounded-xl border border-amber-500/25 bg-amber-50/60 p-2.5 dark:bg-amber-950/20">
-                        <p className="text-[11px] font-bold text-amber-900 dark:text-amber-200">रिकवरी टॉनिक</p>
-                        <ul className="mt-1 space-y-0.5 text-xs text-amber-900 dark:text-amber-300">
-                          {result.recoveryTonics.map((tonic, i) => (
-                            <li key={i}>• {formatFarmerDose(tonic)}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ) : null}
-
-                    <p className="mt-2 text-[10.5px] text-[var(--av-text-muted)]">
-                      ⚠️ दवा लगाते समय सुरक्षा किट पहनें व कंपनी का लेबल ध्यानपूर्वक पढ़ें।
-                    </p>
-                  </div>
-
-                  {/* Card 3: "समाधान" (Field Management & Cultural Actions) */}
-                  <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-4">
-                    <div className="flex items-center gap-2 pb-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
-                        <Leaf className="h-4 w-4" />
-                      </span>
-                      <div>
-                        <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">खेत प्रबंधन व उपाय (समाधान)</h3>
-                        <p className="text-[10px] text-[var(--av-text-muted)]">खेत में करने योग्य प्राथमिक उपाय</p>
-                      </div>
-                    </div>
-                    {result.treatments.length > 0 ? (
-                      <ul className="mt-1 space-y-1.5">
-                        {result.treatments.map((t, i) => (
-                          <li key={i} className="rounded-xl border border-emerald-500/15 bg-emerald-50/40 p-2 text-xs font-medium leading-relaxed text-slate-800 dark:bg-emerald-950/20 dark:text-slate-200">
-                            • {formatFarmerDose(t)}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="mt-1 text-xs text-[var(--av-text-muted)]">
-                        खेत के कदम नहीं मिले — ऊपर दवा सेक्शन देखें।
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Card 4: "यह क्यों हुआ?" (Causes & Why It Happens — Collapsible) */}
-                  <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowWhy(!showWhy)}
-                      className="flex w-full items-center justify-between text-left"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
-                          <ShieldCheck className="h-4 w-4" />
-                        </span>
-                        <div>
-                          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">यह क्यों हुआ? (कारण)</h3>
-                          <p className="text-[10px] text-[var(--av-text-muted)]">रोग फैलने के कारण व अनुकूल मौसम</p>
+                          <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 text-[9.5px] font-black text-emerald-800 dark:text-emerald-300">
+                            प्राथमिकता
+                          </span>
                         </div>
+
+                        <div className="mt-2.5 space-y-2.5">
+                          {result.activeIngredients.length > 0 ? (
+                            result.activeIngredients.map((ai, i) => (
+                              <div
+                                key={i}
+                                className="flex items-center gap-3 rounded-2xl border border-emerald-500/25 bg-gradient-to-r from-emerald-50/70 via-white to-emerald-50/40 p-3 dark:border-emerald-700/40 dark:from-emerald-950/40 dark:via-slate-900 dark:to-emerald-950/20 shadow-2xs"
+                              >
+                                <ChemBottleThumb technical={ai.name} size="sm" className="shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex flex-wrap items-center justify-between gap-1.5">
+                                    <p className="text-[13px] font-extrabold text-emerald-950 dark:text-emerald-100 break-words min-w-[130px]">
+                                      {ai.name}
+                                    </p>
+                                    <span className="inline-block rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-black text-white whitespace-nowrap shrink-0 shadow-2xs">
+                                      {formatFarmerDose(ai.dose)}
+                                    </span>
+                                  </div>
+                                  {ai.brands && ai.brands.length > 0 ? (
+                                    <p className="mt-1.5 text-[11.5px] font-medium leading-snug text-slate-600 dark:text-slate-300">
+                                      <span className="font-bold text-amber-800 dark:text-amber-400">दुकान पर नाम: </span>
+                                      {ai.brands.join(" · ")}
+                                    </p>
+                                  ) : null}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-xs text-[var(--av-text-muted)]">
+                              {kind === "virus"
+                                ? "वायरस की सीधी दवा नहीं — वेक्टर (सफेद मक्खी / थ्रिप्स) नियंत्रण करें व विशेषज्ञ से पूछें।"
+                                : "दवा का सुझाव नहीं मिला — विशेषज्ञ से पूछें।"}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Water and per-acre guidance banner */}
+                        <div className="mt-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 p-2 text-[10.5px] font-bold text-amber-900 dark:text-amber-200">
+                          💧 1 एकड़ खेत के लिए पानी: अमूमन 150 से 200 लीटर साफ़ पानी में घोल बनाएँ (15 लीटर वाले नैपसैक पंप में 8–10 टंकी प्रति एकड़)। तेज धूप में छिड़काव न करें।
+                        </div>
+
+                        {result.spraySticker ? (
+                          <div className="mt-2 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2 dark:bg-sky-950/20">
+                            <p className="text-[10.5px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
+                            <p className="mt-0.5 text-xs text-sky-900 dark:text-sky-200">
+                              सिलिकॉन आधारित चिपको {formatFarmerDose(result.spraySticker)}
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="mt-2 rounded-xl border border-sky-500/20 bg-sky-50/60 p-2 dark:bg-sky-950/20">
+                            <p className="text-[10.5px] font-bold text-sky-800 dark:text-sky-300">स्प्रे स्टिकर (चिपकाने वाला घोल)</p>
+                            <p className="mt-0.5 text-xs text-sky-900 dark:text-sky-200">
+                              सिलिकॉन आधारित चिपको 0.5 मिली प्रति लीटर पानी में मिलाएँ।
+                            </p>
+                          </div>
+                        )}
+
+                        {result.recoveryTonics && result.recoveryTonics.length > 0 ? (
+                          <div className="mt-2 rounded-xl border border-amber-500/25 bg-amber-50/60 p-2.5 dark:bg-amber-950/20">
+                            <p className="text-[11px] font-bold text-amber-900 dark:text-amber-200">रिकवरी टॉनिक</p>
+                            <ul className="mt-1 space-y-0.5 text-xs text-amber-900 dark:text-amber-300">
+                              {result.recoveryTonics.map((tonic, i) => (
+                                <li key={i}>• {formatFarmerDose(tonic)}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : null}
+
+                        <p className="mt-2 text-[10.5px] text-[var(--av-text-muted)]">
+                          ⚠️ दवा लगाते समय सुरक्षा किट पहनें व कंपनी का लेबल ध्यानपूर्वक पढ़ें।
+                        </p>
                       </div>
-                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                        {showWhy ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                      </span>
-                    </button>
-                    {showWhy && (
-                      <ul className="mt-2.5 space-y-1.5 border-t border-slate-100 pt-2.5 dark:border-slate-800">
-                        {[
-                          ...result.whyItHappens,
-                          ...result.environmentalFactors,
-                        ]
-                          .map((w) => w.trim())
-                          .filter(Boolean)
-                          .map((w, i) => (
-                            <li key={i} className="rounded-xl bg-slate-50 p-2 text-xs font-medium leading-relaxed text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-                              • {w}
-                            </li>
-                          ))}
-                      </ul>
-                    )}
-                  </div>
+
+                      {/* Card 3: "समाधान" (Field Management & Cultural Actions) */}
+                      <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-4">
+                        <div className="flex items-center gap-2 pb-2">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                            <Leaf className="h-4 w-4" />
+                          </span>
+                          <div>
+                            <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">खेत प्रबंधन व उपाय (समाधान)</h3>
+                            <p className="text-[10px] text-[var(--av-text-muted)]">खेत में करने योग्य प्राथमिक उपाय</p>
+                          </div>
+                        </div>
+                        {result.treatments.length > 0 ? (
+                          <ul className="mt-1 space-y-1.5">
+                            {result.treatments.map((t, i) => (
+                              <li key={i} className="rounded-xl border border-emerald-500/15 bg-emerald-50/40 p-2 text-xs font-medium leading-relaxed text-slate-800 dark:bg-emerald-950/20 dark:text-slate-200">
+                                • {formatFarmerDose(t)}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="mt-1 text-xs text-[var(--av-text-muted)]">
+                            खेत के कदम नहीं मिले — ऊपर दवा सेक्शन देखें।
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Card 4: "यह क्यों हुआ?" (Causes & Why It Happens — Collapsible) */}
+                      <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-4">
+                        <button
+                          type="button"
+                          onClick={() => setShowWhy(!showWhy)}
+                          className="flex w-full items-center justify-between text-left"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                              <ShieldCheck className="h-4 w-4" />
+                            </span>
+                            <div>
+                              <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">यह क्यों हुआ? (कारण)</h3>
+                              <p className="text-[10px] text-[var(--av-text-muted)]">रोग फैलने के कारण व अनुकूल मौसम</p>
+                            </div>
+                          </div>
+                          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                            {showWhy ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                          </span>
+                        </button>
+                        {showWhy && (
+                          <ul className="mt-2.5 space-y-1.5 border-t border-slate-100 pt-2.5 dark:border-slate-800">
+                            {[
+                              ...result.whyItHappens,
+                              ...result.environmentalFactors,
+                            ]
+                              .map((w) => w.trim())
+                              .filter(Boolean)
+                              .map((w, i) => (
+                                <li key={i} className="rounded-xl bg-slate-50 p-2 text-xs font-medium leading-relaxed text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+                                  • {w}
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                      </div>
+                    </>
+                  )}
 
                   {/* Card 5: Next Steps & Expert Referral */}
                   <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 sm:p-5">
