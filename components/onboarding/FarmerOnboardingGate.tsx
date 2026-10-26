@@ -349,8 +349,8 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     setStep("location");
   };
 
-  const handlePincodeLookup = async () => {
-    const pin = pincode.replace(/\D/g, "").slice(0, 6);
+  const handlePincodeLookup = async (targetPin?: string) => {
+    const pin = (targetPin ?? pincode).replace(/\D/g, "").slice(0, 6);
     if (pin.length !== 6) {
       setError("6 अंकों का सही PIN कोड डालें");
       return;
@@ -360,20 +360,15 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     setError(null);
     try {
       const result = await lookupPincode(pin);
-      if (!result) {
+      if (!result || !result.state || !result.district) {
         setError("PIN कोड नहीं मिला — कृपया ज़िला व राज्य नीचे सूची से चुनें");
         return;
       }
       setPincode(result.pincode);
       setState(result.state);
-      const options = getDistrictsForState(result.state);
-      const match =
-        options.find((d) => d.toLowerCase() === result.district.toLowerCase()) ??
-        options.find((d) => d.toLowerCase().includes(result.district.toLowerCase())) ??
-        result.district;
-      setDistrict(match);
+      setDistrict(result.district);
       setPinSuccess(true);
-      showToast(`${result.district}, ${result.state} — PIN से भरा ✓`, "success");
+      showToast(`${result.district}, ${result.state} — PIN से ऑटो-सेट ✓`, "success");
     } catch {
       setError("PIN lookup असफल — कृपया राज्य व ज़िला नीचे चुनें");
     } finally {
@@ -757,8 +752,12 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                       maxLength={6}
                       value={pincode}
                       onChange={(e) => {
-                        setPincode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                        const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                        setPincode(val);
                         setPinSuccess(false);
+                        if (val.length === 6) {
+                          void handlePincodeLookup(val);
+                        }
                       }}
                       placeholder="उदा. 462001"
                       className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm font-bold text-gray-900 outline-none transition focus:border-emerald-500 dark:border-gray-700 dark:bg-slate-800 dark:text-white"

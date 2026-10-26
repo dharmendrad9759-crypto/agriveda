@@ -41,8 +41,8 @@ export default function WeatherLocationSheet({
 
   if (!open) return null;
 
-  const searchPincode = async () => {
-    const pin = pincode.replace(/\D/g, "").slice(0, 6);
+  const searchPincode = async (targetPin?: string) => {
+    const pin = (targetPin ?? pincode).replace(/\D/g, "").slice(0, 6);
     if (pin.length !== 6) {
       setPinError(isHi ? "6 अंकों का पिनकोड लिखें" : "Enter 6-digit pincode");
       return;
@@ -156,8 +156,12 @@ export default function WeatherLocationSheet({
                   inputMode="numeric"
                   value={pincode}
                   onChange={(e) => {
-                    setPincode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                    const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    setPincode(val);
                     setPinError(null);
+                    if (val.length === 6) {
+                      void searchPincode(val);
+                    }
                   }}
                   onKeyDown={(e) => e.key === "Enter" && void searchPincode()}
                   placeholder={isHi ? "6 अंक — जैसे 226001" : "6 digits — e.g. 226001"}

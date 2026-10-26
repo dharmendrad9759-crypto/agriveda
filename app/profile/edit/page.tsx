@@ -11,7 +11,11 @@ import {
   Calendar,
   Sprout,
   ShieldCheck,
+  CheckCircle2,
+  Loader2,
+  Search,
 } from "lucide-react";
+import { lookupPincode } from "@/lib/pincodeLookup";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useToast } from "@/components/ui/Toast";
@@ -75,6 +79,37 @@ export default function EditProfilePage() {
   const router = useRouter();
 
   const [form, setForm] = useState(profile);
+  const [pinBusy, setPinBusy] = useState(false);
+  const [pinSuccess, setPinSuccess] = useState(false);
+
+  const handlePincodeLookup = async (targetPin?: string) => {
+    const pin = (targetPin ?? form.pincode ?? "").replace(/\D/g, "").slice(0, 6);
+    if (pin.length !== 6) return;
+    setPinBusy(true);
+    setPinSuccess(false);
+    try {
+      const result = await lookupPincode(pin);
+      if (result?.state && result?.district) {
+        setForm((prev) => ({
+          ...prev,
+          pincode: result.pincode,
+          state: result.state,
+          district: result.district,
+        }));
+        setPinSuccess(true);
+        showToast(
+          isHi
+            ? `${result.district}, ${result.state} — PIN से ऑटो-सेट ✓`
+            : `${result.district}, ${result.state} — Auto-set from PIN ✓`,
+          "success"
+        );
+      }
+    } catch {
+      // Ignore
+    } finally {
+      setPinBusy(false);
+    }
+  };
 
   const districtOptions = useMemo(
     () => (isValidState(form.state) ? getDistrictsForState(form.state) : []),
@@ -234,6 +269,55 @@ export default function EditProfilePage() {
             {isHi
               ? "पहले राज्य चुनें, फिर ज़िला — मौसम और मंडी यहीं से मिलेंगे।"
               : "Pick state first, then district — weather & mandi use this."}
+          </div>
+
+          {/* Quick PIN Code Lookup */}
+          <div>
+            <span className="mb-1 block text-[11px] font-semibold text-[var(--av-text-muted)]">
+              {isHi
+                ? "पिनकोड (6 अंक — राज्य व ज़िला ऑटो-सेट करें)"
+                : "PIN code (Auto-fill state & district)"}
+            </span>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <input
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={form.pincode ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    setForm((prev) => ({ ...prev, pincode: val }));
+                    setPinSuccess(false);
+                    if (val.length === 6) {
+                      void handlePincodeLookup(val);
+                    }
+                  }}
+                  placeholder="उदा. 462001"
+                  className="av-input min-h-12 w-full text-[15px] font-semibold"
+                />
+                {pinSuccess && (
+                  <CheckCircle2 className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-600" />
+                )}
+              </div>
+              <button
+                type="button"
+                disabled={pinBusy || (form.pincode ?? "").length !== 6}
+                onClick={() => void handlePincodeLookup()}
+                className="flex shrink-0 items-center gap-1.5 rounded-2xl bg-emerald-700 px-4 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-800 disabled:opacity-40"
+              >
+                {pinBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+                <span>{isHi ? "खोजें" : "Search"}</span>
+              </button>
+            </div>
+            {pinSuccess && (
+              <p className="mt-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                {isHi ? "राज्य व ज़िला ऑटो-सेट हो गए ✓" : "State & District auto-filled ✓"}
+              </p>
+            )}
           </div>
 
           <label className="block">
