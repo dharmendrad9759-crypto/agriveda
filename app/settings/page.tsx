@@ -498,13 +498,6 @@ export default function SettingsPage() {
 
         <Section>
           <Stick
-            icon={LogOut}
-            tone="bg-stone-500/15 text-stone-700 dark:text-stone-300"
-            title={busy === "logout" ? "…" : isHi ? "लॉग आउट" : "Log out"}
-            hint={isHi ? "खेत का डेटा फ़ोन पर रहता है" : "Farm data stays on the phone"}
-            onClick={() => void handleLogout()}
-          />
-          <Stick
             icon={Trash2}
             tone="bg-rose-500/15 text-rose-700 dark:text-rose-300"
             title={busy === "delete" ? "…" : isHi ? "खाता हटाएँ" : "Delete account"}

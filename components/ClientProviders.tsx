@@ -34,6 +34,7 @@ import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { MotionConfig } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 export default function ClientProviders({ children }: { children: ReactNode }) {
   // Sync on first client paint — avoids enabling heavy motion then flipping off
@@ -42,6 +43,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
   );
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith("/admin") ?? false;
+  const isFullScreenChat = pathname === "/ask-query";
 
   return (
     <ThemeProvider>
@@ -79,7 +81,12 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
                       <div className="relative z-10 flex min-h-screen min-w-0 flex-1 flex-col overflow-x-hidden">
                         <MobileShellTopBar />
                         <ShellTopBar />
-                        <main className="min-w-0 flex-grow overflow-x-hidden bg-transparent pb-24 text-[var(--foreground)] lg:pb-0">
+                        <main
+                          className={cn(
+                            "min-w-0 flex-grow overflow-x-hidden bg-transparent text-[var(--foreground)] lg:pb-0",
+                            isFullScreenChat ? "pb-0" : "pb-24"
+                          )}
+                        >
                           <PageReveal>{children}</PageReveal>
                         </main>
                         <Footer />

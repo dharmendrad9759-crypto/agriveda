@@ -3,11 +3,13 @@
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import ThemeToggle from "@/components/theme/ThemeToggle";
+import { useState, type ReactNode } from "react";
 import {
   Bug,
   ChevronRight,
   Compass,
   Languages,
+  LogOut,
   MapPin,
   MessageCircle,
   Palette,
@@ -25,7 +27,7 @@ import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { APP_NAME, APP_VERSION } from "@/lib/appMeta";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropEmoji, getCropHindiName } from "@/lib/crops/crop-display";
-import type { ReactNode } from "react";
+import { logoutAndReload } from "@/lib/appReset";
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -67,6 +69,7 @@ export default function ProfilePage() {
   const { queries } = useQueryHistory();
   const { locale } = useLocale();
   const isHi = locale === "hi";
+  const [busyLogout, setBusyLogout] = useState(false);
 
   const placeLine = [profile.village, profile.district, profile.state]
     .filter(Boolean)
@@ -289,6 +292,40 @@ export default function ProfilePage() {
             ))}
           </div>
         </Section>
+
+        {/* Logout Button (Directly visible on profile) */}
+        <section className="space-y-2 pt-1">
+          <button
+            type="button"
+            onClick={async () => {
+              if (busyLogout) return;
+              setBusyLogout(true);
+              try {
+                await logoutAndReload();
+              } catch {
+                setBusyLogout(false);
+              }
+            }}
+            disabled={busyLogout}
+            className="flex min-h-[50px] w-full items-center justify-center gap-2.5 rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-[14px] font-bold text-rose-600 transition active:scale-[0.98] hover:bg-rose-500/15 disabled:opacity-50 dark:border-rose-500/30 dark:bg-rose-950/30 dark:text-rose-400"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>
+              {busyLogout
+                ? isHi
+                  ? "लॉगआउट हो रहा है…"
+                  : "Logging out…"
+                : isHi
+                ? "लॉग आउट (सुरक्षित बाहर निकलें)"
+                : "Log out"}
+            </span>
+          </button>
+          <p className="text-center text-[11px] font-medium text-[var(--av-text-muted)]">
+            {isHi
+              ? "लॉग आउट करने पर भी आपका खेत और प्रोफ़ाइल डेटा सुरक्षित रहता है"
+              : "Your farm data and profile remain safe on logout"}
+          </p>
+        </section>
 
         <p className="flex items-center justify-center gap-1.5 pb-2 pt-1 text-center text-[10px] font-medium text-[var(--av-text-muted)]">
           <ShieldCheck className="h-3 w-3 text-emerald-600" />

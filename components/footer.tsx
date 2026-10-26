@@ -18,6 +18,7 @@ const HIDE_FOOTER_ROUTES = [
   "/crop-problems",
   "/deficiencies",
   "/settings",
+  "/ask-query",
 ];
 
 export default function Footer() {
