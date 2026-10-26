@@ -964,6 +964,31 @@ export default function MyFarmPage() {
                 );
               })}
             </div>
+          ) : !showAddField ? (
+            <div className="relative overflow-hidden rounded-2xl border-2 border-dashed border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 via-emerald-500/5 to-transparent p-6 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600/15 text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-300">
+                <Sprout className="h-7 w-7" />
+              </div>
+              <h3 className="mt-3 text-base font-black text-[var(--av-text-primary)]">
+                {isHi ? "अभी तक कोई खेत नहीं जुड़ा है" : "No fields added yet"}
+              </h3>
+              <p className="mt-1 text-xs text-[var(--av-text-secondary)] max-w-xs mx-auto">
+                {isHi
+                  ? "अपनी ज़मीन, फसल और बुवाई की तारीख दर्ज करके व्यक्तिगत सलाह पाएं।"
+                  : "Add your land, crop, and sowing date for tailored recommendations."}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddField(true);
+                  if (!fieldCropSlug) setCropPickerOpen(true);
+                }}
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 px-6 py-3 text-xs font-black text-white shadow-lg shadow-emerald-700/25 transition hover:brightness-110 active:scale-95"
+              >
+                <Plus className="h-4 w-4 stroke-[3]" />
+                <span>{isHi ? "खेत जोड़ो (+ Add Field)" : "+ Add Field"}</span>
+              </button>
+            </div>
           ) : null}
         </motion.section>
 

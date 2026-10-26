@@ -21,8 +21,7 @@ import {
   User,
 } from "lucide-react";
 import { FarmerTourSparkleIcon } from "@/components/brand/icons";
-import FarmSetupStep from "@/components/onboarding/FarmSetupStep";
-import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useFarmerProfile, type FarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
 import SearchableSelect from "@/components/ui/SearchableSelect";
 import {
@@ -45,14 +44,15 @@ import { getDeviceId } from "@/lib/deviceId";
 import { signalForceUpdate, withNativeAppHeaders } from "@/lib/nativeAppInfo";
 import { markIntroDone } from "@/lib/launchFlags";
 import { lookupPincode } from "@/lib/pincodeLookup";
+import { pullFarmCloudSync } from "@/lib/farm/cloudSync";
+import { readStorage } from "@/lib/storage";
 import { cn } from "@/lib/cn";
 
-type Step = "auth" | "name" | "location" | "farm";
+type Step = "auth" | "name" | "location";
 
 const SETUP_STEPS: { id: Step; label: string; icon: typeof User }[] = [
   { id: "name", label: "नाम", icon: User },
   { id: "location", label: "स्थान", icon: MapPin },
-  { id: "farm", label: "खेत व फसल", icon: Sprout },
 ];
 
 type ConflictData =
@@ -75,16 +75,15 @@ type ConflictData =
   | null;
 
 export default function FarmerOnboardingGate({ children }: { children: React.ReactNode }) {
-  const { profile, hydrated, completeOnboarding, completeFarmSetup } = useFarmerProfile();
+  const { profile, hydrated, completeOnboarding } = useFarmerProfile();
   const { showToast } = useToast();
   const useFirebase = isFirebaseConfigured();
   // Always allow demo/guest continue so users can explore the app freely
   const allowGuestContinue = true;
 
-  const needsFarmSetup = profile.onboardingComplete && !profile.farmSetupComplete;
   const needsFullOnboarding = !profile.onboardingComplete;
 
-  const [step, setStep] = useState<Step>(needsFarmSetup ? "farm" : "auth");
+  const [step, setStep] = useState<Step>("auth");
   const [conflictData, setConflictData] = useState<ConflictData>(null);
   const [firebaseUid, setFirebaseUid] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -111,8 +110,9 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   };
 
   const continueAsGuest = () => {
-    completeFarmSetup({
+    completeOnboarding({
       ...DEMO_FARMER_PROFILE,
+      onboardingComplete: true,
       farmSetupComplete: true,
       totalFarmAreaAcres: 5,
     });
@@ -168,8 +168,28 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     setEmail(sessionBody.email || hint?.email || "");
     const suggested = String(sessionBody.name || hint?.displayName || "").trim();
     if (suggested) setName(suggested);
-    setStep("name");
     setConflictData(null);
+
+    // If returning user has existing profile in cloud or local storage, restore and skip!
+    try {
+      await pullFarmCloudSync();
+    } catch {
+      /* ignore */
+    }
+    const saved = readStorage<FarmerProfile | null>("agriveda-farmer-profile", null);
+    if (saved?.onboardingComplete && saved.name?.trim() && saved.district?.trim()) {
+      completeOnboarding({ ...saved });
+      markIntroDone();
+      showToast(
+        options?.takeover
+          ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
+          : `वापसी पर स्वागत है, ${saved.name} जी! 🙏`,
+        "success"
+      );
+      return true;
+    }
+
+    setStep("name");
     showToast(
       options?.takeover
         ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
@@ -231,8 +251,28 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     setEmail(sessionBody.email || user.email || "");
     const suggested = String(sessionBody.name || user.displayName || "").trim();
     if (suggested) setName(suggested);
-    setStep("name");
     setConflictData(null);
+
+    // If returning user has existing profile in cloud or local storage, restore and skip!
+    try {
+      await pullFarmCloudSync();
+    } catch {
+      /* ignore */
+    }
+    const saved = readStorage<FarmerProfile | null>("agriveda-farmer-profile", null);
+    if (saved?.onboardingComplete && saved.name?.trim() && saved.district?.trim()) {
+      completeOnboarding({ ...saved });
+      markIntroDone();
+      showToast(
+        options?.takeover
+          ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
+          : `वापसी पर स्वागत है, ${saved.name} जी! 🙏`,
+        "success"
+      );
+      return true;
+    }
+
+    setStep("name");
     showToast(
       options?.takeover
         ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
@@ -244,13 +284,8 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
   useEffect(() => {
     if (!hydrated || !shouldAutoSkipOnboarding() || profile.onboardingComplete) return;
-    completeOnboarding({ ...DEMO_FARMER_PROFILE, farmSetupComplete: false });
-    setStep("farm");
+    completeOnboarding({ ...DEMO_FARMER_PROFILE, farmSetupComplete: true });
   }, [hydrated, profile.onboardingComplete, completeOnboarding]);
-
-  useEffect(() => {
-    if (needsFarmSetup) setStep("farm");
-  }, [needsFarmSetup]);
 
   // Complete redirect-based Google sign-in (Android WebView)
   useEffect(() => {
@@ -278,8 +313,8 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
   const showGate =
     hydrated &&
-    (needsFullOnboarding || needsFarmSetup) &&
-    (needsFarmSetup || !shouldAutoSkipOnboarding());
+    needsFullOnboarding &&
+    !shouldAutoSkipOnboarding();
 
   if (!hydrated || !showGate) {
     return <>{children}</>;
@@ -390,28 +425,21 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       return;
     }
     setError(null);
-    setStep("farm");
-  };
-
-  const finishFarmSetup = (totalAcres: number) => {
-    const profileData = needsFarmSetup
-      ? { totalFarmAreaAcres: totalAcres }
-      : {
-          email: email || undefined,
-          firebaseUid: firebaseUid ?? undefined,
-          name: name.trim(),
-          village: village.trim(),
-          district: district.trim(),
-          state: state.trim(),
-          pincode: pincode.replace(/\D/g, "").slice(0, 6) || undefined,
-          phone: "",
-          phoneVerified: false,
-          totalFarmAreaAcres: totalAcres,
-        };
-
-    completeFarmSetup(profileData);
+    completeOnboarding({
+      email: email || undefined,
+      firebaseUid: firebaseUid ?? undefined,
+      name: name.trim(),
+      village: village.trim(),
+      district: district.trim(),
+      state: state.trim(),
+      pincode: pincode.replace(/\D/g, "").slice(0, 6) || undefined,
+      phone: "",
+      phoneVerified: true,
+      onboardingComplete: true,
+      farmSetupComplete: true,
+    });
     markIntroDone();
-    showToast("बधाई हो! आपका खेत सेटअप पूरा हुआ ✓", "success");
+    showToast("स्वागत है! आपका प्रोफ़ाइल तैयार है ✓", "success");
   };
 
   const setupIndex = SETUP_STEPS.findIndex((s) => s.id === step);
@@ -461,11 +489,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                   AgriVeda
                 </span>
                 <h1 className="text-base font-black leading-tight tracking-tight sm:text-lg">
-                  {step === "auth"
-                    ? "किसान सारथी में स्वागत है"
-                    : needsFarmSetup
-                      ? "खेत व फसल सेटअप"
-                      : "खेत प्रोफ़ाइल सेटअप"}
+                  {step === "auth" ? "किसान सारथी में स्वागत है" : "प्रोफ़ाइल सेटअप"}
                 </h1>
               </div>
             </div>
@@ -476,20 +500,20 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
             </div>
           </div>
 
-          {/* Stepper (Steps 1, 2, 3) */}
+          {/* Stepper (Steps 1, 2) */}
           {showStepper && (
             <div className="mt-4 border-t border-white/15 pt-3">
-              <div className="flex items-center justify-between gap-1">
+              <div className="flex items-center justify-between gap-2">
                 {SETUP_STEPS.map((s, idx) => {
                   const Icon = s.icon;
-                  const isActive = needsFarmSetup ? idx === 2 : idx === setupIndex;
-                  const isDone = needsFarmSetup ? idx < 2 : idx < setupIndex;
+                  const isActive = idx === setupIndex;
+                  const isDone = idx < setupIndex;
 
                   return (
                     <div
                       key={s.id}
                       className={cn(
-                        "flex flex-1 items-center gap-1.5 rounded-xl px-2 py-1.5 transition-all",
+                        "flex flex-1 items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all",
                         isActive
                           ? "bg-white/25 text-white shadow-xs font-black ring-1 ring-white/40"
                           : isDone
@@ -522,7 +546,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
         <div
           className={cn(
             "min-h-0 flex-1 space-y-4 px-5 pb-5 pt-3 sm:px-6 sm:pb-6",
-            step === "farm" || step === "location"
+            step === "location"
               ? "overflow-y-auto overscroll-contain"
               : "overflow-hidden"
           )}
@@ -705,11 +729,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                     className="w-full rounded-2xl border-2 border-emerald-500/40 bg-white py-3.5 pl-11 pr-4 text-base font-bold text-gray-900 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/15 dark:border-emerald-500/30 dark:bg-slate-800 dark:text-white"
                   />
                 </div>
-                {email && (
-                  <p className="mt-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
-                    लॉगिन खाता: {email}
-                  </p>
-                )}
               </div>
 
               <button
@@ -780,11 +799,6 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                     <span>खोजें</span>
                   </button>
                 </div>
-                {pinSuccess && (
-                  <p className="mt-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                    राज्य व ज़िला ऑटो-फिल हो गए ✓
-                  </p>
-                )}
               </div>
 
               {/* State & District Searchable Selects */}
@@ -841,36 +855,15 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                   onClick={finishLocation}
                   className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-green-600 py-3 text-xs font-black text-white shadow-md shadow-emerald-700/20 transition hover:brightness-110 active:scale-[0.99]"
                 >
-                  <span>खेत व फसल जोड़ें</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <Check className="h-4 w-4 stroke-[2.5]" />
+                  <span>शुरू करें (Done)</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 4: FARM & CROP SETUP */}
-          {step === "farm" && (
-            <div className="space-y-3 pt-1">
-              {!needsFarmSetup && (
-                <button
-                  type="button"
-                  onClick={() => setStep("location")}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-gray-500 transition hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  <span>स्थान बदलें</span>
-                </button>
-              )}
-              <FarmSetupStep
-                farmerName={needsFarmSetup ? profile.name : name}
-                onComplete={finishFarmSetup}
-                loading={loading}
-              />
-            </div>
-          )}
-
           {/* General Error Banner */}
-          {error && step !== "farm" && (
+          {error && (
             <div className="rounded-xl border border-rose-500/30 bg-rose-50 p-3 text-center text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
               {error}
             </div>

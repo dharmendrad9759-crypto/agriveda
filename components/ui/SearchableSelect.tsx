@@ -26,6 +26,7 @@ export default function SearchableSelect({
 }: SearchableSelectProps) {
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState(value);
 
@@ -33,7 +34,14 @@ export default function SearchableSelect({
     setQuery(value);
   }, [value]);
 
-  const filtered = useMemo(() => filterByQuery(options, query), [options, query]);
+  // When query matches current selected value or is empty, show full options list!
+  const filtered = useMemo(() => {
+    const trimmed = query.trim();
+    if (!trimmed || trimmed.toLowerCase() === (value || "").trim().toLowerCase()) {
+      return options;
+    }
+    return filterByQuery(options, trimmed);
+  }, [options, query, value]);
 
   useEffect(() => {
     const onDocClick = (event: MouseEvent) => {
@@ -51,6 +59,16 @@ export default function SearchableSelect({
     setOpen(false);
   };
 
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (disabled) return;
+    setOpen((prev) => {
+      const next = !prev;
+      if (next) inputRef.current?.focus();
+      return next;
+    });
+  };
+
   return (
     <div ref={rootRef} className="relative">
       <label className="mb-1 flex items-center gap-1.5 text-xs font-bold theme-text-muted">
@@ -59,6 +77,7 @@ export default function SearchableSelect({
       </label>
       <div className="relative">
         <input
+          ref={inputRef}
           type="text"
           role="combobox"
           aria-expanded={open}
@@ -67,40 +86,65 @@ export default function SearchableSelect({
           disabled={disabled}
           value={query}
           placeholder={placeholder}
+          onClick={() => {
+            if (!disabled) setOpen(true);
+          }}
           onChange={(e) => {
             setQuery(e.target.value);
             setOpen(true);
             if (!e.target.value.trim()) onChange("");
           }}
-          onFocus={() => setOpen(true)}
-          onBlur={() => {
-            setOpen(false);
-            const match = matchOption(options, query);
-            if (match) {
-              onChange(match);
-              setQuery(match);
-            } else {
-              setQuery(value);
+          onFocus={(e) => {
+            if (!disabled) {
+              setOpen(true);
+              e.target.select();
             }
           }}
+          onBlur={() => {
+            // Short delay so onMouseDown on dropdown option registers before blur
+            setTimeout(() => {
+              if (document.activeElement !== inputRef.current) {
+                setOpen(false);
+                const match = matchOption(options, query);
+                if (match) {
+                  onChange(match);
+                  setQuery(match);
+                } else if (!query.trim()) {
+                  onChange("");
+                  setQuery("");
+                } else {
+                  setQuery(value);
+                }
+              }
+            }, 180);
+          }}
           className={cn(
-            "theme-input w-full rounded-xl border py-2.5 pl-3 pr-9 text-sm outline-none focus:border-emerald-500",
+            "theme-input w-full rounded-xl border py-2.5 pl-3 pr-10 text-sm font-semibold outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15",
             disabled && "cursor-not-allowed opacity-50"
           )}
         />
-        <ChevronDown
-          className={cn(
-            "pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 theme-text-muted transition",
-            open && "rotate-180"
-          )}
-        />
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={handleToggle}
+          disabled={disabled}
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition"
+          aria-label={open ? "सूची बंद करें" : "सूची खोलें"}
+        >
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 transition-transform duration-200",
+              open && "rotate-180 text-emerald-600"
+            )}
+          />
+        </button>
       </div>
 
       {open && !disabled && (
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-50 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-emerald-500/20 bg-[var(--background)] py-1 shadow-xl"
+          className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-emerald-500/20 bg-[var(--background)] py-1 shadow-2xl backdrop-blur-md"
         >
           {filtered.length === 0 ? (
             <li className="px-3 py-2.5 text-xs theme-text-muted">{emptyHint}</li>
@@ -109,14 +153,17 @@ export default function SearchableSelect({
               <li key={option} role="option" aria-selected={option === value}>
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => pick(option)}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    pick(option);
+                  }}
                   className={cn(
-                    "theme-text-primary flex w-full px-3 py-2.5 text-left text-sm transition hover:bg-emerald-500/10",
+                    "theme-text-primary flex w-full items-center justify-between px-3.5 py-2.5 text-left text-sm transition hover:bg-emerald-500/10",
                     option === value && "bg-emerald-500/15 font-bold text-emerald-700 dark:text-emerald-300"
                   )}
                 >
-                  {option}
+                  <span>{option}</span>
+                  {option === value && <span className="text-xs text-emerald-600 font-extrabold">✓</span>}
                 </button>
               </li>
             ))

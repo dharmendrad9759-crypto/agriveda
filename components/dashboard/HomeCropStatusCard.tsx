@@ -181,33 +181,33 @@ export default function HomeCropStatusCard({
               </AppLink>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <AppLink
                     href={cropSlug ? `/crops/${cropSlug}` : "/my-farm"}
-                    className="truncate font-display text-[16.5px] sm:text-[17.5px] font-black leading-tight tracking-tight text-[var(--av-text-primary)] hover:text-emerald-700 dark:hover:text-emerald-300"
+                    className="font-display text-[17px] sm:text-[18.5px] font-black leading-snug tracking-tight text-[var(--av-text-primary)] hover:text-emerald-700 dark:hover:text-emerald-300"
                   >
                     {cropDisplayName}
                   </AppLink>
                   <AppLink
                     href={cropSlug ? `/crops/${cropSlug}` : "/my-farm"}
-                    className="text-[var(--av-text-muted)] hover:text-emerald-600"
+                    className="text-[var(--av-text-muted)] hover:text-emerald-600 p-0.5"
                     title={isHi ? "फसल विवरण खोलें" : "Open crop details"}
                   >
                     <ChevronRight className="h-4 w-4 shrink-0 stroke-[2.5]" />
                   </AppLink>
                 </div>
 
-                {/* Subline: Field Name · Sowing Date (Information display; Green pill on right is the single edit action) */}
-                <div className="mt-0.5 flex items-center gap-x-1.5 text-[11px] sm:text-[11.5px] font-semibold text-[var(--av-text-secondary)]">
-                  <span className="truncate max-w-[110px]">
-                    {field.name || (isHi ? "मुख्य खेत" : "Main Field")}
+                {/* Subline: Field Name · Sowing Date (Clean, fully readable, no ellipsis truncation) */}
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] sm:text-[12px] font-semibold text-[var(--av-text-secondary)]">
+                  <span className="shrink-0 text-emerald-800 dark:text-emerald-300 font-bold">
+                    {field.name || (isHi ? "खेत #1" : "Field #1")}
                   </span>
-                  <span className="opacity-35">·</span>
-                  <span className="truncate text-[var(--av-text-muted)]">
+                  <span className="opacity-40">·</span>
+                  <span className="text-[var(--av-text-muted)] font-medium">
                     {timeline.hasSowingDate
                       ? `${isHi ? "बुवाई:" : "Sown:"} ${timeline.sowingDateFormatted}`
                       : isHi
-                        ? "तारीख नहीं जुड़ी"
+                        ? "तारीख जोड़ें"
                         : "No date set"}
                   </span>
                 </div>

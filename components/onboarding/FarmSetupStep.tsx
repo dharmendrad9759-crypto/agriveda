@@ -144,32 +144,30 @@ export default function FarmSetupStep({
   return (
     <div className="space-y-4">
       {/* Friendly greeting badge */}
-      <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-emerald-600/10 to-teal-500/10 p-3.5 text-xs">
+      <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-emerald-600/10 to-teal-500/10 p-3 text-xs">
         <div className="flex items-center gap-2 font-bold text-emerald-800 dark:text-emerald-300">
           <FarmerTourSparkleIcon className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span>{farmerName ? `${farmerName} जी, ` : ""}अपनी ज़मीन व फसलें जोड़ें</span>
         </div>
-        <p className="mt-1 leading-relaxed text-emerald-950/80 dark:text-emerald-100/80">
-          सटीक सिंचाई समय, खाद गणना और मंडी भाव के लिए अपने खेत का रकबा और फसल तय करें।
-        </p>
       </div>
 
-      {/* Total Land Summary Metric */}
-      <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-900/40 via-emerald-950/30 to-slate-900/60 p-4 text-center shadow-lg backdrop-blur-md">
-        <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/15 blur-2xl" />
-        <div className="relative">
-          <p className="flex items-center justify-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-400">
-            <Layers className="h-3.5 w-3.5" />
-            कुल कृषि रकबा (Total Farm Area)
+      {/* Total Land Summary Metric — High-Contrast Deep Emerald Gradient Card */}
+      <div className="relative overflow-hidden rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-[#042d1c] via-[#064228] to-[#021f13] p-4 text-center shadow-[0_12px_30px_rgba(4,45,28,0.35)]">
+        <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-emerald-400/25 blur-2xl" />
+        <div className="pointer-events-none absolute -left-6 -bottom-6 h-28 w-28 rounded-full bg-teal-400/20 blur-2xl" />
+        <div className="relative z-10">
+          <p className="flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider text-emerald-300">
+            <Layers className="h-4 w-4 text-emerald-400" />
+            कुल कृषि रकबा
           </p>
-          <div className="mt-1 flex items-baseline justify-center gap-1.5">
-            <span className="text-3xl font-black tracking-tight text-white drop-shadow-sm">
+          <div className="mt-2 flex items-baseline justify-center gap-2">
+            <span className="text-4xl font-black tracking-tight text-white drop-shadow-md">
               {previewAcres > 0 ? previewAcres.toFixed(1) : "0.0"}
             </span>
-            <span className="text-sm font-bold text-emerald-300">एकड़</span>
+            <span className="text-base font-extrabold text-emerald-300">एकड़</span>
           </div>
-          <p className="mt-1 text-[11px] text-gray-300/80">
-            कुल खेत: <strong className="text-white">{fields.length}</strong>
+          <p className="mt-1.5 text-xs font-bold text-emerald-100/90">
+            कुल खेत: <span className="rounded-full bg-emerald-500/25 px-2 py-0.5 text-white">{fields.length}</span>
           </p>
         </div>
       </div>

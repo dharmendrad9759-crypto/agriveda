@@ -150,7 +150,6 @@ export default function BottomNav() {
           ))}
 
           <AppLink
-            id="tour-ai-doctor"
             href="/ai-doctor"
             onClick={() => softTap(16)}
             className="group relative -mt-8 flex min-w-[76px] flex-col items-center"
@@ -166,6 +165,7 @@ export default function BottomNav() {
               />
             )}
             <motion.span
+              id="tour-ai-doctor"
               className={cn(
                 "relative flex h-[60px] w-[60px] items-center justify-center rounded-full bg-gradient-to-tr from-emerald-700 via-teal-600 to-amber-400 text-white shadow-[0_12px_28px_rgba(5,150,105,0.45),0_6px_20px_rgba(245,158,11,0.4)] ring-4 ring-white dark:ring-slate-900 transition-all duration-200 border border-amber-300/50",
                 aiActive

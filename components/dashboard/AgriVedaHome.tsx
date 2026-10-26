@@ -31,6 +31,7 @@ import { track } from "@/lib/analytics";
 import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import FarmerAppTour from "@/components/tutorial/FarmerAppTour";
 import HomeCropStatusCard from "@/components/dashboard/HomeCropStatusCard";
+import HomeAddCropHero from "@/components/dashboard/HomeAddCropHero";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 
 
@@ -376,7 +377,7 @@ export default function AgriVedaHome() {
   const reduced = useReducedMotion();
   const { profile } = useFarmerProfile();
   const { weather, loading: weatherLoading, error: weatherError } = useLiveWeather();
-  const { data: farm, setFields } = useFarmData();
+  const { data: farm, setFields, addField } = useFarmData();
   const { history: aiHistory } = useAIHistory();
   const lastScan = aiHistory[0];
 
@@ -392,6 +393,22 @@ export default function AgriVedaHome() {
       return f;
     });
     setFields(nextFields);
+  };
+
+  const handleAddCropFromHome = (cropSlug: string, cropName: string, sowingDateIso?: string) => {
+    const sDate = sowingDateIso || new Date().toISOString().split("T")[0];
+    addField({
+      name: isHi ? "खेत #1" : "Field #1",
+      area: "1.0 एकड़",
+      ownership: "Owned",
+      crop: cropName,
+      cropSlug,
+      status: "Active",
+      sowingDate: sDate,
+      sowingDateIso: sDate,
+      emoji: "🌱",
+      stage: "सक्रिय",
+    });
   };
 
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
@@ -459,15 +476,10 @@ export default function AgriVedaHome() {
               onUpdateSowingDate={handleUpdateSowingDate}
             />
           ) : (
-            <AppLink
-              href="/my-farm"
-              className="flex min-h-[64px] items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-500/35 bg-emerald-50/50 px-4 dark:bg-emerald-950/20"
-            >
-              <Sprout className="h-5 w-5 text-emerald-600" />
-              <span className="text-[15px] font-bold text-emerald-800 dark:text-emerald-200">
-                {isHi ? "अपनी फसल जोड़ो" : "Add your crop"}
-              </span>
-            </AppLink>
+            <HomeAddCropHero
+              isHi={isHi}
+              onAddCrop={handleAddCropFromHome}
+            />
           )}
         </motion.section>
 
