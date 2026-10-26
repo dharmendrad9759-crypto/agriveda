@@ -603,6 +603,15 @@ export const POPULAR_TONICS: MixMedicine[] = [
   },
 ];
 
+export function cleanTechnicalName(name: string): string {
+  if (!name) return "";
+  return name.replace(/\s*\([^)]*\)/g, " ").replace(/\s{2,}/g, " ").trim();
+}
+
+for (const med of [...POPULAR_INSECTICIDES, ...POPULAR_FUNGICIDES, ...POPULAR_TONICS]) {
+  med.nameHi = cleanTechnicalName(med.nameHi);
+}
+
 // --------------------------------------------------------------------------
 // Formulation & Category Extraction Helpers
 // --------------------------------------------------------------------------
@@ -708,11 +717,7 @@ export function curativeToMixMedicine(
   dosePerAcre = dosePerAcre.replace(/मिली\/ग्राम|ग्राम\/मिली/g, solidOrLiquidUnit);
 
   const cleanHi = curative.nameHi
-    ? curative.nameHi
-        .replace(/\s*\([^)]*[\u0900-\u097F\w\s/-]+\)\s*$/, "")
-        .replace(/\s*\(.*?\)\s*$/, "")
-        .replace(/\s*या\s+.*$/, "")
-        .trim()
+    ? cleanTechnicalName(curative.nameHi.replace(/\s*या\s+.*$/, ""))
     : "";
 
   const cleanTech = curative.technical

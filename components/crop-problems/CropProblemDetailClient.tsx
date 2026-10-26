@@ -6,14 +6,15 @@ import AppLink from "@/components/ui/AppLink";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import ProblemFlowShell, { MockCard } from "@/components/crop-problems/ProblemFlowShell";
 import { getCropProblem } from "@/data/crop-curative-problems";
+import { getCleanHindiTitle } from "@/components/crop-problems/CropProblemGalleryClient";
 import { getCurativeMedicines } from "@/lib/crops/cropProblemMedicines";
+import { cleanTechnicalName } from "@/data/mix-advisor/mix-plans";
 import { parseFarmerDose } from "@/lib/crops/tankDose";
 import { speakFarmerText, stopFarmerSpeech } from "@/lib/speech/farmerVoice";
 import { useToast } from "@/components/ui/Toast";
 import { readStorage, writeStorage } from "@/lib/storage";
 import {
   Check,
-  Volume2,
   VolumeX,
   Share2,
   FlaskConical,
@@ -155,7 +156,7 @@ export default function CropProblemDetailClient({
     () => getCurativeMedicines(cropSlug, problemId, p.cureChemicalHi),
     [cropSlug, problemId, p.cureChemicalHi]
   );
-  const shortName = p.nameHi.split("(")[0].trim();
+  const shortName = getCleanHindiTitle(p.nameHi);
 
   // Primary doctor medicine info
   const primaryChem = chemItems[0];
@@ -218,7 +219,7 @@ export default function CropProblemDetailClient({
     writeStorage(
       SAVED_KEY,
       [
-        { id, title: `${crop.nameHi} · ${p.nameHi}`, at: new Date().toISOString() },
+        { id, title: `${crop.nameHi} · ${shortName}`, at: new Date().toISOString() },
         ...prev.filter((x) => x.id !== id),
       ].slice(0, 30)
     );
@@ -291,10 +292,7 @@ export default function CropProblemDetailClient({
                   <span>रोकें</span>
                 </>
               ) : (
-                <>
-                  <Volume2 className="h-4 w-4" />
-                  <span>सुनो 🔊</span>
-                </>
+                <span>सुनो 🔊</span>
               )}
             </button>
           </div>
@@ -321,9 +319,6 @@ export default function CropProblemDetailClient({
                 <h2 className="text-[13.5px] font-black text-emerald-950 dark:text-emerald-100">
                   डॉक्टर की अनुशंसित दवा व सही डोज़ (Treatment)
                 </h2>
-                <p className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                  खेत में तुरंत असर करने वाली प्रमाणित दवाएँ
-                </p>
               </div>
             </div>
             <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 text-[9px] font-black text-emerald-800 dark:text-emerald-300">
@@ -369,7 +364,7 @@ export default function CropProblemDetailClient({
                         {/* Hindi Name */}
                         {c.nameHi && (
                           <p className="text-[11.5px] font-bold text-emerald-800 dark:text-emerald-300 mt-0.5">
-                            {c.nameHi.replace(/\s*\((?!.*(?:उपचार|समय|गोभ|डालें))[^)]*\)\s*/g, " ").trim()}
+                            {cleanTechnicalName(c.nameHi)}
                           </p>
                         )}
                       </div>
@@ -416,15 +411,7 @@ export default function CropProblemDetailClient({
                       </div>
 
                       {/* Full-Width 3-Column Compact Dosage Grid */}
-                      <div className="w-full rounded-xl bg-amber-500/10 border border-amber-500/30 p-2.5 space-y-2">
-                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
-                          <span className="flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-amber-600 animate-pulse" />
-                            <span>सटीक डोज़ — {parsed.methodLabel}:</span>
-                          </span>
-                          <span className="font-bold text-emerald-700 dark:text-emerald-300">⚡ 3-4 दिन में असर</span>
-                        </div>
-
+                      <div className="w-full rounded-xl bg-amber-500/10 border border-amber-500/30 p-2.5">
                         <div className="grid grid-cols-3 gap-2 text-center">
                           {/* Pill 1 */}
                           <div
@@ -463,18 +450,13 @@ export default function CropProblemDetailClient({
                       </div>
 
                       {/* Practical Agronomist Doctor Advice */}
-                      <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2 text-[11px] space-y-0.5">
-                        <p className="font-bold text-slate-800 dark:text-slate-200">
-                          💡 <span className="font-semibold">{parsed.doctorTip}</span>
-                        </p>
-                        {c.safety &&
-                          !parsed.doctorTip.includes(c.safety) &&
-                          !/(?:स्प्रे\s*(?:नहीं|न\s*करें)|बालू|रेत|टंकी\s*की\s*ज़रूरत\s*नहीं)/i.test(c.safety) && (
-                            <p className="text-[10.5px] text-slate-600 dark:text-slate-400 font-medium">
-                              सुरक्षा निर्देश: {c.safety}
-                            </p>
-                          )}
-                      </div>
+                      {parsed.doctorTip ? (
+                        <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2 text-[11px]">
+                          <p className="font-semibold text-slate-800 dark:text-slate-200">
+                            💡 {parsed.doctorTip}
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </div>

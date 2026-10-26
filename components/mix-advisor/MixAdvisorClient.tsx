@@ -32,6 +32,7 @@ import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import { CROP_PROBLEM_CROPS, type CropProblemItem } from "@/data/crop-curative-problems";
+import { getCleanHindiTitle } from "@/components/crop-problems/CropProblemGalleryClient";
 import {
   GROWTH_STAGES,
   buildMixPlanFromProblems,
@@ -44,6 +45,7 @@ import {
   POPULAR_TONICS,
   SILICONE_STICKER,
   tankItems,
+  cleanTechnicalName,
   type GrowthStageId,
   type MixMedicine,
   type MixPlan,
@@ -602,7 +604,7 @@ function MixAdvisorInner() {
                         className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-extrabold text-white shadow-xs"
                       >
                         <Check className="h-3 w-3 stroke-[3]" />
-                        {p.nameHi}
+                        {getCleanHindiTitle(p.nameHi)}
                         <button
                           type="button"
                           onClick={(e) => {
@@ -671,7 +673,7 @@ function MixAdvisorInner() {
                         </span>
                         <span className="block px-3 py-2.5">
                           <span className="line-clamp-1 text-[13px] font-black text-[var(--av-text-primary)]">
-                            {p.nameHi}
+                            {getCleanHindiTitle(p.nameHi)}
                           </span>
                           <span className="line-clamp-1 text-[10px] font-medium text-[var(--av-text-muted)]">
                             {p.nameEn}
@@ -681,23 +683,6 @@ function MixAdvisorInner() {
                     );
                   })}
                 </div>
-
-                {/* Selected Summary Pill */}
-                {selectedProblems.length > 0 && (
-                  <div className="mt-3 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/30 p-3">
-                    <div className="flex items-start gap-2">
-                      <TankMixSparkleIcon className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
-                      <div className="text-[12px] leading-snug">
-                        <span className="font-bold text-emerald-950 dark:text-emerald-100">
-                          चुनी गई समस्याएँ:{" "}
-                        </span>
-                        <span className="font-semibold text-emerald-800 dark:text-emerald-200">
-                          {selectedProblems.map((p) => p.nameHi).join(" + ")}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
 
               <button
@@ -754,17 +739,6 @@ function MixAdvisorInner() {
                   </div>
                 </div>
               </div>
-
-              {selectedProblems.length > 0 && (
-                <div className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3">
-                  <p className="text-[11px] font-bold text-[var(--av-text-muted)]">
-                    आपकी फसल व चुनी गई समस्याएँ:
-                  </p>
-                  <p className="mt-1 text-[13px] font-extrabold text-[var(--av-text-primary)]">
-                    {crop.nameHi} ({crop.nameEn}) — {selectedProblems.map((p) => p.nameHi).join(" · ")}
-                  </p>
-                </div>
-              )}
 
               <div>
                 <p className={AV.sectionTitle}>छिड़काव का सबसे अच्छा समय</p>
@@ -958,7 +932,7 @@ function MixAdvisorInner() {
                             {m.technical}
                           </p>
                           <p className="text-[12px] font-bold text-[var(--av-text-secondary)]">
-                            {m.nameHi}
+                            {cleanTechnicalName(m.nameHi)}
                           </p>
                           {m.brands && m.brands.length > 0 && (
                             <p className="text-[10px] font-medium text-[var(--av-text-muted)]">
@@ -1220,7 +1194,7 @@ function MixAdvisorInner() {
 
                                 {/* Hindi Name & Brands */}
                                 <p className="mt-0.5 text-[12px] font-bold text-[var(--av-text-secondary)]">
-                                  {opt.nameHi}
+                                  {cleanTechnicalName(opt.nameHi)}
                                 </p>
                                 {opt.brands && opt.brands.length > 0 && (
                                   <p className="text-[10px] font-medium text-[var(--av-text-muted)]">
@@ -1234,12 +1208,6 @@ function MixAdvisorInner() {
                                   <span>•</span>
                                   <span className="inline-flex items-center gap-1"><Layers className="h-3 w-3 text-emerald-600" /> 1 एकड़: {opt.dosePerAcre || "200L पानी"}</span>
                                 </div>
-
-                                {opt.safetyHi && (
-                                  <p className="mt-1.5 text-[10px] text-[var(--av-text-muted)] italic leading-tight">
-                                    {opt.safetyHi}
-                                  </p>
-                                )}
                               </div>
 
                               {selected ? (
@@ -1353,7 +1321,7 @@ function MixAdvisorInner() {
                                   </span>
                                 </div>
                                 <p className="mt-0.5 text-[12px] font-bold text-[var(--av-text-secondary)]">
-                                  {med.nameHi}
+                                  {cleanTechnicalName(med.nameHi)}
                                 </p>
                                 <p className="mt-1 text-[11px] font-black text-emerald-800 dark:text-emerald-300">
                                   {med.doseHi}
@@ -1480,7 +1448,7 @@ function MixAdvisorInner() {
                           <tr key={m.technical}>
                             <td className="px-3 py-2.5">
                               <span className="block font-black text-[var(--av-text-primary)]">
-                                {m.isAdjuvant ? m.nameHi : m.technical}
+                                {m.isAdjuvant ? cleanTechnicalName(m.nameHi) : m.technical}
                               </span>
                               {brand && (
                                 <span className="inline-block mt-0.5 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
@@ -1571,7 +1539,7 @@ function MixAdvisorInner() {
                   } catch {}
                   const stageObj = GROWTH_STAGES.find((s) => s.id === stage);
                   const stageLabel = stageObj ? stageObj.labelHi : stage;
-                  const problemLabel = selectedProblems.map((p) => p.nameHi).join(", ");
+                  const problemLabel = selectedProblems.map((p) => getCleanHindiTitle(p.nameHi)).join(", ");
                   const medNames = meds.map((m) => m.technical).join(" + ");
                   const doseLabel = meds.map((m) => m.dosePerAcre || m.doseHi).join(" + ");
                   router.push(

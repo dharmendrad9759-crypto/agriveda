@@ -1,16 +1,16 @@
 "use client";
 
-import { Calendar, CheckCircle2, Clock } from "lucide-react";
-import DarkCard from "@/components/shell/DarkCard";
-import SectionHeader from "@/components/shell/SectionHeader";
+import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { Calendar, CheckCircle2 } from "lucide-react";
 import RiskBadge from "@/components/shell/RiskBadge";
 import AppLink from "@/components/ui/AppLink";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { isHindiLocale } from "@/lib/i18n/farmer-ui";
-import { riskLabelHi, stageLabelHi } from "@/lib/i18n/farmer-display";
-import { getCropStageAlerts, getCropTasksDue } from "@/lib/crops/cropAgroMeta";
+import { riskLabelHi } from "@/lib/i18n/farmer-display";
+import { getCropTasksDue, farmerThreatHi } from "@/lib/crops/cropAgroMeta";
 import { getCropHindiName } from "@/lib/crops/crop-display";
-import { AV } from "@/lib/design/tokens";
+import { getCropTimelineGuidance } from "@/lib/crops/cropTimelineEngine";
 import type { Crop } from "@/types/crop";
 import type { EnrichedCropDetail } from "@/types/crop-detail";
 
@@ -19,15 +19,103 @@ interface Props {
   detail: EnrichedCropDetail;
 }
 
-export default function CropCalendarSection({ crop, detail }: Props) {
-  const { t, locale } = useLocale();
+export interface CalendarTaskItem {
+  id: string;
+  task: string;
+  details?: string;
+  due: string;
+  priority: "high" | "medium" | "low";
+}
+
+export default function CropCalendarSection({ crop }: Props) {
+  const { locale } = useLocale();
   const hi = isHindiLocale(locale);
   const cropLabel = (hi && getCropHindiName(crop.slug)) || crop.name;
-  const harvestStage = detail.growthStages[detail.growthStages.length - 1];
-  const tasksDue = getCropTasksDue(crop);
-  const stageAlerts = getCropStageAlerts(crop, detail.growthStages);
 
-  const stageName = (name: string) => (hi ? stageLabelHi(name) : name);
+  const searchParams = useSearchParams();
+  const dasParam = searchParams?.get("das");
+  const parsedDas =
+    dasParam !== null && !isNaN(Number(dasParam)) ? Number(dasParam) : null;
+
+  // If DAS is available (e.g. from /crops/[slug]/care/calendar?das=57), compute stage-specific guidance
+  const timeline = useMemo(() => {
+    if (parsedDas === null) return null;
+    const d = new Date();
+    d.setDate(d.getDate() - parsedDas);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const sowingDateIso = `${y}-${m}-${day}`;
+
+    return getCropTimelineGuidance({
+      cropSlug: crop.slug,
+      cropName: crop.name,
+      sowingDate: sowingDateIso,
+      isHi: hi,
+    });
+  }, [crop.slug, crop.name, parsedDas, hi]);
+
+  // Tasks to perform: If timeline available, construct this week's exact actions; otherwise fallback to getCropTasksDue
+  const tasks: CalendarTaskItem[] = useMemo(() => {
+    if (timeline) {
+      const items: CalendarTaskItem[] = [];
+
+      // 1. Critical Agronomic / Irrigation / Field Task for this stage
+      if (timeline.todayTask?.title) {
+        items.push({
+          id: "today-main",
+          task: timeline.todayTask.title,
+          details: timeline.todayTask.details,
+          due: hi ? "आज ही करें / तुरंत" : "Today / Urgent",
+          priority: timeline.todayTask.priority === "high" ? "high" : "medium",
+        });
+      }
+
+      // 2. Fertilizer / Nutrition Task
+      if (timeline.fertilizer) {
+        items.push({
+          id: "fert-task",
+          task: timeline.fertilizer.title,
+          details: `${timeline.fertilizer.dose}${
+            timeline.fertilizer.tip ? ` · ${timeline.fertilizer.tip}` : ""
+          }`,
+          due: timeline.fertilizer.badge || (hi ? "इस हफ्ते" : "This week"),
+          priority: timeline.fertilizer.isDueNow ? "high" : "low",
+        });
+      }
+
+      // 3. Pest / Weed / Crop Health Scouting
+      const majorPest = crop.cropProtection?.majorPests?.[0];
+      const weedNote = crop.cropProtection?.weedManagement?.[0];
+      items.push({
+        id: "protect-task",
+        task: majorPest
+          ? hi
+            ? `${farmerThreatHi(majorPest)} कीट व रोग की निगरानी करें`
+            : `Scout for ${majorPest}`
+          : hi
+            ? "खेत में कीट व रोगों की जांच करें"
+            : "Check for pests and leaf diseases",
+        details:
+          weedNote ||
+          (hi
+            ? "पत्तियों और तनों की जांच करें, कोई भी लक्षण दिखे तो समय पर समाधान करें।"
+            : "Inspect plants and act at early symptoms."),
+        due: hi ? "2–3 दिन में" : "In 2–3 days",
+        priority: "medium",
+      });
+
+      return items;
+    }
+
+    // Default fallback from crop tasks
+    return getCropTasksDue(crop).map((t) => ({
+      id: t.id,
+      task: t.task,
+      due: t.due,
+      priority: t.priority,
+    }));
+  }, [timeline, crop, hi]);
 
   return (
     <div className="space-y-3.5">
@@ -39,12 +127,20 @@ export default function CropCalendarSection({ crop, detail }: Props) {
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="text-base sm:text-lg font-black leading-tight text-white">
-              {hi ? `${cropLabel} — इस हफ्ते का मुख्य काम` : `${cropLabel} — This Week's Work`}
+              {hi
+                ? parsedDas !== null
+                  ? `${cropLabel} — बुवाई के ${parsedDas} दिन का मुख्य काम`
+                  : `${cropLabel} — इस हफ्ते का मुख्य काम`
+                : parsedDas !== null
+                  ? `${cropLabel} — Day ${parsedDas} Work`
+                  : `${cropLabel} — This Week's Work`}
             </h1>
             <p className="mt-0.5 text-xs text-emerald-100/80">
-              {hi
-                ? `फसल अवधि: ${crop.durationDays} · सही समय पर काम करने से पैदावार बढ़ती है`
-                : `Duration: ${crop.durationDays} · Timely action protects yield`}
+              {timeline?.stageSubtitle
+                ? `${timeline.stageName} (${timeline.stageSubtitle})`
+                : hi
+                  ? `फसल अवधि: ${crop.durationDays} · सही समय पर काम करने से पैदावार बढ़ती है`
+                  : `Duration: ${crop.durationDays} · Timely action protects yield`}
             </p>
           </div>
         </div>
@@ -59,19 +155,16 @@ export default function CropCalendarSection({ crop, detail }: Props) {
         </div>
       </div>
 
-      {/* Actionable Tasks List */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-[14px] font-black text-[var(--av-text-primary)]">
-            {hi ? "प्राथमिकता वाले काम" : "Priority Tasks"}
+      {/* Actionable Tasks List — ONLY this section is rendered */}
+      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 sm:p-4 shadow-sm">
+        <div className="mb-3">
+          <h2 className="text-[15px] sm:text-[16px] font-black tracking-tight text-[var(--av-text-primary)]">
+            {hi ? "अभी आपको यह काम करने चाहिए" : "Tasks You Should Do Now"}
           </h2>
-          <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
-            {tasksDue.length} {hi ? "कार्य" : "Tasks"}
-          </span>
         </div>
 
-        <ul className="space-y-2">
-          {tasksDue.map((task, i) => (
+        <ul className="space-y-2.5">
+          {tasks.map((task) => (
             <li
               key={task.id}
               className="flex items-start justify-between gap-3 rounded-xl border border-[var(--av-border-subtle)] bg-[var(--av-surface-inset)] p-3 transition hover:border-emerald-500/30"
@@ -81,61 +174,27 @@ export default function CropCalendarSection({ crop, detail }: Props) {
                   <CheckCircle2 className="h-3.5 w-3.5" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-bold leading-snug text-[var(--av-text-primary)]">
+                  <p className="text-[13.5px] font-bold leading-snug text-[var(--av-text-primary)]">
                     {task.task}
                   </p>
-                  <p className="mt-1 text-[11px] font-semibold text-[var(--av-text-muted)]">
+                  {task.details ? (
+                    <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--av-text-secondary)]">
+                      {task.details}
+                    </p>
+                  ) : null}
+                  <p className="mt-1.5 text-[11px] font-semibold text-[var(--av-text-muted)]">
                     ⏰ {task.due}
                   </p>
                 </div>
               </div>
-              <RiskBadge level={task.priority} label={hi ? riskLabelHi(task.priority) : undefined} />
+              <RiskBadge
+                level={task.priority}
+                label={hi ? riskLabelHi(task.priority) : undefined}
+              />
             </li>
           ))}
         </ul>
       </div>
-
-      {/* Stage Alerts */}
-      {stageAlerts.length > 0 ? (
-        <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm">
-          <div className="mb-2.5">
-            <h2 className="text-[14px] font-black text-[var(--av-text-primary)]">
-              {hi ? "फसल अवस्था व अलर्ट" : "Growth Stage Alerts"}
-            </h2>
-            <p className="text-[11px] text-[var(--av-text-muted)]">
-              {hi ? "अवस्था के अनुसार इन बातों का विशेष ध्यान रखें" : "Critical points for current stage"}
-            </p>
-          </div>
-
-          <ul className="space-y-2">
-            {stageAlerts.map((a) => (
-              <li key={a.id} className="rounded-xl border border-[var(--av-border-subtle)] bg-[var(--av-surface-inset)] p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-[13px] font-bold text-[var(--av-text-primary)]">{stageName(a.stage)}</p>
-                  <RiskBadge level={a.level} label={hi ? riskLabelHi(a.level) : undefined} />
-                </div>
-                <p className="mt-1 text-[12px] leading-relaxed text-[var(--av-text-secondary)]">{a.alert}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      {/* Harvest Countdown */}
-      {harvestStage && (
-        <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-3.5 dark:bg-amber-950/20">
-          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
-            <Clock className="h-4 w-4" />
-            <p className="text-xs font-black uppercase tracking-wider">
-              {hi ? "पकने और कटाई की अवस्था" : "Harvest Stage"}
-            </p>
-          </div>
-          <p className="mt-1.5 text-sm font-bold text-[var(--av-text-primary)]">
-            {stageName(harvestStage.title)}
-          </p>
-          <p className="text-xs text-[var(--av-text-muted)]">{harvestStage.period}</p>
-        </div>
-      )}
     </div>
   );
 }

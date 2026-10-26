@@ -425,7 +425,7 @@ export default function AgriVedaHome() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(16,185,129,0.18),transparent_55%),radial-gradient(ellipse_at_90%_10%,rgba(180,140,70,0.1),transparent_45%),linear-gradient(180deg,#e8f6ee_0%,transparent_70%)]" />
       </div>
 
-      <div className="relative z-10 space-y-4 px-0.5 pt-1">
+      <div className="relative z-10 space-y-3 px-0.5 pt-1">
         {/* Welcome + compact weather button + interactive Today's Task checklist */}
         <motion.section {...fade(0)} className="px-0.5">
           <div className="flex items-start justify-between gap-3">
@@ -572,76 +572,66 @@ export default function AgriVedaHome() {
           </motion.section>
         ) : null}
 
-        {/* Farm tools & utilities — Luxury Categorized Grid */}
-        <motion.section {...fade(0.07)} className="space-y-3.5 pt-1">
-          <div className="flex items-center justify-between px-1">
-            <div>
-              <h2 className="text-[16px] font-black tracking-tight text-[var(--av-text-primary)]">
-                {isHi ? "खेत के अन्य टूल्स (Farm Tools)" : "Farm Tools & Services"}
-              </h2>
-              <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
-                {isHi ? "फसल सुरक्षा, स्प्रे हिसाब और खेत प्रबंधन" : "Crop protection, spray logs and farm management"}
-              </p>
-            </div>
-            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10.5px] font-black text-emerald-800 dark:text-emerald-300 border border-emerald-500/25">
-              {isHi ? "7 स्मार्ट टूल्स" : "7 Smart Tools"}
-            </span>
+        {/* Farm tools & utilities — Categorized & Space-Optimized */}
+        <motion.section {...fade(0.07)} className="space-y-2 pt-0.5">
+          <div className="px-1">
+            <h2 className="text-[15px] sm:text-[16px] font-black tracking-tight text-[var(--av-text-primary)]">
+              {isHi ? "खेत के अन्य टूल्स (Farm Tools)" : "Farm Tools & Services"}
+            </h2>
           </div>
 
-          <div className="space-y-3.5">
+          <div className="space-y-2">
             {FARM_TOOL_CATEGORIES.map((category) => (
               <div
                 key={category.id}
-                className="rounded-3xl border border-emerald-900/10 bg-gradient-to-b from-[var(--av-surface)] to-[var(--av-surface-inset)]/40 p-3 shadow-[0_8px_24px_-12px_rgba(11,61,40,0.12)] dark:border-emerald-500/15 dark:shadow-none"
+                className="rounded-2xl border border-emerald-900/10 bg-gradient-to-b from-[var(--av-surface)] to-[var(--av-surface-inset)]/30 p-2 sm:p-2.5 shadow-2xs dark:border-emerald-500/15"
               >
                 {/* Category Header */}
-                <div className="mb-2.5 flex items-center justify-between px-1 pt-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[13px] font-black tracking-tight text-[var(--av-text-primary)]">
+                <div className="mb-1.5 flex items-center justify-between px-1 pt-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[12.5px] font-black tracking-tight text-[var(--av-text-primary)]">
                       {isHi ? category.titleHi : category.titleEn}
                     </span>
                   </div>
-                  <span className="rounded-md bg-emerald-600/10 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                  <span className="rounded-md bg-emerald-600/10 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-800 dark:text-emerald-300">
                     {isHi ? category.badgeHi : category.badgeEn}
                   </span>
                 </div>
 
                 {/* Items Grid */}
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                   {category.items.map((job) => (
                     <AppLink
                       key={job.id}
                       href={job.href}
                       onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
-                      className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-emerald-900/8 bg-[var(--av-surface)] p-2.5 shadow-[0_2px_10px_-4px_rgba(11,61,40,0.08)] transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md active:scale-[0.98] dark:border-white/5"
+                      className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-emerald-900/8 bg-[var(--av-surface)] p-1.5 sm:p-2 shadow-2xs transition-all duration-150 hover:border-emerald-500/40 hover:shadow-xs active:scale-[0.98] dark:border-white/5"
                     >
-                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-black/5 dark:border-white/10 shadow-xs">
+                      <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-lg border border-black/5 dark:border-white/10 shadow-2xs">
                         <Image
                           src={job.imageSrc}
                           alt=""
                           fill
-                          sizes="48px"
+                          sizes="40px"
                           quality={60}
-                          className="object-cover transition duration-300 group-hover:scale-110"
+                          className="object-cover transition duration-300 group-hover:scale-105"
                         />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
-                          <p className="truncate text-[13.5px] font-black text-[var(--av-text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
+                          <p className="truncate text-[12.5px] sm:text-[13px] font-black text-[var(--av-text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
                             {isHi ? job.hi : job.en}
                           </p>
-                          <span className="rounded-sm bg-emerald-500/10 px-1 py-0.2 text-[9px] font-black text-emerald-700 dark:text-emerald-300">
+                          <span className="rounded-sm bg-emerald-500/10 px-1 py-0.2 text-[8.5px] font-bold text-emerald-700 dark:text-emerald-300">
                             {isHi ? job.tagHi : job.tagEn}
                           </span>
                         </div>
-                        <p className="truncate text-[11px] font-medium text-[var(--av-text-muted)]">
+                        <p className="truncate text-[10px] sm:text-[10.5px] font-medium text-[var(--av-text-muted)]">
                           {isHi ? job.subHi : job.subEn}
                         </p>
                       </div>
-                      <div className="mr-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-700 transition group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-500/20 dark:text-emerald-300">
-                        <ChevronRight className="h-4 w-4" />
-                      </div>
+                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[var(--av-text-muted)] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-emerald-600" />
                     </AppLink>
                   ))}
                 </div>

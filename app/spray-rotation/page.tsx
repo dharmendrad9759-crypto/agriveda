@@ -4,39 +4,29 @@ import { useState, useMemo, useEffect } from "react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
-import { Plus, Wifi, WifiOff, Droplets, BookOpen, ChevronRight, ShieldCheck } from "lucide-react";
-import { SprayRotationSparkleIcon } from "@/components/brand/icons";
+import { Plus, Wifi, WifiOff, Droplets } from "lucide-react";
 import SprayTimeline from "@/components/spray-rotation/SprayTimeline";
 import RiskBanner from "@/components/spray-rotation/RiskBanner";
-import SuggestedSprayCard from "@/components/spray-rotation/SuggestedSprayCard";
 import { useSprayLogs } from "@/hooks/useSprayLogs";
 import { useSprayFields } from "@/hooks/useSprayFields";
-import { useSprayLocale } from "@/hooks/useSprayLocale";
-import { t } from "@/lib/i18n/spray-rotation";
 import {
   attachProducts,
   checkResistanceRisk,
-  suggestNextMoAGroup,
 } from "@/lib/sprayRotation";
 import { trySyncPendingSprays } from "@/lib/spraySync";
 import { cropCatalog } from "@/data/crop-catalog";
-import { getCropPestDisease } from "@/data/pest-disease";
 import { cn } from "@/lib/cn";
-import { AV } from "@/lib/design/tokens";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const DEFAULT_FIELD = { id: "default-field", name: "मुख्य खेत", cropSlug: "paddy" };
 
 export default function SprayRotationPage() {
   const { t: uiT } = useLocale();
-  const { locale } = useSprayLocale();
   const { fields } = useSprayFields();
   const { hydrated, isOnline, pendingCount, getLogsForField } = useSprayLogs();
 
   const [selectedFieldId, setSelectedFieldId] = useState(fields[0]?.id ?? DEFAULT_FIELD.id);
   const [selectedCropSlug, setSelectedCropSlug] = useState<string>("");
-  const [pestId, setPestId] = useState("");
-  const [diseaseId, setDiseaseId] = useState("");
 
   useEffect(() => {
     if (fields.length > 0 && !selectedFieldId) {
@@ -52,7 +42,6 @@ export default function SprayRotationPage() {
   const rawCropSlug = selectedCropSlug || activeField?.cropSlug || "paddy";
   const cropId = rawCropSlug === "groundnut" ? "moongfali" : rawCropSlug;
   const currentCrop = cropCatalog.find((c) => c.slug === cropId) ?? cropCatalog[0];
-  const cropThreats = getCropPestDisease(cropId);
 
   const fieldLogs = useMemo(() => {
     if (!activeField) return [];
@@ -61,10 +50,6 @@ export default function SprayRotationPage() {
 
   const withProducts = useMemo(() => attachProducts(fieldLogs), [fieldLogs]);
   const risk = useMemo(() => checkResistanceRisk(fieldLogs), [fieldLogs]);
-  const suggestions = useMemo(
-    () => suggestNextMoAGroup(cropId, pestId || undefined, diseaseId || undefined, fieldLogs),
-    [cropId, pestId, diseaseId, fieldLogs]
-  );
 
   if (!hydrated) return null;
 
@@ -73,11 +58,7 @@ export default function SprayRotationPage() {
       title="स्प्रे चक्र व डायरी"
       breadcrumbs={[{ label: uiT("navHome"), href: "/" }, { label: "स्प्रे डायरी" }]}
     >
-      <div className="flex items-center justify-between pb-1">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-300">
-          <ShieldCheck className="h-4 w-4 text-emerald-600" />
-          दवा रोटेशन व रिकॉर्ड प्रबंधन
-        </span>
+      <div className="flex items-center justify-end pb-1">
         <div className="flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-muted)]">
           {isOnline ? (
             <>
@@ -150,13 +131,13 @@ export default function SprayRotationPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 1. मेरा छिड़काव रिकॉर्ड (स्प्रे डायरी) */}
+      {/* मेरा छिड़काव रिकॉर्ड (स्प्रे डायरी) */}
       {/* ========================================================================= */}
       <DarkCard className="mt-4" delay={1}>
         <div className="flex items-center justify-between border-b border-[var(--av-border)] pb-3">
           <h2 className="flex items-center gap-2 text-[15px] font-black text-[var(--av-text-primary)]">
             <Droplets className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-            1. मेरा छिड़काव रिकॉर्ड (स्प्रे डायरी)
+            मेरा छिड़काव रिकॉर्ड (स्प्रे डायरी)
           </h2>
           <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
             {withProducts.length} छिड़काव
@@ -177,25 +158,16 @@ export default function SprayRotationPage() {
         </div>
 
         {/* Spray Timeline History */}
-        <div className="mt-4">
-          <p className="text-[12px] font-black text-[var(--av-text-primary)]">
-            इस सीजन की छिड़काव सूची ({currentCrop.nameHi || currentCrop.name}):
-          </p>
-          {withProducts.length === 0 ? (
-            <div className="mt-3 rounded-2xl border border-dashed border-[var(--av-border)] p-4 text-center">
-              <p className="text-xs font-semibold text-[var(--av-text-secondary)]">
-                इस सीजन में अभी कोई छिड़काव दर्ज नहीं है।
-              </p>
-              <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-                जब भी खेत में स्प्रे करें, नीचे बटन दबाकर डायरी में नोट करें ताकि दवा बदलने का सही सुझाव मिल सके।
-              </p>
-            </div>
-          ) : (
+        {withProducts.length > 0 && (
+          <div className="mt-4">
+            <p className="text-[12px] font-black text-[var(--av-text-primary)]">
+              इस सीजन की छिड़काव सूची ({currentCrop.nameHi || currentCrop.name}):
+            </p>
             <div className="mt-3">
               <SprayTimeline sprays={withProducts} />
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Add Spray Log Button */}
         <AppLink
@@ -203,71 +175,8 @@ export default function SprayRotationPage() {
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-sm font-black text-white shadow-md shadow-emerald-700/20 active:scale-[0.98]"
         >
           <Plus className="h-4 w-4 stroke-[3]" />
-          + नया छिड़काव दर्ज करें (स्प्रे डायरी)
+          नया छिड़काव दर्ज करें (स्प्रे डायरी)
         </AppLink>
-      </DarkCard>
-
-      {/* ========================================================================= */}
-      {/* 2. अगली बार कौन-सी बदलकर दवा डालें */}
-      {/* ========================================================================= */}
-      <DarkCard className="mt-4" delay={2}>
-        <div className="border-b border-[var(--av-border)] pb-3">
-          <h2 className="flex items-center gap-2 text-[15px] font-black text-[var(--av-text-primary)]">
-            <SprayRotationSparkleIcon className="h-4 w-4 text-amber-500" />
-            2. अगली बार कौन-सी बदलकर दवा डालें
-          </h2>
-          <p className="mt-1 text-[11px] font-medium text-[var(--av-text-muted)]">
-            (ताकि कीट/रोग पर दवा बेअसर न हो और फसल को 100% सुरक्षा मिले)
-          </p>
-        </div>
-
-        {/* Target Threat Dropdown */}
-        <div className="mt-3">
-          <label className="block text-xs font-bold text-[var(--av-text-secondary)] mb-1.5">
-            🎯 लक्ष्य कीट या रोग चुनें:
-          </label>
-          <select
-            value={pestId ? `p-${pestId}` : diseaseId ? `d-${diseaseId}` : ""}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v.startsWith("p-")) {
-                setPestId(v.slice(2));
-                setDiseaseId("");
-              } else if (v.startsWith("d-")) {
-                setDiseaseId(v.slice(2));
-                setPestId("");
-              } else {
-                setPestId("");
-                setDiseaseId("");
-              }
-            }}
-            className="av-input w-full text-xs font-semibold"
-          >
-            <option value="">— सभी प्रमुख कीट व रोग —</option>
-            {(cropThreats?.pests ?? []).map((p) => (
-              <option key={p.id} value={`p-${p.id}`}>
-                🐛 कीट: {p.name}
-              </option>
-            ))}
-            {(cropThreats?.diseases ?? []).map((d) => (
-              <option key={d.id} value={`d-${d.id}`}>
-                🦠 रोग: {d.name}
-              </option>
-            ))}
-          </select>
-          <p className="mt-1.5 text-[10px] text-[var(--av-text-muted)]">
-            चयनित फसल: <span className="font-bold text-emerald-700 dark:text-emerald-300">{currentCrop.nameHi || currentCrop.name}</span>
-          </p>
-        </div>
-
-        {/* Suggestions List */}
-        <div className="mt-3">
-          <SuggestedSprayCard
-            suggestions={suggestions}
-            title="अनुशंसित सुरक्षित दवाएं (बदलकर डालने हेतु)"
-            emptyMessage="इस कीट/रोग के लिए अनुमोदित दवाएं सूची में उपलब्ध हैं।"
-          />
-        </div>
       </DarkCard>
     </AppShell>
   );

@@ -555,19 +555,8 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
         />
 
         <div className="relative z-10">
-          {/* Top category badges */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/35 bg-emerald-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-emerald-300 backdrop-blur-md">
-              <FertilizerNpkSparkleIcon className="h-3.5 w-3.5" />
-              {hi ? "वैज्ञानिक + फील्ड-टेस्टेड (High-Yield)" : "Scientific + Field-Tested Plan"}
-            </span>
-            <span className="rounded-full bg-white/15 border border-white/20 px-2.5 py-0.5 text-[10.5px] font-extrabold text-white/90 backdrop-blur-md">
-              🏛️ ICAR/SAU मानक
-            </span>
-          </div>
-
           {/* Main Title & Crop Image */}
-          <div className="mt-3.5 flex items-center gap-3.5">
+          <div className="flex items-center gap-3.5">
             <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 border-emerald-400/30 bg-slate-900 shadow-md ring-2 ring-emerald-500/20 sm:h-24 sm:w-24">
               <Image
                 src={cropImg}
@@ -582,11 +571,6 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               <h1 className="text-[20px] font-black leading-tight text-white tracking-tight sm:text-[23px]">
                 {hindi || crop.name} खाद योजना
               </h1>
-              <p className="mt-1 text-[12px] font-medium leading-snug text-emerald-100/85">
-                {hi
-                  ? "बेसल खाद, यूरिया कोटिंग, जड़ों में ड्रेंचिंग और फोलियर स्प्रे का बंपर पैदावार शेड्यूल"
-                  : "Balanced basal, top-dressing, root drenching & foliar spray schedule"}
-              </p>
             </div>
           </div>
 
@@ -735,24 +719,6 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </div>
           )}
 
-          {/* DAP + Zinc & Calcium Nitrate Golden Rule Alert */}
-          <div className="rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3.5 shadow-sm dark:bg-amber-950/20">
-            <div className="flex items-start gap-2.5">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-white font-black text-xs shadow-xs">
-                <AlertTriangle className="h-3.5 w-3.5" />
-              </span>
-              <div>
-                <h4 className="text-[12.5px] font-black text-amber-950 dark:text-amber-100">
-                  {hi ? "💡 किसान टिप (गोल्डन नियम): खाद मिलाते समय सावधानी" : "Golden Rule: Fertilizer Mixing Safety"}
-                </h4>
-                <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-amber-900/90 dark:text-amber-200/90">
-                  {hi
-                    ? "1) DAP/SSP के साथ सामान्य जिंक सल्फेट कभी मिलाकर न डालें (दोनों मिलकर पत्थर जैसा 'जिंक फास्फेट' बना लेते हैं) — बेसल में Chelated Zinc (EDTA 12%) लें या जिंक को पहली यूरिया के साथ दें। 2) कैल्शियम नाइट्रेट को किसी भी सल्फेट या फॉस्फेट खाद के साथ न मिलाएं, हमेशा अलग से चलाएं।"
-                    : "Never mix DAP/SSP with normal Zinc Sulphate (use Chelated Zinc EDTA 12% or apply with 1st Urea). Always run Calcium Nitrate separately from sulphate/phosphate fertilizers."}
-                </p>
-              </div>
-            </div>
-          </div>
 
           <DarkCard>
             {supportsDrip ? (
@@ -787,9 +753,6 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                     ? `अवस्था अनुसार खाद व स्प्रे शेड्यूल (${acres} एकड़ के लिए)`
                     : `Stage-Wise Fertilizer Schedule (${acres} Acre)`}
                 </h3>
-                <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                  दानेदार खाद + जड़ों में ड्रेंचिंग + फोलियर स्प्रे का सटीक फील्ड कॉम्बिनेशन
-                </p>
               </div>
             </div>
 
@@ -996,9 +959,6 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                     ? `${hindi || crop.name} के फोलियर स्प्रे व ड्रेंचिंग चरण (${acres} एकड़)`
                     : `${crop.name} Foliar Spray & Drenching Stages (${acres} Acre)`}
                 </h3>
-                <p className="mt-0.5 text-[11px] font-medium text-[var(--av-text-muted)]">
-                  💧 स्प्रे की मात्रा और पानी दोनों {acres} एकड़ के हिसाब से सेट हैं
-                </p>
               </div>
               <ul className="mt-3 space-y-2.5">
                 {verifiedFoliarStages.map((s, idx) => (

@@ -789,35 +789,63 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
     "image": "/images/crops/maize.jpg",
     "problems": [
       {
-        "id": "shoot-fly-stem-borer",
-        "nameHi": "तना मक्खी व तना छेदक (Shoot Fly & Pink Borer)",
-        "nameEn": "Shoot Fly & Pink Borer",
+        "id": "stem-borer",
+        "nameHi": "तना छेदक",
+        "nameEn": "Stem Borer / Pink Borer",
         "tagHi": "कीट",
-        "image": "/images/pests/pest-atherigona-approximata-2.jpg",
-        "stageHi": "अंकुरण व वानस्पतिक (5-25 दिन)",
+        "image": "/images/pests/pest-chilo-partellus-2.jpg",
+        "stageHi": "वानस्पतिक अवस्था (15-35 दिन)",
         "stages": [
           "vegetative"
         ],
-        "specialFactHi": "छोटे पौधों की बीच की गोभ सूख जाती है (Dead Heart) और पत्तों पर सीधी लाइन में गोल छेद दिखते हैं।",
-        "whatHi": "सुंडी पौधे के दिल (गोभ) को काट देती है जिससे पौधा झाड़ीनुमा हो जाता है।",
+        "specialFactHi": "पत्तियों पर सीधी कतार में गोल छेद (Shot holes) और बीच की गोभ सूख जाना (Dead heart)।",
+        "whatHi": "तना छेदक (Chilo partellus) की सुंडी तने में घुसकर अंदर से खोखला करती है।",
         "whyHi": [
           "देर से बुवाई",
-          "गर्म तापमान"
+          "गर्म व शुष्क मौसम",
+          "खेत में पिछली फसल के अवशेष"
         ],
         "cureOrganicHi": [
-          "समय पर अगेती बुवाई",
-          "नीम तेल"
+          "ट्राइकोग्रामा कार्ड (50,000 अंडे/एकड़)",
+          "नीम तेल 5 ml/L"
         ],
         "cureChemicalHi": [
           "फर्टेरा 4 kg पोंगली में",
-          "अलिका 80 ml"
+          "कोराजन 60 ml"
         ],
-        "whenToActHi": "अंकुरण के 7-10 दिन बाद पहली सूखी गोभ पर",
-        "tipHi": "दवा का स्प्रे या दाने सीधे मक्के की पोंगली (Whorl) के अंदर डालें।"
+        "whenToActHi": "पत्तियों पर छेद दिखते ही या 15-20 दिन की फसल पर",
+        "tipHi": "दानेदार दवा सीधे पौधे की पोंगली (Whorl) के अंदर डालें।"
+      },
+      {
+        "id": "shoot-fly",
+        "nameHi": "तना मक्खी",
+        "nameEn": "Shoot Fly (Atherigona)",
+        "tagHi": "कीट",
+        "image": "/images/pests/pest-atherigona-approximata-2.jpg",
+        "stageHi": "अंकुरण व शुरुआती अवस्था (5-20 दिन)",
+        "stages": [
+          "vegetative"
+        ],
+        "specialFactHi": "छोटे पौधे की बीच की पत्ती सूखकर पीली पड़ जाती है (Dead Heart) और खींचने पर आसानी से बदबू के साथ निकल आती है।",
+        "whatHi": "तना मक्खी की मैगट अंकुरण के बाद बढ़ते तने को खा जाती है जिससे पौधा झाड़ीदार हो जाता है।",
+        "whyHi": [
+          "मानसून देर होने पर देरी से बुवाई",
+          "कम बारिश या सूखा तनाव"
+        ],
+        "cureOrganicHi": [
+          "मानसून आते ही अगेती बुवाई करें",
+          "पीला स्टिकी ट्रैप (10/एकड़)"
+        ],
+        "cureChemicalHi": [
+          "थायोमेथोक्सम 30% FS बीज उपचार",
+          "अलिका 80 ml प्रति एकड़"
+        ],
+        "whenToActHi": "अंकुरण के 7-10 दिन के अंदर पहली सूखी गोभ दिखने पर",
+        "tipHi": "बुवाई के समय बीज उपचार ही सबसे पक्का बचाव है; खड़ी फसल में तुरंत अलिका का स्प्रे करें।"
       },
       {
         "id": "fall-armyworm",
-        "nameHi": "फॉल आर्मीवर्म (Fall Armyworm - FAW)",
+        "nameHi": "फॉल आर्मीवर्म",
         "nameEn": "Fall Armyworm (FAW)",
         "tagHi": "कीट",
         "image": "/images/pests/pest-spodoptera-frugiperda-2.jpg",
@@ -845,7 +873,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
       },
       {
         "id": "turcicum-blight",
-        "nameHi": "पत्ती झुलसा (Turcicum & Maydis Leaf Blight)",
+        "nameHi": "पत्ती झुलसा",
         "nameEn": "Turcicum & Maydis Leaf Blight",
         "tagHi": "फफूंद",
         "image": "/images/diseases/disease-exserohilum-turcicum-2.jpg",
@@ -873,7 +901,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
       },
       {
         "id": "post-flowering-stalk-rot",
-        "nameHi": "तना सड़न (Post-Flowering Stalk Rot)",
+        "nameHi": "तना सड़न",
         "nameEn": "Post-Flowering Stalk Rot",
         "tagHi": "फफूंद",
         "image": "/images/crop-identification/04_maize/post_flowering_stalk_rot.webp",
@@ -899,7 +927,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
       },
       {
         "id": "common-rust",
-        "nameHi": "सामान्य रतुआ (Common Rust)",
+        "nameHi": "सामान्य रतुआ",
         "nameEn": "Common Rust (Puccinia sorghi)",
         "tagHi": "फफूंद",
         "image": "/images/diseases/disease-puccinia-sorghi-2.jpg",
@@ -4543,10 +4571,11 @@ const PROBLEM_ID_ALIASES: Record<string, Record<string, string>> = {
   maize: {
     rust: "common-rust",
     "common-rust": "common-rust",
-    "shoot-fly": "shoot-fly-stem-borer",
-    "stem-fly": "shoot-fly-stem-borer",
-    "stem-borer": "shoot-fly-stem-borer",
-    "shoot-fly-stem-borer": "shoot-fly-stem-borer",
+    "shoot-fly": "shoot-fly",
+    "stem-fly": "shoot-fly",
+    "stem-borer": "stem-borer",
+    "pink-borer": "stem-borer",
+    "shoot-fly-stem-borer": "stem-borer",
     "fall-army-worm": "fall-armyworm",
     faw: "fall-armyworm",
     "stalk-rot": "post-flowering-stalk-rot",

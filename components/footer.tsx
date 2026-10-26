@@ -45,7 +45,6 @@ export default function Footer() {
             {SUPPORT_EMAIL}
           </a>
         </nav>
-        <p className="text-[10px] theme-text-muted">AI सुझाव — दवा लेबल से मिलाएँ</p>
       </div>
     </footer>
   );

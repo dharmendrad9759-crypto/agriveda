@@ -1081,18 +1081,60 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ]
   },
   "maize": {
-    "shoot-fly-stem-borer": [
+    "stem-borer": [
           {
-                "nameHi": "इमिडाक्लोप्रिड 17.8% SL + लैम्ब्डा-साइहेलोथ्रिन 5% EC",
-                "technical": "Imidacloprid 17.8% SL + Lambda-cyhalothrin 5% EC",
-                "dose": "100 मिली इमिडाक्लोप्रिड + 200 मिली लैम्ब्डा प्रति एकड़",
+                "nameHi": "फिप्रोनिल 0.3% GR (रीजेंट)",
+                "technical": "Fipronil 0.3% GR",
+                "dose": "7-8 किग्रा प्रति एकड़ (हल्की नमी में खेत में डालें)",
                 "brands": [
-                      "Confidor + Karate"
+                      "Regent 0.3 GR (Bayer)",
+                      "Mortar"
                 ],
-                "safety": "शुरुआती तना मक्खी नियंत्रण।",
+                "safety": "शुरुआती तना छेदक व भूमिगत कीटों से बचाव।",
                 "level": 1,
                 "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
-                "dosePerAcre": "100 ml + 200 ml / एकड़"
+                "dosePerAcre": "7-8 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
+                "technical": "Chlorantraniliprole 18.5% SC",
+                "dose": "0.4 मिली / लीटर पानी (60 मिली प्रति एकड़)",
+                "brands": [
+                      "Coragen (FMC)",
+                      "Cover"
+                ],
+                "safety": "पौधे की गोभ में स्प्रे करने पर तना छेदक की सुंडी तुरंत खाना बंद कर देती है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "60 मिली / एकड़"
+          },
+          {
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
+                "technical": "Chlorantraniliprole 0.4% GR",
+                "dose": "4 किग्रा प्रति एकड़ (सीधे पोंगली/गोभ के अंदर डालें)",
+                "brands": [
+                      "Ferterra (FMC)"
+                ],
+                "safety": "गोभ में डालने पर 25 दिन तक तना छेदक से पूर्ण मुक्ति।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "4 किग्रा / एकड़ (पोंगली में)",
+                "isTopPerformer": true
+          }
+    ],
+    "shoot-fly": [
+          {
+                "nameHi": "इमिडाक्लोप्रिड 17.8% SL (कॉन्फिडोर)",
+                "technical": "Imidacloprid 17.8% SL",
+                "dose": "0.5 मिली / लीटर पानी (100 मिली प्रति एकड़)",
+                "brands": [
+                      "Confidor (Bayer)",
+                      "Tatamida"
+                ],
+                "safety": "अंकुरण के तुरंत बाद तना मक्खी की रोकथाम हेतु।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "100 मिली / एकड़"
           },
           {
                 "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
@@ -1101,11 +1143,27 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "Alika (Syngenta)"
                 ],
-                "safety": "पोंगली के अंदर घुसकर तना छेदक को मारता है।",
+                "safety": "सिस्टेमिक व कॉन्टैक्ट क्रिया — तना मक्खी पर त्वरित नियंत्रण।",
                 "level": 2,
                 "levelLabelHi": "स्तर 2 · मध्यम स्तर",
                 "dosePerAcre": "80 मिली / एकड़"
           },
+          {
+                "nameHi": "थियामेथोक्साम 30% FS (क्रूजर) या सायंट्रानिलिप्रोल 19.8% + थायोमेथोक्सम 19.8% FS",
+                "technical": "Thiamethoxam 30% FS / Cyantraniliprole 19.8% + Thiamethoxam 19.8% FS",
+                "dose": "8 मिली प्रति किलो बीज (बीज उपचार) या 100 मिली प्रति एकड़ स्प्रे",
+                "brands": [
+                      "Cruiser (Syngenta)",
+                      "Fortenza Duo"
+                ],
+                "safety": "बीज उपचार से शुरुआती 21 दिनों तक तना मक्खी का 100% सुरक्षा कवच।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "बीज उपचार / 100 मिली एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "shoot-fly-stem-borer": [
           {
                 "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
                 "technical": "Chlorantraniliprole 0.4% GR",
@@ -6262,10 +6320,11 @@ const PROBLEM_ALIASES: Record<string, Record<string, string>> = {
   maize: {
     rust: "common-rust",
     "common-rust": "common-rust",
-    "shoot-fly": "shoot-fly-stem-borer",
-    "stem-fly": "shoot-fly-stem-borer",
-    "stem-borer": "shoot-fly-stem-borer",
-    "shoot-fly-stem-borer": "shoot-fly-stem-borer",
+    "shoot-fly": "shoot-fly",
+    "stem-fly": "shoot-fly",
+    "stem-borer": "stem-borer",
+    "pink-borer": "stem-borer",
+    "shoot-fly-stem-borer": "stem-borer",
     "fall-army-worm": "fall-armyworm",
     faw: "fall-armyworm",
     "stalk-rot": "post-flowering-stalk-rot",
