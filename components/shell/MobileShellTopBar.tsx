@@ -70,6 +70,7 @@ export default function MobileShellTopBar() {
         <div className="flex shrink-0 items-center gap-1.5">
           {/* One-tap Language Toggle */}
           <button
+            id="tour-language-btn"
             type="button"
             onClick={toggleLanguage}
             className="flex h-9 items-center gap-1 rounded-xl border border-emerald-500/20 bg-[var(--av-surface)] px-2.5 text-[11px] font-extrabold text-[var(--av-text-primary)] shadow-sm active:scale-95 hover:border-emerald-500/40"
@@ -82,6 +83,7 @@ export default function MobileShellTopBar() {
 
           {/* Notifications / Alerts */}
           <AppLink
+            id="tour-alerts-btn"
             href="/alerts"
             className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/15 bg-[var(--av-surface)] text-[var(--av-text-secondary)] shadow-sm transition hover:border-emerald-500/35 hover:text-[var(--av-accent)] active:scale-95"
             aria-label={t("shellNotifications")}

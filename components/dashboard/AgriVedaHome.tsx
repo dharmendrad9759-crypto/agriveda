@@ -60,6 +60,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
       <div className="relative z-10 mt-3 grid grid-cols-2 gap-2.5 sm:gap-3">
         {/* Card 1: AI Camera Scan */}
         <AppLink
+          id="tour-home-camera-card"
           href="/ai-doctor"
           onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_photo_scan" })}
           className="group relative flex flex-col overflow-hidden rounded-2xl border border-emerald-400/30 bg-emerald-950/70 backdrop-blur-md shadow-md transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-950/90 hover:shadow-xl active:scale-[0.97]"

@@ -6,6 +6,7 @@ import ThemeToggle from "@/components/theme/ThemeToggle";
 import {
   Bug,
   ChevronRight,
+  Compass,
   Languages,
   MapPin,
   MessageCircle,
@@ -241,6 +242,12 @@ export default function ProfilePage() {
             </div>
 
             {[
+              {
+                href: "/?tour=1",
+                icon: Compass,
+                tone: "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300",
+                label: isHi ? "ऐप फीचर्स टूर (Spotlight Walkthrough)" : "App Spotlight Tour",
+              },
               {
                 href: "/my-queries",
                 icon: MessageCircle,

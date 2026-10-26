@@ -10,18 +10,21 @@ import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 import { cn } from "@/lib/cn";
 
 const SIDE_ITEMS: {
+  id?: string;
   labelKey: FarmerUiKey;
   path: string;
   icon: typeof Home;
   match: (pathname: string) => boolean;
 }[] = [
   {
+    id: "tour-nav-home",
     labelKey: "navHome",
     path: "/",
     icon: Home,
     match: (pathname) => pathname === "/",
   },
   {
+    id: "tour-nav-crops",
     labelKey: "navCrops",
     path: "/crops",
     icon: Sprout,
@@ -33,18 +36,21 @@ const SIDE_ITEMS: {
 ];
 
 const RIGHT_ITEMS: {
+  id?: string;
   labelKey: FarmerUiKey;
   path: string;
   icon: typeof Home;
   match: (pathname: string) => boolean;
 }[] = [
   {
+    id: "tour-nav-mandi",
     labelKey: "market",
     path: "/mandi",
     icon: IndianRupee,
     match: (pathname) => pathname.startsWith("/mandi"),
   },
   {
+    id: "tour-nav-profile",
     labelKey: "navProfile",
     path: "/profile",
     icon: User,
@@ -53,12 +59,14 @@ const RIGHT_ITEMS: {
 ];
 
 function NavItem({
+  id,
   label,
   path,
   icon: Icon,
   isActive,
   reduced,
 }: {
+  id?: string;
   label: string;
   path: string;
   icon: typeof Home;
@@ -67,6 +75,7 @@ function NavItem({
 }) {
   return (
     <AppLink
+      id={id}
       href={path}
       onClick={() => softTap(10)}
       className="relative flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 transition-colors duration-150"
@@ -131,6 +140,7 @@ export default function BottomNav() {
           {SIDE_ITEMS.map((item) => (
             <NavItem
               key={item.path}
+              id={item.id}
               label={t(item.labelKey)}
               path={item.path}
               icon={item.icon}
@@ -140,6 +150,7 @@ export default function BottomNav() {
           ))}
 
           <AppLink
+            id="tour-ai-doctor"
             href="/ai-doctor"
             onClick={() => softTap(16)}
             className="group relative -mt-8 flex min-w-[76px] flex-col items-center"
@@ -193,6 +204,7 @@ export default function BottomNav() {
           {RIGHT_ITEMS.map((item) => (
             <NavItem
               key={item.path}
+              id={item.id}
               label={t(item.labelKey)}
               path={item.path}
               icon={item.icon}

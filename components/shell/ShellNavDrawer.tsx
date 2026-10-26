@@ -7,6 +7,7 @@ import {
   Bug,
   ChevronRight,
   CloudSun,
+  Compass,
   FlaskConical,
   Home,
   Landmark,
@@ -340,6 +341,18 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
                 <MessageCircle className="h-3.5 w-3.5" />
                 {isHi ? "किसान साथी — सीधा सवाल पूछें" : "Kisan Saathi — Ask Help"}
               </AppLink>
+
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  window.dispatchEvent(new CustomEvent("agriveda:start-tour"));
+                }}
+                className="mt-2 flex w-full min-h-[38px] items-center justify-center gap-2 rounded-xl border border-emerald-500/25 bg-[var(--av-surface)] px-3 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300 shadow-2xs transition hover:bg-emerald-50 dark:hover:bg-emerald-950/40 active:scale-[0.99]"
+              >
+                <Compass className="h-3.5 w-3.5 text-emerald-600" />
+                {isHi ? "ऐप टूर (फीचर्स गाइड देखें)" : "App Walkthrough Tour"}
+              </button>
 
               <div className="mt-2 flex items-center justify-between px-1 text-[9.5px] text-[var(--av-text-muted)]">
                 <span>{BRAND} v{APP_VERSION}</span>

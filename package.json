@@ -45,6 +45,7 @@
     "@capacitor/status-bar": "^8.0.2",
     "@supabase/supabase-js": "^2.110.0",
     "@vercel/analytics": "^2.0.1",
+    "driver.js": "^1.10.2",
     "firebase": "^12.15.0",
     "framer-motion": "^12.42.0",
     "leaflet": "^1.9.4",
