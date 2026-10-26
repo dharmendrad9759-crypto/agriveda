@@ -27,19 +27,32 @@ export async function getActiveDevice(
   return row;
 }
 
+export type ClaimActiveDeviceResult =
+  | { ok: true; transferred?: boolean }
+  | {
+      ok: false;
+      conflict: true;
+      activeDeviceId: string;
+      activeEmail?: string;
+      activeSince?: number;
+    };
+
 /**
  * One Google account → one device.
- * Insert-if-absent avoids two phones winning the same claim at once.
+ * When takeover is true, the active device binding is transferred to this new device
+ * and the previous device session will be rejected on its next request.
  */
 export async function claimActiveDevice(
   firebaseUid: string,
   deviceId: string,
-  email: string
-): Promise<{ ok: true } | { ok: false; conflict: true; activeDeviceId: string }> {
+  email: string,
+  options?: { takeover?: boolean }
+): Promise<ClaimActiveDeviceResult> {
   const uid = firebaseUid.trim();
+  const cleanEmail = email.trim().toLowerCase();
   const record: ActiveDeviceRecord = {
     deviceId,
-    email: email.trim().toLowerCase(),
+    email: cleanEmail,
     updatedAt: Date.now(),
   };
 
@@ -52,16 +65,37 @@ export async function claimActiveDevice(
     if (retry) return { ok: true };
     const again = await getActiveDevice(uid);
     if (again && again.deviceId !== deviceId) {
-      return { ok: false, conflict: true, activeDeviceId: again.deviceId };
+      if (options?.takeover) {
+        await kvSet(keyFor(uid), record, ACTIVE_DEVICE_TTL_MS);
+        return { ok: true, transferred: true };
+      }
+      return {
+        ok: false,
+        conflict: true,
+        activeDeviceId: again.deviceId,
+        activeEmail: again.email,
+        activeSince: again.updatedAt,
+      };
     }
     await kvSet(keyFor(uid), record, ACTIVE_DEVICE_TTL_MS);
     return { ok: true };
   }
 
   if (existing.deviceId !== deviceId) {
-    return { ok: false, conflict: true, activeDeviceId: existing.deviceId };
+    if (options?.takeover) {
+      await kvSet(keyFor(uid), record, ACTIVE_DEVICE_TTL_MS);
+      return { ok: true, transferred: true };
+    }
+    return {
+      ok: false,
+      conflict: true,
+      activeDeviceId: existing.deviceId,
+      activeEmail: existing.email,
+      activeSince: existing.updatedAt,
+    };
   }
 
+  // Same device: refresh record & TTL
   await kvSet(keyFor(uid), record, ACTIVE_DEVICE_TTL_MS);
   return { ok: true };
 }

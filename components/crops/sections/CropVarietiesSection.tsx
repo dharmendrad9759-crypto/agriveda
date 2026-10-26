@@ -16,7 +16,8 @@ import { getFieldVarietyGuide } from "@/lib/crops/fieldVarietyGuide";
 import FieldVarietyBoard from "@/components/crops/sections/FieldVarietyBoard";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import type { Crop } from "@/types/crop";
-import { MapPin, TrendingUp } from "lucide-react";
+import { AlertTriangle, MapPin, TrendingUp } from "lucide-react";
+import { cn } from "@/lib/cn";
 import { useMemo, useState } from "react";
 
 const ECOLOGY_OPTS: { id: PaddyEcology | "all"; hi: string; en: string }[] = [
@@ -107,8 +108,30 @@ function VarietyCard({
               {v.regionHi}
             </p>
           ) : null}
-          {(ecologyLabel || grainLabel || duration || v.yieldHi) && (
-            <p className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-[var(--av-text-muted)]">
+          {(ecologyLabel || grainLabel || duration || v.yieldHi || v.canSaveSeed !== undefined) && (
+            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-[var(--av-text-muted)]">
+              {v.canSaveSeed !== undefined && (
+                <span
+                  className={cn(
+                    "rounded-md border px-1.5 py-0.5 font-bold inline-flex items-center gap-1",
+                    v.canSaveSeed
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+                      : "border-rose-500/30 bg-rose-500/10 text-rose-800 dark:text-rose-300"
+                  )}
+                >
+                  {v.canSaveSeed ? (
+                    <>
+                      <span>🟢</span>
+                      <span>{hi ? "देशी/प्रमाणित: अगले साल बीज रख सकते हैं" : "Can save seed for next season"}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🔴</span>
+                      <span>{hi ? "संकर (हाइब्रिड): हर साल नया बीज खरीदें" : "Hybrid (F1): Buy fresh seed every year"}</span>
+                    </>
+                  )}
+                </span>
+              )}
               {ecologyLabel ? (
                 <span className="rounded-md bg-[var(--av-accent-soft)] px-1.5 py-0.5 font-semibold text-[var(--av-accent)]">
                   {hi ? ecologyLabel.hi : ecologyLabel.en}
@@ -130,13 +153,23 @@ function VarietyCard({
                   {v.yieldHi}
                 </span>
               ) : null}
-            </p>
+            </div>
           )}
         </div>
         <span className="shrink-0 rounded-full bg-[var(--av-accent-soft)] px-2 py-0.5 text-[9px] font-bold text-[var(--av-accent)]">
           {hi ? stageLabelHi(v.season) : v.season}
         </span>
       </div>
+
+      {v.resistanceWarning && (
+        <div className="mt-2 flex items-start gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 p-2 text-[11px] leading-relaxed text-amber-950 dark:text-amber-200">
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <div>
+            <span className="font-extrabold">{hi ? "चेतावनी (ICAR अलर्ट): " : "Warning: "}</span>
+            {hi ? v.resistanceWarning : (v.resistanceWarningEn || v.resistanceWarning)}
+          </div>
+        </div>
+      )}
       {v.tipHi ? (
         <p className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2 py-1.5 text-[11px] leading-snug text-[var(--av-text-secondary)]">
           <span className="font-bold text-emerald-700 dark:text-emerald-300">

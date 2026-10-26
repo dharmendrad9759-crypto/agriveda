@@ -82,6 +82,27 @@ function googleProvider() {
 }
 
 /**
+ * Sign out completely from both Capacitor native Google Auth and Firebase JS Auth.
+ * This guarantees the OS account picker dialog appears cleanly on next login,
+ * and clears any sticky cached accounts when switching Gmail IDs or resetting data.
+ */
+export async function signOutGoogle(): Promise<void> {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      await FirebaseAuthentication.signOut();
+    } catch (e) {
+      console.warn("[googleAuth] native signOut failed", e);
+    }
+  }
+  try {
+    const auth = cachedAuth || getAuth(getFirebaseApp());
+    await auth.signOut();
+  } catch (e) {
+    console.warn("[googleAuth] web signOut failed", e);
+  }
+}
+
+/**
  * Native Android: only collect Google idToken — session is created on Agriveda server
  * (avoids Firebase JS auth/network-request-failed inside Capacitor WebView).
  */
@@ -91,6 +112,10 @@ export async function getNativeGoogleIdToken(): Promise<{
   email: string | null;
 }> {
   try {
+    // Proactively reset native Google session so Android OS account picker displays
+    // (allows switching between multiple Gmail accounts without getting locked)
+    await FirebaseAuthentication.signOut().catch(() => {});
+
     const result = await FirebaseAuthentication.signInWithGoogle({
       skipNativeAuth: true,
       useCredentialManager: false,
@@ -127,6 +152,7 @@ export async function signInWithGoogle(): Promise<User> {
 
   if (Capacitor.isNativePlatform()) {
     try {
+      await FirebaseAuthentication.signOut().catch(() => {});
       const result = await FirebaseAuthentication.signInWithGoogle({
         skipNativeAuth: true,
         useCredentialManager: false,

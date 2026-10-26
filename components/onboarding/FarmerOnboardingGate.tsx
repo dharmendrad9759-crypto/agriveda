@@ -14,6 +14,7 @@ import {
   MapPin,
   Search,
   ShieldCheck,
+  Smartphone,
   Sprout,
   Tractor,
   TrendingUp,
@@ -36,6 +37,7 @@ import {
   firebaseAuthError,
   getNativeGoogleIdToken,
   signInWithGoogle,
+  signOutGoogle,
 } from "@/lib/firebase/googleAuth";
 import { Capacitor } from "@capacitor/core";
 import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-demo";
@@ -53,6 +55,25 @@ const SETUP_STEPS: { id: Step; label: string; icon: typeof User }[] = [
   { id: "farm", label: "खेत व फसल", icon: Sprout },
 ];
 
+type ConflictData =
+  | {
+      type: "native";
+      googleIdToken: string;
+      hint?: { displayName?: string | null; email?: string | null };
+      email: string;
+    }
+  | {
+      type: "web";
+      user: {
+        uid: string;
+        getIdToken: () => Promise<string>;
+        displayName: string | null;
+        email: string | null;
+      };
+      email: string;
+    }
+  | null;
+
 export default function FarmerOnboardingGate({ children }: { children: React.ReactNode }) {
   const { profile, hydrated, completeOnboarding, completeFarmSetup } = useFarmerProfile();
   const { showToast } = useToast();
@@ -64,6 +85,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const needsFullOnboarding = !profile.onboardingComplete;
 
   const [step, setStep] = useState<Step>(needsFarmSetup ? "farm" : "auth");
+  const [conflictData, setConflictData] = useState<ConflictData>(null);
   const [firebaseUid, setFirebaseUid] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -100,7 +122,8 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
   const establishSessionFromGoogleIdToken = async (
     googleIdToken: string,
-    hint?: { displayName?: string | null; email?: string | null }
+    hint?: { displayName?: string | null; email?: string | null },
+    options?: { takeover?: boolean }
   ) => {
     const deviceId = getDeviceId();
     const headers = await withNativeAppHeaders({
@@ -110,7 +133,11 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       method: "POST",
       credentials: "include",
       headers,
-      body: JSON.stringify({ googleIdToken, deviceId }),
+      body: JSON.stringify({
+        googleIdToken,
+        deviceId,
+        takeover: options?.takeover,
+      }),
     });
     const sessionBody = await sessionRes.json().catch(() => ({}));
     if (sessionRes.status === 426 || sessionBody.code === "FORCE_UPDATE") {
@@ -118,6 +145,16 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       throw new Error(sessionBody.error || "नया ऐप संस्करण ज़रूरी है");
     }
     if (sessionRes.status === 409 || sessionBody.code === "DEVICE_CONFLICT") {
+      if (!options?.takeover) {
+        setConflictData({
+          type: "native",
+          googleIdToken,
+          hint,
+          email: sessionBody.email || hint?.email || "",
+        });
+        setError(null);
+        return false;
+      }
       throw new Error(
         sessionBody.error ||
           "यह Google ID दूसरी डिवाइस पर लॉगिन है। पहले उस फोन से Logout करें।"
@@ -132,15 +169,25 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     const suggested = String(sessionBody.name || hint?.displayName || "").trim();
     if (suggested) setName(suggested);
     setStep("name");
-    showToast("Google लॉगिन सफल ✓", "success");
+    setConflictData(null);
+    showToast(
+      options?.takeover
+        ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
+        : "Google लॉगिन सफल ✓",
+      "success"
+    );
+    return true;
   };
 
-  const establishSession = async (user: {
-    uid: string;
-    getIdToken: () => Promise<string>;
-    displayName: string | null;
-    email: string | null;
-  }) => {
+  const establishSession = async (
+    user: {
+      uid: string;
+      getIdToken: () => Promise<string>;
+      displayName: string | null;
+      email: string | null;
+    },
+    options?: { takeover?: boolean }
+  ) => {
     const deviceId = getDeviceId();
     const idToken = await user.getIdToken();
     const headers = await withNativeAppHeaders({
@@ -150,7 +197,11 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       method: "POST",
       credentials: "include",
       headers,
-      body: JSON.stringify({ idToken, deviceId }),
+      body: JSON.stringify({
+        idToken,
+        deviceId,
+        takeover: options?.takeover,
+      }),
     });
     const sessionBody = await sessionRes.json().catch(() => ({}));
     if (sessionRes.status === 426 || sessionBody.code === "FORCE_UPDATE") {
@@ -158,6 +209,15 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       throw new Error(sessionBody.error || "नया ऐप संस्करण ज़रूरी है");
     }
     if (sessionRes.status === 409 || sessionBody.code === "DEVICE_CONFLICT") {
+      if (!options?.takeover) {
+        setConflictData({
+          type: "web",
+          user,
+          email: sessionBody.email || user.email || "",
+        });
+        setError(null);
+        return false;
+      }
       throw new Error(
         sessionBody.error ||
           "यह Google ID दूसरी डिवाइस पर लॉगिन है। पहले उस फोन से Logout करें।"
@@ -172,7 +232,14 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     const suggested = String(sessionBody.name || user.displayName || "").trim();
     if (suggested) setName(suggested);
     setStep("name");
-    showToast("Google लॉगिन सफल ✓", "success");
+    setConflictData(null);
+    showToast(
+      options?.takeover
+        ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
+        : "Google लॉगिन सफल ✓",
+      "success"
+    );
+    return true;
   };
 
   useEffect(() => {
@@ -218,7 +285,39 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     return <>{children}</>;
   }
 
+  const handleConfirmTakeover = async () => {
+    if (!conflictData) return;
+    setError(null);
+    setLoading(true);
+    try {
+      if (conflictData.type === "native") {
+        await establishSessionFromGoogleIdToken(
+          conflictData.googleIdToken,
+          conflictData.hint,
+          { takeover: true }
+        );
+      } else {
+        await establishSession(conflictData.user, { takeover: true });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : firebaseAuthError(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelConflict = async () => {
+    setConflictData(null);
+    setError(null);
+    try {
+      await signOutGoogle();
+    } catch {
+      /* ignore */
+    }
+  };
+
   const loginWithGoogle = async () => {
+    setConflictData(null);
     setError(null);
     setLoading(true);
     try {
@@ -481,31 +580,81 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                 </div>
               </div>
 
-              {/* Login Buttons */}
+              {/* Login or Device Conflict Transfer Card */}
               <div className="space-y-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => void loginWithGoogle()}
-                  disabled={loading}
-                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white py-3.5 text-sm font-black text-gray-800 shadow-md transition hover:bg-gray-50 hover:shadow-lg active:scale-[0.99] disabled:opacity-50 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
-                >
-                  {loading ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
-                  ) : (
-                    <GoogleGlyph />
-                  )}
-                  <span>Google से सुरक्षित लॉगिन करें</span>
-                </button>
+                {conflictData ? (
+                  <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 via-emerald-500/5 to-white/70 p-4 text-center shadow-lg backdrop-blur-md dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:to-slate-900/80">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
+                      <Smartphone className="h-6 w-6" />
+                    </div>
+                    <span className="mt-2.5 inline-block rounded-full bg-emerald-600/15 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300">
+                      सत्र स्थानांतरण • Device Transfer
+                    </span>
+                    <h3 className="mt-1 text-sm font-black text-gray-900 dark:text-white">
+                      यह खाता पहले से किसी डिवाइस पर सक्रिय है
+                    </h3>
+                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+                      Google ID:{" "}
+                      <span className="font-bold text-emerald-700 dark:text-emerald-300">
+                        {conflictData.email || email}
+                      </span>
+                    </p>
+                    <p className="mt-2 text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+                      सुरक्षा के लिए एक समय में एक ही डिवाइस पर लॉगिन रहता है। क्या आप इसे इस फ़ोन पर ट्रांसफर करना चाहते हैं? (पिछली डिवाइस अपने आप सुरक्षित लॉगआउट हो जाएगी)
+                    </p>
 
-                {allowGuestContinue && (
-                  <button
-                    type="button"
-                    onClick={continueAsGuest}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-600/40 bg-emerald-600/10 py-3 text-xs font-bold text-emerald-800 transition hover:bg-emerald-600/15 active:scale-[0.99] dark:text-emerald-300"
-                  >
-                    <FarmerTourSparkleIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    <span>सीधे ऐप देखें (Explore Demo Mode)</span>
-                  </button>
+                    <div className="mt-4 space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => void handleConfirmTakeover()}
+                        disabled={loading}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-green-600 py-3 text-xs font-black text-white shadow-md shadow-emerald-700/25 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-50"
+                      >
+                        {loading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <CheckCircle2 className="h-4 w-4" />
+                        )}
+                        <span>हाँ, इस फ़ोन पर लॉगिन ट्रांसफर करें</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => void handleCancelConflict()}
+                        disabled={loading}
+                        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-300/80 bg-white/90 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-100 active:scale-[0.99] dark:border-gray-700 dark:bg-slate-800 dark:text-gray-300"
+                      >
+                        <span>रद्द करें / दूसरा खाता चुनें</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => void loginWithGoogle()}
+                      disabled={loading}
+                      className="flex w-full items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white py-3.5 text-sm font-black text-gray-800 shadow-md transition hover:bg-gray-50 hover:shadow-lg active:scale-[0.99] disabled:opacity-50 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+                    >
+                      {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
+                      ) : (
+                        <GoogleGlyph />
+                      )}
+                      <span>Google से सुरक्षित लॉगिन करें</span>
+                    </button>
+
+                    {allowGuestContinue && (
+                      <button
+                        type="button"
+                        onClick={continueAsGuest}
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-600/40 bg-emerald-600/10 py-3 text-xs font-bold text-emerald-800 transition hover:bg-emerald-600/15 active:scale-[0.99] dark:text-emerald-300"
+                      >
+                        <FarmerTourSparkleIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <span>सीधे ऐप देखें (Explore Demo Mode)</span>
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
 

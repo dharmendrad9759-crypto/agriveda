@@ -49,6 +49,8 @@ export const WEED_GLOBAL_PRINCIPLES_HI: string[] = [
   "खेत में पैर धंसने जैसी अच्छी नमी हो — सूखी जमीन पर स्प्रे कम असर करता है, फसल पर झटका भी लग सकता है।",
   "नोजल: Flat Fan या कट नोजल लगाओ। गोल Cone नोजल से दवा उड़कर फसल पर गिर सकती है।",
   "पानी: कम से कम 150 लीटर प्रति एकड़ (लगभग 15 टंकी × 10 लीटर)। 5–6 टंकी में पूरा स्प्रे अधूरा असर।",
+  "दवा व खाद का गैप: खरपतवारनाशी और यूरिया/जिंक के स्प्रे में कम से कम 5 से 7 दिन का अंतर रखें। दोनों एक साथ डालने से फसल पीली पड़ जाती है।",
+  "पानी की शुद्धता: दवा घोलते समय हमेशा साफ़ पानी इस्तेमाल करें — मटमैले पानी से दवा का असर 30–40% घट जाता है।",
 ];
 
 export const WEED_FIELD_GUIDE_ALIASES: Record<string, string> = {
@@ -83,7 +85,8 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       { localHi: "चटरी-मटरी", category: "broadleaf", scientific: "Vicia sativa" },
     ],
     preEmergence: [
-      { applicationType: "pre", timingHi: "बुवाई के 0–3 दिन · 48–72 घंटे के भीतर", technical: "Pyroxasulfone 85% WG", brands: ["Shaked","Momiji","Awkira"], doseHi: "60 ग्राम प्रति एकड़", waterHi: "150–200 लीटर पानी", targetsHi: ["गुल्ली डंडा", "बथुआ"], fieldConditionHi: "पलेवा में अच्छी नमी हो", noteHi: "जहाँ Clodinafop या Sulfosulfuron का असर कम हो गया हो, वहाँ अच्छा विकल्प" },
+      { applicationType: "pre", timingHi: "बुवाई के 0–3 दिन (अंकुरण से पहले)", technical: "Pendimethalin 30% EC", brands: ["Stomp","Dost"], doseHi: "1.5 लीटर प्रति एकड़ (हल्की मिट्टी में 1.25–1.5 ली)", waterHi: "200 लीटर पानी", targetsHi: ["गुल्ली डंडा", "बथुआ", "चौड़ी पत्ती"], fieldConditionHi: "खेत में अच्छी नमी (पलेवा) हो", noteHi: "बुवाई के तुरंत बाद छिड़काव करने से खरपतवार का अंकुरण ही नहीं होता" },
+      { applicationType: "pre", timingHi: "बुवाई के 0–3 दिन · 48–72 घंटे के भीतर", technical: "Pyroxasulfone 85% WG", brands: ["Shaked","Momiji","Awkira"], doseHi: "60 ग्राम प्रति एकड़", waterHi: "150–200 लीटर पानी", targetsHi: ["गुल्ली डंडा", "बथुआ"], fieldConditionHi: "पलेवा में अच्छी नमी हो", noteHi: "जहाँ Clodinafop या Sulfosulfuron का असर कम हो गया हो, वहाँ सबसे असरदार विकल्प" },
     ],
     postEmergence: [
       { applicationType: "post", timingHi: "पहली सिंचाई के बाद · गुल्ली 2–3 पत्ती", technical: "Clodinafop-propargyl 15% WP", brands: ["Topik","Point"], doseHi: "160 ग्राम प्रति एकड़", targetsHi: ["गुल्ली डंडा","जंगली जई"] },
@@ -93,6 +96,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       { applicationType: "combo", timingHi: "घास और चौड़ी पत्ती दोनों के लिए", technical: "Sulfosulfuron 75% + Metsulfuron-methyl 5% WG", brands: ["Total","Leader Plus"], doseHi: "16 ग्राम प्रति एकड़", waterHi: "150 लीटर पानी", targetsHi: ["गुल्ली डंडा","जंगली जई","बथुआ","हिरनखुरी"], adjuvantHi: "गोंद / surfactant पैक के साथ मिलाएँ" },
     ],
     fieldDoctorTips: [
+      { titleHi: "खरपतवारनाशी व यूरिया/जिंक का 7-दिन का नियम", pointsHi: ["गुल्ली-डंडा या चौड़ी पत्ती की दवा डालने के तुरंत बाद यूरिया या जिंक का स्प्रे कभी न करें।", "दवा और खाद के बीच कम से कम 5 से 7 दिन का अंतर रखें ताकि गेहूं पीला पड़कर न बैठे।"] },
       { titleHi: "2,4-D की सावधानी", pointsHi: ["गेहूं के पास सरसों, मटर, आलू या चना हो तो हवा चलते समय 2,4-D मत डालो", "2,4-D पड़ोसी फसल पर उड़ सकती है — पत्ते मुड़ जाते हैं"] },
       { titleHi: "कट नोजल से स्प्रे करो", pointsHi: ["दवा और यूरिया एक नली से मिलाकर फेंकने से गुल्ली डंडा नहीं मरता", "कट नोजल से लाइन बनाकर जमीन पर स्प्रे करो"] },
     ],

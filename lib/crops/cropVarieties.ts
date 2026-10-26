@@ -29,6 +29,14 @@ export interface MarketVarietyRec extends CropVariety {
   yieldHi?: string;
   /** खास बात / खेती टिप */
   tipHi?: string;
+  /** क्या किसान अगले साल इसका बीज रख सकता है? true = देशी/प्रमाणित (OPV), false = संकर (Hybrid F1) */
+  canSaveSeed?: boolean;
+  /** बीज प्रकार लेबल */
+  seedTypeLabel?: string;
+  /** रोग रोधकता या चेतावनी (जैसे HD 2967 में पीला रतुआ का अलर्ट) */
+  resistanceWarning?: string;
+  /** English text for resistance / susceptibility alert */
+  resistanceWarningEn?: string;
 }
 
 const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
@@ -46,6 +54,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "सिंचित क्षेत्र — पंजाब, हरियाणा, पश्चिमी उत्तर प्रदेश",
       yieldHi: "16–18 कुंटल/एकड़",
       tipHi: "यूरिया ज्यादा न डालें — पौधा लंबा होकर गिर सकता है और दाना पतला रह जाएगा।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "स्वर्ण सब-1 / CR धान 801",
@@ -60,6 +70,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "बाढ़/जलभराव — पूर्वी यू.पी., बिहार, पश्चिम बंगाल, ओडिशा",
       yieldHi: "22–25 कुंटल/एकड़",
       tipHi: "बाढ़ के बाद पानी निकलते ही हल्का यूरिया डालें — पौधा जल्दी रिकवर करता है।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "अराइज 6444 गोल्ड (बायर)",
@@ -74,6 +86,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "पूरे भारत — सिंचित व आंशिक सिंचित क्षेत्र",
       yieldHi: "28–30 कुंटल/एकड़",
       tipHi: "कल्ले ज्यादा निकलते हैं — रोपाई में दूरी 20×20 सेमी रखें।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (F1)",
     },
     {
       name: "CSR 36 / CSR 43",
@@ -88,6 +102,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "लवणीय/क्षारीय ऊसर भूमि",
       yieldHi: "सामान्य किस्म से 30–40% अधिक",
       tipHi: "CSR 36 ≈ 135–140 दिन; CSR 43 ≈ 110–115 दिन (अगेती)।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "पीआर 126",
@@ -102,12 +118,14 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "सीधी बिजाई (DSR) और कम पानी वाले क्षेत्र",
       yieldHi: "अच्छी औसत उपज — कम अवधि में",
       tipHi: "नर्सरी से कटाई तक मात्र 120–125 दिन — गेहूं चक्र में फायदेमंद।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
   ],
   wheat: [
     {
       name: "HD 2967 (पूसा मालवीय)",
-      trait: "भारत की सबसे लोकप्रिय किस्म; पीला रतुआ सहनशील",
+      trait: "भारत की सबसे लोकप्रिय पुरानी किस्म; सिंचित व समय पर बुवाई",
       season: "रबी",
       states: ["Punjab","Haryana","Uttar Pradesh","Madhya Pradesh"],
       source: "govt",
@@ -115,19 +133,25 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       durationDays: { min: 140, max: 145 },
       regionHi: "उत्तर-पश्चिम — सिंचित, समय पर बुवाई",
       yieldHi: "22–25 कुंटल/एकड़",
-      tipHi: "पिछेती बुवाई में न लगाएँ — नवंबर में समय पर बुवाई पर ही अच्छी उपज।",
+      tipHi: "पिछेती बुवाई में न लगाएँ — नवंबर में 20 तारीख तक बुवाई करने पर ही अच्छी उपज।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
+      resistanceWarning: "इस पुरानी किस्म में पीला रतुआ (Yellow Rust) से बचाने वाले Yr17 जीन टूट चुके हैं और यह नए पैथोटाइप्स के प्रति संवेदनशील है। नए खेतों के लिए DBW 327, PBW 824, HD 3226 या स्थानीय KVK द्वारा अनुशंसित नवीनतम किस्में चुनें।",
+      resistanceWarningEn: "Yr17 resistance in this older variety has broken down against new yellow rust pathotypes. For new sowings, choose latest rust-resistant varieties recommended by your local KVK (such as DBW 327, PBW 824, or HD 3226).",
     },
     {
       name: "DBW 187 (करण वंदना)",
-      trait: "उच्च उपज; ब्लास्ट व रतुआ प्रतिरोधी; प्रोटीन 12%+",
+      trait: "उच्च उपज; ब्लास्ट व पीला रतुआ प्रतिरोधी; प्रोटीन 12%+",
       season: "रबी",
       states: ["Punjab","Haryana","Uttar Pradesh","Bihar"],
       source: "govt",
-      marketNote: "उत्तर मैदानों में ऊँची पैदावार वाली किस्म",
+      marketNote: "उत्तर मैदानों में सबसे ऊँची पैदावार वाली नई किस्म",
       durationDays: { min: 145, max: 150 },
       regionHi: "उत्तर-पूर्वी व उत्तर-पश्चिम मैदान",
       yieldHi: "26–28 कुंटल/एकड़ (संभावना 28–30 तक)",
       tipHi: "बाली निकलते और दाना भरते समय खेत में नमी जरूर रखें — सूखा न पड़ने दें।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "HD 3086 (पूसा गौतमी)",
@@ -138,8 +162,10 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       marketNote: "चापाती क्वालिटी के लिए उत्तम",
       durationDays: { min: 135, max: 140 },
       regionHi: "सिंचित व गर्मी (हीट स्ट्रेस) वाले क्षेत्र",
-      yieldHi: "अच्छी औसत उपज",
-      tipHi: "देर रबी/गर्म अंत वाले क्षेत्रों के लिए सुरक्षित विकल्प।",
+      yieldHi: "22–24 कुंटल/एकड़",
+      tipHi: "मार्च की गर्म हवा सहने की ताकत — दाना सिकुड़ता नहीं है और पैदावार सुरक्षित रहती है।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "KRL 210 / KRL 213",
@@ -152,6 +178,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "क्षारीय/लवणीय मिट्टी — pH 8.5–9.3 तक",
       yieldHi: "15–18 कुंटल/एकड़ (ऊसर में)",
       tipHi: "सामान्य किस्म जहाँ फेल हो, वहाँ KRL श्रृंखला आज़माएँ।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "HI 1605 (पूसा उजाला) / HI 8759 (पूसा तेजस)",
@@ -161,8 +189,10 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       source: "govt",
       marketNote: "मध्य भारत वर्षा आधारित क्षेत्रों की पसंद",
       regionHi: "मध्य भारत — वर्षा आधारित या सीमित सिंचाई",
-      yieldHi: "सीमित पानी में स्थिर उपज",
-      tipHi: "पूसा तेजस सूजी/पास्ता वाला ड्यूरम गेहूं है।",
+      yieldHi: "सीमित पानी में 18–20 कुंटल/एकड़",
+      tipHi: "पूसा तेजस सूजी/पास्ता वाला ड्यूरम गेहूं है। कम पानी में भी बढ़िया पैदावार।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
   ],
   tomato: [
@@ -176,6 +206,9 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "ऑल इंडिया — तीनों मौसम",
       yieldHi: "30–35 टन/एकड़",
       tipHi: "मचान (स्टेकिंग) + मल्चिंग पेपर लगाएँ — फल नहीं सड़ते, उपज लगभग दोगुनी।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (F1)",
+      resistanceWarning: "हाइब्रिड टमाटर से कभी खुद बीज न रखें — अगली पीढ़ी में फल छोटे, बेढंगे और रोगग्रस्त हो जाते हैं।",
     },
     {
       name: "अर्क रक्षक (IIHR)",
@@ -187,6 +220,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "सिंचित + मल्चिंग/ड्रिप वाली खेती",
       yieldHi: "35–40 टन/एकड़",
       tipHi: "तीन बीमारियों से बचाव — फफूंदनाशक/कीटनाशक खर्च काफी बचता है।",
+      canSaveSeed: false,
+      seedTypeLabel: "सरकारी हाइब्रिड (F1)",
     },
     {
       name: "US 440",
@@ -198,6 +233,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "दक्षिण व मध्य भारत",
       yieldHi: "अच्छी व्यापारिक उपज",
       tipHi: "बाजार में जल्दी आना हो तो अगेती किस्म चुनें।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (F1)",
     },
   ],
   soybean: [
@@ -212,6 +249,9 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "म.प्र., महाराष्ट्र, राजस्थान — सभी मिट्टियाँ",
       yieldHi: "8–10 कुंटल/एकड़",
       tipHi: "बीज दर 30–32 किग्रा/एकड़ रखें — ज्यादा घने पौधे पर फूल झड़ते हैं।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
+      resistanceWarning: "अति-पुरानी किस्म होने से कई क्षेत्रों में पीला मोज़ेक और चारकोल रॉट का खतरा बढ़ चुका है। नए खेतों में JS 20-34 या NRC किस्में आज़माएँ।",
     },
     {
       name: "JS 95-60",
@@ -224,6 +264,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "कम बारिश या कम अवधि वाले क्षेत्र",
       yieldHi: "7–8 कुंटल/एकड़",
       tipHi: "बारिश जल्दी चली जाए तो भी उपज पर कम असर — जल्दी पकती है।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "JS 20-34 / NRC 138",
@@ -236,6 +278,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "सूखा / गर्डल बीटल–तना मक्खी प्रभावित क्षेत्र",
       yieldHi: "कम बारिश में स्थिर फलियाँ",
       tipHi: "कम बारिश में भी फलियाँ नहीं सूखतीं — छोटे पौधे, कम lodging।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
   ],
   maize: [
@@ -249,6 +293,9 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "ऑल इंडिया — खरीफ व रबी",
       yieldHi: "30–35 कुंटल/एकड़",
       tipHi: "फॉल आर्मीवर्म दिखते ही पहली स्टेज में स्पिनटोराम या इमामेक्टिन का स्प्रे करें।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (F1)",
+      resistanceWarning: "हाइब्रिड मक्के के दाने से दोबारा बुवाई न करें — भुट्टे छोटे, आधे खाली और पैदावार 40–50% कम हो जाती है।",
     },
     {
       name: "DKC 9108 (बायर डेकाल्ब)",
@@ -260,6 +307,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "बारिश आधारित व सूखा प्रभावित क्षेत्र",
       yieldHi: "28–30 कुंटल/एकड़",
       tipHi: "सूखा सहन अच्छी है, पर टैसलिंग (जीरा आते समय) पानी जरूर दें — वरना दाना नहीं भरेगा।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (F1)",
     },
     {
       name: "HQPM 1",
@@ -271,6 +320,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "फीड, पशु आहार व प्रोसेसिंग",
       yieldHi: "अच्छी फीड ग्रेड उपज",
       tipHi: "पोल्ट्री/प्रोसेसिंग कॉन्ट्रैक्ट वाले किसानों के लिए खास।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (QPM Hybrid F1)",
     },
   ],
   moongfali: [
@@ -500,6 +551,10 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "अगेती फसल — ऑल इंडिया",
       yieldHi: "120–130 कुंटल/एकड़",
       tipHi: "जल्दी पकती है — अगेती झुलसा असर दिखने से पहले फसल तैयार।",
+      canSaveSeed: false,
+      seedTypeLabel: "प्रमाणित बीज कंद (हर 2–3 साल में नया बीज लें)",
+      resistanceWarning: "पछेती झुलसा (Late Blight) के प्रति मध्यम संवेदनशील। बादल छाने या कोहरा रहने पर मैंकोज़ेब 2.5 ग्राम/लीटर का सुरक्षात्मक छिड़काव तुरंत करें।",
+      resistanceWarningEn: "Moderately susceptible to Late Blight. Under foggy or overcast conditions, apply preventive Mancozeb 75% WP @ 2.5 g/L promptly.",
     },
     {
       name: "कुफरी ख्याति / कुफरी बहार",
@@ -512,6 +567,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "उत्तर भारत मैदानी — मुख्य रबी",
       yieldHi: "140–160 कुंटल/एकड़",
       tipHi: "मिट्टी चढ़ाते समय कंद धूप में न आएँ — हरा (ग्रीनिंग) होकर जहरीला हो जाता है।",
+      canSaveSeed: false,
+      seedTypeLabel: "प्रमाणित बीज कंद (हर 2–3 साल में नया बीज लें)",
     },
     {
       name: "कुफरी चिप्सोना-3 / कुफरी फ्राइसोना",
@@ -523,6 +580,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "प्रोसेसिंग इंडस्ट्री के लिए",
       yieldHi: "उद्योग ग्रेड उपज",
       tipHi: "फ्राई करने पर रंग अच्छा — कॉन्ट्रैक्ट फार्मिंग के लिए चुनें।",
+      canSaveSeed: false,
+      seedTypeLabel: "प्रमाणित बीज कंद (हर 2–3 साल में नया बीज लें)",
     },
   ],
   bajra: [
@@ -536,6 +595,9 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "राजस्थान, हरियाणा, यू.पी., गुजरात — सिंचित/अच्छी बारिश",
       yieldHi: "12–15 कुंटल/एकड़",
       tipHi: "अर्गट (चिपकिया पदार्थ) दिखते ही तुरंत फफूंदनाशक स्प्रे — वरना दाने नहीं बनेंगे।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (F1)",
+      resistanceWarning: "हाइब्रिड बाजरा से बीज न रखें — अगली पीढ़ी में सिट्टे छोटे और दाना आधा रह जाता है।",
     },
     {
       name: "HHB 67 संशोधित",
@@ -548,6 +610,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "अत्यधिक सूखा व कम बारिश वाले क्षेत्र",
       yieldHi: "8–10 कुंटल/एकड़",
       tipHi: "कम बारिश में भी दाना पूरा पकता है — ड्रायलैंड के लिए बेस्ट।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (CCS HAU)",
     },
     {
       name: "बायो 70",
@@ -559,6 +623,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "हरा चारा और दाना दोनों के लिए",
       yieldHi: "अच्छा चारा + दाना",
       tipHi: "पशुपालन वाले किसानों के लिए ड्यूल पर्पस विकल्प।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (F1)",
     },
   ],
   onion: [
@@ -609,6 +675,9 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "मध्य व दक्षिण भारत",
       yieldHi: "10–12 कुंटल/एकड़",
       tipHi: "गुलाबी सुंडी पर Bt असर कम हो रहा है — खेत में फिरोमोन ट्रैप लगाना जरूरी।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर बीटी हाइब्रिड (BG-II)",
+      resistanceWarning: "गुलाबी सुंडी (PBW) में Bt विष के प्रति सहनशीलता बढ़ रही है। 45 दिन बाद फिरोमोन ट्रैप (8 ट्रैप/एकड़) अनिवार्य रूप से लगाएँ।",
     },
     {
       name: "बनी BG-II (तुलसी)",
@@ -620,6 +689,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "सिंचित व हल्की-मध्यम भूमि",
       yieldHi: "12–14 कुंटल/एकड़",
       tipHi: "मैग्नीशियम कमी से पत्ते लाल होकर झड़ते हैं — MgSO₄ स्प्रे जरूर करें।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर बीटी हाइब्रिड (BG-II)",
     },
     {
       name: "सूरज (नॉन-Bt / HDPS)",
@@ -632,6 +703,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "वर्षा आधारित + हाई डेंसिटी प्लांटिंग",
       yieldHi: "सघन बुवाई में अच्छी उपज",
       tipHi: "कम जगह में ज्यादा पौधे — HDPS अपनाते समय दूरी का ध्यान रखें।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित सीधी किस्म (OPV)",
     },
   ],
   moong: [
@@ -720,6 +793,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "मध्य व दक्षिण भारत",
       yieldHi: "8–10 कुंटल/एकड़",
       tipHi: "बुवाई के 30–35 दिन पर निपिंग (ऊपर की शिखा तोड़ना) — साइड शाखाएँ व फलियाँ ज्यादा।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "GNG 1581 (गणगौर)",
@@ -732,6 +807,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "उत्तर भारत — राजस्थान, हरियाणा, पंजाब, पश्चिमी यू.पी.",
       yieldHi: "10–12 कुंटल/एकड़",
       tipHi: "फूल आने पर सिंचाई न करें — पानी लगते ही फूल झड़ जाते हैं।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "जेजी 11",
@@ -743,6 +820,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "असिंचित / बारिश आधारित क्षेत्र",
       yieldHi: "कम पानी में स्थिर उपज",
       tipHi: "ड्रायलैंड चना के लिए सुरक्षित विकल्प।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
   ],
   masoor: [
@@ -808,6 +887,9 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "ऑल इंडिया सिंचित — राजस्थान, हरियाणा, यू.पी., म.प्र.",
       yieldHi: "10–12 कुंटल/एकड़",
       tipHi: "फूल आने पर अक्सर माहू (चेपा) — ठंड बढ़ने पर इमिडाक्लोप्रिड या थायमेथोक्साम स्प्रे रेडी रखें।",
+      canSaveSeed: false,
+      seedTypeLabel: "संकर हाइब्रिड (F1)",
+      resistanceWarning: "हाइब्रिड सरसों से कभी बीज न रखें — दूसरी पीढ़ी में पौधे अलग-अलग ऊँचाई के हो जाते हैं और उपज 30–40% घट जाती है।",
     },
     {
       name: "पूसा सरसों 30 / LES 39",
@@ -819,6 +901,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "स्वास्थ्यवर्धक तेल व सामान्य क्षेत्र",
       yieldHi: "8–10 कुंटल/एकड़",
       tipHi: "सल्फर (बेंटोनाइट) 10–15 किग्रा/एकड़ डालें — तेल मात्रा व दाने की चमक बढ़ती है।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
     {
       name: "RH 749 / NRCHB 101",
@@ -831,6 +915,8 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       regionHi: "सिंचित व क्षारीय/खारे पानी वाले क्षेत्र",
       yieldHi: "10–12 कुंटल/एकड़",
       tipHi: "ऊँची शाखाएँ — अच्छी प्रबंधन से ऊँची उपज।",
+      canSaveSeed: true,
+      seedTypeLabel: "प्रमाणित किस्म (OPV)",
     },
   ],
   bhindi: [

@@ -1,6 +1,7 @@
 /* Agriveda offline pack — crop assets, emergency data, stale page shell */
-const CACHE = "agriveda-offline-v2";
+const CACHE = "agriveda-offline-v3";
 const PRECACHE = [
+  "/",
   "/offline/emergency.json",
   "/manifest.webmanifest",
   "/images/crops/_placeholder.svg",
@@ -45,7 +46,7 @@ function remember(cache, req, res) {
 }
 
 function slowPage() {
-  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agriveda</title><body style="margin:0;font-family:system-ui,sans-serif;background:#f2faf5;color:#0B3D28;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px;text-align:center"><div><p style="font-size:28px;margin:0">🌱</p><h1 style="font-size:22px;margin:12px 0 8px">नेट धीमा है</h1><p style="font-size:16px;line-height:1.4">एक बार ऐप खुल जाए तो अगली बार फोन पर से खुल जाएगी। थोड़ी देर बाद फिर खोलें।</p><button onclick="location.reload()" style="margin-top:16px;min-height:48px;padding:0 20px;border:0;border-radius:999px;background:#006432;color:#fff;font-weight:700;font-size:16px">फिर खोलें</button></div></body>`;
+  const html = `<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agriveda - कमज़ोर इंटरनेट</title><style>*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#061a12;color:#ecfdf5;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px;text-align:center}.card{max-width:360px;padding:32px 24px;background:rgba(12,36,27,0.85);border:1px solid rgba(16,185,129,0.25);border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,0.5)}.icon{font-size:36px;margin-bottom:12px}h1{font-size:20px;font-weight:900;margin:0 0 8px;color:#34d399}p{font-size:13px;line-height:1.5;color:#a7f3d0;margin:0 0 20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;width:100%;border:0;border-radius:14px;background:#059669;color:#fff;font-weight:800;font-size:14px;cursor:pointer;transition:background 0.2s}.btn:active{transform:scale(0.98)}</style></head><body><div class="card"><div class="icon">🌱</div><h1>इंटरनेट कनेक्शन धीमा है</h1><p>कमज़ोर नेटवर्क के कारण पेज लोड होने में समय लग रहा है। आपका खेत व फसल डेटा सुरक्षित है।</p><button class="btn" onclick="location.reload()">पेज फिर से लोड करें</button></div></body></html>`;
   return new Response(html, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } });
 }
 
@@ -58,7 +59,7 @@ self.addEventListener("fetch", (event) => {
 
   if (isApi(url)) {
     event.respondWith(
-      networkWithTimeout(req, 12000).catch(
+      networkWithTimeout(req, 18000).catch(
         () =>
           new Response(JSON.stringify({ offline: true }), {
             status: 503,
@@ -81,14 +82,15 @@ self.addEventListener("fetch", (event) => {
         const cached = await cache.match(req);
         if (cached) {
           event.waitUntil(
-            networkWithTimeout(req, 8000)
+            networkWithTimeout(req, 12000)
               .then((res) => remember(cache, req, res))
               .catch(() => {})
           );
           return cached;
         }
         try {
-          const res = await networkWithTimeout(req, isPage ? 12000 : 20000);
+          // Generous timeout for rural 2G/3G connections
+          const res = await networkWithTimeout(req, isPage ? 25000 : 30000);
           remember(cache, req, res);
           return res;
         } catch {

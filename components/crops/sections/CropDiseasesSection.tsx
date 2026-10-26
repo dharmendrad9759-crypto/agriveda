@@ -14,7 +14,7 @@ import {
 import { getEnrichedCropThreats, threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
-import { Search } from "lucide-react";
+import { Search, ShieldAlert, AlertTriangle } from "lucide-react";
 import { useMemo, useState } from "react";
 
 function diseaseThumb(
@@ -181,6 +181,97 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
           {hi ? "रोग गाइड" : "Disease guide"}
         </p>
       </div>
+
+      {/* Crop-Specific High-Impact Strategy Card (Technical Kisan Advisory) */}
+      {(crop.slug === "potato" || crop.slug === "tomato") && (
+        <div className="rounded-2xl border-2 border-red-500/30 bg-gradient-to-br from-red-500/10 via-amber-500/5 to-transparent p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/20 text-red-700 dark:text-red-300">
+              <ShieldAlert className="h-4 w-4" />
+            </span>
+            <div>
+              <h4 className="text-[13px] font-black text-[var(--av-text-primary)]">
+                {hi ? "झुलसा (Blight) का 2-चरणीय रक्षा चक्र" : "Blight 2-Stage Defense Protocol"}
+              </h4>
+              <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                {hi
+                  ? "48 घंटे में पूरी फसल जलने से बचाने के लिए सही समय पर सही दवा चुनें:"
+                  : "Prevent total crop burnout by spraying the right fungicide at the right time:"}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
+            <div className="rounded-xl border border-amber-500/30 bg-white/70 p-3 dark:bg-black/20">
+              <span className="inline-block rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-black uppercase text-amber-800 dark:text-amber-200">
+                {hi ? "1. सुरक्षात्मक (Preventive)" : "1. Preventive"}
+              </span>
+              <p className="mt-1 text-xs font-bold text-[var(--av-text-primary)]">
+                {hi ? "रोग आने से पहले (कोहरा/बादल छाने पर)" : "Before disease appears"}
+              </p>
+              <p className="mt-1 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                {hi
+                  ? "मैंकोज़ेब 75% WP (600 ग्राम/एकड़) या प्रोपिनेब (एंट्राकोल 600 ग्राम)। यह पत्तियों पर सुरक्षा कवच बनाता है।"
+                  : "Mancozeb 75% WP (600 g/acre) or Propineb 70% WP (600 g). Forms a protective coat."}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-red-500/30 bg-white/70 p-3 dark:bg-black/20">
+              <span className="inline-block rounded-md bg-red-500/15 px-2 py-0.5 text-[10px] font-black uppercase text-red-800 dark:text-red-200">
+                {hi ? "2. उपचारात्मक (Curative)" : "2. Curative"}
+              </span>
+              <p className="mt-1 text-xs font-bold text-[var(--av-text-primary)]">
+                {hi ? "काले-भूरे धब्बे दिखते ही (तुरंत)" : "Immediately upon seeing black spots"}
+              </p>
+              <p className="mt-1 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                {hi
+                  ? "साइमोक्सानिल + मैंकोज़ेब (कर्जेट 600 ग्राम) या फेनामिडोन + मैंकोज़ेब (सेक्टिन 600 ग्राम) 24 घंटे में स्प्रे करें।"
+                  : "Cymoxanil + Mancozeb (600 g) or Fenamidone + Mancozeb (600 g) within 24 hours."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(crop.slug === "mustard" || crop.slug === "sarson") && (
+        <div className="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-transparent p-3.5 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300">
+              <ShieldAlert className="h-4 w-4" />
+            </span>
+            <div>
+              <h4 className="text-[13px] font-black text-[var(--av-text-primary)]">
+                {hi ? "सफेद रतुआ (White Rust) व डाउनी मिल्ड्यू अलर्ट" : "White Rust & Downy Mildew Alert"}
+              </h4>
+              <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                {hi
+                  ? "फूल खिलते समय फव्वारा सिंचाई न करें (नमी से सफेद फफोले फैलते हैं)। रोकथाम के लिए मैंकोज़ेब 75% WP (600 ग्राम/एकड़ 200 लीटर पानी) या लक्षण दिखते ही मेटलैक्टिल 8% + मैंकोज़ेब 64% WP (500 ग्राम/एकड़) का स्प्रे करें।"
+                  : "Avoid overhead sprinkler at flowering. Spray Mancozeb 75% WP (600g/acre in 200L water) or Metalaxyl 8% + Mancozeb 64% WP (500g/acre) at first sign of white pustules."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(crop.slug === "sugarcane" || crop.slug === "ganna") && (
+        <div className="rounded-2xl border-2 border-red-500/30 bg-gradient-to-br from-red-500/10 via-amber-500/5 to-transparent p-3.5 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/20 text-red-700 dark:text-red-300">
+              <ShieldAlert className="h-4 w-4" />
+            </span>
+            <div>
+              <h4 className="text-[13px] font-black text-[var(--av-text-primary)]">
+                {hi ? "लाल सड़न (Red Rot) व पोक्का बोइंग सुरक्षा" : "Red Rot & Pokkah Boeng Strategy"}
+              </h4>
+              <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                {hi
+                  ? "तने को चीरने पर यदि गूदा लाल और एल्कोहल जैसी गंध आए, तो वह लाल सड़न है—तुरंत उस थान को उखाड़कर जलाएं। पोक्का बोइंग (ऊपर की पत्तियाँ ऐंठन व सड़न) पर कॉपर ऑक्सीक्लोराइड 500 ग्राम/एकड़ (200 लीटर पानी में) या कार्बेन्डाजिम 250 ग्राम/एकड़ का स्प्रे करें।"
+                  : "Discard and burn plants with red internal stalk tissues. Spray Copper Oxychloride 500g/acre (in 200L water) or Carbendazim 250g/acre for Pokkah Boeng leaf twisting."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="relative">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A9A91]" />

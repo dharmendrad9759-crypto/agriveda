@@ -180,13 +180,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const claim = await claimActiveDevice(user.localId, deviceId, email);
+    const takeover = body.takeover === true;
+    const claim = await claimActiveDevice(user.localId, deviceId, email, { takeover });
     if (!claim.ok) {
       return NextResponse.json(
         {
           error:
-            "यह Google ID दूसरी डिवाइस पर लॉगिन है। पहले उस फोन से Logout करें।",
+            "यह Google ID पहले किसी अन्य डिवाइस (या ऐप के पुराने डेटा) पर सक्रिय है। क्या आप इसे इस डिवाइस पर ट्रांसफर करना चाहते हैं?",
           code: "DEVICE_CONFLICT",
+          canTakeover: true,
+          email,
+          activeSince: claim.activeSince ?? null,
         },
         { status: 409 }
       );
@@ -234,6 +238,7 @@ export async function POST(request: NextRequest) {
       name: displayName || null,
       phone: phone || null,
       firebaseUid: user.localId,
+      transferred: Boolean(claim.transferred),
     });
     applySessionCookie(res, token);
     return res;

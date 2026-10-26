@@ -17,7 +17,7 @@ import {
 import { getEnrichedCropThreats, threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
-import { Search } from "lucide-react";
+import { Search, ShieldAlert, Bug } from "lucide-react";
 import { useMemo, useState } from "react";
 
 function pestFieldRisk(
@@ -173,6 +173,95 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
           {hi ? "कीट गाइड" : "Pest guide"}
         </p>
       </div>
+
+      {/* Crop-Specific High-Impact Pest Strategy Card (Technical Kisan Advisory) */}
+      {(crop.slug === "maize" || crop.slug === "makka") && (
+        <div className="rounded-2xl border-2 border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/20 text-rose-700 dark:text-rose-300">
+              <Bug className="h-4 w-4" />
+            </span>
+            <div>
+              <h4 className="text-[13px] font-black text-[var(--av-text-primary)]">
+                {hi ? "फॉल आर्मीवर्म (FAW) गोफ स्प्रे नियम" : "Fall Armyworm (FAW) Whorl Application"}
+              </h4>
+              <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                {hi
+                  ? "सुंडी मक्के के पोंगे/गोफ (Whorl) के अंदर छिपी रहती है—ऊपर फव्वारा मारने से नहीं मरती:"
+                  : "Target spray directly into the whorl where the caterpillar feeds:"}
+              </p>
+            </div>
+          </div>
+          <div className="mt-2.5 rounded-xl border border-rose-500/25 bg-white/70 p-3 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)] dark:bg-black/20">
+            {hi
+              ? "नोजल का मुंह सीधे पौधे के गोफ (Whorl) की तरफ करके इमामेक्टिन बेंजोएट 5% SG (80–100 ग्राम/एकड़) या क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन 60 मिली/एकड़) का स्प्रे करें। दवा सीधे गोफ के अंदर जाने पर ही सुंडी तुरंत नष्ट होती है।"
+              : "Direct spray nozzle directly down into the leaf whorl using Emamectin Benzoate 5% SG (80-100 g/acre) or Chlorantraniliprole 18.5% SC (60 ml/acre)."}
+          </div>
+        </div>
+      )}
+
+      {(crop.slug === "cotton" || crop.slug === "kapas") && (
+        <div className="rounded-2xl border-2 border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/20 text-rose-700 dark:text-rose-300">
+              <Bug className="h-4 w-4" />
+            </span>
+            <div>
+              <h4 className="text-[13px] font-black text-[var(--av-text-primary)]">
+                {hi ? "गुलाबी सुंडी (PBW) व रसचूसक कीट प्रबंधन" : "Pink Bollworm & Sucking Pest Management"}
+              </h4>
+              <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                {hi
+                  ? "फूल व टिंडे बनते समय फसल की सुरक्षा के 2 सबसे अहम नियम:"
+                  : "Two golden rules during square and boll formation:"}
+              </p>
+            </div>
+          </div>
+          <div className="mt-2.5 space-y-2 text-xs font-semibold text-[var(--av-text-secondary)]">
+            <div className="rounded-xl border border-rose-500/25 bg-white/70 p-2.5 dark:bg-black/20">
+              <span className="font-extrabold text-[var(--av-text-primary)]">
+                {hi ? "रसचूसक कीट (सफेद मक्खी / थ्रिप्स): " : "Sucking Pests: "}
+              </span>
+              {hi
+                ? "डायफेनथियुरॉन 50% WP (250 ग्राम/एकड़) का स्प्रे करें। पत्तों के नीचे चिपकी सफेद मक्खी और थ्रिप्स दोनों खत्म होते हैं।"
+                : "Spray Diafenthiuron 50% WP (250 g/acre) to control whiteflies and thrips."}
+            </div>
+            <div className="rounded-xl border border-amber-500/25 bg-white/70 p-2.5 dark:bg-black/20">
+              <span className="font-extrabold text-[var(--av-text-primary)]">
+                {hi ? "टिंडे झड़ने से रोकना: " : "Prevent Boll Drop: "}
+              </span>
+              {hi
+                ? "फूल आते समय अल्फा नेफ्थाइल एसिटिक एसिड 4.5 SL (Planofix) 4 मिली प्रति 15 लीटर पानी में मिलाकर स्प्रे करें — टिंडे व फूल गिरना पूरी तरह रुक जाता है।"
+                : "Spray Alpha Naphthyl Acetic Acid 4.5 SL (Planofix) 4 ml per 15 L water at flowering to arrest square and boll drop."}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(crop.slug === "mustard" || crop.slug === "sarson") && (
+        <div className="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-transparent p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300">
+              <Bug className="h-4 w-4" />
+            </span>
+            <div>
+              <h4 className="text-[13px] font-black text-[var(--av-text-primary)]">
+                {hi ? "माहू (चेपा / Aphid) आर्थिक क्षति स्तर (ETL) व सुरक्षित स्प्रे" : "Mustard Aphid ETL & Bee-Safe Spray"}
+              </h4>
+              <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                {hi
+                  ? "जनवरी-फरवरी में बादल छाने पर माहू बढ़ता है — आर्थिक स्तर पार होने पर ही स्प्रे करें:"
+                  : "Aphids peak during cloudy winter. Spray only when economic threshold (ETL) is reached:"}
+              </p>
+            </div>
+          </div>
+          <p className="mt-2 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]">
+            {hi
+              ? "जब 20% से अधिक पौधों की मुख्य शाखा पर 50–60 माहू दिखने लगें (ETL स्तर), तभी स्प्रे करें। इमिडाक्लोप्रिड 17.8% SL (50–60 मिली/एकड़) या थायमेथोक्साम 25% WG (80 ग्राम/एकड़) 150 लीटर पानी में मिलाकर डालें। जरूरी चेतावनी: सरसों में परागण के लिए मधुमक्खियाँ आवश्यक हैं, इसलिए स्प्रे हमेशा शाम 3:30–4 बजे के बाद ही करें जब मधुमक्खियाँ छत्ते में लौट चुकी हों।"
+              : "Spray only when ETL is crossed (20% infested plants or 50-60 aphids per 10cm central shoot). Apply Imidacloprid 17.8% SL (50-60 ml/acre) or Thiamethoxam 25% WG (80 g/acre) in 150 L water. Critical: Spray strictly in late afternoon/evening (after 4 PM) when honeybees are not foraging."}
+          </p>
+        </div>
+      )}
 
       <div className="relative">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A9A91]" />

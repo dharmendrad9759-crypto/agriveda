@@ -950,6 +950,107 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
             </div>
           </div>
 
+            {/* 3-Stage Master Foliar Protocol (Technical Kisan strategy) */}
+            <div className="rounded-2xl border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-sky-500/5 to-transparent p-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+                  <FertilizerNpkSparkleIcon className="h-4 w-4" />
+                </span>
+                <div>
+                  <h4 className="text-[13px] font-black text-[var(--av-text-primary)]">
+                    {hi ? "3-चरणीय फोलियर स्प्रे मास्टर प्लान (Technical Kisan रणनीति)" : "3-Stage Master Foliar NPK Protocol"}
+                  </h4>
+                  <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                    {crop.slug === "sugarcane" || crop.slug === "ganna"
+                      ? hi
+                        ? "गन्ने के कल्ले, पोरियों की लंबाई और रस-मिठास बढ़ाने के 3 मुख्य स्प्रे:"
+                        : "Three critical foliar stages for tillering, stalk elongation, and sucrose:"
+                      : hi
+                        ? "फसल की बढ़वार, फूल और दाना/कंद भराव के लिए 3 सबसे असरदार स्प्रे:"
+                        : "Three most critical foliar stages for high vigor, flowering, and heavy grains:"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-3.5 space-y-2.5">
+                {/* Stage 1 */}
+                <div className="rounded-xl border border-emerald-500/20 bg-white/70 p-3 dark:bg-black/20">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-black text-white">
+                        1
+                      </span>
+                      <span className="text-xs font-black text-emerald-800 dark:text-emerald-200">
+                        {crop.slug === "sugarcane" || crop.slug === "ganna"
+                          ? hi ? "पहला स्प्रे: कल्ले फूटना व जड़ फैलाव (40–55 दिन)" : "Spray 1: Tillering & Root Vigor (40–55 DAS)"
+                          : hi ? "पहला स्प्रे: वानस्पतिक बढ़वार (25–35 दिन)" : "Spray 1: Vegetative Growth (25–35 DAS)"}
+                      </span>
+                    </div>
+                    <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                      NPK 19:19:19
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]">
+                    {hi
+                      ? "NPK 19:19:19 (1–1.5 किग्रा/एकड़) + ह्यूमिक एसिड 98% (250 ग्राम) — 150 लीटर पानी में। इससे जड़ों का गहरा फैलाव होता है, कल्ले ज्यादा फूटते हैं और पत्तियों में गहरा हरापन आता है।"
+                      : "NPK 19:19:19 (1–1.5 kg/acre) + Humic Acid 98% (250 g) in 150 L water. Promotes vigorous root spread, tillering, and deep green foliage."}
+                  </p>
+                </div>
+
+                {/* Stage 2 */}
+                <div className="rounded-xl border border-sky-500/20 bg-white/70 p-3 dark:bg-black/20">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sky-500 text-[10px] font-black text-white">
+                        2
+                      </span>
+                      <span className="text-xs font-black text-sky-800 dark:text-sky-200">
+                        {crop.slug === "sugarcane" || crop.slug === "ganna"
+                          ? hi ? "दूसरा स्प्रे: पोरियों की तीव्र बढ़वार (90–110 दिन)" : "Spray 2: Rapid Internode Elongation (90–110 DAS)"
+                          : hi ? "दूसरा स्प्रे: गभोट / फूल आने की शुरुआत (55–65 दिन)" : "Spray 2: Pre-Flowering / Booting (55–65 DAS)"}
+                      </span>
+                    </div>
+                    <span className="rounded-md bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold text-sky-800 dark:text-sky-300">
+                      {crop.slug === "sugarcane" || crop.slug === "ganna" ? "यूरिया 2% + 00:52:34" : "00:52:34 + बोरॉन"}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]">
+                    {crop.slug === "sugarcane" || crop.slug === "ganna"
+                      ? hi
+                        ? "NPK 00:52:34 (1.5 किग्रा/एकड़) + यूरिया (2 किग्रा/एकड़) — 200 लीटर पानी में। यह तने की मोटाई और पोरियों की लंबाई बढ़ाता है।"
+                        : "NPK 00:52:34 (1.5 kg/acre) + Urea spray (2 kg/acre) in 200 L water to boost internode length and stalk thickness."
+                      : hi
+                        ? "NPK 00:52:34 (1 किग्रा/एकड़) + बोरॉन 20% (100–125 ग्राम)। फास्फोरस बालियों व फूलों की संख्या बढ़ाता है, पोटाश तने को मजबूत करता है और बोरॉन परागण (pollination) पक्का करके फूल-फल को झड़ने से रोकता है। (ध्यान दें: बोरॉन 125 ग्राम से ज्यादा कभी न डालें)।"
+                        : "NPK 00:52:34 (1 kg/acre) + Boron 20% (100–125 g). High phosphate boosts panicle/flower count, potash strengthens stems, and boron guarantees robust pollination."}
+                  </p>
+                </div>
+
+                {/* Stage 3 */}
+                <div className="rounded-xl border border-amber-500/20 bg-white/70 p-3 dark:bg-black/20">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500 text-[10px] font-black text-white">
+                        3
+                      </span>
+                      <span className="text-xs font-black text-amber-800 dark:text-amber-200">
+                        {crop.slug === "sugarcane" || crop.slug === "ganna"
+                          ? hi ? "तीसरा स्प्रे: रस व वजन भराव / सुक्रोज (150–180 दिन)" : "Spray 3: Sugar Accumulation / Maturity (150–180 DAS)"
+                          : hi ? "तीसरा स्प्रे: दूधिया / दाना भराव (80–90 दिन)" : "Spray 3: Milking / Grain Filling (80–90 DAS)"}
+                      </span>
+                    </div>
+                    <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-300">
+                      NPK 00:00:50
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]">
+                    {hi
+                      ? "NPK 00:00:50 (पोटैशियम सल्फेट 1–1.5 किग्रा/एकड़) — 150–200 लीटर पानी में। यह पत्तियों में बने भोजन को सीधे दानों, कंदों या गन्ने के रस में भेजता है, जिससे फसल का वजन, चमक और मिठास बढ़ जाती है।"
+                      : "NPK 00:00:50 (Potassium Sulphate 1–1.5 kg/acre) in 150–200 L water. Translocates photosynthates into developing grains, tubers, or cane juice, maximizing weight and sugar."}
+                  </p>
+                </div>
+              </div>
+          </div>
+
           {/* Crop-specific Foliar Spray & Drenching Stages from the High-Yield Schedule */}
           {verifiedFoliarStages.length > 0 && (
             <DarkCard>

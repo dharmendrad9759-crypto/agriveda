@@ -18,6 +18,7 @@ import {
   formatIrrigationSequenceHi,
   stripLeadingIndex,
 } from "@/lib/crops/simplifyIrrigationHi";
+import { getWaterPriorityPlan } from "@/lib/crops/waterPriorityRules";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { AV } from "@/lib/design/tokens";
@@ -93,6 +94,8 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
       }),
     [crop]
   );
+
+  const waterPriority = useMemo(() => getWaterPriorityPlan(crop.slug), [crop.slug]);
 
   const rainAlert = useMemo(() => {
     if (!weather?.dailyForecast?.length) return null;
@@ -299,6 +302,66 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
       </DarkCard>
 
       {showAwd ? <AwdIrrigationCard hi={hi} /> : null}
+
+      {/* Water Scarcity / Priority Protocol Card */}
+      {waterPriority ? (
+        <DarkCard className="border-sky-500/25 bg-gradient-to-br from-sky-500/10 via-cyan-500/5 to-transparent">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/20 text-sky-600 dark:text-sky-300">
+              <Droplets className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <h3 className="text-xs font-black text-[var(--av-text-primary)]">
+                {hi
+                  ? "सीमित पानी में क्या करें? (सिंचाई प्राथमिकता नियम)"
+                  : "Water Scarcity Rules (When water is limited)"}
+              </h3>
+              <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
+                {hi
+                  ? "अगर नलकूप या नहर का पानी कम हो, तो इन क्रांतिक समयों पर ही पानी दें:"
+                  : "If water/tubewell access is limited, prioritize these critical windows:"}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5">
+              <div className="flex items-center gap-1.5 text-amber-700 dark:text-amber-300">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/25 text-[10px] font-black">
+                  1
+                </span>
+                <span className="text-[11px] font-extrabold uppercase tracking-wide">
+                  {hi ? "अगर केवल 1 ही पानी उपलब्ध हो" : "If only 1 irrigation is possible"}
+                </span>
+              </div>
+              <p className="mt-1.5 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]">
+                {hi ? waterPriority.singleHi : waterPriority.singleEn}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-2.5">
+              <div className="flex items-center gap-1.5 text-sky-700 dark:text-sky-300">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sky-500/25 text-[10px] font-black">
+                  2
+                </span>
+                <span className="text-[11px] font-extrabold uppercase tracking-wide">
+                  {hi ? "अगर केवल 2 पानी उपलब्ध हों" : "If 2 irrigations are possible"}
+                </span>
+              </div>
+              <p className="mt-1.5 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]">
+                {hi ? waterPriority.twoHi : waterPriority.twoEn}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-2 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-soft)] px-3 py-2 text-[11px] font-semibold text-[var(--av-text-muted)]">
+            <span className="font-extrabold text-[var(--av-text-primary)]">
+              {hi ? "पर्याप्त पानी होने पर: " : "With full water: "}
+            </span>
+            {hi ? waterPriority.fullHi : waterPriority.fullEn}
+          </div>
+        </DarkCard>
+      ) : null}
 
       {/* Timeline */}
       <DarkCard>

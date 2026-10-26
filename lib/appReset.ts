@@ -72,14 +72,31 @@ export function clearAppData(options?: {
   if (locale) localStorage.setItem("agriveda-app-locale", locale);
 }
 
+import { signOutGoogle } from "@/lib/firebase/googleAuth";
+
 /** Full reset including onboarding — reloads the app. */
-export function resetAppAndReload() {
+export async function resetAppAndReload() {
+  try {
+    await signOutGoogle();
+  } catch {
+    /* ignore */
+  }
+  try {
+    await fetch("/api/auth/session", { method: "DELETE", credentials: "include" });
+  } catch {
+    /* ignore */
+  }
   clearAppData({ keepTheme: true, keepLocale: true, fullWipe: true });
   window.location.href = "/";
 }
 
 /** Logout: clear only the session cookie — keep farm/profile data on device. */
 export async function logoutAndReload() {
+  try {
+    await signOutGoogle();
+  } catch {
+    /* ignore */
+  }
   try {
     await fetch("/api/auth/session", { method: "DELETE", credentials: "include" });
   } catch {
@@ -91,6 +108,7 @@ export async function logoutAndReload() {
 /** Play Store account deletion: server wipe + full local clear. */
 export async function deleteAccountAndReload(): Promise<{ ok: boolean; error?: string }> {
   try {
+    await signOutGoogle().catch(() => {});
     const res = await fetch("/api/account", { method: "DELETE", credentials: "include" });
     if (res.status === 401) {
       // No server session — wipe device data (still valid for Play “delete my data”)
