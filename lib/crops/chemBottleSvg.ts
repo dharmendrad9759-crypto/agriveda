@@ -353,24 +353,37 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "dinotefuran-20-sg": "/images/chem/real/dinotefuran-20-sg.jpg",
   "emamectin-benzoate-5-sg": "/images/chem/real/emamectin-benzoate-5-sg.jpg",
   "fipronil-0-3-gr": "/images/chem/real/fipronil-0-3-gr.jpg",
+  "fipronil-0-3": "/images/chem/real/fipronil-0-3-gr.jpg",
+  "fipronil-0-3-g": "/images/chem/real/fipronil-0-3-gr.jpg",
+  "fipronil-0-6-gr": "/images/chem/real/fipronil-0-6-gr.jpg",
+  "fipronil-0-6": "/images/chem/real/fipronil-0-6-gr.jpg",
+  "fipronil-0-6-g": "/images/chem/real/fipronil-0-6-gr.jpg",
   "fipronil-5-sc": "/images/chem/real/fipronil-5-sc.jpg",
   "flonicamid-50-wg": "/images/chem/real/flonicamid-50-wg.jpg",
   "flubendiamide-39-sc": "/images/chem/real/flubendiamide-39-sc.jpg",
   "imidacloprid-17-8-sl": "/images/chem/real/imidacloprid-17-8-sl.jpg",
+  "imidacloprid-70-ws": "/images/chem/real/imidacloprid-70-ws.jpg",
   "imidacloprid-lambda-combo": "/images/chem/real/imidacloprid-lambda-combo.jpg",
   "imidacloprid-17-8-sl-lambda-cyhalothrin-5-ec": "/images/chem/real/imidacloprid-lambda-combo.jpg",
+  "indoxacarb-14-5-sc": "/images/chem/real/indoxacarb-14-5-sc.jpg",
   "lambda-cyhalothrin-5-ec": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
   "malathion-50-ec": "/images/chem/real/malathion-50-ec.jpg",
   "novaluron-emamectin-sc": "/images/chem/real/novaluron-emamectin-sc.jpg",
   "profenofos-50-ec": "/images/chem/real/profenofos-50-ec.jpg",
   "profenofos-cypermethrin-ec": "/images/chem/real/profenofos-cypermethrin-ec.jpg",
   "profenofos-40-cypermethrin-4-ec": "/images/chem/real/profenofos-cypermethrin-ec.jpg",
+  "propargite-57-ec": "/images/chem/real/propargite-57-ec.jpg",
+  "pyriproxyfen-10-ec": "/images/chem/real/pyriproxyfen-10-ec.jpg",
+  "pyriproxyfen-bifenthrin-ec": "/images/chem/real/pyriproxyfen-bifenthrin-ec.jpg",
   "spinetoram-11-7-sc": "/images/chem/real/spinetoram-11-7-sc.jpg",
   "spinosad-45-sc": "/images/chem/real/spinosad-45-sc.jpg",
+  "spiromesifen-22-9-sc": "/images/chem/real/spiromesifen-22-9-sc.jpg",
   "cypermethrin-25-ec": "/images/chem/real/cypermethrin-25-ec.jpg",
   "cypermethrin-10-ec": "/images/chem/real/cypermethrin-25-ec.jpg",
   "ustaad": "/images/chem/real/cypermethrin-25-ec.jpg",
+  "thiacloprid-21-7-sc": "/images/chem/real/thiacloprid-21-7-sc.jpg",
   "thiamethoxam-25-wg": "/images/chem/real/thiamethoxam-25-wg.jpg",
+  "thiamethoxam-30-fs": "/images/chem/real/thiamethoxam-30-fs.jpg",
   "thiamethoxam-12-6-lambda-9-5-zc": "/images/chem/real/thiamethoxam-lambda-zc.jpg",
   "thiamethoxam-12-6-lambda-cyhalothrin-9-5-zc": "/images/chem/real/thiamethoxam-lambda-zc.jpg",
   "thiamethoxam-lambda-combo": "/images/chem/real/thiamethoxam-lambda-zc.jpg",
@@ -395,13 +408,22 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "carbendazim-50-wp": "/images/chem/real/carbendazim-50-wp.jpg",
   "carbendazim-mancozeb-wp": "/images/chem/real/carbendazim-mancozeb-wp.jpg",
   "carbendazim-12-mancozeb-63-wp": "/images/chem/real/carbendazim-mancozeb-wp.jpg",
+  "carboxin-thiram-ds": "/images/chem/real/carboxin-thiram-ds.jpg",
+  "carboxin-37-5-thiram-37-5-ds": "/images/chem/real/carboxin-thiram-ds.jpg",
   "chlorothalonil-75-wp": "/images/chem/real/chlorothalonil-75-wp.jpg",
   "copper-hydroxide-53-8-df": "/images/chem/real/copper-hydroxide-53-8-df.jpg",
   "copper-oxychloride-50-wp": "/images/chem/real/copper-oxychloride-50-wp.jpg",
+  "cymoxanil-mancozeb-wp": "/images/chem/real/cymoxanil-mancozeb-wp.jpg",
+  "cymoxanil-8-mancozeb-64-wp": "/images/chem/real/cymoxanil-mancozeb-wp.jpg",
   "difenoconazole-25-ec": "/images/chem/real/difenoconazole-25-ec.jpg",
   "dimethomorph-50-wp": "/images/chem/real/dimethomorph-50-wp.jpg",
+  "dinocap-48-ec": "/images/chem/real/dinocap-48-ec.jpg",
+  "edifenphos-50-ec": "/images/chem/real/edifenphos-50-ec.jpg",
+  "famoxadone-cymoxanil-sc": "/images/chem/real/famoxadone-cymoxanil-sc.jpg",
   "fluopyram-34-48-sc": "/images/chem/real/fluopyram-34-48-sc.jpg",
   "hexaconazole-5-ec": "/images/chem/real/hexaconazole-5-ec.jpg",
+  "iprodione-50-wp": "/images/chem/real/iprodione-50-wp.jpg",
+  "isoprothiolane-40-ec": "/images/chem/real/isoprothiolane-40-ec.jpg",
   "kasugamycin-3-sl": "/images/chem/real/kasugamycin-3-sl.jpg",
   "mancozeb-75-wp": "/images/chem/real/mancozeb-75-wp.jpg",
   "metalaxyl-m-mancozeb-wp": "/images/chem/real/metalaxyl-m-mancozeb-wp.jpg",
@@ -410,6 +432,7 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "propiconazole-25-ec": "/images/chem/real/propiconazole-25-ec.jpg",
   "picoxystrobin-7-propiconazole-12-sc": "/images/chem/real/picoxystrobin-propiconazole-sc.jpg",
   "picoxystrobin-propiconazole": "/images/chem/real/picoxystrobin-propiconazole-sc.jpg",
+  "picoxystrobin-propiconazole-sc": "/images/chem/real/picoxystrobin-propiconazole-sc.jpg",
   "galileo-way": "/images/chem/real/picoxystrobin-propiconazole-sc.jpg",
   "propineb-70-wp": "/images/chem/real/propineb-70-wp.jpg",
   "pyraclostrobin-20-wg": "/images/chem/real/pyraclostrobin-20-wg.jpg",
@@ -424,6 +447,7 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "tebuconazole-trifloxystrobin": "/images/chem/real/tebuconazole-trifloxystrobin.jpg",
   "tebuconazole-trifloxystrobin-wg": "/images/chem/real/tebuconazole-trifloxystrobin-wg.jpg",
   "thiophanate-methyl-70-wp": "/images/chem/real/thiophanate-methyl-70-wp.jpg",
+  "triadimefon-25-wp": "/images/chem/real/triadimefon-25-wp.jpg",
   "trichoderma-viride-1-wp": "/images/chem/real/trichoderma-viride-1-wp.jpg",
   "tricyclazole-75-wp": "/images/chem/real/tricyclazole-75-wp.jpg",
   "validamycin-3-l": "/images/chem/real/validamycin-3-l.jpg",
@@ -446,23 +470,45 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
 
 export const STATIC_SVG_BOTTLES = new Set<string>([]);
 
-export function hasRealBottlePhoto(_technical: string): boolean {
+export function hasRealBottlePhoto(technical: string): boolean {
+  if (!technical) return false;
+  const hit = lookupChemBottle(technical);
+  if (hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]) return true;
+  const norm = technical
+    .toLowerCase()
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  if (REAL_BOTTLE_PHOTOS[norm]) return true;
   return false;
 }
 
 /**
  * 100% Pure Generic Technical Packaging:
- * Renders a realistic 3D bottle or sealed metallic agro pouch with ONLY
- * the official technical formulation and CIB&RC diamond printed on the label.
- * Zero commercial brand names and zero company logos.
+ * Returns the authentic photorealistic 3D studio image (with ZERO commercial brands & ZERO company logos),
+ * falling back to the vector product shot only if a real photo is not yet in the catalog.
  */
 export function chemBottleImageSrc(technical: string): string {
   const hit = lookupChemBottle(technical);
+  if (hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]) {
+    return REAL_BOTTLE_PHOTOS[hit.slug];
+  }
+
+  const norm = technical
+    .toLowerCase()
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  if (REAL_BOTTLE_PHOTOS[norm]) {
+    return REAL_BOTTLE_PHOTOS[norm];
+  }
+
   const cat = hit?.category || bottleCategory(technical);
   const pkgType = getChemPackageType(technical, hit?.formulation);
-  const svg = pkgType === "pouch"
-    ? renderChemPouchSvg(technical, cat)
-    : renderChemBottleSvg(technical, cat);
+  const svg =
+    pkgType === "pouch"
+      ? renderChemPouchSvg(technical, cat)
+      : renderChemBottleSvg(technical, cat);
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
