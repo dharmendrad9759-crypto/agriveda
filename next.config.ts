@@ -66,6 +66,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/ask",
+        destination: "/ask-query",
+        permanent: true,
+      },
+      {
+        source: "/expert-chat",
+        destination: "/ask-query",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

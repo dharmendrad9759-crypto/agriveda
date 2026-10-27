@@ -19,6 +19,8 @@ const HIDE_FOOTER_ROUTES = [
   "/deficiencies",
   "/settings",
   "/ask-query",
+  "/ask",
+  "/expert-chat",
 ];
 
 export default function Footer() {

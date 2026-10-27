@@ -122,7 +122,12 @@ export default function BottomNav() {
   const aiActive = pathname.startsWith("/ai-doctor");
 
   // Hide BottomNav on inner scheme detail/guide screens and dedicated expert chat
-  if (pathname.startsWith("/schemes/") || pathname === "/ask-query") {
+  if (
+    pathname.startsWith("/schemes/") ||
+    pathname === "/ask-query" ||
+    pathname === "/ask" ||
+    pathname === "/expert-chat"
+  ) {
     return null;
   }
 

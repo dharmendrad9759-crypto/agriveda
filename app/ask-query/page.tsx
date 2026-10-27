@@ -279,10 +279,60 @@ export default function AskQueryPage() {
     }, 1000);
   }, [isHi, showToast]);
 
+  // Dynamic visualViewport tracking for software keyboard docking & WhatsApp-style layout
+  const [viewportStyle, setViewportStyle] = useState<React.CSSProperties>({
+    height: "100dvh",
+  });
+
+  const scrollToBottom = useCallback((smooth = true) => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: smooth ? "smooth" : "auto",
+      block: "end",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateViewport = () => {
+      const vv = window.visualViewport;
+      if (vv) {
+        setViewportStyle({
+          height: `${vv.height}px`,
+          top: `${vv.offsetTop}px`,
+        });
+      } else {
+        setViewportStyle({
+          height: "100dvh",
+          top: 0,
+        });
+      }
+      setTimeout(() => {
+        scrollToBottom(false);
+      }, 50);
+    };
+
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", updateViewport);
+      vv.addEventListener("scroll", updateViewport);
+    }
+    window.addEventListener("resize", updateViewport);
+    updateViewport();
+
+    return () => {
+      if (vv) {
+        vv.removeEventListener("resize", updateViewport);
+        vv.removeEventListener("scroll", updateViewport);
+      }
+      window.removeEventListener("resize", updateViewport);
+    };
+  }, [scrollToBottom]);
+
   // Scroll to bottom on message updates
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+    scrollToBottom(true);
+  }, [messages, isTyping, scrollToBottom]);
 
   // Check speech recognition support
   useEffect(() => {
@@ -377,17 +427,12 @@ export default function AskQueryPage() {
       };
 
       recognition.onresult = (event: any) => {
-        let finalTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript;
-          } else {
-            finalTranscript += transcript;
-          }
+        let completeTranscript = "";
+        for (let i = 0; i < event.results.length; ++i) {
+          completeTranscript += event.results[i][0].transcript;
         }
-        if (finalTranscript.trim()) {
-          setInputText(finalTranscript.trim());
+        if (completeTranscript.trim()) {
+          setInputText(completeTranscript.trim());
         }
       };
 
@@ -538,8 +583,11 @@ export default function AskQueryPage() {
     CROP_SUGGESTIONS[selectedCrop] || CROP_SUGGESTIONS.general;
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-[#efeae2] text-stone-900 overscroll-none select-none dark:bg-[#0b141a] dark:text-stone-100">
-      {/* WhatsApp Header */}
+    <div
+      className="fixed inset-0 h-[100dvh] w-full flex flex-col bg-[#f4fbf7] overflow-hidden z-50 text-stone-900 select-none dark:bg-[#0b141a] dark:text-stone-100"
+      style={viewportStyle}
+    >
+      {/* Part A: Top Header (shrink-0) */}
       <header className="sticky top-0 z-30 flex shrink-0 items-center justify-between bg-[#008069] px-3 py-2.5 text-white shadow-md dark:bg-[#1f2c34]">
         <div className="flex items-center gap-2.5">
           <button
@@ -586,13 +634,13 @@ export default function AskQueryPage() {
         </div>
       </header>
 
-      {/* Trust & Transparency Banner (explaining where data reaches) */}
+      {/* Part A2: Trust & Transparency Banner (shrink-0) */}
       <div className="shrink-0 border-b border-black/5 bg-emerald-950/90 px-3 py-1.5 text-center text-[11px] font-semibold text-emerald-100 backdrop-blur-md dark:border-white/5 dark:bg-emerald-950/80">
         🔒 आपका सवाल और फोटो सीधे हमारे कृषि वैज्ञानिक पैनल (Doctor Desk) पर पहुंचते हैं।
       </div>
 
-      {/* Messages Feed */}
-      <div className="flex-1 space-y-3 overflow-y-auto px-3.5 py-3 overscroll-contain select-text [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* Part B: Scrollable Messages Area (flex-1 overflow-y-auto) */}
+      <div className="flex-1 space-y-3 overflow-y-auto px-3 py-4 select-text [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-contain">
         {/* Date pill */}
         <div className="flex justify-center">
           <span className="rounded-lg bg-black/10 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs backdrop-blur-sm dark:bg-white/10 dark:text-stone-300">
@@ -675,180 +723,188 @@ export default function AskQueryPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Suggested Quick Question Chips */}
-      <div className="shrink-0 border-t border-black/5 bg-[#efeae2]/90 px-3 py-2 dark:border-white/5 dark:bg-[#0b141a]/90">
-        <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {activeSuggestions.map((prompt) => (
-            <button
-              key={prompt}
-              type="button"
-              onClick={() => {
-                setInputText(prompt);
-              }}
-              className="shrink-0 rounded-full border border-stone-300 bg-white/90 px-3 py-1.5 text-[13px] font-bold text-stone-800 shadow-2xs hover:bg-white active:scale-95 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
-            >
-              {prompt}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom Pinned Input Bar (WhatsApp style, ZERO GAP) */}
-      <div className="shrink-0 border-t border-black/10 bg-white p-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-xl dark:border-white/10 dark:bg-[#202c33]">
-        {/* Large, Clear Crop Selector Bar */}
-        <div className="mb-2.5 flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <span className="shrink-0 text-xs font-black tracking-wide text-stone-600 uppercase dark:text-stone-400">
-            🌾 फसल:
-          </span>
-          {COMMON_CROP_CHIPS.map((chip) => {
-            const active = selectedCrop === chip.slug;
-            return (
+      {/* Part C: Bottom Input Bar & Chips (shrink-0 mt-auto) */}
+      <div className="shrink-0 mt-auto w-full bg-white border-t border-emerald-100 pb-[env(safe-area-inset-bottom,8px)] shadow-xl dark:border-white/10 dark:bg-[#1f2c34]">
+        {/* Suggested Quick Question Chips */}
+        <div className="border-b border-emerald-100/60 bg-[#f4fbf7]/90 px-3 py-2 dark:border-white/5 dark:bg-[#0b141a]/90">
+          <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {activeSuggestions.map((prompt) => (
               <button
-                key={chip.slug}
-                type="button"
-                onClick={() => setSelectedCrop(chip.slug)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13.5px] font-bold transition active:scale-95 ${
-                  active
-                    ? "bg-[#008069] text-white shadow-md ring-2 ring-emerald-500/30 dark:bg-emerald-600"
-                    : "bg-stone-100 text-stone-800 border border-stone-200/80 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700"
-                }`}
-              >
-                <span className="text-base">{chip.emoji}</span>
-                <span>{chip.nameHi}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Live Voice Recording Status Overlay */}
-        {isRecording && (
-          <div className="mb-2 flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-rose-700 animate-in fade-in dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300">
-            <div className="flex items-center gap-2.5">
-              <span className="h-3 w-3 rounded-full bg-rose-600 animate-ping" />
-              <div className="flex flex-col">
-                <span className="text-xs font-black">
-                  आवाज़ सुनी जा रही है… बोलें ({recordSeconds}s)
-                </span>
-                <span className="text-[10px] opacity-80">
-                  बोलने के बाद 'सही' दबाएं या सीधे भेजें
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={stopVoiceRecording}
-                className="flex h-8 items-center gap-1 rounded-xl bg-emerald-600 px-2.5 text-xs font-bold text-white shadow-xs active:scale-95"
-              >
-                <Check className="h-3.5 w-3.5" />
-                <span>हो गया</span>
-              </button>
-              <button
+                key={prompt}
                 type="button"
                 onClick={() => {
-                  stopVoiceRecording();
-                  setInputText("");
+                  setInputText(prompt);
+                  scrollToBottom(true);
                 }}
-                className="rounded-xl p-1.5 text-stone-500 hover:bg-black/10 dark:text-stone-300"
-                title="रद्द करें"
+                className="shrink-0 rounded-full border border-emerald-200/80 bg-white px-3 py-1 text-[12.5px] font-bold text-stone-800 shadow-2xs hover:border-emerald-500 hover:bg-emerald-50 active:scale-95 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Large, Clear Crop Selector Bar */}
+        <div className="px-3 pt-2.5 pb-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <span className="shrink-0 text-xs font-black tracking-wide text-stone-600 uppercase dark:text-stone-400">
+              🌾 फसल:
+            </span>
+            {COMMON_CROP_CHIPS.map((chip) => {
+              const active = selectedCrop === chip.slug;
+              return (
+                <button
+                  key={chip.slug}
+                  type="button"
+                  onClick={() => setSelectedCrop(chip.slug)}
+                  className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-[13px] font-bold transition active:scale-95 ${
+                    active
+                      ? "bg-[#008069] text-white shadow-sm ring-2 ring-emerald-500/30 dark:bg-emerald-600"
+                      : "bg-stone-100 text-stone-800 border border-stone-200/80 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700"
+                  }`}
+                >
+                  <span className="text-base">{chip.emoji}</span>
+                  <span>{chip.nameHi}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Live Voice Recording Status Overlay & Photo Preview */}
+        <div className="p-2.5 pt-1 space-y-2">
+          {isRecording && (
+            <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-rose-700 animate-in fade-in dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300">
+              <div className="flex items-center gap-2.5">
+                <span className="h-3 w-3 rounded-full bg-rose-600 animate-ping" />
+                <div className="flex flex-col">
+                  <span className="text-xs font-black">
+                    आवाज़ सुनी जा रही है… बोलें ({recordSeconds}s)
+                  </span>
+                  <span className="text-[10px] opacity-80">
+                    बोलने के बाद 'सही' दबाएं या सीधे भेजें
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={stopVoiceRecording}
+                  className="flex h-8 items-center gap-1 rounded-xl bg-emerald-600 px-2.5 text-xs font-bold text-white shadow-xs active:scale-95"
+                >
+                  <Check className="h-3.5 w-3.5" />
+                  <span>हो गया</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    stopVoiceRecording();
+                    setInputText("");
+                  }}
+                  className="rounded-xl p-1.5 text-stone-500 hover:bg-black/10 dark:text-stone-300"
+                  title="रद्द करें"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {photoPreview && (
+            <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2">
+              <div className="flex items-center gap-2.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photoPreview}
+                  alt="Selected"
+                  className="h-11 w-11 rounded-lg object-cover border border-emerald-600/30"
+                />
+                <span className="text-xs font-bold text-emerald-900 dark:text-emerald-100">
+                  बीमारी/पत्ती की फोटो तैयार है ✓
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPhotoPreview(null)}
+                className="rounded-full p-1.5 text-stone-500 hover:bg-black/10 dark:text-stone-300"
+                title="फोटो हटाएं"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Photo preview bubble before sending */}
-        {photoPreview && (
-          <div className="mb-2 flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2">
-            <div className="flex items-center gap-2.5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photoPreview}
-                alt="Selected"
-                className="h-11 w-11 rounded-lg object-cover border border-emerald-600/30"
-              />
-              <span className="text-xs font-bold text-emerald-900 dark:text-emerald-100">
-                बीमारी/पत्ती की फोटो तैयार है ✓
-              </span>
-            </div>
+          {/* Input Controls Row */}
+          <div className="flex items-center gap-2">
+            {/* File Upload Hidden Input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoUpload}
+            />
+
+            {/* Camera Button */}
             <button
               type="button"
-              onClick={() => setPhotoPreview(null)}
-              className="rounded-full p-1.5 text-stone-500 hover:bg-black/10 dark:text-stone-300"
-              title="फोटो हटाएं"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-stone-600 hover:bg-stone-100 active:scale-95 dark:text-stone-300 dark:hover:bg-white/10"
+              title="पत्ती या कीड़े की फोटो जोड़ें"
             >
-              <X className="h-4 w-4" />
+              <Camera className="h-6 w-6" />
+            </button>
+
+            {/* Mic Button (Real Speech Recognition) */}
+            <button
+              type="button"
+              onClick={handleToggleVoice}
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-95 ${
+                isRecording
+                  ? "bg-rose-600 text-white shadow-md shadow-rose-600/40 animate-pulse"
+                  : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/10"
+              }`}
+              title="बोलकर सवाल पूछें"
+            >
+              {isRecording ? <Square className="h-5 w-5" /> : <Mic className="h-6 w-6" />}
+            </button>
+
+            {/* Text Input Field */}
+            <input
+              type="text"
+              placeholder={
+                isRecording
+                  ? "आपकी आवाज़ दर्ज हो रही है… बोलें"
+                  : selectedCrop === "general"
+                  ? "फसल की समस्या या सवाल लिखें…"
+                  : `${selectedCropObj.nameHi} में क्या समस्या है? लिखें…`
+              }
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onFocus={() => {
+                setTimeout(() => scrollToBottom(true), 100);
+                setTimeout(() => scrollToBottom(true), 300);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              className="flex-1 rounded-2xl border border-stone-300 bg-stone-100 px-4 py-2.5 text-[15px] text-stone-900 outline-none transition focus:border-[#008069] focus:bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:focus:border-emerald-500"
+            />
+
+            {/* Send Button */}
+            <button
+              type="button"
+              onClick={handleSend}
+              disabled={!inputText.trim() && !photoPreview}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#008069] text-white shadow-md transition hover:bg-[#00705c] active:scale-95 disabled:opacity-40 dark:bg-emerald-600"
+              title="भेजें"
+            >
+              <Send className="h-5 w-5" />
             </button>
           </div>
-        )}
-
-        {/* Input Controls Row */}
-        <div className="flex items-center gap-2">
-          {/* File Upload Hidden Input */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handlePhotoUpload}
-          />
-
-          {/* Camera Button */}
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-stone-600 hover:bg-stone-100 active:scale-95 dark:text-stone-300 dark:hover:bg-white/10"
-            title="पत्ती या कीड़े की फोटो जोड़ें"
-          >
-            <Camera className="h-6 w-6" />
-          </button>
-
-          {/* Mic Button (Real Speech Recognition) */}
-          <button
-            type="button"
-            onClick={handleToggleVoice}
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-95 ${
-              isRecording
-                ? "bg-rose-600 text-white shadow-md shadow-rose-600/40 animate-pulse"
-                : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/10"
-            }`}
-            title="बोलकर सवाल पूछें"
-          >
-            {isRecording ? <Square className="h-5 w-5" /> : <Mic className="h-6 w-6" />}
-          </button>
-
-          {/* Text Input Field */}
-          <input
-            type="text"
-            placeholder={
-              isRecording
-                ? "आपकी आवाज़ दर्ज हो रही है… बोलें"
-                : selectedCrop === "general"
-                ? "फसल की समस्या या सवाल लिखें…"
-                : `${selectedCropObj.nameHi} में क्या समस्या है? लिखें…`
-            }
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            className="flex-1 rounded-2xl border border-stone-300 bg-stone-100 px-4 py-2.5 text-[15px] text-stone-900 outline-none transition focus:border-[#008069] focus:bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:focus:border-emerald-500"
-          />
-
-          {/* Send Button */}
-          <button
-            type="button"
-            onClick={handleSend}
-            disabled={!inputText.trim() && !photoPreview}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#008069] text-white shadow-md transition hover:bg-[#00705c] active:scale-95 disabled:opacity-40 dark:bg-emerald-600"
-            title="भेजें"
-          >
-            <Send className="h-5 w-5" />
-          </button>
         </div>
       </div>
     </div>

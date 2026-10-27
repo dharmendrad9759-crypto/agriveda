@@ -43,7 +43,8 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
   );
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith("/admin") ?? false;
-  const isFullScreenChat = pathname === "/ask-query";
+  const isFullScreenChat =
+    pathname === "/ask-query" || pathname === "/ask" || pathname === "/expert-chat";
 
   return (
     <ThemeProvider>
