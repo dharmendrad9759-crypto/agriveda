@@ -209,6 +209,7 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       canSaveSeed: false,
       seedTypeLabel: "संकर हाइब्रिड (F1)",
       resistanceWarning: "हाइब्रिड टमाटर से कभी खुद बीज न रखें — अगली पीढ़ी में फल छोटे, बेढंगे और रोगग्रस्त हो जाते हैं।",
+      resistanceWarningEn: "Do not save and replant seeds from hybrid tomato — subsequent generations produce small, deformed, and disease-prone fruit.",
     },
     {
       name: "अर्क रक्षक (IIHR)",
@@ -252,6 +253,7 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       canSaveSeed: true,
       seedTypeLabel: "प्रमाणित किस्म (OPV)",
       resistanceWarning: "अति-पुरानी किस्म होने से कई क्षेत्रों में पीला मोज़ेक और चारकोल रॉट का खतरा बढ़ चुका है। नए खेतों में JS 20-34 या NRC किस्में आज़माएँ।",
+      resistanceWarningEn: "Being an older variety, risk of Yellow Mosaic Virus and Charcoal Rot is elevated in several districts. For new fields, prefer JS 20-34 or recommended NRC varieties.",
     },
     {
       name: "JS 95-60",
@@ -296,6 +298,7 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       canSaveSeed: false,
       seedTypeLabel: "संकर हाइब्रिड (F1)",
       resistanceWarning: "हाइब्रिड मक्के के दाने से दोबारा बुवाई न करें — भुट्टे छोटे, आधे खाली और पैदावार 40–50% कम हो जाती है।",
+      resistanceWarningEn: "Do not replant saved grain from hybrid maize — cobs will be small, poorly filled, and yield drops by 40–50%.",
     },
     {
       name: "DKC 9108 (बायर डेकाल्ब)",
@@ -598,6 +601,7 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       canSaveSeed: false,
       seedTypeLabel: "संकर हाइब्रिड (F1)",
       resistanceWarning: "हाइब्रिड बाजरा से बीज न रखें — अगली पीढ़ी में सिट्टे छोटे और दाना आधा रह जाता है।",
+      resistanceWarningEn: "Do not save seeds from hybrid pearl millet — second-generation plants yield smaller ears and cut production by half.",
     },
     {
       name: "HHB 67 संशोधित",
@@ -678,6 +682,7 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       canSaveSeed: false,
       seedTypeLabel: "संकर बीटी हाइब्रिड (BG-II)",
       resistanceWarning: "गुलाबी सुंडी (PBW) में Bt विष के प्रति सहनशीलता बढ़ रही है। 45 दिन बाद फिरोमोन ट्रैप (8 ट्रैप/एकड़) अनिवार्य रूप से लगाएँ।",
+      resistanceWarningEn: "Pink Bollworm (PBW) shows increasing tolerance to Bt traits. Installing pheromone traps (8 traps/acre) at 45 DAS is strongly recommended.",
     },
     {
       name: "बनी BG-II (तुलसी)",
@@ -890,6 +895,7 @@ const VARIETIES_BY_CROP: Record<string, MarketVarietyRec[]> = {
       canSaveSeed: false,
       seedTypeLabel: "संकर हाइब्रिड (F1)",
       resistanceWarning: "हाइब्रिड सरसों से कभी बीज न रखें — दूसरी पीढ़ी में पौधे अलग-अलग ऊँचाई के हो जाते हैं और उपज 30–40% घट जाती है।",
+      resistanceWarningEn: "Never save seed from hybrid mustard — second-generation progeny segregate widely in height and maturity, reducing yield by 30–40%.",
     },
     {
       name: "पूसा सरसों 30 / LES 39",

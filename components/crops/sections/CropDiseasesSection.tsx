@@ -221,13 +221,22 @@ export default function CropDiseasesSection({ crop }: { crop: Crop }) {
                 {hi ? "2. उपचारात्मक (Curative)" : "2. Curative"}
               </span>
               <p className="mt-1 text-xs font-bold text-[var(--av-text-primary)]">
-                {hi ? "काले-भूरे धब्बे दिखते ही (तुरंत)" : "Immediately upon seeing black spots"}
+                {hi ? "लक्षण पहचानकर सही दवा चुनें:" : "Identify symptoms and select treatment:"}
               </p>
-              <p className="mt-1 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
-                {hi
-                  ? "साइमोक्सानिल + मैंकोज़ेब (कर्जेट 600 ग्राम) या फेनामिडोन + मैंकोज़ेब (सेक्टिन 600 ग्राम) 24 घंटे में स्प्रे करें।"
-                  : "Cymoxanil + Mancozeb (600 g) or Fenamidone + Mancozeb (600 g) within 24 hours."}
-              </p>
+              <div className="mt-1.5 space-y-1.5 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                <p>
+                  • <strong className="text-[var(--av-text-primary)]">{hi ? "अगेती झुलसा (Early Blight):" : "Early Blight:"}</strong>{" "}
+                  {hi
+                    ? "पत्तियों पर गोल छल्लेदार (टारगेट बोर्ड) भूरे धब्बे → डाइफेनोकोनाज़ोल 25% EC (100–120 मिली) या एजोक्सीस्ट्रोबिन + डाइफेनोकोनाज़ोल (200 मिली/एकड़)।"
+                    : "Concentric circular target-board spots on older leaves → Difenoconazole 25% EC (100–120 ml) or Azoxystrobin + Difenoconazole (200 ml/acre)."}
+                </p>
+                <p>
+                  • <strong className="text-[var(--av-text-primary)]">{hi ? "पछेती झुलसा (Late Blight):" : "Late Blight:"}</strong>{" "}
+                  {hi
+                    ? "ठंडे/कोहरे के मौसम में पानीदार काले धब्बे व पत्ती के नीचे सफेद फफूंद → साइमोक्सानिल + मैंकोज़ेब (600 ग्राम) या फेनामिडोन + मैंकोज़ेब (600 ग्राम) तुरंत 24 घंटे में डालें।"
+                    : "Water-soaked dark lesions with white mildew under leaves in cold/fog → Cymoxanil + Mancozeb (600 g) or Fenamidone + Mancozeb (600 g) within 24 hours."}
+                </p>
+              </div>
             </div>
           </div>
         </div>

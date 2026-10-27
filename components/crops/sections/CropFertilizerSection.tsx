@@ -1007,11 +1007,15 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                       <span className="text-xs font-black text-sky-800 dark:text-sky-200">
                         {crop.slug === "sugarcane" || crop.slug === "ganna"
                           ? hi ? "दूसरा स्प्रे: पोरियों की तीव्र बढ़वार (90–110 दिन)" : "Spray 2: Rapid Internode Elongation (90–110 DAS)"
+                          : crop.slug === "potato" || crop.slug === "aloo"
+                          ? hi ? "दूसरा स्प्रे: कंद बनना व बढ़वार (40–50 दिन)" : "Spray 2: Tuber Initiation (40–50 DAS)"
+                          : ["tomato", "tamatar", "chilli", "mirch", "onion", "pyaz", "brinjal", "baingan", "okra", "bhindi"].includes(crop.slug)
+                          ? hi ? "दूसरा स्प्रे: फूल व शुरुआती फल/गांठ विकास (45–55 दिन)" : "Spray 2: Flowering & Fruit/Bulb Set (45–55 DAS)"
                           : hi ? "दूसरा स्प्रे: गभोट / फूल आने की शुरुआत (55–65 दिन)" : "Spray 2: Pre-Flowering / Booting (55–65 DAS)"}
                       </span>
                     </div>
                     <span className="rounded-md bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold text-sky-800 dark:text-sky-300">
-                      {crop.slug === "sugarcane" || crop.slug === "ganna" ? "यूरिया 2% + 00:52:34" : "00:52:34 + बोरॉन"}
+                      {crop.slug === "sugarcane" || crop.slug === "ganna" ? "यूरिया 1% + 00:52:34" : "00:52:34 + बोरॉन"}
                     </span>
                   </div>
                   <p className="mt-1 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]">
@@ -1035,6 +1039,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                       <span className="text-xs font-black text-amber-800 dark:text-amber-200">
                         {crop.slug === "sugarcane" || crop.slug === "ganna"
                           ? hi ? "तीसरा स्प्रे: रस व वजन भराव / सुक्रोज (150–180 दिन)" : "Spray 3: Sugar Accumulation / Maturity (150–180 DAS)"
+                          : crop.slug === "potato" || crop.slug === "aloo"
+                          ? hi ? "तीसरा स्प्रे: कंद फुलाव व वजन भराव (65–80 दिन)" : "Spray 3: Tuber Bulking & Sizing (65–80 DAS)"
+                          : ["tomato", "tamatar", "chilli", "mirch", "onion", "pyaz", "brinjal", "baingan", "okra", "bhindi"].includes(crop.slug)
+                          ? hi ? "तीसरा स्प्रे: फल विकास व वजन भराव (70–85 दिन)" : "Spray 3: Fruit Sizing & Maturity (70–85 DAS)"
                           : hi ? "तीसरा स्प्रे: दूधिया / दाना भराव (80–90 दिन)" : "Spray 3: Milking / Grain Filling (80–90 DAS)"}
                       </span>
                     </div>

@@ -231,8 +231,8 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
                 {hi ? "टिंडे झड़ने से रोकना: " : "Prevent Boll Drop: "}
               </span>
               {hi
-                ? "फूल आते समय अल्फा नेफ्थाइल एसिटिक एसिड 4.5 SL (Planofix) 4 मिली प्रति 15 लीटर पानी में मिलाकर स्प्रे करें — टिंडे व फूल गिरना पूरी तरह रुक जाता है।"
-                : "Spray Alpha Naphthyl Acetic Acid 4.5 SL (Planofix) 4 ml per 15 L water at flowering to arrest square and boll drop."}
+                ? "फूल व गूलर (कली) बनते समय अल्फा नेफ्थाइल एसिटिक एसिड 4.5 SL (Planofix) 1 मिली प्रति 4.5 लीटर पानी (लगभग 3.5 मिली प्रति 15L पंप, ~30–40 ppm) में मिलाकर स्प्रे करें — टिंडे व फूल गिरना काफी हद तक रुक जाता है।"
+                : "Spray Alpha Naphthyl Acetic Acid 4.5 SL (Planofix) 1 ml per 4.5 L water (approx 3.5 ml per 15 L pump, ~30–40 ppm) at flowering/square stage to arrest square and boll drop."}
             </div>
           </div>
         </div>
@@ -246,7 +246,7 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
             </span>
             <div>
               <h4 className="text-[13px] font-black text-[var(--av-text-primary)]">
-                {hi ? "माहू (चेपा / Aphid) आर्थिक क्षति स्तर (ETL) व सुरक्षित स्प्रे" : "Mustard Aphid ETL & Bee-Safe Spray"}
+                {hi ? "माहू (चेपा / Aphid) आर्थिक क्षति स्तर (ETL) व मधुमक्खी सुरक्षा सावधानी" : "Mustard Aphid ETL & Pollinator Safety Protocol"}
               </h4>
               <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
                 {hi
@@ -257,8 +257,8 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
           </div>
           <p className="mt-2 text-xs font-semibold leading-relaxed text-[var(--av-text-secondary)]">
             {hi
-              ? "जब 20% से अधिक पौधों की मुख्य शाखा पर 50–60 माहू दिखने लगें (ETL स्तर), तभी स्प्रे करें। इमिडाक्लोप्रिड 17.8% SL (50–60 मिली/एकड़) या थायमेथोक्साम 25% WG (80 ग्राम/एकड़) 150 लीटर पानी में मिलाकर डालें। जरूरी चेतावनी: सरसों में परागण के लिए मधुमक्खियाँ आवश्यक हैं, इसलिए स्प्रे हमेशा शाम 3:30–4 बजे के बाद ही करें जब मधुमक्खियाँ छत्ते में लौट चुकी हों।"
-              : "Spray only when ETL is crossed (20% infested plants or 50-60 aphids per 10cm central shoot). Apply Imidacloprid 17.8% SL (50-60 ml/acre) or Thiamethoxam 25% WG (80 g/acre) in 150 L water. Critical: Spray strictly in late afternoon/evening (after 4 PM) when honeybees are not foraging."}
+              ? "जब 20% पौधों पर मुख्य तने के ऊपरी 10 सेमी भाग में 50–60 माहू दिखने लगें (ETL स्तर), तभी स्प्रे करें। इमिडाक्लोप्रिड 17.8% SL (50–60 मिली/एकड़) या थायमेथोक्साम 25% WG (80 ग्राम/एकड़) 150 लीटर पानी में मिलाकर डालें। जरूरी परागण सुरक्षा: सरसों में फलियां बनने के लिए मधुमक्खियाँ अनिवार्य हैं (ये कीटनाशक मधुमक्खियों के लिए विषैले हैं), इसलिए स्प्रे हमेशा शाम 4 बजे के बाद ही करें जब मधुमक्खियों का भ्रमण बंद हो चुका हो।"
+              : "Spray only when ETL is reached (20% infested plants with 50–60 aphids per 10 cm of central shoot). Apply Imidacloprid 17.8% SL (50–60 ml/acre) or Thiamethoxam 25% WG (80 g/acre) in 150 L water. Pollinator safety warning: Bees are vital for mustard pod set (these insecticides are toxic to pollinators); spray strictly late in the afternoon/evening (after 4 PM) when bee foraging stops."}
           </p>
         </div>
       )}

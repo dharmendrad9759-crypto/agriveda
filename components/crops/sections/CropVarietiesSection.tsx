@@ -119,7 +119,16 @@ function VarietyCard({
                       : "border-rose-500/30 bg-rose-500/10 text-rose-800 dark:text-rose-300"
                   )}
                 >
-                  {v.canSaveSeed ? (
+                  {v.seedTypeLabel?.includes("कंद") ? (
+                    <>
+                      <span>🥔</span>
+                      <span>
+                        {hi
+                          ? (v.seedTypeLabel || "प्रमाणित बीज कंद: हर 2–3 साल में नया बीज बदलें")
+                          : "Certified seed tubers: Renew every 2–3 years"}
+                      </span>
+                    </>
+                  ) : v.canSaveSeed ? (
                     <>
                       <span>🟢</span>
                       <span>{hi ? "देशी/प्रमाणित: अगले साल बीज रख सकते हैं" : "Can save seed for next season"}</span>
@@ -127,7 +136,11 @@ function VarietyCard({
                   ) : (
                     <>
                       <span>🔴</span>
-                      <span>{hi ? "संकर (हाइब्रिड): हर साल नया बीज खरीदें" : "Hybrid (F1): Buy fresh seed every year"}</span>
+                      <span>
+                        {hi
+                          ? (v.seedTypeLabel || "संकर (हाइब्रिड): हर साल नया बीज खरीदें")
+                          : "Hybrid (F1): Buy fresh seed every year"}
+                      </span>
                     </>
                   )}
                 </span>

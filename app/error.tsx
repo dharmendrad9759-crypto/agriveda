@@ -26,10 +26,14 @@ export default function GlobalError({
   useEffect(() => {
     console.error("[app/error]", error?.digest || error?.message);
 
-    // Auto-retry at most once per session for transient chunk load failures
+    // Auto-retry at most once per session for transient chunk load failures (online only)
     if (typeof window !== "undefined") {
       const msg = String(error?.message || "").toLowerCase();
       if (msg.includes("chunk") || msg.includes("failed to fetch")) {
+        // Do not automatically reload while offline; keep recovery actions visible
+        if (typeof navigator !== "undefined" && !navigator.onLine) {
+          return;
+        }
         const key = "agriveda-chunk-retry-attempted";
         if (!sessionStorage.getItem(key)) {
           sessionStorage.setItem(key, "1");
