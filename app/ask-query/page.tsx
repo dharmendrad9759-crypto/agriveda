@@ -282,6 +282,9 @@ export default function AskQueryPage() {
   // Dynamic visualViewport tracking for software keyboard docking & WhatsApp-style layout
   const [viewportStyle, setViewportStyle] = useState<React.CSSProperties>({
     height: "100dvh",
+    width: "100vw",
+    maxWidth: "100%",
+    overflowX: "hidden",
   });
 
   const scrollToBottom = useCallback((smooth = true) => {
@@ -300,11 +303,17 @@ export default function AskQueryPage() {
         setViewportStyle({
           height: `${vv.height}px`,
           top: `${vv.offsetTop}px`,
+          width: "100vw",
+          maxWidth: "100%",
+          overflowX: "hidden",
         });
       } else {
         setViewportStyle({
           height: "100dvh",
           top: 0,
+          width: "100vw",
+          maxWidth: "100%",
+          overflowX: "hidden",
         });
       }
       setTimeout(() => {
@@ -584,7 +593,7 @@ export default function AskQueryPage() {
 
   return (
     <div
-      className="fixed inset-0 h-[100dvh] w-full flex flex-col bg-[#f4fbf7] overflow-hidden z-50 text-stone-900 select-none dark:bg-[#0b141a] dark:text-stone-100"
+      className="fixed inset-0 h-[100dvh] max-h-[100dvh] w-[100vw] max-w-full flex flex-col bg-[#f4fbf7] overflow-hidden overflow-x-hidden z-50 text-stone-900 select-none overscroll-none dark:bg-[#0b141a] dark:text-stone-100"
       style={viewportStyle}
     >
       {/* Part A: Top Header (shrink-0) */}
@@ -639,8 +648,8 @@ export default function AskQueryPage() {
         🔒 आपका सवाल और फोटो सीधे हमारे कृषि वैज्ञानिक पैनल (Doctor Desk) पर पहुंचते हैं।
       </div>
 
-      {/* Part B: Scrollable Messages Area (flex-1 overflow-y-auto) */}
-      <div className="flex-1 space-y-3 overflow-y-auto px-3 py-4 select-text [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-contain">
+      {/* Part B: Scrollable Messages Area (flex-1 min-h-0 overflow-y-auto overscroll-y-contain) */}
+      <div className="flex-1 min-h-0 space-y-3 overflow-y-auto overflow-x-hidden px-3 py-4 select-text [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-y-contain">
         {/* Date pill */}
         <div className="flex justify-center">
           <span className="rounded-lg bg-black/10 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs backdrop-blur-sm dark:bg-white/10 dark:text-stone-300">
@@ -724,10 +733,10 @@ export default function AskQueryPage() {
       </div>
 
       {/* Part C: Bottom Input Bar & Chips (shrink-0 mt-auto) */}
-      <div className="shrink-0 mt-auto w-full bg-white border-t border-emerald-100 pb-[env(safe-area-inset-bottom,8px)] shadow-xl dark:border-white/10 dark:bg-[#1f2c34]">
+      <div className="shrink-0 mt-auto w-full max-w-full overflow-hidden bg-white border-t border-emerald-100 pb-[env(safe-area-inset-bottom,8px)] shadow-xl dark:border-white/10 dark:bg-[#1f2c34]">
         {/* Suggested Quick Question Chips */}
-        <div className="border-b border-emerald-100/60 bg-[#f4fbf7]/90 px-3 py-2 dark:border-white/5 dark:bg-[#0b141a]/90">
-          <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="w-full max-w-full overflow-hidden border-b border-emerald-100/60 bg-[#f4fbf7]/90 px-3 py-2 box-border dark:border-white/5 dark:bg-[#0b141a]/90">
+          <div className="flex w-full items-center gap-2 overflow-x-auto whitespace-nowrap pr-4 box-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {activeSuggestions.map((prompt) => (
               <button
                 key={prompt}
@@ -745,8 +754,8 @@ export default function AskQueryPage() {
         </div>
 
         {/* Large, Clear Crop Selector Bar */}
-        <div className="px-3 pt-2.5 pb-1">
-          <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="w-full max-w-full overflow-hidden px-3 pt-2.5 pb-1 box-border">
+          <div className="flex w-full items-center gap-1.5 overflow-x-auto whitespace-nowrap pr-4 box-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <span className="shrink-0 text-xs font-black tracking-wide text-stone-600 uppercase dark:text-stone-400">
               🌾 फसल:
             </span>
@@ -884,6 +893,7 @@ export default function AskQueryPage() {
               onFocus={() => {
                 setTimeout(() => scrollToBottom(true), 100);
                 setTimeout(() => scrollToBottom(true), 300);
+                setTimeout(() => scrollToBottom(true), 500);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
