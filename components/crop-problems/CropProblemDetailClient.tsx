@@ -122,6 +122,41 @@ function MiniPoints({ items }: { items: string[] }) {
   );
 }
 
+const SINGLE_COMBO_FORMULATIONS = [
+  "alika",
+  "amistar top",
+  "galileo way",
+  "nativo",
+  "ridomil gold",
+  "roket",
+  "ampligo",
+  "merivon",
+  "custodia",
+  "lancer gold",
+  "lesenta",
+  "thiamethoxam 12.6% + lambda",
+  "azoxystrobin 18.2% + difenoconazole",
+  "picoxystrobin 7% + propiconazole 12%",
+  "tebuconazole 50% + trifloxystrobin 25%",
+  "metalaxyl 8% + mancozeb 64%",
+  "profenofos 40% + cypermethrin 4%",
+  "chlorantraniliprole 9.3% + lambda",
+  "fluxapyroxad + pyraclostrobin",
+  "azoxystrobin 11% + tebuconazole 18.3%",
+  "fipronil 40% + imidacloprid 40%",
+  "acephate 50% + imidacloprid 1.8%",
+  "pyriproxyfen 10% + bifenthrin 10%",
+];
+
+function isTankMix(tech: string): boolean {
+  if (!tech.includes("+")) return false;
+  const lower = tech.toLowerCase();
+  for (const s of SINGLE_COMBO_FORMULATIONS) {
+    if (lower.includes(s)) return false;
+  }
+  return true;
+}
+
 export default function CropProblemDetailClient({
   cropSlug,
   problemId,
@@ -137,11 +172,24 @@ export default function CropProblemDetailClient({
   const [saved, setSaved] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [expandedOptions, setExpandedOptions] = useState<Record<number, boolean>>({ 0: true });
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    symptoms: false,
+    causes: false,
+    organic: false,
+    precautions: false,
+  });
 
   const toggleOption = (idx: number) => {
     setExpandedOptions((prev) => ({
       ...prev,
       [idx]: !prev[idx],
+    }));
+  };
+
+  const toggleSection = (id: string) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [id]: !prev[id],
     }));
   };
 
@@ -392,7 +440,27 @@ export default function CropProblemDetailClient({
                     <div className="border-t border-emerald-900/8 px-3 pb-3 pt-2.5 space-y-2.5 animate-in fade-in duration-200">
                       {/* Product Photo & Brands Row */}
                       <div className="flex items-center gap-3 bg-stone-50/80 dark:bg-slate-800/50 p-2.5 rounded-xl border border-stone-200/70 dark:border-slate-700/60">
-                        <ChemBottleThumb technical={c.technical} size="sm" className="rounded-xl shrink-0 shadow-xs" />
+                        {isTankMix(c.technical) ? (
+                          <div className="flex items-center gap-1.5 shrink-0 bg-stone-100 dark:bg-slate-800/80 p-1.5 rounded-xl border border-stone-200 dark:border-slate-700">
+                            <div className="flex flex-col items-center">
+                              <ChemBottleThumb technical={c.technical.split("+")[0].trim()} size="xs" className="rounded-lg shadow-2xs" />
+                              <span className="text-[8.5px] font-black text-slate-700 dark:text-slate-300 mt-0.5 max-w-[58px] truncate text-center">
+                                {c.technical.split("+")[0].trim().split(" ")[0]}
+                              </span>
+                            </div>
+                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white font-black text-[11px] shadow-xs">
+                              +
+                            </span>
+                            <div className="flex flex-col items-center">
+                              <ChemBottleThumb technical={c.technical.split("+")[1].trim()} size="xs" className="rounded-lg shadow-2xs" />
+                              <span className="text-[8.5px] font-black text-slate-700 dark:text-slate-300 mt-0.5 max-w-[58px] truncate text-center">
+                                {c.technical.split("+")[1].trim().split(" ")[0]}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <ChemBottleThumb technical={c.technical} size="sm" className="rounded-xl shrink-0 shadow-xs" />
+                        )}
                         <div className="min-w-0 flex-1 space-y-1.5">
                           {c.brands && c.brands.length > 0 ? (
                             <div>
@@ -422,7 +490,7 @@ export default function CropProblemDetailClient({
                             <span className="block text-[9px] font-black uppercase tracking-tight text-emerald-800 dark:text-emerald-300 truncate">
                               {parsed.pill1.icon} {parsed.pill1.label}
                             </span>
-                            <span className="block text-[12.5px] sm:text-[13.5px] font-black text-emerald-950 dark:text-emerald-100 mt-1 leading-tight">
+                            <span className="block text-[12px] sm:text-[13px] font-black text-emerald-950 dark:text-emerald-100 mt-1 leading-tight">
                               {parsed.pill1.value}
                             </span>
                           </div>
@@ -432,7 +500,7 @@ export default function CropProblemDetailClient({
                             <span className="block text-[9px] font-black uppercase tracking-tight text-amber-800 dark:text-amber-300 truncate">
                               {parsed.pill2.icon} {parsed.pill2.label}
                             </span>
-                            <span className="block text-[12.5px] sm:text-[13.5px] font-black text-slate-900 dark:text-white mt-1 leading-tight">
+                            <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-1 leading-tight">
                               {parsed.pill2.value}
                             </span>
                           </div>
@@ -442,7 +510,7 @@ export default function CropProblemDetailClient({
                             <span className="block text-[9px] font-black uppercase tracking-tight text-sky-800 dark:text-sky-300 truncate">
                               {parsed.pill3.icon} {parsed.pill3.label}
                             </span>
-                            <span className="block text-[12.5px] sm:text-[13.5px] font-black text-slate-900 dark:text-white mt-1 leading-tight">
+                            <span className="block text-[12px] sm:text-[13px] font-black text-slate-900 dark:text-white mt-1 leading-tight">
                               {parsed.pill3.value}
                             </span>
                           </div>
@@ -479,90 +547,166 @@ export default function CropProblemDetailClient({
           </div>
         </MockCard>
 
-        {/* 2. खेत में कैसे पहचानें (लक्षण — 150-Word UPSC Precision) */}
+        {/* 2. खेत में कैसे पहचानें (लक्षण — Interactive Collapsible Accordion) */}
         <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-800 dark:text-emerald-300 text-[11px] font-black">
-              2
-            </span>
-            <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
-              खेत में लक्षण व पहचान (लक्षण)
-            </h2>
-          </div>
-          <p className="text-[10.5px] font-medium text-slate-600 dark:text-slate-300">
-            खेत में पौधे को ध्यान से देखें — ये प्रमुख संकेत दिखाई देंगे:
-          </p>
-          <MiniPoints items={symptomsList} />
-        </MockCard>
-
-        {/* 3. यह क्यों फैला और नुकसान का समय (कारण) */}
-        <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-amber-600/10 text-amber-800 dark:text-amber-300 text-[11px] font-black">
-              3
-            </span>
-            <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
-              यह क्यों हुआ और नुकसान का समय (कारण)
-            </h2>
-          </div>
-          <div className="space-y-2">
-            <div>
-              <p className="text-[10.5px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                फैलाव के मुख्य कारण:
-              </p>
-              <MiniPoints items={causesList} />
-            </div>
-            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800">
-              <p className="text-[10.5px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-300">
-                तुरंत कदम उठाएँ:
-              </p>
-              <MiniPoints items={timingList} />
-            </div>
-          </div>
-        </MockCard>
-
-        {/* 4. जैविक व देसी उपाय (Organic) */}
-        {organicPoints.length > 0 && (
-          <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-teal-600/10 text-teal-800 dark:text-teal-300 text-[11px] font-black">
-                4
+          <div
+            onClick={() => toggleSection("symptoms")}
+            className="flex cursor-pointer items-center justify-between gap-2"
+          >
+            <div className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-800 dark:text-emerald-300 text-[11px] font-black">
+                2
               </span>
               <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
-                जैविक व देसी उपाय (Organic Alternative)
+                खेत में लक्षण व पहचान (लक्षण)
               </h2>
             </div>
-            <p className="text-[10.5px] font-medium text-slate-600 dark:text-slate-300">
-              शुरुआती रोकथाम या बिना केमिकल के बचाव के लिए:
-            </p>
-            <MiniPoints items={organicPoints} />
+            <button
+              type="button"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 transition hover:bg-emerald-500/20 active:scale-95"
+              aria-label={openSections.symptoms ? "Collapse" : "Expand"}
+            >
+              {openSections.symptoms ? (
+                <ChevronUp className="h-4 w-4 stroke-[2.5]" />
+              ) : (
+                <ChevronDown className="h-4 w-4 stroke-[2.5]" />
+              )}
+            </button>
+          </div>
+          {openSections.symptoms && (
+            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 animate-in fade-in duration-200">
+              <p className="text-[10.5px] font-medium text-slate-600 dark:text-slate-300">
+                खेत में पौधे को ध्यान से देखें — ये प्रमुख संकेत दिखाई देंगे:
+              </p>
+              <MiniPoints items={symptomsList} />
+            </div>
+          )}
+        </MockCard>
+
+        {/* 3. यह क्यों फैला और नुकसान का समय (कारण — Interactive Collapsible Accordion) */}
+        <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
+          <div
+            onClick={() => toggleSection("causes")}
+            className="flex cursor-pointer items-center justify-between gap-2"
+          >
+            <div className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-amber-600/10 text-amber-800 dark:text-amber-300 text-[11px] font-black">
+                3
+              </span>
+              <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
+                यह क्यों हुआ और नुकसान का समय (कारण)
+              </h2>
+            </div>
+            <button
+              type="button"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-800 dark:text-amber-300 transition hover:bg-amber-500/20 active:scale-95"
+              aria-label={openSections.causes ? "Collapse" : "Expand"}
+            >
+              {openSections.causes ? (
+                <ChevronUp className="h-4 w-4 stroke-[2.5]" />
+              ) : (
+                <ChevronDown className="h-4 w-4 stroke-[2.5]" />
+              )}
+            </button>
+          </div>
+          {openSections.causes && (
+            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2 animate-in fade-in duration-200">
+              <div>
+                <p className="text-[10.5px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                  फैलाव के मुख्य कारण:
+                </p>
+                <MiniPoints items={causesList} />
+              </div>
+              <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800">
+                <p className="text-[10.5px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-300">
+                  तुरंत कदम उठाएँ:
+                </p>
+                <MiniPoints items={timingList} />
+              </div>
+            </div>
+          )}
+        </MockCard>
+
+        {/* 4. जैविक व देसी उपाय (Organic Alternative — Interactive Collapsible Accordion) */}
+        {organicPoints.length > 0 && (
+          <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
+            <div
+              onClick={() => toggleSection("organic")}
+              className="flex cursor-pointer items-center justify-between gap-2"
+            >
+              <div className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-teal-600/10 text-teal-800 dark:text-teal-300 text-[11px] font-black">
+                  4
+                </span>
+                <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
+                  जैविक व देसी उपाय (Organic Alternative)
+                </h2>
+              </div>
+              <button
+                type="button"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-800 dark:text-teal-300 transition hover:bg-teal-500/20 active:scale-95"
+                aria-label={openSections.organic ? "Collapse" : "Expand"}
+              >
+                {openSections.organic ? (
+                  <ChevronUp className="h-4 w-4 stroke-[2.5]" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 stroke-[2.5]" />
+                )}
+              </button>
+            </div>
+            {openSections.organic && (
+              <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 animate-in fade-in duration-200">
+                <p className="text-[10.5px] font-medium text-slate-600 dark:text-slate-300">
+                  शुरुआती रोकथाम या बिना केमिकल के बचाव के लिए:
+                </p>
+                <MiniPoints items={organicPoints} />
+              </div>
+            )}
           </MockCard>
         )}
 
-        {/* 5. आगे के लिए रोकथाम व सुझाव */}
+        {/* 5. आगे के लिए रोकथाम व सुझाव (Precautions — Interactive Collapsible Accordion) */}
         <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-sky-600/10 text-sky-800 dark:text-sky-300 text-[11px] font-black">
-              5
-            </span>
-            <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
-              सावधानियां व आगे के लिए बचाव (Precautions)
-            </h2>
+          <div
+            onClick={() => toggleSection("precautions")}
+            className="flex cursor-pointer items-center justify-between gap-2"
+          >
+            <div className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-sky-600/10 text-sky-800 dark:text-sky-300 text-[11px] font-black">
+                5
+              </span>
+              <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
+                सावधानियां व आगे के लिए बचाव (Precautions)
+              </h2>
+            </div>
+            <button
+              type="button"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-800 dark:text-sky-300 transition hover:bg-sky-500/20 active:scale-95"
+              aria-label={openSections.precautions ? "Collapse" : "Expand"}
+            >
+              {openSections.precautions ? (
+                <ChevronUp className="h-4 w-4 stroke-[2.5]" />
+              ) : (
+                <ChevronDown className="h-4 w-4 stroke-[2.5]" />
+              )}
+            </button>
           </div>
-          <ul className="mt-2 space-y-1.5 text-[12px] font-medium text-slate-700 dark:text-slate-300">
-            <li className="flex items-start gap-1.5">
-              <span className="text-emerald-600 font-black">✓</span>
-              <span><strong>छिड़काव का सही समय:</strong> सुबह 10 बजे से पहले या शाम 4 बजे के बाद ही स्प्रे करें, तेज धूप में दवा उड़ जाती है।</span>
-            </li>
-            <li className="flex items-start gap-1.5">
-              <span className="text-emerald-600 font-black">✓</span>
-              <span><strong>साफ़ पानी:</strong> हमेशा कुएं या ट्यूबवेल के साफ़ पानी का इस्तेमाल करें; गंदे तालाब के पानी से दवा का असर खत्म हो जाता है।</span>
-            </li>
-            <li className="flex items-start gap-1.5">
-              <span className="text-emerald-600 font-black">✓</span>
-              <span><strong>कटाई से पूर्व अंतर (PHI):</strong> कटाई से कम से कम 15–20 दिन पहले छिड़काव बंद कर दें।</span>
-            </li>
-          </ul>
+          {openSections.precautions && (
+            <ul className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5 text-[12px] font-medium text-slate-700 dark:text-slate-300 animate-in fade-in duration-200">
+              <li className="flex items-start gap-1.5">
+                <span className="text-emerald-600 font-black">✓</span>
+                <span><strong>छिड़काव का सही समय:</strong> सुबह 10 बजे से पहले या शाम 4 बजे के बाद ही स्प्रे करें, तेज धूप में दवा उड़ जाती है।</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-emerald-600 font-black">✓</span>
+                <span><strong>साफ़ पानी:</strong> हमेशा कुएं या ट्यूबवेल के साफ़ पानी का इस्तेमाल करें; गंदे तालाब के पानी से दवा का असर खत्म हो जाता है।</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-emerald-600 font-black">✓</span>
+                <span><strong>कटाई से पूर्व अंतर (PHI):</strong> कटाई से कम से कम 15–20 दिन पहले छिड़काव बंद कर दें।</span>
+              </li>
+            </ul>
+          )}
         </MockCard>
 
         {/* 📋 Doctor Prescription Action Card (WhatsApp & Save) */}

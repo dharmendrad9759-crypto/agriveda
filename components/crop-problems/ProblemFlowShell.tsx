@@ -106,18 +106,6 @@ export default function ProblemFlowShell({
       >
         {children}
       </motion.div>
-
-      <div className="pointer-events-none fixed bottom-24 right-3 z-20 flex flex-col items-center sm:bottom-8">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/brand/kisan-saathi-mascot.png"
-          alt=""
-          className="h-14 w-14 object-contain drop-shadow-lg"
-        />
-        <span className="mt-0.5 rounded-full border border-emerald-900/10 bg-white/95 px-2 py-0.5 text-[9px] font-black text-emerald-800 shadow-sm">
-          किसान का साथी
-        </span>
-      </div>
     </div>
   );
 }

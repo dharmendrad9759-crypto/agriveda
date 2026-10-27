@@ -180,8 +180,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const takeover = body.takeover !== false;
-    const claim = await claimActiveDevice(user.localId, deviceId, email, { takeover });
+    // Auto-takeover enabled: seamless login without manual device conflict prompts
+    const takeover = true;
+    const claim = await claimActiveDevice(user.localId, deviceId, email, { takeover: true });
     if (!claim.ok) {
       return NextResponse.json(
         {

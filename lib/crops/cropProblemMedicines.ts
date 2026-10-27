@@ -527,25 +527,23 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "8 kg GR / 400 g SP प्रति एकड़"
           },
           {
-                "nameHi": "फिप्रोनिल 0.6% GR (फर्टेरा / रीजेंट अल्ट्रा)",
-                "technical": "Fipronil 0.6% GR",
-                "dose": "4 किग्रा प्रति एकड़ (खेत में खाद के साथ बिखेरें)",
+                "nameHi": "फिप्रोनिल 0.3% GR (रीजेंट)",
+                "technical": "Fipronil 0.3% GR",
+                "dose": "8–10 किग्रा प्रति एकड़ (खेत में खाद के साथ बुरकाव)",
                 "brands": [
-                      "Ferterra (FMC)",
-                      "Regent Ultra"
+                      "Regent (Bayer)"
                 ],
                 "safety": "कल्ले फूटने के समय 2-3 सेमी खड़े पानी में डालें।",
                 "level": 2,
                 "levelLabelHi": "स्तर 2 · मध्यम स्तर (दानेदार)",
-                "dosePerAcre": "4 किग्रा / एकड़"
+                "dosePerAcre": "8–10 किग्रा / एकड़"
           },
           {
-                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन / बायेगो)",
+                "nameHi": "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन)",
                 "technical": "Chlorantraniliprole 18.5% SC",
-                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़) या टेट्रानिलिप्रोल (80 ml)",
+                "dose": "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़)",
                 "brands": [
-                      "Coragen (FMC)",
-                      "Vayego (Bayer - 80 ml)"
+                      "Coragen (FMC)"
                 ],
                 "safety": "सफेद बाली (White Earhead) से 100% सुरक्षा; लंबे समय तक सुरक्षित।",
                 "level": 3,
@@ -572,8 +570,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Emamectin Benzoate 5% SG",
                 "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
                 "brands": [
-                      "Proclaim (Syngenta)",
-                      "Missile"
+                      "Proclaim (Syngenta)"
                 ],
                 "safety": "पत्ती के अंदर छिपी इल्ली को तुरंत मारता है।",
                 "level": 2,
@@ -583,10 +580,9 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "फ्लूबेंडियामाइड 20% WG (ताकुमी)",
                 "technical": "Flubendiamide 20% WG",
-                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़) या कोराजन (60 ml)",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
                 "brands": [
-                      "Takumi (Tata Rallis)",
-                      "Coragen (FMC)"
+                      "Takumi (Tata Rallis)"
                 ],
                 "safety": "पत्ती लपेटक पर सर्वश्रेष्ठ नियंत्रण, पत्तियां तुरंत हरी हो जाती हैं।",
                 "level": 3,
@@ -637,12 +633,11 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "bph": [
           {
-                "nameHi": "डाइनोटिफ्यूरान 20% SG (ओशीन / टोकन)",
+                "nameHi": "डाइनोटिफ्यूरान 20% SG (ओशीन)",
                 "technical": "Dinotefuran 20% SG",
                 "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
                 "brands": [
-                      "Osheen (PI)",
-                      "Token"
+                      "Osheen (PI)"
                 ],
                 "safety": "सिस्टेमिक रस चूसक कीटनाशक।",
                 "level": 1,
@@ -679,9 +674,9 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "कॉपर हाइड्रॉक्साइड 53.8% DF + स्ट्रेप्टोसाइक्लिन",
                 "technical": "Copper Hydroxide 53.8% DF + Streptocycline",
-                "dose": "कॉपर: 2 ग्राम/ली. + स्ट्रेप्टो: 1 ग्राम प्रति 10 ली. पानी (350 g + 18 g / एकड़)",
+                "dose": "कॉपर: 35–40 ग्राम + स्ट्रेप्टो: 1.5–2 ग्राम प्रति 15L टंकी (350 g + 18 g / एकड़)",
                 "brands": [
-                      "Kocide (Corteva) + Streptocycline"
+                      "Kocide (Corteva) + Streptocycline (Bharat)"
                 ],
                 "safety": "जीवाणु संक्रमण को आगे बढ़ने से रोकता है।",
                 "level": 1,
@@ -689,11 +684,11 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "350 g + 18 g / एकड़"
           },
           {
-                "nameHi": "कासुगामाइसिन 3% SL + कॉपर ऑक्सीक्लोराइड",
-                "technical": "Kasugamycin 3% SL + Copper Oxychloride",
-                "dose": "कासुगामाइसिन: 2 मिली/ली. + कॉपर: 2 ग्राम/ली. पानी (400 ml + 400 g / एकड़)",
+                "nameHi": "कासुगामाइसिन 3% SL + कॉपर ऑक्सीक्लोराइड 50% WP",
+                "technical": "Kasugamycin 3% SL + Copper Oxychloride 50% WP",
+                "dose": "कासुगामाइसिन: 30–40 मिली + कॉपर: 35–40 ग्राम प्रति 15L टंकी (400 ml + 400 g / एकड़)",
                 "brands": [
-                      "Kasu-B (Dhanuka) + Blitox"
+                      "Kasu-B (Dhanuka) + Blitox (Tata Rallis)"
                 ],
                 "safety": "सिस्टेमिक एंटीबायोटिक जो पौधे के संवहन तंत्र में पहुंचता है।",
                 "level": 2,
@@ -703,9 +698,9 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "बिस्मर्थियाज़ोल 20% WP + स्ट्रेप्टोसाइक्लिन",
                 "technical": "Bismerthiazol 20% WP + Streptocycline",
-                "dose": "300 ग्राम बिस्मर्थियाज़ोल + 18 ग्राम स्ट्रेप्टोसाइक्लिन प्रति एकड़",
+                "dose": "बिस्मर्थियाज़ोल: 25–30 ग्राम + स्ट्रेप्टोसाइक्लिन: 1.5–2 ग्राम प्रति 15L टंकी (300 g + 18 g / एकड़)",
                 "brands": [
-                      "Bismerthiazol 20% WP + Streptocycline"
+                      "Bismerthiazol 20% WP + Streptocycline (Bharat)"
                 ],
                 "safety": "BLB के जीवाणु पर विशिष्ट एंटी-बैक्टीरियल मारक क्षमता।",
                 "level": 3,
@@ -716,12 +711,11 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "blast": [
           {
-                "nameHi": "ट्राइसाइक्लाज़ोल 75% WP (बीम / बाण)",
+                "nameHi": "ट्राइसाइक्लाज़ोल 75% WP (बीम)",
                 "technical": "Tricyclazole 75% WP",
                 "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
                 "brands": [
-                      "Beam (Corteva)",
-                      "Baan"
+                      "Beam (Corteva)"
                 ],
                 "safety": "धान ब्लास्ट का सबसे प्रसिद्ध और विश्वसनीय फफूंदनाशक।",
                 "level": 1,
@@ -741,17 +735,16 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "300 मिली / एकड़"
           },
           {
-                "nameHi": "पिकोक्सीस्ट्रोबिन + ट्राइसाइक्लाज़ोल SC (गैलीलियो वे / बाण प्लस)",
-                "technical": "Picoxystrobin + Tricyclazole",
-                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़) या ट्राइसाइक्लाजोल+मैंकोजेब (500 g)",
+                "nameHi": "पिकोक्सीस्ट्रोबिन 22.5% SC + ट्राइसाइक्लाज़ोल 75% WP (गैलीलियो + बीम)",
+                "technical": "Picoxystrobin 22.5% SC + Tricyclazole 75% WP",
+                "dose": "पिकोक्सी: 20 मिली + ट्राइसाइक्लाज़ोल: 10–12 ग्राम प्रति 15L टंकी (200 ml + 120 g / एकड़)",
                 "brands": [
-                      "Galileo Way (Corteva)",
-                      "Baan Plus (500 g)"
+                      "Galileo (Corteva) + Beam (Corteva)"
                 ],
                 "safety": "स्ट्रोबिल्यूरिन + ट्राइसाइक्लाजोल का शक्तिशाली दोहरा प्रहार; गर्दन तोड़ ब्लास्ट से पूर्ण सुरक्षा।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-                "dosePerAcre": "400 मिली / एकड़",
+                "dosePerAcre": "200 ml + 120 g / एकड़",
                 "isTopPerformer": true
           }
     ],
@@ -761,8 +754,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Propiconazole 25% EC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Tilt (Syngenta)",
-                      "Bumper"
+                      "Tilt (Syngenta)"
                 ],
                 "safety": "बाली निकलने से ठीक पहले सुरक्षात्मक स्प्रे करें।",
                 "level": 1,
@@ -3563,14 +3555,13 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "isTopPerformer": true
           }
     ],
-    "yellow-brown-rust": [
+    "yellow-rust": [
           {
                 "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
                 "technical": "Propiconazole 25% EC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Tilt (Syngenta)",
-                      "Bumper"
+                      "Tilt (Syngenta)"
                 ],
                 "safety": "पीला रतुआ का सबसे लोकप्रिय व विश्वसनीय फफूंदनाशक।",
                 "level": 1,
@@ -3582,8 +3573,85 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Tebuconazole 25.9% EC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Folicur (Bayer)",
-                      "Orius"
+                      "Folicur (Bayer)"
+                ],
+                "safety": "रतुआ को तुरंत सुखाकर झंडा पत्ती (Flag leaf) को सुरक्षित रखता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Nativo (Bayer)"
+                ],
+                "safety": "पीला रतुआ पर 100% कंट्रोल; झंडा पत्ती अंत तक हरी, दाने मोटे व चमकदार।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "brown-rust": [
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)"
+                ],
+                "safety": "भूरा रतुआ की रोकथाम व सुरक्षा।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)"
+                ],
+                "safety": "भूरा रतुआ के दानों को तुरंत सुखाता है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25% WG (नेटिवो)",
+                "technical": "Tebuconazole 50% + Trifloxystrobin 25% WG",
+                "dose": "0.6 ग्राम / लीटर पानी (120 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Nativo (Bayer)"
+                ],
+                "safety": "भूरा रतुआ पर संपूर्ण नियंत्रण; दाना सिकुड़ने से बचाता है।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
+                "dosePerAcre": "120 ग्राम / एकड़",
+                "isTopPerformer": true
+          }
+    ],
+    "yellow-brown-rust": [
+          {
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Tilt (Syngenta)"
+                ],
+                "safety": "पीला रतुआ का सबसे लोकप्रिय व विश्वसनीय फफूंदनाशक।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "dosePerAcre": "200 मिली / एकड़"
+          },
+          {
+                "nameHi": "टेबुकोनाज़ोल 25.9% EC (फॉलिकुर)",
+                "technical": "Tebuconazole 25.9% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Folicur (Bayer)"
                 ],
                 "safety": "रतुआ को तुरंत सुखाकर झंडा पत्ती (Flag leaf) को सुरक्षित रखता है।",
                 "level": 2,

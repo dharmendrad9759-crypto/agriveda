@@ -241,7 +241,21 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
   let acreDose = perAcreMatch ? perAcreMatch[0] : "";
   let perLitre = perLMatch ? perLMatch[0] : "";
 
-  if (perLMatch) {
+  // Check for explicit per-tank dosage (e.g. "कॉपर: 35–40 ग्राम + स्ट्रेप्टो: 1.5–2 ग्राम प्रति 15L टंकी")
+  const directTankMatch = raw.match(
+    /(?:^|[(,])\s*([^\n();]+?)\s*(?:प्रति|\/)\s*(?:15\s*L|15\s*लीटर)?\s*टंकी/i
+  );
+  if (directTankMatch && directTankMatch[1]) {
+    tankDose = directTankMatch[1].trim();
+  }
+
+  // Check for explicit combination acre dose inside parentheses, e.g. "(350 g + 18 g / एकड़)"
+  const parenAcreMatch = raw.match(/\(([^)]*एकड़[^)]*)\)/i);
+  if (parenAcreMatch && parenAcreMatch[1]) {
+    acreDose = parenAcreMatch[1].trim();
+  }
+
+  if (!tankDose && perLMatch) {
     const a = Number(perLMatch[1]);
     const b = perLMatch[2] ? Number(perLMatch[2]) : a;
     const unitHi = /ग्राम|^g$/i.test(perLMatch[0]) ? "ग्राम" : "मिली";
@@ -254,7 +268,7 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
     }
   }
 
-  if (!tankDose && perAcreMatch) {
+  if (!tankDose && perAcreMatch && !raw.includes("+")) {
     const a = Number(perAcreMatch[1]);
     const b = perAcreMatch[2] ? Number(perAcreMatch[2]) : a;
     const unitHi = /ग्राम|^g$/i.test(perAcreMatch[0]) ? "ग्राम" : "मिली";

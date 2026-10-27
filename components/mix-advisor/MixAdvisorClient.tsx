@@ -948,6 +948,15 @@ function MixAdvisorInner() {
                               </div>
                             </div>
                           )}
+
+                          {m.synergyNoticeHi && (
+                            <div className="mt-2 rounded-xl border border-emerald-500/35 bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 p-2.5 text-[11px] font-bold text-emerald-950 dark:text-emerald-100 shadow-2xs">
+                              <p className="flex items-center gap-1.5">
+                                <span className="shrink-0 text-base">✨</span>
+                                <span>{m.synergyNoticeHi}</span>
+                              </p>
+                            </div>
+                          )}
                         </div>
 
                         {/* Doses Grid */}

@@ -75,6 +75,8 @@ export type MixMedicine = {
   resistanceWarning?: string;
   /** Whether the target problem is viral (requires vector insecticide + viricide) */
   isVirusTarget?: boolean;
+  /** Multi-target broad-spectrum synergy notice */
+  synergyNoticeHi?: string;
 };
 
 export type DynamicMixStep = {
@@ -1317,22 +1319,46 @@ export function buildMixPlanFromProblems(
 
     const curatives = cropMedsRecord[prob.id];
     if (curatives && curatives.length > 0) {
-      // Find the first curative option not yet present in recommendedMedicines
-      const nonDuplicateCurative = curatives.find((c) => {
-        const med = curativeToMixMedicine(c, prob);
-        return !recommendedMedicines.some((m) => isSameMed(m, med));
-      });
+      const isVirus = Boolean(
+        prob.isVirus ||
+        prob.tagHi.includes("वायरस") ||
+        prob.id.includes("ymv") ||
+        prob.id.includes("leaf-curl") ||
+        prob.id.includes("mosaic")
+      );
+      const isPest = isVirus || prob.tagHi.includes("कीट") || prob.tagHi.includes("कीड़ा");
+      const category: MedicineCategory = isPest ? "insecticide" : "fungicide";
 
-      if (nonDuplicateCurative) {
-        const chosenMed = curativeToMixMedicine(nonDuplicateCurative, prob);
-        recommendedMedicines.push(chosenMed);
-      } else {
-        // The curative already in the tank also controls this problem
-        const primaryMed = curativeToMixMedicine(curatives[0], prob);
-        const existing = recommendedMedicines.find((m) => isSameMed(m, primaryMed));
-        if (existing && existing.targetProblemHi && !existing.targetProblemHi.includes(prob.nameHi)) {
-          existing.targetProblemHi = `${existing.targetProblemHi} + ${formatCleanProblemTarget(prob.nameHi)}`;
+      // Check if we already have a medicine in the tank of this exact category
+      const existingSameCat = recommendedMedicines.find((m) => m.category === category && !m.isAdjuvant);
+
+      if (existingSameCat) {
+        // Check if existing medicine already matches one of curatives for this problem
+        const matchesExisting = curatives.some((c) => {
+          const med = curativeToMixMedicine(c, prob);
+          return isSameMed(med, existingSameCat);
+        });
+
+        if (matchesExisting) {
+          if (existingSameCat.targetProblemHi && !existingSameCat.targetProblemHi.includes(formatCleanProblemTarget(prob.nameHi))) {
+            existingSameCat.targetProblemHi = `${existingSameCat.targetProblemHi} + ${formatCleanProblemTarget(prob.nameHi)}`;
+          }
+          existingSameCat.synergyNoticeHi = `💡 बहु-रोग नियंत्रण: यह ब्रॉड-स्पेक्ट्रम दवा दोनों समस्याओं पर एक साथ असर करती है; अलग दवा की ज़रूरत नहीं है।`;
+        } else {
+          // Check if there is an advanced/broad-spectrum common curative (e.g. Level 2 or 3)
+          const advancedCurative = curatives.find((c) => (c.level ?? 1) >= 2) || curatives[0];
+          if (existingSameCat.targetProblemHi && !existingSameCat.targetProblemHi.includes(formatCleanProblemTarget(prob.nameHi))) {
+            existingSameCat.targetProblemHi = `${existingSameCat.targetProblemHi} + ${formatCleanProblemTarget(prob.nameHi)}`;
+          }
+          existingSameCat.synergyNoticeHi = isPest
+            ? `💡 बहु-कीट सुरक्षा: दो अलग कीटनाशक मिलाने से फसल पर तनाव आता है; यह ब्रॉड-स्पेक्ट्रम दवा दोनों कीटों को एक साथ नियंत्रित करती है।`
+            : `💡 बहु-रोग सुरक्षा: दो अलग फफूंदनाशक मिलाने से पत्ते जल सकते हैं; यह ब्रॉड-स्पेक्ट्रम दवा दोनों रोगों की फफूंद को समाप्त करती है।`;
         }
+      } else {
+        // No medicine of this category in the tank yet — add primary recommendation
+        const chosenCurative = curatives[0];
+        const chosenMed = curativeToMixMedicine(chosenCurative, prob);
+        recommendedMedicines.push(chosenMed);
       }
 
       // Add all curatives to alternatives pool

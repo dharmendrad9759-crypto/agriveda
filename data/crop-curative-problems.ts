@@ -2512,6 +2512,58 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "tipHi": "पहली सिंचाई के समय दानेदार दवा बिखेरें।"
       },
       {
+        "id": "yellow-rust",
+        "nameHi": "पीला रतुआ / स्ट्राइप रस्ट (Yellow Rust)",
+        "nameEn": "Yellow / Stripe Rust (Puccinia striiformis)",
+        "tagHi": "फफूंद",
+        "image": "/images/diseases/disease-puccinia-striiformis-2.jpg",
+        "stageHi": "गभोट व झंडा पत्ती अवस्था (45-70 दिन)",
+        "stages": [
+          "flowering",
+          "fruiting"
+        ],
+        "specialFactHi": "पत्तियों पर सीधी लाइनों में पीला पाउडर (हल्दी जैसा) जमता है जो छूने पर हाथ पर लग जाता है।",
+        "whatHi": "पक्सीनिया स्ट्राइइफॉर्मिस (Puccinia striiformis) कवक से पत्तियों पर पीली समानांतर धारियां पड़ती हैं।",
+        "whyHi": [
+          "सर्दियों की बारिश, कोहरा व ठंडी हवाएं (जनवरी-फरवरी का मौसम)"
+        ],
+        "cureOrganicHi": [
+          "रोगरोधी किस्म (HD-2967, HD-3086, DBW-187 आदि)"
+        ],
+        "cureChemicalHi": [
+          "टिल्ट (Tilt) 200 ml",
+          "नेटिवो (Nativo) 120 g"
+        ],
+        "whenToActHi": "पत्ती पर पहली पीली हल्दी जैसी धारी दिखते ही",
+        "tipHi": "पीला रतुआ हवा से तेज़ी से फैलता है; लक्षण दिखते ही बिना देरी के तुरंत स्प्रे करें।"
+      },
+      {
+        "id": "brown-rust",
+        "nameHi": "भूरा रतुआ / लीफ रस्ट (Brown Rust)",
+        "nameEn": "Brown / Leaf Rust (Puccinia triticina)",
+        "tagHi": "फफूंद",
+        "image": "/images/diseases/disease-puccinia-triticina.jpg",
+        "stageHi": "गभोट व बाली अवस्था (60-90 दिन)",
+        "stages": [
+          "flowering",
+          "fruiting"
+        ],
+        "specialFactHi": "पत्तियों की ऊपरी सतह पर कत्थई-भूरे रंग के गोल या अंडाकार दाने (पस्ट्यूल्स) बिखरे होते हैं।",
+        "whatHi": "पक्सीनिया ट्रिटिसिना (Puccinia triticina) कवक से पत्तियों पर बिखरा हुआ भूरा-कत्थई पाउडर बनता है।",
+        "whyHi": [
+          "फरवरी-मार्च का गर्म व नम मौसम (तापमान 20-25°C बढ़ने पर)"
+        ],
+        "cureOrganicHi": [
+          "सहनशील किस्में चुनें व संतुलित यूरिया दें"
+        ],
+        "cureChemicalHi": [
+          "फॉलिकुर (Folicur) 200 ml",
+          "नेटिवो (Nativo) 120 g"
+        ],
+        "whenToActHi": "पत्ती की ऊपरी सतह पर भूरे दाने दिखने पर तुरंत",
+        "tipHi": "भूरा रतुआ दाना भरते समय हमला करता है जिससे दाना सिकुड़ जाता है; 1 स्प्रे तुरंत करें।"
+      },
+      {
         "id": "yellow-brown-rust",
         "nameHi": "पीला व भूरा रतुआ (Yellow & Brown Rust)",
         "nameEn": "Yellow & Brown Rust",
@@ -2522,10 +2574,10 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
           "flowering",
           "fruiting"
         ],
-        "specialFactHi": "पत्तियों पर सीधी लाइनों में पीला पाउडर (हल्दी जैसा) जमता है जो हाथ पर लग जाता है।",
-        "whatHi": "पक्सीनिया कवक से पत्तियों पर पीली धारियां पड़ना और भोजन बनना बंद होना।",
+        "specialFactHi": "पत्तियों पर सीधी लाइनों में पीला पाउडर या बिखरे भूरे दाने।",
+        "whatHi": "पक्सीनिया कवक से पत्तियों पर पीली धारियां या भूरे दाने पड़ना।",
         "whyHi": [
-          "सर्दियों की बारिश, कोहरा व ठंडी हवाएं (जनवरी-फरवरी)"
+          "सर्दियों की बारिश, कोहरा व ठंडी हवाएं"
         ],
         "cureOrganicHi": [
           "रोगरोधी किस्म (HD-2967, HD-3086, DBW-187 आदि)"
