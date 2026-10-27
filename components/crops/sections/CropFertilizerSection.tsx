@@ -1156,12 +1156,6 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
                         </span>
                       </div>
                     </div>
-
-                    {card.brands?.length ? (
-                      <p className="text-[10.5px] font-semibold text-[var(--av-text-muted)]">
-                        दुकान में नाम: <span className="font-bold text-[var(--av-text-secondary)]">{card.brands.join(" · ")}</span>
-                      </p>
-                    ) : null}
                   </li>
                 ))}
               </ul>

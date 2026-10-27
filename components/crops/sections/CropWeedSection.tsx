@@ -190,12 +190,9 @@ function HerbicideCard({ opt, hi, index }: { opt: HerbicideOption; hi: boolean; 
           <p className="text-[14px] font-black leading-snug text-emerald-950">
             {hi ? bilingualAgriName(opt.technical) : opt.technical}
           </p>
-          {opt.brands?.length ? (
-            <p className="mt-0.5 text-[11px] font-semibold text-emerald-800/70">
-              {hi ? "बाज़ार में नाम: " : "Brand: "}
-              {opt.brands.join(" · ")}
-            </p>
-          ) : null}
+          <p className="mt-0.5 text-[10.5px] font-semibold text-emerald-800/80">
+            🧪 {hi ? "शुद्ध खरपतवारनाशक टेक्निकल" : "Herbicide Technical"}
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-1.5">

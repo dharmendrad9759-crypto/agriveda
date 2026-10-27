@@ -279,9 +279,7 @@ export default function CropProblemDetailClient({
     const chemListText = chemItems
       .map((c, i) => {
         const d = parseFarmerDose(c.dose);
-        return `*विकल्प ${i + 1}: ${c.technical}*\n  • ${d.pill1.label}: ${d.pill1.value}\n  • ${d.pill2.label}: ${d.pill2.value}\n  • ${d.pill3.label}: ${d.pill3.value}${
-          c.brands?.length ? `\n  • प्रसिद्ध ब्रांड्स: ${c.brands.join(", ")}` : ""
-        }`;
+        return `*विकल्प ${i + 1}: ${c.technical}*\n  • तकनीकी नाम: ${cleanTechnicalName(c.nameHi || c.technical)}\n  • ${d.pill1.label}: ${d.pill1.value}\n  • ${d.pill2.label}: ${d.pill2.value}\n  • ${d.pill3.label}: ${d.pill3.value}\n  • सलाह: खाद-बीज दुकान पर केवल यह टेक्निकल नाम बताएं।`;
       })
       .join("\n\n");
 
@@ -462,18 +460,18 @@ export default function CropProblemDetailClient({
                           <ChemBottleThumb technical={c.technical} size="sm" className="rounded-xl shrink-0 shadow-xs" />
                         )}
                         <div className="min-w-0 flex-1 space-y-1.5">
-                          {c.brands && c.brands.length > 0 ? (
-                            <div>
-                              <span className="block text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
-                                🏷️ बाज़ार में प्रसिद्ध ब्रांड्स:
-                              </span>
-                              <p className="text-[12px] font-bold text-slate-900 dark:text-slate-100 leading-snug mt-0.5">
-                                {c.brands.join(" · ")}
-                              </p>
-                            </div>
-                          ) : null}
-                          <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-                            💡 फोटो पर टैप करके असली पैकेट / बोतल देख सकते हैं
+                          <div>
+                            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-900 dark:text-emerald-200">
+                              🧪 {isTankMix(c.technical) ? "टैंक मिक्स (2-Technical Tank Mix)" : "शुद्ध टेक्निकल सॉल्ट (Technical Formulation)"}
+                            </span>
+                            <p className="text-[12.5px] font-black text-slate-900 dark:text-slate-100 leading-snug mt-1">
+                              {cleanTechnicalName(c.nameHi || c.technical)}
+                            </p>
+                          </div>
+                          <p className="text-[10.5px] font-semibold text-slate-600 dark:text-slate-400 leading-relaxed">
+                            {isTankMix(c.technical)
+                              ? "💡 खाद-बीज दुकान से दोनों टेक्निकल लेकर ऊपर लिखी अलग-अलग मात्रा अनुसार टंकी में घोलें।"
+                              : "💡 खाद-बीज दुकान पर केवल यह टेक्निकल नाम बताएं। किसी भी अच्छी कंपनी का यह सॉल्ट खरीद सकते हैं।"}
                           </p>
                         </div>
                       </div>

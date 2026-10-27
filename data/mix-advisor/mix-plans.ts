@@ -607,7 +607,11 @@ export const POPULAR_TONICS: MixMedicine[] = [
 
 export function cleanTechnicalName(name: string): string {
   if (!name) return "";
-  return name.replace(/\s*\([^)]*\)/g, " ").replace(/\s{2,}/g, " ").trim();
+  return name
+    .replace(/\s*\([^)]*\)/g, " ")
+    .replace(/\s*या\s+[A-Za-z0-9\u0900-\u097F\-]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 for (const med of [...POPULAR_INSECTICIDES, ...POPULAR_FUNGICIDES, ...POPULAR_TONICS]) {

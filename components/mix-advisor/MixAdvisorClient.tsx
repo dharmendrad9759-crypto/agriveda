@@ -934,11 +934,10 @@ function MixAdvisorInner() {
                           <p className="text-[12px] font-bold text-[var(--av-text-secondary)]">
                             {cleanTechnicalName(m.nameHi)}
                           </p>
-                          {m.brands && m.brands.length > 0 && (
-                            <p className="text-[10px] font-medium text-[var(--av-text-muted)]">
-                              बाजार के लोकप्रिय ब्रांड: {m.brands.slice(0, 3).join(", ")}
-                            </p>
-                          )}
+                          {/* Pure technical guidance */}
+                          <p className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+                            🧪 तकनीकी सॉल्ट · किसी भी अच्छी कंपनी का ले सकते हैं
+                          </p>
                           {m.isVirusTarget && (
                             <div className="mt-2 rounded-xl bg-purple-500/10 border border-purple-500/20 p-2 text-[11px] font-medium text-purple-900 dark:text-purple-200 flex items-start gap-1.5">
                               <ShieldAlert className="h-3.5 w-3.5 text-purple-600 shrink-0 mt-0.5" />
@@ -1205,11 +1204,10 @@ function MixAdvisorInner() {
                                 <p className="mt-0.5 text-[12px] font-bold text-[var(--av-text-secondary)]">
                                   {cleanTechnicalName(opt.nameHi)}
                                 </p>
-                                {opt.brands && opt.brands.length > 0 && (
-                                  <p className="text-[10px] font-medium text-[var(--av-text-muted)]">
-                                    बाजार के ब्रांड: {opt.brands.slice(0, 3).join(", ")}
-                                  </p>
-                                )}
+                                {/* Pure technical formulation note */}
+                                <p className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+                                  🧪 शुद्ध तकनीकी सॉल्ट
+                                </p>
 
                                 {/* Doses */}
                                 <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-black text-emerald-800 dark:text-emerald-300">
@@ -1446,9 +1444,6 @@ function MixAdvisorInner() {
                     </thead>
                     <tbody className="divide-y divide-[var(--av-border)]">
                       {displayItems.map((m) => {
-                        const brand = !m.isAdjuvant
-                          ? m.brandHi || (m.brands && m.brands.length > 0 ? m.brands[0].split("(")[0].trim() : null)
-                          : null;
                         const isSolidMed = /WP|WG|WDG|DF|SP|SG|GR/i.test(m.technical || m.formCode);
                         const cleanUnit = isSolidMed ? "ग्राम" : "मिली";
                         const cleanDoseLiter = (m.dosePerLiter || "—").replace(/मिली\/ग्राम|ग्राम\/मिली/g, cleanUnit);
@@ -1459,12 +1454,12 @@ function MixAdvisorInner() {
                               <span className="block font-black text-[var(--av-text-primary)]">
                                 {m.isAdjuvant ? cleanTechnicalName(m.nameHi) : m.technical}
                               </span>
-                              {brand && (
-                                <span className="inline-block mt-0.5 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                                  प्रसिद्ध ब्रांड: {brand}
+                              {!m.isAdjuvant && m.nameHi && (
+                                <span className="block text-[10.5px] font-bold text-emerald-800 dark:text-emerald-300">
+                                  {cleanTechnicalName(m.nameHi)}
                                 </span>
                               )}
-                              {!brand && !m.isAdjuvant && m.targetProblemHi && (
+                              {m.targetProblemHi && (
                                 <span className="text-[10px] font-semibold text-[var(--av-text-muted)]">
                                   {m.targetProblemHi}
                                 </span>

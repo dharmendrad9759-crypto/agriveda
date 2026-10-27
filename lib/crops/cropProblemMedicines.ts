@@ -6406,6 +6406,20 @@ for (const [alias, target] of Object.entries(ALIASES)) {
   }
 }
 
+function sanitizeCurative(med: CurativeMedicine): CurativeMedicine {
+  const cleanHi = (med.nameHi || med.technical || "")
+    .replace(/\s*\([^)]*\)/g, " ")
+    .replace(/\s*या\s+[A-Za-z0-9\u0900-\u097F\-]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+  return {
+    ...med,
+    nameHi: cleanHi || med.technical,
+    brands: [], // Strictly zero commercial brand names or company names
+  };
+}
+
 export function getCurativeMedicines(
   cropSlug: string,
   problemId: string,
@@ -6422,19 +6436,22 @@ export function getCurativeMedicines(
     CROP_PROBLEM_MEDICINES[mappedSlug]?.[problemId] ||
     CROP_PROBLEM_MEDICINES[cropSlug]?.[problemId];
 
-  if (mapped && mapped.length > 0) return mapped;
+  if (mapped && mapped.length > 0) {
+    return mapped.map(sanitizeCurative);
+  }
 
   if (!rawLines || rawLines.length === 0) return [];
   return rawLines.slice(0, 3).map((line, i) => {
     const raw = line.split("—")[0]?.trim() || line;
-    return {
+    return sanitizeCurative({
       nameHi: raw,
       technical: i === 0 ? "Standard Technical Formulation" : "Complementary Technical",
       dose: "अनुशंसित डोज़: 1.5–2 ग्राम/मिली प्रति लीटर पानी (लेबल अनुसार)",
-      brands: ["प्रमाणित कृषि सेवा केंद्र से संपर्क करें"],
+      brands: [],
       level: (i + 1) as 1 | 2 | 3,
       levelLabelHi: `स्तर ${i + 1}`,
-    };
+    });
   });
 }
+
 

@@ -91,9 +91,7 @@ export default function FieldMedicinePanel({
         item.farmerDose?.perTank || item.dose
       }\n• प्रति एकड़ मात्रा: ${
         item.farmerDose?.perAcre || item.waterDose
-      }\n${
-        item.brands.length ? `• प्रसिद्ध ब्रांड नाम: ${item.brands.join(", ")}\n` : ""
-      }दुकानदार भाई, कृपया इस टेक्निकल फॉर्मूले की दवाई दें।`;
+      }\nदुकानदार भाई, कृपया इस टेक्निकल फॉर्मूले की दवाई दें।`;
     }
 
     if (navigator.clipboard) {
@@ -562,15 +560,10 @@ export default function FieldMedicinePanel({
                               </p>
                             )}
 
-                          {/* Popular Market Brands */}
-                          {item.brands.length > 0 && (
-                            <div className="mt-1 rounded bg-amber-50/80 px-1.5 py-0.5 text-[10.5px] font-semibold text-amber-950 dark:bg-amber-950/40 dark:text-amber-200">
-                              <span className="font-extrabold text-amber-800 dark:text-amber-300">
-                                {hi ? "प्रसिद्ध ब्रांड: " : "Brands: "}
-                              </span>
-                              {item.brands.join(", ")}
-                            </div>
-                          )}
+                          {/* Technical Formulation Tag */}
+                          <div className="mt-1 inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                            🧪 {hi ? "शुद्ध तकनीकी फॉर्मूलेशन" : "Technical Formulation"}
+                          </div>
 
                           {/* Dose & Water Information */}
                           <div className="mt-1.5 space-y-1">

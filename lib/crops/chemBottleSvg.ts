@@ -446,26 +446,18 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
 
 export const STATIC_SVG_BOTTLES = new Set<string>([]);
 
-export function hasRealBottlePhoto(technical: string): boolean {
-  if (!technical) return false;
-  const hit = lookupChemBottle(technical);
-  if (hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]) return true;
-  const norm = technical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  return Boolean(REAL_BOTTLE_PHOTOS[norm]);
+export function hasRealBottlePhoto(_technical: string): boolean {
+  return false;
 }
 
+/**
+ * 100% Pure Generic Technical Packaging:
+ * Renders a realistic 3D bottle or sealed metallic agro pouch with ONLY
+ * the official technical formulation and CIB&RC diamond printed on the label.
+ * Zero commercial brand names and zero company logos.
+ */
 export function chemBottleImageSrc(technical: string): string {
   const hit = lookupChemBottle(technical);
-  if (hit?.slug && REAL_BOTTLE_PHOTOS[hit.slug]) {
-    return REAL_BOTTLE_PHOTOS[hit.slug];
-  }
-  const norm = technical.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  if (REAL_BOTTLE_PHOTOS[norm]) {
-    return REAL_BOTTLE_PHOTOS[norm];
-  }
-
-  // Gracefully render custom SVG bottle/pouch with THIS exact chemical name printed on the label!
-  // NEVER fall back to Chlorantraniliprole 18.5% SC or unrelated commercial bottles.
   const cat = hit?.category || bottleCategory(technical);
   const pkgType = getChemPackageType(technical, hit?.formulation);
   const svg = pkgType === "pouch"
@@ -473,3 +465,4 @@ export function chemBottleImageSrc(technical: string): string {
     : renderChemBottleSvg(technical, cat);
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
+

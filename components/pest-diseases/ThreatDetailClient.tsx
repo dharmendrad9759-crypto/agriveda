@@ -571,7 +571,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                 hi
                   ? `राम-राम किसान भाई! ${cropHi || threat.cropName} में ${names.primary} के लिए डॉक्टर की सलाह: ${
                       sprayProducts[0]
-                        ? `सबसे पहले ${sprayProducts[0].brands?.[0] ? `${sprayProducts[0].brands[0]} यानी ` : ""}${sprayProducts[0].technical} का स्प्रे करें। ${sprayProducts[0].doseAcre ? `मात्रा ${sprayProducts[0].doseAcre} रखें।` : ""}`
+                        ? `सबसे पहले टेक्निकल ${sprayProducts[0].technical} का स्प्रे करें। ${sprayProducts[0].doseAcre ? `मात्रा ${sprayProducts[0].doseAcre} रखें।` : ""}`
                         : farmerAiDose
                           ? `अनुशंसित दवा ${farmerAiDose} का प्रयोग करें।`
                           : "दवा टैब में दिए गए पहले विकल्प का छिड़काव करें।"

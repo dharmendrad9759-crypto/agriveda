@@ -94,20 +94,14 @@ export default function ChemBottleThumb({
 
         <span
           className={`absolute left-1 top-1 flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[8.5px] font-black text-white shadow-sm ${
-            isReal
-              ? "bg-emerald-700/95"
-              : isPouch
-              ? "bg-purple-700/90"
-              : "bg-blue-700/90"
+            isPouch ? "bg-purple-700/90" : "bg-emerald-700/95"
           }`}
-          title={isReal ? `असली फोटो (${packageLabel})` : `${packageLabel} रूप`}
+          title={`${packageLabel} रूप`}
         >
-          {isReal ? (
-            <Camera className="h-2.5 w-2.5" />
-          ) : isPouch ? (
+          {isPouch ? (
             <Package className="h-2.5 w-2.5" />
           ) : null}
-          <span>{isReal ? `फोटो · ${packageLabel}` : packageLabel}</span>
+          <span>{packageLabel}</span>
         </span>
 
         {allowExpand && (
@@ -153,19 +147,15 @@ export default function ChemBottleThumb({
 
                 <div className="mt-3.5 text-center w-full">
                   <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                    {isReal
-                      ? isPouch
-                        ? "असली टेक्निकल पैकेट (Product Photo)"
-                        : "असली टेक्निकल बोतल (Product Photo)"
-                      : isPouch
-                      ? "तकनीकी पैकेट (Agro Foil Sachet)"
-                      : "तकनीकी बोतल (Technical Bottle)"}
+                    {isPouch
+                      ? "तकनीकी पैकेट (Technical Grade Packet)"
+                      : "तकनीकी बोतल (Technical Grade Bottle)"}
                   </span>
                   <p className="mt-1.5 text-base font-black text-stone-900 dark:text-stone-100">
                     {displayName}
                   </p>
                   <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-0.5">
-                    खाद-बीज की दुकान पर यह टेक्निकल नाम बताकर {isPouch ? "पैकेट" : "दवाई"} लें
+                    खाद-बीज की दुकान पर केवल यह टेक्निकल नाम बताकर {isPouch ? "पैकेट" : "दवाई"} लें (ब्रांड नाम अलग हो सकता है)
                   </p>
                 </div>
               </div>

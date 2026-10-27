@@ -59,11 +59,6 @@ function ProductRow({
             ℹ️ {note}
           </p>
         ) : null}
-        {product.brands?.length ? (
-          <p className="mt-1 text-[10px] font-medium text-[var(--av-text-muted)]">
-            दुकान / बाज़ार में: <span className="font-semibold text-[var(--av-text-secondary)]">{product.brands.join(" · ")}</span>
-          </p>
-        ) : null}
       </div>
     </li>
   );

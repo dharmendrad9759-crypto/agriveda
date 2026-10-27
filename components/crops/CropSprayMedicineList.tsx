@@ -97,12 +97,10 @@ export default function CropSprayMedicineList({
                             : ""}
                         </p>
                       )}
-                      {p.brands?.length ? (
-                        <p className="mt-1 text-[11.5px] font-medium leading-snug text-[var(--av-text-muted)]">
-                          <span className="font-bold text-[var(--av-text-secondary)]">{hi ? "प्रसिद्ध ब्रांड: " : "Brands: "}</span>
-                          {p.brands.join(" · ")}
-                        </p>
-                      ) : null}
+                      {/* Pure technical formulation tag */}
+                      <p className="mt-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                        🧪 शुद्ध तकनीकी फॉर्मूलेशन
+                      </p>
 
                       {/* Prominent Dose Badges */}
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -182,7 +180,6 @@ export default function CropSprayMedicineList({
             problem: shareProblem,
             items: picks.map((p) => ({
               title: hi ? bilingualAgriName(p.technical) : p.technical,
-              brands: p.brands?.length ? shopBrandLine(p.brands, hi) : undefined,
               dose: p.doseAcre,
               tank: hi ? tankDoseLine(p.doseAcre) : null,
             })),
