@@ -118,20 +118,20 @@ export default function AgriVedaSplashScreen({ onComplete, reducedMotion = false
         <h1 className="m-0 font-display text-[clamp(2.2rem,9vw,3rem)] font-extrabold leading-none tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-sky-400 drop-shadow-sm">
           {BRAND}
         </h1>
-        <p className="mt-3 text-[12px] font-bold tracking-[0.3em] text-slate-400/80 uppercase">
-          Digital Farmers
+        <p className="mt-3 text-[13px] font-bold tracking-[0.2em] text-emerald-300">
+          स्मार्ट किसान सलाहकार
         </p>
 
         {/* Tech Line Decorator */}
-        <div aria-hidden className="mt-6 flex items-center gap-3">
+        <div aria-hidden className="mt-5 flex items-center gap-3">
           <span className="h-px w-12 bg-gradient-to-r from-transparent to-emerald-500/50" />
           <div className="h-1.5 w-1.5 rotate-45 border border-emerald-400 bg-transparent shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
           <span className="h-px w-12 bg-gradient-to-l from-transparent to-emerald-500/50" />
         </div>
 
-        <div className="mt-6 inline-flex max-w-[min(92vw,340px)] items-center justify-center rounded-2xl border border-white/5 bg-white/5 px-6 py-3 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <span className="text-[13px] font-bold leading-none text-emerald-50 sm:text-[14px]">
-            स्मार्ट खेती, बेहतर फसल
+        <div className="mt-5 inline-flex max-w-[min(92vw,340px)] items-center justify-center rounded-2xl border border-emerald-500/25 bg-emerald-950/50 px-6 py-2.5 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <span className="text-[13px] font-bold leading-none text-emerald-100 sm:text-[14px]">
+            🌱 डिजिटल किसान • समृद्ध फसल
           </span>
         </div>
       </div>
