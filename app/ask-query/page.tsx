@@ -14,7 +14,6 @@ import {
   MicOff,
   Phone,
   Send,
-  ShieldCheck,
   Sparkles,
   Stethoscope,
   Square,
@@ -203,7 +202,7 @@ export default function AskQueryPage() {
       {
         id: "msg-welcome",
         sender: "doctor",
-        text: "नमस्ते किसान भाई! 🙏 यह AgriVeda कृषि विशेषज्ञ (Doctor Desk) लाइव सहायता है।\n\nयहाँ आप अपनी फसल की बीमारी, कीट या खाद-पानी संबंधी सवाल और फोटो भेज सकते हैं।\n\n🔒 **यह सवाल कहाँ जाता है?**\n• आपका सवाल सीधे हमारे सीनियर कृषि वैज्ञानिकों (डॉक्टर पैनल) को जाता है।\n• यहाँ आपको तुरंत सटीक दवा, खुराक व छिड़काव का तरीका मिलता है।\n• आपका हर सवाल आपके 'इतिहास' में सुरक्षित रहता है।",
+        text: "नमस्ते किसान भाई! 🙏 अपनी फसल की बीमारी, कीट या खाद संबंधी समस्या लिखकर या फोटो खींचकर भेजें। आपको तुरंत सही समाधान और दवा की खुराक मिलेगी।",
         time: "अभी",
       },
     ];
@@ -271,7 +270,7 @@ export default function AskQueryPage() {
       const docMsg: ChatMessage = {
         id: `ref-doc-${Date.now()}`,
         sender: "doctor",
-        text: `👨‍🌾 **${cropLabel} की AI रिपोर्ट हमारे कृषि विशेषज्ञ डॉक्टर को प्राप्त हो गई है।**\n\nडॉक्टर साहब रोग के लक्षणों की समीक्षा कर रहे हैं। वे जल्द ही आपको प्रमाणित दवा, खुराक और छिड़काव का सही तरीका यहीं भेजेंगे।`,
+        text: `👨‍🌾 **${cropLabel} की AI रिपोर्ट प्राप्त हो गई है।**\n\nरोग के लक्षणों की जांच कर समाधान और दवा की खुराक नीचे दी जा रही है।`,
         time: "अभी",
       };
       setIsTyping(false);
@@ -282,6 +281,7 @@ export default function AskQueryPage() {
   // Dynamic visualViewport tracking for software keyboard docking & WhatsApp-style layout
   const [viewportStyle, setViewportStyle] = useState<React.CSSProperties>({
     height: "100dvh",
+    top: 0,
     width: "100vw",
     maxWidth: "100%",
     overflowX: "hidden",
@@ -302,7 +302,7 @@ export default function AskQueryPage() {
       if (vv) {
         setViewportStyle({
           height: `${vv.height}px`,
-          top: `${vv.offsetTop}px`,
+          top: 0,
           width: "100vw",
           maxWidth: "100%",
           overflowX: "hidden",
@@ -547,10 +547,10 @@ export default function AskQueryPage() {
       image: currentPhoto || undefined,
       farmerName: profile.name || "आप",
       expertResponse: {
-        expertName: "AgriVeda कृषि विशेषज्ञ (Doctor Desk)",
+        expertName: "AgriVeda कृषि डॉक्टर",
         date: "उत्तर प्राप्त",
         preview: tailoredAdvice.slice(0, 140) + "…",
-        fullAnswer: `${tailoredAdvice}\n\n📋 **सवाल आईडी: #${ticketId}** (डॉक्टर डेस्क पर सुरक्षित)`,
+        fullAnswer: tailoredAdvice,
       },
     });
 
@@ -578,7 +578,7 @@ export default function AskQueryPage() {
       const doctorMessage: ChatMessage = {
         id: `doc-${Date.now()}`,
         sender: "doctor",
-        text: `${tailoredAdvice}\n\n📋 **सवाल आईडी: #${ticketId}**\n*(यह सवाल हमारे डॉक्टर डेस्क पर भी दर्ज हो गया है)*`,
+        text: tailoredAdvice,
         time: new Date().toLocaleTimeString("hi-IN", {
           hour: "2-digit",
           minute: "2-digit",
@@ -593,11 +593,11 @@ export default function AskQueryPage() {
 
   return (
     <div
-      className="fixed inset-0 h-[100dvh] max-h-[100dvh] w-[100vw] max-w-full flex flex-col bg-[#f4fbf7] overflow-hidden overflow-x-hidden z-50 text-stone-900 select-none overscroll-none dark:bg-[#0b141a] dark:text-stone-100"
+      className="fixed inset-x-0 top-0 h-[100dvh] max-h-[100dvh] w-full max-w-full flex flex-col bg-[#f4fbf7] overflow-hidden overflow-x-hidden z-50 text-stone-900 select-none overscroll-none dark:bg-[#0b141a] dark:text-stone-100"
       style={viewportStyle}
     >
       {/* Part A: Top Header (shrink-0) */}
-      <header className="sticky top-0 z-30 flex shrink-0 items-center justify-between bg-[#008069] px-3 py-2.5 text-white shadow-md dark:bg-[#1f2c34]">
+      <header className="sticky top-0 z-30 flex shrink-0 items-center justify-between bg-[#008069] px-3 py-2 text-white shadow-md dark:bg-[#1f2c34]">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
@@ -608,21 +608,16 @@ export default function AskQueryPage() {
             <ArrowLeft className="h-5 w-5" />
           </button>
 
-          <div className="relative">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-lg font-bold backdrop-blur-sm border border-white/25 shadow-sm">
-              👨‍🌾
-            </div>
-            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#008069] bg-emerald-400 dark:border-[#1f2c34]" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-lg font-bold backdrop-blur-sm border border-white/25 shadow-sm">
+            👨‍🌾
           </div>
 
           <div className="min-w-0">
-            <h1 className="flex items-center gap-1.5 text-[15px] font-bold leading-tight text-white">
-              <span>AgriVeda कृषि डॉक्टर</span>
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
+            <h1 className="text-[15px] font-bold leading-tight text-white">
+              AgriVeda कृषि डॉक्टर
             </h1>
-            <p className="flex items-center gap-1 text-[11px] font-medium text-emerald-100/90">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" />
-              <span>ऑनलाइन · सरकारी प्रमाणित विशेषज्ञ</span>
+            <p className="text-[11px] font-medium text-emerald-100/80">
+              फसल परामर्श एवं रोग निदान
             </p>
           </div>
         </div>
@@ -643,12 +638,34 @@ export default function AskQueryPage() {
         </div>
       </header>
 
-      {/* Part A2: Trust & Transparency Banner (shrink-0) */}
-      <div className="shrink-0 border-b border-black/5 bg-emerald-950/90 px-3 py-1.5 text-center text-[11px] font-semibold text-emerald-100 backdrop-blur-md dark:border-white/5 dark:bg-emerald-950/80">
-        🔒 आपका सवाल और फोटो सीधे हमारे कृषि वैज्ञानिक पैनल (Doctor Desk) पर पहुंचते हैं।
+      {/* Part A2: Crop Selector Bar - Pinned at the TOP below Header */}
+      <div className="shrink-0 z-20 w-full max-w-full overflow-hidden border-b border-emerald-900/10 bg-[#e8f5ee] px-3 py-2 shadow-xs dark:border-white/5 dark:bg-[#182229]">
+        <div className="flex w-full items-center gap-1.5 overflow-x-auto whitespace-nowrap pr-4 box-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <span className="shrink-0 text-xs font-black tracking-wide text-stone-700 uppercase dark:text-stone-300">
+            🌾 फसल:
+          </span>
+          {COMMON_CROP_CHIPS.map((chip) => {
+            const active = selectedCrop === chip.slug;
+            return (
+              <button
+                key={chip.slug}
+                type="button"
+                onClick={() => setSelectedCrop(chip.slug)}
+                className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-[12.5px] font-bold transition active:scale-95 ${
+                  active
+                    ? "bg-[#008069] text-white shadow-sm ring-2 ring-emerald-500/30 dark:bg-emerald-600"
+                    : "bg-white text-stone-800 border border-stone-200/90 hover:bg-stone-100 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700"
+                }`}
+              >
+                <span className="text-base">{chip.emoji}</span>
+                <span>{chip.nameHi}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Part B: Scrollable Messages Area (flex-1 min-h-0 overflow-y-auto overscroll-y-contain) */}
+      {/* Part B: Scrollable Messages Area */}
       <div className="flex-1 min-h-0 space-y-3 overflow-y-auto overflow-x-hidden px-3 py-4 select-text [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-y-contain">
         {/* Date pill */}
         <div className="flex justify-center">
@@ -697,17 +714,12 @@ export default function AskQueryPage() {
                   {m.text}
                 </div>
 
-                {/* Bottom Row: Timestamp, double tick & delivery badge */}
-                <div className="mt-1.5 flex items-center justify-between gap-2 border-t border-black/5 pt-1 text-[11px] font-medium text-stone-500 dark:border-white/5 dark:text-stone-400">
-                  <span className="text-[10px]">
-                    {isMe ? "विशेषज्ञ डॉक्टर को प्रेषित ✓" : "सत्यापित उपचार"}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span>{m.time}</span>
-                    {isMe && (
-                      <CheckCheck className="h-4 w-4 text-[#53bdeb]" />
-                    )}
-                  </div>
+                {/* Bottom Row: Timestamp and status tick */}
+                <div className="mt-1 flex items-center justify-end gap-1 text-[11px] font-medium text-stone-500 dark:text-stone-400">
+                  <span>{m.time}</span>
+                  {isMe && (
+                    <CheckCheck className="h-3.5 w-3.5 text-[#53bdeb]" />
+                  )}
                 </div>
               </div>
             </div>
@@ -732,10 +744,10 @@ export default function AskQueryPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Part C: Bottom Input Bar & Chips (shrink-0 mt-auto) */}
-      <div className="shrink-0 mt-auto w-full max-w-full overflow-hidden bg-white border-t border-emerald-100 pb-[env(safe-area-inset-bottom,8px)] shadow-xl dark:border-white/10 dark:bg-[#1f2c34]">
+      {/* Part C: Bottom Input Bar (shrink-0 mt-auto) */}
+      <div className="shrink-0 mt-auto w-full max-w-full overflow-hidden bg-white border-t border-stone-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-4 sm:pb-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] dark:border-white/10 dark:bg-[#1f2c34]">
         {/* Suggested Quick Question Chips */}
-        <div className="w-full max-w-full overflow-hidden border-b border-emerald-100/60 bg-[#f4fbf7]/90 px-3 py-2 box-border dark:border-white/5 dark:bg-[#0b141a]/90">
+        <div className="w-full max-w-full overflow-hidden border-b border-stone-100 bg-[#f9fafb] px-3 py-1.5 box-border dark:border-white/5 dark:bg-[#111b21]">
           <div className="flex w-full items-center gap-2 overflow-x-auto whitespace-nowrap pr-4 box-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {activeSuggestions.map((prompt) => (
               <button
@@ -745,38 +757,11 @@ export default function AskQueryPage() {
                   setInputText(prompt);
                   scrollToBottom(true);
                 }}
-                className="shrink-0 rounded-full border border-emerald-200/80 bg-white px-3 py-1 text-[12.5px] font-bold text-stone-800 shadow-2xs hover:border-emerald-500 hover:bg-emerald-50 active:scale-95 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                className="shrink-0 rounded-full border border-stone-200 bg-white px-2.5 py-1 text-[12px] font-semibold text-stone-700 shadow-2xs hover:border-emerald-500 hover:text-emerald-700 active:scale-95 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
               >
                 {prompt}
               </button>
             ))}
-          </div>
-        </div>
-
-        {/* Large, Clear Crop Selector Bar */}
-        <div className="w-full max-w-full overflow-hidden px-3 pt-2.5 pb-1 box-border">
-          <div className="flex w-full items-center gap-1.5 overflow-x-auto whitespace-nowrap pr-4 box-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <span className="shrink-0 text-xs font-black tracking-wide text-stone-600 uppercase dark:text-stone-400">
-              🌾 फसल:
-            </span>
-            {COMMON_CROP_CHIPS.map((chip) => {
-              const active = selectedCrop === chip.slug;
-              return (
-                <button
-                  key={chip.slug}
-                  type="button"
-                  onClick={() => setSelectedCrop(chip.slug)}
-                  className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-[13px] font-bold transition active:scale-95 ${
-                    active
-                      ? "bg-[#008069] text-white shadow-sm ring-2 ring-emerald-500/30 dark:bg-emerald-600"
-                      : "bg-stone-100 text-stone-800 border border-stone-200/80 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700"
-                  }`}
-                >
-                  <span className="text-base">{chip.emoji}</span>
-                  <span>{chip.nameHi}</span>
-                </button>
-              );
-            })}
           </div>
         </div>
 
