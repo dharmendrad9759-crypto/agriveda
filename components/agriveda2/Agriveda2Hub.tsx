@@ -6,9 +6,12 @@ import {
   Brain,
   Calculator,
   Calendar,
+  Compass,
+  CreditCard,
   LayoutDashboard,
   Sprout,
   Stethoscope,
+  Tractor,
 } from "lucide-react";
 import { AgriAiQuerySparkleIcon } from "@/components/brand/icons";
 import GlassCard from "@/components/ui/GlassCard";
@@ -70,6 +73,27 @@ const MODULES = [
     title: "खाद कैलकुलेटर",
     desc: "NPK — एकड़/बीघा के हिसाब",
     glow: "from-lime-500/20 to-green-500/10 border-lime-400/40",
+  },
+  {
+    href: "/services/land-area-converter",
+    icon: Compass,
+    title: "ज़मीन नाप कैलकुलेटर",
+    desc: "बीघा, एकड़, हेक्टेयर, कट्ठा",
+    glow: "from-teal-500/20 to-emerald-500/10 border-teal-400/40",
+  },
+  {
+    href: "/services/kcc-calculator",
+    icon: CreditCard,
+    title: "KCC ब्याज कैलकुलेटर",
+    desc: "4% प्रभावी ब्याज व EMI",
+    glow: "from-amber-500/20 to-orange-500/10 border-amber-400/40",
+  },
+  {
+    href: "/services/tractor-hp-calculator",
+    icon: Tractor,
+    title: "ट्रैक्टर HP उपकरण मैचिंग",
+    desc: "रोटावेटर, सीडर व डीजल",
+    glow: "from-blue-500/20 to-indigo-500/10 border-blue-400/40",
   },
 ];
 

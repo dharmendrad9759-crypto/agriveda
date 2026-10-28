@@ -44,6 +44,16 @@ const SCHEME_IMAGE: Record<string, string> = {
   "midh-polyhouse": "/images/schemes/scheme-organic.jpg",
   "pm-fme": "/images/schemes/scheme-income.jpg",
   "rkvy-raftaar": "/images/schemes/scheme-income.jpg",
+  "up-khet-suraksha": "/images/schemes/scheme-climate.jpg",
+  "up-nand-baba": "/images/schemes/scheme-livestock.jpg",
+  "up-nishulk-boring": "/images/schemes/scheme-irrigation.jpg",
+  "rj-kisan-samman-nidhi": "/images/schemes/scheme-income.jpg",
+  "rj-gopal-card": "/images/schemes/scheme-kcc.jpg",
+  "rj-kisan-mitra-urja": "/images/schemes/scheme-irrigation.jpg",
+  "rj-tarbandi": "/images/schemes/scheme-climate.jpg",
+  "bihar-krishi-input": "/images/schemes/scheme-insurance.jpg",
+  "haryana-pashu-kcc": "/images/schemes/scheme-livestock.jpg",
+  "punjab-pani-bachao": "/images/schemes/scheme-irrigation.jpg",
 };
 
 export function resolveSchemeImage(scheme: Pick<FarmerScheme, "id" | "category">): string {

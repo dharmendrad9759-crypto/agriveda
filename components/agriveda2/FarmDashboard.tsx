@@ -7,9 +7,12 @@ import {
   BookOpen,
   Camera,
   ChevronRight,
+  Compass,
+  CreditCard,
   Droplets,
   MessageCircle,
   Sprout,
+  Tractor,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { useSprayFields } from "@/hooks/useSprayFields";
@@ -214,6 +217,9 @@ export default function FarmDashboard({ compact = false }: { compact?: boolean }
 
       <div className="grid grid-cols-2 gap-2">
         <QuickAppLink href="/services/seed-calculator" icon={<Sprout className="h-4 w-4" />} label="बीज कैलकुलेटर" />
+        <QuickAppLink href="/services/land-area-converter" icon={<Compass className="h-4 w-4" />} label="ज़मीन नाप" />
+        <QuickAppLink href="/services/kcc-calculator" icon={<CreditCard className="h-4 w-4" />} label="KCC लोन कैलकुलेटर" />
+        <QuickAppLink href="/services/tractor-hp-calculator" icon={<Tractor className="h-4 w-4" />} label="ट्रैक्टर उपकरण" />
         <QuickAppLink href="/sowing-window" icon={<Droplets className="h-4 w-4" />} label="बुआई समय" />
         <QuickAppLink href="/smart-crop" icon={<Sprout className="h-4 w-4" />} label="Smart crop" />
         <QuickAppLink href="/crop-problems" icon={<AlertTriangle className="h-4 w-4" />} label="समस्या → समाधान" />

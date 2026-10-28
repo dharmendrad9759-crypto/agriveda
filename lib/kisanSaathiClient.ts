@@ -53,6 +53,28 @@ ${context.district ? `Aapka zila: ${context.district} — iske hisaab se window 
 Zinc ${context.state?.toLowerCase().includes("up") || context.state?.toLowerCase().includes("bihar") ? "UP/Bihar ki mitti mein bahut zaroori" : "deficiency history ho to dein"}.`;
   }
 
+  if (/bigha|zameen|jameen|acre|hectare|kattha|kanal|biswa/.test(q)) {
+    return `📏 ZAMEEN NAAP / BIGHA CONVERTER
+
+→ Zameen Naap Calculator: /services/land-area-converter
+→ UP, Rajasthan, Bihar, Haryana, Punjab, MP ke anusaar Bigha (Pucca/Kachcha), Acre, Hectare, Kattha, Kanal instant convert karein.`;
+  }
+
+  if (/kcc|loan|byaj|credit|emi/.test(q)) {
+    return `💳 KCC & AGRI LOAN CALCULATOR
+
+→ KCC Calculator: /services/kcc-calculator
+→ 7% base mein 3% prompt repayment chhoot se net 4% effective interest aur bachat dekhein.
+→ Tractor, Dairy, Solar Pump EMI calculator bhi available hai.`;
+  }
+
+  if (/tractor|rotavator|seeder|diesel|harrow/.test(q)) {
+    return `🚜 TRACTOR HP & DIESEL CALCULATOR
+
+→ Tractor Matching Calculator: /services/tractor-hp-calculator
+→ HP (25–65+ HP), 2WD/4WD aur mitti ke anusaar sahi Rotavator, Cultivator, Super Seeder aur diesel khapat dekhein.`;
+  }
+
   return `🌾 Kisan Saathi — ${crop}
 
 Aapki baat: "${userMessage.slice(0, 100)}"

@@ -11,8 +11,10 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  Compass,
   CreditCard,
   ExternalLink,
+  Fuel,
   MapPin,
   Search,
   Shield,
@@ -840,6 +842,69 @@ export default function SchemesClient() {
                         </span>
                       </button>
                     ))}
+                  </div>
+                </section>
+
+                {/* कृषि टूल्स व कैलकुलेटर (Agricultural Calculators & Tools - Point 2) */}
+                <section className="pt-2">
+                  <SectionTitle>
+                    {hi ? "🧮 किसान उपयोगी टूल्स व कैलकुलेटर" : "Farmer Tools & Calculators"}
+                  </SectionTitle>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <AppLink
+                      href="/services/land-area-converter"
+                      className="group flex items-center gap-3 rounded-2xl border border-stone-200/90 bg-white p-3 shadow-xs transition hover:border-emerald-500/40 hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                        <Compass className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[13px] font-black text-stone-900 group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-300">
+                          {hi ? "ज़मीन नाप कैलकुलेटर" : "Land Area Converter"}
+                        </div>
+                        <div className="text-[11px] text-stone-500 line-clamp-1 dark:text-stone-400">
+                          {hi ? "बीघा, एकड़, हेक्टेयर, कट्ठा व कनाल" : "Bigha, Acre, Hectare, Kattha"}
+                        </div>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-stone-400 group-hover:text-emerald-600 shrink-0" />
+                    </AppLink>
+
+                    <AppLink
+                      href="/services/kcc-calculator"
+                      className="group flex items-center gap-3 rounded-2xl border border-stone-200/90 bg-white p-3 shadow-xs transition hover:border-amber-500/40 hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                        <CreditCard className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[13px] font-black text-stone-900 group-hover:text-amber-700 dark:text-white dark:group-hover:text-amber-300">
+                          {hi ? "KCC ब्याज व लोन कैलकुलेटर" : "KCC & Loan EMI Calc"}
+                        </div>
+                        <div className="text-[11px] text-stone-500 line-clamp-1 dark:text-stone-400">
+                          {hi ? "4% प्रभावी ब्याज बचत व ट्रैक्टर EMI" : "4% net interest & Tractor EMI"}
+                        </div>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-stone-400 group-hover:text-amber-600 shrink-0" />
+                    </AppLink>
+
+                    <AppLink
+                      href="/services/tractor-hp-calculator"
+                      className="group flex items-center gap-3 rounded-2xl border border-stone-200/90 bg-white p-3 shadow-xs transition hover:border-blue-500/40 hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+                        <Tractor className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[13px] font-black text-stone-900 group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-300">
+                          {hi ? "ट्रैक्टर HP व उपकरण मैचिंग" : "Tractor HP & Implements"}
+                        </div>
+                        <div className="text-[11px] text-stone-500 line-clamp-1 dark:text-stone-400">
+                          {hi ? "रोटावेटर, सीडर व डीजल खपत" : "Rotavator, Seeder & Fuel rate"}
+                        </div>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-stone-400 group-hover:text-blue-600 shrink-0" />
+                    </AppLink>
                   </div>
                 </section>
 
