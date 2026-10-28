@@ -7,6 +7,7 @@ function normalizeKey(s: string): string {
   return s
     .toLowerCase()
     .replace(/[\u2013\u2014]/g, "-")
+    .replace(/\+/g, " + ")
     .replace(/[^\p{L}\p{N}+]+/gu, " ")
     .replace(/\s+/g, " ")
     .trim();

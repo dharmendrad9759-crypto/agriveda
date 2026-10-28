@@ -206,4 +206,38 @@ describe("Chemical Bottle Photorealistic Images Resolution", () => {
     expect(chemBottleImageSrc("Mepiquat Chloride 5% AS")).toBe("/images/chem/real/mepiquat-chloride-5-as.jpg");
     expect(chemBottleImageSrc("Sulphur 80% WDG")).toBe("/images/chem/real/wettable-sulphur-80-wdg.jpg");
   });
+
+  it("resolves final 7 audit chemicals and drench formulations to authentic photos", () => {
+    // 1. Thiamethoxam 12.6% + Lambda Cyhalothrin 9.5% ZC
+    expect(hasRealBottlePhoto("Thiamethoxam + Lambda Cyhalothrin")).toBe(true);
+    expect(chemBottleImageSrc("Thiamethoxam 12.6% + Lambda Cyhalothrin 9.5% ZC")).toBe("/images/chem/real/thiamethoxam-lambda-zc.jpg");
+
+    // 2. Picoxystrobin 7.05% + Propiconazole 11.71% SC
+    expect(hasRealBottlePhoto("Picoxystrobin + Propiconazole")).toBe(true);
+    expect(chemBottleImageSrc("Picoxystrobin 7.05% + Propiconazole 11.71% SC")).toBe("/images/chem/real/picoxystrobin-propiconazole-sc.jpg");
+
+    // 3. Carbaryl 50% WP
+    expect(hasRealBottlePhoto("Carbaryl 50% WP")).toBe(true);
+    expect(chemBottleImageSrc("Carbaryl 50% WP formulation with a current CIBRC label claim")).toBe("/images/chem/real/carbaryl-50-wp.jpg");
+
+    // 4. Myclobutanil 10% WP
+    expect(hasRealBottlePhoto("Myclobutanil 10% WP")).toBe(true);
+    expect(chemBottleImageSrc("Myclobutanil 10% WP")).toBe("/images/chem/real/myclobutanil-10-wp.jpg");
+
+    // 5. Triazophos 40% EC
+    expect(hasRealBottlePhoto("Triazophos 40% EC")).toBe(true);
+    expect(chemBottleImageSrc("Triazophos 40% EC")).toBe("/images/chem/real/triazophos-40-ec.jpg");
+
+    // 6. Diclosulam 84% WDG
+    expect(hasRealBottlePhoto("Diclosulam 84% WDG")).toBe(true);
+    expect(chemBottleImageSrc("Diclosulam 84% WDG")).toBe("/images/chem/real/diclosulam-84-wdg.jpg");
+
+    // 7. Fluchloralin 45% EC
+    expect(hasRealBottlePhoto("Fluchloralin 45% EC")).toBe(true);
+    expect(chemBottleImageSrc("Fluchloralin 45% EC")).toBe("/images/chem/real/fluchloralin-45-ec.jpg");
+
+    // 8. Metalaxyl+Mancozeb (nursery drench)
+    expect(chemBottleImageSrc("Metalaxyl+Mancozeb (nursery drench)")).toBe("/images/chem/real/metalaxyl-m-mancozeb-wp.jpg");
+    expect(chemBottleImageSrc("Metalaxyl+Mancozeb (drench)")).toBe("/images/chem/real/metalaxyl-m-mancozeb-wp.jpg");
+  });
 });

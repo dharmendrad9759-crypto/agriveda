@@ -553,6 +553,16 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "pyrithiobac": "/images/chem/real/pyrithiobac-sodium-10-ec.jpg",
   "diuron-80-wp": "/images/chem/real/diuron-80-wp.jpg",
   "diuron": "/images/chem/real/diuron-80-wp.jpg",
+  "carbaryl-50-wp": "/images/chem/real/carbaryl-50-wp.jpg",
+  "carbaryl": "/images/chem/real/carbaryl-50-wp.jpg",
+  "myclobutanil-10-wp": "/images/chem/real/myclobutanil-10-wp.jpg",
+  "myclobutanil": "/images/chem/real/myclobutanil-10-wp.jpg",
+  "triazophos-40-ec": "/images/chem/real/triazophos-40-ec.jpg",
+  "triazophos": "/images/chem/real/triazophos-40-ec.jpg",
+  "diclosulam-84-wdg": "/images/chem/real/diclosulam-84-wdg.jpg",
+  "diclosulam": "/images/chem/real/diclosulam-84-wdg.jpg",
+  "fluchloralin-45-ec": "/images/chem/real/fluchloralin-45-ec.jpg",
+  "fluchloralin": "/images/chem/real/fluchloralin-45-ec.jpg",
 
   // Adjuvants & IPM Traps
   "silicon-spreader": "/images/chem/real/silicon-spreader.jpg",

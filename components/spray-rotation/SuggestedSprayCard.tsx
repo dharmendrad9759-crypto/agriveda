@@ -75,11 +75,12 @@ export default function SuggestedSprayCard({
                   </span>
                 </div>
 
-                {/* Technical name */}
-                <p className="mt-1 text-[11px] font-medium text-[var(--av-text-secondary)]">
-                  <span className="font-bold">तकनीकी (Technical): </span>
-                  {s.product.activeIngredient}
-                </p>
+                {/* Active ingredient */}
+                {s.product.activeIngredient && s.product.activeIngredient !== s.product.productName && (
+                  <p className="mt-1 text-[11px] font-medium text-[var(--av-text-secondary)]">
+                    {s.product.activeIngredient}
+                  </p>
+                )}
 
                 {/* Purpose */}
                 <p className="mt-1 text-[11px] font-bold text-sky-800 dark:text-sky-300">
