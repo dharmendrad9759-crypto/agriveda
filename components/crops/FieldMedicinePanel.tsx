@@ -560,11 +560,6 @@ export default function FieldMedicinePanel({
                               </p>
                             )}
 
-                          {/* Technical Formulation Tag */}
-                          <div className="mt-1 inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                            🧪 {hi ? "शुद्ध तकनीकी फॉर्मूलेशन" : "Technical Formulation"}
-                          </div>
-
                           {/* Dose & Water Information */}
                           <div className="mt-1.5 space-y-1">
                             <div className="flex flex-wrap items-center gap-1 text-[10.5px]">

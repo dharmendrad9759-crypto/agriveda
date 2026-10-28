@@ -97,10 +97,6 @@ export default function CropSprayMedicineList({
                             : ""}
                         </p>
                       )}
-                      {/* Pure technical formulation tag */}
-                      <p className="mt-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
-                        🧪 शुद्ध तकनीकी फॉर्मूलेशन
-                      </p>
 
                       {/* Prominent Dose Badges */}
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">

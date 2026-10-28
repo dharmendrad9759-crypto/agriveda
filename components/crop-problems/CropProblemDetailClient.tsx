@@ -9,6 +9,7 @@ import { getCropProblem } from "@/data/crop-curative-problems";
 import { getCleanHindiTitle } from "@/components/crop-problems/CropProblemGalleryClient";
 import { getCurativeMedicines } from "@/lib/crops/cropProblemMedicines";
 import { cleanTechnicalName } from "@/data/mix-advisor/mix-plans";
+import { lookupChemBottle } from "@/lib/crops/chemBottle";
 import { parseFarmerDose } from "@/lib/crops/tankDose";
 import { speakFarmerText, stopFarmerSpeech } from "@/lib/speech/farmerVoice";
 import { useToast } from "@/components/ui/Toast";
@@ -134,6 +135,27 @@ const SINGLE_COMBO_FORMULATIONS = [
   "custodia",
   "lancer gold",
   "lesenta",
+  "saaf",
+  "साफ",
+  "cabrio top",
+  "कैब्रियो टॉप",
+  "carbendazim 12% + mancozeb 63%",
+  "carbendazim + mancozeb",
+  "कार्बेन्डाजिम 12% + मैंकोजेब 63%",
+  "कार्बेंडाजिम 12% + मैनकोजेब 63%",
+  "कार्बेन्डाजिम + मैंकोजेब",
+  "metiram 55% + pyraclostrobin 5%",
+  "metiram + pyraclostrobin",
+  "मेटिराम 55% + पायराक्लोस्ट्रोबिन 5%",
+  "cymoxanil 8% + mancozeb 64%",
+  "cymoxanil + mancozeb",
+  "carboxin 37.5% + thiram 37.5%",
+  "carboxin + thiram",
+  "azoxystrobin + tebuconazole",
+  "azoxystrobin + difenoconazole",
+  "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4%",
+  "tebuconazole + trifloxystrobin",
+  "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25%",
   "thiamethoxam 12.6% + lambda",
   "azoxystrobin 18.2% + difenoconazole",
   "picoxystrobin 7% + propiconazole 12%",
@@ -144,15 +166,22 @@ const SINGLE_COMBO_FORMULATIONS = [
   "fluxapyroxad + pyraclostrobin",
   "azoxystrobin 11% + tebuconazole 18.3%",
   "fipronil 40% + imidacloprid 40%",
+  "फ़िप्रोनिल 40% + इमिडाक्लोप्रिड 40%",
+  "फिप्रोनिल 40% + इमिडाक्लोप्रिड 40%",
   "acephate 50% + imidacloprid 1.8%",
   "pyriproxyfen 10% + bifenthrin 10%",
+  "पायरीप्रॉक्सीफेन 10% + बाइफेंथ्रिन 10%",
 ];
 
 function isTankMix(tech: string): boolean {
-  if (!tech.includes("+")) return false;
+  if (!tech || !tech.includes("+")) return false;
+  // If catalog has an entry matching this compound formulation, it is a single packaged product
+  const hit = lookupChemBottle(tech);
+  if (hit) return false;
+
   const lower = tech.toLowerCase();
   for (const s of SINGLE_COMBO_FORMULATIONS) {
-    if (lower.includes(s)) return false;
+    if (lower.includes(s.toLowerCase())) return false;
   }
   return true;
 }
@@ -367,9 +396,6 @@ export default function CropProblemDetailClient({
                 </h2>
               </div>
             </div>
-            <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 text-[9px] font-black text-emerald-800 dark:text-emerald-300">
-              सटीक नाप
-            </span>
           </div>
 
           <div className="space-y-2.5 mt-2">
@@ -459,15 +485,10 @@ export default function CropProblemDetailClient({
                         ) : (
                           <ChemBottleThumb technical={c.technical} size="sm" className="rounded-xl shrink-0 shadow-xs" />
                         )}
-                        <div className="min-w-0 flex-1 space-y-1.5">
-                          <div>
-                            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-900 dark:text-emerald-200">
-                              🧪 {isTankMix(c.technical) ? "टैंक मिक्स (2-Technical Tank Mix)" : "शुद्ध टेक्निकल सॉल्ट (Technical Formulation)"}
-                            </span>
-                            <p className="text-[12.5px] font-black text-slate-900 dark:text-slate-100 leading-snug mt-1">
-                              {cleanTechnicalName(c.nameHi || c.technical)}
-                            </p>
-                          </div>
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <p className="text-[13px] font-black text-slate-900 dark:text-slate-100 leading-snug">
+                            {cleanTechnicalName(c.nameHi || c.technical)}
+                          </p>
                           <p className="text-[10.5px] font-semibold text-slate-600 dark:text-slate-400 leading-relaxed">
                             {isTankMix(c.technical)
                               ? "💡 खाद-बीज दुकान से दोनों टेक्निकल लेकर ऊपर लिखी अलग-अलग मात्रा अनुसार टंकी में घोलें।"

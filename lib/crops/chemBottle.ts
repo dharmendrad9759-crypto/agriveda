@@ -7,10 +7,12 @@ function normalizeKey(s: string): string {
   return s
     .toLowerCase()
     .replace(/[\u2013\u2014]/g, "-")
-    .replace(/[^a-z0-9+]+/g, " ")
+    .replace(/[^\p{L}\p{N}+]+/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
+
+const FORM_ONLY_RE = /^\d+(?:\s*\.\s*\d+)?\s*(?:ec|sc|wp|wg|gr|sl|sp|fs|sg|zc|df|wdg|ws|od|sl|sl)$/i;
 
 const byAlias = new Map<string, ChemBottleEntry>();
 for (const entry of CHEM_BOTTLE_CATALOG) {
@@ -22,11 +24,77 @@ for (const entry of CHEM_BOTTLE_CATALOG) {
   ];
   for (const key of keys) {
     const n = normalizeKey(key);
-    if (n && !byAlias.has(n)) byAlias.set(n, entry);
+    if (!n || FORM_ONLY_RE.test(n)) continue;
+    if (!byAlias.has(n)) byAlias.set(n, entry);
   }
 }
 
 const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
+  // High-priority combination formulations (checked first)
+  "टेबुकोनाज़ोल 50% + ट्राइफ्लॉक्सीस्ट्रोबिन 25%": "tebuconazole-trifloxystrobin-wg",
+  "टेबुकोनाज़ोल 50%": "tebuconazole-trifloxystrobin-wg",
+  "टेबुकोनाज़ोल + ट्राइफ्लॉक्सीस्ट्रोबिन": "tebuconazole-trifloxystrobin-wg",
+  "मेटिराम 55% + पायराक्लोस्ट्रोबिन 5%": "metiram-55-pyraclostrobin-5-wg",
+  "मेटिराम 55%": "metiram-55-pyraclostrobin-5-wg",
+  "मेटिराम + पायराक्लोस्ट्रोबिन": "metiram-55-pyraclostrobin-5-wg",
+  "कैब्रियो टॉप": "metiram-55-pyraclostrobin-5-wg",
+  "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4%": "azoxystrobin-difenoconazole-sc",
+  "एज़ोक्सीस्ट्रोबिन 18.2%": "azoxystrobin-difenoconazole-sc",
+  "एज़ोक्सीस्ट्रोबिन + डिफेनोकोनाज़ोल": "azoxystrobin-difenoconazole-sc",
+  "एमिस्टार टॉप": "azoxystrobin-difenoconazole-sc",
+  "कार्बेन्डाजिम 12% + मैंकोजेब 63%": "carbendazim-mancozeb-wp",
+  "कार्बेंडाजिम 12% + मैनकोजेब 63%": "carbendazim-mancozeb-wp",
+  "कार्बेन्डाजिम 12%": "carbendazim-mancozeb-wp",
+  "कार्बेंडाजिम 12%": "carbendazim-mancozeb-wp",
+  "कार्बेन्डाजिम + मैंकोजेब": "carbendazim-mancozeb-wp",
+  "कार्बेंडाजिम + मैनकोजेब": "carbendazim-mancozeb-wp",
+  "साफ": "carbendazim-mancozeb-wp",
+  "पायरीप्रॉक्सीफेन 10% + बाइफेंथ्रिन 10%": "pyriproxyfen-bifenthrin-ec",
+  "पायरीप्रॉक्सीफेन 10% + बायफेंथ्रिन 10%": "pyriproxyfen-bifenthrin-ec",
+  "पायरीप्रॉक्सीफेन + बाइफेंथ्रिन": "pyriproxyfen-bifenthrin-ec",
+  "थायमेथॉक्सम 12.6% + लैम्ब्डा 9.5%": "thiamethoxam-lambda-zc",
+  "थायमेथॉक्सम + लैम्ब्डा": "thiamethoxam-lambda-zc",
+  "अलिका": "thiamethoxam-lambda-zc",
+
+  // Specific single formulations
+  "आइसोप्रोथियोलेन 40%": "isoprothiolane-40-ec",
+  "आइसोप्रोथिओलेन 40%": "isoprothiolane-40-ec",
+  "आइसोप्रोथियोलेन": "isoprothiolane-40-ec",
+  "आइसोप्रोथिओलेन": "isoprothiolane-40-ec",
+  "फुजी-वन": "isoprothiolane-40-ec",
+  "फुजिओन": "isoprothiolane-40-ec",
+
+  "किटाज़िन 48%": "kitazin-48-ec",
+  "किटाज़िन": "kitazin-48-ec",
+  "किटाजिन 48%": "kitazin-48-ec",
+  "किटाजिन": "kitazin-48-ec",
+
+  "बाइफेंथ्रिन 10%": "bifenthrin-10-ec",
+  "बायफेंथ्रिन 10%": "bifenthrin-10-ec",
+  "बाइफेंथ्रिन": "bifenthrin-10-ec",
+  "बायफेंथ्रिन": "bifenthrin-10-ec",
+  "टालस्टार": "bifenthrin-10-ec",
+
+  "क्विनालफॉस 25%": "quinalphos-25-ec",
+  "क्विनालफॉस": "quinalphos-25-ec",
+  "क्विनालफास 25%": "quinalphos-25-ec",
+  "क्विनालफास": "quinalphos-25-ec",
+  "एकलक्स": "quinalphos-25-ec",
+
+  "इंडोक्साकार्ब 14.5%": "indoxacarb-14-5-sc",
+  "इंडोक्साकार्ब": "indoxacarb-14-5-sc",
+  "अवांट": "indoxacarb-14-5-sc",
+
+  "साइपरमेथ्रिन 10%": "cypermethrin-10-ec",
+  "साइपरमेथ्रिन 25%": "cypermethrin-25-ec",
+  "साइपरमेथ्रिन": "cypermethrin-10-ec",
+  "उस्ताद": "cypermethrin-25-ec",
+
+  "टेबुकोनाज़ोल 25.9%": "tebuconazole-25-9-ec",
+  "टेबुकोनाज़ोल": "tebuconazole-25-9-ec",
+  "टेबुकोनाजोल": "tebuconazole-25-9-ec",
+  "फॉलिकुर": "tebuconazole-25-9-ec",
+
   // Insecticides
   // Specific formulations
   "क्लोरांट्रानिलीप्रोल 0.4%": "chlorantraniliprole-0-4-gr",
@@ -98,7 +166,6 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "पेगासस": "diafenthiuron-50-wp",
   "स्पाइरोमेसिफेन": "spiromesifen-22-9-sc",
   "ओबेरॉन": "spiromesifen-22-9-sc",
-  "साइपरमेथ्रिन": "cypermethrin-10-ec",
   "साइंट्रानिलिप्रोल": "cyantraniliprole-10-od",
   "बेनेविया": "cyantraniliprole-10-od",
   "benevia": "cyantraniliprole-10-od",
@@ -137,7 +204,6 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "सल्फर": "wettable-sulphur-80-wdg",
   "घुलनशील सल्फर": "wettable-sulphur-80-wdg",
   "पायराक्लोस्ट्रोबिन": "pyraclostrobin-20-wg",
-  "कैब्रियो टॉप": "pyraclostrobin-20-wg",
   "पाइमेट्रोज़िन": "pymetrozine-50-wg",
   "चेस": "pymetrozine-50-wg",
   "क्लोरफेनापायर": "chlorfenapyr-10-sc",
@@ -153,8 +219,6 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "एसिटामिप्रिड": "acetamiprid-20-sp",
   "प्राइड": "acetamiprid-20-sp",
   "मानिक": "acetamiprid-20-sp",
-  "इंडोक्साकार्ब": "indoxacarb-14-5-sc",
-  "अवांट": "indoxacarb-14-5-sc",
 
   // Fungicides
   "मैंकोजेब": "mancozeb-75-wp",
@@ -168,9 +232,7 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "रिडोमिल": "metalaxyl-m-mancozeb-wp",
   "मेटालेक्सिल": "metalaxyl-m-mancozeb-wp",
   "मेटालैक्सिल": "metalaxyl-m-mancozeb-wp",
-  "साफ": "carbendazim-mancozeb-wp",
   "नेटिवो": "tebuconazole-trifloxystrobin-wg",
-  "एमिस्टार टॉप": "azoxystrobin-difenoconazole-sc",
   "स्ट्रेप्टोसाइक्लिन": "streptocycline-sp",
   "स्ट्रेप्टोमाइसिन": "streptocycline-sp",
   "वैलिडामाइसिन": "validamycin-3-l",
@@ -180,9 +242,6 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "डिफेनोकोनाज़ोल": "difenoconazole-25-ec",
   "डिफेनोकोनाजोल": "difenoconazole-25-ec",
   "स्कोर": "difenoconazole-25-ec",
-  "टेबुकोनाज़ोल": "tebuconazole-25-9-ec",
-  "टेबुकोनाजोल": "tebuconazole-25-9-ec",
-  "फॉलिकुर": "tebuconazole-25-9-ec",
   "एज़ोक्सीस्ट्रोबिन": "azoxystrobin-250-sc",
   "एजोक्सीस्ट्रोबिन": "azoxystrobin-250-sc",
   "एमिस्टार": "azoxystrobin-250-sc",
@@ -212,8 +271,6 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "टिल्ट": "propiconazole-25-ec",
   "साइमोक्सानिल": "cymoxanil-mancozeb-wp",
   "कर्जेट": "cymoxanil-mancozeb-wp",
-  "आइसोप्रोथिओलेन": "isoprothiolane-40-ec",
-  "फुजिओन": "isoprothiolane-40-ec",
   "हिनोसन": "edifenphos-50-ec",
 
   // Herbicides
