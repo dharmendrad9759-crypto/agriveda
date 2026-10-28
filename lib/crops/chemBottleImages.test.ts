@@ -159,4 +159,51 @@ describe("Chemical Bottle Photorealistic Images Resolution", () => {
     expect(hasRealBottlePhoto("Cartap Hydrochloride 50% SP")).toBe(true);
     expect(chemBottleImageSrc("Cartap Hydrochloride 50% SP")).toBe("/images/chem/real/cartap-50-sp.jpg");
   });
+
+  it("resolves bidirectional combo technical names correctly", () => {
+    // Trifloxystrobin first vs Tebuconazole first
+    expect(chemBottleImageSrc("Trifloxystrobin 25% + Tebuconazole 50% WG")).toBe("/images/chem/real/tebuconazole-trifloxystrobin-wg.jpg");
+    expect(chemBottleImageSrc("Tebuconazole 50% + Trifloxystrobin 25% WG")).toBe("/images/chem/real/tebuconazole-trifloxystrobin-wg.jpg");
+    expect(chemBottleImageSrc("ट्राइफ्लॉक्सीस्ट्रोबिन 25% + टेबुकोनाज़ोल 50% WG")).toBe("/images/chem/real/tebuconazole-trifloxystrobin-wg.jpg");
+
+    // Pyraclostrobin first vs Metiram first
+    expect(chemBottleImageSrc("Pyraclostrobin 5% + Metiram 55% WG")).toBe("/images/chem/real/metiram-55-pyraclostrobin-5-wg.jpg");
+    expect(chemBottleImageSrc("Metiram 55% + Pyraclostrobin 5% WG")).toBe("/images/chem/real/metiram-55-pyraclostrobin-5-wg.jpg");
+
+    // Difenoconazole first vs Azoxystrobin first
+    expect(chemBottleImageSrc("Difenoconazole 11.4% + Azoxystrobin 18.2% SC")).toBe("/images/chem/real/azoxystrobin-difenoconazole-sc.jpg");
+    expect(chemBottleImageSrc("Azoxystrobin 18.2% + Difenoconazole 11.4% SC")).toBe("/images/chem/real/azoxystrobin-difenoconazole-sc.jpg");
+
+    // Mancozeb first vs Carbendazim first
+    expect(chemBottleImageSrc("Mancozeb 63% + Carbendazim 12% WP")).toBe("/images/chem/real/carbendazim-mancozeb-wp.jpg");
+    expect(chemBottleImageSrc("Carbendazim 12% + Mancozeb 63% WP")).toBe("/images/chem/real/carbendazim-mancozeb-wp.jpg");
+  });
+
+  it("resolves all newly added herbicide and PGR photorealistic packages", () => {
+    // Herbicide pouches
+    expect(chemBottleImageSrc("Clodinafop-propargyl 15% WP")).toBe("/images/chem/real/clodinafop-15-wp.jpg");
+    expect(chemBottleImageSrc("Sulfosulfuron 75% WG")).toBe("/images/chem/real/sulfosulfuron-75-wg.jpg");
+    expect(chemBottleImageSrc("Metsulfuron-methyl 20% WP")).toBe("/images/chem/real/metsulfuron-methyl-20-wp.jpg");
+    expect(chemBottleImageSrc("Ethoxysulfuron 15% WDG")).toBe("/images/chem/real/ethoxysulfuron-15-wdg.jpg");
+    expect(chemBottleImageSrc("Halosulfuron-methyl 75% WG")).toBe("/images/chem/real/halosulfuron-75-wg.jpg");
+    expect(chemBottleImageSrc("Metribuzin 70% WP")).toBe("/images/chem/real/metribuzin-70-wp.jpg");
+    expect(chemBottleImageSrc("Pyrazosulfuron-ethyl 10% WP")).toBe("/images/chem/real/pyrazosulfuron-10-wp.jpg");
+    expect(chemBottleImageSrc("Diuron 80% WP")).toBe("/images/chem/real/diuron-80-wp.jpg");
+
+    // Herbicide bottles
+    expect(chemBottleImageSrc("Butachlor 50% EC")).toBe("/images/chem/real/butachlor-50-ec.jpg");
+    expect(chemBottleImageSrc("2,4-D Amine Salt 58% SL")).toBe("/images/chem/real/2-4-d-amine-58-sl.jpg");
+    expect(chemBottleImageSrc("Imazethapyr 10% SL")).toBe("/images/chem/real/imazethapyr-10-sl.jpg");
+    expect(chemBottleImageSrc("Quizalofop-ethyl 5% EC")).toBe("/images/chem/real/quizalofop-5-ec.jpg");
+    expect(chemBottleImageSrc("Tembotrione 34.4% SC")).toBe("/images/chem/real/tembotrione-34-sc.jpg");
+    expect(chemBottleImageSrc("Topramezone 33.6% SC")).toBe("/images/chem/real/topramezone-33-sc.jpg");
+    expect(chemBottleImageSrc("Pinoxaden 5.1% EC")).toBe("/images/chem/real/pinoxaden-5-ec.jpg");
+
+    // Other agrochemicals & PGRs
+    expect(chemBottleImageSrc("Spirotetramat 15.31% OD")).toBe("/images/chem/real/spirotetramat-15-od.jpg");
+    expect(chemBottleImageSrc("Mandipropamid 23.4% SC")).toBe("/images/chem/real/mandipropamid-23-sc.jpg");
+    expect(chemBottleImageSrc("Paclobutrazol 23% SC")).toBe("/images/chem/real/paclobutrazol-23-sc.jpg");
+    expect(chemBottleImageSrc("Mepiquat Chloride 5% AS")).toBe("/images/chem/real/mepiquat-chloride-5-as.jpg");
+    expect(chemBottleImageSrc("Sulphur 80% WDG")).toBe("/images/chem/real/wettable-sulphur-80-wdg.jpg");
+  });
 });

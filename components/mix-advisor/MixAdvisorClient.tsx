@@ -934,10 +934,6 @@ function MixAdvisorInner() {
                           <p className="text-[12px] font-bold text-[var(--av-text-secondary)]">
                             {cleanTechnicalName(m.nameHi)}
                           </p>
-                          {/* Pure technical guidance */}
-                          <p className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
-                            🧪 तकनीकी सॉल्ट · किसी भी अच्छी कंपनी का ले सकते हैं
-                          </p>
                           {m.isVirusTarget && (
                             <div className="mt-2 rounded-xl bg-purple-500/10 border border-purple-500/20 p-2 text-[11px] font-medium text-purple-900 dark:text-purple-200 flex items-start gap-1.5">
                               <ShieldAlert className="h-3.5 w-3.5 text-purple-600 shrink-0 mt-0.5" />
@@ -1203,10 +1199,6 @@ function MixAdvisorInner() {
                                 {/* Hindi Name & Brands */}
                                 <p className="mt-0.5 text-[12px] font-bold text-[var(--av-text-secondary)]">
                                   {cleanTechnicalName(opt.nameHi)}
-                                </p>
-                                {/* Pure technical formulation note */}
-                                <p className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
-                                  🧪 शुद्ध तकनीकी सॉल्ट
                                 </p>
 
                                 {/* Doses */}

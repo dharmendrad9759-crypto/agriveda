@@ -10,6 +10,7 @@ import { getCleanHindiTitle } from "@/components/crop-problems/CropProblemGaller
 import { getCurativeMedicines } from "@/lib/crops/cropProblemMedicines";
 import { cleanTechnicalName } from "@/data/mix-advisor/mix-plans";
 import { lookupChemBottle } from "@/lib/crops/chemBottle";
+import { isPreMixFormulation } from "@/lib/crops/medicineParser";
 import { parseFarmerDose } from "@/lib/crops/tankDose";
 import { speakFarmerText, stopFarmerSpeech } from "@/lib/speech/farmerVoice";
 import { useToast } from "@/components/ui/Toast";
@@ -175,6 +176,9 @@ const SINGLE_COMBO_FORMULATIONS = [
 
 function isTankMix(tech: string): boolean {
   if (!tech || !tech.includes("+")) return false;
+  // If text describes a pre-mix formulated product (% + % with formulation), it is a single packaged medicine
+  if (isPreMixFormulation(tech)) return false;
+
   // If catalog has an entry matching this compound formulation, it is a single packaged product
   const hit = lookupChemBottle(tech);
   if (hit) return false;
