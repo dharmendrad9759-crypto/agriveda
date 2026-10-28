@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { chemBottleImageSrc, hasRealBottlePhoto, REAL_BOTTLE_PHOTOS } from "@/lib/crops/chemBottleSvg";
+import { lookupChemBottle } from "@/lib/crops/chemBottle";
 import fs from "fs";
 import path from "path";
 
@@ -60,5 +61,35 @@ describe("Chemical Bottle Photorealistic Images Resolution", () => {
     expect(chemBottleImageSrc("Flubendiamide 20% WG")).toBe("/images/chem/real/flubendiamide-20-wg.jpg");
     expect(chemBottleImageSrc("Pymetrozine 50% WG")).toBe("/images/chem/real/pymetrozine-50-wg.jpg");
     expect(chemBottleImageSrc("Triflumezopyrim 10% SC")).toBe("/images/chem/real/triflumezopyrim-10-sc.jpg");
+  });
+
+  it("resolves Thiodicarb 75% WP to real metallic pouch photo", () => {
+    expect(hasRealBottlePhoto("Thiodicarb 75% WP")).toBe(true);
+    expect(chemBottleImageSrc("Thiodicarb 75% WP")).toBe("/images/chem/real/thiodicarb-75-wp.jpg");
+    expect(chemBottleImageSrc("थायोडिकार्ब 75% WP")).toBe("/images/chem/real/thiodicarb-75-wp.jpg");
+  });
+
+  it("resolves Tolfenpyrad 15% EC to real bottle photo", () => {
+    expect(hasRealBottlePhoto("Tolfenpyrad 15% EC")).toBe(true);
+    expect(chemBottleImageSrc("Tolfenpyrad 15% EC")).toBe("/images/chem/real/tolfenpyrad-15-ec.jpg");
+    expect(chemBottleImageSrc("टोलफेनपायराड 15% EC")).toBe("/images/chem/real/tolfenpyrad-15-ec.jpg");
+  });
+
+  it("resolves Fipronil 40% + Imidacloprid 40% WG correctly and avoids the .3 GR bug", () => {
+    // English lookup
+    expect(hasRealBottlePhoto("Fipronil 40% + Imidacloprid 40% WG")).toBe(true);
+    expect(chemBottleImageSrc("Fipronil 40% + Imidacloprid 40% WG")).toBe("/images/chem/real/fipronil-40-imidacloprid-40-wg.jpg");
+    expect(chemBottleImageSrc("Fipronil 40% + Imidacloprid 40% WG")).not.toBe("/images/chem/real/fipronil-0-3-gr.jpg");
+
+    // Hindi lookup
+    expect(hasRealBottlePhoto("फ़िप्रोनिल 40% + इमिडाक्लोप्रिड 40% WG")).toBe(true);
+    expect(chemBottleImageSrc("फ़िप्रोनिल 40% + इमिडाक्लोप्रिड 40% WG")).toBe("/images/chem/real/fipronil-40-imidacloprid-40-wg.jpg");
+    expect(chemBottleImageSrc("फ़िप्रोनिल 40% + इमिडाक्लोप्रिड 40% WG")).not.toBe("/images/chem/real/fipronil-0-3-gr.jpg");
+
+    const entry = lookupChemBottle("फ़िप्रोनिल 40% + इमिडाक्लोप्रिड 40% WG");
+    expect(entry).toBeDefined();
+    expect(entry?.slug).toBe("fipronil-40-imidacloprid-40-wg");
+    expect(entry?.formulation).toBe("40% + 40% WG");
+    expect(entry?.formulation).not.toContain("0.3%");
   });
 });
