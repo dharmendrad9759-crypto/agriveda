@@ -8,7 +8,7 @@ function normalizeKey(s: string): string {
     .toLowerCase()
     .replace(/[\u2013\u2014]/g, "-")
     .replace(/\+/g, " + ")
-    .replace(/[^\p{L}\p{N}+]+/gu, " ")
+    .replace(/[^\p{L}\p{M}\p{N}+]+/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -224,7 +224,16 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "ब्रोफ्लैनिलाइड": "broflanilide-300-sc",
   "ब्रोफ्लानिलाइड": "broflanilide-300-sc",
   "सिमेग्रा": "broflanilide-300-sc",
-  "cimegra": "broflanilide-300-sc",
+  "क्लोरोपायरीफॉस 1.5% dp": "chlorpyrifos-1-5-dp",
+  "क्लोरोपायरीफॉस 1.5%": "chlorpyrifos-1-5-dp",
+  "क्लोरोपायरीफॉस 1.5": "chlorpyrifos-1-5-dp",
+  "क्लोरोपायरीफॉस डस्ट": "chlorpyrifos-1-5-dp",
+  "क्लोरपायरीफॉस 1.5% dp": "chlorpyrifos-1-5-dp",
+  "क्लोरपायरीफॉस 1.5%": "chlorpyrifos-1-5-dp",
+  "क्लोरपायरीफॉस 1.5": "chlorpyrifos-1-5-dp",
+  "क्लोरपायरीफॉस डस्ट": "chlorpyrifos-1-5-dp",
+  "मिथाइल पैराथियान 2% डस्ट": "chlorpyrifos-1-5-dp",
+  "मिथाइल पैराथियान डस्ट": "chlorpyrifos-1-5-dp",
   "क्लोरोपायरीफॉस": "chlorpyrifos-50-cypermethrin-5-ec",
   "प्रोफेनोफॉस 50%": "profenofos-50-ec",
   "प्रोफेनोफॉस": "profenofos-50-ec",
@@ -655,8 +664,8 @@ export type ChemPackageType = "bottle" | "pouch";
 export function getChemPackageType(technical: string, formulation?: string): ChemPackageType {
   const t = `${technical} ${formulation || ""}`.toUpperCase();
   if (
-    /\b(?:WP|WG|WDG|SG|SP|GR|DF|WS)\b/.test(t) ||
-    /पाउच|पैकेट|चूर्ण|घुलनशील\s*पाउडर|POUCH|PACKET|SACHET|DUST/i.test(technical)
+    /\b(?:WP|WG|WDG|SG|SP|GR|DF|WS|DP)\b/.test(t) ||
+    /पाउच|पैकेट|चूर्ण|घुलनशील\s*पाउडर|POUCH|PACKET|SACHET|DUST|डस्ट/i.test(technical)
   ) {
     return "pouch";
   }
