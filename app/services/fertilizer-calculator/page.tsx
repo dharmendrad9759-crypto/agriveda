@@ -688,7 +688,7 @@ function FertilizerCalculatorInner() {
                         className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-0.5"
                       >
                         <Ruler className="h-3 w-3" />
-                        नया नापें
+                        खेत नापें
                       </a>
                     </div>
                     <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -736,7 +736,7 @@ function FertilizerCalculatorInner() {
                       className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1"
                     >
                       <Ruler className="h-3 w-3" />
-                      उपग्रह से खेत नापें →
+                      उपग्रह से अपना खेत नापें →
                     </a>
                   </div>
                 )}

@@ -179,7 +179,7 @@ export default function FieldHUD({
             }`}
           >
             <Save className="w-4 h-4" />
-            खेत सहेजें (Save Field)
+            अपना खेत सहेजें (Save Field)
           </button>
         )}
       </div>

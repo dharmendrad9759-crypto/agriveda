@@ -75,7 +75,7 @@ const DRAWER_CATEGORIES: DrawerCategory[] = [
         match: (p) => p === "/my-farm",
       },
       {
-        labelHi: "खेत नापें (GPS व उपग्रह)",
+        labelHi: "अपना खेत नापें",
         labelEn: "Smart Field Mapping",
         href: "/my-farm/measure",
         icon: Ruler,

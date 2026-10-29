@@ -47,6 +47,7 @@ function FieldMeasureContent() {
   const [selectedBighaId, setSelectedBighaId] = useState<string>("up");
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [savedSuccessField, setSavedSuccessField] = useState<FarmField | null>(null);
+  const [pinnedLocation, setPinnedLocation] = useState<LatLng | null>(null);
   const [showGuide, setShowGuide] = useState(false);
 
   // If editId is provided, populate initial field boundary
@@ -108,10 +109,10 @@ function FieldMeasureContent() {
             <div>
               <h1 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
                 <Ruler className="w-5 h-5 text-emerald-600" />
-                {editingField ? `सीमा संशोधन: ${editingField.name}` : "खेत नापें (Smart Field Mapping)"}
+                {editingField ? `सीमा संशोधन: ${editingField.name}` : "अपना खेत नापें"}
               </h1>
               <p className="text-xs text-gray-500 hidden sm:block">
-                उपग्रह व जीपीएस आधारित सटीक भू-गणितीय (WGS84) रकबा मापन
+                उपग्रह व GPS आधारित सटीक भू-गणितीय (WGS84) रकबा मापन व लोकेशन
               </p>
             </div>
           </div>
@@ -208,6 +209,13 @@ function FieldMeasureContent() {
             initialCoords={editingField?.boundary || []}
             mode="draw"
             onCoordsChange={(newCoords) => setCoords(newCoords)}
+            onSaveLocationPin={(pos) => {
+              setPinnedLocation(pos);
+              if (coords.length < 3) {
+                setCoords([pos]);
+              }
+              setIsSaveModalOpen(true);
+            }}
             height="540px"
           />
         </div>
@@ -267,7 +275,7 @@ function FieldMeasureContent() {
       <SaveFieldModal
         isOpen={isSaveModalOpen}
         onClose={() => setIsSaveModalOpen(false)}
-        coords={coords}
+        coords={coords.length >= 3 ? coords : (pinnedLocation ? [pinnedLocation] : coords)}
         bighaDisplay={bighaDisplayString}
         initialData={editingField || undefined}
         onSave={handleSaveField}

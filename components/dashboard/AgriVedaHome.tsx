@@ -304,7 +304,7 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
     items: [
       {
         id: "field-measure",
-        hi: "खेत नापें (GPS)",
+        hi: "अपना खेत नापें",
         en: "Field Mapping",
         subHi: "उपग्रह व GPS से सटीक रकबा नापें",
         subEn: "Measure exact area with Satellite & GPS",

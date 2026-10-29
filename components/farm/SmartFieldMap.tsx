@@ -32,6 +32,7 @@ import {
   Navigation,
   Loader2,
   PlusCircle,
+  MapPin,
 } from "lucide-react";
 import {
   LatLng,
@@ -39,6 +40,7 @@ import {
   haversineDistanceMeters,
   getPolygonBoundingBox,
 } from "@/lib/geo/fieldGeometry";
+import { requestUserLocation } from "@/lib/weatherApi";
 import "leaflet/dist/leaflet.css";
 
 // Fix Leaflet default marker icons in Next.js bundler
@@ -56,6 +58,7 @@ export interface SmartFieldMapProps {
   mode?: "draw" | "walk" | "view";
   onCoordsChange?: (coords: LatLng[]) => void;
   onValidationChange?: (isValid: boolean, error?: string) => void;
+  onSaveLocationPin?: (coords: LatLng) => void;
   height?: string;
   defaultCenter?: [number, number];
   defaultZoom?: number;
@@ -153,6 +156,7 @@ export default function SmartFieldMap({
   mode: initialMode = "draw",
   onCoordsChange,
   onValidationChange,
+  onSaveLocationPin,
   height = "520px",
   defaultCenter = [27.502, 78.053], // Default Aligarh / UP Agricultural Belt
   defaultZoom = 16,
@@ -165,6 +169,7 @@ export default function SmartFieldMap({
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
 
   // Undo / Redo stacks
   const [history, setHistory] = useState<LatLng[][]>([]);
@@ -294,23 +299,72 @@ export default function SmartFieldMap({
     }
   };
 
-  // GPS Locate Me
-  const handleLocateMe = () => {
-    if (!("geolocation" in navigator)) {
-      alert("आपके ब्राउज़र में GPS सुविधा उपलब्ध नहीं है।");
+  // GPS Locate Me (Resilient Multi-Tier Location Resolver)
+  const handleLocateMe = useCallback(async (isAuto = false) => {
+    setLocating(true);
+    setSearchMessage(null);
+
+    const applyLocation = (lat: number, lng: number, accuracy?: number) => {
+      setFocusCenter([lat, lng]);
+      setUserGpsPos({ lat, lng });
+      if (typeof accuracy === "number") setGpsAccuracy(accuracy);
+      try {
+        localStorage.setItem(
+          "agriveda-last-location",
+          JSON.stringify({ lat, lon: lng, at: new Date().toISOString() })
+        );
+      } catch {}
+      setLocating(false);
+    };
+
+    // Tier 1: Try Native Capacitor / Browser High-Accuracy Location
+    try {
+      const pos = await requestUserLocation();
+      applyLocation(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
       return;
+    } catch {
+      // Tier 2: Fall back to standard browser geolocation without high accuracy (fast network/WiFi fix)
+      if (typeof window !== "undefined" && "geolocation" in navigator) {
+        try {
+          const fallbackPos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: false,
+              timeout: 12000,
+              maximumAge: 120000,
+            });
+          });
+          applyLocation(fallbackPos.coords.latitude, fallbackPos.coords.longitude, fallbackPos.coords.accuracy);
+          return;
+        } catch {
+          /* continue to cache fallback */
+        }
+      }
+
+      // Tier 3: Fall back to stored last location if present
+      try {
+        const stored = localStorage.getItem("agriveda-last-location");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed.lat === "number" && typeof parsed.lon === "number") {
+            applyLocation(parsed.lat, parsed.lon);
+            return;
+          }
+        }
+      } catch {}
+
+      // Gentle guidance if manual tap failed — NEVER throw an alert modal
+      if (!isAuto) {
+        setSearchMessage("स्थान नहीं मिल सका। कृपया फोन का GPS/लोकेशन चालू करें या ऊपर गांव खोजें।");
+      }
+    } finally {
+      setLocating(false);
     }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setFocusCenter([latitude, longitude]);
-      },
-      (err) => {
-        alert("GPS स्थान प्राप्त नहीं हो सका: " + err.message);
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-  };
+  }, []);
+
+  // Auto-request location on screen mount so farmer's field is focused immediately
+  useEffect(() => {
+    handleLocateMe(true);
+  }, [handleLocateMe]);
 
   // GPS Walking Mode Handler
   const startGpsWalking = () => {
@@ -467,7 +521,7 @@ export default function SmartFieldMap({
             }`}
           >
             <PlusCircle className="w-3.5 h-3.5" />
-            नक्शे पर बनाएं
+            सीमा बनाएं
           </button>
           <button
             type="button"
@@ -482,8 +536,28 @@ export default function SmartFieldMap({
             }`}
           >
             <Footprints className="w-3.5 h-3.5" />
-            चलकर नापें (Walk)
+            चलकर नापें
           </button>
+          {onSaveLocationPin && (
+            <button
+              type="button"
+              onClick={() => {
+                const targetPos =
+                  userGpsPos ||
+                  (coords.length > 0
+                    ? coords[0]
+                    : focusCenter
+                    ? { lat: focusCenter[0], lng: focusCenter[1] }
+                    : { lat: defaultCenter[0], lng: defaultCenter[1] });
+                onSaveLocationPin(targetPos);
+              }}
+              title="खेत की लोकेशन सहेजें (Save Field Location)"
+              className="px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold flex items-center gap-1 shadow-sm active:scale-95 transition"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">लोकेशन सहेजें</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -526,11 +600,15 @@ export default function SmartFieldMap({
         {/* Locate Me */}
         <button
           type="button"
-          onClick={handleLocateMe}
-          title="मेरी वर्तमान लोकेशन पर जाएं"
+          onClick={() => handleLocateMe(false)}
+          title="मेरी लोकेशन पर जाएं (Locate My Farm)"
           className="w-9 h-9 bg-white/95 hover:bg-white text-gray-700 rounded-xl shadow-lg border border-gray-200 flex items-center justify-center transition active:scale-95"
         >
-          <Crosshair className="w-4 h-4 text-blue-600" />
+          {locating ? (
+            <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+          ) : (
+            <Crosshair className="w-4 h-4 text-blue-600" />
+          )}
         </button>
 
         {/* Zoom to Field */}
@@ -688,8 +766,14 @@ export default function SmartFieldMap({
         center={defaultCenter}
         zoom={defaultZoom}
         zoomControl={false}
+        attributionControl={false}
         className="w-full h-full z-0"
       >
+        <style>{`
+          .leaflet-control-attribution { display: none !important; }
+          .leaflet-bottom.leaflet-right { display: none !important; }
+        `}</style>
+
         <MapController
           coords={coords}
           focusCenter={focusCenter}
@@ -705,7 +789,6 @@ export default function SmartFieldMap({
         {layerType === "satellite" && (
           <TileLayer
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            attribution="&copy; Esri World Imagery"
             maxZoom={19}
           />
         )}
@@ -714,7 +797,6 @@ export default function SmartFieldMap({
           <>
             <TileLayer
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              attribution="&copy; Esri World Imagery"
               maxZoom={19}
             />
             <TileLayer
@@ -727,7 +809,6 @@ export default function SmartFieldMap({
         {layerType === "google_hybrid" && (
           <TileLayer
             url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
-            attribution="&copy; Google Maps"
             maxZoom={20}
           />
         )}
@@ -735,7 +816,6 @@ export default function SmartFieldMap({
         {layerType === "osm" && (
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; OpenStreetMap"
             maxZoom={19}
           />
         )}

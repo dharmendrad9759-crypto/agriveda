@@ -126,7 +126,7 @@ const FARM_LINKS: {
   icon3d?: string;
   icon: LucideIcon;
 }[] = [
-  { id: "measure", hi: "खेत नापें (GPS)", en: "Measure Field", href: "/my-farm/measure", icon3d: "/images/icons/3d/my-farm.jpg", icon: Ruler },
+  { id: "measure", hi: "अपना खेत नापें", en: "Measure Field", href: "/my-farm/measure", icon3d: "/images/icons/3d/my-farm.jpg", icon: Ruler },
   { id: "advisor", hi: "खेत सलाह", en: "Advice", href: "/field-advisor", icon3d: "/images/icons/3d/my-farm.jpg", icon: Sprout },
   { id: "fertilizer", hi: "खाद कैलकुलेटर", en: "Fertilizer", href: "/services/fertilizer-calculator", icon3d: "/images/icons/3d/fertilizer.jpg", icon: Calculator },
   { id: "doctor", hi: "फसल डॉक्टर", en: "Crop Doctor", href: "/ai-doctor", icon3d: "/images/icons/3d/crop-doctor.jpg", icon: ShieldAlert },
@@ -453,7 +453,7 @@ export default function MyFarmPage() {
                 className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm shadow-emerald-900/20 active:scale-[0.98] transition"
               >
                 <Ruler className="h-3.5 w-3.5 text-emerald-200" />
-                <span>{isHi ? "खेत नापें (GPS)" : "Measure Field"}</span>
+                <span>{isHi ? "अपना खेत नापें" : "Measure Field"}</span>
               </AppLink>
               <button
                 type="button"
@@ -522,7 +522,7 @@ export default function MyFarmPage() {
                 <div className="flex items-center gap-2">
                   <Ruler className="h-4 w-4 text-emerald-700 dark:text-emerald-300 shrink-0" />
                   <span className="text-[11px] font-bold text-emerald-900 dark:text-emerald-100">
-                    {isHi ? "उपग्रह या GPS से अपने खेत का रकबा नापें" : "Measure exact area using Satellite & GPS"}
+                    {isHi ? "उपग्रह या GPS से अपना खेत नापें" : "Measure exact area using Satellite & GPS"}
                   </span>
                 </div>
                 <AppLink
@@ -1090,7 +1090,7 @@ export default function MyFarmPage() {
                   className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-700/25 transition hover:brightness-110 active:scale-95"
                 >
                   <Ruler className="h-4 w-4" />
-                  <span>{isHi ? "उपग्रह से खेत नापें" : "Measure on Satellite Map"}</span>
+                  <span>{isHi ? "उपग्रह से अपना खेत नापें" : "Measure Field on Map"}</span>
                 </AppLink>
                 <button
                   type="button"

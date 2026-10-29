@@ -24,6 +24,8 @@ export interface FarmField {
   // Smart Field Mapping & Geospatial measurement attributes
   village?: string;
   farmerName?: string;
+  location?: { lat: number; lng: number };
+  isLocationOnly?: boolean;
   areaAcres?: number;
   areaHectares?: number;
   areaSqMeters?: number;

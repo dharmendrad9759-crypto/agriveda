@@ -7,6 +7,7 @@ import {
   coordsToGeoJsonPolygon,
   calculateGeodesicArea,
   calculateGeodesicPerimeter,
+  getPolygonCenter,
   ACRE_TO_SQ_METERS,
   HECTARE_TO_SQ_METERS,
 } from "@/lib/geo/fieldGeometry";
@@ -93,26 +94,30 @@ export default function SaveFieldModal({
     }
 
     const finalCrop = crop === "अन्य (Other)" ? customCrop.trim() : crop.trim();
-    const geoJson = coordsToGeoJsonPolygon(coords);
+    const isPolygon = coords.length >= 3;
+    const geoJson = isPolygon ? coordsToGeoJsonPolygon(coords) : undefined;
+    const centerPoint = coords.length > 0 ? getPolygonCenter(coords) : undefined;
 
     onSave({
       name: name.trim(),
       village: village.trim(),
       farmerName: farmerName.trim() || undefined,
       crop: finalCrop || "अनिर्धारित",
-      area: `${acres.toFixed(2)} एकड़`,
-      areaAcres: Math.round(acres * 100) / 100,
-      areaHectares: Math.round(hectares * 1000) / 1000,
-      areaSqMeters: Math.round(sqMeters),
-      perimeterMeters: Math.round(perimeter),
-      bighaDisplay: bighaDisplay,
+      area: isPolygon ? `${acres.toFixed(2)} एकड़` : (initialData?.area || "लोकेशन सहेजी गई"),
+      areaAcres: isPolygon ? Math.round(acres * 100) / 100 : initialData?.areaAcres,
+      areaHectares: isPolygon ? Math.round(hectares * 1000) / 1000 : initialData?.areaHectares,
+      areaSqMeters: isPolygon ? Math.round(sqMeters) : initialData?.areaSqMeters,
+      perimeterMeters: isPolygon ? Math.round(perimeter) : initialData?.perimeterMeters,
+      bighaDisplay: isPolygon ? bighaDisplay : undefined,
       ownership: initialData?.ownership || "Owned",
       emoji: initialData?.emoji || "🌾",
       stage: initialData?.stage || "सक्रिय",
       status: "Active",
-      boundary: coords,
+      boundary: isPolygon ? coords : undefined,
       geoJson,
-      measurementMethod: "manual_map",
+      location: centerPoint,
+      isLocationOnly: !isPolygon,
+      measurementMethod: isPolygon ? "manual_map" : "manual_entry",
       sowingDate: sowingDate || initialData?.sowingDate || "",
       irrigationType: irrigationType || undefined,
       soilType: soilType || undefined,
@@ -134,10 +139,10 @@ export default function SaveFieldModal({
           <div>
             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-emerald-600" />
-              खेत सहेजें (Save Field)
+              अपना खेत सहेजें (Save Field)
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              नापे गए भूखंड को अपनी प्रोफाइल में सुरक्षित करें
+              खेत की लोकेशन, सीमा और रकबा अपनी प्रोफाइल में सुरक्षित करें
             </p>
           </div>
           <button
