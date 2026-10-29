@@ -22,6 +22,7 @@ export function sanitizeLegacyFarmData(stored: Partial<FarmData>): FarmData {
   }
 
   const cleanFields = fields.map((f, idx) => ({
+    ...f,
     id: f.id || `f-${Date.now()}-${idx}`,
     name: f.name || `खेत ${idx + 1}`,
     area: typeof f.area === "string" ? f.area : "1.0 Acre",
@@ -39,6 +40,11 @@ export function sanitizeLegacyFarmData(stored: Partial<FarmData>): FarmData {
 
   return {
     fields: cleanFields,
+    seasons: stored.seasons ?? [],
+    observations: stored.observations ?? [],
+    satelliteObservations: stored.satelliteObservations ?? [],
+    tasks: stored.tasks ?? [],
+    alerts: stored.alerts ?? [],
     activities: (stored.activities ?? []).filter((a) => !MOCK_ACTIVITY_IDS.has(a.id)),
     notes: stored.notes ?? [],
   };

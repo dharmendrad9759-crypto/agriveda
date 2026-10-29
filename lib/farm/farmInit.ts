@@ -17,6 +17,11 @@ export interface OnboardingFieldInput {
 
 export const EMPTY_FARM_DATA: FarmData = {
   fields: [],
+  seasons: [],
+  observations: [],
+  satelliteObservations: [],
+  tasks: [],
+  alerts: [],
   activities: [],
   notes: [],
 };

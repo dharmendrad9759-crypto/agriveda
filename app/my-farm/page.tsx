@@ -917,9 +917,12 @@ export default function MyFarmPage() {
                           </span>
                         </div>
                         <div>
-                          <p className="font-display text-[1.25rem] font-bold leading-tight text-white drop-shadow-sm">
-                            {f.name}
-                          </p>
+                          <AppLink href={`/my-farm/${f.id}`} className="hover:underline">
+                            <p className="font-display text-[1.25rem] font-bold leading-tight text-white drop-shadow-sm flex items-center gap-1.5">
+                              <span>{f.name}</span>
+                              <ArrowRight className="w-4 h-4 text-emerald-300 inline" />
+                            </p>
+                          </AppLink>
                           <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-emerald-100">
                             <span className="flex h-5 w-5 items-center justify-center rounded-md bg-white/20 text-white backdrop-blur-sm">
                               <Sprout className="h-3 w-3" />
@@ -994,6 +997,48 @@ export default function MyFarmPage() {
                         </span>
                         <ArrowRight className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
                       </AppLink>
+
+                      {/* Agriveda 360° Farm Intelligence Hub Action Grid */}
+                      <div className="grid grid-cols-3 gap-1.5 pt-1">
+                        <AppLink
+                          href={`/my-farm/${f.id}?tab=live`}
+                          className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-center hover:bg-emerald-500/20 transition active:scale-95"
+                        >
+                          <span className="text-sm">🌾</span>
+                          <span className="text-[11px] font-bold text-emerald-900 dark:text-emerald-100 mt-0.5">
+                            {isHi ? "लाइव खेत" : "Live Farm"}
+                          </span>
+                          <span className="text-[9px] text-emerald-700 dark:text-emerald-300">
+                            {isHi ? "नक्शा व मौसम" : "Map & Weather"}
+                          </span>
+                        </AppLink>
+
+                        <AppLink
+                          href={`/my-farm/${f.id}?tab=radar`}
+                          className="flex flex-col items-center justify-center p-2 rounded-xl bg-teal-500/10 border border-teal-500/25 text-center hover:bg-teal-500/20 transition active:scale-95"
+                        >
+                          <span className="text-sm">🛰️</span>
+                          <span className="text-[11px] font-bold text-teal-900 dark:text-teal-100 mt-0.5">
+                            {isHi ? "स्वास्थ्य रडार" : "Health Radar"}
+                          </span>
+                          <span className="text-[9px] text-teal-700 dark:text-teal-300">
+                            {isHi ? "Sentinel-2" : "NDVI Satellite"}
+                          </span>
+                        </AppLink>
+
+                        <AppLink
+                          href={`/my-farm/${f.id}?tab=journey`}
+                          className="flex flex-col items-center justify-center p-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-center hover:bg-amber-500/20 transition active:scale-95"
+                        >
+                          <span className="text-sm">📅</span>
+                          <span className="text-[11px] font-bold text-amber-900 dark:text-amber-100 mt-0.5">
+                            {isHi ? "फसल सफर" : "Crop Journey"}
+                          </span>
+                          <span className="text-[9px] text-amber-700 dark:text-amber-300">
+                            {isHi ? "Zadoks अवस्थाएं" : "Stages & Tasks"}
+                          </span>
+                        </AppLink>
+                      </div>
 
                       {/* Satellite Boundary Mini Map (if boundary drawn) */}
                       {f.boundary && f.boundary.length >= 3 ? (
