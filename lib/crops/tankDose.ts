@@ -63,6 +63,8 @@ export type ApplicationMethod =
   | "soil_broadcast"     // रेत/बालू या खाद में मिलाकर खेत में बुरकाव (Broadcasting)
   | "seed_treatment"     // बुवाई से पूर्व बीज उपचार (Seed treatment)
   | "drench_irrigation"  // सिंचाई के पानी के साथ बहाना / जड़ों में ड्रेंचिंग
+  | "poison_bait"        // चोकर + गुड़ + कीटनाशक चारा विधि
+  | "trap_device"        // फेरोमोन / फलमक्खी ट्रैप
   | "foliar_spray";      // 15L स्प्रे टंकी से पत्तियों पर छिड़काव (Standard spray)
 
 export interface DosePill {
@@ -215,6 +217,81 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
       tankDose: "सिंचाई के साथ (स्प्रे नहीं)",
       acreDose: acreVal,
       waterVolume: "सिंचाई का पानी",
+      perLitre: "लागू नहीं",
+      raw,
+    };
+  }
+
+  // 3b. Trap Device check (फेरोमोन / फलमक्खी ट्रैप / चिपचिपे कार्ड)
+  const isTrap = /trap|ल्योर|ट्रैप|चिपचिपे|स्टीकी|fly trap/i.test(raw);
+  if (isTrap) {
+    const trapCountMatch = raw.match(/(\d+(?:\s*[-–से]\s*\d+)?\s*ट्रैप)/i);
+    const trapCount = trapCountMatch ? trapCountMatch[0] : "4–6 ट्रैप प्रति एकड़";
+
+    return {
+      method: "trap_device",
+      methodLabel: "ट्रैप विधि (कीट आकर्षण व खात्मा)",
+      isSpray: false,
+      pill1: {
+        icon: "🪤",
+        label: "उपकरण प्रकार",
+        value: "ट्रैप / ल्योर",
+        subtext: "खेत में टांगें",
+      },
+      pill2: {
+        icon: "🌾",
+        label: "प्रति एकड़ संख्या",
+        value: trapCount,
+        subtext: "फसल से 1 फुट ऊपर",
+      },
+      pill3: {
+        icon: "🎯",
+        label: "प्रयोग विधि",
+        value: "खेत में लगाएं",
+        subtext: "कीटों की निगरानी व खात्मा",
+      },
+      useSticker: false,
+      doctorTip: "ट्रैप को फसल की ऊंचाई से 1 फुट ऊपर लगाएं और समय-समय पर ल्यूर बदलते रहें।",
+      voiceActionLine: `खेत में ${trapCount} लगाएं ताकि कीट आकर्षित होकर फंस जाएं।`,
+      tankDose: "लागू नहीं (स्प्रे पंप में न भरें)",
+      acreDose: trapCount,
+      waterVolume: "पानी की आवश्यकता नहीं",
+      perLitre: "लागू नहीं",
+      raw,
+    };
+  }
+
+  // 3c. Poison Bait check (चोकर + गुड़ चारा विधि)
+  const isBait = /(?:चारा|गुड़|शीरा|चोकर|बेसन|bait)/i.test(raw) && !/लीटर\s*पानी\s*में\s*घोलकर\s*स्प्रे/i.test(raw);
+  if (isBait) {
+    return {
+      method: "poison_bait",
+      methodLabel: "चारा विधि (Poison Bait)",
+      isSpray: false,
+      pill1: {
+        icon: "🪤",
+        label: "प्रयोग की विधि",
+        value: "चारा विधि",
+        subtext: "ढेला बनाकर रखें",
+      },
+      pill2: {
+        icon: "🥣",
+        label: "मिश्रण सामग्री",
+        value: "चोकर + गुड़ + दवा",
+        subtext: "शाम के समय रखें",
+      },
+      pill3: {
+        icon: "🌾",
+        label: "प्रयोग क्षेत्र",
+        value: "खेत में जगह-जगह रखें",
+        subtext: "कीट आकर्षित होकर मरेंगे",
+      },
+      useSticker: false,
+      doctorTip: "चोकर, गुड़ और कीटनाशक मिलाकर छोटे-छोटे ढेले बनाएं और शाम को खेत में पौधों के पास रखें।",
+      voiceActionLine: "चोकर और गुड़ के साथ कीटनाशक मिलाकर शाम के समय खेत में जगह-जगह रखें।",
+      tankDose: "लागू नहीं (स्प्रे पंप में न भरें)",
+      acreDose: "10 किग्रा चोकर + 1 किग्रा गुड़",
+      waterVolume: "हल्का पानी (गीला करने हेतु)",
       perLitre: "लागू नहीं",
       raw,
     };
