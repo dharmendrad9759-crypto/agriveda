@@ -60,6 +60,30 @@ export default function HomeFarmSnapshot() {
             </AppLink>
           </div>
         </div>
+
+        {/* 360° Quick Launch Pills when fields exist */}
+        {hasFields && farm.fields[0] && (
+          <div className="relative mt-2.5 pt-2 border-t border-emerald-500/15 grid grid-cols-3 gap-1.5 text-[11px]">
+            <AppLink
+              href={`/my-farm/${farm.fields[0].id}?tab=live`}
+              className="py-1 px-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-900 dark:text-emerald-200 font-bold text-center transition truncate"
+            >
+              🌾 लाइव खेत
+            </AppLink>
+            <AppLink
+              href={`/my-farm/${farm.fields[0].id}?tab=radar`}
+              className="py-1 px-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-900 dark:text-teal-200 font-bold text-center transition truncate"
+            >
+              🛰️ स्वास्थ्य रडार
+            </AppLink>
+            <AppLink
+              href={`/my-farm/${farm.fields[0].id}?tab=journey`}
+              className="py-1 px-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold text-center transition truncate"
+            >
+              📅 फसल सफर
+            </AppLink>
+          </div>
+        )}
       </motion.div>
 
       {/* Instant Home Field Measurement Popup Modal */}
