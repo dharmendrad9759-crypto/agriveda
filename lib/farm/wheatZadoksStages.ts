@@ -23,7 +23,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [0, 10],
     baseTempC: 5.0,
     targetGDD: [0, 120],
-    photoUrl: "/images/home/home-job-plan.jpg",
+    photoUrl: "/images/wheat-stages/stage-1-germination.jpg",
     importantActivitiesHi: [
       "खेत में समान जमाव (Crop Stand) का निरीक्षण करें।",
       "यदि कहीं जमाव कम है, तो तुरंत हल्की नमी में नागा भरें (Gap Filling)।",
@@ -63,7 +63,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [18, 25],
     baseTempC: 5.0,
     targetGDD: [120, 260],
-    photoUrl: "/images/home/ask-expert-trust.jpg",
+    photoUrl: "/images/wheat-stages/stage-2-cri.jpg",
     importantActivitiesHi: [
       "गेहूँ का पहला और सबसे महत्वपूर्ण पानी लगाएं (CRI Irrigation)।",
       "सिंचाई के 2-3 दिन बाद पहली यूरिया टॉप-ड्रेसिंग (45-50 किग्रा/एकड़) डालें।",
@@ -103,7 +103,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [25, 45],
     baseTempC: 5.0,
     targetGDD: [260, 520],
-    photoUrl: "/images/home/home-job-plan.jpg",
+    photoUrl: "/images/wheat-stages/stage-3-tillering.jpg",
     importantActivitiesHi: [
       "खरपतवार नाशक का सही समय (30-35 दिन पर)। गुल्ली डंडा हेतु क्लोडिनाफॉप / सल्फोसल्फ्यूरॉन का छिड़काव।",
       "यूरिया की दूसरी खुराक (35-40 दिन पर) डालें।",
@@ -143,7 +143,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [45, 65],
     baseTempC: 5.0,
     targetGDD: [520, 800],
-    photoUrl: "/images/home/ask-expert-trust.jpg",
+    photoUrl: "/images/wheat-stages/stage-4-stem_elongation.jpg",
     importantActivitiesHi: [
       "तीसरी सिंचाई 60-65 दिन पर करें।",
       "यूरिया की अंतिम टॉप-ड्रेसिंग इस अवस्था से पहले पूरी कर लें।",
@@ -182,7 +182,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [65, 80],
     baseTempC: 5.0,
     targetGDD: [800, 1050],
-    photoUrl: "/images/home/home-job-plan.jpg",
+    photoUrl: "/images/wheat-stages/stage-5-booting.jpg",
     importantActivitiesHi: [
       "झंडा पत्ती को रोगमुक्त रखने के लिए 0:52:34 (N-P-K) + बोरॉन 20% का स्प्रे लाभदायक होता है।",
       "रतुआ रोग दिखते ही प्रोपिकोनाज़ोल 25% EC का तुरंत स्प्रे करें।",
@@ -221,7 +221,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [80, 95],
     baseTempC: 5.0,
     targetGDD: [1050, 1280],
-    photoUrl: "/images/home/ask-expert-trust.jpg",
+    photoUrl: "/images/wheat-stages/stage-6-heading.jpg",
     importantActivitiesHi: [
       "खेत में समान बाली निकलने की जांच करें।",
       "हल्की सिंचाई (चौथी सिंचाई) करें ताकि तेज हवा में पौधे न गिरें।",
@@ -260,7 +260,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [95, 105],
     baseTempC: 5.0,
     targetGDD: [1280, 1450],
-    photoUrl: "/images/home/home-job-plan.jpg",
+    photoUrl: "/images/wheat-stages/stage-7-flowering.jpg",
     importantActivitiesHi: [
       "इस 4-5 दिन की अवधि में किसी भी प्रकार के कीटनाशक का स्प्रे न करें ताकि परागण बाधित न हो।",
       "मिट्टी में पर्याप्त नमी बनाए रखें।",
@@ -296,7 +296,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [105, 120],
     baseTempC: 5.0,
     targetGDD: [1450, 1720],
-    photoUrl: "/images/home/ask-expert-trust.jpg",
+    photoUrl: "/images/wheat-stages/stage-8-milking.jpg",
     importantActivitiesHi: [
       "पांचवी सिंचाई (दूधिया अवस्था में) करें।",
       "पछेती गर्मी (Terminal Heat) से बचाव के लिए 00:00:50 (पोटेशियम सल्फेट) 1% का छिड़काव दाने को मोटा करता है।",
@@ -332,7 +332,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [120, 135],
     baseTempC: 5.0,
     targetGDD: [1720, 1980],
-    photoUrl: "/images/home/home-job-plan.jpg",
+    photoUrl: "/images/wheat-stages/stage-9-dough.jpg",
     importantActivitiesHi: [
       "सिंचाई पूरी तरह बंद कर दें। अब पानी देने से कोई लाभ नहीं होगा बल्कि फसल गिर सकती है।",
       "कटाई यंत्र (Combine Harvester / थ्रेशर) की व्यवस्था शुरू करें।",
@@ -368,7 +368,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     typicalDaysRange: [135, 150],
     baseTempC: 5.0,
     targetGDD: [1980, 2300],
-    photoUrl: "/images/home/ask-expert-trust.jpg",
+    photoUrl: "/images/wheat-stages/stage-10-ripening.jpg",
     importantActivitiesHi: [
       "धूप खिली होने पर कंबाइन हार्वेस्टर या रीपर द्वारा कटाई करें।",
       "भूसे (तूड़ी) को सुरक्षित स्थान पर ढककर रखें।",

@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useFarmData } from "@/hooks/useFarmData";
-import { useToast } from "@/components/ui/Toast";
 import AppLink from "@/components/ui/AppLink";
 import FieldSwitcher from "@/components/farm/FieldSwitcher";
 import LiveFarmView from "@/components/farm/LiveFarmView";
@@ -13,16 +13,18 @@ import {
   calculateDaysAfterSowing,
   estimateWheatStage,
   generateWheatSeasonTasks,
+  isWheatCrop,
+  updateTaskStatusesByAge,
 } from "@/lib/farm/cropJourneyEngine";
-import { FarmTask, CropSeason, TaskStatus } from "@/lib/farm/types";
+import { cn } from "@/lib/cn";
+import { EASE_OUT, MOTION, tabPanel } from "@/lib/motion/variants";
+import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeft,
   Radio,
   Sprout,
   Compass,
   Tractor,
-  Layers,
-  Sparkles,
 } from "lucide-react";
 
 interface FieldDetailClientProps {
@@ -30,17 +32,38 @@ interface FieldDetailClientProps {
   initialTab?: string;
 }
 
+type FarmTab = "live" | "radar" | "journey";
+
+const TABS: { id: FarmTab; label: string; icon: LucideIcon }[] = [
+  { id: "live", label: "लाइव", icon: Compass },
+  { id: "radar", label: "स्वास्थ्य", icon: Radio },
+  { id: "journey", label: "सफर", icon: Sprout },
+];
+
+function validTab(tab?: string | null): FarmTab {
+  return tab === "radar" || tab === "journey" ? tab : "live";
+}
+
+function currentSeasonLabel(date = new Date()) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  if (month >= 5 && month <= 9) return `खरीफ ${year}`;
+  if (month >= 10) return `रबी ${year}-${String(year + 1).slice(2)}`;
+  return `रबी ${year - 1}-${String(year).slice(2)}`;
+}
+
 export default function FieldDetailClient({
   fieldId,
   initialTab = "live",
 }: FieldDetailClientProps) {
   const router = useRouter();
-  const { showToast } = useToast();
+  const reduced = useReducedMotion();
   const {
     data,
     hydrated,
     addSeason,
     updateSeason,
+    updateField,
     addTask,
     updateTaskStatus,
     addObservation,
@@ -48,68 +71,122 @@ export default function FieldDetailClient({
     addActivity,
   } = useFarmData();
 
-  // Valid tabs: 'live' | 'radar' | 'journey'
-  const validTab = (t?: string): "live" | "radar" | "journey" => {
-    if (t === "radar" || t === "journey") return t;
-    return "live";
-  };
+  const [activeTab, setActiveTab] = useState<FarmTab>(validTab(initialTab));
+  const initializedFor = useRef<string | null>(null);
+  const derivedSignature = useRef<string>("");
 
-  const [activeTab, setActiveTab] = useState<"live" | "radar" | "journey">(
-    validTab(initialTab)
+  const field = useMemo(
+    () => data.fields.find((item) => item.id === fieldId),
+    [data.fields, fieldId]
   );
 
-  const field = useMemo(() => {
-    return data.fields.find((f) => f.id === fieldId);
-  }, [data.fields, fieldId]);
+  const activeSeason = useMemo(
+    () =>
+      data.seasons.find(
+        (season) => season.fieldId === fieldId && season.seasonStatus === "active"
+      ),
+    [data.seasons, fieldId]
+  );
 
-  // Find or create active crop season for this field
-  const activeSeason = useMemo(() => {
-    return data.seasons.find((s) => s.fieldId === fieldId && s.seasonStatus === "active");
-  }, [data.seasons, fieldId]);
+  const hasAnySeason = useMemo(
+    () => data.seasons.some((season) => season.fieldId === fieldId),
+    [data.seasons, fieldId]
+  );
 
-  // If no season exists yet for this field, initialize one automatically
+  // Keep the active tab in sync with browser back/forward navigation.
   useEffect(() => {
-    if (!hydrated || !field) return;
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      setActiveTab(validTab(params.get("tab")));
+    };
 
-    if (!activeSeason) {
-      const sowingIso = field.sowingDateIso || new Date().toISOString();
-      const das = calculateDaysAfterSowing(sowingIso);
-      const estStage = estimateWheatStage({
-        id: "",
-        fieldId: field.id,
-        cropId: "wheat",
-        cropName: field.crop || "गेहूँ",
-        seasonName: "रबी 2026-27",
-        sowingDate: sowingIso,
-        currentStageId: "cri",
-        stageEstimationMethod: "agronomic_window",
-        seasonStatus: "active",
-        createdAt: "",
-        updatedAt: "",
-      });
-      const newSeasonId = `cs-${field.id}-${Date.now()}`;
+    syncFromUrl();
+    window.addEventListener("popstate", syncFromUrl);
+    return () => window.removeEventListener("popstate", syncFromUrl);
+  }, []);
 
-      addSeason({
-        fieldId: field.id,
-        cropId: "wheat",
-        cropName: field.crop || "गेहूँ",
-        variety: field.variety,
-        seasonName: "रबी 2026-27",
-        sowingDate: sowingIso,
-        currentStageId: estStage.stage.stageId,
-        stageEstimationMethod: estStage.method,
-        seasonStatus: "active",
-      });
+  // Create a season only for fields that have never had one. Harvested seasons
+  // stay harvested; the farmer can explicitly start a fresh season instead.
+  const startSeason = useCallback((sowingDateOverride?: string) => {
+    if (!field) return;
+    initializedFor.current = field.id;
 
-      // Also generate initial tasks for this season
-      const initialTasks = generateWheatSeasonTasks(newSeasonId, field.id);
-      initialTasks.forEach((t) => {
-        addTask(t);
+    const wheat = isWheatCrop(field);
+    const sowingIso =
+      sowingDateOverride || field.sowingDateIso || new Date().toISOString();
+
+    if (sowingDateOverride) {
+      updateField(field.id, {
+        sowingDateIso: sowingDateOverride,
+        sowingDate: sowingDateOverride,
+        status: "Active",
       });
     }
-  }, [hydrated, field, activeSeason, fieldId, addSeason, addTask]);
+    const cropId = wheat ? "wheat" : field.cropSlug || "other";
 
-  const handleSwitchTab = (tab: "live" | "radar" | "journey") => {
+    const estimated = estimateWheatStage({
+      id: "",
+      fieldId: field.id,
+      cropId,
+      cropName: field.crop || "फसल",
+      seasonName: currentSeasonLabel(),
+      sowingDate: sowingIso,
+      currentStageId: "cri",
+      stageEstimationMethod: "agronomic_window",
+      seasonStatus: "active",
+      createdAt: "",
+      updatedAt: "",
+    });
+
+    const seasonId = addSeason({
+      fieldId: field.id,
+      cropId,
+      cropName: field.crop || "फसल",
+      variety: field.variety,
+      seasonName: currentSeasonLabel(),
+      sowingDate: sowingIso,
+      currentStageId: wheat ? estimated.stage.stageId : field.stage || "germination",
+      stageEstimationMethod: wheat ? estimated.method : "farmer_confirmed",
+      seasonStatus: "active",
+    });
+
+    if (wheat) {
+      generateWheatSeasonTasks(seasonId, field.id).forEach((task) => addTask(task));
+    }
+  }, [field, addSeason, addTask, updateField]);
+
+  useEffect(() => {
+    if (!hydrated || !field || hasAnySeason) return;
+    if (initializedFor.current === field.id) return;
+    startSeason();
+  }, [hydrated, field, hasAnySeason, startSeason]);
+
+  // Derive due/upcoming statuses from crop age for the active season only.
+  useEffect(() => {
+    if (!hydrated || !activeSeason) return;
+
+    const seasonTasks = data.tasks.filter(
+      (task) => task.seasonId === activeSeason.id
+    );
+    if (seasonTasks.length === 0) return;
+
+    const age = calculateDaysAfterSowing(activeSeason.sowingDate);
+    const derived = updateTaskStatusesByAge(seasonTasks, age);
+    const signature = derived
+      .map((task) => `${task.id}:${task.status}`)
+      .join("|");
+
+    if (signature === derivedSignature.current) return;
+    derivedSignature.current = signature;
+
+    derived.forEach((task, index) => {
+      if (task.status !== seasonTasks[index]?.status) {
+        updateTaskStatus(task.id, task.status);
+      }
+    });
+  }, [hydrated, activeSeason, data.tasks, updateTaskStatus]);
+
+  const handleSwitchTab = (tab: FarmTab) => {
     setActiveTab(tab);
     window.history.replaceState(null, "", `/my-farm/${fieldId}?tab=${tab}`);
   };
@@ -120,10 +197,12 @@ export default function FieldDetailClient({
 
   if (!hydrated) {
     return (
-      <div className="min-h-screen bg-[var(--av-surface-inset)] flex items-center justify-center p-6 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-[var(--av-surface-inset)] p-6 text-center">
         <div className="space-y-3">
-          <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs font-bold text-gray-500">खेत डेटा लोड हो रहा है...</p>
+          <div className="mx-auto h-9 w-9 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
+          <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
+            खेत डेटा लोड हो रहा है…
+          </p>
         </div>
       </div>
     );
@@ -131,23 +210,25 @@ export default function FieldDetailClient({
 
   if (!field) {
     return (
-      <div className="min-h-screen bg-[var(--av-surface-inset)] p-6 flex flex-col items-center justify-center text-center">
-        <div className="max-w-sm w-full bg-[var(--av-surface)] p-6 rounded-2xl border border-[var(--av-border)] shadow-md space-y-4">
-          <Tractor className="w-12 h-12 text-emerald-600 mx-auto" />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--av-surface-inset)] p-6 text-center">
+        <div className="w-full max-w-sm space-y-4 rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-6 shadow-[var(--av-shadow-md)]">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+            <Tractor className="h-6 w-6" />
+          </span>
           <div>
-            <h1 className="text-base font-bold text-[var(--av-text-primary)]">
+            <h1 className="text-sm font-semibold text-[var(--av-text-primary)]">
               खेत नहीं मिला
             </h1>
-            <p className="text-xs text-[var(--av-text-muted)] mt-1">
-              यह खेत हटाया जा चुका है या इसका लिंक अमान्य है।
+            <p className="mt-1 text-[11px] leading-relaxed text-[var(--av-text-muted)]">
+              यह खेत हटाया जा चुका है या लिंक अमान्य है।
             </p>
           </div>
           <AppLink
             href="/my-farm"
-            className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition shadow-sm"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-700 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>मेरे सभी खेत पर वापस जाएं</span>
+            <ArrowLeft className="h-4 w-4" />
+            मेरे खेत
           </AppLink>
         </div>
       </div>
@@ -156,110 +237,134 @@ export default function FieldDetailClient({
 
   return (
     <div className="min-h-screen bg-[var(--av-surface-inset)] text-[var(--av-text-primary)]">
-      {/* Sticky Top Header */}
-      <header className="sticky top-0 z-40 bg-[var(--av-surface)]/95 backdrop-blur-md border-b border-[var(--av-border)] shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
+      <header className="sticky top-0 z-40 border-b border-[var(--av-border)] bg-[var(--av-surface)]/95 backdrop-blur-md">
+        <div className="mx-auto max-w-3xl px-4 pb-2 pt-3">
+          <div className="flex items-center gap-2">
             <AppLink
               href="/my-farm"
-              className="p-2 rounded-xl bg-[var(--av-surface-inset)] hover:bg-gray-100 dark:hover:bg-gray-800 text-[var(--av-text-secondary)] border border-[var(--av-border)] transition shrink-0"
-              title="पीछे जाएं"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] transition hover:text-[var(--av-text-primary)]"
+              aria-label="वापस जाएं"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="h-4 w-4" />
             </AppLink>
 
-            <FieldSwitcher
-              fields={data.fields}
-              selectedFieldId={field.id}
-              onSelectField={handleSelectField}
-            />
-          </div>
+            <div className="min-w-0 flex-1">
+              <FieldSwitcher
+                fields={data.fields}
+                selectedFieldId={field.id}
+                onSelectField={handleSelectField}
+              />
+            </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-600 text-white">
-              सक्रिय खेत
+            <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-[var(--av-surface-inset)] px-2.5 py-1 text-[9.5px] font-medium text-[var(--av-text-muted)] sm:flex">
+              <span
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  field.status === "Active"
+                    ? "bg-emerald-500"
+                    : "bg-[var(--av-text-muted)]"
+                )}
+              />
+              {field.status === "Active" ? "सक्रिय" : field.status}
             </span>
           </div>
-        </div>
 
-        {/* 3-Tab Bar: Live Farm | Health Radar | 360° Crop Journey */}
-        <div className="max-w-3xl mx-auto px-4 flex border-t border-[var(--av-border)] gap-1 p-1 bg-[var(--av-surface-inset)]">
-          <button
-            type="button"
-            onClick={() => handleSwitchTab("live")}
-            className={`flex-1 py-2.5 text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all ${
-              activeTab === "live"
-                ? "bg-gradient-to-r from-emerald-800 to-teal-800 text-white shadow-md shadow-emerald-900/20"
-                : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)] hover:bg-white/50 dark:hover:bg-gray-800"
-            }`}
+          <nav
+            className="relative mt-2.5 grid grid-cols-3 gap-1 rounded-2xl bg-[var(--av-surface-inset)] p-1"
+            aria-label="खेत दृश्य"
           >
-            <Compass className="w-3.5 h-3.5" />
-            <span>🌾 लाइव खेत</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleSwitchTab("radar")}
-            className={`flex-1 py-2.5 text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all ${
-              activeTab === "radar"
-                ? "bg-gradient-to-r from-teal-800 to-cyan-800 text-white shadow-md shadow-teal-900/20"
-                : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)] hover:bg-white/50 dark:hover:bg-gray-800"
-            }`}
-          >
-            <Radio className="w-3.5 h-3.5" />
-            <span>🛰️ स्वास्थ्य रडार</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleSwitchTab("journey")}
-            className={`flex-1 py-2.5 text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all ${
-              activeTab === "journey"
-                ? "bg-gradient-to-r from-amber-600 via-amber-700 to-yellow-700 text-white shadow-md shadow-amber-900/30"
-                : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)] hover:bg-white/50 dark:hover:bg-gray-800"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" />
-            <span>🌟 360° फसल सफर</span>
-          </button>
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleSwitchTab(tab.id)}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "relative rounded-xl py-2 text-[11px] font-semibold transition",
+                    active
+                      ? "text-[var(--av-text-primary)]"
+                      : "text-[var(--av-text-muted)] hover:text-[var(--av-text-secondary)]"
+                  )}
+                >
+                  {active ? (
+                    <motion.span
+                      layoutId="farm-tab-indicator"
+                      className="absolute inset-0 rounded-xl bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]"
+                      transition={
+                        reduced
+                          ? { duration: 0 }
+                          : { type: "spring", stiffness: 420, damping: 34 }
+                      }
+                    />
+                  ) : null}
+                  <span className="relative z-10 flex items-center justify-center gap-1.5">
+                    <Icon
+                      className={cn(
+                        "h-3.5 w-3.5",
+                        active
+                          ? "text-emerald-700 dark:text-emerald-300"
+                          : "text-current"
+                      )}
+                    />
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
       </header>
 
-      {/* Main Tab Content */}
-      <main className="max-w-3xl mx-auto px-4 py-4">
-        {activeTab === "live" && (
-          <LiveFarmView
-            field={field}
-            activeSeason={activeSeason}
-            tasks={data.tasks}
-            observations={data.observations}
-            onSwitchTab={handleSwitchTab}
-            onUpdateTaskStatus={updateTaskStatus}
-            onAddObservation={addObservation}
-            onDeleteObservation={deleteObservation}
-            onAddActivity={addActivity}
-          />
-        )}
+      <main className="mx-auto max-w-3xl px-4 py-4">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={activeTab}
+            variants={tabPanel}
+            initial={reduced ? false : "initial"}
+            animate="animate"
+            exit={reduced ? undefined : "exit"}
+            transition={{ duration: MOTION.normal, ease: EASE_OUT }}
+          >
+            {activeTab === "live" ? (
+              <LiveFarmView
+                field={field}
+                activeSeason={activeSeason}
+                tasks={data.tasks}
+                observations={data.observations}
+                onSwitchTab={handleSwitchTab}
+                onUpdateTaskStatus={updateTaskStatus}
+                onAddObservation={addObservation}
+                onDeleteObservation={deleteObservation}
+                onAddActivity={addActivity}
+              />
+            ) : null}
 
-        {activeTab === "radar" && (
-          <HealthRadarView
-            field={field}
-            activeSeason={activeSeason}
-            satelliteObservations={data.satelliteObservations}
-            onAddObservation={addObservation}
-          />
-        )}
+            {activeTab === "radar" ? (
+              <HealthRadarView
+                field={field}
+                activeSeason={activeSeason}
+                satelliteObservations={data.satelliteObservations}
+                onAddObservation={addObservation}
+              />
+            ) : null}
 
-        {activeTab === "journey" && (
-          <CropJourneyView
-            field={field}
-            activeSeason={activeSeason}
-            tasks={data.tasks}
-            onUpdateSeason={updateSeason}
-            onUpdateTaskStatus={updateTaskStatus}
-            onAddTask={addTask}
-          />
-        )}
+            {activeTab === "journey" ? (
+              <CropJourneyView
+                field={field}
+                activeSeason={activeSeason}
+                hasSeasonHistory={hasAnySeason}
+                tasks={data.tasks}
+                onUpdateSeason={updateSeason}
+                onUpdateTaskStatus={updateTaskStatus}
+                onAddTask={addTask}
+                onStartSeason={startSeason}
+              />
+            ) : null}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );

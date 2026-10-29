@@ -58,7 +58,11 @@ describe("Agriveda Farm Intelligence 360° - Scientific & Agronomic Engine", () 
         { lat: 27.5, lng: 78.002 },
       ];
       const series = generateHistoricalObservations("f-1", boundary, 60);
-      expect(series).toHaveLength(4);
+      expect(series).toHaveLength(6);
+      // Observations should span a chronological time series
+      const dates = series.map((s) => s.acquisitionDate);
+      expect([...dates].sort()).toEqual(dates);
+      expect(new Set(dates).size).toBe(6);
       // All observations should have SCL cloud masking under 10%
       series.forEach((s) => {
         expect(s.cloudCoveragePercent).toBeLessThan(10);

@@ -19,13 +19,16 @@ import {
   Calculator,
   CalendarDays,
   Check,
+  ChevronRight,
   CloudSun,
+  Compass,
   FlaskConical,
   Leaf,
   MapPin,
   MessageCircle,
   Pencil,
   Plus,
+  Radio,
   RefreshCw,
   Search,
   ShieldAlert,
@@ -998,45 +1001,48 @@ export default function MyFarmPage() {
                         <ArrowRight className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
                       </AppLink>
 
-                      {/* Agriveda 360° Farm Intelligence Hub Action Grid */}
-                      <div className="grid grid-cols-3 gap-1.5 pt-1">
+                      {/* Agriveda 360° Farm Intelligence Hub */}
+                      <div className="divide-y divide-[var(--av-border-subtle)] overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
                         <AppLink
                           href={`/my-farm/${f.id}?tab=live`}
-                          className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-center hover:bg-emerald-500/20 transition active:scale-95"
+                          className="flex items-center gap-2.5 px-3 py-2 transition hover:bg-[var(--av-surface)] active:scale-[0.99]"
                         >
-                          <span className="text-sm">🌾</span>
-                          <span className="text-[11px] font-bold text-emerald-900 dark:text-emerald-100 mt-0.5">
+                          <Compass className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                          <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
                             {isHi ? "लाइव खेत" : "Live Farm"}
                           </span>
-                          <span className="text-[9px] text-emerald-700 dark:text-emerald-300">
+                          <span className="text-[9.5px] text-[var(--av-text-muted)]">
                             {isHi ? "नक्शा व मौसम" : "Map & Weather"}
                           </span>
+                          <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
                         </AppLink>
 
                         <AppLink
                           href={`/my-farm/${f.id}?tab=radar`}
-                          className="flex flex-col items-center justify-center p-2 rounded-xl bg-teal-500/10 border border-teal-500/25 text-center hover:bg-teal-500/20 transition active:scale-95"
+                          className="flex items-center gap-2.5 px-3 py-2 transition hover:bg-[var(--av-surface)] active:scale-[0.99]"
                         >
-                          <span className="text-sm">🛰️</span>
-                          <span className="text-[11px] font-bold text-teal-900 dark:text-teal-100 mt-0.5">
+                          <Radio className="h-3.5 w-3.5 shrink-0 text-teal-600 dark:text-teal-300" />
+                          <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
                             {isHi ? "स्वास्थ्य रडार" : "Health Radar"}
                           </span>
-                          <span className="text-[9px] text-teal-700 dark:text-teal-300">
-                            {isHi ? "Sentinel-2" : "NDVI Satellite"}
+                          <span className="text-[9.5px] text-[var(--av-text-muted)]">
+                            {isHi ? "NDVI उपग्रह" : "NDVI Satellite"}
                           </span>
+                          <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
                         </AppLink>
 
                         <AppLink
                           href={`/my-farm/${f.id}?tab=journey`}
-                          className="flex flex-col items-center justify-center p-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-center hover:bg-amber-500/20 transition active:scale-95"
+                          className="flex items-center gap-2.5 px-3 py-2 transition hover:bg-[var(--av-surface)] active:scale-[0.99]"
                         >
-                          <span className="text-sm">📅</span>
-                          <span className="text-[11px] font-bold text-amber-900 dark:text-amber-100 mt-0.5">
+                          <Sprout className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300" />
+                          <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
                             {isHi ? "फसल सफर" : "Crop Journey"}
                           </span>
-                          <span className="text-[9px] text-amber-700 dark:text-amber-300">
-                            {isHi ? "Zadoks अवस्थाएं" : "Stages & Tasks"}
+                          <span className="text-[9.5px] text-[var(--av-text-muted)]">
+                            {isHi ? "अवस्था व कार्य" : "Stages & Tasks"}
                           </span>
+                          <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
                         </AppLink>
                       </div>
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   FarmField,
   CropSeason,
@@ -16,33 +17,32 @@ import {
 import { calculateDaysAfterSowing } from "@/lib/farm/cropJourneyEngine";
 import { useToast } from "@/components/ui/Toast";
 import AppLink from "@/components/ui/AppLink";
+import FarmSheet from "@/components/farm/FarmSheet";
+import { cn } from "@/lib/cn";
+import { EASE_OUT } from "@/lib/motion/variants";
 import {
-  Radio,
   Satellite,
-  Info,
+  Radio,
   AlertTriangle,
   CheckCircle2,
-  Calendar,
+  CalendarDays,
+  Cloud,
   Layers,
-  ArrowRight,
-  TrendingUp,
   Camera,
   Search,
-  ExternalLink,
-  ChevronDown,
-  X,
-  Sparkles,
-  Zap,
-  Target,
+  TrendingUp,
+  TrendingDown,
+  Map as MapIcon,
   Activity,
+  NotebookPen,
 } from "lucide-react";
 
 const LiveFieldMap = dynamic(() => import("@/components/farm/LiveFieldMap"), {
   ssr: false,
   loading: () => (
-    <div className="h-[300px] w-full bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-xs text-emerald-400 gap-2 border border-emerald-900/50">
-      <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-      <span>ESA Sentinel-2 L2A उपग्रह रडार लोड हो रहा है...</span>
+    <div className="flex h-[260px] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[11px] text-[var(--av-text-muted)]">
+      <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
+      <span>उपग्रह नक्शा लोड हो रहा है…</span>
     </div>
   ),
 });
@@ -54,6 +54,187 @@ interface HealthRadarViewProps {
   onAddObservation?: (obs: Omit<FieldObservation, "id" | "createdAt">) => void;
 }
 
+function formatShortDate(isoDate: string) {
+  return new Date(isoDate).toLocaleDateString("hi-IN", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
+function getNdviBand(value: number) {
+  if (value >= 0.7) {
+    return {
+      label: "सघन व स्वस्थ",
+      detail: "घनी हरियाली — फसल अच्छी बढ़वार में है।",
+      badge: "border-emerald-400/30 bg-emerald-400/15 text-emerald-200",
+      dot: "bg-emerald-400",
+    };
+  }
+  if (value >= 0.5) {
+    return {
+      label: "अच्छी बढ़वार",
+      detail: "वानस्पतिक विकास सामान्य है, निगरानी जारी रखें।",
+      badge: "border-teal-400/30 bg-teal-400/15 text-teal-200",
+      dot: "bg-teal-400",
+    };
+  }
+  if (value >= 0.3) {
+    return {
+      label: "मध्यम तनाव",
+      detail: "कुछ हिस्सों में कम घनत्व — खेत में जाकर जांच करें।",
+      badge: "border-amber-400/30 bg-amber-400/15 text-amber-200",
+      dot: "bg-amber-400",
+    };
+  }
+  return {
+    label: "कम घनत्व",
+    detail: "फसल पतली या शुरुआती अवस्था में — मिट्टी व नमी देखें।",
+    badge: "border-rose-400/30 bg-rose-400/15 text-rose-200",
+    dot: "bg-rose-400",
+  };
+}
+
+function NdviGauge({ value }: { value: number }) {
+  const reduced = useReducedMotion();
+  const clamped = Math.min(1, Math.max(0, value));
+  const radius = 62;
+  const arcLength = Math.PI * radius;
+  const offset = arcLength * (1 - clamped);
+
+  return (
+    <div className="w-[168px] shrink-0">
+      <div className="relative">
+        <svg viewBox="0 0 160 112" className="w-full" aria-hidden>
+          <defs>
+            <linearGradient id="radar-gauge" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#fb7185" />
+              <stop offset="48%" stopColor="#fbbf24" />
+              <stop offset="100%" stopColor="#34d399" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M18 96 A 62 62 0 0 1 142 96"
+            fill="none"
+            stroke="rgba(255,255,255,0.08)"
+            strokeWidth="9"
+            strokeLinecap="round"
+          />
+          <motion.path
+            d="M18 96 A 62 62 0 0 1 142 96"
+            fill="none"
+            stroke="url(#radar-gauge)"
+            strokeWidth="9"
+            strokeLinecap="round"
+            strokeDasharray={arcLength}
+            initial={false}
+            animate={{ strokeDashoffset: offset }}
+            transition={reduced ? { duration: 0 } : { duration: 0.9, ease: EASE_OUT }}
+          />
+        </svg>
+        <div className="absolute inset-x-0 bottom-1 text-center">
+          <p className="text-[26px] font-semibold leading-none tabular-nums text-white">
+            {value.toFixed(2)}
+          </p>
+          <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-emerald-200/55">
+            NDVI
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center justify-between px-3 text-[9px] font-medium text-emerald-200/40">
+        <span>0.0</span>
+        <span>0.5</span>
+        <span>1.0</span>
+      </div>
+    </div>
+  );
+}
+
+function NdviSparkline({ series }: { series: SatelliteObservation[] }) {
+  const gradientId = useId().replace(/:/g, "");
+  const reduced = useReducedMotion();
+  const width = 300;
+  const height = 78;
+  const padX = 8;
+  const padY = 10;
+
+  const values = series.map((item) => item.meanNdvi);
+  const min = Math.min(...values, 0.24) - 0.04;
+  const max = Math.max(...values, 0.82) + 0.04;
+  const range = Math.max(0.01, max - min);
+  const step = (width - padX * 2) / Math.max(1, series.length - 1);
+
+  const points = series.map((item, index) => {
+    const x = padX + index * step;
+    const y = height - padY - ((item.meanNdvi - min) / range) * (height - padY * 2);
+    return { x, y };
+  });
+
+  const line = points
+    .map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
+    .join(" ");
+  const first = points[0];
+  const last = points[points.length - 1];
+  const area = `${line} L${last.x.toFixed(1)} ${height - padY} L${first.x.toFixed(1)} ${
+    height - padY
+  } Z`;
+
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="w-full"
+      role="img"
+      aria-label="पिछले 45 दिनों का NDVI रुझान"
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <line
+        x1={padX}
+        y1={height - padY}
+        x2={width - padX}
+        y2={height - padY}
+        stroke="var(--av-border)"
+        strokeDasharray="3 4"
+      />
+
+      <motion.path
+        d={area}
+        fill={`url(#${gradientId})`}
+        initial={reduced ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      />
+      <motion.path
+        d={line}
+        fill="none"
+        stroke="#10b981"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={reduced ? false : { pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.8, ease: EASE_OUT }}
+      />
+
+      {points.map((point, index) => (
+        <circle
+          key={index}
+          cx={point.x}
+          cy={point.y}
+          r={index === points.length - 1 ? 3.4 : 2}
+          fill={index === points.length - 1 ? "#10b981" : "var(--av-surface)"}
+          stroke="#10b981"
+          strokeWidth={index === points.length - 1 ? 2 : 1.4}
+        />
+      ))}
+    </svg>
+  );
+}
+
 export default function HealthRadarView({
   field,
   activeSeason,
@@ -61,68 +242,49 @@ export default function HealthRadarView({
   onAddObservation,
 }: HealthRadarViewProps) {
   const { showToast } = useToast();
+  const reduced = useReducedMotion();
+  const scanTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedZone, setSelectedZone] = useState<PotentialInspectionZone | null>(null);
   const [inspectionNote, setInspectionNote] = useState("");
   const [showLogModal, setShowLogModal] = useState(false);
   const [isRadarScanning, setIsRadarScanning] = useState(false);
 
-  // Generate current Sentinel-2 Level-2A observation if not passed
+  const cropAge = (() => {
+    if (activeSeason?.sowingDate) {
+      return calculateDaysAfterSowing(activeSeason.sowingDate);
+    }
+    if (field.sowingDateIso) {
+      return calculateDaysAfterSowing(field.sowingDateIso);
+    }
+    return 35;
+  })();
+
   const currentObservation = useMemo(() => {
-    const existing = satelliteObservations.find((s) => s.fieldId === field.id);
+    const existing = satelliteObservations.find((item) => item.fieldId === field.id);
     if (existing) return existing;
+    return generateFieldSatelliteObservation(field.id, field.boundary || [], cropAge);
+  }, [satelliteObservations, field.id, field.boundary, cropAge]);
 
-    const das = activeSeason?.sowingDate
-      ? calculateDaysAfterSowing(activeSeason.sowingDate)
-      : field.sowingDateIso
-      ? calculateDaysAfterSowing(field.sowingDateIso)
-      : 35;
-    return generateFieldSatelliteObservation(field.id, field.boundary || [], das);
-  }, [satelliteObservations, field.id, field.boundary, activeSeason?.sowingDate, field.sowingDateIso]);
-
-  // Generate historical NDVI time-series
   const historicalSeries = useMemo(() => {
-    const das = activeSeason?.sowingDate
-      ? calculateDaysAfterSowing(activeSeason.sowingDate)
-      : field.sowingDateIso
-      ? calculateDaysAfterSowing(field.sowingDateIso)
-      : 35;
-    return generateHistoricalObservations(field.id, field.boundary || [], das);
-  }, [field.id, field.boundary, activeSeason?.sowingDate, field.sowingDateIso]);
+    return generateHistoricalObservations(field.id, field.boundary || [], cropAge);
+  }, [field.id, field.boundary, cropAge]);
 
-  // Determine NDVI Health Class
-  const ndviClass = useMemo(() => {
-    const v = currentObservation.meanNdvi;
-    if (v >= 0.7) {
-      return {
-        label: "अति सघन व स्वस्थ फसल (Dense Canopy)",
-        color: "text-emerald-400",
-        badgeBg: "bg-emerald-600 text-white",
-        glow: "from-emerald-500/20 to-transparent",
-      };
-    }
-    if (v >= 0.5) {
-      return {
-        label: "सामान्य व अच्छी वानस्पतिक बढ़वार (Good Biomass)",
-        color: "text-teal-400",
-        badgeBg: "bg-teal-600 text-white",
-        glow: "from-teal-500/20 to-transparent",
-      };
-    }
-    if (v >= 0.3) {
-      return {
-        label: "मध्यम बढ़वार / हल्का वानस्पतिक तनाव (Low Density / Stress)",
-        color: "text-amber-400",
-        badgeBg: "bg-amber-600 text-white",
-        glow: "from-amber-500/20 to-transparent",
-      };
-    }
-    return {
-      label: "कम वानस्पतिक घनत्व / अंकुरण चरण (Bare Soil / Sparse)",
-      color: "text-rose-400",
-      badgeBg: "bg-rose-600 text-white",
-      glow: "from-rose-500/20 to-transparent",
+  const band = useMemo(() => getNdviBand(currentObservation.meanNdvi), [
+    currentObservation.meanNdvi,
+  ]);
+
+  const ndviDelta = useMemo(() => {
+    if (historicalSeries.length < 2) return 0;
+    const first = historicalSeries[0].meanNdvi;
+    const latest = historicalSeries[historicalSeries.length - 1].meanNdvi;
+    return latest - first;
+  }, [historicalSeries]);
+
+  useEffect(() => {
+    return () => {
+      if (scanTimer.current) clearTimeout(scanTimer.current);
     };
-  }, [currentObservation.meanNdvi]);
+  }, []);
 
   const handleOpenInspectionLog = (zone: PotentialInspectionZone) => {
     setSelectedZone(zone);
@@ -130,15 +292,15 @@ export default function HealthRadarView({
     setShowLogModal(true);
   };
 
-  const handleSaveInspection = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveInspection = (event: React.FormEvent) => {
+    event.preventDefault();
     if (!onAddObservation || !selectedZone) return;
 
     onAddObservation({
       fieldId: field.id,
       seasonId: activeSeason?.id,
-      category: "soil_deficiency",
-      title: `निरीक्षण रिपोर्ट - ज़ोन ${selectedZone.zoneId}`,
+      category: "general_scout",
+      title: `निरीक्षण रिपोर्ट - क्षेत्र ${selectedZone.zoneId.split("-").pop()}`,
       notes: inspectionNote,
       location: selectedZone.centroid || (field.boundary && field.boundary[0]),
       date: new Date().toISOString(),
@@ -147,41 +309,33 @@ export default function HealthRadarView({
 
     showToast("जांच रिपोर्ट खेत की डायरी में दर्ज की गई", "success");
     setShowLogModal(false);
-    setSelectedZone(null);
   };
 
   const triggerScan = () => {
+    if (isRadarScanning) return;
     setIsRadarScanning(true);
-    setTimeout(() => {
+    scanTimer.current = setTimeout(() => {
       setIsRadarScanning(false);
-      showToast("रडार स्कैन पूर्ण: 10m Sentinel-2 डेटा अद्यतन है", "success");
+      scanTimer.current = null;
+      showToast("रडार स्कैन पूर्ण — Sentinel-2 डेटा अद्यतन है", "success");
     }, 2000);
   };
 
+  const zones = currentObservation.potentialInspectionZones;
+
   return (
     <div className="space-y-4 pb-12">
-      {/* Aerospace Satellite Telemetry Cockpit */}
-      <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-[#103C32] via-[#0c2a23] to-[#061814] text-white p-4 sm:p-5 shadow-2xl relative overflow-hidden">
-        <div className="pointer-events-none absolute -top-12 -right-12 w-48 h-48 bg-teal-400/10 rounded-full blur-2xl" />
+      <section className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-[#0a211b] text-white shadow-[0_18px_50px_-24px_rgba(6,78,59,0.75)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(110%_80%_at_85%_0%,rgba(45,212,191,0.16),transparent_55%)]" />
 
-        {/* Cockpit Top Bar */}
-        <div className="flex items-center justify-between border-b border-emerald-500/20 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300">
-              <Satellite className="w-5 h-5 animate-pulse" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xs sm:text-sm font-black tracking-wide text-white uppercase">
-                  Copernicus Sentinel-2 Level-2A
-                </h2>
-                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                  BOA Reflectance
-                </span>
-              </div>
-              <p className="text-[10px] text-emerald-200/70">
-                यूरोपीय अंतरिक्ष एजेंसी (ESA) • 10m मल्टीस्पेक्ट्रल रिज़ॉल्यूशन
-              </p>
+        <header className="relative flex items-center justify-between gap-2 px-4 pt-4 sm:px-5">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-400/25 bg-emerald-400/10 text-emerald-300">
+              <Satellite className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <h2 className="truncate text-[14px] font-semibold leading-tight">स्वास्थ्य रडार</h2>
+              <p className="text-[10px] text-emerald-200/55">Sentinel-2 · 10 मीटर</p>
             </div>
           </div>
 
@@ -189,334 +343,307 @@ export default function HealthRadarView({
             type="button"
             onClick={triggerScan}
             disabled={isRadarScanning}
-            className="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1.5 text-[10px] font-semibold text-emerald-200 transition active:scale-95 disabled:opacity-70"
           >
-            <Radio className={`w-3.5 h-3.5 ${isRadarScanning ? "animate-spin text-amber-300" : "animate-pulse"}`} />
-            <span>{isRadarScanning ? "स्कैन जारी..." : "रडार स्कैन"}</span>
+            <Radio
+              className={cn("h-3 w-3", isRadarScanning ? "animate-spin text-amber-300" : "animate-pulse")}
+              aria-hidden
+            />
+            {isRadarScanning ? "स्कैन…" : "स्कैन"}
           </button>
-        </div>
+        </header>
 
-        {/* Telemetry Numbers Grid */}
-        <div className="grid grid-cols-4 gap-2 my-3 text-center">
-          <div className="p-2.5 rounded-2xl bg-black/40 border border-emerald-500/20">
-            <span className="text-[9px] font-bold text-emerald-300/80 uppercase">अधिग्रहण</span>
-            <p className="text-xs font-black text-white mt-0.5">
-              {new Date(currentObservation.acquisitionDate).toLocaleDateString("hi-IN", {
-                day: "numeric",
-                month: "short",
-              })}
-            </p>
-          </div>
-          <div className="p-2.5 rounded-2xl bg-black/40 border border-emerald-500/20">
-            <span className="text-[9px] font-bold text-emerald-300/80 uppercase">औसत NDVI</span>
-            <p className="text-sm font-black text-emerald-400 mt-0.5">
-              {currentObservation.meanNdvi.toFixed(2)}
-            </p>
-          </div>
-          <div className="p-2.5 rounded-2xl bg-black/40 border border-emerald-500/20">
-            <span className="text-[9px] font-bold text-emerald-300/80 uppercase">क्लाउड कवर</span>
-            <p className="text-xs font-black text-white mt-0.5">
-              {currentObservation.cloudCoveragePercent}%
-            </p>
-          </div>
-          <div className="p-2.5 rounded-2xl bg-black/40 border border-emerald-500/20">
-            <span className="text-[9px] font-bold text-emerald-300/80 uppercase">वैध पिक्सल</span>
-            <p className="text-xs font-black text-white mt-0.5">
-              {currentObservation.validPixelCount}
-            </p>
-          </div>
-        </div>
+        <div className="relative flex flex-col items-center gap-3 px-4 pb-4 pt-2 sm:flex-row sm:items-center sm:gap-4">
+          <NdviGauge value={currentObservation.meanNdvi} />
 
-        {/* Spectral Formula & Health Evaluation Badge */}
-        <div className="p-3 rounded-2xl bg-black/50 border border-emerald-500/30 flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-1.5 text-[10px] text-emerald-300 font-mono">
-              <Activity className="w-3.5 h-3.5 text-emerald-400" />
-              <span>NDVI = (B8 NIR - B4 Red) / (B8 + B4)</span>
-            </div>
-            <p className={`text-xs font-black mt-0.5 ${ndviClass.color}`}>
-              {ndviClass.label}
-            </p>
-          </div>
-          <span className={`px-2.5 py-1 rounded-xl text-xs font-black ${ndviClass.badgeBg}`}>
-            {currentObservation.meanNdvi.toFixed(2)}
-          </span>
-        </div>
-      </div>
-
-      {/* Small Farm Resolution Safeguard Notice */}
-      {currentObservation.isSmallFieldSafeguarded && (
-        <div className="rounded-3xl border border-amber-300/80 bg-amber-50/90 dark:bg-amber-950/30 p-4 text-xs text-amber-900 dark:text-amber-200 shadow-sm flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-extrabold text-sm text-amber-950 dark:text-amber-100">
-              वैज्ञानिक सावधानी — छोटा खेत (0.5 एकड़ से कम):
-            </p>
-            <p className="text-[11.5px] leading-relaxed text-amber-900 dark:text-amber-300">
-              सेंटिनल-2 उपग्रह का प्रत्येक पिक्सल 10×10 मीटर (100 मी²) का होता है। 0.5 एकड़ से छोटे खेतों में मेड़ों व सीमाओं का प्रभाव पड़ता है। पूरे खेत का औसत NDVI सटीक है, लेकिन खेत के भीतर अलग-अलग ज़ोन का निर्णय करने से पहले स्वयं खेत में जाकर पौधों की स्थिति अवश्य देखें।
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Satellite Imagery with Radar Sweep Effect */}
-      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
-              <Target className="w-4 h-4" />
+          <div className="min-w-0 flex-1">
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold",
+                band.badge
+              )}
+            >
+              <span className={cn("h-1.5 w-1.5 rounded-full", band.dot)} />
+              {band.label}
             </span>
-            <div>
-              <h3 className="text-xs font-black text-[var(--av-text-primary)]">
-                उपग्रह वनस्पति स्वास्थ्य व असमानता मानचित्र
+            <p className="mt-1.5 text-[11px] leading-snug text-emerald-100/65">{band.detail}</p>
+
+            <div className="mt-2.5 grid grid-cols-2 gap-1.5 text-[10px] text-emerald-100/75">
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1">
+                <CalendarDays className="h-3 w-3 text-emerald-300/80" aria-hidden />
+                {formatShortDate(currentObservation.acquisitionDate)}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1">
+                <Cloud className="h-3 w-3 text-emerald-300/80" aria-hidden />
+                {currentObservation.cloudCoveragePercent}% बादल
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1">
+                <Layers className="h-3 w-3 text-emerald-300/80" aria-hidden />
+                {currentObservation.resolutionMeters} मी
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1">
+                <Activity className="h-3 w-3 text-emerald-300/80" aria-hidden />
+                {currentObservation.validPixelCount} px
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {currentObservation.isSmallFieldSafeguarded ? (
+        <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/[0.07] px-3.5 py-2.5">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden />
+          <p className="text-[11px] leading-relaxed text-amber-900 dark:text-amber-100/85">
+            <span className="font-semibold">छोटा खेत: </span>
+            {currentObservation.smallFieldMessage ||
+              "10 मीटर पिक्सल के कारण सीमा का प्रभाव पड़ सकता है। ज़ोन का निर्णय खेत में जाकर ही करें।"}
+          </p>
+        </div>
+      ) : null}
+
+      <section className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+              <MapIcon className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <h3 className="truncate text-[12px] font-semibold text-[var(--av-text-primary)]">
+                फसल नक्शा
               </h3>
               <p className="text-[10px] text-[var(--av-text-muted)]">
-                10m रिज़ॉल्यूशन ग्रिड पर संवेदी विश्लेषण
+                10 मीटर ग्रिड · {zones.length} जांच क्षेत्र
               </p>
             </div>
           </div>
-          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-            {currentObservation.potentialInspectionZones.length} जांच क्षेत्र मिले
+          <span className="rounded-full bg-[var(--av-surface-inset)] px-2 py-1 text-[9px] font-semibold text-[var(--av-text-muted)]">
+            NDVI
           </span>
         </div>
 
-        {/* Live Map */}
-        <div className="relative rounded-2xl overflow-hidden">
+        <div className="relative mt-2.5 overflow-hidden rounded-2xl">
           <LiveFieldMap
             boundary={field.boundary || []}
-            inspectionZones={currentObservation.potentialInspectionZones}
-            height="300px"
+            inspectionZones={zones}
+            height="264px"
           />
 
-          {/* Radar Scanning Line Overlay */}
-          {isRadarScanning && (
-            <div className="pointer-events-none absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
-              <div className="w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-pulse" />
+          {isRadarScanning ? (
+            <div className="pointer-events-none absolute inset-0 bg-emerald-400/5">
+              <motion.div
+                className="h-px w-full bg-gradient-to-r from-transparent via-emerald-300 to-transparent shadow-[0_0_16px_#34d399]"
+                initial={reduced ? false : { y: 0 }}
+                animate={{ y: [0, 264, 0] }}
+                transition={{ duration: 2.6, repeat: Infinity, ease: "linear" }}
+              />
             </div>
-          )}
+          ) : null}
         </div>
 
-        {/* NDVI Color Scale Legend Bar */}
-        <div className="pt-2">
-          <div className="flex items-center justify-between text-[10px] font-bold text-[var(--av-text-secondary)] mb-1">
-            <span>NDVI रंग पैमाना (वानस्पतिक घनत्व):</span>
-            <span className="text-emerald-700 dark:text-emerald-300">0.2 से 0.85+</span>
-          </div>
-          <div className="h-3 rounded-full w-full bg-gradient-to-r from-[#d97706] via-[#eab308] via-[#84cc16] to-[#047857] shadow-inner" />
-          <div className="flex justify-between text-[9px] text-[var(--av-text-muted)] mt-1 font-extrabold">
-            <span>सूखा / खाली (0.2)</span>
-            <span>कम घनत्व (0.4)</span>
-            <span>मध्यम बढ़वार (0.6)</span>
-            <span>अति सघन (&gt;0.75)</span>
+        <div className="mt-2.5">
+          <div className="h-1.5 w-full rounded-full bg-gradient-to-r from-rose-400 via-amber-300 to-emerald-500" />
+          <div className="mt-1 flex items-center justify-between text-[9px] font-medium text-[var(--av-text-muted)]">
+            <span>कम घनत्व</span>
+            <span>मध्यम</span>
+            <span>सघन</span>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Candidate Inspection Zones */}
-      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-300">
-              <Search className="w-4 h-4" />
+      <section className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-700 dark:text-rose-300">
+              <Search className="h-4 w-4" aria-hidden />
             </span>
-            <div>
-              <h3 className="text-xs font-black text-[var(--av-text-primary)]">
-                खेत में जाकर जांच करें (Inspection Zones)
+            <div className="min-w-0">
+              <h3 className="truncate text-[12px] font-semibold text-[var(--av-text-primary)]">
+                खेत में जांच करें
               </h3>
               <p className="text-[10px] text-[var(--av-text-muted)]">
-                उपग्रह असमानता केवल लक्षण बताती है, वास्तविक कारण खेत में जांचें
+                उपग्रह केवल संकेत देता है, कारण खेत में देखें
               </p>
             </div>
           </div>
+          <span className="rounded-full bg-[var(--av-surface-inset)] px-2 py-1 text-[9px] font-semibold text-[var(--av-text-muted)]">
+            {zones.length}
+          </span>
         </div>
 
-        {currentObservation.potentialInspectionZones.length === 0 ? (
-          <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center text-xs text-emerald-800 dark:text-emerald-200">
-            <CheckCircle2 className="w-6 h-6 mx-auto mb-1.5 text-emerald-600" />
-            <p className="font-black text-sm">पूरे खेत में एकसमान व स्वस्थ वानस्पतिक फैलाव है</p>
-            <p className="text-[11px] mt-1 text-emerald-700 dark:text-emerald-300">
-              कोई असामान्य तनाव क्षेत्र (Stress Zone) नहीं मिला है।
-            </p>
+        {zones.length === 0 ? (
+          <div className="mt-3 flex items-center gap-2.5 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.07] px-3.5 py-3">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+            <div>
+              <p className="text-[11.5px] font-semibold text-emerald-900 dark:text-emerald-100">
+                पूरे खेत में एकसमान फैलाव
+              </p>
+              <p className="text-[10px] text-emerald-800/70 dark:text-emerald-200/65">
+                कोई स्पष्ट तनाव क्षेत्र नहीं मिला।
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="space-y-3">
-            {currentObservation.potentialInspectionZones.map((zone) => {
-              const isHigh = zone.urgency === "high";
+          <div className="mt-3 space-y-2">
+            {zones.map((zone) => {
+              const high = zone.urgency === "high";
               return (
-                <div
+                <article
                   key={zone.zoneId}
-                  className="p-3.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] space-y-2.5 transition hover:border-emerald-500/40"
+                  className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-3"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${
-                          isHigh ? "bg-rose-600 text-white" : "bg-amber-500 text-white"
-                        }`}
-                      >
-                        {isHigh ? "उच्च प्राथमिकता" : "मध्यम प्राथमिकता"}
-                      </span>
-                      <span className="text-xs font-black text-[var(--av-text-primary)]">
-                        ज़ोन {zone.zoneId}
-                      </span>
+                  <div className="flex items-start gap-2.5">
+                    <span
+                      className={cn(
+                        "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
+                        high
+                          ? "bg-rose-500/12 text-rose-600 dark:text-rose-300"
+                          : "bg-amber-500/12 text-amber-600 dark:text-amber-300"
+                      )}
+                    >
+                      <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="truncate text-[11.5px] font-semibold text-[var(--av-text-primary)]">
+                          क्षेत्र {zone.zoneId.split("-").pop()}
+                          <span className="ml-1.5 text-[9px] font-medium text-[var(--av-text-muted)]">
+                            {high ? "उच्च" : "मध्यम"}
+                          </span>
+                        </p>
+                        <span className="shrink-0 rounded-md bg-[var(--av-surface)] px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
+                          {zone.meanNdvi.toFixed(2)}
+                        </span>
+                      </div>
+
+                      <p className="mt-1 text-[10.5px] leading-relaxed text-[var(--av-text-secondary)]">
+                        {zone.explanationHi}
+                      </p>
+
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <span className="text-[9.5px] text-[var(--av-text-muted)]">
+                          ~{Math.round(zone.areaHectares * 10000)} m²
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <AppLink
+                            href="/ai-doctor"
+                            className="inline-flex items-center gap-1 rounded-lg bg-emerald-700 px-2 py-1 text-[10px] font-semibold text-white transition active:scale-95"
+                          >
+                            <Camera className="h-3 w-3" aria-hidden />
+                            AI जांच
+                          </AppLink>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenInspectionLog(zone)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] px-2 py-1 text-[10px] font-semibold text-[var(--av-text-secondary)] transition active:scale-95"
+                          >
+                            <NotebookPen className="h-3 w-3" aria-hidden />
+                            डायरी
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-xs font-black text-emerald-700 dark:text-emerald-400">
-                      NDVI {zone.meanNdvi.toFixed(2)}
-                    </span>
                   </div>
-
-                  <p className="text-xs text-[var(--av-text-secondary)] leading-relaxed">
-                    {zone.explanationHi}
-                  </p>
-
-                  <div className="p-2.5 rounded-xl bg-[var(--av-surface)] border border-[var(--av-border)] text-[11px] text-[var(--av-text-secondary)] flex items-center justify-between">
-                    <span className="font-bold text-emerald-800 dark:text-emerald-300">
-                      सलाह: खेत में नमी, दीमक या उर्वरक कमी की जांच करें
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-bold">
-                      ~{Math.round(zone.areaHectares * 10000)} मी²
-                    </span>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <AppLink
-                      href="/ai-doctor"
-                      className="flex-1 py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow-md shadow-emerald-700/20 active:scale-95 transition"
-                    >
-                      <Camera className="w-3.5 h-3.5" />
-                      <span>फोटो खींचें व AI डॉक्टर से पूछें</span>
-                    </AppLink>
-                    <button
-                      type="button"
-                      onClick={() => handleOpenInspectionLog(zone)}
-                      className="py-2 px-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-[var(--av-text-secondary)] active:scale-95 transition"
-                    >
-                      डायरी नोट
-                    </button>
-                  </div>
-                </div>
+                </article>
               );
             })}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Multi-date Historical NDVI Time-Series */}
-      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-blue-500/15 text-blue-700 dark:text-blue-300">
-              <TrendingUp className="w-4 h-4" />
+      <section className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300">
+              <TrendingUp className="h-4 w-4" aria-hidden />
             </span>
-            <div>
-              <h3 className="text-xs font-black text-[var(--av-text-primary)]">
-                फसल वानस्पतिक वृद्धि का उपग्रह सफर (NDVI Time-Series)
+            <div className="min-w-0">
+              <h3 className="truncate text-[12px] font-semibold text-[var(--av-text-primary)]">
+                NDVI रुझान
               </h3>
-              <p className="text-[10px] text-[var(--av-text-muted)]">
-                बुवाई से अब तक सेंटिनल-2 निगरानी
-              </p>
+              <p className="text-[10px] text-[var(--av-text-muted)]">पिछले 45 दिनों की निगरानी</p>
             </div>
           </div>
+
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+              ndviDelta >= 0
+                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                : "bg-rose-500/10 text-rose-700 dark:text-rose-300"
+            )}
+          >
+            {ndviDelta >= 0 ? (
+              <TrendingUp className="h-3 w-3" aria-hidden />
+            ) : (
+              <TrendingDown className="h-3 w-3" aria-hidden />
+            )}
+            {ndviDelta >= 0 ? "+" : ""}
+            {ndviDelta.toFixed(2)}
+          </span>
         </div>
 
-        {/* Visual Bar Chart */}
-        <div className="pt-2 pb-1 space-y-2">
-          <div className="flex items-end justify-between gap-2 h-28 px-2 border-b border-[var(--av-border)]">
-            {historicalSeries.map((obs, i) => {
-              const heightPct = Math.max(15, Math.min(100, Math.round(obs.meanNdvi * 100)));
-              const isLatest = i === historicalSeries.length - 1;
+        <div className="mt-2">
+          <NdviSparkline series={historicalSeries} />
+        </div>
 
-              return (
-                <div key={obs.id} className="flex-1 flex flex-col items-center h-full justify-end">
-                  <span className="text-[10px] font-black text-gray-700 dark:text-gray-300 mb-1">
-                    {obs.meanNdvi.toFixed(2)}
-                  </span>
-                  <div
-                    style={{ height: `${heightPct}%` }}
-                    className={`w-full max-w-[42px] rounded-t-xl transition-all ${
-                      isLatest
-                        ? "bg-gradient-to-t from-emerald-700 to-teal-400 shadow-lg shadow-emerald-500/30"
-                        : "bg-emerald-600/70"
-                    }`}
-                  />
-                  <span className="text-[9px] font-extrabold text-gray-500 mt-1 truncate">
-                    {new Date(obs.acquisitionDate).toLocaleDateString("hi-IN", {
-                      day: "numeric",
-                      month: "short",
-                    })}
-                  </span>
-                </div>
-              );
-            })}
+        <div className="flex items-center justify-between text-[9px] font-medium text-[var(--av-text-muted)]">
+          <span>{formatShortDate(historicalSeries[0]?.acquisitionDate || currentObservation.acquisitionDate)}</span>
+          <span>
+            {formatShortDate(
+              historicalSeries[historicalSeries.length - 1]?.acquisitionDate ||
+                currentObservation.acquisitionDate
+            )}
+          </span>
+        </div>
+      </section>
+
+      <FarmSheet
+        open={showLogModal && Boolean(selectedZone)}
+        onClose={() => setShowLogModal(false)}
+        title="जांच डायरी में दर्ज करें"
+        subtitle={
+          selectedZone
+            ? `क्षेत्र ${selectedZone.zoneId.split("-").pop()} · NDVI ${selectedZone.meanNdvi.toFixed(2)}`
+            : undefined
+        }
+        icon={<Search className="h-4 w-4" aria-hidden />}
+      >
+        <form onSubmit={handleSaveInspection} className="space-y-3">
+          <div>
+            <label
+              htmlFor="inspection-note"
+              className="mb-1 block text-[11px] font-semibold text-[var(--av-text-secondary)]"
+            >
+              खेत में आपने क्या देखा?
+            </label>
+            <textarea
+              id="inspection-note"
+              value={inspectionNote}
+              onChange={(event) => setInspectionNote(event.target.value)}
+              rows={4}
+              required
+              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-[12px] text-[var(--av-text-primary)] outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            />
           </div>
 
-          <p className="text-[11px] text-center text-emerald-800 dark:text-emerald-300 font-bold pt-1">
-            🌱 फसल का वानस्पतिक घनत्व समय के साथ सुचारू रूप से बढ़ रहा है।
-          </p>
-        </div>
-      </div>
-
-      {/* Modal: Log Inspection Note */}
-      {showLogModal && selectedZone && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[var(--av-surface)] rounded-3xl border border-[var(--av-border)] p-5 max-w-sm w-full space-y-3.5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[var(--av-border)] pb-2.5">
-              <h3 className="text-sm font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
-                <Search className="w-4 h-4 text-emerald-600" />
-                खेत जांच डायरी में दर्ज करें
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowLogModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveInspection} className="space-y-3">
-              <div>
-                <label className="block text-xs font-bold text-[var(--av-text-secondary)] mb-1">
-                  स्थान
-                </label>
-                <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">
-                  ज़ोन {selectedZone.zoneId} (NDVI {selectedZone.meanNdvi.toFixed(2)})
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[var(--av-text-secondary)] mb-1">
-                  खेत में आपने क्या देखा?
-                </label>
-                <textarea
-                  value={inspectionNote}
-                  onChange={(e) => setInspectionNote(e.target.value)}
-                  rows={3}
-                  className="w-full text-xs p-2.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  required
-                />
-              </div>
-
-              <div className="flex gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setShowLogModal(false)}
-                  className="flex-1 py-2 rounded-xl border border-[var(--av-border)] text-xs font-bold text-[var(--av-text-secondary)]"
-                >
-                  रद्द करें
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2 rounded-xl bg-emerald-700 text-white text-xs font-bold shadow-md hover:bg-emerald-800"
-                >
-                  डायरी में जोड़ें
-                </button>
-              </div>
-            </form>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowLogModal(false)}
+              className="flex-1 rounded-xl border border-[var(--av-border)] py-2.5 text-[11px] font-semibold text-[var(--av-text-secondary)] transition active:scale-[0.98]"
+            >
+              रद्द करें
+            </button>
+            <button
+              type="submit"
+              className="flex-1 rounded-xl bg-emerald-700 py-2.5 text-[11px] font-semibold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.98]"
+            >
+              डायरी में जोड़ें
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </FarmSheet>
     </div>
   );
 }

@@ -137,6 +137,8 @@ export function generateHistoricalObservations(
   cropAgeDays: number = 30
 ): SatelliteObservation[] {
   const dates = [
+    { daysAgo: 45, age: Math.max(2, cropAgeDays - 45) },
+    { daysAgo: 35, age: Math.max(4, cropAgeDays - 35) },
     { daysAgo: 25, age: Math.max(5, cropAgeDays - 25) },
     { daysAgo: 18, age: Math.max(10, cropAgeDays - 18) },
     { daysAgo: 10, age: Math.max(15, cropAgeDays - 10) },

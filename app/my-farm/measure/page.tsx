@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   MapPin,
@@ -12,10 +12,10 @@ import {
   Sparkles,
   CheckCircle2,
   Calculator,
-  RefreshCw,
   Layers,
   ChevronRight,
   ShieldAlert,
+  X,
 } from "lucide-react";
 import { LatLng, getFieldMeasurement } from "@/lib/geo/fieldGeometry";
 import { REGIONAL_BIGHA_OPTIONS } from "@/lib/bighaConversion";
@@ -28,16 +28,29 @@ import type { FarmField } from "@/lib/farm/types";
 const SmartFieldMap = dynamic(() => import("@/components/farm/SmartFieldMap"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[520px] bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white/80 gap-3 border border-slate-800">
-      <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-      <div className="text-sm font-semibold">उपग्रह नक्शा लोड हो रहा है (Loading Satellite Map)...</div>
-      <div className="text-xs text-slate-400">कृषि उपग्रह दृश्य तैयार किया जा रहा है</div>
+    <div className="flex h-[440px] w-full flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-muted)] sm:h-[520px]">
+      <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
+      <p className="text-[11px] font-medium">उपग्रह नक्शा लोड हो रहा है…</p>
     </div>
   ),
 });
 
+const GUIDE_STEPS = [
+  {
+    title: "खेत खोजें या GPS से जाएं",
+    body: "सर्च में गांव, पिन कोड या निर्देशांक लिखें, या कंपास बटन से अपनी वर्तमान लोकेशन पर पहुंचें।",
+  },
+  {
+    title: "सीमा बनाएं या चलकर नापें",
+    body: "नक्शे पर खेत के हर कोने पर टैप करें। कोनों को खींचकर मेड़ पर ठीक करें, या मेड़ पर चलकर सीमा दर्ज करें।",
+  },
+  {
+    title: "रकबा देखें और सहेजें",
+    body: "एकड़, बीघा और हेक्टेयर तुरंत देखें। खेत सहेजने के बाद सीधे खाद कैलकुलेटर में भेजें।",
+  },
+];
+
 function FieldMeasureContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("editId");
 
@@ -46,25 +59,31 @@ function FieldMeasureContent() {
   const [coords, setCoords] = useState<LatLng[]>([]);
   const [selectedBighaId, setSelectedBighaId] = useState<string>("up");
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
-  const [savedSuccessField, setSavedSuccessField] = useState<FarmField | null>(null);
+  const [savedSuccessField, setSavedSuccessField] =
+    useState<FarmField | null>(null);
   const [pinnedLocation, setPinnedLocation] = useState<LatLng | null>(null);
   const [showGuide, setShowGuide] = useState(false);
+  const [hydratedEditId, setHydratedEditId] = useState<string | null>(null);
 
   // If editId is provided, populate initial field boundary
   const editingField = useMemo(() => {
     if (!editId || !data?.fields) return null;
-    return data.fields.find((f) => f.id === editId) || null;
+    return data.fields.find((field) => field.id === editId) || null;
   }, [editId, data?.fields]);
 
-  useEffect(() => {
-    if (editingField?.boundary && editingField.boundary.length >= 3) {
-      setCoords(editingField.boundary);
-    }
-  }, [editingField]);
+  // Farm data hydrates after mount: adopt the stored boundary once it arrives.
+  if (
+    editingField &&
+    editingField.id !== hydratedEditId &&
+    (editingField.boundary?.length ?? 0) >= 3
+  ) {
+    setHydratedEditId(editingField.id);
+    setCoords(editingField.boundary ?? []);
+  }
 
   const activeBigha = useMemo(() => {
     return (
-      REGIONAL_BIGHA_OPTIONS.find((b) => b.id === selectedBighaId) ||
+      REGIONAL_BIGHA_OPTIONS.find((option) => option.id === selectedBighaId) ||
       REGIONAL_BIGHA_OPTIONS[0]
     );
   }, [selectedBighaId]);
@@ -94,177 +113,213 @@ function FieldMeasureContent() {
     : undefined;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-emerald-50/20 to-white pb-16">
+    <div className="min-h-screen bg-[var(--av-surface-inset)] pb-16 text-[var(--av-text-primary)]">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/my-farm"
-              className="p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition"
-              title="वापस मेरे खेत"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <h1 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
-                <Ruler className="w-5 h-5 text-emerald-600" />
-                {editingField ? `सीमा संशोधन: ${editingField.name}` : "अपना खेत नापें"}
-              </h1>
-              <p className="text-xs text-gray-500 hidden sm:block">
-                उपग्रह व GPS आधारित सटीक भू-गणितीय (WGS84) रकबा मापन व लोकेशन
-              </p>
-            </div>
+      <header className="sticky top-0 z-40 border-b border-[var(--av-border)] bg-[var(--av-surface)]/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 pb-3 pt-3">
+          <Link
+            href="/my-farm"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] transition hover:text-[var(--av-text-primary)] active:scale-95"
+            aria-label="वापस मेरे खेत"
+            title="वापस मेरे खेत"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+
+          <div className="min-w-0 flex-1">
+            <h1 className="flex items-center gap-1.5 truncate text-[15px] font-semibold leading-tight text-[var(--av-text-primary)]">
+              <Ruler className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
+              {editingField
+                ? `सीमा संशोधन: ${editingField.name}`
+                : "अपना खेत नापें"}
+            </h1>
+            <p className="mt-0.5 hidden truncate text-[10.5px] text-[var(--av-text-muted)] sm:block">
+              उपग्रह व GPS आधारित WGS84 रकबा मापन
+            </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowGuide((prev) => !prev)}
-              className="px-3 py-1.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-xs font-semibold hover:bg-emerald-100 flex items-center gap-1.5 transition"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">कैसे नापें? (Guide)</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowGuide((prev) => !prev)}
+            aria-expanded={showGuide}
+            aria-controls="field-measure-guide"
+            className="flex shrink-0 items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2.5 py-1.5 text-[10.5px] font-semibold text-[var(--av-text-secondary)] transition hover:text-[var(--av-text-primary)] active:scale-95"
+          >
+            <HelpCircle className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
+            <span className="hidden sm:inline">कैसे नापें?</span>
+          </button>
         </div>
       </header>
 
       {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-3 sm:px-4 pt-4 space-y-4">
-        {/* Help Guide Banner */}
-        {showGuide && (
-          <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-2xl p-4 shadow-lg border border-emerald-500/30 transition-all">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h3 className="font-bold text-sm flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-200" />
-                खेत नापने की 5 आसान विधियां:
-              </h3>
+      <main className="mx-auto max-w-3xl space-y-3 px-3 pt-3 sm:px-4">
+        {/* Help Guide */}
+        {showGuide ? (
+          <section
+            id="field-measure-guide"
+            className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]"
+          >
+            <div className="flex items-start gap-2 border-b border-[var(--av-border-subtle)] px-3.5 py-2.5">
+              <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-300" />
+              <h2 className="flex-1 text-[12px] font-semibold text-[var(--av-text-primary)]">
+                खेत नापने के 3 आसान चरण
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowGuide(false)}
-                className="text-white/80 hover:text-white text-xs font-bold px-2 py-0.5 rounded bg-black/20"
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[var(--av-text-muted)] transition hover:bg-[var(--av-surface-inset)] hover:text-[var(--av-text-primary)]"
+                aria-label="गाइड बंद करें"
               >
-                बंद करें
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-emerald-50/90 pt-1">
-              <div className="bg-white/10 p-2.5 rounded-xl">
-                <b className="text-white block mb-0.5">1. खेत खोजें या GPS से जाएं:</b>
-                सर्च बार में अपने गांव का नाम लिखें या नीले कंपास बटन से वर्तमान खेत पर जाएं।
-              </div>
-              <div className="bg-white/10 p-2.5 rounded-xl">
-                <b className="text-white block mb-0.5">2. मेड़ पर टैप करें या चलकर नापें:</b>
-                खेत के हर कोने पर टैप करें। कोनों को खींचकर (Drag) ठीक मेड़ पर सेट करें।
-              </div>
-              <div className="bg-white/10 p-2.5 rounded-xl">
-                <b className="text-white block mb-0.5">3. सहेजें और खाद निकालें:</b>
-                एकड़ व बीघा तुरंत देखें। सहेजने के बाद उर्वरक कैलकुलेटर में सीधे उपयोग करें।
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Success Modal / Banner */}
-        {savedSuccessField && (
-          <div className="bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-4 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-emerald-950">
-                  खेत &apos;{savedSuccessField.name}&apos; सफलतापूर्वक सहेजा गया!
+            <ol className="grid gap-2 p-3 sm:grid-cols-3">
+              {GUIDE_STEPS.map((step, index) => (
+                <li
+                  key={step.title}
+                  className="rounded-xl bg-[var(--av-surface-inset)] p-2.5"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[9px] font-bold text-white">
+                      {index + 1}
+                    </span>
+                    <p className="text-[10.5px] font-semibold text-[var(--av-text-primary)]">
+                      {step.title}
+                    </p>
+                  </div>
+                  <p className="mt-1 text-[10px] leading-snug text-[var(--av-text-muted)]">
+                    {step.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
+
+        {/* Success Banner */}
+        {savedSuccessField ? (
+          <section className="flex flex-col gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.08] p-3.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white">
+                <CheckCircle2 className="h-4.5 w-4.5" />
+              </span>
+              <div className="min-w-0">
+                <h3 className="truncate text-[12px] font-semibold text-[var(--av-text-primary)]">
+                  खेत &apos;{savedSuccessField.name}&apos; सहेजा गया
                 </h3>
-                <p className="text-xs text-emerald-800">
-                  कुल रकबा: <b>{savedSuccessField.areaAcres} एकड़</b> ({savedSuccessField.bighaDisplay || "सहेजा गया"}) • {savedSuccessField.village}
+                <p className="mt-0.5 text-[10.5px] text-[var(--av-text-muted)]">
+                  {savedSuccessField.areaAcres} एकड़ ·{" "}
+                  {savedSuccessField.bighaDisplay || "बीघा उपलब्ध नहीं"} ·{" "}
+                  {savedSuccessField.village || "गांव दर्ज नहीं"}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex w-full items-center gap-1.5 sm:w-auto">
               <Link
                 href={`/services/fertilizer-calculator?acres=${savedSuccessField.areaAcres}&crop=${encodeURIComponent(
                   savedSuccessField.crop || ""
                 )}`}
-                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-700 px-3 py-2 text-[11px] font-semibold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.99] sm:flex-none"
               >
-                <Calculator className="w-3.5 h-3.5" />
-                खाद की गणना करें
+                <Calculator className="h-3.5 w-3.5" />
+                खाद गणना
               </Link>
               <Link
                 href="/my-farm"
-                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-900 font-bold text-xs flex items-center justify-center gap-1 transition"
+                className="flex flex-1 items-center justify-center gap-1 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2 text-[11px] font-semibold text-[var(--av-text-secondary)] transition hover:text-[var(--av-text-primary)] active:scale-[0.99] sm:flex-none"
               >
-                मेरे खेत देखें
-                <ChevronRight className="w-3.5 h-3.5" />
+                मेरे खेत
+                <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-          </div>
-        )}
+          </section>
+        ) : null}
 
         {/* Interactive Satellite Field Map */}
-        <div className="w-full">
+        <section className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]">
+          <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border-subtle)] px-3 py-2">
+            <p className="flex min-w-0 items-center gap-1.5 text-[10.5px] font-medium text-[var(--av-text-muted)]">
+              <MapPin className="h-3 w-3 shrink-0 text-emerald-700 dark:text-emerald-300" />
+              <span className="truncate">
+                {coords.length >= 3
+                  ? `${coords.length} कोनों की सीमा तैयार`
+                  : editingField
+                    ? "पुरानी सीमा संशोधित करें"
+                    : "नक्शे पर खेत के कोने दबाएं"}
+              </span>
+            </p>
+            <span className="shrink-0 rounded-full bg-[var(--av-surface-inset)] px-2 py-0.5 text-[9px] font-semibold text-[var(--av-text-muted)]">
+              {activeBigha.state}
+            </span>
+          </div>
+
           <SmartFieldMap
+            key={editingField?.id ?? "new-field"}
             initialCoords={editingField?.boundary || []}
             mode="draw"
             onCoordsChange={(newCoords) => setCoords(newCoords)}
-            onSaveLocationPin={(pos) => {
-              setPinnedLocation(pos);
+            onSaveLocationPin={(position) => {
+              setPinnedLocation(position);
               if (coords.length < 3) {
-                setCoords([pos]);
+                setCoords([position]);
               }
               setIsSaveModalOpen(true);
             }}
-            height="540px"
+            height="clamp(420px, 62vh, 560px)"
           />
-        </div>
+        </section>
 
         {/* Live Calculation HUD */}
-        <div className="w-full">
-          <FieldHUD
-            coords={coords}
-            selectedBighaId={selectedBighaId}
-            onBighaIdChange={(id) => setSelectedBighaId(id)}
-            onSave={() => setIsSaveModalOpen(true)}
-            canSave={coords.length >= 3}
-          />
-        </div>
+        <FieldHUD
+          coords={coords}
+          selectedBighaId={selectedBighaId}
+          onBighaIdChange={(id) => setSelectedBighaId(id)}
+          onSave={() => setIsSaveModalOpen(true)}
+          canSave={coords.length >= 3}
+        />
 
-        {/* Feature Cards / Integration Highlights */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-          <div className="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-              <Layers className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-gray-900">राज्य-अनुसार बीघा</h4>
-              <p className="text-[11px] text-gray-500">
-                UP, बिहार, राजस्थान, MP आदि के अनुसार सटीक बीघा रूपांतरण
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <div className="flex items-center gap-2.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+              <Layers className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <h4 className="text-[11px] font-semibold text-[var(--av-text-primary)]">
+                राज्य-अनुसार बीघा
+              </h4>
+              <p className="mt-0.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
+                UP, बिहार, राजस्थान, MP के सटीक बीघा मानक
               </p>
             </div>
           </div>
 
-          <div className="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-              <Calculator className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-gray-900">कैलकुलेटर में ऑटो-फिल</h4>
-              <p className="text-[11px] text-gray-500">
-                नापे गए रकबे से खाद और कीटनाशक की सही मात्रा निकालें
+          <div className="flex items-center gap-2.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-700 dark:text-blue-300">
+              <Calculator className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <h4 className="text-[11px] font-semibold text-[var(--av-text-primary)]">
+                कैलकुलेटर में ऑटो-फिल
+              </h4>
+              <p className="mt-0.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
+                नापे गए रकबे से खाद व कीटनाशक की सही मात्रा
               </p>
             </div>
           </div>
 
-          <div className="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-              <ShieldAlert className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-gray-900">सुरक्षित व निजी डेटा</h4>
-              <p className="text-[11px] text-gray-500">
-                खेत की सीमाएं और डेटा केवल आपके उपकरण में सुरक्षित हैं
+          <div className="flex items-center gap-2.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300">
+              <ShieldAlert className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <h4 className="text-[11px] font-semibold text-[var(--av-text-primary)]">
+                सुरक्षित व निजी डेटा
+              </h4>
+              <p className="mt-0.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
+                सीमाएं और दस्तावेज केवल आपके उपकरण में सुरक्षित
               </p>
             </div>
           </div>
@@ -275,7 +330,9 @@ function FieldMeasureContent() {
       <SaveFieldModal
         isOpen={isSaveModalOpen}
         onClose={() => setIsSaveModalOpen(false)}
-        coords={coords.length >= 3 ? coords : (pinnedLocation ? [pinnedLocation] : coords)}
+        coords={
+          coords.length >= 3 ? coords : pinnedLocation ? [pinnedLocation] : coords
+        }
         bighaDisplay={bighaDisplayString}
         initialData={editingField || undefined}
         onSave={handleSaveField}
@@ -288,8 +345,8 @@ export default function FieldMeasurePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">
-          <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="flex min-h-screen items-center justify-center bg-[var(--av-surface-inset)]">
+          <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
         </div>
       }
     >

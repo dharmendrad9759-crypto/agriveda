@@ -83,7 +83,8 @@ function resolvePhase(): Phase {
  * Later opens: no splash, no carousel — app only.
  */
 export default function LaunchFlow() {
-  const [phase, setPhase] = useState<Phase>(() => resolvePhase());
+  // Resolve after mount so server and first client render match ("checking" → null).
+  const [phase, setPhase] = useState<Phase>("checking");
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {

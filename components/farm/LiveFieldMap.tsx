@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -50,59 +50,71 @@ function MapClickHandler({ onClick }: { onClick?: (coords: LatLng) => void }) {
   return null;
 }
 
-function getCategoryIcon(category: string) {
-  let emoji = "📍";
-  let bg = "#10b981";
+const CATEGORY_META: Record<string, { color: string; label: string; icon: string }> = {
+  insect_pest: {
+    color: "#ef4444",
+    label: "कीट हमला",
+    icon: '<path d="M9 7.13v-1a3 3 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6 13H2"/><path d="M22 13h-4"/><path d="m8 2 1.9 1.9"/><path d="M14.1 3.9 16 2"/>',
+  },
+  disease: {
+    color: "#f97316",
+    label: "रोग लक्षण",
+    icon: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12"/>',
+  },
+  weed_patch: {
+    color: "#eab308",
+    label: "खरपतवार",
+    icon: '<path d="M7 20h10"/><path d="M12 20v-8"/><path d="M12 12c-3 0-5-2-5-5 3 0 5 2 5 5Z"/><path d="M12 12c3 0 5-2 5-5-3 0-5 2-5 5Z"/>',
+  },
+  waterlogging: {
+    color: "#0ea5e9",
+    label: "जल भराव",
+    icon: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5S12.5 4 12 2c-.5 2-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/>',
+  },
+  irrigation_issue: {
+    color: "#0284c7",
+    label: "सिंचाई समस्या",
+    icon: '<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1C7 13 7 11 9.5 11c2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/><path d="M2 18c.6.5 1.2 1 2.5 1C7 19 7 17 9.5 17c2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/>',
+  },
+  soil_deficiency: {
+    color: "#8b5cf6",
+    label: "पोषक तत्व",
+    icon: '<path d="M10 2v7.5L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9.5V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/>',
+  },
+  general_scout: {
+    color: "#10b981",
+    label: "सामान्य निरीक्षण",
+    icon: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  },
+};
 
-  switch (category) {
-    case "pest":
-      emoji = "🐛";
-      bg = "#ef4444";
-      break;
-    case "disease":
-      emoji = "🍂";
-      bg = "#f97316";
-      break;
-    case "weed":
-      emoji = "🌿";
-      bg = "#eab308";
-      break;
-    case "waterlogging":
-      emoji = "💧";
-      bg = "#0ea5e9";
-      break;
-    case "nutrient":
-      emoji = "🧪";
-      bg = "#8b5cf6";
-      break;
-    case "frost":
-      emoji = "❄️";
-      bg = "#06b6d4";
-      break;
-  }
+function getCategoryMeta(category: string) {
+  return CATEGORY_META[category] ?? CATEGORY_META.general_scout;
+}
+
+function getCategoryIcon(category: string) {
+  const meta = getCategoryMeta(category);
 
   return L.divIcon({
     className: "custom-field-pin",
     html: `
       <div style="
-        background: ${bg};
-        width: 32px;
-        height: 32px;
+        background: ${meta.color};
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
         border: 2px solid #ffffff;
         cursor: pointer;
-        transform: translate(-16px, -16px);
       ">
-        ${emoji}
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${meta.icon}</svg>
       </div>
     `,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
   });
 }
 
@@ -174,7 +186,7 @@ export default function LiveFieldMap({
         {inspectionZones.map((zone) => {
           const lat = zone.centroid?.lat;
           const lng = zone.centroid?.lng;
-          if (!lat || !lng) return null;
+          if (lat == null || lng == null) return null;
           const radiusMeters = zone.areaHectares ? Math.sqrt((zone.areaHectares * 10000) / Math.PI) : 15;
           const isHigh = zone.urgency === "high";
 
@@ -193,7 +205,7 @@ export default function LiveFieldMap({
               <Popup>
                 <div className="p-1 text-xs">
                   <p className="font-bold text-gray-900">
-                    {isHigh ? "⚠️ उच्च प्राथमिकता जांच क्षेत्र" : "🔍 मध्यम प्राथमिकता क्षेत्र"}
+                    {isHigh ? "उच्च प्राथमिकता जांच क्षेत्र" : "मध्यम प्राथमिकता क्षेत्र"}
                   </p>
                   <p className="text-gray-600 mt-1">{zone.explanationHi}</p>
                   <p className="text-[11px] text-emerald-800 font-semibold mt-1">
@@ -208,6 +220,7 @@ export default function LiveFieldMap({
         {/* Observation Pins */}
         {observations.map((obs) => {
           if (!obs.location) return null;
+          const meta = getCategoryMeta(obs.category);
           return (
             <Marker
               key={obs.id}
@@ -217,21 +230,11 @@ export default function LiveFieldMap({
               <Popup>
                 <div className="p-1 text-xs max-w-[200px]">
                   <div className="flex items-center gap-1 font-bold text-gray-900 mb-1">
-                    <span>
-                      {obs.category === "insect_pest"
-                        ? "🐛 कीट हमला"
-                        : obs.category === "disease"
-                        ? "🍂 रोग लक्षण"
-                        : obs.category === "weed_patch"
-                        ? "🌿 खरपतवार"
-                        : obs.category === "waterlogging"
-                        ? "💧 जल भराव"
-                        : "📍 समस्या नोट"}
-                    </span>
+                    <span>{meta.label}</span>
                   </div>
                   <p className="text-gray-700">{obs.notes || "कोई विवरण नहीं"}</p>
                   <p className="text-[10px] text-gray-400 mt-1">
-                    {new Date(obs.date || obs.createdAt || Date.now()).toLocaleDateString("hi-IN")}
+                    {new Date(obs.date || obs.createdAt).toLocaleDateString("hi-IN")}
                   </p>
                 </div>
               </Popup>

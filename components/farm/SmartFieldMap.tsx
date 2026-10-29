@@ -29,7 +29,6 @@ import {
   RotateCcw,
   AlertTriangle,
   ZoomIn,
-  Navigation,
   Loader2,
   PlusCircle,
   MapPin,
@@ -38,7 +37,6 @@ import {
   LatLng,
   validateFieldPolygon,
   haversineDistanceMeters,
-  getPolygonBoundingBox,
 } from "@/lib/geo/fieldGeometry";
 import { requestUserLocation } from "@/lib/weatherApi";
 import "leaflet/dist/leaflet.css";
@@ -52,6 +50,13 @@ L.Icon.Default.mergeOptions({
 });
 
 export type MapLayerType = "satellite" | "hybrid" | "osm" | "google_hybrid";
+
+// Shared surface for map overlays: readable over satellite imagery in both themes.
+const MAP_SURFACE =
+  "border border-[var(--av-border)] bg-[var(--av-surface)]/95 shadow-[var(--av-shadow-md)] backdrop-blur-md";
+
+const MAP_ICON_BUTTON =
+  "flex h-9 w-9 items-center justify-center rounded-xl text-[var(--av-text-secondary)] transition hover:text-[var(--av-text-primary)] active:scale-95";
 
 export interface SmartFieldMapProps {
   initialCoords?: LatLng[];

@@ -1,18 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
-  X,
   Check,
   MapPin,
   Sprout,
-  Calendar,
+  CalendarDays,
   Droplets,
   Mountain,
   FileText,
-  User,
-  Sparkles,
-  Award,
+  Info,
 } from "lucide-react";
 import {
   LatLng,
@@ -25,6 +22,8 @@ import {
 } from "@/lib/geo/fieldGeometry";
 import { FarmField } from "@/lib/farm/types";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import FarmSheet from "@/components/farm/FarmSheet";
+import { cn } from "@/lib/cn";
 
 interface SaveFieldModalProps {
   isOpen: boolean;
@@ -131,11 +130,11 @@ const CROPS_CATALOG: CropOption[] = [
 ];
 
 const IRRIGATION_OPTIONS = [
-  { value: "Tubewell / बोरवेल", label: "💧 बोरवेल / ट्यूबवेल" },
-  { value: "Canal / नहर", label: "🌊 नहर (Canal)" },
-  { value: "Drip / टपक सिंचाई", label: "🚰 ड्रिप सिंचाई" },
-  { value: "Sprinkler / फव्वारा", label: "🚿 फव्वारा (Sprinkler)" },
-  { value: "Rainfed / वर्षा-आधारित", label: "🌧️ वर्षा-आधारित (बारानी)" },
+  { value: "Tubewell / बोरवेल", label: "बोरवेल / ट्यूबवेल" },
+  { value: "Canal / नहर", label: "नहर (Canal)" },
+  { value: "Drip / टपक सिंचाई", label: "ड्रिप सिंचाई" },
+  { value: "Sprinkler / फव्वारा", label: "फव्वारा (Sprinkler)" },
+  { value: "Rainfed / वर्षा-आधारित", label: "वर्षा-आधारित (बारानी)" },
 ];
 
 const SOIL_OPTIONS = [
@@ -145,6 +144,33 @@ const SOIL_OPTIONS = [
   "बलुई दोमट (Sandy Loam)",
   "चिकनी मिट्टी (Clay)",
 ];
+
+function resolveCrop(initialData?: Partial<FarmField>): CropOption {
+  const bySlug = initialData?.cropSlug
+    ? CROPS_CATALOG.find((crop) => crop.slug === initialData.cropSlug)
+    : undefined;
+  if (bySlug) return bySlug;
+
+  const name = (initialData?.crop || "").toLowerCase();
+  const byName = CROPS_CATALOG.find(
+    (crop) =>
+      name.includes(crop.nameHi) || name.includes(crop.nameEn.toLowerCase())
+  );
+  return byName ?? CROPS_CATALOG[0];
+}
+
+function toDateInput(value?: string): string {
+  if (!value) return "";
+  if (/^\d{4}-\d{2}-\d{2}/.test(value)) return value.slice(0, 10);
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? "" : parsed.toISOString().slice(0, 10);
+}
+
+function daysAgoISO(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date.toISOString().slice(0, 10);
+}
 
 export default function SaveFieldModal({
   isOpen,
@@ -161,46 +187,88 @@ export default function SaveFieldModal({
   const hectares = sqMeters / HECTARE_TO_SQ_METERS;
   const perimeter = calculateGeodesicPerimeter(coords);
 
+  const initialCrop = useMemo(() => resolveCrop(initialData), [initialData]);
+
   const [name, setName] = useState(initialData?.name || "मेरा खेत 1");
   const [village, setVillage] = useState(
     initialData?.village || profile?.village || profile?.district || "मेरा गांव"
   );
-  const [farmerName, setFarmerName] = useState(initialData?.farmerName || profile?.name || "");
-
-  // Crop & Variety
-  const [selectedCropSlug, setSelectedCropSlug] = useState<string>("wheat");
-  const [variety, setVariety] = useState<string>(initialData?.variety || "DBW 187");
-  const [customVariety, setCustomCropVariety] = useState("");
-
-  // Sowing Date Preset calculation (Default: 22 days ago for CRI active wheat stage)
-  const defaultSowing = useMemo(() => {
-    const d = new Date(Date.now() - 22 * 24 * 60 * 60 * 1000);
-    return d.toISOString().split("T")[0];
-  }, []);
-
-  const [sowingDate, setSowingDate] = useState<string>(initialData?.sowingDate || defaultSowing);
-  const [irrigationType, setIrrigationType] = useState<string>(
-    initialData?.irrigationType || "Tubewell / बोरवेल"
+  const [farmerName, setFarmerName] = useState(
+    initialData?.farmerName || profile?.name || ""
   );
-  const [soilType, setSoilType] = useState<string>(
-    initialData?.soilType || "दोमट मिट्टी (Loam)"
+  const [selectedCropSlug, setSelectedCropSlug] = useState(initialCrop.slug);
+  const [variety, setVariety] = useState(
+    initialData?.variety || initialCrop.popularVarieties[0] || ""
+  );
+  const [customVariety, setCustomVariety] = useState("");
+  const [sowingDate, setSowingDate] = useState(() =>
+    toDateInput(initialData?.sowingDateIso || initialData?.sowingDate)
+  );
+  const [irrigationType, setIrrigationType] = useState(
+    initialData?.irrigationType || IRRIGATION_OPTIONS[0].value
+  );
+  const [soilType, setSoilType] = useState(
+    initialData?.soilType || SOIL_OPTIONS[0]
   );
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [error, setError] = useState<string | null>(null);
 
-  const activeCropObj = useMemo(() => {
-    return CROPS_CATALOG.find((c) => c.slug === selectedCropSlug) || CROPS_CATALOG[0];
-  }, [selectedCropSlug]);
+  // Re-seed on every open and when async "edit field" data arrives with an id.
+  const seedKey = isOpen ? initialData?.id ?? "new" : "";
+  const seededFor = useRef<string | null>(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) {
+      seededFor.current = null;
+      return;
+    }
+    if (seededFor.current === seedKey) return;
+    seededFor.current = seedKey;
+
+    const crop = resolveCrop(initialData);
+    const initialVariety = initialData?.variety || "";
+    const isKnownVariety = crop.popularVarieties.includes(initialVariety);
+
+    setName(initialData?.name || "मेरा खेत 1");
+    setVillage(
+      initialData?.village || profile?.village || profile?.district || "मेरा गांव"
+    );
+    setFarmerName(initialData?.farmerName || profile?.name || "");
+    setSelectedCropSlug(crop.slug);
+    setVariety(isKnownVariety ? initialVariety : crop.popularVarieties[0] || "");
+    setCustomVariety(
+      initialVariety && !isKnownVariety ? initialVariety : ""
+    );
+    setSowingDate(
+      toDateInput(initialData?.sowingDateIso || initialData?.sowingDate) ||
+        daysAgoISO(22)
+    );
+    setIrrigationType(initialData?.irrigationType || IRRIGATION_OPTIONS[0].value);
+    setSoilType(initialData?.soilType || SOIL_OPTIONS[0]);
+    setNotes(initialData?.notes || "");
+    setError(null);
+  }, [
+    isOpen,
+    seedKey,
+    initialData,
+    profile?.village,
+    profile?.district,
+    profile?.name,
+  ]);
+
+  const activeCropObj = useMemo(
+    () =>
+      CROPS_CATALOG.find((crop) => crop.slug === selectedCropSlug) ||
+      CROPS_CATALOG[0],
+    [selectedCropSlug]
+  );
 
   const handleApplySowingPreset = (daysAgo: number) => {
-    const d = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
-    setSowingDate(d.toISOString().split("T")[0]);
+    setSowingDate(daysAgoISO(daysAgo));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
     if (!name.trim()) {
       setError("कृपया खेत का नाम दर्ज करें");
       return;
@@ -218,26 +286,43 @@ export default function SaveFieldModal({
       crop: activeCropObj.nameHi,
       cropSlug: activeCropObj.slug,
       variety: finalVariety || undefined,
-      area: isPolygon ? `${acres.toFixed(2)} एकड़` : (initialData?.area || "लोकेशन सहेजी गई"),
-      areaAcres: isPolygon ? Math.round(acres * 100) / 100 : initialData?.areaAcres,
-      areaHectares: isPolygon ? Math.round(hectares * 1000) / 1000 : initialData?.areaHectares,
-      areaSqMeters: isPolygon ? Math.round(sqMeters) : initialData?.areaSqMeters,
-      perimeterMeters: isPolygon ? Math.round(perimeter) : initialData?.perimeterMeters,
-      bighaDisplay: isPolygon ? bighaDisplay : undefined,
+      area: isPolygon
+        ? `${acres.toFixed(2)} एकड़`
+        : initialData?.area || "लोकेशन सहेजी गई",
+      areaAcres: isPolygon
+        ? Math.round(acres * 100) / 100
+        : initialData?.areaAcres,
+      areaHectares: isPolygon
+        ? Math.round(hectares * 1000) / 1000
+        : initialData?.areaHectares,
+      areaSqMeters: isPolygon
+        ? Math.round(sqMeters)
+        : initialData?.areaSqMeters,
+      perimeterMeters: isPolygon
+        ? Math.round(perimeter)
+        : initialData?.perimeterMeters,
+      bighaDisplay: isPolygon
+        ? bighaDisplay || initialData?.bighaDisplay
+        : initialData?.bighaDisplay,
       ownership: initialData?.ownership || "Owned",
       emoji: activeCropObj.emoji,
       stage: initialData?.stage || "सक्रिय",
-      status: "Active",
-      boundary: isPolygon ? coords : undefined,
-      geoJson,
-      location: centerPoint,
+      status: initialData?.status || "Active",
+      boundary: isPolygon ? coords : initialData?.boundary,
+      geoJson: isPolygon ? geoJson : initialData?.geoJson,
+      location: centerPoint || initialData?.location,
       isLocationOnly: !isPolygon,
-      measurementMethod: isPolygon ? "manual_map" : "manual_entry",
+      measurementMethod: isPolygon
+        ? initialData?.measurementMethod || "manual_map"
+        : initialData?.measurementMethod || "manual_entry",
       sowingDate,
-      sowingDateIso: sowingDate ? new Date(sowingDate).toISOString() : undefined,
+      sowingDateIso: sowingDate
+        ? new Date(sowingDate).toISOString()
+        : initialData?.sowingDateIso,
       irrigationType,
       soilType,
       notes: notes.trim() || undefined,
+      createdAt: initialData?.createdAt,
       updatedAt: new Date().toISOString(),
     });
 
@@ -245,300 +330,274 @@ export default function SaveFieldModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
-      <div
-        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[92vh] overflow-y-auto border border-emerald-100 flex flex-col no-scrollbar"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Top Header */}
-        <div className="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-emerald-600/15 via-[#103C32]/10 to-transparent">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#103C32] text-white flex items-center justify-center shadow-lg shadow-emerald-950/20">
-              <MapPin className="w-5 h-5 text-emerald-400" />
-            </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
-                अपना खेत सहेजें
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-900">
-                  Agriveda 360°
-                </span>
-              </h2>
-              <p className="text-xs text-gray-500">
-                उपग्रह सीमा, रकबा और फसल चक्र सक्रिय करें
-              </p>
-            </div>
+    <FarmSheet
+      open={isOpen}
+      onClose={onClose}
+      title={initialData?.id ? "खेत विवरण संशोधित करें" : "खेत सहेजें"}
+      subtitle="उपग्रह सीमा, रकबा और फसल चक्र सक्रिय करें"
+      icon={<MapPin className="h-4 w-4" />}
+      size="lg"
+      level={10000}
+    >
+      <div className="mb-3.5 grid grid-cols-3 divide-x divide-[var(--av-border-subtle)] rounded-2xl bg-[var(--av-surface-inset)] py-2.5 text-center">
+        <div>
+          <p className="text-[9px] font-medium uppercase tracking-wider text-[var(--av-text-muted)]">
+            रकबा
+          </p>
+          <p className="mt-0.5 text-sm font-semibold tabular-nums text-[var(--av-text-primary)]">
+            {acres.toFixed(2)} <span className="text-[9px]">एकड़</span>
+          </p>
+          {bighaDisplay ? (
+            <p className="mt-0.5 text-[9px] text-amber-700 dark:text-amber-300">
+              {bighaDisplay}
+            </p>
+          ) : null}
+        </div>
+        <div>
+          <p className="text-[9px] font-medium uppercase tracking-wider text-[var(--av-text-muted)]">
+            हेक्टेयर
+          </p>
+          <p className="mt-0.5 text-sm font-semibold tabular-nums text-[var(--av-text-primary)]">
+            {hectares.toFixed(3)}
+          </p>
+          <p className="mt-0.5 text-[9px] text-[var(--av-text-muted)]">
+            {Math.round(sqMeters).toLocaleString("en-IN")} m²
+          </p>
+        </div>
+        <div>
+          <p className="text-[9px] font-medium uppercase tracking-wider text-[var(--av-text-muted)]">
+            परिधि
+          </p>
+          <p className="mt-0.5 text-sm font-semibold tabular-nums text-[var(--av-text-primary)]">
+            {Math.round(perimeter)} m
+          </p>
+          <p className="mt-0.5 text-[9px] text-[var(--av-text-muted)]">
+            {coords.length} कोने
+          </p>
+        </div>
+      </div>
+
+      {error ? (
+        <div className="mb-3 flex items-start gap-2 rounded-xl border border-rose-500/25 bg-rose-500/10 p-2.5 text-[11px] font-medium text-rose-700 dark:text-rose-300">
+          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          {error}
+        </div>
+      ) : null}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-1.5 block text-[11px] font-semibold text-[var(--av-text-secondary)]">
+              खेत का नाम <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="उदा. उत्तर वाला खेत"
+              value={name}
+              onChange={(event) => {
+                setName(event.target.value);
+                if (error) setError(null);
+              }}
+              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-xs font-medium text-[var(--av-text-primary)] outline-none transition placeholder:text-[var(--av-text-muted)] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            />
           </div>
+
+          <div>
+            <label className="mb-1.5 block text-[11px] font-semibold text-[var(--av-text-secondary)]">
+              गांव / कस्बा
+            </label>
+            <input
+              type="text"
+              placeholder="उदा. नगला बीच"
+              value={village}
+              onChange={(event) => setVillage(event.target.value)}
+              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-xs text-[var(--av-text-primary)] outline-none transition placeholder:text-[var(--av-text-muted)] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-1.5 flex items-center justify-between gap-2">
+            <label className="flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+              <Sprout className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
+              मुख्य फसल
+            </label>
+            <span className="text-[10px] text-[var(--av-text-muted)]">
+              {activeCropObj.emoji} {activeCropObj.nameHi}
+            </span>
+          </div>
+
+          <div className="grid max-h-40 grid-cols-4 gap-1.5 overflow-y-auto rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-1.5 sm:grid-cols-6">
+            {CROPS_CATALOG.map((crop) => {
+              const selected = crop.slug === selectedCropSlug;
+              return (
+                <button
+                  key={crop.slug}
+                  type="button"
+                  onClick={() => {
+                    setSelectedCropSlug(crop.slug);
+                    setVariety(crop.popularVarieties[0] || "");
+                    setCustomVariety("");
+                  }}
+                  className={cn(
+                    "rounded-xl px-1 py-2 text-center transition active:scale-95",
+                    selected
+                      ? "bg-emerald-700 text-white shadow-sm"
+                      : "bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
+                  )}
+                >
+                  <span className="block text-base leading-none" aria-hidden>
+                    {crop.emoji}
+                  </span>
+                  <span className="mt-1 block truncate text-[10px] font-medium">
+                    {crop.nameHi}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-[11px] font-semibold text-[var(--av-text-secondary)]">
+            बीज किस्म
+          </label>
+          <div className="mb-1.5 flex flex-wrap gap-1.5">
+            {activeCropObj.popularVarieties.map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => {
+                  setVariety(item);
+                  setCustomVariety("");
+                }}
+                className={cn(
+                  "rounded-lg px-2.5 py-1 text-[10.5px] font-medium transition",
+                  variety === item && !customVariety
+                    ? "bg-emerald-700 text-white shadow-sm"
+                    : "border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
+                )}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <input
+            type="text"
+            placeholder="या अपनी किस्म लिखें…"
+            value={customVariety}
+            onChange={(event) => setCustomVariety(event.target.value)}
+            className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none transition placeholder:text-[var(--av-text-muted)] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+          />
+        </div>
+
+        <div>
+          <div className="mb-1.5 flex items-center justify-between gap-2">
+            <label className="flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+              <CalendarDays className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
+              बुवाई की तारीख
+            </label>
+            <span className="text-[10px] text-[var(--av-text-muted)]">
+              {sowingDate}
+            </span>
+          </div>
+
+          <div className="mb-2 grid grid-cols-4 gap-1.5">
+            {[
+              { days: 0, label: "आज" },
+              { days: 10, label: "10 दिन" },
+              { days: 21, label: "21 दिन" },
+              { days: 35, label: "35 दिन" },
+            ].map((preset) => (
+              <button
+                key={preset.days}
+                type="button"
+                onClick={() => handleApplySowingPreset(preset.days)}
+                className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-1.5 text-[10px] font-medium text-[var(--av-text-secondary)] transition hover:text-[var(--av-text-primary)]"
+              >
+                {preset.label} पहले
+              </button>
+            ))}
+          </div>
+
+          <input
+            type="date"
+            value={sowingDate}
+            onChange={(event) => setSowingDate(event.target.value)}
+            className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs font-medium text-[var(--av-text-primary)] outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+          />
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+              <Droplets className="h-3.5 w-3.5 text-sky-600 dark:text-sky-300" />
+              सिंचाई व्यवस्था
+            </label>
+            <select
+              value={irrigationType}
+              onChange={(event) => setIrrigationType(event.target.value)}
+              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none focus:border-emerald-500"
+            >
+              {IRRIGATION_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+              <Mountain className="h-3.5 w-3.5 text-amber-600 dark:text-amber-300" />
+              मिट्टी का प्रकार
+            </label>
+            <select
+              value={soilType}
+              onChange={(event) => setSoilType(event.target.value)}
+              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none focus:border-emerald-500"
+            >
+              {SOIL_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
+            <FileText className="h-3.5 w-3.5 text-[var(--av-text-muted)]" />
+            नोट्स
+          </label>
+          <textarea
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
+            placeholder="खेत, मिट्टी या सिंचाई से जुड़ी कोई खास बात…"
+            rows={2}
+            className="w-full resize-none rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none transition placeholder:text-[var(--av-text-muted)] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+          />
+        </div>
+
+        <div className="flex gap-2 border-t border-[var(--av-border-subtle)] pt-3">
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition"
+            className="flex-1 rounded-xl border border-[var(--av-border)] py-2.5 text-xs font-semibold text-[var(--av-text-secondary)] transition hover:bg-[var(--av-surface-inset)]"
           >
-            <X className="w-5 h-5" />
+            रद्द करें
+          </button>
+          <button
+            type="submit"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-700 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.99]"
+          >
+            <Check className="h-4 w-4" />
+            {initialData?.id ? "बदलाव सहेजें" : "खेत सक्रिय करें"}
           </button>
         </div>
-
-        {/* High-Tech Measurement Telemetry Bar */}
-        <div className="mx-4 sm:mx-5 mt-3.5 p-3.5 bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white rounded-2xl shadow-md flex items-center justify-around text-center">
-          <div>
-            <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">
-              सटीक रकबा (Area)
-            </div>
-            <div className="text-xl font-black text-white mt-0.5">
-              {acres.toFixed(2)} एकड़
-            </div>
-            {bighaDisplay && (
-              <div className="text-[10px] text-amber-300 font-bold">
-                {bighaDisplay}
-              </div>
-            )}
-          </div>
-          <div className="w-px h-9 bg-emerald-700/60" />
-          <div>
-            <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">
-              हेक्टेयर
-            </div>
-            <div className="text-sm font-bold text-white mt-0.5">
-              {hectares.toFixed(3)} Ha
-            </div>
-            <div className="text-[10px] text-emerald-200">
-              {Math.round(sqMeters).toLocaleString()} m²
-            </div>
-          </div>
-          <div className="w-px h-9 bg-emerald-700/60" />
-          <div>
-            <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">
-              मेड़ परिधि
-            </div>
-            <div className="text-sm font-bold text-white mt-0.5">
-              {Math.round(perimeter)} मीटर
-            </div>
-            <div className="text-[10px] text-emerald-200">{coords.length} कोने</div>
-          </div>
-        </div>
-
-        {error && (
-          <div className="mx-4 sm:mx-5 mt-3 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs font-bold text-rose-700">
-            {error}
-          </div>
-        )}
-
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4 text-xs">
-          {/* Field Name & Village */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1">
-                खेत का नाम <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="उदा. उत्तर वाला खेत, 01"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  if (error) setError(null);
-                }}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs font-semibold text-gray-900"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1">
-                गांव / कस्बा
-              </label>
-              <input
-                type="text"
-                placeholder="उदा. नगला बीच"
-                value={village}
-                onChange={(e) => setVillage(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs font-medium text-gray-800"
-              />
-            </div>
-          </div>
-
-          {/* Visual Crop Selection Cards */}
-          <div>
-            <label className="block text-xs font-bold text-gray-800 mb-1.5 flex items-center justify-between">
-              <span className="flex items-center gap-1">
-                <Sprout className="w-3.5 h-3.5 text-emerald-600" />
-                मुख्य फसल चुनें
-              </span>
-              <span className="text-[10px] font-semibold text-emerald-700">
-                चयनित: {activeCropObj.emoji} {activeCropObj.nameHi}
-              </span>
-            </label>
-
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-36 overflow-y-auto p-1 border border-gray-100 rounded-2xl bg-gray-50/50">
-              {CROPS_CATALOG.map((item) => {
-                const isSelected = item.slug === selectedCropSlug;
-                return (
-                  <button
-                    key={item.slug}
-                    type="button"
-                    onClick={() => {
-                      setSelectedCropSlug(item.slug);
-                      setVariety(item.popularVarieties[0] || "");
-                    }}
-                    className={`p-2 rounded-xl text-center transition-all ${
-                      isSelected
-                        ? "bg-[#103C32] text-white shadow-md ring-2 ring-emerald-500 font-bold scale-[1.02]"
-                        : "bg-white border border-gray-200 text-gray-800 hover:border-emerald-300"
-                    }`}
-                  >
-                    <span className="text-lg block">{item.emoji}</span>
-                    <span className="text-[11px] font-bold block mt-0.5 truncate">
-                      {item.nameHi}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Variety Quick Pills */}
-          <div>
-            <label className="block text-xs font-bold text-gray-800 mb-1">
-              बीज किस्म / वेरायटी (Variety)
-            </label>
-            <div className="flex flex-wrap gap-1.5 mb-1.5">
-              {activeCropObj.popularVarieties.map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => {
-                    setVariety(v);
-                    setCustomCropVariety("");
-                  }}
-                  className={`px-2.5 py-1 rounded-xl text-[11px] font-bold transition ${
-                    variety === v && !customVariety
-                      ? "bg-emerald-700 text-white shadow-sm"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
-                  }`}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
-            <input
-              type="text"
-              placeholder="या अपनी किस्म का नाम लिखें (उदा. श्रीराम 303)..."
-              value={customVariety}
-              onChange={(e) => setCustomCropVariety(e.target.value)}
-              className="w-full px-3 py-1.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs"
-            />
-          </div>
-
-          {/* Sowing Date with Instant Presets */}
-          <div>
-            <label className="block text-xs font-bold text-gray-800 mb-1 flex items-center justify-between">
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                बुवाई की तारीख (Sowing Date)
-              </span>
-              <span className="text-[10px] text-gray-500 font-medium">
-                {sowingDate}
-              </span>
-            </label>
-
-            {/* Quick Presets */}
-            <div className="grid grid-cols-4 gap-1.5 mb-2">
-              <button
-                type="button"
-                onClick={() => handleApplySowingPreset(0)}
-                className="py-1 px-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-[10px] text-center"
-              >
-                आज
-              </button>
-              <button
-                type="button"
-                onClick={() => handleApplySowingPreset(10)}
-                className="py-1 px-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-[10px] text-center"
-              >
-                10 दिन पहले
-              </button>
-              <button
-                type="button"
-                onClick={() => handleApplySowingPreset(21)}
-                className="py-1 px-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-[10px] text-center border border-amber-300"
-              >
-                21 दिन (CRI)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleApplySowingPreset(35)}
-                className="py-1 px-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-[10px] text-center"
-              >
-                35 दिन पहले
-              </button>
-            </div>
-
-            <input
-              type="date"
-              value={sowingDate}
-              onChange={(e) => setSowingDate(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs font-semibold text-gray-800 bg-white"
-            />
-          </div>
-
-          {/* Irrigation & Soil Quick Chips */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1 flex items-center gap-1">
-                <Droplets className="w-3.5 h-3.5 text-blue-600" />
-                सिंचाई व्यवस्था
-              </label>
-              <select
-                value={irrigationType}
-                onChange={(e) => setIrrigationType(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold bg-white"
-              >
-                {IRRIGATION_OPTIONS.map((it) => (
-                  <option key={it.value} value={it.value}>
-                    {it.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1 flex items-center gap-1">
-                <Mountain className="w-3.5 h-3.5 text-amber-600" />
-                मिट्टी का प्रकार
-              </label>
-              <select
-                value={soilType}
-                onChange={(e) => setSoilType(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs font-semibold bg-white"
-              >
-                {SOIL_OPTIONS.map((st) => (
-                  <option key={st} value={st}>
-                    {st}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* CTA Footer */}
-          <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-bold"
-            >
-              रद्द करें
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#103C32] hover:bg-[#0c2e26] text-white text-xs font-black shadow-lg shadow-emerald-950/25 flex items-center gap-2 active:scale-95 transition"
-            >
-              <Check className="w-4 h-4 text-emerald-400" />
-              <span>खेत व 360° सफर सक्रिय करें</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </FarmSheet>
   );
 }

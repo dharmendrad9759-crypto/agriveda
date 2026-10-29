@@ -16,6 +16,19 @@ import {
   getWheatStageByDays,
 } from "@/lib/farm/wheatZadoksStages";
 
+export function isWheatCrop(crop?: {
+  crop?: string;
+  cropSlug?: string;
+  cropId?: string;
+  cropName?: string;
+}): boolean {
+  const haystack = [crop?.cropId, crop?.cropSlug, crop?.crop, crop?.cropName]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes("wheat") || haystack.includes("गेहू");
+}
+
 export function calculateDaysAfterSowing(sowingDateIso: string): number {
   if (!sowingDateIso) return 0;
   const sowing = new Date(sowingDateIso);
