@@ -328,32 +328,32 @@ export default function LiveFarmView({
 
         {/* Weather Metrics Grid */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="p-2.5 rounded-xl bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-center">
-            <div className="flex items-center justify-center gap-1 text-[var(--av-text-muted)] text-[10px] mb-1">
-              <Thermometer className="w-3 h-3 text-rose-500" />
+          <div className="p-3 rounded-2xl bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-center">
+            <div className="flex items-center justify-center gap-1 text-[var(--av-text-muted)] text-[10px] mb-1 font-semibold">
+              <Thermometer className="w-3.5 h-3.5 text-rose-500" />
               <span>तापमान</span>
             </div>
-            <p className="text-sm font-extrabold text-[var(--av-text-primary)]">
+            <p className="text-base font-black text-[var(--av-text-primary)]">
               {weather?.temp || "24°C"}
             </p>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-center">
-            <div className="flex items-center justify-center gap-1 text-[var(--av-text-muted)] text-[10px] mb-1">
-              <Droplets className="w-3 h-3 text-blue-500" />
+          <div className="p-3 rounded-2xl bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-center">
+            <div className="flex items-center justify-center gap-1 text-[var(--av-text-muted)] text-[10px] mb-1 font-semibold">
+              <Droplets className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
               <span>नमी</span>
             </div>
-            <p className="text-sm font-extrabold text-[var(--av-text-primary)]">
+            <p className="text-base font-black text-[var(--av-text-primary)]">
               {weather?.humidity || "58%"}
             </p>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-center">
-            <div className="flex items-center justify-center gap-1 text-[var(--av-text-muted)] text-[10px] mb-1">
-              <Wind className="w-3 h-3 text-teal-500" />
+          <div className="p-3 rounded-2xl bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-center">
+            <div className="flex items-center justify-center gap-1 text-[var(--av-text-muted)] text-[10px] mb-1 font-semibold">
+              <Wind className="w-3.5 h-3.5 text-teal-500 animate-[spin_6s_linear_infinite]" />
               <span>हवा की गति</span>
             </div>
-            <p className="text-sm font-extrabold text-[var(--av-text-primary)]">
+            <p className="text-base font-black text-[var(--av-text-primary)]">
               {weather?.windSpeed || "8 km/h"}
             </p>
           </div>

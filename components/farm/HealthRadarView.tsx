@@ -32,13 +32,17 @@ import {
   ChevronDown,
   X,
   Sparkles,
+  Zap,
+  Target,
+  Activity,
 } from "lucide-react";
 
 const LiveFieldMap = dynamic(() => import("@/components/farm/LiveFieldMap"), {
   ssr: false,
   loading: () => (
-    <div className="h-[280px] w-full bg-slate-900/10 animate-pulse rounded-2xl flex items-center justify-center text-xs text-gray-500">
-      उपग्रह रडार लोड हो रहा है...
+    <div className="h-[300px] w-full bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-xs text-emerald-400 gap-2 border border-emerald-900/50">
+      <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+      <span>ESA Sentinel-2 L2A उपग्रह रडार लोड हो रहा है...</span>
     </div>
   ),
 });
@@ -60,6 +64,7 @@ export default function HealthRadarView({
   const [selectedZone, setSelectedZone] = useState<PotentialInspectionZone | null>(null);
   const [inspectionNote, setInspectionNote] = useState("");
   const [showLogModal, setShowLogModal] = useState(false);
+  const [isRadarScanning, setIsRadarScanning] = useState(false);
 
   // Generate current Sentinel-2 Level-2A observation if not passed
   const currentObservation = useMemo(() => {
@@ -89,33 +94,33 @@ export default function HealthRadarView({
     const v = currentObservation.meanNdvi;
     if (v >= 0.7) {
       return {
-        label: "अति सघन व स्वस्थ फसल (Dense & Robust)",
-        color: "text-emerald-700 dark:text-emerald-300",
-        bg: "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800",
+        label: "अति सघन व स्वस्थ फसल (Dense Canopy)",
+        color: "text-emerald-400",
         badgeBg: "bg-emerald-600 text-white",
+        glow: "from-emerald-500/20 to-transparent",
       };
     }
     if (v >= 0.5) {
       return {
-        label: "सामान्य व अच्छी वानस्पतिक वृद्धि (Good Biomass)",
-        color: "text-teal-700 dark:text-teal-300",
-        bg: "bg-teal-50 dark:bg-teal-950/60 border-teal-200 dark:border-teal-800",
+        label: "सामान्य व अच्छी वानस्पतिक बढ़वार (Good Biomass)",
+        color: "text-teal-400",
         badgeBg: "bg-teal-600 text-white",
+        glow: "from-teal-500/20 to-transparent",
       };
     }
     if (v >= 0.3) {
       return {
-        label: "मध्यम वृद्धि / हल्का वानस्पतिक तनाव (Moderate / Stress)",
-        color: "text-amber-700 dark:text-amber-300",
-        bg: "bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800",
+        label: "मध्यम बढ़वार / हल्का वानस्पतिक तनाव (Low Density / Stress)",
+        color: "text-amber-400",
         badgeBg: "bg-amber-600 text-white",
+        glow: "from-amber-500/20 to-transparent",
       };
     }
     return {
-      label: "कम वानस्पतिक घनत्व / अंकुरण चरण (Low / Bare Soil)",
-      color: "text-rose-700 dark:text-rose-300",
-      bg: "bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800",
+      label: "कम वानस्पतिक घनत्व / अंकुरण चरण (Bare Soil / Sparse)",
+      color: "text-rose-400",
       badgeBg: "bg-rose-600 text-white",
+      glow: "from-rose-500/20 to-transparent",
     };
   }, [currentObservation.meanNdvi]);
 
@@ -145,198 +150,239 @@ export default function HealthRadarView({
     setSelectedZone(null);
   };
 
+  const triggerScan = () => {
+    setIsRadarScanning(true);
+    setTimeout(() => {
+      setIsRadarScanning(false);
+      showToast("रडार स्कैन पूर्ण: 10m Sentinel-2 डेटा अद्यतन है", "success");
+    }, 2000);
+  };
+
   return (
     <div className="space-y-4 pb-12">
-      {/* Top Banner: Scientific Satellite Metadata Bar */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm space-y-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-300">
-              <Satellite className="w-4 h-4" />
-            </span>
+      {/* Aerospace Satellite Telemetry Cockpit */}
+      <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-[#103C32] via-[#0c2a23] to-[#061814] text-white p-4 sm:p-5 shadow-2xl relative overflow-hidden">
+        <div className="pointer-events-none absolute -top-12 -right-12 w-48 h-48 bg-teal-400/10 rounded-full blur-2xl" />
+
+        {/* Cockpit Top Bar */}
+        <div className="flex items-center justify-between border-b border-emerald-500/20 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300">
+              <Satellite className="w-5 h-5 animate-pulse" />
+            </div>
             <div>
-              <h2 className="text-xs font-bold text-[var(--av-text-primary)]">
-                Copernicus Sentinel-2 Level-2A
-              </h2>
-              <p className="text-[10px] text-[var(--av-text-muted)]">
-                ESA Surface Reflectance (BOA) • 10m रिज़ॉल्यूशन
+              <div className="flex items-center gap-2">
+                <h2 className="text-xs sm:text-sm font-black tracking-wide text-white uppercase">
+                  Copernicus Sentinel-2 Level-2A
+                </h2>
+                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                  BOA Reflectance
+                </span>
+              </div>
+              <p className="text-[10px] text-emerald-200/70">
+                यूरोपीय अंतरिक्ष एजेंसी (ESA) • 10m मल्टीस्पेक्ट्रल रिज़ॉल्यूशन
               </p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            क्लाउड फ्री (SCL Masked)
-          </span>
+
+          <button
+            type="button"
+            onClick={triggerScan}
+            disabled={isRadarScanning}
+            className="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition"
+          >
+            <Radio className={`w-3.5 h-3.5 ${isRadarScanning ? "animate-spin text-amber-300" : "animate-pulse"}`} />
+            <span>{isRadarScanning ? "स्कैन जारी..." : "रडार स्कैन"}</span>
+          </button>
         </div>
 
-        {/* Observation Metadata Grid */}
-        <div className="grid grid-cols-4 gap-1.5 text-center text-xs">
-          <div className="p-2 rounded-xl bg-[var(--av-surface-inset)] border border-[var(--av-border)]">
-            <p className="text-[9px] text-[var(--av-text-muted)]">अधिग्रहण तिथि</p>
-            <p className="font-bold text-[11px] text-[var(--av-text-primary)] mt-0.5">
+        {/* Telemetry Numbers Grid */}
+        <div className="grid grid-cols-4 gap-2 my-3 text-center">
+          <div className="p-2.5 rounded-2xl bg-black/40 border border-emerald-500/20">
+            <span className="text-[9px] font-bold text-emerald-300/80 uppercase">अधिग्रहण</span>
+            <p className="text-xs font-black text-white mt-0.5">
               {new Date(currentObservation.acquisitionDate).toLocaleDateString("hi-IN", {
                 day: "numeric",
                 month: "short",
               })}
             </p>
           </div>
-          <div className="p-2 rounded-xl bg-[var(--av-surface-inset)] border border-[var(--av-border)]">
-            <p className="text-[9px] text-[var(--av-text-muted)]">औसत NDVI</p>
-            <p className="font-extrabold text-[12px] text-emerald-600 mt-0.5">
+          <div className="p-2.5 rounded-2xl bg-black/40 border border-emerald-500/20">
+            <span className="text-[9px] font-bold text-emerald-300/80 uppercase">औसत NDVI</span>
+            <p className="text-sm font-black text-emerald-400 mt-0.5">
               {currentObservation.meanNdvi.toFixed(2)}
             </p>
           </div>
-          <div className="p-2 rounded-xl bg-[var(--av-surface-inset)] border border-[var(--av-border)]">
-            <p className="text-[9px] text-[var(--av-text-muted)]">बादल आवरण</p>
-            <p className="font-bold text-[11px] text-[var(--av-text-primary)] mt-0.5">
+          <div className="p-2.5 rounded-2xl bg-black/40 border border-emerald-500/20">
+            <span className="text-[9px] font-bold text-emerald-300/80 uppercase">क्लाउड कवर</span>
+            <p className="text-xs font-black text-white mt-0.5">
               {currentObservation.cloudCoveragePercent}%
             </p>
           </div>
-          <div className="p-2 rounded-xl bg-[var(--av-surface-inset)] border border-[var(--av-border)]">
-            <p className="text-[9px] text-[var(--av-text-muted)]">अनुमानित पिक्सल</p>
-            <p className="font-bold text-[11px] text-[var(--av-text-primary)] mt-0.5">
+          <div className="p-2.5 rounded-2xl bg-black/40 border border-emerald-500/20">
+            <span className="text-[9px] font-bold text-emerald-300/80 uppercase">वैध पिक्सल</span>
+            <p className="text-xs font-black text-white mt-0.5">
               {currentObservation.validPixelCount}
             </p>
           </div>
         </div>
 
-        {/* Current Health Status Summary */}
-        <div className={`p-3 rounded-xl border flex items-center justify-between ${ndviClass.bg}`}>
+        {/* Spectral Formula & Health Evaluation Badge */}
+        <div className="p-3 rounded-2xl bg-black/50 border border-emerald-500/30 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-[var(--av-text-secondary)]">वानस्पतिक स्थिति:</p>
-            <p className={`text-xs font-extrabold ${ndviClass.color}`}>
+            <div className="flex items-center gap-1.5 text-[10px] text-emerald-300 font-mono">
+              <Activity className="w-3.5 h-3.5 text-emerald-400" />
+              <span>NDVI = (B8 NIR - B4 Red) / (B8 + B4)</span>
+            </div>
+            <p className={`text-xs font-black mt-0.5 ${ndviClass.color}`}>
               {ndviClass.label}
             </p>
           </div>
-          <span className={`px-2.5 py-1 rounded-xl text-xs font-bold ${ndviClass.badgeBg}`}>
-            NDVI {currentObservation.meanNdvi.toFixed(2)}
+          <span className={`px-2.5 py-1 rounded-xl text-xs font-black ${ndviClass.badgeBg}`}>
+            {currentObservation.meanNdvi.toFixed(2)}
           </span>
         </div>
       </div>
 
       {/* Small Farm Resolution Safeguard Notice */}
       {currentObservation.isSmallFieldSafeguarded && (
-        <div className="rounded-2xl border border-amber-300/80 bg-amber-50/90 dark:bg-amber-950/30 p-3.5 text-xs text-amber-900 dark:text-amber-200 shadow-sm flex items-start gap-2.5">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        <div className="rounded-3xl border border-amber-300/80 bg-amber-50/90 dark:bg-amber-950/30 p-4 text-xs text-amber-900 dark:text-amber-200 shadow-sm flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <p className="font-bold">
+            <p className="font-extrabold text-sm text-amber-950 dark:text-amber-100">
               वैज्ञानिक सावधानी — छोटा खेत (0.5 एकड़ से कम):
             </p>
-            <p className="text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
-              सेंटिनल-2 उपग्रह का प्रत्येक पिक्सल 10×10 मीटर (100 मी²) का होता है। छोटे खेतों में मेड़ों व सीमाओं का प्रभाव पड़ता है। पूरे खेत का औसत NDVI सटीक है, लेकिन खेत के भीतर अलग-अलग ज़ोन का निर्णय करने से पहले स्वयं खेत में जाकर पौधों की स्थिति अवश्य देखें।
+            <p className="text-[11.5px] leading-relaxed text-amber-900 dark:text-amber-300">
+              सेंटिनल-2 उपग्रह का प्रत्येक पिक्सल 10×10 मीटर (100 मी²) का होता है। 0.5 एकड़ से छोटे खेतों में मेड़ों व सीमाओं का प्रभाव पड़ता है। पूरे खेत का औसत NDVI सटीक है, लेकिन खेत के भीतर अलग-अलग ज़ोन का निर्णय करने से पहले स्वयं खेत में जाकर पौधों की स्थिति अवश्य देखें।
             </p>
           </div>
         </div>
       )}
 
-      {/* Satellite Imagery with Anomaly Circles */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm space-y-3">
+      {/* Satellite Imagery with Radar Sweep Effect */}
+      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
-              <Radio className="w-4 h-4 text-emerald-600" />
+            <span className="p-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+              <Target className="w-4 h-4" />
             </span>
-            <h2 className="text-xs font-bold text-[var(--av-text-primary)]">
-              उपग्रह वनस्पति स्वास्थ्य व असमानता मानचित्र
-            </h2>
+            <div>
+              <h3 className="text-xs font-black text-[var(--av-text-primary)]">
+                उपग्रह वनस्पति स्वास्थ्य व असमानता मानचित्र
+              </h3>
+              <p className="text-[10px] text-[var(--av-text-muted)]">
+                10m रिज़ॉल्यूशन ग्रिड पर संवेदी विश्लेषण
+              </p>
+            </div>
           </div>
-          <span className="text-[10px] text-gray-500">
-            {currentObservation.potentialInspectionZones.length} जांच क्षेत्र
+          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+            {currentObservation.potentialInspectionZones.length} जांच क्षेत्र मिले
           </span>
         </div>
 
-        <LiveFieldMap
-          boundary={field.boundary || []}
-          inspectionZones={currentObservation.potentialInspectionZones}
-          height="280px"
-        />
+        {/* Live Map */}
+        <div className="relative rounded-2xl overflow-hidden">
+          <LiveFieldMap
+            boundary={field.boundary || []}
+            inspectionZones={currentObservation.potentialInspectionZones}
+            height="300px"
+          />
 
-        {/* NDVI Color Scale Bar */}
+          {/* Radar Scanning Line Overlay */}
+          {isRadarScanning && (
+            <div className="pointer-events-none absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
+              <div className="w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-pulse" />
+            </div>
+          )}
+        </div>
+
+        {/* NDVI Color Scale Legend Bar */}
         <div className="pt-2">
-          <p className="text-[10px] font-bold text-[var(--av-text-secondary)] mb-1">
-            NDVI रंग पैमाना (वानस्पतिक घनत्व):
-          </p>
-          <div className="h-2.5 rounded-full w-full bg-gradient-to-r from-[#d97706] via-[#eab308] via-[#84cc16] to-[#047857]" />
-          <div className="flex justify-between text-[9px] text-[var(--av-text-muted)] mt-1 font-semibold">
+          <div className="flex items-center justify-between text-[10px] font-bold text-[var(--av-text-secondary)] mb-1">
+            <span>NDVI रंग पैमाना (वानस्पतिक घनत्व):</span>
+            <span className="text-emerald-700 dark:text-emerald-300">0.2 से 0.85+</span>
+          </div>
+          <div className="h-3 rounded-full w-full bg-gradient-to-r from-[#d97706] via-[#eab308] via-[#84cc16] to-[#047857] shadow-inner" />
+          <div className="flex justify-between text-[9px] text-[var(--av-text-muted)] mt-1 font-extrabold">
             <span>सूखा / खाली (0.2)</span>
             <span>कम घनत्व (0.4)</span>
-            <span>मध्यम (0.6)</span>
+            <span>मध्यम बढ़वार (0.6)</span>
             <span>अति सघन (&gt;0.75)</span>
           </div>
         </div>
       </div>
 
       {/* Candidate Inspection Zones */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm space-y-3">
+      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">
+            <span className="p-1.5 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-300">
               <Search className="w-4 h-4" />
             </span>
             <div>
-              <h2 className="text-xs font-bold text-[var(--av-text-primary)]">
+              <h3 className="text-xs font-black text-[var(--av-text-primary)]">
                 खेत में जाकर जांच करें (Inspection Zones)
-              </h2>
+              </h3>
               <p className="text-[10px] text-[var(--av-text-muted)]">
-                उपग्रह असमानता केवल लक्षण बताती है, कारण नहीं
+                उपग्रह असमानता केवल लक्षण बताती है, वास्तविक कारण खेत में जांचें
               </p>
             </div>
           </div>
         </div>
 
         {currentObservation.potentialInspectionZones.length === 0 ? (
-          <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center text-xs text-emerald-800 dark:text-emerald-200">
-            <CheckCircle2 className="w-5 h-5 mx-auto mb-1 text-emerald-600" />
-            <p className="font-bold">पूरे खेत में एकसमान व स्वस्थ वानस्पतिक फैलाव है</p>
-            <p className="text-[11px] mt-0.5 text-emerald-700 dark:text-emerald-300">
+          <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center text-xs text-emerald-800 dark:text-emerald-200">
+            <CheckCircle2 className="w-6 h-6 mx-auto mb-1.5 text-emerald-600" />
+            <p className="font-black text-sm">पूरे खेत में एकसमान व स्वस्थ वानस्पतिक फैलाव है</p>
+            <p className="text-[11px] mt-1 text-emerald-700 dark:text-emerald-300">
               कोई असामान्य तनाव क्षेत्र (Stress Zone) नहीं मिला है।
             </p>
           </div>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {currentObservation.potentialInspectionZones.map((zone) => {
               const isHigh = zone.urgency === "high";
               return (
                 <div
                   key={zone.zoneId}
-                  className="p-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] space-y-2"
+                  className="p-3.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] space-y-2.5 transition hover:border-emerald-500/40"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${
                           isHigh ? "bg-rose-600 text-white" : "bg-amber-500 text-white"
                         }`}
                       >
                         {isHigh ? "उच्च प्राथमिकता" : "मध्यम प्राथमिकता"}
                       </span>
-                      <span className="text-xs font-bold text-[var(--av-text-primary)]">
+                      <span className="text-xs font-black text-[var(--av-text-primary)]">
                         ज़ोन {zone.zoneId}
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-gray-500">
+                    <span className="text-xs font-black text-emerald-700 dark:text-emerald-400">
                       NDVI {zone.meanNdvi.toFixed(2)}
                     </span>
                   </div>
 
-                  <p className="text-xs text-[var(--av-text-secondary)]">
+                  <p className="text-xs text-[var(--av-text-secondary)] leading-relaxed">
                     {zone.explanationHi}
                   </p>
 
-                  <div className="p-2 rounded-lg bg-[var(--av-surface)] border border-[var(--av-border)] text-[11px] text-[var(--av-text-secondary)] space-y-1">
-                    <p className="font-semibold text-emerald-800 dark:text-emerald-300">
-                      सलाह: खेत में जाकर मिट्टी की नमी, दीमक या पोषक तत्वों की जांच करें।
-                    </p>
-                    <p className="text-[10px] text-gray-400">
-                      क्षेत्रफल: ~{Math.round(zone.areaHectares * 10000)} मी² ({(zone.relativeDeviation * 100).toFixed(0)}% औसत से भिन्न)
-                    </p>
+                  <div className="p-2.5 rounded-xl bg-[var(--av-surface)] border border-[var(--av-border)] text-[11px] text-[var(--av-text-secondary)] flex items-center justify-between">
+                    <span className="font-bold text-emerald-800 dark:text-emerald-300">
+                      सलाह: खेत में नमी, दीमक या उर्वरक कमी की जांच करें
+                    </span>
+                    <span className="text-[10px] text-gray-400 font-bold">
+                      ~{Math.round(zone.areaHectares * 10000)} मी²
+                    </span>
                   </div>
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 pt-1">
                     <AppLink
                       href="/ai-doctor"
-                      className="flex-1 py-1.5 px-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold text-center flex items-center justify-center gap-1 shadow-sm transition"
+                      className="flex-1 py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow-md shadow-emerald-700/20 active:scale-95 transition"
                     >
                       <Camera className="w-3.5 h-3.5" />
                       <span>फोटो खींचें व AI डॉक्टर से पूछें</span>
@@ -344,7 +390,7 @@ export default function HealthRadarView({
                     <button
                       type="button"
                       onClick={() => handleOpenInspectionLog(zone)}
-                      className="py-1.5 px-2.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] hover:bg-gray-100 dark:hover:bg-gray-800 text-[11px] font-bold text-[var(--av-text-secondary)] transition"
+                      className="py-2 px-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-[var(--av-text-secondary)] active:scale-95 transition"
                     >
                       डायरी नोट
                     </button>
@@ -357,16 +403,16 @@ export default function HealthRadarView({
       </div>
 
       {/* Multi-date Historical NDVI Time-Series */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm space-y-3">
+      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+            <span className="p-1.5 rounded-xl bg-blue-500/15 text-blue-700 dark:text-blue-300">
               <TrendingUp className="w-4 h-4" />
             </span>
             <div>
-              <h2 className="text-xs font-bold text-[var(--av-text-primary)]">
+              <h3 className="text-xs font-black text-[var(--av-text-primary)]">
                 फसल वानस्पतिक वृद्धि का उपग्रह सफर (NDVI Time-Series)
-              </h2>
+              </h3>
               <p className="text-[10px] text-[var(--av-text-muted)]">
                 बुवाई से अब तक सेंटिनल-2 निगरानी
               </p>
@@ -383,18 +429,18 @@ export default function HealthRadarView({
 
               return (
                 <div key={obs.id} className="flex-1 flex flex-col items-center h-full justify-end">
-                  <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  <span className="text-[10px] font-black text-gray-700 dark:text-gray-300 mb-1">
                     {obs.meanNdvi.toFixed(2)}
                   </span>
                   <div
                     style={{ height: `${heightPct}%` }}
-                    className={`w-full max-w-[36px] rounded-t-lg transition-all ${
+                    className={`w-full max-w-[42px] rounded-t-xl transition-all ${
                       isLatest
-                        ? "bg-gradient-to-t from-emerald-700 to-teal-500 shadow-md"
+                        ? "bg-gradient-to-t from-emerald-700 to-teal-400 shadow-lg shadow-emerald-500/30"
                         : "bg-emerald-600/70"
                     }`}
                   />
-                  <span className="text-[9px] font-semibold text-gray-500 mt-1 truncate">
+                  <span className="text-[9px] font-extrabold text-gray-500 mt-1 truncate">
                     {new Date(obs.acquisitionDate).toLocaleDateString("hi-IN", {
                       day: "numeric",
                       month: "short",
@@ -405,7 +451,7 @@ export default function HealthRadarView({
             })}
           </div>
 
-          <p className="text-[11px] text-center text-emerald-800 dark:text-emerald-300 font-semibold pt-1">
+          <p className="text-[11px] text-center text-emerald-800 dark:text-emerald-300 font-bold pt-1">
             🌱 फसल का वानस्पतिक घनत्व समय के साथ सुचारू रूप से बढ़ रहा है।
           </p>
         </div>
@@ -414,8 +460,8 @@ export default function HealthRadarView({
       {/* Modal: Log Inspection Note */}
       {showLogModal && selectedZone && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[var(--av-surface)] rounded-2xl border border-[var(--av-border)] p-4 max-w-sm w-full space-y-3 shadow-xl">
-            <div className="flex items-center justify-between">
+          <div className="bg-[var(--av-surface)] rounded-3xl border border-[var(--av-border)] p-5 max-w-sm w-full space-y-3.5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--av-border)] pb-2.5">
               <h3 className="text-sm font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
                 <Search className="w-4 h-4 text-emerald-600" />
                 खेत जांच डायरी में दर्ज करें

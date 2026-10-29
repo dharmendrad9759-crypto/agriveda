@@ -11,6 +11,7 @@ import {
 } from "@/lib/farm/types";
 import { WHEAT_ZADOKS_STAGES, getWheatStageById, getWheatStageByDays } from "@/lib/farm/wheatZadoksStages";
 import { calculateDaysAfterSowing } from "@/lib/farm/cropJourneyEngine";
+import WheatStageVisualizer from "@/components/farm/WheatStageVisualizer";
 import { useToast } from "@/components/ui/Toast";
 import AppLink from "@/components/ui/AppLink";
 import {
@@ -33,6 +34,8 @@ import {
   X,
   Clock,
   ArrowRight,
+  TrendingUp,
+  Check,
 } from "lucide-react";
 
 interface CropJourneyViewProps {
@@ -153,217 +156,128 @@ export default function CropJourneyView({
 
   return (
     <div className="space-y-4 pb-12">
-      {/* Top Banner: Crop Age, Sowing Date & Current Stage */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 mb-1">
-              {activeSeason?.stageEstimationMethod === "farmer_confirmed"
-                ? "✓ किसान द्वारा पुष्ट चरण"
-                : "🛰️ मौसम व GDD आधार अनुमान"}
-            </span>
-            <h1 className="text-base font-extrabold text-[var(--av-text-primary)]">
-              {field.crop || "गेहूँ"} {field.variety ? `(${field.variety})` : ""}
-            </h1>
-            <p className="text-xs text-[var(--av-text-muted)]">
-              बुवाई तिथि:{" "}
-              {activeSeason?.sowingDate
-                ? new Date(activeSeason.sowingDate).toLocaleDateString("hi-IN", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })
-                : "दर्ज नहीं"}
-            </p>
-          </div>
+      {/* 360° Botanical Visualizer Engine */}
+      <WheatStageVisualizer
+        currentStage={currentStageDef}
+        selectedStage={selectedStageDef}
+        das={das}
+        totalDays={135}
+        onSelectStage={(stageId) => setSelectedStageId(stageId)}
+      />
 
-          <div className="text-right">
-            <span className="text-2xl font-black text-emerald-700 dark:text-emerald-400">
-              {das}
-            </span>
-            <p className="text-[10px] font-bold text-[var(--av-text-muted)] uppercase">
-              दिन की फसल (DAS)
-            </p>
-          </div>
-        </div>
-
-        {/* Current Active Stage Quick Box */}
-        <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-900/10 via-emerald-800/5 to-teal-800/10 border border-emerald-500/20 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-              वर्तमान अवस्था (Current Stage):
-            </p>
-            <p className="text-sm font-black text-[var(--av-text-primary)]">
-              {currentStageDef.stageNameHi} ({currentStageDef.zadoksCode})
-            </p>
-          </div>
-          <span className="text-xs font-extrabold px-2.5 py-1 rounded-xl bg-emerald-600 text-white shadow-sm">
-            {currentStageDef.typicalDaysRange[0]}-{currentStageDef.typicalDaysRange[1]} दिन
-          </span>
-        </div>
-      </div>
-
-      {/* Wheat Zadoks 10-Stage Horizontal Interactive Progression Bar */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <span className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">
-              <Layers className="w-4 h-4" />
-            </span>
-            <h2 className="text-xs font-bold text-[var(--av-text-primary)]">
-              गेहूँ विकास चक्र (Zadoks Z00 - Z99)
-            </h2>
-          </div>
-          <span className="text-[10px] text-[var(--av-text-muted)]">
-            चरण पर टैप करके जानकारी देखें
-          </span>
-        </div>
-
-        {/* Horizontal Scrollable Stages */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 no-scrollbar">
-          {WHEAT_ZADOKS_STAGES.map((stage) => {
-            const isCurrent = stage.stageId === currentStageId;
-            const isSelected = stage.stageId === selectedStageId;
-            const isPast = das > stage.typicalDaysRange[1];
-
-            return (
-              <button
-                key={stage.stageId}
-                type="button"
-                onClick={() => setSelectedStageId(stage.stageId)}
-                className={`flex-shrink-0 w-28 p-2.5 rounded-xl border text-left transition-all ${
-                  isSelected
-                    ? "bg-emerald-800 text-white border-emerald-700 shadow-md ring-2 ring-emerald-500/50"
-                    : isCurrent
-                    ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-[var(--av-text-primary)]"
-                    : isPast
-                    ? "bg-[var(--av-surface-inset)] border-[var(--av-border)] text-gray-500"
-                    : "bg-[var(--av-surface)] border-[var(--av-border)] text-[var(--av-text-secondary)]"
-                }`}
-              >
-                <div className="flex items-center justify-between text-[9px] mb-1 font-semibold">
-                  <span>{stage.zadoksCode}</span>
-                  {isCurrent && (
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  )}
-                  {isPast && !isCurrent && (
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                  )}
-                </div>
-                <p className={`text-[11px] font-bold line-clamp-2 ${isSelected ? "text-white" : ""}`}>
-                  {stage.stageNameHi}
-                </p>
-                <p className={`text-[9px] mt-1 ${isSelected ? "text-emerald-100" : "text-[var(--av-text-muted)]"}`}>
-                  {stage.typicalDaysRange[0]}-{stage.typicalDaysRange[1]} दिन
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Selected Stage Detail & Agronomic Guide */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3.5">
-        <div className="flex items-start justify-between gap-2">
+      {/* Selected Stage Detail & Agronomic Command Center */}
+      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-4">
+        <div className="flex items-start justify-between gap-2 border-b border-[var(--av-border)] pb-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30">
                 {selectedStageDef.zadoksCode}
               </span>
-              <h3 className="text-sm font-extrabold text-[var(--av-text-primary)]">
-                {selectedStageDef.stageNameHi} ({selectedStageDef.stageNameEn})
-              </h3>
+              <h2 className="text-base font-black text-[var(--av-text-primary)]">
+                {selectedStageDef.stageNameHi}
+              </h2>
             </div>
-            <p className="text-[11px] text-[var(--av-text-secondary)] mt-1">
-              अवधि: {selectedStageDef.typicalDaysRange[0]} से {selectedStageDef.typicalDaysRange[1]} दिन
+            <p className="text-xs text-[var(--av-text-secondary)] mt-1">
+              अवस्था अवधि: {selectedStageDef.typicalDaysRange[0]} से {selectedStageDef.typicalDaysRange[1]} दिन
               {selectedStageDef.targetGDD ? ` • संचित GDD: ${selectedStageDef.targetGDD[0]}-${selectedStageDef.targetGDD[1]}°C` : ""}
             </p>
           </div>
 
-          {selectedStageDef.stageId !== currentStageId && (
+          {selectedStageDef.stageId !== currentStageId ? (
             <button
               type="button"
               onClick={() => handleConfirmStage(selectedStageDef.stageId)}
-              className="px-2.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-bold shrink-0 shadow-sm transition"
+              className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shrink-0 shadow-md shadow-emerald-700/20 active:scale-95 transition flex items-center gap-1"
             >
-              यह चरण चुनें
+              <Check className="w-3.5 h-3.5" />
+              <span>यह अवस्था चुनें</span>
             </button>
+          ) : (
+            <span className="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 text-[10px] font-extrabold flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-emerald-600" />
+              वर्तमान अवस्था
+            </span>
           )}
         </div>
 
-        {/* Identification Criteria */}
+        {/* Identification Criteria Card */}
         {selectedStageDef.identificationCriteriaHi && selectedStageDef.identificationCriteriaHi.length > 0 && (
-          <div className="p-3 rounded-xl bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-xs space-y-1">
-            <p className="font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
-              <Sprout className="w-3.5 h-3.5 text-emerald-600" />
-              पहचान के लक्षण (Identification):
+          <div className="p-3.5 rounded-2xl bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-xs space-y-2">
+            <p className="font-extrabold text-[var(--av-text-primary)] flex items-center gap-1.5 text-xs">
+              <Sprout className="w-4 h-4 text-emerald-600" />
+              खेत में पहचान के लक्षण (Physical Field Indicators):
             </p>
-            <ul className="space-y-1 text-[11px] text-[var(--av-text-secondary)]">
+            <ul className="space-y-1.5 text-[11.5px] text-[var(--av-text-secondary)]">
               {selectedStageDef.identificationCriteriaHi.map((crit, idx) => (
-                <li key={idx} className="flex items-start gap-1.5">
-                  <span className="text-emerald-600 font-bold">•</span>
-                  <span>{crit}</span>
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                  <span className="leading-relaxed">{crit}</span>
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {/* Irrigation & Fertilizer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-          {/* Irrigation */}
-          <div className="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 space-y-1">
-            <p className="font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
-              <Droplets className="w-3.5 h-3.5 text-blue-600" />
-              सिंचाई सलाह (Irrigation):
+        {/* Irrigation & Fertilizer High-Impact Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
+          {/* Irrigation Protocol */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border border-blue-500/25 space-y-1.5">
+            <p className="font-extrabold text-blue-900 dark:text-blue-200 flex items-center gap-1.5 text-xs">
+              <Droplets className="w-4 h-4 text-blue-600 shrink-0" />
+              सिंचाई प्रोटोकॉल (Irrigation Guidance):
             </p>
-            <p className="text-[11px] text-blue-800 dark:text-blue-300">
+            <p className="text-[11.5px] text-blue-950 dark:text-blue-100 leading-relaxed">
               {selectedStageDef.irrigationConsiderationsHi}
             </p>
           </div>
 
-          {/* Fertilizer */}
-          <div className="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 space-y-1">
-            <p className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-              <Leaf className="w-3.5 h-3.5 text-emerald-600" />
-              खाद व पोषक तत्व (Nutrients):
+          {/* Fertilizer & Nutrient Protocol */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/25 space-y-1.5">
+            <p className="font-extrabold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5 text-xs">
+              <Leaf className="w-4 h-4 text-emerald-600 shrink-0" />
+              खाद व पोषक तत्व (Nutrient Dosage):
             </p>
-            <p className="text-[11px] text-emerald-800 dark:text-emerald-300">
+            <p className="text-[11.5px] text-emerald-950 dark:text-emerald-100 leading-relaxed">
               {selectedStageDef.nutrientManagementHi}
             </p>
           </div>
         </div>
 
-        {/* Weed & Disease Scouting */}
+        {/* Weed & Disease Scouting Cards */}
         {(selectedStageDef.weedManagementHi || selectedStageDef.pestMonitoringHi) && (
-          <div className="space-y-2 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
             {selectedStageDef.weedManagementHi && (
-              <div className="p-2.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 text-amber-900 dark:text-amber-200">
-                <p className="font-bold text-[11px] mb-0.5">🌿 खरपतवार नियंत्रण:</p>
-                <p className="text-[11px]">{selectedStageDef.weedManagementHi}</p>
+              <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-950 dark:text-amber-100 space-y-1">
+                <p className="font-extrabold text-[11.5px] flex items-center gap-1 text-amber-900 dark:text-amber-200">
+                  <span>🌿</span> खरपतवार नियंत्रण खिड़की:
+                </p>
+                <p className="text-[11px] leading-relaxed">{selectedStageDef.weedManagementHi}</p>
               </div>
             )}
             {selectedStageDef.pestMonitoringHi && (
-              <div className="p-2.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-900 dark:text-rose-200">
-                <p className="font-bold text-[11px] mb-0.5">🐛 कीट व रोग निगरानी:</p>
-                <p className="text-[11px]">{selectedStageDef.pestMonitoringHi}</p>
+              <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-950 dark:text-rose-100 space-y-1">
+                <p className="font-extrabold text-[11.5px] flex items-center gap-1 text-rose-900 dark:text-rose-200">
+                  <Bug className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  कीट व रोग निगरानी (Scouting Focus):
+                </p>
+                <p className="text-[11px] leading-relaxed">{selectedStageDef.pestMonitoringHi}</p>
               </div>
             )}
           </div>
         )}
 
-        {/* 5 Common Farmer Mistakes */}
+        {/* 5 Common Mistakes - Red Caution Card */}
         {selectedStageDef.commonMistakesHi && selectedStageDef.commonMistakesHi.length > 0 && (
-          <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/60 space-y-1.5">
-            <p className="text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center gap-1.5">
-              <ShieldAlert className="w-4 h-4 text-rose-600" />
-              किसान भाइयों की इस चरण की बड़ी गलतियां (गलतियों से बचें):
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-500/15 via-rose-500/5 to-transparent border border-rose-500/30 space-y-2">
+            <p className="text-xs font-black text-rose-800 dark:text-rose-300 flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" />
+              किसान भाइयों की इस चरण की बड़ी गलतियां (इनसे बचें):
             </p>
-            <ul className="space-y-1 text-[11px] text-rose-900 dark:text-rose-200">
+            <ul className="space-y-1.5 text-[11.5px] text-rose-950 dark:text-rose-200">
               {selectedStageDef.commonMistakesHi.map((mistake, i) => (
-                <li key={i} className="flex items-start gap-1.5">
-                  <span className="text-rose-500 font-bold">•</span>
-                  <span>{mistake}</span>
+                <li key={i} className="flex items-start gap-2">
+                  <span className="text-rose-600 font-black">✕</span>
+                  <span className="leading-relaxed">{mistake}</span>
                 </li>
               ))}
             </ul>
@@ -372,22 +286,21 @@ export default function CropJourneyView({
       </div>
 
       {/* Stage Tasks List */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
+      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <span className="p-1.5 rounded-lg bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-300">
+          <div className="flex items-center gap-2">
+            <span className="p-1.5 rounded-xl bg-teal-500/15 text-teal-700 dark:text-teal-300">
               <Calendar className="w-4 h-4" />
             </span>
-            <h2 className="text-xs font-bold text-[var(--av-text-primary)]">
+            <h2 className="text-xs font-black text-[var(--av-text-primary)]">
               फसल कार्य सूची ({filteredTasks.length})
             </h2>
           </div>
 
-          {/* Add Task Button */}
           <button
             type="button"
             onClick={() => setShowTaskModal(true)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-700 text-white text-[11px] font-bold shadow-sm hover:bg-emerald-800 transition"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-700 text-white text-xs font-bold shadow-sm hover:bg-emerald-800 active:scale-95 transition"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>कार्य जोड़ें</span>
@@ -407,9 +320,9 @@ export default function CropJourneyView({
               key={tab.id}
               type="button"
               onClick={() => setTaskFilter(tab.id)}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${
                 taskFilter === tab.id
-                  ? "bg-emerald-800 text-white"
+                  ? "bg-emerald-800 text-white shadow-sm"
                   : "bg-[var(--av-surface-inset)] border border-[var(--av-border)] text-[var(--av-text-secondary)]"
               }`}
             >
@@ -421,7 +334,7 @@ export default function CropJourneyView({
         {/* Task Cards */}
         {filteredTasks.length === 0 ? (
           <p className="text-xs text-[var(--av-text-muted)] py-4 text-center">
-            कोई कार्य नहीं मिला।
+            इस अवस्था का कोई कार्य लंबित नहीं है।
           </p>
         ) : (
           <div className="space-y-2">
@@ -430,7 +343,7 @@ export default function CropJourneyView({
               return (
                 <div
                   key={t.id}
-                  className={`p-3 rounded-xl border transition ${
+                  className={`p-3 rounded-2xl border transition ${
                     isCompleted
                       ? "bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900 opacity-80"
                       : "bg-[var(--av-surface-inset)] border-[var(--av-border)]"
@@ -442,7 +355,7 @@ export default function CropJourneyView({
                       onClick={() =>
                         onUpdateTaskStatus?.(t.id, isCompleted ? "due" : "completed")
                       }
-                      className="mt-0.5 text-gray-400 hover:text-emerald-600"
+                      className="mt-0.5 text-gray-400 hover:text-emerald-600 transition"
                     >
                       {isCompleted ? (
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -453,20 +366,20 @@ export default function CropJourneyView({
                     <div className="flex-1">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <span
-                          className={`text-xs font-bold leading-tight ${
-                            isCompleted ? "line-through text-gray-500" : "text-[var(--av-text-primary)]"
+                          className={`text-xs font-black leading-tight ${
+                            isCompleted ? "line-through text-gray-400" : "text-[var(--av-text-primary)]"
                           }`}
                         >
                           {t.titleHi || (t as any).title}
                         </span>
                         {t.status === "due" && (
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300">
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30">
                             तुरंत करें
                           </span>
                         )}
                       </div>
                       {(t.descriptionHi || (t as any).description) && (
-                        <p className="text-[11px] text-[var(--av-text-secondary)] mt-1">
+                        <p className="text-[11px] text-[var(--av-text-secondary)] mt-1 leading-relaxed">
                           {t.descriptionHi || (t as any).description}
                         </p>
                       )}
@@ -480,19 +393,19 @@ export default function CropJourneyView({
       </div>
 
       {/* Harvest Season Action Card */}
-      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-sm flex items-center justify-between">
+      <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-[var(--av-surface)] to-transparent p-4 shadow-sm flex items-center justify-between">
         <div>
-          <h3 className="text-xs font-bold text-[var(--av-text-primary)]">
+          <h3 className="text-xs font-black text-[var(--av-text-primary)]">
             फसल कटाई संपन्न?
           </h3>
-          <p className="text-[10px] text-[var(--av-text-muted)]">
+          <p className="text-[10px] text-[var(--av-text-muted)] mt-0.5">
             कटाई दर्ज करके यह सीजन समाप्त करें व नया सीजन शुरू करें।
           </p>
         </div>
         <button
           type="button"
           onClick={() => setShowHarvestModal(true)}
-          className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm transition"
+          className="px-3.5 py-2 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md shadow-amber-600/20 active:scale-95 transition"
         >
           कटाई पूरी करें
         </button>
@@ -501,8 +414,8 @@ export default function CropJourneyView({
       {/* Modal: Add Task */}
       {showTaskModal && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[var(--av-surface)] rounded-2xl border border-[var(--av-border)] p-4 max-w-sm w-full space-y-3 shadow-xl">
-            <div className="flex items-center justify-between">
+          <div className="bg-[var(--av-surface)] rounded-3xl border border-[var(--av-border)] p-5 max-w-sm w-full space-y-3.5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--av-border)] pb-2.5">
               <h3 className="text-sm font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
                 <Plus className="w-4 h-4 text-emerald-600" />
                 नया फसल कार्य जोड़ें
@@ -567,8 +480,8 @@ export default function CropJourneyView({
       {/* Modal: Harvest Season */}
       {showHarvestModal && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[var(--av-surface)] rounded-2xl border border-[var(--av-border)] p-4 max-w-sm w-full space-y-3 shadow-xl">
-            <div className="flex items-center justify-between">
+          <div className="bg-[var(--av-surface)] rounded-3xl border border-[var(--av-border)] p-5 max-w-sm w-full space-y-3.5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--av-border)] pb-2.5">
               <h3 className="text-sm font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
                 <Award className="w-4 h-4 text-amber-600" />
                 फसल कटाई व पैदावार दर्ज करें

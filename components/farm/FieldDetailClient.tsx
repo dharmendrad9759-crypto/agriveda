@@ -182,45 +182,45 @@ export default function FieldDetailClient({
           </div>
         </div>
 
-        {/* 3-Tab Bar: Live Farm | Health Radar | Crop Journey */}
-        <div className="max-w-3xl mx-auto px-4 flex border-t border-[var(--av-border)]">
+        {/* 3-Tab Bar: Live Farm | Health Radar | 360° Crop Journey */}
+        <div className="max-w-3xl mx-auto px-4 flex border-t border-[var(--av-border)] gap-1 p-1 bg-[var(--av-surface-inset)]">
           <button
             type="button"
             onClick={() => handleSwitchTab("live")}
-            className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition ${
+            className={`flex-1 py-2.5 text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all ${
               activeTab === "live"
-                ? "border-emerald-600 text-emerald-700 dark:text-emerald-300 bg-emerald-50/50 dark:bg-emerald-950/20"
-                : "border-transparent text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
+                ? "bg-gradient-to-r from-emerald-800 to-teal-800 text-white shadow-md shadow-emerald-900/20"
+                : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)] hover:bg-white/50 dark:hover:bg-gray-800"
             }`}
           >
-            <Compass className="w-4 h-4" />
+            <Compass className="w-3.5 h-3.5" />
             <span>🌾 लाइव खेत</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleSwitchTab("radar")}
-            className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition ${
+            className={`flex-1 py-2.5 text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all ${
               activeTab === "radar"
-                ? "border-teal-600 text-teal-700 dark:text-teal-300 bg-teal-50/50 dark:bg-teal-950/20"
-                : "border-transparent text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
+                ? "bg-gradient-to-r from-teal-800 to-cyan-800 text-white shadow-md shadow-teal-900/20"
+                : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)] hover:bg-white/50 dark:hover:bg-gray-800"
             }`}
           >
-            <Radio className="w-4 h-4" />
+            <Radio className="w-3.5 h-3.5" />
             <span>🛰️ स्वास्थ्य रडार</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleSwitchTab("journey")}
-            className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition ${
+            className={`flex-1 py-2.5 text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all ${
               activeTab === "journey"
-                ? "border-amber-600 text-amber-700 dark:text-amber-300 bg-amber-50/50 dark:bg-amber-950/20"
-                : "border-transparent text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
+                ? "bg-gradient-to-r from-amber-600 via-amber-700 to-yellow-700 text-white shadow-md shadow-amber-900/30"
+                : "text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)] hover:bg-white/50 dark:hover:bg-gray-800"
             }`}
           >
-            <Sprout className="w-4 h-4" />
-            <span>📅 फसल सफर</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" />
+            <span>🌟 360° फसल सफर</span>
           </button>
         </div>
       </header>
