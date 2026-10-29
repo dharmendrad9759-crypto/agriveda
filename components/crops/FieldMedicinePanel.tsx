@@ -68,20 +68,24 @@ export default function FieldMedicinePanel({
         item.trap.timing
       }\nदुकानदार भाई, कृपया इस ल्यूर के साथ उपयुक्त फनल ट्रैप दें।`;
     } else if (item.kind === "mix" && item.tankMix) {
-      const compLines = item.tankMix.components
-        .map(
-          (c, idx) =>
-            `• दवा ${idx + 1}: ${c.nameHi} ${c.formulation} (${c.nameEn})${
-              c.brand ? ` [प्रसिद्ध: ${c.brand}]` : ""
-            }\n  - 16L पंप में मात्रा: ${c.dosePerTank}\n  - प्रति एकड़: ${
-              c.dosePerAcre
-            }`
-        )
-        .join("\n");
-      const spreaderLine = item.tankMix.spreader
-        ? `\n• स्टीकर / स्प्रेडर: ${item.tankMix.spreader.nameHi} (${item.tankMix.spreader.dosePerTank})`
-        : "";
-      text = `टैंक मिश्रण दवाई पर्ची (Agriveda Farm Advisory):\n${compLines}${spreaderLine}\nदुकानदार भाई, कृपया ऊपर लिखी दोनों दवाएं एवं सिलिकॉन स्प्रेडर दें।`;
+      if (item.tankMix.isBaitSpray) {
+        text = `फल मक्खी चारा छिड़काव पर्ची (Agriveda Farm Advisory):\n• चारा घटक: देसी गुड़ या गन्ने का शीरा (100 ग्राम प्रति 10 लीटर पानी)\n• कीटनाशक: मैलाथियान 50% EC (Malathion 50% EC) (20 मिली प्रति 10 लीटर पानी)\n• प्रयोग विधि: 10 लीटर पानी में 100g गुड़ व 20ml मैलाथियान मिलाकर तने व मुख्य शाखाओं पर मोटे बूंदों में छिड़कें।\nदुकानदार भाई, कृपया मैलाथियान 50% EC (Malathion 50% EC) कीटनाशक दें।`;
+      } else {
+        const compLines = item.tankMix.components
+          .map(
+            (c, idx) =>
+              `• दवा ${idx + 1}: ${c.nameHi} ${c.formulation} (${c.nameEn})${
+                c.brand ? ` [प्रसिद्ध: ${c.brand}]` : ""
+              }\n  - 16L पंप में मात्रा: ${c.dosePerTank}\n  - प्रति एकड़: ${
+                c.dosePerAcre
+              }`
+          )
+          .join("\n");
+        const spreaderLine = item.tankMix.spreader
+          ? `\n• स्टीकर / स्प्रेडर: ${item.tankMix.spreader.nameHi} (${item.tankMix.spreader.dosePerTank})`
+          : "";
+        text = `टैंक मिश्रण दवाई पर्ची (Agriveda Farm Advisory):\n${compLines}${spreaderLine}\nदुकानदार भाई, कृपया ऊपर लिखी दोनों दवाएं एवं सिलिकॉन स्प्रेडर दें।`;
+      }
     } else {
       text = `दवाई पर्ची (Agriveda Farm Advisory):\n• असली टेक्निकल नाम: ${
         item.technicalEn || item.technicalHi
@@ -316,12 +320,28 @@ export default function FieldMedicinePanel({
                       >
                         {/* Header Badge */}
                         <div className="flex flex-wrap items-center justify-between gap-1">
-                          <span className="inline-flex items-center gap-1 rounded bg-amber-600 px-2 py-0.5 text-[10px] font-black text-white">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-black text-white ${
+                              item.tankMix.isBaitSpray ? "bg-amber-700" : "bg-amber-600"
+                            }`}
+                          >
                             <Layers className="h-3 w-3" />
-                            {hi ? "संयुक्त टैंक मिश्रण (Tank Mix)" : "Tank Mix Combination"}
+                            {item.tankMix.isBaitSpray
+                              ? hi
+                                ? "फल मक्खी चारा स्प्रे (Poison Bait Spray)"
+                                : "Fruit Fly Poison Bait Spray"
+                              : hi
+                              ? "संयुक्त टैंक मिश्रण (Tank Mix)"
+                              : "Tank Mix Combination"}
                           </span>
                           <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300">
-                            {hi ? "प्रतिरोध तोड़ने हेतु दोहरा वार" : "Resistance Breaker"}
+                            {item.tankMix.isBaitSpray
+                              ? hi
+                                ? "मीठी गंध से आकर्षण + कीट अंत"
+                                : "Attract & Kill Bait"
+                              : hi
+                              ? "प्रतिरोध तोड़ने हेतु दोहरा वार"
+                              : "Resistance Breaker"}
                           </span>
                         </div>
 
@@ -563,17 +583,19 @@ export default function FieldMedicinePanel({
                           {/* Dose & Water Information */}
                           <div className="mt-1.5 space-y-1">
                             <div className="flex flex-wrap items-center gap-1 text-[10.5px]">
-                              {/* Per Liter */}
-                              <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">
-                                <Droplets className="h-2.5 w-2.5 text-emerald-600" />
-                                <span className="font-medium text-stone-500 dark:text-stone-400">
-                                  {hi ? "प्रति ली: " : "Per L: "}
+                              {/* Per Liter (Only shown when liquid spray applies) */}
+                              {item.farmerDose?.perLiter && !item.farmerDose.perLiter.includes("लागू नहीं") && (
+                                <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">
+                                  <Droplets className="h-2.5 w-2.5 text-emerald-600" />
+                                  <span className="font-medium text-stone-500 dark:text-stone-400">
+                                    {hi ? "प्रति ली: " : "Per L: "}
+                                  </span>
+                                  <span>{item.farmerDose.perLiter}</span>
                                 </span>
-                                <span>{item.farmerDose?.perLiter || item.dose}</span>
-                              </span>
+                              )}
 
-                              {/* Per 16L Tank */}
-                              {item.farmerDose?.perTank && (
+                              {/* Per 16L Tank (Only shown when spray pump applies) */}
+                              {item.farmerDose?.perTank && !item.farmerDose.perTank.includes("लागू नहीं") && (
                                 <span className="inline-flex items-center gap-1 rounded-md bg-teal-50 px-2 py-0.5 font-bold text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
                                   <span>🎒</span>
                                   <span className="font-medium text-stone-500 dark:text-stone-400">
@@ -583,12 +605,22 @@ export default function FieldMedicinePanel({
                                 </span>
                               )}
 
-                              {/* Per Acre */}
+                              {/* Per Acre or Soil / Basin Application Method */}
                               {item.farmerDose?.perAcre && (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 font-bold text-blue-900 dark:bg-blue-950/60 dark:text-blue-200">
-                                  <span>🚜</span>
+                                <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-bold ${
+                                  item.farmerDose?.perLiter?.includes("लागू नहीं")
+                                    ? "bg-amber-50 text-amber-950 dark:bg-amber-950/60 dark:text-amber-200 border border-amber-300/40"
+                                    : "bg-blue-50 text-blue-900 dark:bg-blue-950/60 dark:text-blue-200"
+                                }`}>
+                                  <span>{item.farmerDose?.perLiter?.includes("लागू नहीं") ? "🪴" : "🚜"}</span>
                                   <span className="font-medium text-stone-500 dark:text-stone-400">
-                                    {hi ? "प्रति एकड़: " : "Per Acre: "}
+                                    {item.farmerDose?.perLiter?.includes("लागू नहीं")
+                                      ? hi
+                                        ? "प्रयोग विधि व मात्रा: "
+                                        : "Application & Dose: "
+                                      : hi
+                                      ? "प्रति एकड़: "
+                                      : "Per Acre: "}
                                   </span>
                                   <span>{item.farmerDose.perAcre}</span>
                                 </span>

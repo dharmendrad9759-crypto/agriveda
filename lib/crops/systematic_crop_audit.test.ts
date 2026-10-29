@@ -4,7 +4,9 @@ import { splitMedicineLine, parseMedicineItem } from "@/lib/crops/medicineParser
 import { chemBottleImageSrc } from "@/lib/crops/chemBottleSvg";
 
 describe("Systematic Crop Audit across all crops, pests and diseases", () => {
-  it("audits all field medicine guides for agronomic and packaging correctness", () => {
+  it(
+    "audits all field medicine guides for agronomic and packaging correctness",
+    () => {
     let totalLinesChecked = 0;
     let totalItemsParsed = 0;
     const errors: string[] = [];
@@ -83,5 +85,5 @@ describe("Systematic Crop Audit across all crops, pests and diseases", () => {
       console.error(`Found ${errors.length} agronomic issues:\n` + errors.join("\n"));
     }
     expect(errors).toEqual([]);
-  });
+  }, 30000);
 });

@@ -349,6 +349,9 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "chlorpyrifos-20-ec": "/images/chem/real/chlorpyrifos-20-ec.jpg",
   "chlorpyriphos-20-ec": "/images/chem/real/chlorpyrifos-20-ec.jpg",
   "chlorpyrifos-50-cypermethrin-5-ec": "/images/chem/real/chlorpyrifos-50-cypermethrin-5-ec.jpg",
+  "chlorpyrifos-50-cypermethrin-5": "/images/chem/real/chlorpyrifos-50-cypermethrin-5-ec.jpg",
+  "clothianidin-50-wdg": "/images/chem/real/clothianidin-50-wdg.jpg",
+  "clothianidin": "/images/chem/real/clothianidin-50-wdg.jpg",
   "cyantraniliprole-10-od": "/images/chem/real/cyantraniliprole-10-od.jpg",
   "deltamethrin-2-8-ec": "/images/chem/real/deltamethrin-2-8-ec.jpg",
   "diafenthiuron-50-wp": "/images/chem/real/diafenthiuron-50-wp.jpg",
@@ -373,6 +376,10 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "indoxacarb-14-5-sc": "/images/chem/real/indoxacarb-14-5-sc.jpg",
   "lambda-cyhalothrin-5-ec": "/images/chem/real/lambda-cyhalothrin-5-ec.jpg",
   "malathion-50-ec": "/images/chem/real/malathion-50-ec.jpg",
+  "methyl-parathion-2-dp": "/images/chem/real/methyl-parathion-2-dp.jpg",
+  "methyl-parathion-2-dust": "/images/chem/real/methyl-parathion-2-dp.jpg",
+  "methyl-parathion-dp": "/images/chem/real/methyl-parathion-2-dp.jpg",
+  "methyl-parathion": "/images/chem/real/methyl-parathion-2-dp.jpg",
   "novaluron-emamectin-sc": "/images/chem/real/novaluron-emamectin-sc.jpg",
   "profenofos-50-ec": "/images/chem/real/profenofos-50-ec.jpg",
   "profenofos-cypermethrin-ec": "/images/chem/real/profenofos-cypermethrin-ec.jpg",
@@ -437,6 +444,8 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "edifenphos-50-ec": "/images/chem/real/edifenphos-50-ec.jpg",
   "famoxadone-cymoxanil-sc": "/images/chem/real/famoxadone-cymoxanil-sc.jpg",
   "fluopyram-34-48-sc": "/images/chem/real/fluopyram-34-48-sc.jpg",
+  "fluopyram-34-sc": "/images/chem/real/fluopyram-34-48-sc.jpg",
+  "fluopyram": "/images/chem/real/fluopyram-34-48-sc.jpg",
   "hexaconazole-5-ec": "/images/chem/real/hexaconazole-5-ec.jpg",
   "iprodione-50-wp": "/images/chem/real/iprodione-50-wp.jpg",
   "isoprothiolane-40-ec": "/images/chem/real/isoprothiolane-40-ec.jpg",
@@ -567,10 +576,13 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "fluchloralin-45-ec": "/images/chem/real/fluchloralin-45-ec.jpg",
   "fluchloralin": "/images/chem/real/fluchloralin-45-ec.jpg",
 
-  // Adjuvants & IPM Traps
+  // Adjuvants, Traps & Bait Attractants
   "silicon-spreader": "/images/chem/real/silicon-spreader.jpg",
   "pheromone-trap": "/images/chem/real/pheromone-trap.jpg",
   "yellow-sticky-trap": "/images/chem/real/yellow-sticky-trap.jpg",
+  "jaggery-molasses-bait": "/images/tools/jaggery-molasses-bait.jpg",
+  "jaggery-bait": "/images/tools/jaggery-molasses-bait.jpg",
+  "molasses-bait": "/images/tools/jaggery-molasses-bait.jpg",
 };
 
 export const STATIC_SVG_BOTTLES = new Set<string>([]);

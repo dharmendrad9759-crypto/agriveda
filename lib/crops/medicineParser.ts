@@ -42,6 +42,7 @@ export interface TankMixComponent {
 export interface TankMixDetails {
   titleHi: string;
   purposeHi: string;
+  isBaitSpray?: boolean;
   components: TankMixComponent[];
   spreader?: {
     nameHi: string;
@@ -686,26 +687,61 @@ export function parseTankMix(
       continue;
     }
 
-    // Parse chemical component
-    // Dose inside parentheses e.g. (0.8 मिली/लीटर) or after @
-    let doseStr = "";
-    const doseMatch = pTrim.match(
-      /\(([^)]*(?:मिली|ग्राम|ml|g|gm|लीटर|l)[^)]*)\)/i
-    ) || pTrim.match(/@\s*([^।\n+]+)/i);
-
-    if (doseMatch) {
-      doseStr = doseMatch[1].trim();
-    } else {
-      const inlineDose = pTrim.match(
-        /(\d+(?:\.\d+)?\s*(?:ग्राम|मिली|ml|gm|g|लीटर|l)(?:\s*(?:\/|प्रति)?\s*(?:लीटर|l))?)/i
-      );
-      if (inlineDose) doseStr = inlineDose[0].trim();
+    // Check if this part is Jaggery / Molasses bait attractant
+    if (/गुड़|शीरा|molasses|jaggery/i.test(pTrim)) {
+      const gramMatch = pTrim.match(/(\d+(?:\.\d+)?)\s*(?:ग्राम|gm|g)/i);
+      const jaggeryGrams = gramMatch ? parseFloat(gramMatch[1]) : 100;
+      const perLiterGrams = Math.round(jaggeryGrams / 10);
+      components.push({
+        id: `mix-comp-${Math.random().toString(36).slice(2, 7)}`,
+        nameHi: "गुड़ / गन्ने का शीरा (आकर्षण चारा)",
+        nameEn: "Jaggery & Molasses Bait Attractant",
+        formulation: "आकर्षण चारा",
+        dosePerLiter: `${perLiterGrams} ग्राम प्रति लीटर (${jaggeryGrams}g / 10L पानी)`,
+        dosePerTank: `${perLiterGrams * 16} ग्राम प्रति 16L पंप`,
+        dosePerAcre: "पेड़ के तने व निचली पत्तियों पर चारा छिड़कें",
+        category: "insecticide",
+        bottleSlug: "jaggery-molasses-bait",
+        brand: "देसी गुड़ या गन्ने का शीरा (राब)",
+      });
+      continue;
     }
 
-    // Clean name without dose
+    // Parse chemical component
+    // Check batch water dosing first (e.g. "20 मिली को 10 लीटर पानी में मिलाकर")
+    let doseStr = "";
+    const batchMatch = pTrim.match(
+      /(\d+(?:\.\d+)?)\s*(मिली|ml|ग्राम|gm|g)\s*(?:को|में)?\s*(\d+(?:\.\d+)?)\s*(?:लीटर|l)\s*पानी/i
+    );
+    if (batchMatch) {
+      const chemVal = parseFloat(batchMatch[1]);
+      const unit = batchMatch[2];
+      const waterVal = parseFloat(batchMatch[3]);
+      const perLiter = Math.round((chemVal / waterVal) * 10) / 10;
+      doseStr = `${perLiter} ${unit} प्रति लीटर (${chemVal} ${unit} / ${waterVal}L पानी)`;
+    } else {
+      // Dose inside parentheses e.g. (0.8 मिली/लीटर) or after @
+      const doseMatch = pTrim.match(
+        /\(([^)]*(?:मिली|ग्राम|ml|g|gm|लीटर|l)[^)]*)\)/i
+      ) || pTrim.match(/@\s*([^।\n+]+)/i);
+
+      if (doseMatch) {
+        doseStr = doseMatch[1].trim();
+      } else {
+        const inlineDose = pTrim.match(
+          /(\d+(?:\.\d+)?\s*(?:ग्राम|मिली|ml|gm|g|लीटर|l)(?:\s*(?:\/|प्रति)?\s*(?:लीटर|l))?)/i
+        );
+        if (inlineDose) doseStr = inlineDose[0].trim();
+      }
+    }
+
+    // Clean name without dose or application clauses
     let cleanName = pTrim
       .replace(/\([^)]*(?:मिली|ग्राम|ml|g|gm|लीटर|l)[^)]*\)/gi, "")
       .replace(/@\s*[^।\n+]+/gi, "")
+      .replace(/\d+(?:\.\d+)?\s*(?:मिली|ml|ग्राम|gm|g)\s*(?:को|में)?\s*\d+(?:\.\d+)?\s*(?:लीटर|l)\s*पानी[^।\n+]*/gi, "")
+      .replace(/को\s*\d+\s*लीटर\s*पानी[^।\n+]*/gi, "")
+      .replace(/पेड़\s*के\s*कुछ\s*हिस्सों\s*पर\s*छिड़कना/gi, "")
       .replace(/\s+/g, " ")
       .trim();
 
@@ -761,17 +797,24 @@ export function parseTankMix(
     });
   }
 
+  const isBaitSpray =
+    /गुड़|शीरा|चारा|bait/i.test(text) ||
+    components.some((c) => c.bottleSlug === "jaggery-molasses-bait");
+
   const mixTitle = components.map((c) => c.nameHi).join(" + ") +
     (spreaderInfo ? " + सिलिकॉन स्प्रेडर" : "");
 
   const tankMix: TankMixDetails = {
     titleHi: mixTitle,
-    purposeHi:
-      "प्रतिरोधक क्षमता (Resistance) तोड़ने एवं तुरंत तेज़ असर (Knockdown) हेतु दोहरा वैज्ञानिक मिश्रण।",
+    isBaitSpray,
+    purposeHi: isBaitSpray
+      ? "गुड़/शीरे की मीठी महक से नर व मादा फल मक्खियों को आकर्षित करके मैलाथियान के संपर्क से नष्ट करना (चारा छिड़काव)।"
+      : "प्रतिरोधक क्षमता (Resistance) तोड़ने एवं तुरंत तेज़ असर (Knockdown) हेतु दोहरा वैज्ञानिक मिश्रण।",
     components,
     spreader: spreaderInfo,
-    mixingAdvice:
-      "🧪 बाल्टी में 10 लीटर पानी लें। पहले पहली दवा घोलें, फिर दूसरी दवा डालें। अच्छी तरह घुलने के बाद अंत में सिलिकॉन स्प्रेडर मिलाएं और स्प्रे पंप में भरें।",
+    mixingAdvice: isBaitSpray
+      ? "🪤 10 लीटर पानी में 100 ग्राम गुड़/शीरा घोलें, फिर उसमें 20 मिली मैलाथियान 50% EC मिलाएं। पूरे पेड़ को न नहलाएं; केवल तने, मुख्य शाखाओं और निचली पत्तियों पर मोटे बूंदों में छिड़कें ताकि मक्खियां चारा चाटकर नष्ट हो जाएं।"
+      : "🧪 बाल्टी में 10 लीटर पानी लें। पहले पहली दवा घोलें, फिर दूसरी दवा डालें। अच्छी तरह घुलने के बाद अंत में सिलिकॉन स्प्रेडर मिलाएं और स्प्रे पंप में भरें।",
   };
 
   return {
@@ -781,7 +824,7 @@ export function parseTankMix(
     isChemical: true,
     technicalHi: mixTitle,
     technicalEn: components.map((c) => c.nameEn).join(" + "),
-    formulation: "टैंक मिश्रण (Tank Mix)",
+    formulation: isBaitSpray ? "चारा स्प्रे (Poison Bait Spray)" : "टैंक मिश्रण (Tank Mix)",
     brands: components
       .map((c) => c.brand)
       .filter((b): b is string => Boolean(b)),
@@ -793,7 +836,7 @@ export function parseTankMix(
       perAcre: components.map((c) => `${c.nameHi}: ${c.dosePerAcre}`).join(" | "),
     },
     category: components[0]?.category ?? (defaultKind === "disease" ? "fungicide" : "insecticide"),
-    categoryLabelHi: "संयुक्त टैंक मिश्रण (Tank Mix Combo)",
+    categoryLabelHi: isBaitSpray ? "फल मक्खी चारा स्प्रे (Poison Bait Spray)" : "संयुक्त टैंक मिश्रण (Tank Mix Combo)",
     fullNote: text,
     tankMix,
   };
@@ -877,6 +920,9 @@ export function parseMedicineItem(
     .split(/[@•·]| की दर से/i)[0]
     .replace(/\([^)]*\)/g, "")
     .replace(/^(?:अथवा|या)\s+/i, "")
+    .replace(/^(?:तने\s*के\s*चारों\s*ओर[^में]*में|मिट्टी\s*में)\s*/i, "")
+    .replace(/\s*(?:अच्छी\s*तरह\s*मिलाएं|मिलाएं|डालें|छिड़कें)[^$]*$/i, "")
+    .replace(/\s+\d+(?:\.\d+)?\s*(?:ग्राम|मिली|ml|gm|g|kg|किग्रा|लीटर)\s*(?:प्रति\s*[^।\n]+)?$/i, "")
     .trim();
 
   // Lookup in catalog / bottle helper
