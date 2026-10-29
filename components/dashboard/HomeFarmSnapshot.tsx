@@ -2,7 +2,7 @@
 
 import AppLink from "@/components/ui/AppLink";
 import { useFarmData } from "@/hooks/useFarmData";
-import { Plus, Tractor, ChevronRight } from "lucide-react";
+import { Plus, Tractor, ChevronRight, Ruler } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
@@ -35,20 +35,30 @@ export default function HomeFarmSnapshot() {
             )}
           </div>
         </div>
-        <AppLink
-          href="/my-farm"
-          className="inline-flex shrink-0 items-center gap-0.5 rounded-xl bg-[var(--av-accent)] px-2.5 py-1.5 text-[10px] font-bold text-white shadow-sm transition hover:brightness-110 active:scale-95"
-        >
-          {hasFields ? (
-            <>
-              Open <ChevronRight className="h-3 w-3" />
-            </>
-          ) : (
-            <>
-              <Plus className="h-3 w-3" /> Add
-            </>
-          )}
-        </AppLink>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <AppLink
+            href="/my-farm/measure"
+            className="inline-flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2 py-1.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-200 transition hover:bg-emerald-500/20 active:scale-95"
+            title="उपग्रह या GPS से खेत नापें"
+          >
+            <Ruler className="h-3 w-3 text-emerald-600" />
+            <span>नापें</span>
+          </AppLink>
+          <AppLink
+            href="/my-farm"
+            className="inline-flex shrink-0 items-center gap-0.5 rounded-xl bg-[var(--av-accent)] px-2.5 py-1.5 text-[10px] font-bold text-white shadow-sm transition hover:brightness-110 active:scale-95"
+          >
+            {hasFields ? (
+              <>
+                Open <ChevronRight className="h-3 w-3" />
+              </>
+            ) : (
+              <>
+                <Plus className="h-3 w-3" /> Add
+              </>
+            )}
+          </AppLink>
+        </div>
       </div>
     </motion.div>
   );
