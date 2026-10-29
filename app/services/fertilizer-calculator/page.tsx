@@ -18,6 +18,8 @@ import {
   Clock,
   Lightbulb,
   ShieldCheck,
+  Ruler,
+  MapPin,
 } from "lucide-react";
 import { FertilizerNpkSparkleIcon } from "@/components/brand/icons";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
@@ -41,6 +43,7 @@ import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
 import { useToast } from "@/components/ui/Toast";
+import { useFarmData } from "@/hooks/useFarmData";
 
 type Step = "ask" | "plan";
 
@@ -56,6 +59,8 @@ function FertilizerCalculatorInner() {
   const slugs = useMemo(() => listFertilizerCrops(), []);
   const crops = cropCatalog.filter((c) => slugs.includes(c.slug));
   const { showToast } = useToast();
+  const { data: farmData } = useFarmData();
+  const savedFields = farmData?.fields ?? [];
 
   const cropFromUrl = useMemo(() => {
     const raw = searchParams.get("crop");
@@ -669,6 +674,72 @@ function FertilizerCalculatorInner() {
                     <X className="h-4 w-4" />
                   </button>
                 </div>
+
+                {/* Saved Farm Fields Quick Selector */}
+                {savedFields.length > 0 ? (
+                  <div className="mt-4 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3">
+                    <div className="flex items-center justify-between gap-1 mb-2">
+                      <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-200 flex items-center gap-1">
+                        <MapPin className="h-3.5 w-3.5 text-emerald-600" />
+                        मेरे सहेजे गए खेत से चुनें:
+                      </span>
+                      <a
+                        href="/my-farm/measure"
+                        className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-0.5"
+                      >
+                        <Ruler className="h-3 w-3" />
+                        नया नापें
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                      {savedFields.map((f) => {
+                        const fAcres = f.areaAcres ? String(f.areaAcres) : (f.area?.match(/([\d.]+)/)?.[1] ?? "1");
+                        const isSelected = area === fAcres;
+                        return (
+                          <button
+                            key={f.id}
+                            type="button"
+                            onClick={() => {
+                              setArea(fAcres);
+                              if (f.cropSlug && slugs.includes(f.cropSlug)) {
+                                setSlug(f.cropSlug);
+                              }
+                            }}
+                            className={cn(
+                              "shrink-0 rounded-xl px-3 py-2 text-left text-xs font-bold transition active:scale-95 border",
+                              isSelected
+                                ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                                : "bg-[var(--av-surface)] text-[var(--av-text-primary)] border-[var(--av-border)] hover:border-emerald-500/40"
+                            )}
+                          >
+                            <div className="truncate max-w-[130px] font-extrabold">{f.name}</div>
+                            <div
+                              className={cn(
+                                "text-[10px] font-semibold mt-0.5",
+                                isSelected ? "text-emerald-100" : "text-emerald-700 dark:text-emerald-300"
+                              )}
+                            >
+                              {fAcres} एकड़ {f.crop ? `• ${f.crop.split("(")[0].trim()}` : ""}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-3 flex items-center justify-between px-1">
+                    <span className="text-[11px] text-[var(--av-text-muted)]">
+                      खेत का रकबा नहीं पता?
+                    </span>
+                    <a
+                      href="/my-farm/measure"
+                      className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1"
+                    >
+                      <Ruler className="h-3 w-3" />
+                      उपग्रह से खेत नापें →
+                    </a>
+                  </div>
+                )}
 
                 {/* Acre Input with Stepper */}
                 <div className="mt-4">

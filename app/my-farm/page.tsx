@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import AppLink from "@/components/ui/AppLink";
@@ -32,6 +33,9 @@ import {
   TrendingUp,
   type LucideIcon,
   X,
+  Ruler,
+  Trash2,
+  Map,
 } from "lucide-react";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
@@ -109,6 +113,11 @@ function fieldStatusLabel(status: string) {
   return status;
 }
 
+const MiniFieldMap = dynamic(() => import("@/components/farm/MiniFieldMap"), {
+  ssr: false,
+  loading: () => <div className="h-[140px] w-full bg-slate-800/10 animate-pulse rounded-xl" />,
+});
+
 const FARM_LINKS: {
   id: string;
   hi: string;
@@ -117,6 +126,7 @@ const FARM_LINKS: {
   icon3d?: string;
   icon: LucideIcon;
 }[] = [
+  { id: "measure", hi: "खेत नापें (GPS)", en: "Measure Field", href: "/my-farm/measure", icon3d: "/images/icons/3d/my-farm.jpg", icon: Ruler },
   { id: "advisor", hi: "खेत सलाह", en: "Advice", href: "/field-advisor", icon3d: "/images/icons/3d/my-farm.jpg", icon: Sprout },
   { id: "fertilizer", hi: "खाद कैलकुलेटर", en: "Fertilizer", href: "/services/fertilizer-calculator", icon3d: "/images/icons/3d/fertilizer.jpg", icon: Calculator },
   { id: "doctor", hi: "फसल डॉक्टर", en: "Crop Doctor", href: "/ai-doctor", icon3d: "/images/icons/3d/crop-doctor.jpg", icon: ShieldAlert },
@@ -131,7 +141,7 @@ export default function MyFarmPage() {
   const isHi = locale === "hi";
   const reduced = useReducedMotion();
   const { profile, setSowingDate } = useFarmerProfile();
-  const { data, stats, addField, addActivity, addNote } = useFarmData();
+  const { data, stats, addField, updateField, deleteField, addActivity, addNote, parseAreaAcres } = useFarmData();
   const farmAlerts = useDashboardAlerts(3);
   const { weather, loading: weatherLoading } = useLiveWeather();
 
@@ -437,22 +447,31 @@ export default function MyFarmPage() {
             <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
               {isHi ? "मेरे खेत" : "My fields"}
             </h2>
-            <button
-              type="button"
-              onClick={() => {
-                setShowAddField((v) => {
-                  const next = !v;
-                  if (next && !fieldCropSlug) {
-                    setCropPickerOpen(true);
-                  }
-                  return next;
-                });
-              }}
-              className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm shadow-emerald-700/20 active:scale-[0.98]"
-            >
-              {showAddField ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-              {showAddField ? (isHi ? "बंद" : "Close") : isHi ? "खेत जोड़ो" : "Add field"}
-            </button>
+            <div className="flex items-center gap-1.5">
+              <AppLink
+                href="/my-farm/measure"
+                className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm shadow-emerald-900/20 active:scale-[0.98] transition"
+              >
+                <Ruler className="h-3.5 w-3.5 text-emerald-200" />
+                <span>{isHi ? "खेत नापें (GPS)" : "Measure Field"}</span>
+              </AppLink>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddField((v) => {
+                    const next = !v;
+                    if (next && !fieldCropSlug) {
+                      setCropPickerOpen(true);
+                    }
+                    return next;
+                  });
+                }}
+                className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm shadow-emerald-700/20 active:scale-[0.98]"
+              >
+                {showAddField ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                {showAddField ? (isHi ? "बंद" : "Close") : isHi ? "खेत जोड़ो" : "Add field"}
+              </button>
+            </div>
           </div>
 
           {showAddField ? (
@@ -496,6 +515,22 @@ export default function MyFarmPage() {
                     <X className="h-4 w-4" />
                   </button>
                 </div>
+              </div>
+
+              {/* Smart Field Mapping banner inside Add Field */}
+              <div className="p-3 bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent border-b border-emerald-500/20 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Ruler className="h-4 w-4 text-emerald-700 dark:text-emerald-300 shrink-0" />
+                  <span className="text-[11px] font-bold text-emerald-900 dark:text-emerald-100">
+                    {isHi ? "उपग्रह या GPS से अपने खेत का रकबा नापें" : "Measure exact area using Satellite & GPS"}
+                  </span>
+                </div>
+                <AppLink
+                  href="/my-farm/measure"
+                  className="shrink-0 px-2.5 py-1 rounded-lg bg-emerald-700 text-white text-[11px] font-bold hover:bg-emerald-800 transition shadow-sm"
+                >
+                  {isHi ? "नक्शे पर नापें →" : "Measure on Map →"}
+                </AppLink>
               </div>
 
               <div className="space-y-4 p-4">
@@ -959,6 +994,78 @@ export default function MyFarmPage() {
                         </span>
                         <ArrowRight className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
                       </AppLink>
+
+                      {/* Satellite Boundary Mini Map (if boundary drawn) */}
+                      {f.boundary && f.boundary.length >= 3 ? (
+                        <div className="mt-2.5">
+                          <div className="flex items-center justify-between text-[11px] font-bold text-[var(--av-text-secondary)] mb-1">
+                            <span className="flex items-center gap-1">
+                              <Map className="h-3 w-3 text-emerald-600" />
+                              {isHi ? "उपग्रह सीमा दृश्य" : "Satellite Boundary"}
+                            </span>
+                            <span className="text-emerald-700 dark:text-emerald-300 font-extrabold">
+                              {f.areaAcres ? `${f.areaAcres} एकड़` : f.area}
+                              {f.bighaDisplay ? ` • ${f.bighaDisplay}` : ""}
+                            </span>
+                          </div>
+                          <MiniFieldMap boundary={f.boundary} height="130px" />
+                        </div>
+                      ) : null}
+
+                      {/* Location & Metadata Pills */}
+                      {(f.village || f.soilType || f.irrigationType) ? (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px]">
+                          {f.village ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-[var(--av-text-secondary)]">
+                              <MapPin className="h-3 w-3 text-emerald-600" />
+                              {f.village}
+                            </span>
+                          ) : null}
+                          {f.soilType ? (
+                            <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-800 dark:text-amber-200">
+                              {f.soilType}
+                            </span>
+                          ) : null}
+                          {f.irrigationType ? (
+                            <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-800 dark:text-blue-200">
+                              {f.irrigationType}
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : null}
+
+                      {/* Actions Bar */}
+                      <div className="flex items-center justify-between gap-2 pt-2 border-t border-[var(--av-border)]">
+                        <div className="flex items-center gap-1.5">
+                          <AppLink
+                            href={`/my-farm/measure?editId=${f.id}`}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100 text-[11px] font-bold hover:bg-emerald-500/20 transition"
+                          >
+                            <Ruler className="h-3 w-3 text-emerald-600" />
+                            <span>{isHi ? (f.boundary?.length ? "सीमा देखें / बदलें" : "नक्शे पर सीमा बनाएं") : "Edit Map"}</span>
+                          </AppLink>
+                          <AppLink
+                            href={`/services/fertilizer-calculator?acres=${f.areaAcres || parseAreaAcres(f.area) || 1}&crop=${encodeURIComponent(f.cropSlug || f.crop || "")}`}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] text-[11px] font-bold hover:text-[var(--av-text-primary)] transition"
+                          >
+                            <Calculator className="h-3 w-3 text-emerald-600" />
+                            <span>{isHi ? "खाद" : "Fertilizer"}</span>
+                          </AppLink>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(isHi ? `क्या आप '${f.name}' को हटाना चाहते हैं?` : `Delete field '${f.name}'?`)) {
+                              deleteField(f.id);
+                              showToast(isHi ? "खेत हटा दिया गया" : "Field deleted", "success");
+                            }
+                          }}
+                          className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition"
+                          title={isHi ? "खेत हटाएं" : "Delete Field"}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </motion.article>
                 );
@@ -974,20 +1081,29 @@ export default function MyFarmPage() {
               </h3>
               <p className="mt-1 text-xs text-[var(--av-text-secondary)] max-w-xs mx-auto">
                 {isHi
-                  ? "अपनी ज़मीन, फसल और बुवाई की तारीख दर्ज करके व्यक्तिगत सलाह पाएं।"
-                  : "Add your land, crop, and sowing date for tailored recommendations."}
+                  ? "उपग्रह नक्शे पर खेत की सीमा बनाकर या सीधे विवरण दर्ज करके व्यक्तिगत सलाह पाएं।"
+                  : "Measure your field on satellite map or add details for tailored recommendations."}
               </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddField(true);
-                  if (!fieldCropSlug) setCropPickerOpen(true);
-                }}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 px-6 py-3 text-xs font-black text-white shadow-lg shadow-emerald-700/25 transition hover:brightness-110 active:scale-95"
-              >
-                <Plus className="h-4 w-4 stroke-[3]" />
-                <span>{isHi ? "खेत जोड़ो (+ Add Field)" : "+ Add Field"}</span>
-              </button>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+                <AppLink
+                  href="/my-farm/measure"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-700/25 transition hover:brightness-110 active:scale-95"
+                >
+                  <Ruler className="h-4 w-4" />
+                  <span>{isHi ? "उपग्रह से खेत नापें" : "Measure on Satellite Map"}</span>
+                </AppLink>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddField(true);
+                    if (!fieldCropSlug) setCropPickerOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 py-2.5 text-xs font-bold text-[var(--av-text-primary)] hover:border-emerald-500/40 active:scale-95 transition"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>{isHi ? "मैन्युअल जोड़ें" : "Add Manually"}</span>
+                </button>
+              </div>
             </div>
           ) : null}
         </motion.section>

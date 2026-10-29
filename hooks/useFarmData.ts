@@ -61,8 +61,40 @@ export function useFarmData() {
 
   const addField = useCallback((field: Omit<FarmField, "id">) => {
     const id = `f-${Date.now()}`;
+    const newField = { ...field, id };
     setData((prev) => {
-      const next = { ...prev, fields: [...prev.fields, { ...field, id }] };
+      const next = { ...prev, fields: [...prev.fields, newField] };
+      writeStorage(KEY, next);
+      syncSprayFieldsFromFarm(next.fields);
+      syncMyCropsFromFarm(next.fields);
+      queueFarmCloudSync();
+      return next;
+    });
+    return id;
+  }, []);
+
+  const updateField = useCallback((id: string, updates: Partial<FarmField>) => {
+    setData((prev) => {
+      const next = {
+        ...prev,
+        fields: prev.fields.map((f) =>
+          f.id === id ? { ...f, ...updates, updatedAt: new Date().toISOString() } : f
+        ),
+      };
+      writeStorage(KEY, next);
+      syncSprayFieldsFromFarm(next.fields);
+      syncMyCropsFromFarm(next.fields);
+      queueFarmCloudSync();
+      return next;
+    });
+  }, []);
+
+  const deleteField = useCallback((id: string) => {
+    setData((prev) => {
+      const next = {
+        ...prev,
+        fields: prev.fields.filter((f) => f.id !== id),
+      };
       writeStorage(KEY, next);
       syncSprayFieldsFromFarm(next.fields);
       syncMyCropsFromFarm(next.fields);
@@ -134,6 +166,8 @@ export function useFarmData() {
     hydrated,
     stats,
     addField,
+    updateField,
+    deleteField,
     addActivity,
     addNote,
     persist,

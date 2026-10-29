@@ -175,6 +175,18 @@ const DEFAULT_BIGHA: BighaInfo = {
   note: "Default 0.625 acre — apna rajya/jila chunein exact size ke liye",
 };
 
+export const REGIONAL_BIGHA_OPTIONS = [
+  { id: "up", state: "Uttar Pradesh", label: "उत्तर प्रदेश (पक्का बीघा - 0.625 एकड़ / 2529 m²)", acresPerBigha: 0.625, note: "2529 m² = 0.625 acre" },
+  { id: "bihar", state: "Bihar", label: "बिहार (0.625 एकड़ / कठ्ठा-बीघा)", acresPerBigha: 0.625, note: "≈0.625 acre" },
+  { id: "mp", state: "Madhya Pradesh", label: "मध्य प्रदेश (0.60 एकड़ / 2428 m²)", acresPerBigha: 0.6, note: "≈0.6 acre" },
+  { id: "rajasthan_std", state: "Rajasthan", label: "राजस्थान मानक (1.25 एकड़ / 5058 m²)", acresPerBigha: 1.25, note: "≈1.25 acre" },
+  { id: "rajasthan_bada", state: "Rajasthan (Marwar)", label: "राजस्थान बड़ा बीघा (1.60 एकड़ / 6475 m²)", acresPerBigha: 1.6, note: "≈1.6 acre" },
+  { id: "punjab_haryana", state: "Punjab & Haryana", label: "पंजाब व हरियाणा (0.50 एकड़ / 4 कनाल)", acresPerBigha: 0.5, note: "≈0.5 acre" },
+  { id: "gujarat", state: "Gujarat", label: "गुजरात विघा (0.40 एकड़ / 1618 m²)", acresPerBigha: 0.4, note: "≈0.4 acre" },
+  { id: "wb", state: "West Bengal", label: "पश्चिम बंगाल (0.33 एकड़ / 1337 m²)", acresPerBigha: 0.33, note: "≈0.33 acre" },
+  { id: "up_braj", state: "Braj (Mathura/Agra)", label: "ब्रज कच्चा बीघा (0.50 एकड़ / 2023 m²)", acresPerBigha: 0.5, note: "≈2023 m²" },
+];
+
 export function getBighaInfo(state?: string, district?: string): BighaInfo {
   if (district) {
     const dKey = norm(district);

@@ -1,3 +1,7 @@
+import type { LatLng, GeoJsonPolygonGeometry } from "@/lib/geo/fieldGeometry";
+
+export type { LatLng, GeoJsonPolygonGeometry };
+
 export interface FarmField {
   id: string;
   name: string;
@@ -16,6 +20,22 @@ export interface FarmField {
   /** Real measured health only — omit/undefined means unknown (never invent %) */
   health?: number;
   stage: string;
+
+  // Smart Field Mapping & Geospatial measurement attributes
+  village?: string;
+  farmerName?: string;
+  areaAcres?: number;
+  areaHectares?: number;
+  areaSqMeters?: number;
+  perimeterMeters?: number;
+  bighaDisplay?: string;
+  boundary?: LatLng[];
+  geoJson?: GeoJsonPolygonGeometry;
+  measurementMethod?: "manual_map" | "gps_walk" | "manual_entry";
+  soilType?: string;
+  irrigationType?: string;
+  notes?: string;
+  updatedAt?: string;
 }
 
 export interface FarmActivity {
