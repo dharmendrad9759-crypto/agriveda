@@ -283,16 +283,51 @@ export function calculateFarmerDose(doseStr: string, contextText?: string): Farm
     };
   }
 
-  // 3. Seed treatment
-  if (/बीज|seed/i.test(cleaned)) {
+  // 3. Seed & Tuber Treatment (बीज उपचार / कंद शोधन / कंद भिगोना)
+  if (
+    /बीज\s*उपचार|कंद\s*उपचार|बीज\s*शोधन|कंद\s*शोधन|बीजोपचार|seed treatment/i.test(full) ||
+    (/बीज|seed|कंद/i.test(cleaned) && /प्रति\s*किग्रा|ग्राम\/किग्रा|मिली\/किग्रा/i.test(full)) ||
+    (/कंद/i.test(full) && /भिगोकर|भिगोना|डुबोएं/i.test(full))
+  ) {
+    const isSoaking = /भिगोकर|भिगोना|डुबोएं|मिनट/i.test(full);
+    const rateMatch = full.match(
+      /(\d+(?:\.\d+)?(?:\s*[-–से]\s*\d+(?:\.\d+)?)?\s*(?:ग्राम|मिली|ml|gm|g)(?:\s*(?:\/|प्रति)?\s*(?:किग्रा|किलो|kg|क्विंटल|लीटर|l)\s*(?:बीज|कंद|पानी)?)?)/i
+    );
+    const rate = rateMatch ? rateMatch[0].trim() : cleaned || "2-3 ग्राम/किग्रा बीज";
     return {
-      perLiter: cleaned,
-      perTank: "बीज उपचार के लिए",
-      perAcre: "बुवाई पूर्व बीज में अच्छी तरह मिलाएं",
+      perLiter: "लागू नहीं (कंद/बीज शोधन, स्प्रे पंप में न भरें)",
+      perTank: isSoaking
+        ? "लागू नहीं (स्प्रे पंप के लिए नहीं, बाल्टी/टब के घोल में कंद 20-30 मिनट भिगोएँ)"
+        : "लागू नहीं (स्प्रे पंप के लिए नहीं, सीधे बीज पर लेप लगाएँ)",
+      perAcre: isSoaking
+        ? `${rate} के घोल में कंदों को 20-30 मिनट भिगोकर छाया में सुखाएँ`
+        : `बुवाई पूर्व ${rate} की दर से बीज पर समान लेप लगाएँ और 30 मिनट छाया में सुखाकर बुवाई करें`,
     };
   }
 
-  // 4. Soil drenching
+  // 3.5. Seedling Root Dipping (पौध जड़ शोधन / डुबोना)
+  if (/जड़\s*शोधन|जड़ें\s*डुबो|डुबोएं|डुबोकर|root dip/i.test(full)) {
+    const rateMatch = full.match(
+      /(\d+(?:\.\d+)?(?:\s*[-–से]\s*\d+(?:\.\d+)?)?\s*(?:ग्राम|मिली|ml|gm|g)(?:\s*(?:\/|प्रति)?\s*(?:लीटर|l))?)/i
+    );
+    const rate = rateMatch ? rateMatch[0].trim() : "5-10 ग्राम/लीटर";
+    return {
+      perLiter: `${rate} (बाल्टी के पानी में जड़ शोधन घोल)`,
+      perTank: "लागू नहीं (स्प्रे पंप में न भरें, बाल्टी में घोल बनाकर पौध की जड़ें 15-20 मिनट डुबोएँ)",
+      perAcre: "रोपाई से पूर्व पौध की जड़ों को 15-20 मिनट घोल में डुबोकर तुरंत खेत में रोपाई करें",
+    };
+  }
+
+  // 3.8. Bran / Jaggery Poison Bait (चोकर-गुड़ चारा)
+  if (/चोकर|bran|विष-चारा|की\s*गोलियां|bait/i.test(full) && /गुड़|शीरा|थायोडिकार्ब|मैलाथियान/i.test(full)) {
+    return {
+      perLiter: "लागू नहीं (जहरीला चोकर चारा / Poison Bran Bait)",
+      perTank: "लागू नहीं (स्प्रे पंप में न डालें, चोकर-गुड़ की गोलियां क्यारियों में बिखेरें)",
+      perAcre: "10 किग्रा चोकर + 1 किग्रा गुड़ + 100g कीटनाशक मिलाकर शाम को क्यारियों में बिखेरें",
+    };
+  }
+
+  // 4. Liquid Root Drenching
   if (/ड्रेंचिंग|drench/i.test(cleaned)) {
     return {
       perLiter: cleaned,
@@ -301,17 +336,53 @@ export function calculateFarmerDose(doseStr: string, contextText?: string): Farm
     };
   }
 
-  // 5. Direct per acre
+  // 5. Soil / Basal / FYM / Irrigation channel application
+  const isSoilOrFYM = /गोबर|खाद\s*में|जुताई|खेत\s*में|खेत\s*की\s*तैयारी|नीम\s*खली|सिंचाई\s*नाली|ड्रिप\s*से|मिट्टी\s*में/i.test(full);
+  const soilAcreMatch = cleaned.match(
+    /(\d+(?:\.\d+)?(?:\s*से\s*\d+(?:\.\d+)?)?)\s*(किग्रा|kg|ग्राम|gm|g|मिली|ml|लीटर|l)\s*(?:\/|प्रति)\s*(?:एकड़|acre)/i
+  ) || full.match(/(\d+(?:\.\d+)?)\s*(किग्रा|kg|किलो|ग्राम|gm|g)\s*(?:\/|प्रति)?\s*एकड़/i);
+
+  if (isSoilOrFYM && soilAcreMatch) {
+    const num = soilAcreMatch[1];
+    const unit = soilAcreMatch[2];
+    const isDrip = /ड्रिप/i.test(full);
+    const isIrrigation = /सिंचाई\s*नाली|बहाना/i.test(full);
+    const methodDesc = isDrip
+      ? `${num} ${unit} प्रति एकड़ (ड्रिप सिंचाई द्वारा जड़ों में चलाएँ)`
+      : isIrrigation
+      ? `${num} ${unit} प्रति एकड़ (सिंचाई नाली में पानी के साथ बहाएँ)`
+      : `${num} ${unit} प्रति एकड़ (गोबर की खाद या मिट्टी में मिलाकर अंतिम जुताई के समय खेत में बिखेरें)`;
+
+    return {
+      perLiter: isDrip
+        ? `${num} ${unit} / एकड़ (ड्रिप द्वारा)`
+        : "लागू नहीं (खेत की मिट्टी में बुरकाव, स्प्रे पंप में न भरें)",
+      perTank: isDrip
+        ? "ड्रिप टैंक में घोलकर सिंचाई के साथ चलाएँ"
+        : "लागू नहीं (स्प्रे पंप के लिए नहीं, सीधे खेत में डालें)",
+      perAcre: methodDesc,
+    };
+  }
+
+  // 5.5. Direct per acre (Foliar calculation)
   const acreMatch = cleaned.match(
     /(\d+(?:\.\d+)?(?:\s*से\s*\d+(?:\.\d+)?)?)\s*(किग्रा|kg|ग्राम|gm|g|मिली|ml|लीटर|l)\s*(?:\/|प्रति)\s*(?:एकड़|acre)/i
   );
   if (acreMatch) {
-    const num = acreMatch[1];
-    const unit = acreMatch[2];
+    const num = parseFloat(acreMatch[1]);
+    const rawUnit = acreMatch[2].toLowerCase();
+    const isKg = /किग्रा|kg|किलो/.test(rawUnit);
+    const isL = /लीटर|l/.test(rawUnit) && !/मिली|ml/.test(rawUnit);
+
+    const totalMlOrG = isKg || isL ? num * 1000 : num;
+    const unitLabel = isL || /मिली|ml/.test(rawUnit) ? "मिली" : "ग्राम";
+    const perL = Math.round((totalMlOrG / 200) * 10) / 10;
+    const perTank = Math.round(perL * 16 * 10) / 10;
+
     return {
-      perLiter: `${num} ${unit} / एकड़`,
-      perTank: "10 टंकी (पंप) में बराबर बांटें",
-      perAcre: `${num} ${unit} प्रति एकड़ (200 लीटर पानी)`,
+      perLiter: `${perL} ${unitLabel} प्रति लीटर पानी`,
+      perTank: `${perTank} ${unitLabel} प्रति 16L पंप (टंकी)`,
+      perAcre: `${acreMatch[1]} ${acreMatch[2]} प्रति एकड़ (200 लीटर पानी)`,
     };
   }
 
@@ -596,6 +667,16 @@ export function isChemicalMention(text: string): boolean {
     return false;
   }
 
+  // Never classify manual clipping, pruning, egg cluster destruction, or general deficiency advice as chemicals
+  if (
+    /(?:हाथ\s*से\s*(?:काटकर|तोड़कर|बीनकर|चुनकर|नष्ट)|शाखाओं\s*को.*काटकर|अंडों\s*के.*नष्ट|कमी\s*न\s*होने\s*दें)/i.test(
+      text
+    ) &&
+    !/\b(?:WP|EC|SC|SG|WG|WDG|SL|SP|FS|OD|ZC|DF|GR|CG|DS|WS|DP)\b/i.test(text)
+  ) {
+    return false;
+  }
+
   // Has agricultural formulation code (e.g. WP, SC, EC, etc.)
   if (/\b(?:WP|EC|SC|SG|WG|WDG|SL|SP|FS|OD|ZC|DF|GR|CG|DS|WS|DP|PPM)\b/i.test(text)) {
     return true;
@@ -665,7 +746,7 @@ export function parseTankMix(
     if (!pTrim) continue;
 
     // Check if this part is silicon spreader / sticker adjuvant
-    if (/सिलिकॉन|चिपको|स्प्रेडर|स्टीकर|silicon/i.test(pTrim)) {
+    if (/सिलिकॉन|चिपको|स्प्रेडर|स्टीकर|silicon|शैम्पू|डिटर्जेंट/i.test(pTrim)) {
       const doseMatch = pTrim.match(
         /(\d+(?:\.\d+)?)\s*(?:मिली|ml|ग्राम|gm)(?:\s*(?:\/|प्रति)?\s*(?:लीटर|l))?/i
       );
@@ -742,6 +823,8 @@ export function parseTankMix(
       .replace(/\d+(?:\.\d+)?\s*(?:मिली|ml|ग्राम|gm|g)\s*(?:को|में)?\s*\d+(?:\.\d+)?\s*(?:लीटर|l)\s*पानी[^।\n+]*/gi, "")
       .replace(/को\s*\d+\s*लीटर\s*पानी[^।\n+]*/gi, "")
       .replace(/पेड़\s*के\s*कुछ\s*हिस्सों\s*पर\s*छिड़कना/gi, "")
+      .replace(/^(?:फलियां\s*पकते\s*समय|अक्टूबर\s*माह\s*में|फूल\s*आने\s*की\s*शुरुआत\s*में|रोपाई\s*के\s*\d+\s*दिन\s*बाद)\s*/gi, "")
+      .replace(/\s*का\s*स्प्रे$/gi, "")
       .replace(/\s+/g, " ")
       .trim();
 
@@ -921,8 +1004,11 @@ export function parseMedicineItem(
     .replace(/\([^)]*\)/g, "")
     .replace(/^(?:अथवा|या)\s+/i, "")
     .replace(/^(?:तने\s*के\s*चारों\s*ओर[^में]*में|मिट्टी\s*में)\s*/i, "")
+    .replace(/^(?:फलियां\s*पकते\s*समय|अक्टूबर\s*माह\s*में|फूल\s*आने\s*की\s*शुरुआत\s*में|रोपाई\s*के\s*\d+\s*दिन\s*बाद)\s*/gi, "")
+    .replace(/\s*का\s*स्प्रे$/gi, "")
     .replace(/\s*(?:अच्छी\s*तरह\s*मिलाएं|मिलाएं|डालें|छिड़कें)[^$]*$/i, "")
     .replace(/\s+\d+(?:\.\d+)?\s*(?:ग्राम|मिली|ml|gm|g|kg|किग्रा|लीटर)\s*(?:प्रति\s*[^।\n]+)?$/i, "")
+    .replace(/\s+/g, " ")
     .trim();
 
   // Lookup in catalog / bottle helper

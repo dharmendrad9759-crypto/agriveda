@@ -87,15 +87,20 @@ export default function FieldMedicinePanel({
         text = `टैंक मिश्रण दवाई पर्ची (Agriveda Farm Advisory):\n${compLines}${spreaderLine}\nदुकानदार भाई, कृपया ऊपर लिखी दोनों दवाएं एवं सिलिकॉन स्प्रेडर दें।`;
       }
     } else {
+      const isNonSpray = item.farmerDose?.perLiter?.includes("लागू नहीं");
       text = `दवाई पर्ची (Agriveda Farm Advisory):\n• असली टेक्निकल नाम: ${
         item.technicalEn || item.technicalHi
       }\n${
         item.formulation ? `• फॉर्मूलेशन: ${item.formulation}\n` : ""
-      }• 16L पंप (टंकी) में मात्रा: ${
-        item.farmerDose?.perTank || item.dose
-      }\n• प्रति एकड़ मात्रा: ${
-        item.farmerDose?.perAcre || item.waterDose
-      }\nदुकानदार भाई, कृपया इस टेक्निकल फॉर्मूले की दवाई दें।`;
+      }${
+        isNonSpray
+          ? `• प्रयोग विधि व मात्रा: ${item.farmerDose?.perAcre || item.dose}\n`
+          : `• 16L पंप (टंकी) में मात्रा: ${
+              item.farmerDose?.perTank || item.dose
+            }\n• प्रति एकड़ मात्रा: ${
+              item.farmerDose?.perAcre || item.waterDose
+            }\n`
+      }दुकानदार भाई, कृपया इस टेक्निकल फॉर्मूले की दवाई दें।`;
     }
 
     if (navigator.clipboard) {
@@ -605,16 +610,38 @@ export default function FieldMedicinePanel({
                                 </span>
                               )}
 
-                              {/* Per Acre or Soil / Basin Application Method */}
+                              {/* Per Acre or Soil / Basin / Seed Treatment Application Method */}
                               {item.farmerDose?.perAcre && (
                                 <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-bold ${
                                   item.farmerDose?.perLiter?.includes("लागू नहीं")
                                     ? "bg-amber-50 text-amber-950 dark:bg-amber-950/60 dark:text-amber-200 border border-amber-300/40"
                                     : "bg-blue-50 text-blue-900 dark:bg-blue-950/60 dark:text-blue-200"
                                 }`}>
-                                  <span>{item.farmerDose?.perLiter?.includes("लागू नहीं") ? "🪴" : "🚜"}</span>
+                                  <span>
+                                    {item.farmerDose?.perLiter?.includes("बीज")
+                                      ? "🌱"
+                                      : item.farmerDose?.perLiter?.includes("जड़")
+                                      ? "🌿"
+                                      : item.farmerDose?.perLiter?.includes("चारा")
+                                      ? "🪤"
+                                      : item.farmerDose?.perLiter?.includes("लागू नहीं")
+                                      ? "🪴"
+                                      : "🚜"}
+                                  </span>
                                   <span className="font-medium text-stone-500 dark:text-stone-400">
-                                    {item.farmerDose?.perLiter?.includes("लागू नहीं")
+                                    {item.farmerDose?.perLiter?.includes("बीज")
+                                      ? hi
+                                        ? "बीजोपचार विधि: "
+                                        : "Seed Treatment: "
+                                      : item.farmerDose?.perLiter?.includes("जड़")
+                                      ? hi
+                                        ? "पौध जड़ शोधन: "
+                                        : "Root Dip: "
+                                      : item.farmerDose?.perLiter?.includes("चारा")
+                                      ? hi
+                                        ? "चारा विधि: "
+                                        : "Bait Method: "
+                                      : item.farmerDose?.perLiter?.includes("लागू नहीं")
                                       ? hi
                                         ? "प्रयोग विधि व मात्रा: "
                                         : "Application & Dose: "
