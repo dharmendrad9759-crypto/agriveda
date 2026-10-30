@@ -33,6 +33,7 @@ import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import FarmerAppTour from "@/components/tutorial/FarmerAppTour";
 import HomeCropStatusCard from "@/components/dashboard/HomeCropStatusCard";
 import HomeAddCropHero from "@/components/dashboard/HomeAddCropHero";
+import HomeFarmSnapshot from "@/components/dashboard/HomeFarmSnapshot";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 
 
@@ -532,6 +533,11 @@ export default function AgriVedaHome() {
               onAddCrop={handleAddCropFromHome}
             />
           )}
+        </motion.section>
+
+        {/* Agriveda 360° Farm Intelligence Snapshot */}
+        <motion.section {...fade(0.018)}>
+          <HomeFarmSnapshot />
         </motion.section>
 
         {/* Unified Disease & Crop Doctor Module (AI photo + manual list in one place) */}

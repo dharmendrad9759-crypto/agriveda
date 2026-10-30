@@ -277,8 +277,8 @@ export default function WheatStageVisualizer({
       {/* 3D Botanical Stage Visualizer Card / 3D Canvas */}
       <div className="relative mx-3.5 sm:mx-5">
         {has3D && viewMode === "3d" ? (
-          <div className="relative h-[330px] w-full overflow-hidden rounded-2xl border border-emerald-500/30 shadow-2xl sm:h-[380px]">
-            <WheatGermination3DViewer className="h-full w-full" />
+          <div className="relative h-[420px] w-full overflow-hidden rounded-2xl border border-emerald-500/30 shadow-2xl sm:h-[480px]">
+            <WheatGermination3DViewer className="h-full w-full" variant="inline" />
           </div>
         ) : (
           <div
@@ -533,6 +533,7 @@ export default function WheatStageVisualizer({
           >
             <WheatGermination3DViewer
               className="h-full w-full"
+              variant="fullscreen"
               onClose={() => setShowFullscreen3D(false)}
             />
           </motion.div>

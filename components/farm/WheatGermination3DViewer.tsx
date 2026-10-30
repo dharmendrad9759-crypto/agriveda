@@ -18,18 +18,15 @@ import {
   Play,
   Pause,
   RotateCcw,
-  Eye,
   Maximize2,
   Minimize2,
   Volume2,
   VolumeX,
   X,
-  ChevronRight,
-  Info,
-  Layers,
   Sparkles,
-  Camera,
+  Layers,
   Compass,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -37,6 +34,7 @@ interface WheatGermination3DViewerProps {
   onClose?: () => void;
   className?: string;
   initialDay?: number;
+  variant?: "inline" | "fullscreen";
 }
 
 type CameraPreset = "overview" | "seed" | "roots" | "shoot";
@@ -45,6 +43,7 @@ export default function WheatGermination3DViewer({
   onClose,
   className = "",
   initialDay = 3.5,
+  variant = "inline",
 }: WheatGermination3DViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -56,8 +55,9 @@ export default function WheatGermination3DViewer({
   const [isXraySoil, setIsXraySoil] = useState<boolean>(false);
   const [selectedHotspot, setSelectedHotspot] = useState<HotspotInfo | null>(null);
   const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(variant === "fullscreen");
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [isControlsExpanded, setIsControlsExpanded] = useState<boolean>(false);
 
   // Three.js References
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -92,12 +92,10 @@ export default function WheatGermination3DViewer({
   // Update Growth Meshes based on current Day
   const updateGrowthState = useCallback(
     (currentDay: number) => {
-      // Progress from 0.0 to 1.0 (0 days to 7 days)
       const t = Math.max(0, Math.min(1.0, currentDay / 7.0));
 
       // 1. Seed Swelling (Imbibition)
       if (seedMeshRef.current) {
-        // Swells by ~18% as it absorbs water over first 2 days
         const swellFactor = 1.0 + 0.18 * Math.min(1.0, t * 2.8);
         seedMeshRef.current.scale.set(swellFactor, swellFactor, swellFactor);
       }
@@ -173,7 +171,6 @@ export default function WheatGermination3DViewer({
         );
         oldC.dispose();
 
-        // Color transition: pale yellowish-ivory underground -> vibrant radiant emerald above soil
         if (coleoptileMaterialRef.current) {
           const greenRatio = Math.max(0, (t - 0.5) / 0.5);
           const baseColor = new THREE.Color("#e8f5d0").lerp(
@@ -187,7 +184,6 @@ export default function WheatGermination3DViewer({
 
       // 6. Root Hairs (Trichoblasts)
       if (rootHairsGroupRef.current) {
-        // Clear previous root hairs
         while (rootHairsGroupRef.current.children.length > 0) {
           const child = rootHairsGroupRef.current.children[0] as THREE.LineSegments;
           child.geometry.dispose();
@@ -212,12 +208,12 @@ export default function WheatGermination3DViewer({
 
     // 1. Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#05140f"); // Deep cinematic forest-dark
+    scene.background = new THREE.Color("#04130e"); // Deep rich agronomy dark
     sceneRef.current = scene;
 
-    // 2. Camera
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 50);
-    camera.position.set(3.4, 1.4, 6.2);
+    // 2. Camera (Framed with plant slightly elevated so controls don't block it)
+    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 50);
+    camera.position.set(2.8, 0.8, 5.8);
     cameraRef.current = camera;
 
     // 3. Renderer with PBR Tone Mapping & Shadow Support
@@ -231,53 +227,48 @@ export default function WheatGermination3DViewer({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.2;
     rendererRef.current = renderer;
 
-    // 4. OrbitControls
+    // 4. OrbitControls with Touch Damping & Angle Limits
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.minDistance = 2.8;
-    controls.maxDistance = 14.0;
-    controls.maxPolarAngle = Math.PI - 0.15; // Prevent camera flipping below ground
-    controls.minPolarAngle = 0.15;
-    controls.target.set(0, -0.6, 0);
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 2.4;
+    controls.maxDistance = 12.0;
+    controls.maxPolarAngle = Math.PI - 0.2;
+    controls.minPolarAngle = 0.2;
+    // Target plant center, slightly lifted so bottom controls don't overlap
+    controls.target.set(0, -0.3, 0);
     controlsRef.current = controls;
 
-    // 5. Lighting Setup (Cinematic Botanical Studio Rig)
-    // Ambient soft agronomy fill
-    const hemiLight = new THREE.HemisphereLight("#a3e4d7", "#1b120c", 0.9);
+    // 5. Cinematic Lighting Rig
+    const hemiLight = new THREE.HemisphereLight("#a7f3d0", "#18110b", 0.95);
     scene.add(hemiLight);
 
-    // Key directional light (Warm Sunlight)
-    const keyLight = new THREE.DirectionalLight("#fff5e4", 2.2);
-    keyLight.position.set(5, 7, 5);
+    const keyLight = new THREE.DirectionalLight("#fff7eb", 2.4);
+    keyLight.position.set(4.5, 6.5, 4.5);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
-    keyLight.shadow.camera.near = 0.5;
-    keyLight.shadow.camera.far = 20;
     keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
-    // Fill Light (Cool Soft Sky)
-    const fillLight = new THREE.DirectionalLight("#9be8db", 0.85);
-    fillLight.position.set(-6, 3, 2);
+    const fillLight = new THREE.DirectionalLight("#a7f3d0", 0.9);
+    fillLight.position.set(-5, 2.5, 2);
     scene.add(fillLight);
 
-    // Rim / Backlight (Dramatic biological subsurface translucency)
-    const rimLight = new THREE.DirectionalLight("#86efac", 3.2);
-    rimLight.position.set(0, -4, -6);
+    const rimLight = new THREE.DirectionalLight("#86efac", 3.4);
+    rimLight.position.set(0, -3.5, -5.5);
     scene.add(rimLight);
 
-    // 6. Build the Botanical Wheat Seed Mesh
+    // 6. Wheat Seed Mesh
     const seedGeom = createWheatSeedGeometry();
     const seedMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#d4882e"),
-      roughness: 0.65,
-      metalness: 0.05,
-      bumpScale: 0.05,
+      color: new THREE.Color("#d9822b"),
+      roughness: 0.62,
+      metalness: 0.04,
+      bumpScale: 0.06,
     });
     const seedMesh = new THREE.Mesh(seedGeom, seedMat);
     seedMesh.castShadow = true;
@@ -285,22 +276,22 @@ export default function WheatGermination3DViewer({
     scene.add(seedMesh);
     seedMeshRef.current = seedMesh;
 
-    // 7. Soil Block with Cutaway Cross-Section
+    // 7. Soil Cutaway Block
     const soilGroup = createSoilBlockMesh();
     scene.add(soilGroup);
     soilGroupRef.current = soilGroup;
 
-    // 8. Root & Shoot Materials
+    // 8. Materials
     const rootMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#f4fdf6"),
-      roughness: 0.42,
+      color: new THREE.Color("#f6fef8"),
+      roughness: 0.4,
       metalness: 0.02,
     });
     rootMaterialRef.current = rootMat;
 
     const coleoptileMat = new THREE.MeshStandardMaterial({
       color: new THREE.Color("#4ade80"),
-      roughness: 0.35,
+      roughness: 0.32,
       metalness: 0.04,
     });
     coleoptileMaterialRef.current = coleoptileMat;
@@ -327,15 +318,15 @@ export default function WheatGermination3DViewer({
     scene.add(coleoptileMesh);
     coleoptileMeshRef.current = coleoptileMesh;
 
-    // 11. Root Hairs Group
+    // 11. Root Hairs
     const hairsGroup = new THREE.Group();
     scene.add(hairsGroup);
     rootHairsGroupRef.current = hairsGroup;
 
-    // Initial Growth Build
+    // Initial State
     updateGrowthState(day);
 
-    // 12. Animation Loop & Hotspot Tracking
+    // 12. Render Loop
     let animationFrameId: number;
     const tempVec = new THREE.Vector3();
 
@@ -345,7 +336,7 @@ export default function WheatGermination3DViewer({
       controls.update();
       renderer.render(scene, camera);
 
-      // Project 3D Hotspot positions to 2D screen coordinates
+      // Project 3D Hotspot positions
       if (containerRef.current) {
         const w = containerRef.current.clientWidth;
         const h = containerRef.current.clientHeight;
@@ -354,7 +345,6 @@ export default function WheatGermination3DViewer({
           tempVec.copy(spot.position);
           tempVec.project(camera);
 
-          // In front of camera check (z < 1)
           const visible = tempVec.z < 1.0;
           const sx = ((tempVec.x + 1) * w) / 2;
           const sy = ((-tempVec.y + 1) * h) / 2;
@@ -372,7 +362,6 @@ export default function WheatGermination3DViewer({
     };
     animate();
 
-    // Resize Handler
     const handleResize = () => {
       if (!containerRef.current || !renderer || !camera) return;
       const nw = containerRef.current.clientWidth;
@@ -383,7 +372,6 @@ export default function WheatGermination3DViewer({
     };
     window.addEventListener("resize", handleResize);
 
-    // Cleanup on Unmount
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", handleResize);
@@ -394,18 +382,17 @@ export default function WheatGermination3DViewer({
     };
   }, []);
 
-  // Sync Growth Mesh when Day changes
   useEffect(() => {
     updateGrowthState(day);
   }, [day, updateGrowthState]);
 
-  // Auto-play Time-lapse Loop
+  // Smooth Time-lapse Loop
   useEffect(() => {
     if (!isPlaying) return;
 
     const interval = setInterval(() => {
       setDay((prevDay) => {
-        const nextDay = prevDay + 0.045 * playSpeed;
+        const nextDay = prevDay + 0.04 * playSpeed;
         if (nextDay >= 7.0) {
           setIsPlaying(false);
           return 7.0;
@@ -425,12 +412,10 @@ export default function WheatGermination3DViewer({
         const mat = child.material as THREE.MeshStandardMaterial;
         if (isXraySoil) {
           mat.transparent = true;
-          mat.opacity = 0.16;
-          mat.wireframe = false;
+          mat.opacity = 0.15;
         } else {
           mat.transparent = false;
           mat.opacity = 1.0;
-          mat.wireframe = false;
         }
       }
     });
@@ -446,30 +431,29 @@ export default function WheatGermination3DViewer({
 
     switch (preset) {
       case "seed":
-        camera.position.set(0.6, 0.4, 2.9);
-        controls.target.set(0, -0.2, 0.2);
+        camera.position.set(0.5, 0.4, 2.7);
+        controls.target.set(0, -0.1, 0.2);
         setIsXraySoil(false);
         break;
       case "roots":
-        camera.position.set(0.2, -2.2, 4.4);
-        controls.target.set(0, -1.9, 0);
-        setIsXraySoil(true); // Auto-enable X-ray to reveal root architecture
+        camera.position.set(0.2, -1.8, 4.2);
+        controls.target.set(0, -1.6, 0);
+        setIsXraySoil(true);
         break;
       case "shoot":
-        camera.position.set(0.1, 2.1, 3.8);
-        controls.target.set(0, 1.4, 0.1);
+        camera.position.set(0.1, 2.0, 3.6);
+        controls.target.set(0, 1.2, 0.1);
         setIsXraySoil(false);
         break;
       case "overview":
       default:
-        camera.position.set(3.4, 1.4, 6.2);
-        controls.target.set(0, -0.6, 0);
+        camera.position.set(2.8, 0.8, 5.8);
+        controls.target.set(0, -0.3, 0);
         break;
     }
     controls.update();
   }, []);
 
-  // Fullscreen Handler
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
     if (!document.fullscreenElement) {
@@ -481,7 +465,6 @@ export default function WheatGermination3DViewer({
     }
   };
 
-  // Hindi Audio Narration (Web Speech API)
   const toggleSpeech = useCallback(() => {
     if (isSpeaking) {
       window.speechSynthesis?.cancel();
@@ -495,14 +478,11 @@ export default function WheatGermination3DViewer({
     if (selectedHotspot) {
       textToSpeak += `${selectedHotspot.nameHi}। ${selectedHotspot.descriptionHi}। ${selectedHotspot.agronomicSignificanceHi}`;
     } else if (day < 1.5) {
-      textToSpeak +=
-        "बीज मिट्टी की नमी सोखकर फूल रहा है और अंदर एंजाइम सक्रिय हो रहे हैं।";
+      textToSpeak += "बीज मिट्टी की नमी सोखकर फूल रहा है और अंदर एंजाइम सक्रिय हो रहे हैं।";
     } else if (day < 3.5) {
-      textToSpeak +=
-        "प्राथमिक जड़ मिट्टी को चीरकर नीचे जा रही है, और प्रांकुर ऊपर प्रकाश की ओर बढ़ रहा है।";
+      textToSpeak += "प्राथमिक जड़ मिट्टी में नीचे जा रही है, और प्रांकुर ऊपर प्रकाश की ओर बढ़ रहा है।";
     } else {
-      textToSpeak +=
-        "पार्श्व जड़ें फैल चुकी हैं और प्रांकुर चोल मिट्टी से बाहर निकलकर प्रकाश संश्लेषण शुरू कर रहा है।";
+      textToSpeak += "पार्श्व जड़ें फैल चुकी हैं और प्रांकुर चोल मिट्टी से बाहर निकलकर प्रकाश संश्लेषण शुरू कर रहा है।";
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
@@ -519,7 +499,7 @@ export default function WheatGermination3DViewer({
     <div
       ref={containerRef}
       className={cn(
-        "relative flex h-full w-full flex-col overflow-hidden bg-[#04120d] text-white select-none",
+        "relative flex h-full w-full flex-col overflow-hidden bg-[#04120d] text-white select-none touch-none",
         isFullscreen ? "fixed inset-0 z-[9999]" : "rounded-3xl border border-emerald-500/25 shadow-2xl",
         className
       )}
@@ -530,60 +510,47 @@ export default function WheatGermination3DViewer({
         className="h-full w-full cursor-grab active:cursor-grabbing touch-none"
       />
 
+      {/* Floating 360 Hint Badge */}
+      <div className="pointer-events-none absolute left-3 top-3.5 z-10 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[10px] font-semibold text-emerald-300 backdrop-blur-md shadow-md">
+        <Compass className="h-3 w-3 animate-spin duration-3000 text-emerald-400" />
+        <span>360° घुमाएं व पिंच ज़ूम करें</span>
+      </div>
+
       {/* Top Floating Glass HUD */}
-      <div className="pointer-events-none absolute left-0 right-0 top-0 flex items-start justify-between p-3.5 sm:p-5">
-        {/* Stage Title & Scientific Metadata */}
-        <div className="pointer-events-auto rounded-2xl border border-white/10 bg-black/45 p-3 backdrop-blur-md shadow-lg">
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300">
-              3D बॉटनिकल लैब · Zadoks Z00-Z09
-            </span>
-          </div>
-          <h2 className="mt-0.5 text-base font-bold text-white sm:text-lg">
-            अंकुरण व प्ररोह विकास (Germination & Emergence)
-          </h2>
-          <p className="text-[11px] text-emerald-100/70">
-            Triticum aestivum · वैज्ञानिक 3D एनाटॉमी सिम्युलेटर
-          </p>
-        </div>
-
-        {/* Top Right Controls: Fullscreen, Sound, Close */}
-        <div className="pointer-events-auto flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={toggleSpeech}
-            className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-xl border backdrop-blur-md transition active:scale-95",
-              isSpeaking
-                ? "border-emerald-400 bg-emerald-500/25 text-emerald-300 animate-pulse"
-                : "border-white/10 bg-black/40 text-white/80 hover:bg-black/60"
-            )}
-            title="हिन्दी वैज्ञानिक विवरण सुनें"
-          >
-            {isSpeaking ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleFullscreen}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-white/80 backdrop-blur-md hover:bg-black/60 transition active:scale-95"
-            title={isFullscreen ? "फुलस्क्रीन से बाहर निकलें" : "फुलस्क्रीन में देखें"}
-          >
-            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </button>
-
-          {onClose && (
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-white/80 backdrop-blur-md hover:bg-black/60 transition active:scale-95"
-              title="बंद करें"
-            >
-              <X className="h-4 w-4" />
-            </button>
+      <div className="pointer-events-none absolute right-3 top-3.5 z-10 flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={toggleSpeech}
+          className={cn(
+            "pointer-events-auto flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-md transition active:scale-95",
+            isSpeaking
+              ? "border-emerald-400 bg-emerald-500/25 text-emerald-300 animate-pulse"
+              : "border-white/10 bg-black/45 text-white/80 hover:bg-black/60"
           )}
-        </div>
+          title="हिन्दी वैज्ञानिक विवरण सुनें"
+        >
+          {isSpeaking ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+        </button>
+
+        <button
+          type="button"
+          onClick={toggleFullscreen}
+          className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/45 text-white/80 backdrop-blur-md hover:bg-black/60 transition active:scale-95"
+          title={isFullscreen ? "फुलस्क्रीन बंद करें" : "फुलस्क्रीन"}
+        >
+          {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+        </button>
+
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/45 text-white/80 backdrop-blur-md hover:bg-black/60 transition active:scale-95"
+            title="बंद करें"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* Floating 3D Botanical Hotspot Markers */}
@@ -607,16 +574,16 @@ export default function WheatGermination3DViewer({
               className="group relative flex items-center justify-center"
               aria-label={info.nameHi}
             >
-              <span className="absolute h-7 w-7 animate-ping rounded-full bg-emerald-400/35 duration-1000" />
+              <span className="absolute h-6 w-6 animate-ping rounded-full bg-emerald-400/35 duration-1000" />
               <span
                 className={cn(
-                  "relative flex h-6 w-6 items-center justify-center rounded-full border shadow-lg backdrop-blur-md transition group-hover:scale-125",
+                  "relative flex h-5 w-5 items-center justify-center rounded-full border shadow-lg backdrop-blur-md transition group-hover:scale-125",
                   isSelected
                     ? "border-amber-300 bg-amber-400 text-black font-black"
                     : "border-white/80 bg-emerald-600/90 text-white font-bold"
                 )}
               >
-                <Sparkles className="h-3 w-3" />
+                <Sparkles className="h-2.5 w-2.5" />
               </span>
             </button>
           </div>
@@ -627,20 +594,20 @@ export default function WheatGermination3DViewer({
       <AnimatePresence>
         {selectedHotspot && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="pointer-events-auto absolute bottom-28 left-4 right-4 z-20 mx-auto max-w-lg rounded-2xl border border-emerald-400/35 bg-[#071d16]/95 p-4 shadow-2xl backdrop-blur-lg sm:bottom-24"
+            exit={{ opacity: 0, y: 15 }}
+            className="pointer-events-auto absolute bottom-24 left-3 right-3 z-30 mx-auto max-w-md rounded-2xl border border-emerald-400/30 bg-[#071d16]/95 p-3.5 shadow-2xl backdrop-blur-lg sm:bottom-28"
           >
             <div className="flex items-start justify-between gap-2">
               <div>
-                <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[9.5px] font-bold text-emerald-300">
+                <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-300">
                   {selectedHotspot.categoryHi}
                 </span>
-                <h3 className="mt-1 text-sm font-bold text-white sm:text-base">
+                <h3 className="mt-1 text-sm font-bold text-white">
                   {selectedHotspot.nameHi}
                 </h3>
-                <p className="text-[10px] text-emerald-200/60">{selectedHotspot.nameEn}</p>
+                <p className="text-[9.5px] text-emerald-200/60">{selectedHotspot.nameEn}</p>
               </div>
               <button
                 type="button"
@@ -651,15 +618,15 @@ export default function WheatGermination3DViewer({
               </button>
             </div>
 
-            <p className="mt-2 text-xs leading-relaxed text-emerald-100/90">
+            <p className="mt-1.5 text-[11px] leading-relaxed text-emerald-100/90">
               {selectedHotspot.descriptionHi}
             </p>
 
-            <div className="mt-2.5 rounded-xl border border-amber-300/20 bg-amber-400/10 p-2.5">
-              <p className="text-[10px] font-bold text-amber-200">
-                🌾 किसान के लिए महत्वपूर्ण (Agronomic Significance):
+            <div className="mt-2 rounded-xl border border-amber-300/20 bg-amber-400/10 p-2">
+              <p className="text-[9.5px] font-bold text-amber-200">
+                🌾 किसान के लिए महत्वपूर्ण (Agronomic Fact):
               </p>
-              <p className="mt-0.5 text-[10.5px] leading-normal text-amber-100/80">
+              <p className="mt-0.5 text-[10px] leading-normal text-amber-100/80">
                 {selectedHotspot.agronomicSignificanceHi}
               </p>
             </div>
@@ -667,29 +634,29 @@ export default function WheatGermination3DViewer({
         )}
       </AnimatePresence>
 
-      {/* Bottom Floating Control Bar (Timeline Scrubber & Presets) */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 p-3 sm:p-5">
-        <div className="pointer-events-auto mx-auto max-w-2xl rounded-2xl border border-white/10 bg-black/60 p-3 backdrop-blur-md shadow-2xl sm:p-4">
-          {/* Row 1: Camera Presets & X-Ray Mode */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
-            <div className="flex items-center gap-1.5">
+      {/* Streamlined Bottom Floating Control Bar */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 p-2.5 sm:p-4">
+        <div className="pointer-events-auto mx-auto max-w-lg rounded-2xl border border-white/10 bg-black/70 p-2.5 backdrop-blur-md shadow-2xl sm:p-3">
+          {/* Row 1: Camera Presets & X-Ray Toggle */}
+          <div className="flex items-center justify-between gap-1.5 border-b border-white/10 pb-2">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => applyCameraPreset("overview")}
                 className={cn(
-                  "rounded-lg px-2.5 py-1 text-[10.5px] font-semibold transition active:scale-95",
+                  "rounded-lg px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
                   activePreset === "overview"
                     ? "bg-emerald-500 text-black shadow"
                     : "bg-white/10 text-white/80 hover:bg-white/20"
                 )}
               >
-                360° लैब
+                360°
               </button>
               <button
                 type="button"
                 onClick={() => applyCameraPreset("seed")}
                 className={cn(
-                  "rounded-lg px-2.5 py-1 text-[10.5px] font-semibold transition active:scale-95",
+                  "rounded-lg px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
                   activePreset === "seed"
                     ? "bg-emerald-500 text-black shadow"
                     : "bg-white/10 text-white/80 hover:bg-white/20"
@@ -701,7 +668,7 @@ export default function WheatGermination3DViewer({
                 type="button"
                 onClick={() => applyCameraPreset("roots")}
                 className={cn(
-                  "rounded-lg px-2.5 py-1 text-[10.5px] font-semibold transition active:scale-95",
+                  "rounded-lg px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
                   activePreset === "roots"
                     ? "bg-emerald-500 text-black shadow"
                     : "bg-white/10 text-white/80 hover:bg-white/20"
@@ -713,7 +680,7 @@ export default function WheatGermination3DViewer({
                 type="button"
                 onClick={() => applyCameraPreset("shoot")}
                 className={cn(
-                  "rounded-lg px-2.5 py-1 text-[10.5px] font-semibold transition active:scale-95",
+                  "rounded-lg px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
                   activePreset === "shoot"
                     ? "bg-emerald-500 text-black shadow"
                     : "bg-white/10 text-white/80 hover:bg-white/20"
@@ -723,33 +690,32 @@ export default function WheatGermination3DViewer({
               </button>
             </div>
 
-            {/* X-Ray Soil Toggle Button */}
             <button
               type="button"
               onClick={() => setIsXraySoil(!isXraySoil)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[10.5px] font-semibold transition active:scale-95",
+                "inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
                 isXraySoil
-                  ? "border-emerald-400 bg-emerald-500/20 text-emerald-300"
+                  ? "border-emerald-400 bg-emerald-500/25 text-emerald-300"
                   : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10"
               )}
             >
               <Layers className="h-3 w-3" />
-              <span>एक्स-रे (मिट्टी पारदर्शी)</span>
+              <span>एक्स-रे</span>
             </button>
           </div>
 
-          {/* Row 2: Time-Lapse Growth Scrubber Slider */}
-          <div className="pt-2.5">
+          {/* Row 2: Playback & Timeline Scrubber */}
+          <div className="pt-2">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setIsPlaying(!isPlaying)}
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-black shadow transition hover:bg-emerald-400 active:scale-95"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-black shadow transition hover:bg-emerald-400 active:scale-95"
                   title={isPlaying ? "रोकें" : "समय-प्रवाह चलाएं (Time-lapse)"}
                 >
-                  {isPlaying ? <Pause className="h-3.5 w-3.5 fill-black" /> : <Play className="h-3.5 w-3.5 fill-black ml-0.5" />}
+                  {isPlaying ? <Pause className="h-3 w-3 fill-black" /> : <Play className="h-3 w-3 fill-black ml-0.5" />}
                 </button>
 
                 <button
@@ -758,35 +724,34 @@ export default function WheatGermination3DViewer({
                     setDay(0);
                     setIsPlaying(true);
                   }}
-                  className="rounded-md p-1 text-white/60 hover:bg-white/10 hover:text-white"
+                  className="rounded p-0.5 text-white/60 hover:text-white"
                   title="शुरू से पुनः चलाएं"
                 >
-                  <RotateCcw className="h-3.5 w-3.5" />
+                  <RotateCcw className="h-3 w-3" />
                 </button>
 
-                <span className="font-bold text-white text-[13px] tabular-nums">
+                <span className="font-bold text-white text-[11px] tabular-nums">
                   दिन {day.toFixed(1)}{" "}
-                  <span className="text-[10px] font-normal text-emerald-300">
-                    {day < 1.2
+                  <span className="text-[9.5px] font-normal text-emerald-300">
+                    {day < 1.5
                       ? "(जल अवशोषण)"
                       : day < 2.5
                         ? "(प्राथमिक जड़)"
                         : day < 4.5
-                          ? "(पार्श्व जड़ें व प्रांकुर)"
-                          : "(सतह पर प्ररोह Emergence)"}
+                          ? "(पार्श्व जड़ें)"
+                          : "(प्ररोह उभार)"}
                   </span>
                 </span>
               </div>
 
-              {/* Speed Switcher */}
               <button
                 type="button"
                 onClick={() =>
                   setPlaySpeed((prev) => (prev === 1.0 ? 2.0 : prev === 2.0 ? 0.5 : 1.0))
                 }
-                className="rounded bg-white/10 px-1.5 py-0.5 text-[9.5px] font-bold text-white/80 hover:bg-white/20"
+                className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/80 hover:bg-white/20"
               >
-                {playSpeed}x गति
+                {playSpeed}x
               </button>
             </div>
 
@@ -801,15 +766,8 @@ export default function WheatGermination3DViewer({
                 setIsPlaying(false);
                 setDay(parseFloat(e.target.value));
               }}
-              className="mt-2 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-white/20 accent-emerald-400"
+              className="mt-1.5 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-white/20 accent-emerald-400"
             />
-
-            <div className="mt-1 flex items-center justify-between text-[8.5px] font-semibold text-emerald-200/50">
-              <span>दिन 0 (सुप्त बीज)</span>
-              <span>दिन 2 (जड़ उद्भव)</span>
-              <span>दिन 4 (प्रांकुर चोल)</span>
-              <span>दिन 7 (सतह पार अंकुरण)</span>
-            </div>
           </div>
         </div>
       </div>

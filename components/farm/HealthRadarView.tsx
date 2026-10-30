@@ -152,10 +152,12 @@ function NdviGauge({ value }: { value: number }) {
 function NdviSparkline({ series }: { series: SatelliteObservation[] }) {
   const gradientId = useId().replace(/:/g, "");
   const reduced = useReducedMotion();
-  const width = 300;
-  const height = 78;
-  const padX = 8;
-  const padY = 10;
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const width = 320;
+  const height = 84;
+  const padX = 12;
+  const padY = 12;
 
   const values = series.map((item) => item.meanNdvi);
   const min = Math.min(...values, 0.24) - 0.04;
@@ -166,7 +168,7 @@ function NdviSparkline({ series }: { series: SatelliteObservation[] }) {
   const points = series.map((item, index) => {
     const x = padX + index * step;
     const y = height - padY - ((item.meanNdvi - min) / range) * (height - padY * 2);
-    return { x, y };
+    return { x, y, item, index };
   });
 
   const line = points
@@ -178,60 +180,123 @@ function NdviSparkline({ series }: { series: SatelliteObservation[] }) {
     height - padY
   } Z`;
 
+  const handlePointer = (clientX: number) => {
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const relativeX = ((clientX - rect.left) / rect.width) * width;
+    let closestIdx = 0;
+    let closestDist = Infinity;
+    points.forEach((p, idx) => {
+      const dist = Math.abs(p.x - relativeX);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIdx = idx;
+      }
+    });
+    setActiveIndex(closestIdx);
+  };
+
+  const activePoint = activeIndex !== null ? points[activeIndex] : null;
+
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      className="w-full"
-      role="img"
-      aria-label="पिछले 45 दिनों का NDVI रुझान"
-    >
-      <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
-        </linearGradient>
-      </defs>
+    <div className="relative select-none">
+      {/* Floating Scrubber Tooltip */}
+      {activePoint && (
+        <div
+          className="pointer-events-none absolute -top-7 z-20 flex -translate-x-1/2 items-center gap-1.5 rounded-lg border border-emerald-400/30 bg-emerald-950/90 px-2 py-0.5 text-[10px] font-bold text-white shadow-lg backdrop-blur-md transition-all duration-75"
+          style={{
+            left: `${(activePoint.x / width) * 100}%`,
+          }}
+        >
+          <span className="text-emerald-300">
+            {formatShortDate(activePoint.item.acquisitionDate)}
+          </span>
+          <span className="text-white/40">·</span>
+          <span className="text-amber-300 tabular-nums">
+            NDVI {activePoint.item.meanNdvi.toFixed(2)}
+          </span>
+        </div>
+      )}
 
-      <line
-        x1={padX}
-        y1={height - padY}
-        x2={width - padX}
-        y2={height - padY}
-        stroke="var(--av-border)"
-        strokeDasharray="3 4"
-      />
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${width} ${height}`}
+        className="w-full cursor-crosshair touch-none overflow-visible"
+        role="img"
+        aria-label="पिछले 45 दिनों का NDVI रुझान"
+        onMouseMove={(e) => handlePointer(e.clientX)}
+        onTouchMove={(e) => {
+          if (e.touches[0]) handlePointer(e.touches[0].clientX);
+        }}
+        onMouseLeave={() => setActiveIndex(null)}
+        onTouchEnd={() => setActiveIndex(null)}
+      >
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.32" />
+            <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+          </linearGradient>
+        </defs>
 
-      <motion.path
-        d={area}
-        fill={`url(#${gradientId})`}
-        initial={reduced ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      />
-      <motion.path
-        d={line}
-        fill="none"
-        stroke="#10b981"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={reduced ? false : { pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 0.8, ease: EASE_OUT }}
-      />
-
-      {points.map((point, index) => (
-        <circle
-          key={index}
-          cx={point.x}
-          cy={point.y}
-          r={index === points.length - 1 ? 3.4 : 2}
-          fill={index === points.length - 1 ? "#10b981" : "var(--av-surface)"}
-          stroke="#10b981"
-          strokeWidth={index === points.length - 1 ? 2 : 1.4}
+        <line
+          x1={padX}
+          y1={height - padY}
+          x2={width - padX}
+          y2={height - padY}
+          stroke="var(--av-border)"
+          strokeDasharray="3 4"
         />
-      ))}
-    </svg>
+
+        <motion.path
+          d={area}
+          fill={`url(#${gradientId})`}
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        />
+        <motion.path
+          d={line}
+          fill="none"
+          stroke="#10b981"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={reduced ? false : { pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.8, ease: EASE_OUT }}
+        />
+
+        {/* Vertical Guide Line when Scrubbing */}
+        {activePoint && (
+          <line
+            x1={activePoint.x}
+            y1={padY}
+            x2={activePoint.x}
+            y2={height - padY}
+            stroke="#34d399"
+            strokeWidth="1.5"
+            strokeDasharray="2 3"
+          />
+        )}
+
+        {points.map((point, index) => {
+          const isSelected = activeIndex === index;
+          const isLatest = index === points.length - 1;
+          return (
+            <circle
+              key={index}
+              cx={point.x}
+              cy={point.y}
+              r={isSelected ? 4.8 : isLatest ? 3.4 : 2}
+              fill={isSelected ? "#34d399" : isLatest ? "#10b981" : "var(--av-surface)"}
+              stroke={isSelected ? "#ffffff" : "#10b981"}
+              strokeWidth={isSelected ? 2.5 : isLatest ? 2 : 1.4}
+              className="transition-all duration-100"
+            />
+          );
+        })}
+      </svg>
+    </div>
   );
 }
 

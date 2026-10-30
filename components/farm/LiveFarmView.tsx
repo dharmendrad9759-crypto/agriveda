@@ -332,27 +332,27 @@ export default function LiveFarmView({
         </div>
 
         <div className="relative mt-4 grid grid-cols-3 divide-x divide-white/10 rounded-2xl bg-white/[0.06] py-2.5 backdrop-blur-sm">
-          <div className="px-2 text-center">
+          <div className="px-1.5 text-center sm:px-2">
             <p className="flex items-center justify-center gap-1 text-[9px] font-medium uppercase tracking-wider text-emerald-200/55">
               <Thermometer className="h-3 w-3" /> तापमान
             </p>
-            <p className="mt-1 text-[13px] font-semibold tabular-nums">
+            <p className="mt-1 text-[12px] sm:text-[13px] font-semibold tabular-nums">
               {weather?.temp || "24°C"}
             </p>
           </div>
-          <div className="px-2 text-center">
+          <div className="px-1.5 text-center sm:px-2">
             <p className="flex items-center justify-center gap-1 text-[9px] font-medium uppercase tracking-wider text-emerald-200/55">
               <Droplets className="h-3 w-3" /> नमी
             </p>
-            <p className="mt-1 text-[13px] font-semibold tabular-nums">
+            <p className="mt-1 text-[12px] sm:text-[13px] font-semibold tabular-nums">
               {weather?.humidity || "58%"}
             </p>
           </div>
-          <div className="px-2 text-center">
+          <div className="px-1.5 text-center sm:px-2">
             <p className="flex items-center justify-center gap-1 text-[9px] font-medium uppercase tracking-wider text-emerald-200/55">
               <Wind className="h-3 w-3" /> हवा
             </p>
-            <p className="mt-1 text-[13px] font-semibold tabular-nums">
+            <p className="mt-1 text-[12px] sm:text-[13px] font-semibold tabular-nums">
               {weather?.windSpeed || "8 km/h"}
             </p>
           </div>
@@ -707,6 +707,28 @@ export default function LiveFarmView({
           </div>
         </form>
       </FarmSheet>
+
+      {/* Sticky Mobile Floating Action Bar when Pin Drop Mode is active */}
+      {isPinMode && (
+        <div className="fixed bottom-20 left-4 right-4 z-50 flex items-center justify-between gap-3 rounded-2xl border border-rose-500/40 bg-[#160a0e]/95 p-3 text-white shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-300">
+              <Crosshair className="h-4 w-4 animate-pulse" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-bold leading-tight truncate">नक्शे पर समस्या का स्थान चुनें</p>
+              <p className="text-[10px] text-rose-200/80 truncate">टैप करते ही समस्या पिन दर्ज हो जाएगी</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsPinMode(false)}
+            className="shrink-0 rounded-xl bg-white/20 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-white/30 active:scale-95"
+          >
+            रद्द करें
+          </button>
+        </div>
+      )}
     </div>
   );
 }
