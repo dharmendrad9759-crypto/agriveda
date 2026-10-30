@@ -546,7 +546,7 @@ export default function CropJourneyView({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-1.5">
               <span className="rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700 dark:text-amber-300">
-                {selectedStageDef.zadoksCode}
+                चरण {selectedStageDef.stageOrder + 1}
               </span>
               <h2 className="text-[15px] font-semibold leading-tight text-[var(--av-text-primary)]">
                 {selectedStageDef.stageNameHi}

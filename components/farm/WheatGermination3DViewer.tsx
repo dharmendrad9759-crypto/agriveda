@@ -4,14 +4,17 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {
-  createWheatSeedGeometry,
-  createSoilBlockMesh,
+  STAGES_3D_CONFIG,
+  buildStageBotanicalGroup,
+  createTrueSoilProfileTrench,
+  createDetailedSeedMesh,
+  type BotanicalHotspot,
+} from "@/lib/3d/wheatBotanicalEngine";
+import {
   getRootSplines,
   getColeoptileCurve,
   createSubCurveGeometry,
   createRootHairsMesh,
-  GERMINATION_HOTSPOTS,
-  type HotspotInfo,
 } from "@/lib/3d/wheatGerminationEngine";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -24,22 +27,23 @@ import {
   VolumeX,
   X,
   Sparkles,
-  Layers,
   Compass,
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 interface WheatGermination3DViewerProps {
+  stageId?: string;
   onClose?: () => void;
   className?: string;
   initialDay?: number;
   variant?: "inline" | "fullscreen";
 }
 
-type CameraPreset = "overview" | "seed" | "roots" | "shoot";
+type CameraPreset = "overview" | "macro" | "roots" | "stem";
 
 export default function WheatGermination3DViewer({
+  stageId = "germination",
   onClose,
   className = "",
   initialDay = 3.5,
@@ -48,12 +52,18 @@ export default function WheatGermination3DViewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Growth Playback State (Day 0.0 to 7.0)
+  // Active Stage Config
+  const stageConfig = useMemo(() => {
+    return STAGES_3D_CONFIG[stageId] || STAGES_3D_CONFIG.germination;
+  }, [stageId]);
+
+  const isGermination = stageId === "germination";
+
+  // Growth Playback State (Day 0.0 to 7.0 for germination)
   const [day, setDay] = useState<number>(initialDay);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playSpeed, setPlaySpeed] = useState<number>(1.0);
-  const [isXraySoil, setIsXraySoil] = useState<boolean>(false);
-  const [selectedHotspot, setSelectedHotspot] = useState<HotspotInfo | null>(null);
+  const [selectedHotspot, setSelectedHotspot] = useState<BotanicalHotspot | null>(null);
   const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
   const [isFullscreen, setIsFullscreen] = useState<boolean>(variant === "fullscreen");
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
@@ -64,10 +74,10 @@ export default function WheatGermination3DViewer({
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
+  const stageGroupRef = useRef<THREE.Group | null>(null);
 
-  // Dynamic Mesh References for Growth Updates
+  // Dynamic Germination Mesh References
   const seedMeshRef = useRef<THREE.Mesh | null>(null);
-  const soilGroupRef = useRef<THREE.Group | null>(null);
   const radicleMeshRef = useRef<THREE.Mesh | null>(null);
   const seminalLeft1Ref = useRef<THREE.Mesh | null>(null);
   const seminalRight1Ref = useRef<THREE.Mesh | null>(null);
@@ -75,9 +85,6 @@ export default function WheatGermination3DViewer({
   const seminalRight2Ref = useRef<THREE.Mesh | null>(null);
   const coleoptileMeshRef = useRef<THREE.Mesh | null>(null);
   const rootHairsGroupRef = useRef<THREE.Group | null>(null);
-
-  // Materials References
-  const rootMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const coleoptileMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
 
   // Hotspot Screen Projections State
@@ -85,22 +92,23 @@ export default function WheatGermination3DViewer({
     { id: string; x: number; y: number; visible: boolean }[]
   >([]);
 
-  // Splines
+  // Splines for germination
   const rootSplines = useMemo(() => getRootSplines(), []);
   const coleoptileSpline = useMemo(() => getColeoptileCurve(), []);
 
-  // Update Growth Meshes based on current Day
+  // Update Germination Growth Meshes based on current Day
   const updateGrowthState = useCallback(
     (currentDay: number) => {
+      if (!isGermination) return;
       const t = Math.max(0, Math.min(1.0, currentDay / 7.0));
 
-      // 1. Seed Swelling (Imbibition)
+      // 1. Seed Swelling
       if (seedMeshRef.current) {
-        const swellFactor = 1.0 + 0.18 * Math.min(1.0, t * 2.8);
+        const swellFactor = 1.0 + 0.16 * Math.min(1.0, t * 2.8);
         seedMeshRef.current.scale.set(swellFactor, swellFactor, swellFactor);
       }
 
-      // 2. Primary Radicle (Emerges at Day 1.0, reaches max at Day 7.0)
+      // 2. Primary Radicle
       const radicleFraction = t < 0.14 ? 0 : Math.min(1.0, (t - 0.14) / 0.86);
       if (radicleMeshRef.current) {
         const oldGeom = radicleMeshRef.current.geometry;
@@ -113,12 +121,11 @@ export default function WheatGermination3DViewer({
         oldGeom.dispose();
       }
 
-      // 3. Lateral Seminal Roots (First pair emerges at Day 2.5)
+      // 3. Seminal Roots Pair 1
       const seminal1Fraction = t < 0.32 ? 0 : Math.min(1.0, (t - 0.32) / 0.68);
       if (seminalLeft1Ref.current && seminalRight1Ref.current) {
         const oldL = seminalLeft1Ref.current.geometry;
         const oldR = seminalRight1Ref.current.geometry;
-
         seminalLeft1Ref.current.geometry = createSubCurveGeometry(
           rootSplines.seminalLeft1,
           seminal1Fraction,
@@ -131,17 +138,15 @@ export default function WheatGermination3DViewer({
           0.075,
           0.028
         );
-
         oldL.dispose();
         oldR.dispose();
       }
 
-      // 4. Secondary Seminal Roots (Second pair emerges at Day 4.2)
+      // 4. Seminal Roots Pair 2
       const seminal2Fraction = t < 0.55 ? 0 : Math.min(1.0, (t - 0.55) / 0.45);
       if (seminalLeft2Ref.current && seminalRight2Ref.current) {
         const oldL = seminalLeft2Ref.current.geometry;
         const oldR = seminalRight2Ref.current.geometry;
-
         seminalLeft2Ref.current.geometry = createSubCurveGeometry(
           rootSplines.seminalLeft2,
           seminal2Fraction,
@@ -154,12 +159,11 @@ export default function WheatGermination3DViewer({
           0.065,
           0.025
         );
-
         oldL.dispose();
         oldR.dispose();
       }
 
-      // 5. Coleoptile Shoot (Emerges upward at Day 1.8)
+      // 5. Emerging Coleoptile Shoot
       const coleoptileFraction = t < 0.22 ? 0 : Math.min(1.0, (t - 0.22) / 0.78);
       if (coleoptileMeshRef.current) {
         const oldC = coleoptileMeshRef.current.geometry;
@@ -178,11 +182,10 @@ export default function WheatGermination3DViewer({
             greenRatio
           );
           coleoptileMaterialRef.current.color = baseColor;
-          coleoptileMaterialRef.current.roughness = 0.35 + (1 - greenRatio) * 0.25;
         }
       }
 
-      // 6. Root Hairs (Trichoblasts)
+      // 6. Root Hairs
       if (rootHairsGroupRef.current) {
         while (rootHairsGroupRef.current.children.length > 0) {
           const child = rootHairsGroupRef.current.children[0] as THREE.LineSegments;
@@ -196,7 +199,7 @@ export default function WheatGermination3DViewer({
         }
       }
     },
-    [rootSplines, coleoptileSpline]
+    [isGermination, rootSplines, coleoptileSpline]
   );
 
   // Initialize Three.js Scene
@@ -208,12 +211,13 @@ export default function WheatGermination3DViewer({
 
     // 1. Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#04130e"); // Deep rich agronomy dark
+    scene.background = new THREE.Color("#03120d"); // Deep botanical dark
     sceneRef.current = scene;
 
-    // 2. Camera (Framed with plant slightly elevated so controls don't block it)
+    // 2. Camera
     const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 50);
-    camera.position.set(2.8, 0.8, 5.8);
+    const [cx, cy, cz] = stageConfig.cameraPosition;
+    camera.position.set(cx, cy, cz);
     cameraRef.current = camera;
 
     // 3. Renderer with PBR Tone Mapping & Shadow Support
@@ -227,121 +231,108 @@ export default function WheatGermination3DViewer({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.25;
     rendererRef.current = renderer;
 
-    // 4. OrbitControls with Touch Damping & Angle Limits
+    // 4. OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
-    controls.minDistance = 2.4;
+    controls.minDistance = 2.0;
     controls.maxDistance = 12.0;
-    controls.maxPolarAngle = Math.PI - 0.2;
-    controls.minPolarAngle = 0.2;
-    // Target plant center, slightly lifted so bottom controls don't overlap
-    controls.target.set(0, -0.3, 0);
+    controls.maxPolarAngle = Math.PI - 0.15;
+    controls.minPolarAngle = 0.15;
+    const [tx, ty, tz] = stageConfig.cameraTarget;
+    controls.target.set(tx, ty, tz);
     controlsRef.current = controls;
 
     // 5. Cinematic Lighting Rig
-    const hemiLight = new THREE.HemisphereLight("#a7f3d0", "#18110b", 0.95);
+    const hemiLight = new THREE.HemisphereLight("#86efac", "#1c140e", 1.0);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight("#fff7eb", 2.4);
-    keyLight.position.set(4.5, 6.5, 4.5);
+    const keyLight = new THREE.DirectionalLight("#fffbeb", 2.6);
+    keyLight.position.set(4.5, 7.5, 4.5);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
-    keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight("#a7f3d0", 0.9);
+    const fillLight = new THREE.DirectionalLight("#6ee7b7", 1.0);
     fillLight.position.set(-5, 2.5, 2);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight("#86efac", 3.4);
-    rimLight.position.set(0, -3.5, -5.5);
+    const rimLight = new THREE.DirectionalLight("#a7f3d0", 2.5);
+    rimLight.position.set(0, -3.0, -5.0);
     scene.add(rimLight);
 
-    // 6. Wheat Seed Mesh
-    const seedGeom = createWheatSeedGeometry();
-    const seedMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#d9822b"),
-      roughness: 0.62,
-      metalness: 0.04,
-      bumpScale: 0.06,
-    });
-    const seedMesh = new THREE.Mesh(seedGeom, seedMat);
-    seedMesh.castShadow = true;
-    seedMesh.receiveShadow = true;
-    scene.add(seedMesh);
-    seedMeshRef.current = seedMesh;
+    // 6. Build Botanical Plant & Soil Scene
+    if (isGermination) {
+      // Stratified open soil profile trench
+      const soilGroup = createTrueSoilProfileTrench();
+      scene.add(soilGroup);
 
-    // 7. Soil Cutaway Block
-    const soilGroup = createSoilBlockMesh();
-    scene.add(soilGroup);
-    soilGroupRef.current = soilGroup;
+      // Seed
+      const seedMesh = createDetailedSeedMesh();
+      seedMesh.position.set(0, 0, 0.05);
+      scene.add(seedMesh);
+      seedMeshRef.current = seedMesh;
 
-    // 8. Materials
-    const rootMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#f6fef8"),
-      roughness: 0.4,
-      metalness: 0.02,
-    });
-    rootMaterialRef.current = rootMat;
+      // Roots & Shoot Dynamic Meshes
+      const rootMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color("#f8fafc"),
+        roughness: 0.35,
+      });
 
-    const coleoptileMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#4ade80"),
-      roughness: 0.32,
-      metalness: 0.04,
-    });
-    coleoptileMaterialRef.current = coleoptileMat;
+      const coleoptileMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color("#4ade80"),
+        roughness: 0.32,
+      });
+      coleoptileMaterialRef.current = coleoptileMat;
 
-    // 9. Root Meshes
-    const radicleMesh = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
-    radicleMesh.castShadow = true;
-    scene.add(radicleMesh);
-    radicleMeshRef.current = radicleMesh;
+      const radicleMesh = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
+      scene.add(radicleMesh);
+      radicleMeshRef.current = radicleMesh;
 
-    const seminalL1 = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
-    const seminalR1 = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
-    const seminalL2 = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
-    const seminalR2 = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
-    scene.add(seminalL1, seminalR1, seminalL2, seminalR2);
-    seminalLeft1Ref.current = seminalL1;
-    seminalRight1Ref.current = seminalR1;
-    seminalLeft2Ref.current = seminalL2;
-    seminalRight2Ref.current = seminalR2;
+      const seminalL1 = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
+      const seminalR1 = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
+      const seminalL2 = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
+      const seminalR2 = new THREE.Mesh(new THREE.BufferGeometry(), rootMat);
+      scene.add(seminalL1, seminalR1, seminalL2, seminalR2);
+      seminalLeft1Ref.current = seminalL1;
+      seminalRight1Ref.current = seminalR1;
+      seminalLeft2Ref.current = seminalL2;
+      seminalRight2Ref.current = seminalR2;
 
-    // 10. Coleoptile Mesh
-    const coleoptileMesh = new THREE.Mesh(new THREE.BufferGeometry(), coleoptileMat);
-    coleoptileMesh.castShadow = true;
-    scene.add(coleoptileMesh);
-    coleoptileMeshRef.current = coleoptileMesh;
+      const coleoptileMesh = new THREE.Mesh(new THREE.BufferGeometry(), coleoptileMat);
+      scene.add(coleoptileMesh);
+      coleoptileMeshRef.current = coleoptileMesh;
 
-    // 11. Root Hairs
-    const hairsGroup = new THREE.Group();
-    scene.add(hairsGroup);
-    rootHairsGroupRef.current = hairsGroup;
+      const hairsGroup = new THREE.Group();
+      scene.add(hairsGroup);
+      rootHairsGroupRef.current = hairsGroup;
 
-    // Initial State
-    updateGrowthState(day);
+      updateGrowthState(day);
+    } else {
+      // Build Full Botanical Stage
+      const stageModel = buildStageBotanicalGroup(stageId);
+      scene.add(stageModel);
+      stageGroupRef.current = stageModel;
+    }
 
-    // 12. Render Loop
+    // 7. Render Loop & Hotspot Tracking
     let animationFrameId: number;
     const tempVec = new THREE.Vector3();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-
       controls.update();
       renderer.render(scene, camera);
 
-      // Project 3D Hotspot positions
       if (containerRef.current) {
         const w = containerRef.current.clientWidth;
         const h = containerRef.current.clientHeight;
 
-        const projections = GERMINATION_HOTSPOTS.map((spot) => {
+        const projections = stageConfig.hotspots.map((spot) => {
           tempVec.copy(spot.position);
           tempVec.project(camera);
 
@@ -377,18 +368,19 @@ export default function WheatGermination3DViewer({
       window.removeEventListener("resize", handleResize);
       controls.dispose();
       renderer.dispose();
-      seedGeom.dispose();
-      seedMat.dispose();
     };
-  }, []);
+  }, [stageId, stageConfig, isGermination]);
 
+  // Update growth state when day changes
   useEffect(() => {
-    updateGrowthState(day);
-  }, [day, updateGrowthState]);
+    if (isGermination) {
+      updateGrowthState(day);
+    }
+  }, [day, isGermination, updateGrowthState]);
 
-  // Smooth Time-lapse Loop
+  // Smooth Time-lapse Loop for Germination
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || !isGermination) return;
 
     const interval = setInterval(() => {
       setDay((prevDay) => {
@@ -402,57 +394,42 @@ export default function WheatGermination3DViewer({
     }, 32);
 
     return () => clearInterval(interval);
-  }, [isPlaying, playSpeed]);
-
-  // X-Ray Soil Toggle
-  useEffect(() => {
-    if (!soilGroupRef.current) return;
-    soilGroupRef.current.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        const mat = child.material as THREE.MeshStandardMaterial;
-        if (isXraySoil) {
-          mat.transparent = true;
-          mat.opacity = 0.15;
-        } else {
-          mat.transparent = false;
-          mat.opacity = 1.0;
-        }
-      }
-    });
-  }, [isXraySoil]);
+  }, [isPlaying, isGermination, playSpeed]);
 
   // Camera Presets
-  const applyCameraPreset = useCallback((preset: CameraPreset) => {
-    if (!cameraRef.current || !controlsRef.current) return;
-    setActivePreset(preset);
+  const applyCameraPreset = useCallback(
+    (preset: CameraPreset) => {
+      if (!cameraRef.current || !controlsRef.current) return;
+      setActivePreset(preset);
 
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
+      const camera = cameraRef.current;
+      const controls = controlsRef.current;
+      const [tx, ty, tz] = stageConfig.cameraTarget;
 
-    switch (preset) {
-      case "seed":
-        camera.position.set(0.5, 0.4, 2.7);
-        controls.target.set(0, -0.1, 0.2);
-        setIsXraySoil(false);
-        break;
-      case "roots":
-        camera.position.set(0.2, -1.8, 4.2);
-        controls.target.set(0, -1.6, 0);
-        setIsXraySoil(true);
-        break;
-      case "shoot":
-        camera.position.set(0.1, 2.0, 3.6);
-        controls.target.set(0, 1.2, 0.1);
-        setIsXraySoil(false);
-        break;
-      case "overview":
-      default:
-        camera.position.set(2.8, 0.8, 5.8);
-        controls.target.set(0, -0.3, 0);
-        break;
-    }
-    controls.update();
-  }, []);
+      switch (preset) {
+        case "macro":
+          camera.position.set(tx + 0.4, ty + 0.3, 2.6);
+          controls.target.set(tx, ty + 0.2, 0.1);
+          break;
+        case "roots":
+          camera.position.set(0.1, -1.6, 4.0);
+          controls.target.set(0, -1.2, 0);
+          break;
+        case "stem":
+          camera.position.set(0.2, ty + 0.8, 3.4);
+          controls.target.set(0, ty + 0.6, 0);
+          break;
+        case "overview":
+        default:
+          const [cx, cy, cz] = stageConfig.cameraPosition;
+          camera.position.set(cx, cy, cz);
+          controls.target.set(tx, ty, tz);
+          break;
+      }
+      controls.update();
+    },
+    [stageConfig]
+  );
 
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
@@ -474,15 +451,11 @@ export default function WheatGermination3DViewer({
 
     if (!window.speechSynthesis) return;
 
-    let textToSpeak = `गेहूँ का अंकुरण, दिन ${day.toFixed(1)}। `;
+    let textToSpeak = `गेहूँ अवस्था: ${stageConfig.nameHi}, अवधि ${stageConfig.daysRange}। `;
     if (selectedHotspot) {
-      textToSpeak += `${selectedHotspot.nameHi}। ${selectedHotspot.descriptionHi}। ${selectedHotspot.agronomicSignificanceHi}`;
-    } else if (day < 1.5) {
-      textToSpeak += "बीज मिट्टी की नमी सोखकर फूल रहा है और अंदर एंजाइम सक्रिय हो रहे हैं।";
-    } else if (day < 3.5) {
-      textToSpeak += "प्राथमिक जड़ मिट्टी में नीचे जा रही है, और प्रांकुर ऊपर प्रकाश की ओर बढ़ रहा है।";
+      textToSpeak += `${selectedHotspot.titleHi}। ${selectedHotspot.descriptionHi}। ${selectedHotspot.agronomyHi}`;
     } else {
-      textToSpeak += "पार्श्व जड़ें फैल चुकी हैं और प्रांकुर चोल मिट्टी से बाहर निकलकर प्रकाश संश्लेषण शुरू कर रहा है।";
+      textToSpeak += stageConfig.hotspots.map((h) => `${h.titleHi}: ${h.descriptionHi}`).join("। ");
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
@@ -493,282 +466,288 @@ export default function WheatGermination3DViewer({
 
     window.speechSynthesis.speak(utterance);
     setIsSpeaking(true);
-  }, [day, isSpeaking, selectedHotspot]);
+  }, [isSpeaking, selectedHotspot, stageConfig]);
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        "relative flex h-full w-full flex-col overflow-hidden bg-[#04120d] text-white select-none touch-none",
-        isFullscreen ? "fixed inset-0 z-[9999]" : "rounded-3xl border border-emerald-500/25 shadow-2xl",
+        "relative flex flex-col select-none overflow-hidden bg-[#03120d] text-white",
+        isFullscreen ? "h-screen w-screen" : "h-full w-full",
         className
       )}
     >
       {/* 3D WebGL Canvas */}
       <canvas
         ref={canvasRef}
-        className="h-full w-full cursor-grab active:cursor-grabbing touch-none"
+        className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
       />
 
-      {/* Floating 360 Hint Badge */}
-      <div className="pointer-events-none absolute left-3 top-3.5 z-10 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[10px] font-semibold text-emerald-300 backdrop-blur-md shadow-md">
-        <Compass className="h-3 w-3 animate-spin duration-3000 text-emerald-400" />
-        <span>360° घुमाएं व पिंच ज़ूम करें</span>
+      {/* TOP FLOATING HEADER HUD */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 p-2.5 sm:p-3.5">
+        <div className="flex items-start justify-between gap-2">
+          {/* Stage Name Badge */}
+          <div className="pointer-events-auto rounded-xl border border-emerald-500/25 bg-[#03120d]/85 px-3 py-1.5 shadow-xl backdrop-blur-md">
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                <Sparkles className="h-2.5 w-2.5" />
+              </span>
+              <span className="text-[10px] font-bold text-emerald-300">
+                चरण {stageConfig.stageNumber} · 3D बॉटनिकल मॉडल
+              </span>
+            </div>
+            <h3 className="mt-0.5 text-xs font-black text-white sm:text-sm">
+              {stageConfig.nameHi}
+              <span className="ml-1.5 text-[10px] font-normal text-emerald-200/70">
+                ({stageConfig.daysRange})
+              </span>
+            </h3>
+          </div>
+
+          {/* Quick Action Buttons */}
+          <div className="pointer-events-auto flex items-center gap-1">
+            <button
+              type="button"
+              onClick={toggleSpeech}
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-xl border transition active:scale-95",
+                isSpeaking
+                  ? "border-amber-400 bg-amber-400/20 text-amber-300"
+                  : "border-white/15 bg-[#03120d]/80 text-white/80 hover:bg-white/10"
+              )}
+              title={isSpeaking ? "आवाज बंद करें" : "हिंदी में सुनें"}
+            >
+              {isSpeaking ? <Volume2 className="h-4 w-4 animate-pulse" /> : <VolumeX className="h-4 w-4" />}
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-[#03120d]/80 text-white/80 hover:bg-white/10 active:scale-95"
+              title={isFullscreen ? "फुलस्क्रीन से बाहर निकलें" : "फुलस्क्रीन देखें"}
+            >
+              {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </button>
+
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 active:scale-95"
+                title="बंद करें"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Top Floating Glass HUD */}
-      <div className="pointer-events-none absolute right-3 top-3.5 z-10 flex items-center gap-1.5">
-        <button
-          type="button"
-          onClick={toggleSpeech}
-          className={cn(
-            "pointer-events-auto flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-md transition active:scale-95",
-            isSpeaking
-              ? "border-emerald-400 bg-emerald-500/25 text-emerald-300 animate-pulse"
-              : "border-white/10 bg-black/45 text-white/80 hover:bg-black/60"
-          )}
-          title="हिन्दी वैज्ञानिक विवरण सुनें"
-        >
-          {isSpeaking ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
-        </button>
-
-        <button
-          type="button"
-          onClick={toggleFullscreen}
-          className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/45 text-white/80 backdrop-blur-md hover:bg-black/60 transition active:scale-95"
-          title={isFullscreen ? "फुलस्क्रीन बंद करें" : "फुलस्क्रीन"}
-        >
-          {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
-        </button>
-
-        {onClose && (
-          <button
-            type="button"
-            onClick={onClose}
-            className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/45 text-white/80 backdrop-blur-md hover:bg-black/60 transition active:scale-95"
-            title="बंद करें"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-
-      {/* Floating 3D Botanical Hotspot Markers */}
-      {hotspotScreenPositions.map((spot) => {
-        if (!spot.visible) return null;
-        const info = GERMINATION_HOTSPOTS.find((h) => h.id === spot.id);
-        if (!info) return null;
-        const isSelected = selectedHotspot?.id === spot.id;
+      {/* 3D INTERACTIVE HOTSPOT PINS */}
+      {hotspotScreenPositions.map((pos) => {
+        if (!pos.visible) return null;
+        const hotspot = stageConfig.hotspots.find((h) => h.id === pos.id);
+        if (!hotspot) return null;
+        const isSelected = selectedHotspot?.id === hotspot.id;
 
         return (
           <div
-            key={spot.id}
+            key={pos.id}
             style={{
-              transform: `translate3d(${spot.x}px, ${spot.y}px, 0)`,
+              position: "absolute",
+              left: `${pos.x}px`,
+              top: `${pos.y}px`,
+              transform: "translate(-50%, -50%)",
+              zIndex: isSelected ? 40 : 25,
             }}
-            className="pointer-events-auto absolute -left-3 -top-3 z-10 transition-transform duration-75"
+            className="pointer-events-auto"
           >
             <button
               type="button"
-              onClick={() => setSelectedHotspot(isSelected ? null : info)}
-              className="group relative flex items-center justify-center"
-              aria-label={info.nameHi}
+              onClick={() => setSelectedHotspot(isSelected ? null : hotspot)}
+              className={cn(
+                "group relative flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[9.5px] font-bold shadow-2xl transition active:scale-95",
+                isSelected
+                  ? "border-amber-400 bg-amber-400 text-black shadow-amber-400/50 scale-105"
+                  : "border-emerald-400/70 bg-[#03120d]/90 text-emerald-200 backdrop-blur-md hover:border-emerald-300 hover:text-white"
+              )}
             >
-              <span className="absolute h-6 w-6 animate-ping rounded-full bg-emerald-400/35 duration-1000" />
               <span
                 className={cn(
-                  "relative flex h-5 w-5 items-center justify-center rounded-full border shadow-lg backdrop-blur-md transition group-hover:scale-125",
-                  isSelected
-                    ? "border-amber-300 bg-amber-400 text-black font-black"
-                    : "border-white/80 bg-emerald-600/90 text-white font-bold"
+                  "h-1.5 w-1.5 rounded-full",
+                  isSelected ? "bg-black" : "bg-emerald-400 animate-ping"
                 )}
-              >
-                <Sparkles className="h-2.5 w-2.5" />
-              </span>
+              />
+              <span className="truncate max-w-[110px]">{hotspot.titleHi}</span>
             </button>
           </div>
         );
       })}
 
-      {/* Selected Hotspot Bottom Sheet Modal */}
+      {/* HOTSPOT DETAIL MODAL / DRAWER */}
       <AnimatePresence>
         {selectedHotspot && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
-            className="pointer-events-auto absolute bottom-24 left-3 right-3 z-30 mx-auto max-w-md rounded-2xl border border-emerald-400/30 bg-[#071d16]/95 p-3.5 shadow-2xl backdrop-blur-lg sm:bottom-28"
+            className="pointer-events-auto absolute bottom-20 left-3 right-3 z-40 mx-auto max-w-sm rounded-2xl border border-emerald-500/40 bg-[#041a13]/95 p-3 text-white shadow-2xl backdrop-blur-xl sm:left-4 sm:right-auto sm:w-80"
           >
             <div className="flex items-start justify-between gap-2">
               <div>
-                <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-300">
+                <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300">
                   {selectedHotspot.categoryHi}
                 </span>
-                <h3 className="mt-1 text-sm font-bold text-white">
-                  {selectedHotspot.nameHi}
-                </h3>
-                <p className="text-[9.5px] text-emerald-200/60">{selectedHotspot.nameEn}</p>
+                <h4 className="mt-1 text-xs font-bold text-white">
+                  {selectedHotspot.titleHi}
+                </h4>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedHotspot(null)}
-                className="rounded-lg p-1 text-white/60 hover:bg-white/10 hover:text-white"
+                className="rounded p-0.5 text-white/50 hover:text-white"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
 
-            <p className="mt-1.5 text-[11px] leading-relaxed text-emerald-100/90">
+            <p className="mt-1.5 text-[11px] leading-relaxed text-emerald-100/80">
               {selectedHotspot.descriptionHi}
             </p>
 
-            <div className="mt-2 rounded-xl border border-amber-300/20 bg-amber-400/10 p-2">
-              <p className="text-[9.5px] font-bold text-amber-200">
-                🌾 किसान के लिए महत्वपूर्ण (Agronomic Fact):
+            <div className="mt-2 rounded-xl border border-amber-500/20 bg-amber-500/10 p-2">
+              <p className="text-[10px] font-semibold text-amber-200">
+                🌾 कृषि वैज्ञानिक सलाह:
               </p>
-              <p className="mt-0.5 text-[10px] leading-normal text-amber-100/80">
-                {selectedHotspot.agronomicSignificanceHi}
+              <p className="mt-0.5 text-[10px] leading-normal text-amber-100/90">
+                {selectedHotspot.agronomyHi}
               </p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Streamlined Bottom Floating Control Bar */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 p-2.5 sm:p-4">
-        <div className="pointer-events-auto mx-auto max-w-lg rounded-2xl border border-white/10 bg-black/70 p-2.5 backdrop-blur-md shadow-2xl sm:p-3">
-          {/* Row 1: Camera Presets & X-Ray Toggle */}
-          <div className="flex items-center justify-between gap-1.5 border-b border-white/10 pb-2">
-            <div className="flex items-center gap-1">
+      {/* STREAMLINED MOBILE BOTTOM CONTROL BAR */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 p-2.5 sm:p-3.5">
+        <div className="pointer-events-auto mx-auto max-w-md rounded-2xl border border-white/15 bg-[#03120d]/85 p-2 shadow-2xl backdrop-blur-md">
+          {/* Row 1: Camera Presets & Expand button */}
+          <div className="flex items-center justify-between gap-1.5">
+            <div className="flex items-center gap-1 overflow-x-auto">
               <button
                 type="button"
                 onClick={() => applyCameraPreset("overview")}
                 className={cn(
-                  "rounded-lg px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
+                  "rounded-lg px-2 py-0.5 text-[10px] font-bold transition active:scale-95",
                   activePreset === "overview"
                     ? "bg-emerald-500 text-black shadow"
-                    : "bg-white/10 text-white/80 hover:bg-white/20"
+                    : "bg-white/5 text-white/70 hover:bg-white/10"
                 )}
               >
-                360°
+                विहंगम (360°)
               </button>
               <button
                 type="button"
-                onClick={() => applyCameraPreset("seed")}
+                onClick={() => applyCameraPreset("macro")}
                 className={cn(
-                  "rounded-lg px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
-                  activePreset === "seed"
+                  "rounded-lg px-2 py-0.5 text-[10px] font-bold transition active:scale-95",
+                  activePreset === "macro"
                     ? "bg-emerald-500 text-black shadow"
-                    : "bg-white/10 text-white/80 hover:bg-white/20"
+                    : "bg-white/5 text-white/70 hover:bg-white/10"
                 )}
               >
-                बीज
+                नजदीकी (Macro)
               </button>
-              <button
-                type="button"
-                onClick={() => applyCameraPreset("roots")}
-                className={cn(
-                  "rounded-lg px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
-                  activePreset === "roots"
-                    ? "bg-emerald-500 text-black shadow"
-                    : "bg-white/10 text-white/80 hover:bg-white/20"
-                )}
-              >
-                जड़ें
-              </button>
-              <button
-                type="button"
-                onClick={() => applyCameraPreset("shoot")}
-                className={cn(
-                  "rounded-lg px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
-                  activePreset === "shoot"
-                    ? "bg-emerald-500 text-black shadow"
-                    : "bg-white/10 text-white/80 hover:bg-white/20"
-                )}
-              >
-                अंकुर
-              </button>
+              {stageConfig.showSoilProfile && (
+                <button
+                  type="button"
+                  onClick={() => applyCameraPreset("roots")}
+                  className={cn(
+                    "rounded-lg px-2 py-0.5 text-[10px] font-bold transition active:scale-95",
+                    activePreset === "roots"
+                      ? "bg-emerald-500 text-black shadow"
+                      : "bg-white/5 text-white/70 hover:bg-white/10"
+                  )}
+                >
+                  मृदा व जड़ें
+                </button>
+              )}
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsXraySoil(!isXraySoil)}
-              className={cn(
-                "inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-semibold transition active:scale-95",
-                isXraySoil
-                  ? "border-emerald-400 bg-emerald-500/25 text-emerald-300"
-                  : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10"
-              )}
-            >
-              <Layers className="h-3 w-3" />
-              <span>एक्स-रे</span>
-            </button>
+            <div className="flex items-center gap-1 text-[9.5px] text-emerald-300/80 font-medium shrink-0">
+              <Compass className="h-3 w-3 animate-spin" />
+              <span>घुमाएं व पिंच ज़ूम</span>
+            </div>
           </div>
 
-          {/* Row 2: Playback & Timeline Scrubber */}
-          <div className="pt-2">
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-black shadow transition hover:bg-emerald-400 active:scale-95"
-                  title={isPlaying ? "रोकें" : "समय-प्रवाह चलाएं (Time-lapse)"}
-                >
-                  {isPlaying ? <Pause className="h-3 w-3 fill-black" /> : <Play className="h-3 w-3 fill-black ml-0.5" />}
-                </button>
+          {/* Row 2: Germination Time-Lapse Scrubber (Only for Stage 1) */}
+          {isGermination && (
+            <div className="mt-2 border-t border-white/10 pt-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-black shadow transition hover:bg-emerald-400 active:scale-95"
+                    title={isPlaying ? "रोकें" : "समय-प्रवाह चलाएं (Time-lapse)"}
+                  >
+                    {isPlaying ? (
+                      <Pause className="h-3 w-3 fill-black" />
+                    ) : (
+                      <Play className="h-3 w-3 fill-black ml-0.5" />
+                    )}
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDay(0);
-                    setIsPlaying(true);
-                  }}
-                  className="rounded p-0.5 text-white/60 hover:text-white"
-                  title="शुरू से पुनः चलाएं"
-                >
-                  <RotateCcw className="h-3 w-3" />
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDay(0);
+                      setIsPlaying(true);
+                    }}
+                    className="rounded p-0.5 text-white/60 hover:text-white"
+                    title="शुरू से पुनः चलाएं"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                  </button>
 
-                <span className="font-bold text-white text-[11px] tabular-nums">
-                  दिन {day.toFixed(1)}{" "}
-                  <span className="text-[9.5px] font-normal text-emerald-300">
-                    {day < 1.5
-                      ? "(जल अवशोषण)"
-                      : day < 2.5
-                        ? "(प्राथमिक जड़)"
-                        : day < 4.5
-                          ? "(पार्श्व जड़ें)"
-                          : "(प्ररोह उभार)"}
+                  <span className="font-bold text-white text-[11px] tabular-nums">
+                    दिन {day.toFixed(1)}{" "}
+                    <span className="text-[9.5px] font-normal text-emerald-300">
+                      {day < 1.5
+                        ? "(जल अवशोषण)"
+                        : day < 2.5
+                          ? "(प्राथमिक जड़)"
+                          : day < 4.5
+                            ? "(पार्श्व जड़ें)"
+                            : "(प्ररोह उभार)"}
+                    </span>
                   </span>
-                </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setPlaySpeed((prev) => (prev === 1.0 ? 2.0 : prev === 2.0 ? 0.5 : 1.0))
+                  }
+                  className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/80 hover:bg-white/20"
+                >
+                  {playSpeed}x
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() =>
-                  setPlaySpeed((prev) => (prev === 1.0 ? 2.0 : prev === 2.0 ? 0.5 : 1.0))
-                }
-                className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/80 hover:bg-white/20"
-              >
-                {playSpeed}x
-              </button>
+              <input
+                type="range"
+                min="0"
+                max="7.0"
+                step="0.1"
+                value={day}
+                onChange={(e) => {
+                  setIsPlaying(false);
+                  setDay(parseFloat(e.target.value));
+                }}
+                className="mt-1.5 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-white/20 accent-emerald-400"
+              />
             </div>
-
-            {/* Range Input Slider */}
-            <input
-              type="range"
-              min={0}
-              max={7}
-              step={0.05}
-              value={day}
-              onChange={(e) => {
-                setIsPlaying(false);
-                setDay(parseFloat(e.target.value));
-              }}
-              className="mt-1.5 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-white/20 accent-emerald-400"
-            />
-          </div>
+          )}
         </div>
       </div>
     </div>

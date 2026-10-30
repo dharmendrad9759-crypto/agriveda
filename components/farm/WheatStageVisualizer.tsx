@@ -44,16 +44,16 @@ interface WheatStageVisualizerProps {
 }
 
 const STAGE_RAIL = [
-  { id: "germination", code: "Z00", label: "अंकुरण", img: "/images/wheat-stages/stage-1-germination.jpg", has3D: true },
-  { id: "cri", code: "Z13", label: "CRI", img: "/images/wheat-stages/stage-2-cri.jpg" },
-  { id: "tillering", code: "Z21", label: "कल्ले", img: "/images/wheat-stages/stage-3-tillering.jpg" },
-  { id: "stem_elongation", code: "Z30", label: "गांठ", img: "/images/wheat-stages/stage-4-stem_elongation.jpg" },
-  { id: "booting", code: "Z45", label: "गोभ", img: "/images/wheat-stages/stage-5-booting.jpg" },
-  { id: "heading", code: "Z55", label: "बाली", img: "/images/wheat-stages/stage-6-heading.jpg" },
-  { id: "flowering", code: "Z65", label: "फूल", img: "/images/wheat-stages/stage-7-flowering.jpg" },
-  { id: "milking", code: "Z75", label: "दूध", img: "/images/wheat-stages/stage-8-milking.jpg" },
-  { id: "dough", code: "Z85", label: "सख्त", img: "/images/wheat-stages/stage-9-dough.jpg" },
-  { id: "ripening", code: "Z92", label: "पकाव", img: "/images/wheat-stages/stage-10-ripening.jpg" },
+  { id: "germination", stageNum: 1, code: "चरण 1", label: "अंकुरण", img: "/images/wheat-stages/stage-1-germination.jpg", has3D: true },
+  { id: "cri", stageNum: 2, code: "चरण 2", label: "CRI", img: "/images/wheat-stages/stage-2-cri.jpg", has3D: true },
+  { id: "tillering", stageNum: 3, code: "चरण 3", label: "कल्ले", img: "/images/wheat-stages/stage-3-tillering.jpg", has3D: true },
+  { id: "stem_elongation", stageNum: 4, code: "चरण 4", label: "गांठ", img: "/images/wheat-stages/stage-4-stem_elongation.jpg", has3D: true },
+  { id: "booting", stageNum: 5, code: "चरण 5", label: "गोभ", img: "/images/wheat-stages/stage-5-booting.jpg", has3D: true },
+  { id: "heading", stageNum: 6, code: "चरण 6", label: "बाली", img: "/images/wheat-stages/stage-6-heading.jpg", has3D: true },
+  { id: "flowering", stageNum: 7, code: "चरण 7", label: "फूल", img: "/images/wheat-stages/stage-7-flowering.jpg", has3D: true },
+  { id: "milking", stageNum: 8, code: "चरण 8", label: "दूध", img: "/images/wheat-stages/stage-8-milking.jpg", has3D: true },
+  { id: "dough", stageNum: 9, code: "चरण 9", label: "सख्त", img: "/images/wheat-stages/stage-9-dough.jpg", has3D: true },
+  { id: "ripening", stageNum: 10, code: "चरण 10", label: "पकाव", img: "/images/wheat-stages/stage-10-ripening.jpg", has3D: true },
 ] as const;
 
 interface AnatomicalPin {
@@ -144,7 +144,7 @@ export default function WheatStageVisualizer({
   const isCurrent = selectedStage.stageId === currentStage.stageId;
   const pins = STAGE_PINS[selectedStage.stageId] || [];
   const currentStageRailItem = STAGE_RAIL[stageIndex] || STAGE_RAIL[0];
-  const has3D = selectedStage.stageId === "germination";
+  const has3D = true;
 
   // Interactive 3D mouse tilt handler (only active in 2D image mode)
   const handleMouseMove = useCallback(
@@ -193,7 +193,7 @@ export default function WheatStageVisualizer({
           <h2 className="mt-1 flex items-center gap-2 text-[16px] font-bold leading-tight text-white">
             <span>{selectedStage.stageNameHi}</span>
             <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-500/30">
-              {selectedStage.zadoksCode || currentStageRailItem.code}
+              चरण {stageIndex + 1}
             </span>
           </h2>
           <p className="mt-0.5 text-[11px] text-emerald-200/70">
@@ -278,7 +278,12 @@ export default function WheatStageVisualizer({
       <div className="relative mx-3.5 sm:mx-5">
         {has3D && viewMode === "3d" ? (
           <div className="relative h-[420px] w-full overflow-hidden rounded-2xl border border-emerald-500/30 shadow-2xl sm:h-[480px]">
-            <WheatGermination3DViewer className="h-full w-full" variant="inline" />
+            <WheatGermination3DViewer
+              key={selectedStage.stageId}
+              stageId={selectedStage.stageId}
+              className="h-full w-full"
+              variant="inline"
+            />
           </div>
         ) : (
           <div
@@ -447,9 +452,6 @@ export default function WheatStageVisualizer({
                 type="button"
                 onClick={() => {
                   onSelectStage?.(stage.id);
-                  if (stage.id !== "germination") {
-                    setViewMode("image");
-                  }
                 }}
                 aria-label={`${stage.label} (${stage.code})`}
                 aria-pressed={selected}
@@ -515,10 +517,10 @@ export default function WheatStageVisualizer({
 
         {/* Phase milestone markers */}
         <div className="mt-1.5 flex items-center justify-between text-[9px] font-semibold text-emerald-200/40">
-          <span>🌱 बुवाई (Z00)</span>
-          <span>🌿 बढ़वार (Z21)</span>
-          <span>🌾 बाली (Z55)</span>
-          <span>☀️ कटाई (Z92)</span>
+          <span>🌱 बुवाई (चरण 1)</span>
+          <span>🌿 बढ़वार (चरण 3)</span>
+          <span>🌾 बाली (चरण 6)</span>
+          <span>☀️ कटाई (चरण 10)</span>
         </div>
       </div>
 
@@ -532,6 +534,8 @@ export default function WheatStageVisualizer({
             className="fixed inset-0 z-[9999] bg-black"
           >
             <WheatGermination3DViewer
+              key={selectedStage.stageId}
+              stageId={selectedStage.stageId}
               className="h-full w-full"
               variant="fullscreen"
               onClose={() => setShowFullscreen3D(false)}
