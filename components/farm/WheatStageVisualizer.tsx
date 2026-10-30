@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useRef, useCallback } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { CropStageDefinition } from "@/lib/farm/types";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
@@ -14,7 +15,24 @@ import {
   ChevronRight,
   Eye,
   RotateCcw,
+  Maximize2,
+  Box,
+  Layers,
 } from "lucide-react";
+
+// Dynamically import the 3D WebGL Viewer (SSR-safe for Next.js)
+const WheatGermination3DViewer = dynamic(
+  () => import("@/components/farm/WheatGermination3DViewer"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[#05140f] text-emerald-300">
+        <div className="h-7 w-7 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+        <p className="text-[11px] font-medium">3D बॉटनिकल मॉडल लोड हो रहा है…</p>
+      </div>
+    ),
+  }
+);
 
 interface WheatStageVisualizerProps {
   currentStage: CropStageDefinition;
@@ -26,7 +44,7 @@ interface WheatStageVisualizerProps {
 }
 
 const STAGE_RAIL = [
-  { id: "germination", code: "Z00", label: "अंकुरण", img: "/images/wheat-stages/stage-1-germination.jpg" },
+  { id: "germination", code: "Z00", label: "अंकुरण", img: "/images/wheat-stages/stage-1-germination.jpg", has3D: true },
   { id: "cri", code: "Z13", label: "CRI", img: "/images/wheat-stages/stage-2-cri.jpg" },
   { id: "tillering", code: "Z21", label: "कल्ले", img: "/images/wheat-stages/stage-3-tillering.jpg" },
   { id: "stem_elongation", code: "Z30", label: "गांठ", img: "/images/wheat-stages/stage-4-stem_elongation.jpg" },
@@ -99,6 +117,10 @@ export default function WheatStageVisualizer({
   const reduced = useReducedMotion();
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // 3D View Mode State
+  const [viewMode, setViewMode] = useState<"image" | "3d">("image");
+  const [showFullscreen3D, setShowFullscreen3D] = useState(false);
+
   // 3D Tilt perspective state
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
@@ -121,27 +143,31 @@ export default function WheatStageVisualizer({
 
   const isCurrent = selectedStage.stageId === currentStage.stageId;
   const pins = STAGE_PINS[selectedStage.stageId] || [];
+  const currentStageRailItem = STAGE_RAIL[stageIndex] || STAGE_RAIL[0];
+  const has3D = selectedStage.stageId === "germination";
 
-  // Interactive 3D mouse tilt handler
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (reduced || !cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotX = -((y - centerY) / centerY) * 7;
-    const rotY = ((x - centerX) / centerX) * 7;
-    setRotateX(rotX);
-    setRotateY(rotY);
-  }, [reduced]);
+  // Interactive 3D mouse tilt handler (only active in 2D image mode)
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (reduced || viewMode === "3d" || !cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotX = -((y - centerY) / centerY) * 7;
+      const rotY = ((x - centerX) / centerX) * 7;
+      setRotateX(rotX);
+      setRotateY(rotY);
+    },
+    [reduced, viewMode]
+  );
 
   const handleMouseLeave = useCallback(() => {
     setRotateX(0);
     setRotateY(0);
   }, []);
 
-  const currentStageRailItem = STAGE_RAIL[stageIndex] || STAGE_RAIL[0];
   const activeImage = selectedStage.photoUrl?.startsWith("/images/wheat-stages/")
     ? selectedStage.photoUrl
     : currentStageRailItem.img;
@@ -177,7 +203,7 @@ export default function WheatStageVisualizer({
         </div>
 
         {/* Circular Progress & DAS */}
-        <div className="flex shrink-0 items-center gap-2.5">
+        <div className="flex shrink-0 items-center gap-2">
           {!isCurrent && onSelectStage && (
             <button
               type="button"
@@ -202,137 +228,203 @@ export default function WheatStageVisualizer({
         </div>
       </header>
 
-      {/* 3D Botanical Stage Visualizer Card */}
-      <div className="relative mx-3.5 sm:mx-5">
-        <div
-          ref={cardRef}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          style={{
-            perspective: 1000,
-          }}
-          className="relative h-[280px] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#061611] shadow-2xl transition-transform duration-200 ease-out sm:h-[310px]"
-        >
-          {/* Framer motion tilt container */}
-          <motion.div
-            animate={{
-              rotateX: rotateX,
-              rotateY: rotateY,
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 25,
-            }}
-            className="relative h-full w-full"
+      {/* Mode Switcher Pill (Only for stages with Live 3D model) */}
+      {has3D && (
+        <div className="mx-3.5 mb-2.5 flex items-center justify-between gap-2 sm:mx-5">
+          <div className="inline-flex rounded-xl border border-white/10 bg-black/40 p-0.5 backdrop-blur-md">
+            <button
+              type="button"
+              onClick={() => setViewMode("image")}
+              className={cn(
+                "rounded-lg px-2.5 py-1 text-[10px] font-bold transition",
+                viewMode === "image"
+                  ? "bg-emerald-600 text-white shadow"
+                  : "text-white/60 hover:text-white"
+              )}
+            >
+              📷 2D स्टूडियो फोटो
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("3d")}
+              className={cn(
+                "flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-bold transition",
+                viewMode === "3d"
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-400 text-black shadow font-black"
+                  : "text-emerald-300 hover:text-white"
+              )}
+            >
+              <Box className="h-3 w-3" />
+              <span>🎬 3D इंटरैक्टिव लैब</span>
+              <span className="rounded bg-amber-400/30 px-1 text-[8.5px] font-black text-amber-200">
+                Live
+              </span>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowFullscreen3D(true)}
+            className="flex items-center gap-1 rounded-xl border border-emerald-400/30 bg-emerald-500/15 px-2.5 py-1 text-[10px] font-bold text-emerald-200 transition hover:bg-emerald-500/25 active:scale-95"
+            title="3D फुलस्क्रीन में खोलें"
           >
-            {/* Stage Photograph / 3D Render with Cross-Fade */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedStage.stageId}
-                initial={{ opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: MOTION.normal, ease: EASE_OUT }}
-                className="absolute inset-0"
-              >
-                <Image
-                  src={activeImage}
-                  alt={selectedStage.stageNameHi}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 600px"
-                  priority
-                  className="object-cover object-center transition-transform duration-700 ease-out hover:scale-105"
-                />
+            <Maximize2 className="h-3 w-3" />
+            <span>3D फुलस्क्रीन</span>
+          </button>
+        </div>
+      )}
 
-                {/* Subtle dark vignette overlay for typography contrast */}
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#04110d]/90 via-[#04110d]/25 to-black/40" />
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Stage Badge & Status Indicator */}
-            <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5">
-              <div
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold shadow-md backdrop-blur-md",
-                  isCurrent
-                    ? "border-amber-400/50 bg-amber-400/20 text-amber-100"
-                    : "border-white/15 bg-black/45 text-emerald-100/90"
-                )}
-              >
-                <span
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    isCurrent ? "animate-ping bg-amber-300" : "bg-emerald-400"
-                  )}
-                />
-                <span>
-                  {isCurrent
-                    ? "आपकी फसल अभी यहाँ है"
-                    : `${currentStageRailItem.label} (${currentStageRailItem.code})`}
-                </span>
-              </div>
-            </div>
-
-            {/* Botanical Anatomy Callout Pins */}
-            {pins.map((pin, pIdx) => {
-              const isActive = activePinIndex === pIdx;
-              return (
-                <div
-                  key={pin.label}
-                  style={{
-                    left: `${pin.x}%`,
-                    top: `${pin.y}%`,
-                  }}
-                  className="absolute z-20 -translate-x-1/2 -translate-y-1/2"
+      {/* 3D Botanical Stage Visualizer Card / 3D Canvas */}
+      <div className="relative mx-3.5 sm:mx-5">
+        {has3D && viewMode === "3d" ? (
+          <div className="relative h-[330px] w-full overflow-hidden rounded-2xl border border-emerald-500/30 shadow-2xl sm:h-[380px]">
+            <WheatGermination3DViewer className="h-full w-full" />
+          </div>
+        ) : (
+          <div
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              perspective: 1000,
+            }}
+            className="relative h-[280px] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#061611] shadow-2xl transition-transform duration-200 ease-out sm:h-[310px]"
+          >
+            {/* Framer motion tilt container */}
+            <motion.div
+              animate={{
+                rotateX: rotateX,
+                rotateY: rotateY,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 25,
+              }}
+              className="relative h-full w-full"
+            >
+              {/* Stage Photograph / 3D Render with Cross-Fade */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedStage.stageId}
+                  initial={{ opacity: 0, scale: 1.04 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: MOTION.normal, ease: EASE_OUT }}
+                  className="absolute inset-0"
                 >
+                  <Image
+                    src={activeImage}
+                    alt={selectedStage.stageNameHi}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 600px"
+                    priority
+                    className="object-cover object-center transition-transform duration-700 ease-out hover:scale-105"
+                  />
+
+                  {/* Subtle dark vignette overlay for typography contrast */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#04110d]/90 via-[#04110d]/25 to-black/40" />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Stage Badge & Status Indicator */}
+              <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5">
+                <div
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold shadow-md backdrop-blur-md",
+                    isCurrent
+                      ? "border-amber-400/50 bg-amber-400/20 text-amber-100"
+                      : "border-white/15 bg-black/45 text-emerald-100/90"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      isCurrent ? "animate-ping bg-amber-300" : "bg-emerald-400"
+                    )}
+                  />
+                  <span>
+                    {isCurrent
+                      ? "आपकी फसल अभी यहाँ है"
+                      : `${currentStageRailItem.label} (${currentStageRailItem.code})`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Quick 3D Launcher Pill on Germination card */}
+              {has3D && (
+                <div className="absolute right-3 top-3 z-10">
                   <button
                     type="button"
-                    onClick={() => setActivePinIndex(isActive ? null : pIdx)}
-                    className="group relative flex items-center justify-center p-1"
-                    aria-label={pin.label}
+                    onClick={() => setViewMode("3d")}
+                    className="flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-500/25 px-2.5 py-1 text-[10.5px] font-bold text-white shadow-lg backdrop-blur-md transition hover:bg-emerald-500/40 active:scale-95"
                   >
-                    <span className="absolute h-5 w-5 animate-ping rounded-full bg-emerald-400/30 duration-1000" />
-                    <span className="relative flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white/80 bg-emerald-500 shadow-md transition group-hover:scale-125">
-                      <span className="h-1.5 w-1.5 rounded-full bg-white" />
-                    </span>
+                    <Box className="h-3 w-3 text-emerald-300" />
+                    <span>3D मॉडल चलाएं</span>
                   </button>
-
-                  {/* Pin Detail Tooltip / Card */}
-                  <AnimatePresence>
-                    {isActive && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute left-1/2 top-full z-30 mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-xl border border-emerald-400/30 bg-[#071c16]/95 px-3 py-1.5 text-left shadow-2xl backdrop-blur-md"
-                      >
-                        <p className="text-[11px] font-bold text-white">{pin.label}</p>
-                        <p className="text-[9.5px] text-emerald-200/80">{pin.detail}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
-              );
-            })}
+              )}
 
-            {/* Bottom Caption Overlay */}
-            <div className="absolute bottom-2.5 left-3 right-3 z-10 flex items-center justify-between text-[11px]">
-              <div className="flex items-center gap-1.5 text-emerald-200/80">
-                <Info className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="text-[10px] font-medium">
-                  {pins.length > 0
-                    ? "अंगों की जानकारी के लिए बिंदुओं पर टैप करें"
-                    : "ICAR-IIWBR मानक फसल अवस्था"}
+              {/* Botanical Anatomy Callout Pins */}
+              {pins.map((pin, pIdx) => {
+                const isActive = activePinIndex === pIdx;
+                return (
+                  <div
+                    key={pin.label}
+                    style={{
+                      left: `${pin.x}%`,
+                      top: `${pin.y}%`,
+                    }}
+                    className="absolute z-20 -translate-x-1/2 -translate-y-1/2"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setActivePinIndex(isActive ? null : pIdx)}
+                      className="group relative flex items-center justify-center p-1"
+                      aria-label={pin.label}
+                    >
+                      <span className="absolute h-5 w-5 animate-ping rounded-full bg-emerald-400/30 duration-1000" />
+                      <span className="relative flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white/80 bg-emerald-500 shadow-md transition group-hover:scale-125">
+                        <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                      </span>
+                    </button>
+
+                    {/* Pin Detail Tooltip / Card */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute left-1/2 top-full z-30 mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-xl border border-emerald-400/30 bg-[#071c16]/95 px-3 py-1.5 text-left shadow-2xl backdrop-blur-md"
+                        >
+                          <p className="text-[11px] font-bold text-white">{pin.label}</p>
+                          <p className="text-[9.5px] text-emerald-200/80">{pin.detail}</p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+
+              {/* Bottom Caption Overlay */}
+              <div className="absolute bottom-2.5 left-3 right-3 z-10 flex items-center justify-between text-[11px]">
+                <div className="flex items-center gap-1.5 text-emerald-200/80">
+                  <Info className="h-3.5 w-3.5 text-emerald-400" />
+                  <span className="text-[10px] font-medium">
+                    {pins.length > 0
+                      ? "अंगों की जानकारी के लिए बिंदुओं पर टैप करें"
+                      : "ICAR-IIWBR मानक फसल अवस्था"}
+                  </span>
+                </div>
+                <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[9.5px] font-semibold text-emerald-200/90 backdrop-blur-md">
+                  Zadoks {currentStageRailItem.code}
                 </span>
               </div>
-              <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[9.5px] font-semibold text-emerald-200/90 backdrop-blur-md">
-                Zadoks {currentStageRailItem.code}
-              </span>
-            </div>
-          </motion.div>
-        </div>
+            </motion.div>
+          </div>
+        )}
       </div>
 
       {/* 360° Timeline Scrubber Rail */}
@@ -353,7 +445,12 @@ export default function WheatStageVisualizer({
               <button
                 key={stage.id}
                 type="button"
-                onClick={() => onSelectStage?.(stage.id)}
+                onClick={() => {
+                  onSelectStage?.(stage.id);
+                  if (stage.id !== "germination") {
+                    setViewMode("image");
+                  }
+                }}
                 aria-label={`${stage.label} (${stage.code})`}
                 aria-pressed={selected}
                 className={cn(
@@ -424,6 +521,23 @@ export default function WheatStageVisualizer({
           <span>☀️ कटाई (Z92)</span>
         </div>
       </div>
+
+      {/* Fullscreen 3D Botanical Lab Modal */}
+      <AnimatePresence>
+        {showFullscreen3D && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            className="fixed inset-0 z-[9999] bg-black"
+          >
+            <WheatGermination3DViewer
+              className="h-full w-full"
+              onClose={() => setShowFullscreen3D(false)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
