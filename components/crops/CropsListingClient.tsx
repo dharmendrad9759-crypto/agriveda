@@ -13,6 +13,7 @@ import {
 import type { Crop } from "@/types/crop";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
 
 const CATEGORY_HI: Record<string, string> = {
   All: "सभी फसल",
@@ -38,7 +39,7 @@ export default function CropsListingClient({ crops }: Props) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return crops.filter((crop) => {
+    const matched = crops.filter((crop) => {
       if (!matchesListingCategory(crop, category)) return false;
       if (!q) return true;
       const hi = getCropHindiName(crop.slug)?.toLowerCase() ?? "";
@@ -50,6 +51,7 @@ export default function CropsListingClient({ crops }: Props) {
         crop.suitableSeason.toLowerCase().includes(q)
       );
     });
+    return q ? matched : sortCropsByCurrentSeason(matched);
   }, [crops, query, category]);
 
   return (

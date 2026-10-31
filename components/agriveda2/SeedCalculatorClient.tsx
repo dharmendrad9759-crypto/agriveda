@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Calculator, Mic, Sprout, Info, Leaf } from "lucide-react";
 import DarkCard from "@/components/shell/DarkCard";
 import { cropCatalog } from "@/data/crop-catalog";
+import { sortCropsByCurrentSeason, getTopCurrentSeasonCropSlug } from "@/lib/crops/seasonalCropEngine";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { resolveSeedRateEntry } from "@/lib/agriveda2/seedRateFallback";
 import {
@@ -15,14 +16,14 @@ import {
 export default function SeedCalculatorClient() {
   const { crops } = useMyCrops();
   const catalogWithData = useMemo(
-    () => cropCatalog.filter((c) => resolveSeedRateEntry(c.slug)),
+    () => sortCropsByCurrentSeason(cropCatalog.filter((c) => resolveSeedRateEntry(c.slug))),
     []
   );
 
   const defaultSlug =
     crops.find((c) => resolveSeedRateEntry(c.slug))?.slug ??
     catalogWithData[0]?.slug ??
-    "wheat";
+    getTopCurrentSeasonCropSlug();
 
   const [cropSlug, setCropSlug] = useState(defaultSlug);
   const [methodId, setMethodId] = useState<string | undefined>(() =>

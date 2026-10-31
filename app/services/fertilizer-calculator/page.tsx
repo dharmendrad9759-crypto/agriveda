@@ -39,6 +39,7 @@ import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEng
 import { EASE_OUT } from "@/lib/motion/variants";
 import { normalizeCropSlug, resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
@@ -57,7 +58,10 @@ function parseAcresParam(raw: string | null): string | null {
 function FertilizerCalculatorInner() {
   const searchParams = useSearchParams();
   const slugs = useMemo(() => listFertilizerCrops(), []);
-  const crops = cropCatalog.filter((c) => slugs.includes(c.slug));
+  const crops = useMemo(() => {
+    const list = cropCatalog.filter((c) => slugs.includes(c.slug));
+    return sortCropsByCurrentSeason(list);
+  }, [slugs]);
   const { showToast } = useToast();
   const { data: farmData } = useFarmData();
   const savedFields = farmData?.fields ?? [];

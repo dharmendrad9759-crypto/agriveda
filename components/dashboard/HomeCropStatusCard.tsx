@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
@@ -10,6 +10,7 @@ import {
   getOptimalSowingWindow,
 } from "@/lib/crops/cropTimelineEngine";
 import { getCropHindiName } from "@/lib/crops/crop-display";
+import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
 import {
   ArrowLeftRight,
   Calendar,
@@ -73,6 +74,7 @@ export default function HomeCropStatusCard({
   const [showCropSwitcher, setShowCropSwitcher] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const seasonalPopularCrops = useMemo(() => sortCropsByCurrentSeason(POPULAR_CROPS), []);
 
   useEffect(() => {
     setMounted(true);
@@ -584,7 +586,7 @@ export default function HomeCropStatusCard({
                       {isHi ? "लोकप्रिय भारतीय फसलें:" : "Popular Crops:"}
                     </p>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                      {POPULAR_CROPS.map((c) => {
+                      {seasonalPopularCrops.map((c) => {
                         const isCurrent =
                           cropSlug.toLowerCase() === c.slug.toLowerCase() ||
                           field.crop.toLowerCase().includes(c.nameHi);

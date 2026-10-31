@@ -24,6 +24,7 @@ import { FarmField } from "@/lib/farm/types";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import FarmSheet from "@/components/farm/FarmSheet";
 import { cn } from "@/lib/cn";
+import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
 
 interface SaveFieldModalProps {
   isOpen: boolean;
@@ -156,7 +157,7 @@ function resolveCrop(initialData?: Partial<FarmField>): CropOption {
     (crop) =>
       name.includes(crop.nameHi) || name.includes(crop.nameEn.toLowerCase())
   );
-  return byName ?? CROPS_CATALOG[0];
+  return byName ?? sortCropsByCurrentSeason(CROPS_CATALOG)[0];
 }
 
 function toDateInput(value?: string): string {
@@ -187,6 +188,7 @@ export default function SaveFieldModal({
   const hectares = sqMeters / HECTARE_TO_SQ_METERS;
   const perimeter = calculateGeodesicPerimeter(coords);
 
+  const seasonalCrops = useMemo(() => sortCropsByCurrentSeason(CROPS_CATALOG), []);
   const initialCrop = useMemo(() => resolveCrop(initialData), [initialData]);
 
   const [name, setName] = useState(initialData?.name || "मेरा खेत 1");
@@ -429,7 +431,7 @@ export default function SaveFieldModal({
           </div>
 
           <div className="grid max-h-40 grid-cols-4 gap-1.5 overflow-y-auto rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-1.5 sm:grid-cols-6">
-            {CROPS_CATALOG.map((crop) => {
+            {seasonalCrops.map((crop) => {
               const selected = crop.slug === selectedCropSlug;
               return (
                 <button

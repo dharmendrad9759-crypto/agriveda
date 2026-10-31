@@ -1,3 +1,5 @@
+import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
+
 export type CropCategory =
   | "Cereals"
   | "Millets"
@@ -64,7 +66,8 @@ export const categoryOrder: CropCategory[] = [
 export function getCropsByCategory(): Record<CropCategory, CatalogCrop[]> {
   const grouped = {} as Record<CropCategory, CatalogCrop[]>;
   for (const cat of categoryOrder) {
-    grouped[cat] = cropCatalog.filter((c) => c.category === cat);
+    const list = cropCatalog.filter((c) => c.category === cat);
+    grouped[cat] = sortCropsByCurrentSeason(list);
   }
   return grouped;
 }

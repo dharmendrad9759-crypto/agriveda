@@ -16,6 +16,7 @@ import {
 import { cropCatalog } from "@/data/crop-catalog";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { resolveCropImage } from "@/lib/crops/cropImages";
+import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
 import { softTap } from "@/lib/appEssentials";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
@@ -67,9 +68,11 @@ export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProp
 
   const [sowingDate, setSowingDate] = useState(() => toLocalIso(15));
 
+  const seasonalPopularCrops = useMemo(() => sortCropsByCurrentSeason(POPULAR_CROPS), []);
+
   const filteredCrops = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return cropCatalog.filter((c) => {
+    const list = cropCatalog.filter((c) => {
       if (selectedCategory !== "all" && c.category !== selectedCategory) {
         return false;
       }
@@ -81,6 +84,7 @@ export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProp
         hiName.includes(q)
       );
     });
+    return q ? list : sortCropsByCurrentSeason(list);
   }, [searchQuery, selectedCategory]);
 
   const handleQuickAdd = (slug: string, name: string) => {
@@ -144,7 +148,7 @@ export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProp
               {isHi ? "⚡ एक टैप में चुनें (लोकप्रिय फसलें):" : "⚡ Quick Select (Popular Crops):"}
             </p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {POPULAR_CROPS.map((crop) => (
+              {seasonalPopularCrops.map((crop) => (
                 <button
                   key={crop.slug}
                   type="button"

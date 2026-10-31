@@ -36,6 +36,11 @@ import {
   pickDefaultPlannerSeason,
   type PlannerSeasonId,
 } from "@/lib/crops/crop-display";
+import {
+  getCurrentAgriSeason,
+  getTopCurrentSeasonCropSlug,
+  sortCropsByCurrentSeason,
+} from "@/lib/crops/seasonalCropEngine";
 import { buildFertilizerPlan } from "@/lib/agriveda2/fertilizerEngine";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useToast } from "@/components/ui/Toast";
@@ -99,8 +104,19 @@ export default function CropPlannerClient() {
   const hi = isHindiLocale(locale);
   const planRef = useRef<HTMLDivElement>(null);
 
-  const [cropSlug, setCropSlug] = useState("paddy");
-  const [season, setSeason] = useState<PlannerSeasonId>("kharif");
+  // Intelligently order crops by current season (Rabi in Oct-Mar, Kharif in Jun-Sep, Zaid in Apr-May)
+  const sortedCrops = useMemo(() => sortCropsByCurrentSeason(crops), []);
+  const initialCropSlug = useMemo(() => {
+    const topSlug = getTopCurrentSeasonCropSlug();
+    return crops.some((c) => c.slug === topSlug) ? topSlug : sortedCrops[0]?.slug ?? "wheat";
+  }, [sortedCrops]);
+
+  const [cropSlug, setCropSlug] = useState<string>(() => initialCropSlug);
+  const [season, setSeason] = useState<PlannerSeasonId>(() => {
+    const nextCrop = crops.find((c) => c.slug === initialCropSlug) ?? crops[0];
+    const seasons = getPlannerSeasonsForCrop(nextCrop.slug, nextCrop.suitableSeason);
+    return pickDefaultPlannerSeason(seasons);
+  });
   const [area, setArea] = useState("1");
   const [activeTab, setActiveTab] = useState<PlanTab>("Overview");
   const [generated, setGenerated] = useState(false);
@@ -781,7 +797,7 @@ export default function CropPlannerClient() {
           <h3 className="font-display text-[15px] font-bold text-slate-800 dark:text-slate-100">{hi ? "फसल चुनें" : t("plannerWhichCrop")}</h3>
         </div>
         <div className="-mx-0 flex gap-3 overflow-x-auto px-4 py-4 scrollbar-hide">
-          {crops.map((c) => {
+          {sortedCrops.map((c) => {
             const active = c.slug === cropSlug;
             const h = getCropHindiName(c.slug);
             const short = cropShortName(c.name);

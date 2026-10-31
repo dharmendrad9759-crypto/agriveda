@@ -2,6 +2,7 @@ import { cropCatalog } from "@/data/crop-catalog";
 import type { Crop } from "@/types/crop";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { listingGroupForCrop } from "@/lib/crops/icarCropGroups";
+import { getCurrentAgriSeason } from "@/lib/crops/seasonalCropEngine";
 
 const EMOJI_BY_SLUG = Object.fromEntries(cropCatalog.map((c) => [c.slug, c.emoji]));
 
@@ -136,8 +137,9 @@ export function pickDefaultPlannerSeason(
   month = new Date().getMonth() + 1
 ): PlannerSeasonId {
   if (!allowed.length) return "kharif";
-  const current: PlannerSeasonId =
-    month >= 6 && month <= 10 ? "kharif" : month >= 11 || month <= 3 ? "rabi" : "zaid";
+  // October through March is Rabi, April-May is Zaid, June-September is Kharif
+  const sampleDate = new Date(new Date().getFullYear(), month - 1, 15);
+  const current = getCurrentAgriSeason(sampleDate).seasonId as PlannerSeasonId;
   if (allowed.includes(current)) return current;
   return allowed[0];
 }
