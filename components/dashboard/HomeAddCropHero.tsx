@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Plus,
   Search,
-  Sparkles,
   Sprout,
   X,
 } from "lucide-react";
@@ -120,20 +119,9 @@ export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProp
         />
 
         <div className="relative z-10">
-          {/* Header pill & badge */}
-          <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1 text-[11px] font-black tracking-wide text-emerald-200 shadow-sm backdrop-blur-md">
-              <Sprout className="h-3.5 w-3.5 text-emerald-400 animate-bounce" />
-              {isHi ? "फसल प्रबंधन" : "Crop Care"}
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-200">
-              <Sparkles className="h-3 w-3 text-amber-300" />
-              {isHi ? "दैनिक खाद व स्प्रे सलाह" : "Daily Advisory"}
-            </span>
-          </div>
 
           {/* Punchy Headline */}
-          <div className="mt-2.5">
+          <div>
             <h2 className="font-display text-[19px] sm:text-[21px] font-black leading-tight tracking-tight text-white drop-shadow-sm">
               {isHi ? "अपनी मुख्य फसल जोड़ें" : "Add Your Primary Crop"}
             </h2>

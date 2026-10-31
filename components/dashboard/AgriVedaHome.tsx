@@ -43,13 +43,10 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
   return (
     <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/20 bg-gradient-to-br from-[#063320] via-[#042416] to-[#02180e] p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-12px_rgba(2,24,14,0.5)]">
       {/* Header section — Clean badges + punchy heading */}
-      <div className="relative z-10 flex items-center justify-between gap-2">
+      <div className="relative z-10 flex items-center gap-2">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/25 px-2.5 py-0.5 text-[10.5px] font-extrabold tracking-wide text-emerald-200">
           <CropDoctorSparkleIcon className="h-3.5 w-3.5 text-emerald-300" />
           {isHi ? "फसल डॉक्टर" : "Crop Doctor"}
-        </span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-200 backdrop-blur-xs">
-          {isHi ? "⚡ 2 सेकंड में पहचान" : "⚡ 2s Instant Check"}
         </span>
       </div>
 
@@ -646,7 +643,7 @@ export default function AgriVedaHome() {
         <motion.section {...fade(0.07)} className="space-y-2 pt-0.5">
           <div className="px-1">
             <h2 className="text-[15px] sm:text-[16px] font-black tracking-tight text-[var(--av-text-primary)]">
-              {isHi ? "खेत के अन्य टूल्स (Farm Tools)" : "Farm Tools & Services"}
+              {isHi ? "खेत के टूल्स" : "Farm Tools"}
             </h2>
           </div>
 
@@ -657,15 +654,9 @@ export default function AgriVedaHome() {
                 className="rounded-2xl border border-emerald-900/10 bg-gradient-to-b from-[var(--av-surface)] to-[var(--av-surface-inset)]/30 p-2 sm:p-2.5 shadow-2xs dark:border-emerald-500/15"
               >
                 {/* Category Header */}
-                <div className="mb-1.5 flex items-center justify-between px-1 pt-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[12.5px] font-black tracking-tight text-[var(--av-text-primary)]">
-                      {isHi ? category.titleHi : category.titleEn}
-                    </span>
-                  </div>
-                  <span className="rounded-md bg-emerald-600/10 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-800 dark:text-emerald-300">
-                    {isHi ? category.badgeHi : category.badgeEn}
+                <div className="mb-1.5 px-1 pt-0.5">
+                  <span className="text-[12.5px] font-black tracking-tight text-[var(--av-text-primary)]">
+                    {isHi ? category.titleHi : category.titleEn}
                   </span>
                 </div>
 
@@ -689,13 +680,10 @@ export default function AgriVedaHome() {
                         />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
+                        <div>
                           <p className="truncate text-[12.5px] sm:text-[13px] font-black text-[var(--av-text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
                             {isHi ? job.hi : job.en}
                           </p>
-                          <span className="rounded-sm bg-emerald-500/10 px-1 py-0.2 text-[8.5px] font-bold text-emerald-700 dark:text-emerald-300">
-                            {isHi ? job.tagHi : job.tagEn}
-                          </span>
                         </div>
                         <p className="truncate text-[10px] sm:text-[10.5px] font-medium text-[var(--av-text-muted)]">
                           {isHi ? job.subHi : job.subEn}

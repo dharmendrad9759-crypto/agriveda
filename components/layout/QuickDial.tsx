@@ -17,7 +17,7 @@ export default function QuickDial() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-36 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-orange-500/40 bg-orange-500 text-white shadow-lg transition hover:scale-105 md:bottom-20"
+        className="fixed bottom-[9.5rem] right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-orange-500/40 bg-orange-500 text-white shadow-lg transition hover:scale-105 md:bottom-20"
         aria-label="Expert helpline"
       >
         <Phone className="h-5 w-5" />
