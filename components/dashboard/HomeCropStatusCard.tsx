@@ -11,6 +11,7 @@ import {
 } from "@/lib/crops/cropTimelineEngine";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
   ArrowLeftRight,
   Calendar,
@@ -75,6 +76,7 @@ export default function HomeCropStatusCard({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [mounted, setMounted] = useState(false);
   const seasonalPopularCrops = useMemo(() => sortCropsByCurrentSeason(POPULAR_CROPS), []);
+  useBodyScrollLock(showDatePicker || showCropSwitcher);
 
   useEffect(() => {
     setMounted(true);
@@ -514,11 +516,11 @@ export default function HomeCropStatusCard({
       {mounted && showCropSwitcher && typeof document !== "undefined"
         ? createPortal(
             <div
-              className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
               onClick={() => setShowCropSwitcher(false)}
             >
               <div
-                className="relative w-full max-w-lg rounded-t-[28px] sm:rounded-3xl border border-emerald-500/20 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#111c15] max-h-[85vh] flex flex-col"
+                className="relative w-full max-w-lg rounded-3xl border border-emerald-500/20 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#111c15] max-h-[86vh] flex flex-col touch-auto text-left"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Modal Header */}

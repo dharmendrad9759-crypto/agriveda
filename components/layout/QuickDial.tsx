@@ -2,6 +2,7 @@
 
 import { Phone, X } from "lucide-react";
 import { useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 import { KISAN_HELPLINES } from "@/lib/helplines";
 
@@ -9,6 +10,7 @@ const HELPLINES = KISAN_HELPLINES.filter((h) => h.tel !== "1551").slice(0, 3);
 
 export default function QuickDial() {
   const [open, setOpen] = useState(false);
+  useBodyScrollLock(open);
 
   return (
     <>
@@ -22,8 +24,14 @@ export default function QuickDial() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/50 p-4 sm:items-center">
-          <div className="w-full max-w-md animate-sheet-up rounded-3xl bg-white p-6 shadow-2xl dark:bg-gray-900">
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 touch-none select-none overscroll-none">
+          <button
+            type="button"
+            className="absolute inset-0 cursor-default"
+            aria-label="Close"
+            onClick={() => setOpen(false)}
+          />
+          <div className="relative z-10 w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl dark:bg-gray-900 border border-[var(--av-border)] touch-auto max-h-[88vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-extrabold theme-text-primary">कृषि विशेषज्ञ कॉल</h2>
               <button

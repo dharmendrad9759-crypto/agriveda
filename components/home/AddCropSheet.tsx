@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { X, Check } from "lucide-react";
 import { cn } from "@/lib/cn";
 import {
@@ -19,25 +19,21 @@ interface AddCropSheetProps {
 export default function AddCropSheet({ open, onClose, isSelected, onToggle }: AddCropSheetProps) {
   const grouped = getCropsByCategory();
 
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
+  useBodyScrollLock(open);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
       <button
         type="button"
         aria-label="Close overlay"
         onClick={onClose}
-        className="absolute inset-0 animate-fade-in bg-black/70 backdrop-blur-md"
+        className="absolute inset-0 animate-fade-in bg-black/75 backdrop-blur-md touch-none overscroll-none"
       />
 
-      <div className="relative z-10 w-full max-w-lg animate-sheet-up">
-        <div className="agriveda-glass-strong rounded-t-[2rem] border-t border-emerald-500/20 px-5 pb-8 pt-3 shadow-[0_-8px_40px_rgba(0,255,136,0.15)]">
-          <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-emerald-500/40" />
+      <div className="relative z-10 w-full max-w-lg animate-in fade-in zoom-in-95 duration-200">
+        <div className="agriveda-glass-strong rounded-[28px] border border-emerald-500/30 px-5 pb-6 pt-5 shadow-2xl max-h-[86vh] flex flex-col touch-auto text-left">
 
           <div className="mb-5 flex items-center justify-between">
             <div>

@@ -31,6 +31,7 @@ import AppShell from "@/components/shell/AppShell";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { CROP_PROBLEM_CROPS, type CropProblemItem } from "@/data/crop-curative-problems";
 import { getCleanHindiTitle } from "@/components/crop-problems/CropProblemGalleryClient";
 import {
@@ -232,15 +233,7 @@ function MixAdvisorInner() {
   const [addCategoryTab, setAddCategoryTab] = useState<"fungicide" | "insecticide" | "tonic">("insecticide");
 
   // Lock body scroll when modal is open to prevent background bouncing glitch
-  useEffect(() => {
-    if (pickSlot !== null || showAddModal) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [pickSlot, showAddModal]);
+  useBodyScrollLock(pickSlot !== null || showAddModal);
 
   // Weather state
   const [weatherLine, setWeatherLine] = useState("मौसम लोड हो रहा है…");
@@ -1098,15 +1091,15 @@ function MixAdvisorInner() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-xs p-0 sm:p-4 sm:items-center overflow-y-auto overscroll-contain touch-none"
+                    className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm touch-none select-none overscroll-none"
                     onClick={() => setPickSlot(null)}
                   >
                     <motion.div
-                      initial={{ y: 40, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: 24, opacity: 0 }}
-                      transition={{ duration: 0.22, ease: EASE_OUT }}
-                      className="max-h-[85vh] w-full max-w-lg flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-[var(--av-surface)] shadow-2xl overscroll-contain touch-auto border border-[var(--av-border)]"
+                      initial={{ scale: 0.95, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.95, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="max-h-[85vh] w-full max-w-lg flex flex-col overflow-hidden rounded-[28px] bg-[var(--av-surface)] shadow-2xl touch-auto border border-[var(--av-border)]"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex items-center justify-between border-b border-[var(--av-border)] px-4 py-3.5">
@@ -1236,15 +1229,15 @@ function MixAdvisorInner() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-xs p-0 sm:p-4 sm:items-center overflow-y-auto overscroll-contain touch-none"
+                    className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm touch-none select-none overscroll-none"
                     onClick={() => setShowAddModal(false)}
                   >
                     <motion.div
-                      initial={{ y: 40, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: 24, opacity: 0 }}
-                      transition={{ duration: 0.22, ease: EASE_OUT }}
-                      className="max-h-[85vh] w-full max-w-lg flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-[var(--av-surface)] shadow-2xl overscroll-contain touch-auto border border-[var(--av-border)]"
+                      initial={{ scale: 0.95, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.95, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="max-h-[85vh] w-full max-w-lg flex flex-col overflow-hidden rounded-[28px] bg-[var(--av-surface)] shadow-2xl touch-auto border border-[var(--av-border)]"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex items-center justify-between border-b border-[var(--av-border)] px-4 py-3.5">

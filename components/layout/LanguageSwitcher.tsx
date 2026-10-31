@@ -4,6 +4,7 @@ import { Languages, X, Check } from "lucide-react";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { cn } from "@/lib/cn";
 import type { AppLocale } from "@/lib/i18n/farmer-ui";
 
@@ -20,6 +21,7 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
   const { locale, setLocale, t } = useLocale();
   const [open, setOpen] = useState(false);
+  useBodyScrollLock(open);
 
   // Keep AI Doctor uncluttered — language remains available via Profile/Settings.
   if (pathname?.startsWith("/ai-doctor")) return null;
@@ -41,11 +43,17 @@ export default function LanguageSwitcher() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/60 p-4 sm:items-center">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 touch-none select-none overscroll-none">
+          <button
+            type="button"
+            className="absolute inset-0 cursor-default"
+            aria-label="Close"
+            onClick={() => setOpen(false)}
+          />
           <div
             role="dialog"
             aria-label={t("chooseLanguage")}
-            className="w-full max-w-sm overflow-hidden rounded-3xl border border-emerald-500/25 bg-[var(--background)] shadow-2xl"
+            className="relative z-10 w-full max-w-sm overflow-hidden rounded-[28px] border border-emerald-500/25 bg-[var(--background)] shadow-2xl touch-auto max-h-[88vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
               <div>

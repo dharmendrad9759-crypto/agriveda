@@ -106,7 +106,7 @@ export default function HomeFieldMeasureModal({
       {isOpen ? (
         <motion.div
           key="home-field-measure"
-          className="fixed inset-0 flex items-end justify-center sm:items-center sm:p-4"
+          className="fixed inset-0 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none"
           style={{ zIndex: 9990 }}
           role="dialog"
           aria-modal="true"
@@ -120,7 +120,7 @@ export default function HomeFieldMeasureModal({
             type="button"
             aria-label="बंद करें"
             onClick={onClose}
-            className="absolute inset-0 cursor-default bg-black/60 backdrop-blur-[3px]"
+            className="absolute inset-0 cursor-default bg-black/70 backdrop-blur-[3px] touch-none overscroll-none"
             initial={reduced ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -128,13 +128,12 @@ export default function HomeFieldMeasureModal({
           />
 
           <motion.div
-            initial={reduced ? false : { opacity: 0, y: 48, scale: 0.99 }}
+            initial={reduced ? false : { opacity: 0, y: 16, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 32, scale: 0.99 }}
+            exit={{ opacity: 0, y: 16, scale: 0.94 }}
             transition={{ duration: MOTION.normal, ease: EASE_OUT }}
-            className="relative flex max-h-[94vh] w-full flex-col overflow-hidden rounded-t-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl sm:max-w-2xl sm:rounded-3xl"
+            className="relative flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl touch-auto text-left"
           >
-            <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-[var(--av-border)] sm:hidden" />
 
             <header className="flex items-start gap-3 border-b border-[var(--av-border-subtle)] px-4 pb-3 pt-3 sm:px-5">
               <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-700 dark:text-emerald-300">

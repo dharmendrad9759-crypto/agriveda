@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { CalendarClock, X } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
 import { useToast } from "@/components/ui/Toast";
@@ -38,6 +39,7 @@ export default function IrrigationReminderButton({
   const { showToast } = useToast();
   const { data: farm, addActivity } = useFarmData();
   const [open, setOpen] = useState(false);
+  useBodyScrollLock(open);
   const [saving, setSaving] = useState(false);
   const suggested = useMemo(() => suggestIntervalDays(badgeHints), [badgeHints]);
   const [intervalDays, setIntervalDays] = useState(suggested);
@@ -205,14 +207,14 @@ export default function IrrigationReminderButton({
       )}
 
       {open ? (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
           <button
             type="button"
             aria-label="Close"
-            className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm touch-none overscroll-none"
             onClick={() => setOpen(false)}
           />
-          <div className="relative z-10 w-full max-w-lg animate-sheet-up rounded-t-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 pb-8 shadow-[var(--av-shadow-md)] sm:rounded-2xl sm:pb-4">
+          <div className="relative z-10 w-full max-w-lg rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-5 shadow-2xl touch-auto text-left max-h-[88vh] overflow-y-auto">
             <div className="mb-3 flex items-start justify-between gap-2">
               <div>
                 <h3 className="text-[16px] font-black text-[var(--av-text-primary)]">

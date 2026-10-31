@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search, X } from "lucide-react";
 import { cropCatalog } from "@/data/crop-catalog";
@@ -46,6 +47,7 @@ interface Props {
 export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
   const navigate = useAppNavigate();
   const [open, setOpen] = useState(false);
+  useBodyScrollLock(open);
   const [q, setQ] = useState("");
 
   const entries = useMemo(() => {
@@ -100,7 +102,7 @@ export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-[80] flex items-end justify-center bg-black/45 p-3 sm:items-center"
+            className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm touch-none select-none overscroll-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -110,11 +112,11 @@ export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
               role="dialog"
               aria-modal="true"
               aria-labelledby="find-crop-title"
-              initial={{ y: 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 24, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 320, damping: 28 }}
-              className="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-[24px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl touch-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border)] px-4 py-3">

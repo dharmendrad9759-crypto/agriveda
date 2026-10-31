@@ -76,7 +76,7 @@ export default function FarmSheet({
     <AnimatePresence>
       {open ? (
         <div
-          className="fixed inset-0 flex items-end justify-center sm:items-center sm:p-4"
+          className="fixed inset-0 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none"
           style={{ zIndex: level }}
           role="dialog"
           aria-modal="true"
@@ -86,7 +86,7 @@ export default function FarmSheet({
             type="button"
             aria-label="बंद करें"
             onClick={onClose}
-            className="absolute inset-0 cursor-default bg-black/55 backdrop-blur-[3px]"
+            className="absolute inset-0 cursor-default bg-black/70 backdrop-blur-[3px] touch-none overscroll-none"
             initial={reduced ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -95,15 +95,14 @@ export default function FarmSheet({
 
           <motion.div
             className={cn(
-              "relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl sm:rounded-3xl",
-              size === "lg" ? "sm:max-w-lg" : "sm:max-w-md"
+              "relative flex max-h-[88vh] w-full flex-col overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl touch-auto text-left",
+              size === "lg" ? "max-w-lg" : "max-w-md"
             )}
-            initial={reduced ? false : { opacity: 0, y: 48, scale: 0.99 }}
+            initial={reduced ? false : { opacity: 0, y: 16, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 32, scale: 0.99 }}
+            exit={{ opacity: 0, y: 16, scale: 0.94 }}
             transition={{ duration: MOTION.normal, ease: EASE_OUT }}
           >
-            <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-[var(--av-border)] sm:hidden" />
 
             <header className="flex items-start gap-3 border-b border-[var(--av-border-subtle)] px-4 pb-3 pt-3 sm:px-5">
               {icon ? (

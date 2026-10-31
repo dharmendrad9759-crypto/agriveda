@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -48,6 +49,7 @@ export function ShareAgrivedaModal({
   onClose,
   lang = "hi",
 }: ShareAgrivedaModalProps) {
+  useBodyScrollLock(isOpen);
   const isHi = lang === "hi";
   const [copied, setCopied] = useState(false);
   const { title, text, url } = getAgrivedaShareData();
@@ -107,23 +109,23 @@ export function ShareAgrivedaModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm touch-none overscroll-none"
           />
 
-          {/* Modal / Bottom Sheet */}
+          {/* Modal / Centered Dialog */}
           <motion.div
-            initial={{ y: "100%", opacity: 0.5 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "100%", opacity: 0 }}
-            transition={{ type: "spring", damping: 28, stiffness: 300 }}
-            className="relative z-10 w-full max-w-lg rounded-t-[2.2rem] sm:rounded-[2.2rem] border border-emerald-500/25 bg-[var(--av-surface)] p-5 sm:p-6 shadow-2xl shadow-emerald-950/40 text-[var(--foreground)] overflow-hidden"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="relative z-10 w-full max-w-lg rounded-[28px] border border-emerald-500/25 bg-[var(--av-surface)] p-5 sm:p-6 shadow-2xl shadow-emerald-950/40 text-[var(--foreground)] overflow-hidden touch-auto max-h-[88vh] overflow-y-auto"
           >
             {/* Top Drag Handle (Mobile) */}
             <div className="mx-auto -mt-1 mb-4 h-1.5 w-12 rounded-full bg-stone-300 dark:bg-stone-700 sm:hidden" />

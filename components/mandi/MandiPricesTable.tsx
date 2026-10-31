@@ -14,6 +14,7 @@ import type { MandiRow } from "@/lib/mandi/types";
 import { getDistrictsForState, INDIAN_STATES } from "@/lib/india-locations";
 import { ChevronDown, ChevronLeft, ChevronRight, Search, Filter, Download, MapPin, CalendarDays, ArrowDownUp, Star, Navigation, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useFavourites } from "@/hooks/useFavourites";
 import { resolveFarmerLocationFromGps } from "@/lib/farmerLocation";
 
@@ -106,12 +107,14 @@ function SearchableSelectModal({
     return options.filter((opt) => opt.toLowerCase().includes(term));
   }, [options, q]);
 
+  useBodyScrollLock(isOpen);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-emerald-500/20 bg-[var(--av-surface)] shadow-2xl overflow-hidden flex flex-col max-h-[75vh] my-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm touch-none overscroll-none" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-md rounded-[28px] border border-emerald-500/20 bg-[var(--av-surface)] shadow-2xl overflow-hidden flex flex-col max-h-[75vh] my-auto touch-auto">
         <div className="flex items-center justify-between border-b border-[var(--av-border)] p-4">
           <h3 className="text-base font-extrabold text-[var(--av-text-primary)]">{title}</h3>
           <button

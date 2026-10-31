@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { ExternalLink } from "lucide-react";
 import { SCHEMES_LEAVE_CONFIRM_EN, SCHEMES_LEAVE_CONFIRM_HI } from "@/data/schemes/schemeLegal";
 import { AV, Z_INDEX } from "@/lib/design/tokens";
@@ -36,18 +37,20 @@ export default function OfficialLeaveConfirm({
   onClose: () => void;
   onContinue: () => void;
 }) {
+  useBodyScrollLock(open);
+
   if (!open) return null;
 
   return (
     <div
-      className="fixed inset-0 flex items-end justify-center bg-black/50 p-4 sm:items-center"
+      className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 touch-none select-none overscroll-none"
       style={{ zIndex: Z_INDEX.modal }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="leave-agriveda-title"
     >
-      <button type="button" className="absolute inset-0 cursor-default" aria-label="Close" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-lg">
+      <button type="button" className="absolute inset-0 cursor-default touch-none" aria-label="Close" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-md rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface)] p-5 shadow-2xl touch-auto">
         <p id="leave-agriveda-title" className="text-[15px] font-bold text-[var(--av-text-primary)]">
           {hi ? "बाहरी आधिकारिक स्रोत" : "External official website"}
         </p>

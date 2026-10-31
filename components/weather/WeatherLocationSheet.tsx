@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader2, MapPin, Navigation, Search, X } from "lucide-react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { lookupPincode } from "@/lib/pincodeLookup";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 interface Props {
   open: boolean;
@@ -32,12 +33,7 @@ export default function WeatherLocationSheet({
   const [pinBusy, setPinBusy] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
 
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  useBodyScrollLock(open);
 
   if (!open) return null;
 
@@ -64,17 +60,15 @@ export default function WeatherLocationSheet({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
       <button
         type="button"
         aria-label="Close"
         onClick={onClose}
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm touch-none overscroll-none"
       />
 
-      <div className="relative z-10 w-full max-w-lg animate-sheet-up">
-        <div className="rounded-t-[1.75rem] border border-[var(--av-border)] bg-[var(--av-surface)] px-4 pb-8 pt-3 shadow-[0_-12px_40px_rgba(0,0,0,0.12)]">
-          <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-[var(--av-border)]" />
+      <div className="relative z-10 w-full max-w-lg rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface)] p-5 sm:p-6 shadow-2xl touch-auto max-h-[88vh] overflow-y-auto">
 
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-[var(--av-text-primary)]">
@@ -179,7 +173,6 @@ export default function WeatherLocationSheet({
               {pinError ? <p className="mt-2 text-[11px] font-medium text-rose-600">{pinError}</p> : null}
             </div>
           </div>
-        </div>
       </div>
     </div>
   );

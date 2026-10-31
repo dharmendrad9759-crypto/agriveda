@@ -17,6 +17,7 @@ import { cropCatalog } from "@/data/crop-catalog";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { softTap } from "@/lib/appEssentials";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
@@ -52,6 +53,7 @@ const CATEGORIES = [
 
 export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProps) {
   const [modalOpen, setModalOpen] = useState(false);
+  useBodyScrollLock(modalOpen);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
@@ -184,23 +186,24 @@ export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProp
       {/* ── INTERACTIVE FULL CROP SELECTION MODAL ── */}
       <AnimatePresence>
         {modalOpen && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setModalOpen(false)}
-              className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/75 backdrop-blur-sm touch-none overscroll-none"
             />
 
             {/* Modal Dialog */}
             <motion.div
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "100%", opacity: 0 }}
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 16 }}
               transition={{ type: "spring", damping: 26, stiffness: 320 }}
-              className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[2rem] sm:rounded-[2rem] border border-emerald-500/30 bg-[var(--av-surface,#0c1a14)] text-white shadow-2xl"
+              className="relative z-10 flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-[28px] border border-emerald-500/30 bg-[var(--av-surface,#0c1a14)] text-white shadow-2xl touch-auto text-left"
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
               <div className="relative border-b border-emerald-500/20 bg-gradient-to-r from-[#042416] to-[#02180e] p-4 sm:p-5">

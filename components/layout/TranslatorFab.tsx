@@ -2,6 +2,7 @@
 
 import { Languages, X, Check } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
   TRANSLATE_LANGUAGES,
   applyPageTranslation,
@@ -12,6 +13,7 @@ import { cn } from "@/lib/cn";
 
 export default function TranslatorFab() {
   const [open, setOpen] = useState(false);
+  useBodyScrollLock(open);
   const [active, setActive] = useState("en");
 
   useEffect(() => {
@@ -40,13 +42,19 @@ export default function TranslatorFab() {
 
       {open && (
         <div
-          className="agriveda-force-dark fixed inset-0 z-[80] flex items-end justify-center bg-black/60 p-4 sm:items-center"
+          className="agriveda-force-dark fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 touch-none select-none overscroll-none"
           data-theme="dark"
         >
+          <button
+            type="button"
+            className="absolute inset-0 cursor-default"
+            aria-label="Close"
+            onClick={() => setOpen(false)}
+          />
           <div
             role="dialog"
             aria-label="Translate"
-            className="max-h-[80vh] w-full max-w-sm overflow-hidden rounded-3xl border border-emerald-500/25 bg-[#030712] shadow-2xl"
+            className="relative z-10 max-h-[85vh] w-full max-w-sm overflow-hidden rounded-[28px] border border-emerald-500/25 bg-[#030712] shadow-2xl touch-auto flex flex-col"
           >
             <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
               <div>
