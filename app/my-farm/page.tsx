@@ -333,75 +333,74 @@ export default function MyFarmPage() {
           </div>
         </motion.section>
 
-        {/* Primary job advice CTA when fields exist (hidden when add-field form is open) */}
+        {/* Unified Hero: Farm Advisory & Daily Action Center */}
         {!showAddField && hasFields ? (
-          <motion.section {...fade(0.03)}>
-            <AppLink
-              href="/field-advisor"
-              onClick={() => track("tool_open", { href: "/field-advisor", label: "farm_advisor_cta" })}
-              className="group relative flex min-h-[96px] w-full overflow-hidden rounded-2xl border border-emerald-800/20 bg-emerald-950 shadow-lg shadow-emerald-900/25 active:scale-[0.99]"
-            >
-              <span className="relative z-10 flex min-w-0 flex-1 flex-col justify-center gap-1.5 bg-emerald-950 px-3.5 py-4 sm:px-5">
-                <span className="inline-flex w-fit items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-100/90">
-                  <Sprout className="h-3 w-3" />
-                  {isHi ? "आज का काम" : "Today"}
-                </span>
-                <span className="text-[16px] font-bold leading-snug text-white sm:text-[17px]">
-                  {isHi ? "खेत सलाह खोलो" : "Open field advice"}
-                </span>
-                <span className="text-[11px] font-medium leading-snug text-emerald-100/85">
-                  {isHi
-                    ? `${stats.activeFields} सक्रिय खेत · बुवाई तारीख से अवस्था`
-                    : `${stats.activeFields} active · stage from sowing date`}
-                </span>
-                <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-bold text-emerald-200">
-                  {isHi ? "सलाह देखें" : "See advice"}
-                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-                </span>
-              </span>
-              <span className="relative w-[42%] min-w-[120px] max-w-[220px] shrink-0 self-stretch">
-                <Image
-                  src="/images/jobs/job-my-farm.jpg"
-                  alt=""
-                  fill
-                  sizes="220px"
-                  className="object-cover object-[center_35%] transition duration-300 group-hover:scale-105"
-                />
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-emerald-950 via-emerald-950/50 to-transparent"
-                />
-              </span>
-            </AppLink>
-          </motion.section>
-        ) : null}
+          <motion.section {...fade(0.04)}>
+            <div className="relative overflow-hidden rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950 via-[#0a3520] to-[#062013] p-4 text-white shadow-xl shadow-emerald-950/40 sm:p-5">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-emerald-500/15 blur-3xl"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -bottom-10 -left-10 h-36 w-36 rounded-full bg-teal-500/10 blur-2xl"
+              />
 
-        {/* Advice strip (hidden when add-field form is open) */}
-        {!showAddField && hasFields ? (
-          <motion.section {...fade(0.05)}>
-            <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-[var(--av-surface)] to-amber-50/40 p-3.5 dark:from-emerald-950/40 dark:via-[var(--av-surface)] dark:to-amber-950/20">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700/80 dark:text-emerald-300/80">
-                {isHi ? "आज ध्यान दें" : "Watch today"}
-              </p>
-              {topAlert ? (
-                <AppLink href={topAlert.actionHref ?? "/alerts"} className="mt-1.5 block">
-                  <p className="text-[14px] font-bold text-[var(--av-text-primary)]">{topAlert.title}</p>
-                  <p className="mt-0.5 line-clamp-2 text-[12px] text-[var(--av-text-muted)]">{topAlert.body}</p>
-                </AppLink>
-              ) : nextTask ? (
-                <div className="mt-1.5">
-                  <p className="text-[14px] font-bold text-[var(--av-text-primary)]">{nextTask.task}</p>
-                  <p className="mt-0.5 text-[12px] text-[var(--av-text-muted)]">
-                    {nextTask.field} · {nextTask.date}
-                  </p>
+              <div className="relative z-10 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-200 border border-emerald-400/20 backdrop-blur-md">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <Sprout className="h-3 w-3" />
+                    {isHi ? "दैनिक खेत सलाह" : "Daily Advisory"}
+                  </span>
+                  <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[10.5px] font-medium text-emerald-100/80 backdrop-blur-sm">
+                    {stats.activeFields} {isHi ? "सक्रिय खेत" : "active"}
+                  </span>
                 </div>
-              ) : (
-                <p className="mt-1.5 text-[13px] font-medium text-[var(--av-text-secondary)]">
-                  {isHi
-                    ? "कोई ज़रूरी अलर्ट नहीं — मौसम और फसल गाइड देखें।"
-                    : "No urgent alerts — check weather and crop guides."}
-                </p>
-              )}
+
+                {topAlert ? (
+                  <div className="mt-1">
+                    <p className="text-[15px] sm:text-[16px] font-bold leading-tight text-white">
+                      {topAlert.title}
+                    </p>
+                    <p className="mt-1 text-[12px] sm:text-[12.5px] leading-relaxed text-emerald-100/85 line-clamp-2">
+                      {topAlert.body}
+                    </p>
+                  </div>
+                ) : nextTask ? (
+                  <div className="mt-1">
+                    <p className="text-[15px] sm:text-[16px] font-bold leading-tight text-white">
+                      {nextTask.task}
+                    </p>
+                    <p className="mt-1 text-[12px] text-emerald-100/85">
+                      {nextTask.field} · {nextTask.date}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-1">
+                    <p className="text-[15px] font-bold text-white">
+                      {isHi ? "खेत की स्थिति अनुकूल है" : "Field conditions optimal"}
+                    </p>
+                    <p className="mt-1 text-[12px] text-emerald-100/85">
+                      {isHi
+                        ? "मौसम व अवस्था अनुसार समय पर खाद-पानी की योजना बनाएं।"
+                        : "Plan timely fertilizer and irrigation according to crop growth stage."}
+                    </p>
+                  </div>
+                )}
+
+                <AppLink
+                  href={topAlert?.actionHref ?? "/field-advisor"}
+                  onClick={() => track("tool_open", { href: "/field-advisor", label: "farm_advisor_cta" })}
+                  className="mt-1 inline-flex items-center justify-between rounded-xl bg-white/15 hover:bg-white/20 border border-white/20 px-3.5 py-2 text-[12px] font-bold text-white transition backdrop-blur-md active:scale-[0.99]"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Compass className="h-3.5 w-3.5 text-emerald-300" />
+                    <span>{isHi ? "पूरी सलाह व कार्य योजना देखें" : "View Full Advisory"}</span>
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5 text-emerald-300" />
+                </AppLink>
+              </div>
             </div>
           </motion.section>
         ) : null}
@@ -830,20 +829,29 @@ export default function MyFarmPage() {
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {data.fields.map((f) => {
                     const isSelected = f.id === (selectedFieldId || data.fields[0]?.id);
+                    const displayName = f.name?.match(/^\d+$/)
+                      ? (isHi ? `खेत ${f.name}` : `Field ${f.name}`)
+                      : f.name;
+                    const hiCrop = getCropHindiName(f.cropSlug || "") || f.crop;
                     return (
                       <button
                         key={f.id}
                         type="button"
                         onClick={() => setSelectedFieldId(f.id)}
                         className={cn(
-                          "shrink-0 rounded-2xl px-3.5 py-2 text-xs font-bold transition flex items-center gap-2 border active:scale-95",
+                          "shrink-0 rounded-2xl px-3.5 py-2 text-xs font-bold transition flex items-center gap-1.5 border active:scale-95",
                           isSelected
                             ? "bg-emerald-700 text-white border-emerald-700 shadow-md"
                             : "bg-[var(--av-surface)] text-[var(--av-text-secondary)] border-[var(--av-border)] hover:border-emerald-500/40"
                         )}
                       >
                         <Sprout className={cn("h-3.5 w-3.5", isSelected ? "text-emerald-200" : "text-emerald-600")} />
-                        <span>{f.name}</span>
+                        <span>{displayName}</span>
+                        {hiCrop ? (
+                          <span className={cn("text-[10px] font-medium", isSelected ? "text-emerald-100" : "text-[var(--av-text-secondary)]")}>
+                            · {hiCrop}
+                          </span>
+                        ) : null}
                         <span className={cn("text-[10px] font-semibold", isSelected ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
                           ({f.areaAcres ? `${f.areaAcres} एकड़` : f.area})
                         </span>
@@ -863,6 +871,7 @@ export default function MyFarmPage() {
                   name: f.crop,
                 });
                 const hi = getCropHindiName(f.cropSlug || "") || f.crop;
+                const displayName = f.name?.match(/^\d+$/) ? (isHi ? `खेत ${f.name}` : `Field ${f.name}`) : f.name;
                 const cropHref = f.cropSlug ? `/crops/${f.cropSlug}` : "/crops";
                 const nutrientHref = f.cropSlug
                   ? `/crops/${f.cropSlug}/care/nutrients`
@@ -915,7 +924,7 @@ export default function MyFarmPage() {
                         <div>
                           <AppLink href={`/my-farm/${f.id}`} className="hover:underline">
                             <p className="font-display text-[1.25rem] font-bold leading-tight text-white drop-shadow-sm flex items-center gap-1.5">
-                              <span>{f.name}</span>
+                              <span>{displayName}</span>
                               <ArrowRight className="w-4 h-4 text-emerald-300 inline" />
                             </p>
                           </AppLink>
@@ -938,24 +947,22 @@ export default function MyFarmPage() {
                     </div>
 
                     <div className="space-y-2.5 p-3">
-                      <div>
-                        <p className="text-[12px] font-bold text-[var(--av-text-primary)]">
-                          {stageNow}
-                        </p>
+                      <div className="flex items-center justify-between gap-2">
                         {sowingIso ? (
-                          <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
-                            {isHi ? "बुवाई" : "Sown"}: {formatSowingDisplay(sowingIso, isHi)}
+                          <p className="text-[11.5px] font-medium text-[var(--av-text-muted)]">
+                            <span className="font-semibold text-[var(--av-text-secondary)]">{isHi ? "बुवाई तारीख" : "Sown"}</span>: {formatSowingDisplay(sowingIso, isHi)}
                           </p>
                         ) : (
                           <AppLink
                             href={growthHref}
-                            className="mt-1 inline-block text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
+                            className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
                           >
                             {isHi
-                              ? "बुवाई तारीख डालो → आज का काम"
-                              : "Add sowing date → today’s work"}
+                              ? "बुवाई तारीख जोड़ें → आज का काम"
+                              : "Add sowing date → today's work"}
                           </AppLink>
                         )}
+                        <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">{stageNow}</span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
@@ -1005,7 +1012,7 @@ export default function MyFarmPage() {
                             {isHi ? "खेत स्थिति" : "Farm Status"}
                           </span>
                           <span className="text-[9.5px] text-[var(--av-text-muted)]">
-                            {isHi ? "नक्शा व मौसम" : "Map & Weather"}
+                            {isHi ? "खेत का हाल" : "Field Overview"}
                           </span>
                           <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
                         </AppLink>
@@ -1019,7 +1026,7 @@ export default function MyFarmPage() {
                             {isHi ? "फसल सेहत" : "Crop Health"}
                           </span>
                           <span className="text-[9.5px] text-[var(--av-text-muted)]">
-                            {isHi ? "NDVI उपग्रह" : "NDVI Satellite"}
+                            {isHi ? "हरियाली की जांच" : "Crop Greenness"}
                           </span>
                           <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
                         </AppLink>
@@ -1033,7 +1040,7 @@ export default function MyFarmPage() {
                             {isHi ? "फसल बढ़वार" : "Crop Growth"}
                           </span>
                           <span className="text-[9.5px] text-[var(--av-text-muted)]">
-                            {isHi ? "अवस्था व कार्य" : "Stages & Tasks"}
+                            {isHi ? "बुवाई से कटाई" : "Sow to Harvest"}
                           </span>
                           <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
                         </AppLink>

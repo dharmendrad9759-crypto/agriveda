@@ -36,6 +36,9 @@ export default function FieldSwitcher({
   const currentField =
     fields.find((field) => field.id === selectedFieldId) || fields[0];
 
+  const formatFieldName = (name?: string) =>
+    name?.match(/^\d+$/) ? `खेत ${name}` : (name || "");
+
   if (!currentField) return null;
 
   return (
@@ -52,7 +55,7 @@ export default function FieldSwitcher({
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[12px] font-semibold leading-tight text-[var(--av-text-primary)]">
-            {currentField.name}
+            {formatFieldName(currentField.name)}
           </span>
           <span className="mt-0.5 block truncate text-[9.5px] leading-tight text-[var(--av-text-muted)]">
             {currentField.crop}
@@ -123,7 +126,7 @@ export default function FieldSwitcher({
                     >
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[11.5px] font-medium">
-                          {field.name}
+                          {formatFieldName(field.name)}
                           {field.village ? (
                             <span className="ml-1 text-[9.5px] font-normal text-[var(--av-text-muted)]">
                               {field.village}
