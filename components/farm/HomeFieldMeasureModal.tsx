@@ -192,11 +192,7 @@ export default function HomeFieldMeasureModal({
                 />
               </div>
 
-              <p className="flex items-start gap-1.5 px-4 pb-4 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-300" />
-                यह WGS84 भू-गणितीय उपग्रह आधारित अनुमानित माप है — राजस्व या
-                कानूनी सर्वेक्षण के लिए मान्य नहीं।
-              </p>
+
             </div>
           </motion.div>
 

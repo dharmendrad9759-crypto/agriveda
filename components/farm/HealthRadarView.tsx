@@ -64,31 +64,31 @@ function formatShortDate(isoDate: string) {
 function getNdviBand(value: number) {
   if (value >= 0.7) {
     return {
-      label: "सघन व स्वस्थ",
-      detail: "घनी हरियाली — फसल अच्छी बढ़वार में है।",
+      label: "बहुत घनी और स्वस्थ",
+      detail: "खेत में बहुत अच्छी हरियाली है, पौधे पूरे ओज के साथ बढ़ रहे हैं।",
       badge: "border-emerald-400/30 bg-emerald-400/15 text-emerald-200",
       dot: "bg-emerald-400",
     };
   }
   if (value >= 0.5) {
     return {
-      label: "अच्छी बढ़वार",
-      detail: "वानस्पतिक विकास सामान्य है, निगरानी जारी रखें।",
+      label: "बढ़वार अच्छी है",
+      detail: "फसल का विकास सामान्य है, समय पर पानी और खाद की निगरानी रखें।",
       badge: "border-teal-400/30 bg-teal-400/15 text-teal-200",
       dot: "bg-teal-400",
     };
   }
   if (value >= 0.3) {
     return {
-      label: "मध्यम तनाव",
-      detail: "कुछ हिस्सों में कम घनत्व — खेत में जाकर जांच करें।",
+      label: "हल्की कमजोरी / तनाव",
+      detail: "खेत के कुछ हिस्सों में फसल थोड़ी हल्की या पीली दिख रही है — मौके पर जाकर नमी जांचें।",
       badge: "border-amber-400/30 bg-amber-400/15 text-amber-200",
       dot: "bg-amber-400",
     };
   }
   return {
-    label: "कम घनत्व",
-    detail: "फसल पतली या शुरुआती अवस्था में — मिट्टी व नमी देखें।",
+    label: "फसल हल्की / कमजोर",
+    detail: "फसल पतली है या पौधे अभी छोटे हैं — मिट्टी में नमी व जड़ों का फैलाव देखें।",
     badge: "border-rose-400/30 bg-rose-400/15 text-rose-200",
     dot: "bg-rose-400",
   };
@@ -399,8 +399,8 @@ export default function HealthRadarView({
               <Satellite className="h-4 w-4" aria-hidden />
             </span>
             <div className="min-w-0">
-              <h2 className="truncate text-[14px] font-semibold leading-tight">स्वास्थ्य रडार</h2>
-              <p className="text-[10px] text-emerald-200/55">Sentinel-2 · 10 मीटर</p>
+              <h2 className="truncate text-[14px] font-semibold leading-tight">फसल हरियाली व सेहत</h2>
+              <p className="text-[10px] text-emerald-200/70">उपग्रह द्वारा खेत की सेहत की जांच</p>
             </div>
           </div>
 
@@ -571,10 +571,7 @@ export default function HealthRadarView({
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <p className="truncate text-[11.5px] font-semibold text-[var(--av-text-primary)]">
-                          क्षेत्र {zone.zoneId.split("-").pop()}
-                          <span className="ml-1.5 text-[9px] font-medium text-[var(--av-text-muted)]">
-                            {high ? "उच्च" : "मध्यम"}
-                          </span>
+                          उत्तरी हिस्सा — {high ? "अधिक ध्यान दें" : "हल्की कमजोरी"}
                         </p>
                         <span className="shrink-0 rounded-md bg-[var(--av-surface)] px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
                           {zone.meanNdvi.toFixed(2)}
@@ -624,9 +621,9 @@ export default function HealthRadarView({
             </span>
             <div className="min-w-0">
               <h3 className="truncate text-[12px] font-semibold text-[var(--av-text-primary)]">
-                NDVI रुझान
+                फसल बढ़वार का ग्राफ
               </h3>
-              <p className="text-[10px] text-[var(--av-text-muted)]">पिछले 45 दिनों की निगरानी</p>
+              <p className="text-[10px] text-[var(--av-text-muted)]">पिछले 45 दिनों में हरियाली का बदलाव</p>
             </div>
           </div>
 

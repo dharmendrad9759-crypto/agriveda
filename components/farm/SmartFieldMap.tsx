@@ -668,11 +668,11 @@ export default function SmartFieldMap({
             <button
               type="button"
               onClick={() => handleDeleteVertex(coords.length - 1)}
-              title="अंतिम कोना हटाएं"
+              title="अंतिम बिंदु हटाएं"
               className="px-2.5 py-1.5 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 flex items-center gap-1 font-semibold"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>कोना हटाएं</span>
+              <span>हटाएं</span>
             </button>
           )}
 
@@ -866,7 +866,7 @@ export default function SmartFieldMap({
               <Popup>
                 <div className="text-center p-1">
                   <div className="text-xs font-bold text-gray-800 mb-1">
-                    कोना #{index + 1}
+                    #{index + 1}
                   </div>
                   <div className="text-[10px] text-gray-500 mb-2">
                     {c.lat.toFixed(6)}, {c.lng.toFixed(6)}
@@ -876,7 +876,7 @@ export default function SmartFieldMap({
                     onClick={() => handleDeleteVertex(index)}
                     className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold shadow"
                   >
-                    यह कोना हटाएं
+                    हटाएं
                   </button>
                 </div>
               </Popup>

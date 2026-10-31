@@ -813,6 +813,28 @@ function FertilizerCalculatorInner() {
                     </div>
                   </div>
 
+                  {/* किसान के लिए 3 जरूरी टिप्स */}
+                  <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 space-y-2">
+                    <p className="text-xs font-black text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                      <Lightbulb className="h-4 w-4 text-emerald-600" />
+                      <span>किसान भाइयों के लिए 3 जरूरी टिप्स:</span>
+                    </p>
+                    <ul className="space-y-1.5 text-[11px] text-[var(--av-text-secondary)] font-medium leading-relaxed">
+                      <li className="flex items-start gap-1.5">
+                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
+                        <span><strong>DAP व जिंक अलग रखें:</strong> DAP बुवाई पर दें और जिंक पहली सिंचाई पर यूरिया के साथ। दोनों कभी एक साथ न मिलाएं।</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
+                        <span><strong>नमी में ही खाद दें:</strong> यूरिया हमेशा खेत में पर्याप्त नमी होने पर या सिंचाई के तुरंत बाद ही डालें।</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
+                        <span><strong>स्प्रे में पर्याप्त पानी:</strong> पत्तों पर स्प्रे करते समय प्रति एकड़ 150–200 लीटर साफ पानी अवश्य रखें।</span>
+                      </li>
+                    </ul>
+                  </div>
+
                   {/* Prompt: Mitti Janch Report Check */}
                   <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-3.5">
                     <p className="text-xs font-extrabold text-[var(--av-text-primary)]">

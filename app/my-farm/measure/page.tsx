@@ -3,7 +3,8 @@
 import { useState, useMemo, Suspense } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
 import {
   ArrowLeft,
   MapPin,
@@ -51,6 +52,8 @@ const GUIDE_STEPS = [
 ];
 
 function FieldMeasureContent() {
+  const router = useRouter();
+  const { showToast } = useToast();
   const searchParams = useSearchParams();
   const editId = searchParams.get("editId");
 
@@ -101,11 +104,12 @@ function FieldMeasureContent() {
   const handleSaveField = (fieldPayload: Omit<FarmField, "id">) => {
     if (editingField) {
       updateField(editingField.id, fieldPayload);
-      setSavedSuccessField({ ...fieldPayload, id: editingField.id });
     } else {
-      const newId = addField(fieldPayload);
-      setSavedSuccessField({ ...fieldPayload, id: newId || `f-${Date.now()}` });
+      addField(fieldPayload);
     }
+    setIsSaveModalOpen(false);
+    showToast("खेत सफलतापूर्वक जुड़ गया ✓", "success");
+    router.push("/my-farm");
   };
 
   const bighaDisplayString = currentMeasurement?.bigha
@@ -134,7 +138,7 @@ function FieldMeasureContent() {
                 : "अपना खेत नापें"}
             </h1>
             <p className="mt-0.5 hidden truncate text-[10.5px] text-[var(--av-text-muted)] sm:block">
-              उपग्रह व GPS आधारित WGS84 रकबा मापन
+              खेत का रकबा और सीमा मापन
             </p>
           </div>
 
@@ -280,50 +284,7 @@ function FieldMeasureContent() {
           canSave={coords.length >= 3}
         />
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <div className="flex items-center gap-2.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-              <Layers className="h-4 w-4" />
-            </span>
-            <div className="min-w-0">
-              <h4 className="text-[11px] font-semibold text-[var(--av-text-primary)]">
-                राज्य-अनुसार बीघा
-              </h4>
-              <p className="mt-0.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                UP, बिहार, राजस्थान, MP के सटीक बीघा मानक
-              </p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-700 dark:text-blue-300">
-              <Calculator className="h-4 w-4" />
-            </span>
-            <div className="min-w-0">
-              <h4 className="text-[11px] font-semibold text-[var(--av-text-primary)]">
-                कैलकुलेटर में ऑटो-फिल
-              </h4>
-              <p className="mt-0.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                नापे गए रकबे से खाद व कीटनाशक की सही मात्रा
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 shadow-[var(--av-shadow-sm)]">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300">
-              <ShieldAlert className="h-4 w-4" />
-            </span>
-            <div className="min-w-0">
-              <h4 className="text-[11px] font-semibold text-[var(--av-text-primary)]">
-                सुरक्षित व निजी डेटा
-              </h4>
-              <p className="mt-0.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
-                सीमाएं और दस्तावेज केवल आपके उपकरण में सुरक्षित
-              </p>
-            </div>
-          </div>
-        </div>
       </main>
 
       {/* Save Field Modal Sheet */}

@@ -149,6 +149,7 @@ export default function MyFarmPage() {
   const { weather, loading: weatherLoading } = useLiveWeather();
 
   const [showAddField, setShowAddField] = useState(false);
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const [showAddNote, setShowAddNote] = useState(false);
   const [showAddActivity, setShowAddActivity] = useState(false);
 
@@ -322,14 +323,7 @@ export default function MyFarmPage() {
                   ? "खेत जोड़ो"
                   : "Add a field"}
             </span>
-            {hasFields ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-50/90 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
-                <Sprout className="h-3 w-3 shrink-0" />
-                {isHi
-                  ? `${stats.activeFields} सक्रिय`
-                  : `${stats.activeFields} active`}
-              </span>
-            ) : null}
+
             {place ? (
               <span className="inline-flex max-w-[46%] items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2.5 py-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
                 <MapPin className="h-3 w-3 shrink-0 text-sky-600" />
@@ -339,40 +333,8 @@ export default function MyFarmPage() {
           </div>
         </motion.section>
 
-        {/* Empty → photo CTA | Filled → primary jobs (hidden when add-field form is open) */}
-        {!showAddField && !hasFields ? (
-          <motion.section {...fade(0.03)}>
-            <button
-              type="button"
-              onClick={() => {
-                setShowAddField(true);
-                if (!fieldCropSlug) setCropPickerOpen(true);
-              }}
-              className="group relative flex min-h-[240px] w-full overflow-hidden rounded-2xl border border-white/20 text-left shadow-[var(--av-shadow-md)] active:scale-[0.99]"
-            >
-              <Image
-                src="/images/jobs/job-my-farm.jpg"
-                alt=""
-                fill
-                sizes="(max-width: 512px) 100vw, 480px"
-                className="object-cover transition duration-300 group-hover:scale-105"
-                priority
-              />
-              <span className="absolute inset-0 bg-gradient-to-t from-emerald-950/92 via-emerald-950/45 to-black/20" />
-              <span className="relative z-10 flex w-full flex-col justify-end p-5">
-                <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 text-white backdrop-blur-sm">
-                  <Plus className="h-6 w-6" />
-                </span>
-                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-200/90">
-                  {t("myFarm")}
-                </span>
-                <span className="mt-1 font-display text-[1.55rem] font-bold leading-tight text-white">
-                  {isHi ? "पहला खेत जोड़ो" : "Add your first field"}
-                </span>
-              </span>
-            </button>
-          </motion.section>
-        ) : !showAddField && hasFields ? (
+        {/* Primary job advice CTA when fields exist (hidden when add-field form is open) */}
+        {!showAddField && hasFields ? (
           <motion.section {...fade(0.03)}>
             <AppLink
               href="/field-advisor"
@@ -864,7 +826,38 @@ export default function MyFarmPage() {
 
           {hasFields ? (
             <div className="space-y-3">
+              {data.fields.length > 1 ? (
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                  {data.fields.map((f) => {
+                    const isSelected = f.id === (selectedFieldId || data.fields[0]?.id);
+                    return (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setSelectedFieldId(f.id)}
+                        className={cn(
+                          "shrink-0 rounded-2xl px-3.5 py-2 text-xs font-bold transition flex items-center gap-2 border active:scale-95",
+                          isSelected
+                            ? "bg-emerald-700 text-white border-emerald-700 shadow-md"
+                            : "bg-[var(--av-surface)] text-[var(--av-text-secondary)] border-[var(--av-border)] hover:border-emerald-500/40"
+                        )}
+                      >
+                        <Sprout className={cn("h-3.5 w-3.5", isSelected ? "text-emerald-200" : "text-emerald-600")} />
+                        <span>{f.name}</span>
+                        <span className={cn("text-[10px] font-semibold", isSelected ? "text-emerald-100" : "text-[var(--av-text-muted)]")}>
+                          ({f.areaAcres ? `${f.areaAcres} एकड़` : f.area})
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+
               {data.fields.map((f, i) => {
+                const isSelected = f.id === (selectedFieldId || data.fields[0]?.id);
+                if (data.fields.length > 1 && !isSelected) {
+                  return null; // Show selected field prominently
+                }
                 const img = resolveCropImage({
                   slug: f.cropSlug || "",
                   name: f.crop,
@@ -1123,8 +1116,8 @@ export default function MyFarmPage() {
               })}
             </div>
           ) : !showAddField ? (
-            <div className="relative overflow-hidden rounded-2xl border-2 border-dashed border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 via-emerald-500/5 to-transparent p-6 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600/15 text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-300">
+            <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-[var(--av-surface)] p-6 text-center shadow-lg">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
                 <Sprout className="h-7 w-7" />
               </div>
               <h3 className="mt-3 text-base font-black text-[var(--av-text-primary)]">
@@ -1132,16 +1125,16 @@ export default function MyFarmPage() {
               </h3>
               <p className="mt-1 text-xs text-[var(--av-text-secondary)] max-w-xs mx-auto">
                 {isHi
-                  ? "उपग्रह नक्शे पर खेत की सीमा बनाकर या सीधे विवरण दर्ज करके व्यक्तिगत सलाह पाएं।"
+                  ? "फसल और रकबा दर्ज करें या सीधे उपग्रह नक्शे पर नापें।"
                   : "Measure your field on satellite map or add details for tailored recommendations."}
               </p>
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
                 <AppLink
                   href="/my-farm/measure"
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-700/25 transition hover:brightness-110 active:scale-95"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-emerald-800 active:scale-95 transition"
                 >
-                  <Ruler className="h-4 w-4" />
-                  <span>{isHi ? "उपग्रह से अपना खेत नापें" : "Measure Field on Map"}</span>
+                  <Ruler className="h-4 w-4 text-emerald-200" />
+                  <span>{isHi ? "उपग्रह नक्शे पर नापें" : "Measure on Map"}</span>
                 </AppLink>
                 <button
                   type="button"
@@ -1149,10 +1142,10 @@ export default function MyFarmPage() {
                     setShowAddField(true);
                     if (!fieldCropSlug) setCropPickerOpen(true);
                   }}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 py-2.5 text-xs font-bold text-[var(--av-text-primary)] hover:border-emerald-500/40 active:scale-95 transition"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-2.5 text-xs font-bold text-[var(--av-text-primary)] hover:border-emerald-500/40 active:scale-95 transition"
                 >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>{isHi ? "मैन्युअल जोड़ें" : "Add Manually"}</span>
+                  <Plus className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>{isHi ? "विवरण से जोड़ें" : "Add by Details"}</span>
                 </button>
               </div>
             </div>

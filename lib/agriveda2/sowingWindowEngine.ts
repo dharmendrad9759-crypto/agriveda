@@ -166,11 +166,12 @@ export function evaluateSowingWindow(
 
   if (inAnyWindow && factors.includes("soil_moisture_ideal")) {
     const active = displayWindows[activeIdx];
+    const cleanLabel = active.label.replace(/\(timely\)/gi, "").replace(/timely sowing/gi, "बुवाई का सही समय").replace(/timely/gi, "समय पर बुवाई").trim();
     return {
       ...base,
       status: "green",
-      title: "Green Window — Abhi buwai karein",
-      messageHi: `${regionKey} mein ${active.label} (${active.range}) chal raha hai. Mitti ki nami ${soilMoisture}% — uttam. ${buwai.critical_note}`,
+      title: "बुवाई का अनुकूल समय — अभी बुवाई करें",
+      messageHi: `${regionKey} में ${cleanLabel || "बुवाई"} (${active.range}) का सही समय चल रहा है। मिट्टी में नमी (${soilMoisture}%) बुवाई के लिए उत्तम है। ${buwai.critical_note || ""}`.trim(),
       messageEn: `Active window: ${active.label} (${active.range}). Soil moisture ${soilMoisture}% — ideal.`,
       alternateVariety: buwai.late_variety,
     };
@@ -178,11 +179,12 @@ export function evaluateSowingWindow(
 
   if (inAnyWindow) {
     const active = displayWindows[activeIdx];
+    const cleanLabel = active.label.replace(/\(timely\)/gi, "").replace(/timely sowing/gi, "बुवाई का समय").replace(/timely/gi, "बुवाई").trim();
     return {
       ...base,
       status: "yellow",
-      title: "Window khuli hai — savdhani se buwai",
-      messageHi: `${active.label} (${active.range}) — lekin mitti/mausam borderline hai. Nami check karein. ${buwai.critical_note}`,
+      title: "बुवाई की खिड़की खुली है — सावधानी से बुवाई करें",
+      messageHi: `${cleanLabel || "बुवाई"} (${active.range}) का समय है। खेत में मिट्टी की नमी जांच कर ही बुवाई करें। ${buwai.critical_note || ""}`.trim(),
       messageEn: `Window open (${active.range}) but conditions borderline.`,
       alternateVariety: buwai.late_variety,
     };
@@ -193,8 +195,8 @@ export function evaluateSowingWindow(
     return {
       ...base,
       status: "yellow",
-      title: `${daysUntil} din baaki — taiyari karein`,
-      messageHi: `Abhi jaldi hai. ${regionKey}: pehli window ${windowLabel} se. Taiyari: jutai, khad, beej treatment. ${stateDataToLines(stateData)}`,
+      title: `${daysUntil} दिन शेष — खेत तैयार करें`,
+      messageHi: `अभी बुवाई में समय है। ${regionKey} में बुवाई ${windowLabel} से शुरू होगी। तब तक खेत की जुताई, खाद और बीज उपचार पूरा रखें।`,
       messageEn: `Too early. First window opens ${windowLabel}.`,
       alternateVariety: buwai.late_variety,
     };
@@ -204,8 +206,8 @@ export function evaluateSowingWindow(
     return {
       ...base,
       status: "red",
-      title: "Is season ki window band — agla season plan karein",
-      messageHi: `${regionKey} mein is season ki mukhya buwai window nikal chuki. ${buwai.late_variety ? `Picheti ke liye: ${buwai.late_variety}. ` : ""}${buwai.critical_note}`,
+      title: "मुख्य बुवाई का समय समाप्त",
+      messageHi: `${regionKey} में इस सीजन की मुख्य बुवाई का समय निकल चुका है। ${buwai.late_variety ? `पिछेती बुवाई हेतु किस्म: ${buwai.late_variety}। ` : ""}${buwai.critical_note || ""}`.trim(),
       messageEn: `Main sowing window closed for this season in ${regionKey}.`,
       alternateVariety: buwai.late_variety,
       alternateNote: buwai.late_variety,
@@ -215,8 +217,8 @@ export function evaluateSowingWindow(
   return {
     ...base,
     status: "yellow",
-    title: "Late window — variety badlein",
-    messageHi: `Mukhya window guzar chuki. ${buwai.late_variety ? `${buwai.late_variety} try karein. ` : ""}${buwai.critical_note}`,
+    title: "पिछेती बुवाई — सही किस्म चुनें",
+    messageHi: `मुख्य समय निकल चुका है। ${buwai.late_variety ? `पिछेती किस्म ${buwai.late_variety} का प्रयोग करें। ` : ""}${buwai.critical_note || ""}`.trim(),
     messageEn: `Between windows — consider late variety if still sowing.`,
     alternateVariety: buwai.late_variety,
   };

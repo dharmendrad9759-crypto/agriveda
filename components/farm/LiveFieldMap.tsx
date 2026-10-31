@@ -137,13 +137,19 @@ export default function LiveFieldMap({
   if (!boundary || boundary.length < 3) {
     return (
       <div
-        className={`w-full bg-emerald-950/20 rounded-2xl flex flex-col items-center justify-center text-xs text-emerald-800 p-6 ${className}`}
+        className={`w-full bg-emerald-950/20 rounded-2xl flex flex-col items-center justify-center text-xs text-emerald-800 p-6 text-center ${className}`}
         style={{ height }}
       >
-        <p className="font-semibold text-sm mb-1">खेत की सीमा उपलब्ध नहीं है</p>
-        <p className="text-gray-500 text-center">
-          कृपया पहले &quot;अपना खेत नापें&quot; में जाकर खेत की सीमा रेखा बनाएं।
+        <p className="font-bold text-sm mb-1 text-[var(--av-text-primary)]">खेत की सीमा उपलब्ध नहीं है</p>
+        <p className="text-gray-500 text-xs max-w-xs mb-3">
+          सटीक उपग्रह निगरानी के लिए अपने खेत की सीमा रेखा बनाएं।
         </p>
+        <a
+          href="/my-farm/measure"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 text-white font-bold text-xs shadow-sm hover:bg-emerald-800 transition active:scale-95"
+        >
+          नक्शे पर खेत नापें →
+        </a>
       </div>
     );
   }

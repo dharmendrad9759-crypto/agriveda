@@ -110,7 +110,7 @@ export default function FieldHUD({
         ) : validation.valid ? (
           <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2 py-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
             <CheckCircle2 className="h-3 w-3 shrink-0" />
-            सटीक माप तैयार · {coords.length} कोने
+            माप तैयार
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/10 px-2 py-1 text-[10px] font-medium text-rose-700 dark:text-rose-300">
@@ -159,11 +159,7 @@ export default function FieldHUD({
         />
       </div>
 
-      <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-[9.5px] leading-snug text-[var(--av-text-muted)]">
-          WGS84 उपग्रह आधारित अनुमानित माप — कानूनी सर्वेक्षण के लिए मान्य नहीं।
-        </p>
-
+      <div className="mt-2 flex items-center justify-end">
         {onSave ? (
           <button
             type="button"
@@ -177,7 +173,7 @@ export default function FieldHUD({
             )}
           >
             <Save className="h-3.5 w-3.5" />
-            खेत सहेजें
+            खेत जोड़ें
           </button>
         ) : null}
       </div>

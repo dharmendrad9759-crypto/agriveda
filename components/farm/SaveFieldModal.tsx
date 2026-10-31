@@ -25,6 +25,7 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import FarmSheet from "@/components/farm/FarmSheet";
 import { cn } from "@/lib/cn";
 import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
+import { resolveCropImage } from "@/lib/crops/cropImages";
 
 interface SaveFieldModalProps {
   isOpen: boolean;
@@ -335,8 +336,8 @@ export default function SaveFieldModal({
     <FarmSheet
       open={isOpen}
       onClose={onClose}
-      title={initialData?.id ? "खेत विवरण संशोधित करें" : "खेत सहेजें"}
-      subtitle="उपग्रह सीमा, रकबा और फसल चक्र सक्रिय करें"
+      title={initialData?.id ? "खेत विवरण संशोधित करें" : "खेत जोड़ें"}
+      subtitle="खेत का रकबा और फसल विवरण"
       icon={<MapPin className="h-4 w-4" />}
       size="lg"
       level={10000}
@@ -374,7 +375,7 @@ export default function SaveFieldModal({
             {Math.round(perimeter)} m
           </p>
           <p className="mt-0.5 text-[9px] text-[var(--av-text-muted)]">
-            {coords.length} कोने
+            {coords.length} बिंदु
           </p>
         </div>
       </div>
@@ -425,8 +426,15 @@ export default function SaveFieldModal({
               <Sprout className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
               मुख्य फसल
             </label>
-            <span className="text-[10px] text-[var(--av-text-muted)]">
-              {activeCropObj.emoji} {activeCropObj.nameHi}
+            <span className="text-[10px] text-[var(--av-text-muted)] flex items-center gap-1.5 font-bold">
+              <span className="relative inline-block h-4 w-4 overflow-hidden rounded-full border border-emerald-500/30">
+                <img
+                  src={resolveCropImage({ slug: activeCropObj.slug, name: activeCropObj.nameEn })}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </span>
+              <span>{activeCropObj.nameHi}</span>
             </span>
           </div>
 
@@ -449,8 +457,12 @@ export default function SaveFieldModal({
                       : "bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
                   )}
                 >
-                  <span className="block text-base leading-none" aria-hidden>
-                    {crop.emoji}
+                  <span className="relative mx-auto block h-8 w-8 overflow-hidden rounded-xl border border-emerald-500/25 shadow-xs" aria-hidden>
+                    <img
+                      src={resolveCropImage({ slug: crop.slug, name: crop.nameEn })}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   </span>
                   <span className="mt-1 block truncate text-[10px] font-medium">
                     {crop.nameHi}
@@ -596,7 +608,7 @@ export default function SaveFieldModal({
             className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-700 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.99]"
           >
             <Check className="h-4 w-4" />
-            {initialData?.id ? "बदलाव सहेजें" : "खेत सक्रिय करें"}
+            {initialData?.id ? "बदलाव सुरक्षित करें" : "खेत जोड़ें"}
           </button>
         </div>
       </form>

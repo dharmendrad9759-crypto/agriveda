@@ -457,10 +457,9 @@ export default function WheatStageVideoPlayer({
                   </button>
                 </div>
 
-                {/* Right: Live Quality Indicator */}
-                <div className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-black/70 px-2.5 py-1 text-[10px] font-semibold text-emerald-300 backdrop-blur-md">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  <span>100% रियलिस्टिक वीडियो</span>
+                <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-black/60 px-2 py-0.5 text-[10px] text-emerald-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  <span>{selectedStage.stageNameHi}</span>
                 </div>
               </div>
             </div>
@@ -478,8 +477,8 @@ export default function WheatStageVideoPlayer({
 
               {/* Photo Caption */}
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white">
-                <span className="rounded-lg border border-white/15 bg-black/60 px-2 py-1 font-semibold backdrop-blur-md">
-                  HD बॉटनिकल स्टूडियो फोटो
+                <span className="rounded-lg border border-white/15 bg-black/60 px-2.5 py-1 font-semibold backdrop-blur-md">
+                  {selectedStage.stageNameHi}
                 </span>
                 <span className="rounded-lg border border-white/15 bg-black/60 px-2 py-1 font-bold text-amber-200 backdrop-blur-md">
                   चरण {stageMeta.order}
@@ -574,13 +573,7 @@ export default function WheatStageVideoPlayer({
           })}
         </div>
 
-        {/* Milestone Footnote */}
-        <div className="mt-2 flex items-center justify-between text-[9.5px] font-semibold text-emerald-200/50">
-          <span>🌱 बुवाई (चरण 1)</span>
-          <span>🌿 कल्ले (चरण 3)</span>
-          <span>🌾 बाली (चरण 6)</span>
-          <span>☀️ कटाई (चरण 10)</span>
-        </div>
+
       </div>
 
       {/* Practical Agronomic Insights Section */}
