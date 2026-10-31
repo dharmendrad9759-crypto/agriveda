@@ -102,7 +102,7 @@ export function generateWheatSeasonTasks(
       titleHi: "CRI अवस्था — पहला और सबसे जरूरी पानी लगाएं",
       titleEn: "Crown Root Irrigation (CRI - 1st Watering)",
       descriptionHi:
-        "बुवाई के 20-22 दिन पर ताज जड़ें निकलती हैं। इस समय हल्की सिंचाई अवश्य करें। जलभराव न होने दें।",
+        "बुवाई के 20-22 दिन पर मुख्य जड़ें (CRI) फूटती हैं। इस समय पहला हल्का पानी अवश्य लगाएं। जलभराव न होने दें।",
       dueDaysAfterSowing: [18, 25],
       status: "upcoming",
     },

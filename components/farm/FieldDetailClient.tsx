@@ -35,9 +35,9 @@ interface FieldDetailClientProps {
 type FarmTab = "live" | "radar" | "journey";
 
 const TABS: { id: FarmTab; label: string; icon: LucideIcon }[] = [
-  { id: "live", label: "लाइव", icon: Compass },
-  { id: "radar", label: "स्वास्थ्य", icon: Radio },
-  { id: "journey", label: "सफर", icon: Sprout },
+  { id: "live", label: "खेत स्थिति", icon: Compass },
+  { id: "radar", label: "फसल सेहत", icon: Radio },
+  { id: "journey", label: "फसल बढ़वार", icon: Sprout },
 ];
 
 function validTab(tab?: string | null): FarmTab {

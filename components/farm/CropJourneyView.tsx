@@ -26,15 +26,11 @@ import {
   Circle,
   CalendarDays,
   Droplets,
-  Leaf,
-  Bug,
-  ShieldAlert,
   Plus,
   Award,
   Sparkles,
   Clock,
   X,
-  ChevronDown,
   Wheat,
   Shovel,
   Search,
@@ -111,7 +107,6 @@ export default function CropJourneyView({
   const [syncedStageId, setSyncedStageId] = useState<string>(currentStageId);
   const [taskFilter, setTaskFilter] =
     useState<"all" | "pending" | "completed">("pending");
-  const [showMistakes, setShowMistakes] = useState(false);
 
   // Adjust the selected stage at render time when the season's stage changes
   // externally, without a cascading setState-in-effect.
@@ -201,8 +196,8 @@ export default function CropJourneyView({
           </h2>
           <p className="mx-auto mt-1.5 max-w-sm text-[11px] leading-relaxed text-[var(--av-text-muted)]">
             {hasSeasonHistory
-              ? "कटाई दर्ज हो चुकी है। अगली बुवाई की तारीख चुनकर नया 360° सफर शुरू करें।"
-              : "बुवाई की तारीख जोड़कर चरण-वार कार्य और सिंचाई योजना सक्रिय करें।"}
+              ? "कटाई दर्ज हो चुकी है। अगली बुवाई की तारीख जोड़कर नया सीजन शुरू करें।"
+              : "बुवाई की तारीख जोड़कर अवस्था-वार कार्य और सिंचाई योजना सक्रिय करें।"}
           </p>
 
           {onStartSeason ? (
@@ -487,11 +482,11 @@ export default function CropJourneyView({
             <Sprout className="h-6 w-6" />
           </span>
           <h2 className="mt-3 text-sm font-semibold text-[var(--av-text-primary)]">
-            {field.crop || activeSeason?.cropName || "इस फसल"} के लिए 360° सफर
-            तैयार हो रहा है
+            {field.crop || activeSeason?.cropName || "इस फसल"} की अवस्थाएं
+            तैयार हो रही हैं
           </h2>
           <p className="mx-auto mt-1.5 max-w-sm text-[11px] leading-relaxed text-[var(--av-text-muted)]">
-            चरण-वार वैज्ञानिक मार्गदर्शन फिलहाल गेहूँ के लिए उपलब्ध है। आप इस
+            चरण-वार वीडियो और वैज्ञानिक मार्गदर्शन फिलहाल गेहूँ के लिए सक्रिय है। आप इस
             सीजन के कार्य यहाँ प्रबंधित कर सकते हैं।
           </p>
 
@@ -540,168 +535,22 @@ export default function CropJourneyView({
         onSelectStage={(stageId) => setSelectedStageId(stageId)}
       />
 
-      {/* Selected stage detail */}
-      <section className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-4 shadow-[var(--av-shadow-sm)]">
-        <div className="flex items-start justify-between gap-3 border-b border-[var(--av-border-subtle)] pb-3">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700 dark:text-amber-300">
-                चरण {selectedStageDef.stageOrder + 1}
-              </span>
-              <h2 className="text-[15px] font-semibold leading-tight text-[var(--av-text-primary)]">
-                {selectedStageDef.stageNameHi}
-              </h2>
-            </div>
-            <p className="mt-1 text-[10.5px] text-[var(--av-text-muted)]">
-              अवधि {selectedStageDef.typicalDaysRange[0]}–
-              {selectedStageDef.typicalDaysRange[1]} दिन
-              {selectedStageDef.targetGDD
-                ? ` · GDD ${selectedStageDef.targetGDD[0]}–${selectedStageDef.targetGDD[1]}°C`
-                : ""}
-            </p>
-          </div>
-
-          {selectedStageDef.stageId !== currentStageId ? (
-            <button
-              type="button"
-              onClick={() => handleConfirmStage(selectedStageDef.stageId)}
-              disabled={!activeSeason}
-              className="inline-flex shrink-0 items-center gap-1 rounded-xl bg-emerald-700 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-sm transition hover:bg-emerald-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              चुनें
-            </button>
-          ) : (
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-1 text-[9.5px] font-semibold text-emerald-700 dark:text-emerald-300">
-              <Sparkles className="h-3 w-3" />
-              वर्तमान
-            </span>
-          )}
+      {/* Stage Confirmation (if user is browsing another stage) */}
+      {selectedStageDef.stageId !== currentStageId && activeSeason && (
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-950/50 p-3 shadow-md backdrop-blur-md">
+          <p className="text-[12px] font-medium text-emerald-100">
+            क्या आपकी फसल अभी <span className="font-bold text-amber-300">{selectedStageDef.stageNameHi}</span> में है?
+          </p>
+          <button
+            type="button"
+            onClick={() => handleConfirmStage(selectedStageDef.stageId)}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-500 active:scale-95"
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            वर्तमान चुनें
+          </button>
         </div>
-
-        <p className="mt-3 text-[11.5px] leading-relaxed text-[var(--av-text-secondary)]">
-          {selectedStageDef.descriptionHi}
-        </p>
-
-        {selectedStageDef.identificationCriteriaHi.length > 0 ? (
-          <div className="mt-3 rounded-2xl bg-[var(--av-surface-inset)] p-3">
-            <p className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--av-text-primary)]">
-              <Sprout className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
-              खेत में पहचानें
-            </p>
-            <ul className="mt-2 space-y-1.5">
-              {selectedStageDef.identificationCriteriaHi.map((criterion) => (
-                <li
-                  key={criterion}
-                  className="flex items-start gap-2 text-[11px] leading-relaxed text-[var(--av-text-secondary)]"
-                >
-                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-emerald-500" />
-                  {criterion}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
-        <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
-          <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-3">
-            <p className="flex items-center gap-1.5 text-[11px] font-semibold text-sky-800 dark:text-sky-200">
-              <Droplets className="h-3.5 w-3.5 shrink-0 text-sky-600 dark:text-sky-300" />
-              सिंचाई
-            </p>
-            <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--av-text-secondary)]">
-              {selectedStageDef.irrigationConsiderationsHi}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3">
-            <p className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 dark:text-emerald-200">
-              <Leaf className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
-              खाद व पोषण
-            </p>
-            <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--av-text-secondary)]">
-              {selectedStageDef.nutrientManagementHi}
-            </p>
-          </div>
-        </div>
-
-        {selectedStageDef.weedManagementHi || selectedStageDef.pestMonitoringHi ? (
-          <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
-            {selectedStageDef.weedManagementHi ? (
-              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3">
-                <p className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-800 dark:text-amber-200">
-                  <Sprout className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300" />
-                  खरपतवार नियंत्रण
-                </p>
-                <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--av-text-secondary)]">
-                  {selectedStageDef.weedManagementHi}
-                </p>
-              </div>
-            ) : null}
-
-            {selectedStageDef.pestMonitoringHi ? (
-              <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-3">
-                <p className="flex items-center gap-1.5 text-[11px] font-semibold text-rose-800 dark:text-rose-200">
-                  <Bug className="h-3.5 w-3.5 shrink-0 text-rose-600 dark:text-rose-300" />
-                  कीट व रोग निगरानी
-                </p>
-                <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--av-text-secondary)]">
-                  {selectedStageDef.pestMonitoringHi}
-                </p>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        {selectedStageDef.commonMistakesHi.length > 0 ? (
-          <div className="mt-2.5 overflow-hidden rounded-2xl border border-rose-500/20 bg-rose-500/5">
-            <button
-              type="button"
-              onClick={() => setShowMistakes((open) => !open)}
-              className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
-              aria-expanded={showMistakes}
-            >
-              <span className="flex items-center gap-1.5 text-[11px] font-semibold text-rose-800 dark:text-rose-200">
-                <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-rose-600 dark:text-rose-300" />
-                बचने योग्य गलतियां
-                <span className="rounded-md bg-rose-500/12 px-1.5 py-0.5 text-[9px] font-medium">
-                  {selectedStageDef.commonMistakesHi.length}
-                </span>
-              </span>
-              <ChevronDown
-                className={cn(
-                  "h-3.5 w-3.5 shrink-0 text-rose-600 transition-transform dark:text-rose-300",
-                  showMistakes && "rotate-180"
-                )}
-              />
-            </button>
-
-            <AnimatePresence initial={false}>
-              {showMistakes ? (
-                <motion.div
-                  initial={reduced ? false : { height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="overflow-hidden"
-                >
-                  <ul className="space-y-1.5 border-t border-rose-500/15 px-3 py-2.5">
-                    {selectedStageDef.commonMistakesHi.map((mistake) => (
-                      <li
-                        key={mistake}
-                        className="flex items-start gap-2 text-[11px] leading-relaxed text-[var(--av-text-secondary)]"
-                      >
-                        <X className="mt-0.5 h-3 w-3 shrink-0 text-rose-500" />
-                        {mistake}
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </div>
-        ) : null}
-      </section>
+      )}
 
       {tasksSection}
       {harvestSection}

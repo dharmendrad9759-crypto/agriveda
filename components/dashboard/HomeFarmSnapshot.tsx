@@ -90,21 +90,21 @@ export default function HomeFarmSnapshot() {
               className="flex items-center justify-center gap-1 rounded-lg py-1.5 text-[10.5px] font-medium text-[var(--av-text-secondary)] transition hover:bg-[var(--av-surface)] hover:text-[var(--av-text-primary)] hover:shadow-sm active:scale-95"
             >
               <Compass className="h-3 w-3 text-emerald-600 dark:text-emerald-300" />
-              लाइव
+              खेत स्थिति
             </AppLink>
             <AppLink
               href={`/my-farm/${firstField.id}?tab=radar`}
               className="flex items-center justify-center gap-1 rounded-lg py-1.5 text-[10.5px] font-medium text-[var(--av-text-secondary)] transition hover:bg-[var(--av-surface)] hover:text-[var(--av-text-primary)] hover:shadow-sm active:scale-95"
             >
               <Radio className="h-3 w-3 text-teal-600 dark:text-teal-300" />
-              स्वास्थ्य
+              फसल सेहत
             </AppLink>
             <AppLink
               href={`/my-farm/${firstField.id}?tab=journey`}
               className="flex items-center justify-center gap-1 rounded-lg py-1.5 text-[10.5px] font-medium text-[var(--av-text-secondary)] transition hover:bg-[var(--av-surface)] hover:text-[var(--av-text-primary)] hover:shadow-sm active:scale-95"
             >
               <Sprout className="h-3 w-3 text-amber-600 dark:text-amber-300" />
-              सफर
+              फसल बढ़वार
             </AppLink>
           </div>
         ) : null}

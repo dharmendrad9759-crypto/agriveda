@@ -304,7 +304,7 @@ export default function LiveFarmView({
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-70" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
               </span>
-              लाइव खेत
+              खेत स्थिति
             </p>
             <p className="mt-2.5 flex items-baseline gap-1.5">
               <span className="text-[28px] font-semibold leading-none tabular-nums">
@@ -408,7 +408,7 @@ export default function LiveFarmView({
             ) : (
               <Plus className="h-3.5 w-3.5" />
             )}
-            <span>{isPinMode ? "नक्शे पर टैप करें" : "समस्या पिन"}</span>
+            <span>{isPinMode ? "नक्शे पर टैप करें" : "पिन लगाएं"}</span>
           </button>
         </div>
 

@@ -399,8 +399,8 @@ export default function HealthRadarView({
               <Satellite className="h-4 w-4" aria-hidden />
             </span>
             <div className="min-w-0">
-              <h2 className="truncate text-[14px] font-semibold leading-tight">फसल हरियाली व सेहत</h2>
-              <p className="text-[10px] text-emerald-200/70">उपग्रह द्वारा खेत की सेहत की जांच</p>
+              <h2 className="truncate text-[14px] font-semibold leading-tight">फसल सेहत</h2>
+              <p className="text-[10px] text-emerald-200/70">उपग्रह द्वारा हरियाली व बढ़वार की स्थिति</p>
             </div>
           </div>
 
@@ -414,7 +414,7 @@ export default function HealthRadarView({
               className={cn("h-3 w-3", isRadarScanning ? "animate-spin text-amber-300" : "animate-pulse")}
               aria-hidden
             />
-            {isRadarScanning ? "स्कैन…" : "स्कैन"}
+            {isRadarScanning ? "जांच हो रही है…" : "ताज़ा जांचें"}
           </button>
         </header>
 
@@ -433,22 +433,14 @@ export default function HealthRadarView({
             </span>
             <p className="mt-1.5 text-[11px] leading-snug text-emerald-100/65">{band.detail}</p>
 
-            <div className="mt-2.5 grid grid-cols-2 gap-1.5 text-[10px] text-emerald-100/75">
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1">
-                <CalendarDays className="h-3 w-3 text-emerald-300/80" aria-hidden />
-                {formatShortDate(currentObservation.acquisitionDate)}
+            <div className="mt-2.5 flex flex-wrap items-center gap-2 text-[10.5px] text-emerald-200/75">
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1">
+                <CalendarDays className="h-3 w-3 text-emerald-300" aria-hidden />
+                उपग्रह तस्वीर: {formatShortDate(currentObservation.acquisitionDate)}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1">
-                <Cloud className="h-3 w-3 text-emerald-300/80" aria-hidden />
-                {currentObservation.cloudCoveragePercent}% बादल
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1">
-                <Layers className="h-3 w-3 text-emerald-300/80" aria-hidden />
-                {currentObservation.resolutionMeters} मी
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1">
-                <Activity className="h-3 w-3 text-emerald-300/80" aria-hidden />
-                {currentObservation.validPixelCount} px
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1">
+                <Cloud className="h-3 w-3 text-emerald-300" aria-hidden />
+                मौसम: साफ
               </span>
             </div>
           </div>
@@ -477,7 +469,7 @@ export default function HealthRadarView({
                 फसल नक्शा
               </h3>
               <p className="text-[10px] text-[var(--av-text-muted)]">
-                10 मीटर ग्रिड · {zones.length} जांच क्षेत्र
+                {zones.length > 0 ? `${zones.length} स्थान पर ध्यान दें` : "पूरा खेत एकसमान हरा-भरा"}
               </p>
             </div>
           </div>

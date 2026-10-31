@@ -46,8 +46,8 @@ const STAGE_VIDEO_MAP: Record<string, { video: string; photo: string; order: num
     video: "/videos/wheat-stages/stage-2-cri.mp4",
     photo: "/images/wheat-stages/stage-2-cri.jpg",
     order: 2,
-    label: "CRI",
-    phase: "क्राउन जड़",
+    label: "जड़ विकास",
+    phase: "पहला पानी (21 दिन)",
   },
   tillering: {
     video: "/videos/wheat-stages/stage-3-tillering.mp4",
@@ -95,15 +95,15 @@ const STAGE_VIDEO_MAP: Record<string, { video: string; photo: string; order: num
     video: "/videos/wheat-stages/stage-9-dough.mp4",
     photo: "/images/wheat-stages/stage-9-dough.jpg",
     order: 9,
-    label: "सख्त",
+    label: "दाना पकना",
     phase: "सख्त दाना",
   },
   ripening: {
     video: "/videos/wheat-stages/stage-10-ripening.mp4",
     photo: "/images/wheat-stages/stage-10-ripening.jpg",
     order: 10,
-    label: "पकाव",
-    phase: "सुनहरी कटाई",
+    label: "पकी फसल",
+    phase: "कटाई तैयारी",
   },
 };
 
@@ -255,7 +255,7 @@ export default function WheatStageVideoPlayer({
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-300/80">
             <Sprout className="h-3.5 w-3.5 text-emerald-400" aria-hidden />
-            <span>फसल विकास यात्रा · जीवंत वीडियो</span>
+            <span>गेहूं बढ़वार · वीडियो गाइड</span>
           </div>
 
           <h2 className="mt-1 flex flex-wrap items-center gap-2 text-[16px] font-bold leading-tight text-white sm:text-[18px]">
@@ -325,7 +325,7 @@ export default function WheatStageVideoPlayer({
             )}
           >
             <Play className="h-3 w-3 fill-current" />
-            <span>🎬 जीवंत वीडियो</span>
+            <span>🎬 वीडियो</span>
           </button>
 
           <button
@@ -338,7 +338,7 @@ export default function WheatStageVideoPlayer({
                 : "text-white/60 hover:text-white"
             )}
           >
-            <span>📷 HD फोटो</span>
+            <span>📷 फोटो</span>
           </button>
         </div>
 
@@ -494,9 +494,9 @@ export default function WheatStageVideoPlayer({
         <div className="mb-2 flex items-center justify-between text-[11px] font-semibold text-emerald-200/90">
           <span className="flex items-center gap-1.5">
             <Layers className="h-3.5 w-3.5 text-emerald-400" />
-            <span>गेहूं विकास यात्रा (10 प्रमुख चरण)</span>
+            <span>गेहूं की 10 प्रमुख अवस्थाएं</span>
           </span>
-          <span className="text-[10px] text-emerald-300/70">टैप करके किसी भी चरण का वीडियो देखें</span>
+          <span className="text-[10px] text-emerald-300/70">टैप करके वीडियो देखें</span>
         </div>
 
         {/* 10-Stage Touch Grid */}

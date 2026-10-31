@@ -147,7 +147,7 @@ export const CROP_STAGE_ADVISORIES: Record<string, CropStageAdvisory[]> = {
   wheat: [
     {
       stageId: "crown_root",
-      stageNameHi: "ताज जड़ अवस्था (CRI stage, 18-25 दिन)",
+      stageNameHi: "जड़ विकास (CRI अवस्था, 18-25 दिन)",
       stageNameEn: "Crown Root Initiation",
       minDas: 0,
       maxDas: 25,

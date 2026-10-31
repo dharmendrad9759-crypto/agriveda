@@ -1002,7 +1002,7 @@ export default function MyFarmPage() {
                         >
                           <Compass className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
                           <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
-                            {isHi ? "लाइव खेत" : "Live Farm"}
+                            {isHi ? "खेत स्थिति" : "Farm Status"}
                           </span>
                           <span className="text-[9.5px] text-[var(--av-text-muted)]">
                             {isHi ? "नक्शा व मौसम" : "Map & Weather"}
@@ -1016,7 +1016,7 @@ export default function MyFarmPage() {
                         >
                           <Radio className="h-3.5 w-3.5 shrink-0 text-teal-600 dark:text-teal-300" />
                           <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
-                            {isHi ? "स्वास्थ्य रडार" : "Health Radar"}
+                            {isHi ? "फसल सेहत" : "Crop Health"}
                           </span>
                           <span className="text-[9.5px] text-[var(--av-text-muted)]">
                             {isHi ? "NDVI उपग्रह" : "NDVI Satellite"}
@@ -1030,7 +1030,7 @@ export default function MyFarmPage() {
                         >
                           <Sprout className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300" />
                           <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
-                            {isHi ? "फसल सफर" : "Crop Journey"}
+                            {isHi ? "फसल बढ़वार" : "Crop Growth"}
                           </span>
                           <span className="text-[9.5px] text-[var(--av-text-muted)]">
                             {isHi ? "अवस्था व कार्य" : "Stages & Tasks"}

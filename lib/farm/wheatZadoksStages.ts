@@ -10,87 +10,85 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     cropId: "wheat",
     stageId: "germination",
     zadoksCode: "Z00-Z09",
-    stageNameHi: "अंकुरण व जमाव (Germination & Emergence)",
+    stageNameHi: "अंकुरण व जमाव",
     stageNameEn: "Germination & Emergence",
     stageOrder: 0,
     descriptionHi:
-      "बीज में नमी का प्रवेश, जड़ (Radicle) का निकलना और प्रथम प्रांकुर (Coleoptile) का मिट्टी से बाहर आना।",
+      "बीज से जड़ निकलना और हरी सुई जैसी पत्तियों का मिट्टी से बाहर आना।",
     identificationCriteriaHi: [
-      "मिट्टी की सतह पर हल्की हरी सुई जैसी पत्तियां दिखना।",
-      "खेत में 70-80% अंकुरण 6 से 10 दिनों के अंदर पूरा हो जाता है।",
-      "पौधों की कतारें दूर से स्पष्ट दिखने लगती हैं।",
+      "मिट्टी से सुई जैसी बारीक हरी पत्तियां निकलना।",
+      "बुवाई के 6 से 10 दिनों में खेत में कतारें दिखने लगना।",
     ],
     typicalDaysRange: [0, 10],
     baseTempC: 5.0,
     targetGDD: [0, 120],
     photoUrl: "/images/wheat-stages/stage-1-germination.jpg",
     importantActivitiesHi: [
-      "खेत में समान जमाव (Crop Stand) का निरीक्षण करें।",
-      "यदि कहीं जमाव कम है, तो तुरंत हल्की नमी में नागा भरें (Gap Filling)।",
-      "चिड़ियों और चूहों से नए अंकुरित पौधों की सुरक्षा करें।",
+      "खेत में पौधों का जमाव देखें, जहां बीज न जमा हो वहां तुरंत बीज डालें।",
+      "पक्षियों और चूहों से नए अंकुरित पौधों की रक्षा करें।",
     ],
     irrigationConsiderationsHi:
-      "इस समय पानी न दें जब तक कि मिट्टी में बहुत अधिक सूखा न हो। अधिक पानी से जमाव रुक सकता है और बीज सड़ सकता है।",
+      "अभी पानी न लगाएं। बुवाई के तुरंत बाद पानी देने से मिट्टी पर पपड़ी जम जाती है और बीज सड़ सकता है।",
     nutrientManagementHi:
-      "बुवाई के समय डाला गया बेसल पोटाश (MOP) व डीएपी (DAP) पौधे की जड़ों को मजबूती दे रहा है। अभी कोई खाद न डालें।",
+      "बुवाई पर दिया गया डीएपी और पोटाश जड़ों को खुराक दे रहा है। अभी कोई खाद न दें।",
     weedManagementHi:
-      "यदि प्री-इमर्जेंस हर्बिसाइड (जैसे पेंडीमेथालिन 30% EC) नहीं डाला था, तो पहले 20 दिन तक खरपतवार की निगरानी करें।",
+      "शुरुआती 20 दिन तक खरपतवार की निगरानी रखें।",
     pestMonitoringHi:
-      "दीमक और कटवर्म (Guzhia weevil) की निगरानी करें। यदि तने कटे मिलें तो क्लोरपायरीफॉस का प्रयोग करें।",
+      "दीमक व कटवर्म की निगरानी करें।",
     diseaseMonitoringHi:
-      "बीज-जनित फफूंद (Foot rot / Damping off) की निगरानी करें।",
+      "जड़ सड़न (Foot rot) की जांच करें।",
     commonMistakesHi: [
       "अंकुरण के तुरंत बाद भारी सिंचाई करना जिससे मिट्टी पर पपड़ी जम जाती है।",
-      "बीज को बहुत गहरा (5 सेमी से अधिक) बोना जिससे अंकुर बाहर नहीं आ पाता।",
+      "बीज को बहुत गहरा (5 सेमी से ज्यादा) बोना।",
     ],
     nextStagePreviewHi:
-      "अगली अवस्था: ताज जड़ विकास (Crown Root Initiation - CRI) जो 20-22 दिन पर आएगी (पहला पानी)।",
+      "अगली अवस्था: जड़ विकास (CRI अवस्था) जो 20-22 दिन पर आएगी (पहला पानी)।",
   },
   {
     cropId: "wheat",
     stageId: "cri",
     zadoksCode: "Z10-Z19",
-    stageNameHi: "ताज जड़ विकास (Crown Root Initiation - CRI)",
+    stageNameHi: "जड़ विकास (CRI अवस्था)",
     stageNameEn: "Crown Root Initiation (CRI)",
     stageOrder: 1,
     descriptionHi:
-      "गेहूँ के जीवन चक्र की सबसे महत्वपूर्ण अवस्था! बीज के ऊपर तने के आधार से स्थायी क्राउन जड़ें निकलती हैं जो पूरे जीवन पौधे को भोजन और सहारा देंगी।",
+      "गेहूँ का सबसे महत्वपूर्ण समय! बीज के ऊपर मुख्य जड़ें फूटती हैं और इसी समय पहला पानी दिया जाता है।",
     identificationCriteriaHi: [
-      "पौधे में 3 से 4 हरी पत्तियां निकल आती हैं।",
-      "पौधे को सावधानी से उखाड़कर जड़ धोएं तो बीज के ठीक ऊपर सफेद छल्ले जैसी नई जड़ें दिखेंगी।",
-      "बुवाई के ठीक 20 से 25 दिन बाद यह अवस्था आती है।",
+      "पौधे में 3 से 4 पत्तियां निकल आती हैं।",
+      "पौधा उखाड़कर जड़ धोएं तो बीज के ठीक ऊपर सफेद नई जड़ें फूटती दिखेंगी।",
+      "बुवाई के ठीक 20 से 22 दिन बाद यह समय आता है।",
     ],
     typicalDaysRange: [18, 25],
     baseTempC: 5.0,
     targetGDD: [120, 260],
     photoUrl: "/images/wheat-stages/stage-2-cri.jpg",
     importantActivitiesHi: [
-      "गेहूँ का पहला और सबसे महत्वपूर्ण पानी लगाएं (CRI Irrigation)।",
-      "सिंचाई के 2-3 दिन बाद पहली यूरिया टॉप-ड्रेसिंग (45-50 किग्रा/एकड़) डालें।",
-      "चौड़ी और संकरी पत्ती वाले खरपतवारों की पहचान शुरू करें।",
+      "गेहूँ का पहला हल्का पानी (CRI सिंचाई) 20-22 दिन पर लगाएं।",
+      "पानी के 2-3 दिन बाद ओट आने पर यूरिया (45 किग्रा प्रति एकड़) डालें।",
+      "गुल्ली डंडा और बथुआ जैसे खरपतवारों पर नजर रखें।",
     ],
     irrigationConsiderationsHi:
-      "अत्यंत संवेदनशील! यदि इस अवस्था में पानी देने में 10 दिन की भी देरी हुई तो पैदावार में 25-30% तक की भारी गिरावट आ सकती है। पानी हल्का लगाएं, जलभराव न होने दें।",
+      "पहला पानी बहुत जरूरी है! इसमें देरी होने पर पैदावार 25-30% तक घट सकती है। पानी हल्का लगाएं, खेत में जलभराव न होने दें।",
     nutrientManagementHi:
-      "पहली सिंचाई के ओट आने पर यूरिया 45 किग्रा + जिंक सल्फेट (यदि बुवाई पर नहीं डाला था) का छिड़काव करें।",
+      "पहली सिंचाई के बाद ओट आने पर यूरिया 40-45 किग्रा + जिंक का छिड़काव करें।",
     weedManagementHi:
-      "गुल्ली डंडा (Phalaris minor) और बथुआ निकलना शुरू होते हैं। पहली सिंचाई के बाद खरपतवार नाशक का सही समय होता है।",
+      "गुल्ली डंडा (मैंडूसी) व बथुआ की पहचान करें। पहली सिंचाई के बाद सही दवा का छिड़काव करें।",
     pestMonitoringHi:
-      "माहू (Aphid) और तना छेदक के शुरुआती लक्षणों की निगरानी करें।",
+      "माहू (चेपा) और तना छेदक के शुरुआती लक्षणों की निगरानी करें।",
     diseaseMonitoringHi:
-      "जड़ सड़न (Root rot) के लक्षणों की जांच करें।",
+      "जड़ सड़न की जांच करें।",
     commonMistakesHi: [
-      "CRI पानी को नजरअंदाज करना या 30-35 दिन तक टालना।",
-      "खेत में बहुत ज्यादा पानी भर देना जिससे पौधा पीला पड़ने लगता है।",
+      "पहला पानी देने में देरी करना (25-30 दिन से ज्यादा टालना)।",
+      "खेत में बहुत ज्यादा पानी भर देना जिससे पौधे पीले पड़ जाते हैं।",
     ],
     nextStagePreviewHi:
-      "अगली अवस्था: कल्ले फूटना (Tillering) जहां मुख्य पौधे से नए तने निकलेंगे।",
+      "अगली अवस्था: कल्ले फूटना (Tillering) जहां पौधे से नई शाखाएं निकलेंगी।",
   },
   {
     cropId: "wheat",
     stageId: "tillering",
     zadoksCode: "Z20-Z29",
-    stageNameHi: "कल्ले फूटना (Tillering Stage)",
+    stageNameHi: "कल्ले फूटना",
     stageNameEn: "Tillering Stage",
     stageOrder: 2,
     descriptionHi:
@@ -130,7 +128,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     cropId: "wheat",
     stageId: "stem_elongation",
     zadoksCode: "Z30-Z39",
-    stageNameHi: "तना वृद्धि व गांठ बनना (Jointing / Stem Elongation)",
+    stageNameHi: "गांठ बनना (तना बढ़वार)",
     stageNameEn: "Stem Elongation / Jointing",
     stageOrder: 3,
     descriptionHi:
@@ -169,7 +167,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     cropId: "wheat",
     stageId: "booting",
     zadoksCode: "Z40-Z49",
-    stageNameHi: "गोभ अवस्था (Booting Stage)",
+    stageNameHi: "गोभ अवस्था",
     stageNameEn: "Booting Stage",
     stageOrder: 4,
     descriptionHi:
@@ -208,7 +206,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     cropId: "wheat",
     stageId: "heading",
     zadoksCode: "Z50-Z59",
-    stageNameHi: "बालियां निकलना (Heading / Ear Emergence)",
+    stageNameHi: "बाली निकलना",
     stageNameEn: "Heading / Ear Emergence",
     stageOrder: 5,
     descriptionHi:
@@ -247,7 +245,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     cropId: "wheat",
     stageId: "flowering",
     zadoksCode: "Z60-Z69",
-    stageNameHi: "फूल व परागण (Flowering / Anthesis)",
+    stageNameHi: "फूल व परागण",
     stageNameEn: "Flowering / Anthesis",
     stageOrder: 6,
     descriptionHi:
@@ -283,7 +281,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     cropId: "wheat",
     stageId: "milking",
     zadoksCode: "Z70-Z79",
-    stageNameHi: "दुग्ध अवस्था (Milk Stage / Grain Filling)",
+    stageNameHi: "दूधिया दाना",
     stageNameEn: "Milk Stage / Grain Filling",
     stageOrder: 7,
     descriptionHi:
@@ -319,7 +317,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     cropId: "wheat",
     stageId: "dough",
     zadoksCode: "Z80-Z89",
-    stageNameHi: "दाना सख्त होना (Dough Stage)",
+    stageNameHi: "दाना पकना",
     stageNameEn: "Dough Stage",
     stageOrder: 8,
     descriptionHi:
@@ -354,7 +352,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
     cropId: "wheat",
     stageId: "ripening",
     zadoksCode: "Z90-Z99",
-    stageNameHi: "पूर्ण पक्वता व कटाई (Ripening & Harvest)",
+    stageNameHi: "पकी फसल (कटाई)",
     stageNameEn: "Ripening & Harvest",
     stageOrder: 9,
     descriptionHi:
@@ -385,7 +383,7 @@ export const WHEAT_ZADOKS_STAGES: CropStageDefinition[] = [
       "गीले अनाज का भंडारण करना जिससे फफूंद लग जाती है और अंकुरण क्षमता नष्ट हो जाती है।",
     ],
     nextStagePreviewHi:
-      "फसल सीजन संपन्न! आप नई फसल का सफर शुरू कर सकते हैं।",
+      "फसल सीजन संपन्न! आप अगली फसल की बुवाई दर्ज कर सकते हैं।",
   },
 ];
 

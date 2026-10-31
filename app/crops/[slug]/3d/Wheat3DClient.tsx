@@ -41,7 +41,7 @@ export default function Wheat3DClient({ cropName, cropSlug }: Props) {
               {cropName} · 10 प्रमुख विकास चरण
             </h1>
             <p className="text-[10.5px] text-emerald-300">
-              100% जीवंत व रियलिस्टिक वीडियो गाइड
+              फसल बढ़वार वीडियो गाइड
             </p>
           </div>
 

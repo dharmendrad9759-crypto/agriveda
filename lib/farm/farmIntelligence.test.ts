@@ -82,7 +82,7 @@ describe("Agriveda Farm Intelligence 360° - Scientific & Agronomic Engine", () 
       const criStage = getWheatStageById("cri");
       expect(criStage).toBeDefined();
       expect(criStage?.zadoksCode).toBe("Z10-Z19");
-      expect(criStage?.stageNameHi).toContain("ताज जड़");
+      expect(criStage?.stageNameHi).toContain("जड़ विकास");
       expect(criStage?.irrigationConsiderationsHi).toContain("पानी");
       expect(criStage?.commonMistakesHi?.length).toBeGreaterThan(0);
     });
