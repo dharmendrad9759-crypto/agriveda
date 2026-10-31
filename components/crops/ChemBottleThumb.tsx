@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { bottleCategory, getChemPackageType, lookupChemBottle } from "@/lib/crops/chemBottle";
 import { chemBottleImageSrc, hasRealBottlePhoto } from "@/lib/crops/chemBottleSvg";
 import type { ChemBottleCategory } from "@/data/chem-bottle-catalog";
@@ -25,35 +26,7 @@ export default function ChemBottleThumb({
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!expanded) return;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    const prevBodyTouchAction = document.body.style.touchAction;
-
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
-
-    const preventTouch = (e: TouchEvent) => {
-      // Prevent background scrolling while modal is open
-      if ((e.target as HTMLElement)?.closest?.('[data-modal-content="true"]')) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    window.addEventListener("touchmove", preventTouch, { passive: false });
-
-    return () => {
-      window.removeEventListener("touchmove", preventTouch);
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.body.style.overflow = prevBodyOverflow;
-      document.body.style.touchAction = prevBodyTouchAction;
-      window.scrollTo(0, scrollY);
-    };
-  }, [expanded]);
+  useBodyScrollLock(expanded);
 
   const hit = lookupChemBottle(technical);
   const isReal = hasRealBottlePhoto(technical);
@@ -117,10 +90,8 @@ export default function ChemBottleThumb({
             <div
               role="dialog"
               aria-modal="true"
-              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in touch-none select-none overscroll-none"
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in"
               onClick={() => setExpanded(false)}
-              onTouchMove={(e) => e.preventDefault()}
-              onWheel={(e) => e.preventDefault()}
             >
               <div
                 data-modal-content="true"

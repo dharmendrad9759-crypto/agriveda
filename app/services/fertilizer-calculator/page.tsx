@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -86,35 +87,23 @@ function FertilizerCalculatorInner() {
   const [hasSoilReport, setHasSoilReport] = useState<boolean>(false);
   const [showSoilInPlan, setShowSoilInPlan] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useBodyScrollLock(showBottomSheet);
 
   useEffect(() => {
     if (!showBottomSheet) return;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    const prevBodyTouchAction = document.body.style.touchAction;
-
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
-
-    const preventTouch = (e: TouchEvent) => {
-      if ((e.target as HTMLElement)?.closest?.('[data-bottom-sheet="true"]')) {
-        return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowBottomSheet(false);
       }
-      e.preventDefault();
     };
-
-    window.addEventListener("touchmove", preventTouch, { passive: false });
-
-    return () => {
-      window.removeEventListener("touchmove", preventTouch);
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.body.style.overflow = prevBodyOverflow;
-      document.body.style.touchAction = prevBodyTouchAction;
-      window.scrollTo(0, scrollY);
-    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [showBottomSheet]);
 
   useEffect(() => {
@@ -621,283 +610,294 @@ function FertilizerCalculatorInner() {
         </AnimatePresence>
 
         {/* ========================================================== */}
-        {/* THUMB-FRIENDLY BOTTOM SHEET MODAL (Crop & Acre Selection)   */}
+        {/* DIALOG MODAL (Crop & Acre Selection - Centered via Portal) */}
         {/* ========================================================== */}
-        <AnimatePresence>
-          {showBottomSheet && slug && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowBottomSheet(false)}
-                className="fixed inset-0 bg-black/75 backdrop-blur-sm touch-none overscroll-none"
-              />
-
-              {/* Dialog Card - Positioned in front of the screen */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.94, y: 16 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.94, y: 16 }}
-                transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                className="relative z-10 flex max-h-[86vh] w-full max-w-lg flex-col overflow-hidden rounded-[28px] border border-emerald-500/30 bg-[var(--av-surface)] shadow-2xl touch-auto text-left"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Header (Sticky at top of dialog) */}
-                <div className="flex items-center justify-between border-b border-[var(--av-border)] bg-[var(--av-surface)] px-5 py-3.5 shrink-0">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl ring-2 ring-emerald-500/30">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={resolveCropImage({
-                          slug,
-                          name: cropCatalog.find((c) => c.slug === slug)?.name ?? slug,
-                        })}
-                        alt=""
-                        className="h-full w-full object-cover"
-                      />
-                    </span>
-                    <div className="min-w-0">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                        <CheckCircle2 className="h-3 w-3" />
-                        फसल चुनी गई
-                      </span>
-                      <h2 className="truncate text-lg font-black text-[var(--av-text-primary)]">
-                        {cropHi}
-                      </h2>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowBottomSheet(false)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--av-surface-inset)] text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)] active:scale-95"
-                    aria-label="बंद करें"
+        {mounted && typeof document !== "undefined"
+          ? createPortal(
+              <AnimatePresence>
+                {showBottomSheet && slug && (
+                  <div
+                    className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={`${cropHi} खाद कैलकुलेटर`}
                   >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
+                    {/* Backdrop */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      onClick={() => setShowBottomSheet(false)}
+                      className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+                    />
 
-                {/* Scrollable Form Body */}
-                <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 space-y-4 scrollbar-hide">
-                  {/* Saved Farm Fields Quick Selector */}
-                  {savedFields.length > 0 ? (
-                    <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3">
-                      <div className="flex items-center justify-between gap-1 mb-2">
-                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-200 flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5 text-emerald-600" />
-                          मेरे सहेजे गए खेत से चुनें:
-                        </span>
-                        <a
-                          href="/my-farm/measure"
-                          className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-0.5"
+                    {/* Dialog Card - Positioned squarely in front of the screen */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.94, y: 16 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.94, y: 16 }}
+                      transition={{ type: "spring", damping: 26, stiffness: 320 }}
+                      className="relative z-10 my-auto flex max-h-[85dvh] w-full max-w-lg flex-col overflow-hidden rounded-[26px] border border-emerald-500/30 bg-[var(--av-surface)] shadow-2xl text-left"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {/* Header (Sticky at top of dialog) */}
+                      <div className="flex items-center justify-between border-b border-[var(--av-border)] bg-[var(--av-surface)] px-5 py-3.5 shrink-0">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl ring-2 ring-emerald-500/30">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={resolveCropImage({
+                                slug,
+                                name: cropCatalog.find((c) => c.slug === slug)?.name ?? slug,
+                              })}
+                              alt=""
+                              className="h-full w-full object-cover"
+                            />
+                          </span>
+                          <div className="min-w-0">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                              <CheckCircle2 className="h-3 w-3" />
+                              फसल चुनी गई
+                            </span>
+                            <h2 className="truncate text-lg font-black text-[var(--av-text-primary)]">
+                              {cropHi}
+                            </h2>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setShowBottomSheet(false)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--av-surface-inset)] text-[var(--av-text-muted)] hover:text-[var(--av-text-primary)] active:scale-95"
+                          aria-label="बंद करें"
                         >
-                          <Ruler className="h-3 w-3" />
-                          खेत नापें
-                        </a>
+                          <X className="h-4 w-4" />
+                        </button>
                       </div>
-                      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                        {savedFields.map((f) => {
-                          const fAcres = f.areaAcres ? String(f.areaAcres) : (f.area?.match(/([\d.]+)/)?.[1] ?? "1");
-                          const isSelected = area === fAcres;
-                          return (
+
+                      {/* Scrollable Form Body */}
+                      <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 space-y-4 scrollbar-hide">
+                        {/* Saved Farm Fields Quick Selector */}
+                        {savedFields.length > 0 ? (
+                          <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3">
+                            <div className="flex items-center justify-between gap-1 mb-2">
+                              <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-200 flex items-center gap-1">
+                                <MapPin className="h-3.5 w-3.5 text-emerald-600" />
+                                मेरे सहेजे गए खेत से चुनें:
+                              </span>
+                              <a
+                                href="/my-farm/measure"
+                                className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-0.5"
+                              >
+                                <Ruler className="h-3 w-3" />
+                                खेत नापें
+                              </a>
+                            </div>
+                            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                              {savedFields.map((f) => {
+                                const fAcres = f.areaAcres ? String(f.areaAcres) : (f.area?.match(/([\d.]+)/)?.[1] ?? "1");
+                                const isSelected = area === fAcres;
+                                return (
+                                  <button
+                                    key={f.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setArea(fAcres);
+                                      if (f.cropSlug && slugs.includes(f.cropSlug)) {
+                                        setSlug(f.cropSlug);
+                                      }
+                                    }}
+                                    className={cn(
+                                      "shrink-0 rounded-xl px-3 py-2 text-left text-xs font-bold transition active:scale-95 border",
+                                      isSelected
+                                        ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                                        : "bg-[var(--av-surface)] text-[var(--av-text-primary)] border-[var(--av-border)] hover:border-emerald-500/40"
+                                    )}
+                                  >
+                                    <div className="truncate max-w-[130px] font-extrabold">{f.name}</div>
+                                    <div
+                                      className={cn(
+                                        "text-[10px] font-semibold mt-0.5",
+                                        isSelected ? "text-emerald-100" : "text-emerald-700 dark:text-emerald-300"
+                                      )}
+                                    >
+                                      {fAcres} एकड़ {f.crop ? `• ${f.crop.split("(")[0].trim()}` : ""}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between px-1">
+                            <span className="text-[11px] text-[var(--av-text-muted)]">
+                              खेत का रकबा नहीं पता?
+                            </span>
+                            <a
+                              href="/my-farm/measure"
+                              className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1"
+                            >
+                              <Ruler className="h-3 w-3" />
+                              उपग्रह से अपना खेत नापें →
+                            </a>
+                          </div>
+                        )}
+
+                        {/* Acre Input with Stepper */}
+                        <div>
+                          <label className="block text-xs font-extrabold uppercase tracking-wider text-[var(--av-text-muted)]">
+                            खेत कितना एकड़?
+                          </label>
+                          <div className="mt-2 flex items-center gap-2">
                             <button
-                              key={f.id}
                               type="button"
                               onClick={() => {
-                                setArea(fAcres);
-                                if (f.cropSlug && slugs.includes(f.cropSlug)) {
-                                  setSlug(f.cropSlug);
-                                }
+                                const cur = Math.max(0.5, parseFloat(area || "1") - 0.5);
+                                setArea(String(Math.round(cur * 10) / 10));
                               }}
-                              className={cn(
-                                "shrink-0 rounded-xl px-3 py-2 text-left text-xs font-bold transition active:scale-95 border",
-                                isSelected
-                                  ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
-                                  : "bg-[var(--av-surface)] text-[var(--av-text-primary)] border-[var(--av-border)] hover:border-emerald-500/40"
-                              )}
+                              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-primary)] transition active:scale-95"
                             >
-                              <div className="truncate max-w-[130px] font-extrabold">{f.name}</div>
-                              <div
+                              <Minus className="h-4 w-4" />
+                            </button>
+
+                            <div className="relative flex-1">
+                              <input
+                                type="number"
+                                inputMode="decimal"
+                                min="0.1"
+                                max="50"
+                                step="0.5"
+                                value={area}
+                                onChange={(e) => setArea(e.target.value)}
+                                className="av-input h-12 w-full text-center text-xl font-black text-emerald-700 dark:text-emerald-300"
+                                placeholder="1"
+                              />
+                              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--av-text-muted)]">
+                                एकड़
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const cur = Math.min(50, parseFloat(area || "1") + 0.5);
+                                setArea(String(Math.round(cur * 10) / 10));
+                              }}
+                              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-primary)] transition active:scale-95"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
+
+                          {/* Quick Acre Chips */}
+                          <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+                            {["0.5", "1", "2", "3", "5"].map((val) => (
+                              <button
+                                key={val}
+                                type="button"
+                                onClick={() => setArea(val)}
                                 className={cn(
-                                  "text-[10px] font-semibold mt-0.5",
-                                  isSelected ? "text-emerald-100" : "text-emerald-700 dark:text-emerald-300"
+                                  "rounded-full px-3 py-1 text-xs font-bold transition active:scale-95",
+                                  area === val
+                                    ? "bg-emerald-600 text-white shadow-sm"
+                                    : "border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]"
                                 )}
                               >
-                                {fAcres} एकड़ {f.crop ? `• ${f.crop.split("(")[0].trim()}` : ""}
-                              </div>
+                                {val} एकड़
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* किसान के लिए 3 जरूरी टिप्स */}
+                        <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 space-y-2">
+                          <p className="text-xs font-black text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                            <Lightbulb className="h-4 w-4 text-emerald-600" />
+                            <span>किसान भाइयों के लिए 3 जरूरी टिप्स:</span>
+                          </p>
+                          <ul className="space-y-1.5 text-[11px] text-[var(--av-text-secondary)] font-medium leading-relaxed">
+                            <li className="flex items-start gap-1.5">
+                              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
+                              <span><strong>DAP व जिंक अलग रखें:</strong> DAP बुवाई पर दें और जिंक पहली सिंचाई पर यूरिया के साथ। दोनों कभी एक साथ न मिलाएं।</span>
+                            </li>
+                            <li className="flex items-start gap-1.5">
+                              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
+                              <span><strong>नमी में ही खाद दें:</strong> यूरिया हमेशा खेत में पर्याप्त नमी होने पर या सिंचाई के तुरंत बाद ही डालें।</span>
+                            </li>
+                            <li className="flex items-start gap-1.5">
+                              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
+                              <span><strong>स्प्रे में पर्याप्त पानी:</strong> पत्तों पर स्प्रे करते समय प्रति एकड़ 150–200 लीटर साफ पानी अवश्य रखें।</span>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Prompt: Mitti Janch Report Check */}
+                        <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-3.5">
+                          <p className="text-xs font-extrabold text-[var(--av-text-primary)]">
+                            क्या आपके पास मिट्टी जाँच रिपोर्ट है?
+                          </p>
+                          <p className="mt-0.5 text-[10.5px] text-[var(--av-text-muted)]">
+                            रिपोर्ट होने पर खाद की मात्रा और भी सटीक हो जाती है
+                          </p>
+
+                          <div className="mt-2.5 flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setHasSoilReport(false);
+                                setSoilTest({});
+                              }}
+                              className={cn(
+                                "flex-1 rounded-xl py-2.5 text-xs font-black transition active:scale-95",
+                                !hasSoilReport
+                                  ? "bg-emerald-600 text-white shadow-sm"
+                                  : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                              )}
+                            >
+                              नहीं
                             </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-between px-1">
-                      <span className="text-[11px] text-[var(--av-text-muted)]">
-                        खेत का रकबा नहीं पता?
-                      </span>
-                      <a
-                        href="/my-farm/measure"
-                        className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1"
-                      >
-                        <Ruler className="h-3 w-3" />
-                        उपग्रह से अपना खेत नापें →
-                      </a>
-                    </div>
-                  )}
+                            <button
+                              type="button"
+                              onClick={() => setHasSoilReport(true)}
+                              className={cn(
+                                "flex-1 rounded-xl py-2.5 text-xs font-black transition active:scale-95",
+                                hasSoilReport
+                                  ? "bg-amber-600 text-white shadow-sm"
+                                  : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                              )}
+                            >
+                              हाँ
+                            </button>
+                          </div>
 
-                  {/* Acre Input with Stepper */}
-                  <div>
-                    <label className="block text-xs font-extrabold uppercase tracking-wider text-[var(--av-text-muted)]">
-                      खेत कितना एकड़?
-                    </label>
-                    <div className="mt-2 flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const cur = Math.max(0.5, parseFloat(area || "1") - 0.5);
-                          setArea(String(Math.round(cur * 10) / 10));
-                        }}
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-primary)] transition active:scale-95"
-                      >
-                        <Minus className="h-4 w-4" />
-                      </button>
-
-                      <div className="relative flex-1">
-                        <input
-                          type="number"
-                          inputMode="decimal"
-                          min="0.1"
-                          max="50"
-                          step="0.5"
-                          value={area}
-                          onChange={(e) => setArea(e.target.value)}
-                          className="av-input h-12 w-full text-center text-xl font-black text-emerald-700 dark:text-emerald-300"
-                          placeholder="1"
-                        />
-                        <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--av-text-muted)]">
-                          एकड़
-                        </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const cur = Math.min(50, parseFloat(area || "1") + 0.5);
-                          setArea(String(Math.round(cur * 10) / 10));
-                        }}
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-primary)] transition active:scale-95"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </button>
-                    </div>
-
-                    {/* Quick Acre Chips */}
-                    <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-                      {["0.5", "1", "2", "3", "5"].map((val) => (
-                        <button
-                          key={val}
-                          type="button"
-                          onClick={() => setArea(val)}
-                          className={cn(
-                            "rounded-full px-3 py-1 text-xs font-bold transition active:scale-95",
-                            area === val
-                              ? "bg-emerald-600 text-white shadow-sm"
-                              : "border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]"
+                          {hasSoilReport && (
+                            <div className="mt-3 pt-3 border-t border-amber-500/20">
+                              <SoilTestInputs value={soilTest} onChange={setSoilTest} />
+                            </div>
                           )}
-                        >
-                          {val} एकड़
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* किसान के लिए 3 जरूरी टिप्स */}
-                  <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 space-y-2">
-                    <p className="text-xs font-black text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-                      <Lightbulb className="h-4 w-4 text-emerald-600" />
-                      <span>किसान भाइयों के लिए 3 जरूरी टिप्स:</span>
-                    </p>
-                    <ul className="space-y-1.5 text-[11px] text-[var(--av-text-secondary)] font-medium leading-relaxed">
-                      <li className="flex items-start gap-1.5">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
-                        <span><strong>DAP व जिंक अलग रखें:</strong> DAP बुवाई पर दें और जिंक पहली सिंचाई पर यूरिया के साथ। दोनों कभी एक साथ न मिलाएं।</span>
-                      </li>
-                      <li className="flex items-start gap-1.5">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
-                        <span><strong>नमी में ही खाद दें:</strong> यूरिया हमेशा खेत में पर्याप्त नमी होने पर या सिंचाई के तुरंत बाद ही डालें।</span>
-                      </li>
-                      <li className="flex items-start gap-1.5">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
-                        <span><strong>स्प्रे में पर्याप्त पानी:</strong> पत्तों पर स्प्रे करते समय प्रति एकड़ 150–200 लीटर साफ पानी अवश्य रखें।</span>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Prompt: Mitti Janch Report Check */}
-                  <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-3.5">
-                    <p className="text-xs font-extrabold text-[var(--av-text-primary)]">
-                      क्या आपके पास मिट्टी जाँच रिपोर्ट है?
-                    </p>
-                    <p className="mt-0.5 text-[10.5px] text-[var(--av-text-muted)]">
-                      रिपोर्ट होने पर खाद की मात्रा और भी सटीक हो जाती है
-                    </p>
-
-                    <div className="mt-2.5 flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setHasSoilReport(false);
-                          setSoilTest({});
-                        }}
-                        className={cn(
-                          "flex-1 rounded-xl py-2.5 text-xs font-black transition active:scale-95",
-                          !hasSoilReport
-                            ? "bg-emerald-600 text-white shadow-sm"
-                            : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
-                        )}
-                      >
-                        नहीं
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setHasSoilReport(true)}
-                        className={cn(
-                          "flex-1 rounded-xl py-2.5 text-xs font-black transition active:scale-95",
-                          hasSoilReport
-                            ? "bg-amber-600 text-white shadow-sm"
-                            : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
-                        )}
-                      >
-                        हाँ
-                      </button>
-                    </div>
-
-                    {hasSoilReport && (
-                      <div className="mt-3 pt-3 border-t border-amber-500/20">
-                        <SoilTestInputs value={soilTest} onChange={setSoilTest} />
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </div>
 
-                {/* Sticky Dialog Footer CTA */}
-                <div className="border-t border-[var(--av-border)] bg-[var(--av-surface)] p-4 shrink-0">
-                  <button
-                    type="button"
-                    disabled={!canSeePlan}
-                    onClick={handleViewPlan}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-900/30 transition active:scale-[0.98] disabled:opacity-50"
-                  >
-                    <FertilizerNpkSparkleIcon className="h-4 w-4" />
-                    <span>खाद योजना देखें</span>
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+                      {/* Sticky Dialog Footer CTA */}
+                      <div className="border-t border-[var(--av-border)] bg-[var(--av-surface)] p-4 shrink-0">
+                        <button
+                          type="button"
+                          disabled={!canSeePlan}
+                          onClick={handleViewPlan}
+                          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-900/30 transition active:scale-[0.98] disabled:opacity-50"
+                        >
+                          <FertilizerNpkSparkleIcon className="h-4 w-4" />
+                          <span>खाद योजना देखें</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </AnimatePresence>,
+              document.body
+            )
+          : null}
       </div>
     </Agriveda2Shell>
   );

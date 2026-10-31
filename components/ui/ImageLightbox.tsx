@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 type ImageLightboxProps = {
   src: string | null;
@@ -12,7 +13,7 @@ type ImageLightboxProps = {
 
 /**
  * Full-screen image preview portaled to document.body so AppShell / motion
- * transforms cannot pin `position:fixed` to a scrolled parent (mobile “too low”).
+ * transforms cannot pin `position:fixed` to a scrolled parent.
  */
 export default function ImageLightbox({
   src,
@@ -27,22 +28,10 @@ export default function ImageLightbox({
     setMounted(true);
   }, []);
 
+  useBodyScrollLock(Boolean(src));
+
   useEffect(() => {
     if (!src) return;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    const prevBodyTouchAction = document.body.style.touchAction;
-
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
-
-    const preventTouch = (e: TouchEvent) => {
-      e.preventDefault();
-    };
-
-    window.addEventListener("touchmove", preventTouch, { passive: false });
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCloseRef.current();
@@ -50,12 +39,7 @@ export default function ImageLightbox({
     window.addEventListener("keydown", onKey);
 
     return () => {
-      window.removeEventListener("touchmove", preventTouch);
       window.removeEventListener("keydown", onKey);
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.body.style.overflow = prevBodyOverflow;
-      document.body.style.touchAction = prevBodyTouchAction;
-      window.scrollTo(0, scrollY);
     };
   }, [src]);
 
@@ -63,12 +47,10 @@ export default function ImageLightbox({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/92 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] touch-none select-none overscroll-none"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/92 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]"
       role="dialog"
       aria-modal="true"
       onClick={onClose}
-      onTouchMove={(e) => e.preventDefault()}
-      onWheel={(e) => e.preventDefault()}
     >
       <button
         type="button"

@@ -82,35 +82,6 @@ export default function HomeCropStatusCard({
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!showDatePicker) return;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    const prevBodyTouchAction = document.body.style.touchAction;
-
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
-
-    const preventTouch = (e: TouchEvent) => {
-      if ((e.target as HTMLElement)?.closest?.('[data-modal-content="true"]')) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    window.addEventListener("touchmove", preventTouch, { passive: false });
-
-    return () => {
-      window.removeEventListener("touchmove", preventTouch);
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.body.style.overflow = prevBodyOverflow;
-      document.body.style.touchAction = prevBodyTouchAction;
-      window.scrollTo(0, scrollY);
-    };
-  }, [showDatePicker]);
-
   // Form state for date picker modal
   const toLocalIso = (d: Date) => {
     const y = d.getFullYear();
@@ -374,10 +345,8 @@ export default function HomeCropStatusCard({
             <div
               role="dialog"
               aria-modal="true"
-              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none"
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4"
               onClick={() => setShowDatePicker(false)}
-              onTouchMove={(e) => e.preventDefault()}
-              onWheel={(e) => e.preventDefault()}
             >
               {/* Backdrop blur */}
               <div
@@ -516,7 +485,7 @@ export default function HomeCropStatusCard({
       {mounted && showCropSwitcher && typeof document !== "undefined"
         ? createPortal(
             <div
-              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
               onClick={() => setShowCropSwitcher(false)}
             >
               <div
