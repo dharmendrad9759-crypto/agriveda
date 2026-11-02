@@ -25,7 +25,7 @@ interface FarmSheetProps {
 
 /**
  * Shared bottom-sheet / dialog shell for farm actions.
- * Keeps every farm form visually consistent and animated on low-end phones.
+ * Mobile-first: slides up as a bottom sheet on phones, centered on desktop.
  */
 export default function FarmSheet({
   open,
@@ -70,13 +70,13 @@ export default function FarmSheet({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  if (!mounted) return null;
+  if (!mounted || typeof document === "undefined") return null;
 
   return createPortal(
     <AnimatePresence>
       {open ? (
         <div
-          className="fixed inset-0 flex items-center justify-center p-3 sm:p-4"
+          className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4"
           style={{ zIndex: level }}
           role="dialog"
           aria-modal="true"
@@ -95,16 +95,18 @@ export default function FarmSheet({
 
           <motion.div
             className={cn(
-              "relative flex max-h-[85dvh] w-full flex-col overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl text-left",
+              "relative flex max-h-[92dvh] sm:max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-[32px] sm:rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0",
               size === "lg" ? "max-w-lg" : "max-w-md"
             )}
-            initial={reduced ? false : { opacity: 0, y: 16, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.94 }}
+            initial={reduced ? false : { opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 32 }}
             transition={{ duration: MOTION.normal, ease: EASE_OUT }}
           >
+            {/* Mobile pull indicator */}
+            <div className="mx-auto mt-2.5 mb-1 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
 
-            <header className="flex items-start gap-3 border-b border-[var(--av-border-subtle)] px-4 pb-3 pt-3 sm:px-5">
+            <header className="flex items-start gap-3 border-b border-[var(--av-border-subtle)] px-4 pb-3 pt-2 sm:pt-3 sm:px-5">
               {icon ? (
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-700 dark:text-emerald-300">
                   {icon}

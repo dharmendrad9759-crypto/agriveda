@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { Loader2, MapPin, Navigation, Search, X } from "lucide-react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { lookupPincode } from "@/lib/pincodeLookup";
@@ -34,8 +35,13 @@ export default function WeatherLocationSheet({
   const [pinError, setPinError] = useState<string | null>(null);
 
   useBodyScrollLock(open);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
-  if (!open) return null;
+  if (!open || !mounted || typeof document === "undefined") return null;
 
   const searchPincode = async (targetPin?: string) => {
     const pin = (targetPin ?? pincode).replace(/\D/g, "").slice(0, 6);
@@ -59,16 +65,18 @@ export default function WeatherLocationSheet({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
+  return createPortal(
+    <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <button
         type="button"
         aria-label="Close"
         onClick={onClose}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm touch-none overscroll-none"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
       />
 
-      <div className="relative z-10 w-full max-w-lg rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface)] p-5 sm:p-6 shadow-2xl touch-auto max-h-[88vh] overflow-y-auto">
+      <div className="relative z-10 w-full max-w-lg rounded-t-[32px] sm:rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface)] px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6 shadow-2xl max-h-[92dvh] sm:max-h-[88vh] overflow-y-auto text-left animate-in fade-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
+        {/* Mobile pull indicator */}
+        <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
 
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-[var(--av-text-primary)]">
@@ -174,6 +182,7 @@ export default function WeatherLocationSheet({
             </div>
           </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

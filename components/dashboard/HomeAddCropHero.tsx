@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -50,7 +51,13 @@ const CATEGORIES = [
   { id: "Oilseeds", hi: "तिलहन", en: "Oilseeds" },
 ];
 
-export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProps) {
+export default function HomeAddCropHero({
+ isHi, onAddCrop }: HomeAddCropHeroProps) {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const [modalOpen, setModalOpen] = useState(false);
   useBodyScrollLock(modalOpen);
   const [searchQuery, setSearchQuery] = useState("");
@@ -172,28 +179,32 @@ export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProp
       </div>
 
       {/* ── INTERACTIVE FULL CROP SELECTION MODAL ── */}
-      <AnimatePresence>
-        {modalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setModalOpen(false)}
-              className="fixed inset-0 bg-black/75 backdrop-blur-sm touch-none overscroll-none"
-            />
+      {mounted && typeof document !== "undefined"
+        ? createPortal(
+            <AnimatePresence>
+              {modalOpen && (
+                <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                  {/* Backdrop */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setModalOpen(false)}
+                    className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+                  />
 
-            {/* Modal Dialog */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 16 }}
-              transition={{ type: "spring", damping: 26, stiffness: 320 }}
-              className="relative z-10 flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-[28px] border border-emerald-500/30 bg-[var(--av-surface,#0c1a14)] text-white shadow-2xl touch-auto text-left"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
+                  {/* Modal Dialog */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 32 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 32 }}
+                    transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="relative z-10 flex max-h-[92dvh] sm:max-h-[85dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[32px] sm:rounded-[28px] border border-emerald-500/30 bg-[var(--av-surface,#0c1a14)] text-white shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Top drag handle for mobile */}
+                    <div className="mx-auto mt-2.5 mb-1 h-1.5 w-12 rounded-full bg-white/20 sm:hidden" />
+                    {/* Modal Header */}
               <div className="relative border-b border-emerald-500/20 bg-gradient-to-r from-[#042416] to-[#02180e] p-4 sm:p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -385,9 +396,12 @@ export default function HomeAddCropHero({ isHi, onAddCrop }: HomeAddCropHeroProp
                 </button>
               </div>
             </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                </div>
+              )}
+            </AnimatePresence>,
+            document.body
+          )
+        : null}
     </>
   );
 }

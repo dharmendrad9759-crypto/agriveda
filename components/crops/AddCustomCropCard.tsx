@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search, X } from "lucide-react";
@@ -47,6 +48,11 @@ interface Props {
 export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
   const navigate = useAppNavigate();
   const [open, setOpen] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   useBodyScrollLock(open);
   const [q, setQ] = useState("");
 
@@ -99,26 +105,30 @@ export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
         </button>
       </motion.div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm touch-none select-none overscroll-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setOpen(false)}
-          >
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="find-crop-title"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl touch-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
+      {mounted && typeof document !== "undefined"
+        ? createPortal(
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setOpen(false)}
+                >
+                  <motion.div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="find-crop-title"
+                    initial={{ opacity: 0, y: 32 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 32 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex max-h-[92dvh] sm:max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-t-[32px] sm:rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Mobile drag handle */}
+                    <div className="mx-auto mt-2.5 mb-1 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
               <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border)] px-4 py-3">
                 <div>
                   <h2 id="find-crop-title" className="text-base font-black text-[var(--av-text-primary)]">
@@ -203,10 +213,13 @@ export function AddCustomCropCard({ crops, index, onSelectName }: Props) {
                   ))
                 )}
               </ul>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>,
+            document.body
+          )
+        : null}
     </>
   );
 }

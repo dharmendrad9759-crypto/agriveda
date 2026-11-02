@@ -170,19 +170,17 @@ html, body {
   animation: av-shimmer 4s linear infinite;
 }
 
-/* Tool / page open — visible enter (works even when Framer is reduced on native) */
+/* Tool / page open — smooth visible enter without layout shift or containing block trap */
 @keyframes av-page-enter {
   from {
     opacity: 0;
-    transform: translateY(18px) scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 .av-page-enter {
-  animation: av-page-enter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: av-page-enter 0.2s ease-out both;
 }
 @media (prefers-reduced-motion: reduce) {
   .av-page-enter {

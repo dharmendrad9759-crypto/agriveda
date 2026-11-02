@@ -345,7 +345,7 @@ export default function HomeCropStatusCard({
             <div
               role="dialog"
               aria-modal="true"
-              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4"
+              className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4"
               onClick={() => setShowDatePicker(false)}
             >
               {/* Backdrop blur */}
@@ -357,9 +357,11 @@ export default function HomeCropStatusCard({
               {/* Modal Container */}
               <div
                 data-modal-content="true"
-                className="relative z-10 w-full max-w-md overflow-hidden rounded-[1.75rem] border border-emerald-600/30 bg-white p-4 shadow-2xl dark:border-emerald-500/30 dark:bg-slate-900 sm:p-5 animate-in fade-in zoom-in-95"
+                className="relative z-10 w-full max-w-md overflow-hidden rounded-t-[32px] sm:rounded-[1.75rem] border border-emerald-600/30 bg-white px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-5 shadow-2xl dark:border-emerald-500/30 dark:bg-slate-900 animate-in fade-in slide-in-from-bottom-6 sm:zoom-in-95 text-left"
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Mobile drag handle */}
+                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700 sm:hidden" />
                 {/* Header */}
                 <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3 dark:border-slate-800">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -485,13 +487,15 @@ export default function HomeCropStatusCard({
       {mounted && showCropSwitcher && typeof document !== "undefined"
         ? createPortal(
             <div
-              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+              className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
               onClick={() => setShowCropSwitcher(false)}
             >
               <div
-                className="relative w-full max-w-lg rounded-3xl border border-emerald-500/20 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#111c15] max-h-[86vh] flex flex-col touch-auto text-left"
+                className="relative w-full max-w-lg rounded-t-[32px] sm:rounded-3xl border border-emerald-500/20 bg-white px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-5 shadow-2xl dark:border-white/10 dark:bg-[#111c15] max-h-[92dvh] sm:max-h-[86vh] flex flex-col text-left animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Mobile drag handle */}
+                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-stone-300 dark:bg-stone-700 sm:hidden" />
                 {/* Modal Header */}
                 <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5 shrink-0">
                   <div>

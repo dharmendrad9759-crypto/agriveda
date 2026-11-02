@@ -617,7 +617,7 @@ function FertilizerCalculatorInner() {
               <AnimatePresence>
                 {showBottomSheet && slug && (
                   <div
-                    className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4"
+                    className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4"
                     role="dialog"
                     aria-modal="true"
                     aria-label={`${cropHi} खाद कैलकुलेटर`}
@@ -632,15 +632,17 @@ function FertilizerCalculatorInner() {
                       className="fixed inset-0 bg-black/75 backdrop-blur-sm"
                     />
 
-                    {/* Dialog Card - Positioned squarely in front of the screen */}
+                    {/* Dialog Card / Mobile Sheet */}
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.94, y: 16 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.94, y: 16 }}
+                      initial={{ opacity: 0, y: 32 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 32 }}
                       transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                      className="relative z-10 my-auto flex max-h-[85dvh] w-full max-w-lg flex-col overflow-hidden rounded-[26px] border border-emerald-500/30 bg-[var(--av-surface)] shadow-2xl text-left"
+                      className="relative z-10 flex max-h-[92dvh] sm:max-h-[85dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[32px] sm:rounded-[26px] border border-emerald-500/30 bg-[var(--av-surface)] shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
                       onClick={(e) => e.stopPropagation()}
                     >
+                      {/* Mobile drag handle */}
+                      <div className="mx-auto mt-2.5 mb-1 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
                       {/* Header (Sticky at top of dialog) */}
                       <div className="flex items-center justify-between border-b border-[var(--av-border)] bg-[var(--av-surface)] px-5 py-3.5 shrink-0">
                         <div className="flex items-center gap-3 min-w-0">

@@ -1,7 +1,8 @@
 "use client";
 
 import { Phone, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 import { KISAN_HELPLINES } from "@/lib/helplines";
@@ -9,6 +10,11 @@ import { KISAN_HELPLINES } from "@/lib/helplines";
 const HELPLINES = KISAN_HELPLINES.filter((h) => h.tel !== "1551").slice(0, 3);
 
 export default function QuickDial() {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const [open, setOpen] = useState(false);
   useBodyScrollLock(open);
 
@@ -23,15 +29,18 @@ export default function QuickDial() {
         <Phone className="h-5 w-5" />
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 touch-none select-none overscroll-none">
-          <button
-            type="button"
-            className="absolute inset-0 cursor-default"
-            aria-label="Close"
-            onClick={() => setOpen(false)}
-          />
-          <div className="relative z-10 w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl dark:bg-gray-900 border border-[var(--av-border)] touch-auto max-h-[88vh] overflow-y-auto">
+      {open && mounted && typeof document !== "undefined"
+        ? createPortal(
+            <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+              <button
+                type="button"
+                className="absolute inset-0 cursor-default"
+                aria-label="Close"
+                onClick={() => setOpen(false)}
+              />
+              <div className="relative z-10 w-full max-w-md rounded-t-[32px] sm:rounded-[28px] bg-white px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-6 shadow-2xl dark:bg-gray-900 border border-[var(--av-border)] max-h-[92dvh] sm:max-h-[88vh] overflow-y-auto animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200 text-left">
+                {/* Mobile drag handle */}
+                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-stone-300 dark:bg-stone-700 sm:hidden" />
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-extrabold theme-text-primary">कृषि विशेषज्ञ कॉल</h2>
               <button
@@ -58,9 +67,11 @@ export default function QuickDial() {
                 </a>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }

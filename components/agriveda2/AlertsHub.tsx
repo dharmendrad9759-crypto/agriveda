@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import {
   Bell,
   Calendar,
@@ -65,6 +66,11 @@ const ALERT_TYPE_META: Record<
 };
 
 export default function AlertsHub() {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const { locale } = useLocale();
   const hi = locale === "hi";
   const { showToast } = useToast();
@@ -429,9 +435,12 @@ export default function AlertsHub() {
       </div>
 
       {/* Modal: Add New Custom Alert */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--background)] p-5 shadow-2xl">
+      {showAddModal && mounted && typeof document !== "undefined"
+        ? createPortal(
+            <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
+              <div className="relative w-full max-w-md max-h-[92dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-[32px] sm:rounded-3xl border border-[var(--av-border)] bg-[var(--background)] px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-5 shadow-2xl animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200 text-left">
+                {/* Mobile drag handle */}
+                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
             <div className="flex items-center justify-between pb-3 border-b border-[var(--av-border)]">
               <div className="flex items-center gap-2">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
@@ -569,9 +578,11 @@ export default function AlertsHub() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
 }

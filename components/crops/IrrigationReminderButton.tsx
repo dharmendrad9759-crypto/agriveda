@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { CalendarClock, X } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
@@ -30,6 +31,7 @@ type Props = {
 };
 
 export default function IrrigationReminderButton({
+
   cropSlug,
   cropLabel,
   hi,
@@ -39,6 +41,11 @@ export default function IrrigationReminderButton({
   const { showToast } = useToast();
   const { data: farm, addActivity } = useFarmData();
   const [open, setOpen] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   useBodyScrollLock(open);
   const [saving, setSaving] = useState(false);
   const suggested = useMemo(() => suggestIntervalDays(badgeHints), [badgeHints]);
@@ -206,15 +213,18 @@ export default function IrrigationReminderButton({
         </div>
       )}
 
-      {open ? (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
-          <button
-            type="button"
-            aria-label="Close"
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm touch-none overscroll-none"
-            onClick={() => setOpen(false)}
-          />
-          <div className="relative z-10 w-full max-w-lg rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-5 shadow-2xl touch-auto text-left max-h-[88vh] overflow-y-auto">
+      {open && mounted && typeof document !== "undefined"
+        ? createPortal(
+            <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4">
+              <button
+                type="button"
+                aria-label="Close"
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                onClick={() => setOpen(false)}
+              />
+              <div className="relative z-10 w-full max-w-lg rounded-t-[32px] sm:rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-5 shadow-2xl text-left max-h-[92dvh] sm:max-h-[88vh] overflow-y-auto animate-in fade-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
+                {/* Mobile drag handle */}
+                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
             <div className="mb-3 flex items-start justify-between gap-2">
               <div>
                 <h3 className="text-[16px] font-black text-[var(--av-text-primary)]">
@@ -306,9 +316,11 @@ export default function IrrigationReminderButton({
                   ? "याद लगा दें"
                   : "Save reminder"}
             </button>
-          </div>
-        </div>
-      ) : null}
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }

@@ -5,12 +5,11 @@ import { usePathname } from "next/navigation";
 
 /**
  * Tool / page enter animation.
- * Uses CSS (not Framer) so it still runs on Capacitor even when UI motion is reduced for performance.
+ * Smoothly resets scroll to top without double-mounting the DOM tree.
  */
 export default function PageReveal({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [reduced, setReduced] = useState(false);
-  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -20,9 +19,8 @@ export default function PageReveal({ children }: { children: React.ReactNode }) 
     return () => mq.removeEventListener?.("change", sync);
   }, []);
 
-  // Remount animation whenever route changes and reset scroll to top
+  // Reset scroll to top on route change
   useEffect(() => {
-    setTick((n) => n + 1);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     }
@@ -31,7 +29,7 @@ export default function PageReveal({ children }: { children: React.ReactNode }) 
   if (reduced) return <>{children}</>;
 
   return (
-    <div key={`${pathname}-${tick}`} className="av-page-enter min-w-0">
+    <div key={pathname} className="av-page-enter min-w-0">
       {children}
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -52,6 +53,11 @@ export function ShareAgrivedaModal({
   useBodyScrollLock(isOpen);
   const isHi = lang === "hi";
   const [copied, setCopied] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const { title, text, url } = getAgrivedaShareData();
 
   const fullShareText = `${text}\n\n👇 अभी देखें / खोलें:\n${url}`;
@@ -106,29 +112,31 @@ export function ShareAgrivedaModal({
   const canNativeShare =
     typeof navigator !== "undefined" && typeof navigator.share === "function";
 
-  return (
+  if (!mounted || typeof document === "undefined") return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none">
+        <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm touch-none overscroll-none"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
           />
 
-          {/* Modal / Centered Dialog */}
+          {/* Modal / Mobile Sheet */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 32 }}
             transition={{ duration: 0.2 }}
-            className="relative z-10 w-full max-w-lg rounded-[28px] border border-emerald-500/25 bg-[var(--av-surface)] p-5 sm:p-6 shadow-2xl shadow-emerald-950/40 text-[var(--foreground)] overflow-hidden touch-auto max-h-[88vh] overflow-y-auto"
+            className="relative z-10 w-full max-w-lg rounded-t-[32px] sm:rounded-[28px] border border-emerald-500/25 bg-[var(--av-surface)] px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-6 shadow-2xl shadow-emerald-950/40 text-[var(--foreground)] overflow-hidden max-h-[92dvh] sm:max-h-[88vh] overflow-y-auto text-left"
           >
             {/* Top Drag Handle (Mobile) */}
-            <div className="mx-auto -mt-1 mb-4 h-1.5 w-12 rounded-full bg-stone-300 dark:bg-stone-700 sm:hidden" />
+            <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-stone-300 dark:bg-stone-700 sm:hidden" />
 
             {/* Header */}
             <div className="flex items-start justify-between gap-3">
@@ -302,6 +310,7 @@ export function ShareAgrivedaModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useRef, useState, type ReactNode } from "react";
+import { useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { navigateBack } from "@/lib/navigationTracker";
 import {
@@ -272,7 +273,12 @@ function StateSelectModal({
   hi: boolean;
 }) {
   const [filter, setFilter] = useState("");
-  if (!open) return null;
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+  if (!open || !mounted || typeof document === "undefined") return null;
 
   const allStateKeys = ["all", ...Object.keys(INDIAN_STATES_SCHEME_META)];
   const filtered = allStateKeys.filter((st) => {
@@ -286,17 +292,19 @@ function StateSelectModal({
     );
   });
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in"
+      className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative my-auto flex max-h-[75vh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white p-5 shadow-2xl dark:border-stone-800 dark:bg-stone-900"
+        className="relative flex max-h-[88dvh] sm:max-h-[75vh] w-full max-w-md flex-col overflow-hidden rounded-t-[32px] sm:rounded-3xl border border-stone-200 bg-white p-5 pb-[max(1rem,env(safe-area-inset-bottom))] sm:pb-5 shadow-2xl dark:border-stone-800 dark:bg-stone-900 animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile pull indicator */}
+        <div className="mx-auto -mt-2 mb-3 h-1.5 w-12 rounded-full bg-stone-300 dark:bg-stone-700 sm:hidden" />
         <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
           <div>
             <h3 className="text-base font-black text-stone-900 dark:text-white">
@@ -355,7 +363,8 @@ function StateSelectModal({
           })}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

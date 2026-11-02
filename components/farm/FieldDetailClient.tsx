@@ -318,7 +318,7 @@ export default function FieldDetailClient({
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-4">
+      <main className="mx-auto max-w-3xl px-4 py-4 min-w-0 overflow-x-hidden">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab}

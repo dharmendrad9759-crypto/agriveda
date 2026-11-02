@@ -1,7 +1,8 @@
 "use client";
 
 import { Languages, X, Check } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
   TRANSLATE_LANGUAGES,
@@ -12,6 +13,11 @@ import {
 import { cn } from "@/lib/cn";
 
 export default function TranslatorFab() {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const [open, setOpen] = useState(false);
   useBodyScrollLock(open);
   const [active, setActive] = useState("en");
@@ -40,22 +46,25 @@ export default function TranslatorFab() {
         <Languages className="h-5 w-5" style={{ color: "#ffffff" }} />
       </button>
 
-      {open && (
-        <div
-          className="agriveda-force-dark fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 touch-none select-none overscroll-none"
-          data-theme="dark"
-        >
-          <button
-            type="button"
-            className="absolute inset-0 cursor-default"
-            aria-label="Close"
-            onClick={() => setOpen(false)}
-          />
-          <div
-            role="dialog"
-            aria-label="Translate"
-            className="relative z-10 max-h-[85vh] w-full max-w-sm overflow-hidden rounded-[28px] border border-emerald-500/25 bg-[#030712] shadow-2xl touch-auto flex flex-col"
-          >
+      {open && mounted && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="agriveda-force-dark fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+              data-theme="dark"
+            >
+              <button
+                type="button"
+                className="absolute inset-0 cursor-default"
+                aria-label="Close"
+                onClick={() => setOpen(false)}
+              />
+              <div
+                role="dialog"
+                aria-label="Translate"
+                className="relative z-10 max-h-[92dvh] sm:max-h-[85vh] w-full max-w-sm rounded-t-[32px] sm:rounded-[28px] border border-emerald-500/25 bg-[#030712] px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-5 shadow-2xl flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200 text-left"
+              >
+                {/* Mobile drag handle */}
+                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-slate-700 sm:hidden" />
             <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
               <div>
                 <h2 className="text-base font-extrabold text-white">Translate</h2>
@@ -99,9 +108,11 @@ export default function TranslatorFab() {
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-      )}
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }

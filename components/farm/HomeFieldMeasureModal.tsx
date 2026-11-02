@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -45,6 +46,11 @@ export default function HomeFieldMeasureModal({
   const wasOpen = useRef(false);
 
   useBodyScrollLock(isOpen);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
     if (isOpen && !wasOpen.current) {
@@ -102,38 +108,42 @@ export default function HomeFieldMeasureModal({
   };
 
   return (
-    <AnimatePresence>
-      {isOpen ? (
-        <motion.div
-          key="home-field-measure"
-          className="fixed inset-0 flex items-center justify-center p-3 sm:p-4 touch-none select-none overscroll-none"
-          style={{ zIndex: 9990 }}
-          role="dialog"
-          aria-modal="true"
-          aria-label="अपना खेत नापें"
-          initial={reduced ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: MOTION.normal, ease: EASE_OUT }}
-        >
-          <motion.button
-            type="button"
-            aria-label="बंद करें"
-            onClick={onClose}
-            className="absolute inset-0 cursor-default bg-black/70 backdrop-blur-[3px] touch-none overscroll-none"
-            initial={reduced ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: MOTION.fast }}
-          />
+    mounted && typeof document !== "undefined"
+      ? createPortal(
+          <AnimatePresence>
+            {isOpen ? (
+              <motion.div
+                key="home-field-measure"
+                className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4"
+                style={{ zIndex: 9990 }}
+                role="dialog"
+                aria-modal="true"
+                aria-label="अपना खेत नापें"
+                initial={reduced ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: MOTION.normal, ease: EASE_OUT }}
+              >
+                <motion.button
+                  type="button"
+                  aria-label="बंद करें"
+                  onClick={onClose}
+                  className="absolute inset-0 cursor-default bg-black/70 backdrop-blur-[3px]"
+                  initial={reduced ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: MOTION.fast }}
+                />
 
-          <motion.div
-            initial={reduced ? false : { opacity: 0, y: 16, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.94 }}
-            transition={{ duration: MOTION.normal, ease: EASE_OUT }}
-            className="relative flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl touch-auto text-left"
-          >
+                <motion.div
+                  initial={reduced ? false : { opacity: 0, y: 32 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 32 }}
+                  transition={{ duration: MOTION.normal, ease: EASE_OUT }}
+                  className="relative flex max-h-[92dvh] sm:max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[32px] sm:rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
+                >
+                  {/* Mobile drag handle */}
+                  <div className="mx-auto mt-2.5 mb-1 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
 
             <header className="flex items-start gap-3 border-b border-[var(--av-border-subtle)] px-4 pb-3 pt-3 sm:px-5">
               <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-700 dark:text-emerald-300">
@@ -209,8 +219,11 @@ export default function HomeFieldMeasureModal({
             bighaDisplay={bighaDisplayString}
             onSave={handleSaveField}
           />
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>,
+          document.body
+        )
+      : null
   );
 }
