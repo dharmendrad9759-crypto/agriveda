@@ -5,6 +5,7 @@
 
 import { getCropIdentificationFromUrl } from "@/lib/pests/cropIdentificationImages";
 import { getBatch1StagePhotos } from "@/lib/crops/batch1StageManifest";
+import { getBatch2StagePhotos } from "@/lib/crops/batch2StageManifest";
 
 export interface ThreatPhotoItem {
   url: string;
@@ -12,6 +13,8 @@ export interface ThreatPhotoItem {
   badgeEn: string;
   captionHi: string;
   captionEn: string;
+  locationHi?: string;
+  thumbRuleHi?: string;
 }
 
 const GALLERY_MAP: Record<string, string[]> = {
@@ -949,7 +952,7 @@ export function getThreatGalleryPhotos(
 ): ThreatPhotoItem[] {
   if (!primaryImageUrl && !threatId) return [];
 
-  // 1. Check Batch 1 Stage-wise field manifest first (highest priority for 39 Batch 1 threats)
+  // 1. Check Batch 1 Stage-wise field manifest (39 threats)
   const batch1 = getBatch1StagePhotos(cropSlug, threatId, primaryImageUrl);
   if (batch1 && batch1.length > 0) {
     return batch1.map((b) => ({
@@ -958,10 +961,26 @@ export function getThreatGalleryPhotos(
       badgeEn: b.badgeEn,
       captionHi: b.captionHi,
       captionEn: b.captionEn,
+      locationHi: b.locationHi,
+      thumbRuleHi: b.thumbRuleHi,
     }));
   }
 
-  // 2. Check crop-specific WebP identification asset
+  // 2. Check Batch 2 Stage-wise field manifest (32 threats: soybean, mustard, potato, chilli, sugarcane, chana)
+  const batch2 = getBatch2StagePhotos(cropSlug, threatId, primaryImageUrl);
+  if (batch2 && batch2.length > 0) {
+    return batch2.map((b) => ({
+      url: b.url,
+      badgeHi: b.badgeHi,
+      badgeEn: b.badgeEn,
+      captionHi: b.captionHi,
+      captionEn: b.captionEn,
+      locationHi: b.locationHi,
+      thumbRuleHi: b.thumbRuleHi,
+    }));
+  }
+
+  // 3. Check crop-specific WebP identification asset
   const cropId = getCropIdentificationFromUrl(primaryImageUrl);
   if (cropId && cropId.gallery.length > 0) {
     return cropId.gallery.map((g) => ({
@@ -973,7 +992,7 @@ export function getThreatGalleryPhotos(
     }));
   }
 
-  // 3. Normalize image path and check GALLERY_MAP
+  // 4. Normalize image path and check GALLERY_MAP
   const normalized = (primaryImageUrl || "").split("?")[0].replace(/-[23]\.jpg$/, ".jpg");
   const urls = GALLERY_MAP[normalized] || (primaryImageUrl ? [primaryImageUrl] : []);
 

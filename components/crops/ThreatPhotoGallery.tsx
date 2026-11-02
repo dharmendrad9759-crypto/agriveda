@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Camera, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
+import { Camera, ChevronLeft, ChevronRight, MapPin, ZoomIn } from "lucide-react";
 import ImageLightbox from "@/components/ui/ImageLightbox";
 import { getThreatGalleryPhotos, type ThreatPhotoItem } from "@/lib/crops/threatGalleryManifest";
 
@@ -70,16 +70,25 @@ export default function ThreatPhotoGallery({
         />
 
         {/* Gradient Overlay for legibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45 pointer-events-none" />
 
-        {/* Top Stage Indicator Badge */}
-        <div className="absolute top-3 left-3 z-10 pointer-events-none">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-md border border-emerald-500/30 shadow-md">
+        {/* Top Badges (Stage & Plant Location) */}
+        <div className="absolute top-3 left-3 right-14 z-10 pointer-events-none flex flex-wrap items-center gap-1.5">
+          {/* Active Stage Badge */}
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-black/75 px-3 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-md border border-emerald-500/30 shadow-md">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="truncate max-w-[220px]">
+            <span className="truncate max-w-[190px]">
               {hi ? activePhoto.badgeHi : activePhoto.badgeEn}
             </span>
           </span>
+
+          {/* Plant Location Pill (e.g. तने के अंदर, पत्ती के नीचे) */}
+          {activePhoto.locationHi && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-medium text-emerald-200 backdrop-blur-md border border-emerald-400/20 shadow-xs">
+              <MapPin className="h-3 w-3 text-emerald-400 shrink-0" />
+              <span className="truncate max-w-[160px]">{activePhoto.locationHi}</span>
+            </span>
+          )}
         </div>
 
         {/* Bottom diagnostic caption overlay */}
@@ -141,7 +150,7 @@ export default function ThreatPhotoGallery({
                 onClick={() => setActiveIndex(idx)}
                 className={`group relative flex flex-col overflow-hidden rounded-xl border-2 transition-all active:scale-95 text-left shadow-xs ${
                   isActive
-                    ? "border-emerald-600 bg-emerald-50/60 ring-2 ring-emerald-500/30"
+                    ? "border-emerald-600 bg-emerald-50/70 ring-2 ring-emerald-500/30"
                     : "border-slate-200 bg-white hover:border-emerald-300 opacity-85 hover:opacity-100"
                 }`}
               >
@@ -181,6 +190,28 @@ export default function ThreatPhotoGallery({
               </button>
             );
           })}
+        </div>
+      )}
+
+      {/* 🌾 Kisan Pehchan Sutra (Practical Farmer Identification Rule) */}
+      {activePhoto.thumbRuleHi && (
+        <div className="flex items-start gap-2.5 rounded-2xl border border-emerald-500/35 bg-gradient-to-r from-emerald-50 via-teal-50/40 to-emerald-50 p-3 shadow-xs">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white text-xs shadow-xs font-bold">
+            🌾
+          </div>
+          <div className="space-y-0.5 text-xs">
+            <span className="font-bold text-emerald-950 flex items-center gap-1.5">
+              <span>किसान पहचान सूत्र</span>
+              {activePhoto.locationHi && (
+                <span className="font-normal text-[10.5px] text-emerald-800 bg-emerald-100 px-2 py-0.2 rounded-full border border-emerald-300/60">
+                  {activePhoto.locationHi}
+                </span>
+              )}
+            </span>
+            <p className="text-emerald-900 leading-relaxed font-medium">
+              {activePhoto.thumbRuleHi}
+            </p>
+          </div>
         </div>
       )}
 
