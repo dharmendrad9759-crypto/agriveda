@@ -4,6 +4,7 @@
  */
 
 import { getCropIdentificationFromUrl } from "@/lib/pests/cropIdentificationImages";
+import { getBatch1StagePhotos } from "@/lib/crops/batch1StageManifest";
 
 export interface ThreatPhotoItem {
   url: string;
@@ -941,10 +942,26 @@ const PHOTO_METAS = [
   },
 ];
 
-export function getThreatGalleryPhotos(primaryImageUrl?: string): ThreatPhotoItem[] {
-  if (!primaryImageUrl) return [];
+export function getThreatGalleryPhotos(
+  primaryImageUrl?: string,
+  cropSlug?: string,
+  threatId?: string
+): ThreatPhotoItem[] {
+  if (!primaryImageUrl && !threatId) return [];
 
-  // Check crop-specific WebP identification asset first
+  // 1. Check Batch 1 Stage-wise field manifest first (highest priority for 39 Batch 1 threats)
+  const batch1 = getBatch1StagePhotos(cropSlug, threatId, primaryImageUrl);
+  if (batch1 && batch1.length > 0) {
+    return batch1.map((b) => ({
+      url: b.url,
+      badgeHi: b.badgeHi,
+      badgeEn: b.badgeEn,
+      captionHi: b.captionHi,
+      captionEn: b.captionEn,
+    }));
+  }
+
+  // 2. Check crop-specific WebP identification asset
   const cropId = getCropIdentificationFromUrl(primaryImageUrl);
   if (cropId && cropId.gallery.length > 0) {
     return cropId.gallery.map((g) => ({
@@ -956,9 +973,9 @@ export function getThreatGalleryPhotos(primaryImageUrl?: string): ThreatPhotoIte
     }));
   }
 
-  // Normalize image path
-  const normalized = primaryImageUrl.split("?")[0].replace(/-[23]\.jpg$/, ".jpg");
-  const urls = GALLERY_MAP[normalized] || [primaryImageUrl];
+  // 3. Normalize image path and check GALLERY_MAP
+  const normalized = (primaryImageUrl || "").split("?")[0].replace(/-[23]\.jpg$/, ".jpg");
+  const urls = GALLERY_MAP[normalized] || (primaryImageUrl ? [primaryImageUrl] : []);
 
   return urls.map((url, i) => {
     const meta = PHOTO_METAS[i] || PHOTO_METAS[0];

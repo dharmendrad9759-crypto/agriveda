@@ -334,6 +334,8 @@ export default function CropProblemDetailClient({
           subtitle={p.nameEn}
           cropLabel={crop.nameHi}
           tagLabel={p.tagHi}
+          cropSlug={crop.slug}
+          threatId={p.id}
           hi={true}
         />
 

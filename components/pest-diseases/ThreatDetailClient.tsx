@@ -588,6 +588,8 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
             subtitle={names.secondary || threat.scientificName || undefined}
             cropLabel={cropHi || threat.cropName}
             tagLabel={isPest ? (hi ? "कीट" : "Pest") : (hi ? "रोग" : "Disease")}
+            cropSlug={threat.cropSlug}
+            threatId={threat.id}
             hi={hi}
           />
 
