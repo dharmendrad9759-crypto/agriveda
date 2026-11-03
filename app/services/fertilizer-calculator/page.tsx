@@ -20,7 +20,6 @@ import {
   Lightbulb,
   ShieldCheck,
   Ruler,
-  MapPin,
 } from "lucide-react";
 import { FertilizerNpkSparkleIcon } from "@/components/brand/icons";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
@@ -34,7 +33,6 @@ import {
   fertilizerAmountParts,
   fertilizerBagPurposeHi,
   fertilizerPackHi,
-  GOLDEN_FIELD_RULES_HI,
 } from "@/data/agriveda2/fertilizer-data";
 import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
 import { EASE_OUT } from "@/lib/motion/variants";
@@ -202,7 +200,7 @@ function FertilizerCalculatorInner() {
   return (
     <Agriveda2Shell
       title="खाद कैलकुलेटर"
-      subtitle={step === "ask" ? "फसल चुनें" : `${cropHi} · ${areaLabel} एकड़`}
+      subtitle={step === "ask" ? "फसल चुनें" : undefined}
       backHref={backHref}
       hubTheme="green"
     >
@@ -276,37 +274,6 @@ function FertilizerCalculatorInner() {
                 </div>
               </div>
 
-              {/* 3 Golden Field Rules Preview on Ask Screen */}
-              <div
-                className={cn(
-                  AV.card,
-                  "rounded-[22px] border border-amber-500/25 bg-gradient-to-br from-amber-500/10 via-[var(--av-surface)] to-[var(--av-surface)] p-4 shadow-sm"
-                )}
-              >
-                <div className="mb-2.5 flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
-                    <Lightbulb className="h-4 w-4" />
-                  </span>
-                  <h2 className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                    💡 किसान टिप: 3 गोल्डन फील्ड नियम
-                  </h2>
-                </div>
-                <div className="space-y-2">
-                  {GOLDEN_FIELD_RULES_HI.map((rule) => (
-                    <div
-                      key={rule.id}
-                      className="rounded-xl border border-amber-500/20 bg-[var(--av-surface-inset)] p-2.5"
-                    >
-                      <p className="text-xs font-black text-[var(--av-text-primary)]">
-                        {rule.titleHi}
-                      </p>
-                      <p className="mt-0.5 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
-                        {rule.bodyHi}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </motion.div>
           ) : (
             /* =================================================== */
@@ -405,9 +372,6 @@ function FertilizerCalculatorInner() {
                             <h2 className="text-sm font-extrabold text-[var(--av-text-primary)]">
                               अवस्था अनुसार शेड्यूल (कब, कैसे और क्या डालें)
                             </h2>
-                            <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
-                              बेसल + टॉप ड्रेसिंग + ड्रेंचिंग + फोलियर स्प्रे कॉम्बिनेशन
-                            </p>
                           </div>
                         </div>
                       </div>
@@ -683,11 +647,7 @@ function FertilizerCalculatorInner() {
                         {/* Saved Farm Fields Quick Selector */}
                         {savedFields.length > 0 ? (
                           <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3">
-                            <div className="flex items-center justify-between gap-1 mb-2">
-                              <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-200 flex items-center gap-1">
-                                <MapPin className="h-3.5 w-3.5 text-emerald-600" />
-                                मेरे सहेजे गए खेत से चुनें:
-                              </span>
+                            <div className="flex items-center justify-end gap-1 mb-2">
                               <a
                                 href="/my-farm/measure"
                                 className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-0.5"
@@ -718,14 +678,6 @@ function FertilizerCalculatorInner() {
                                     )}
                                   >
                                     <div className="truncate max-w-[130px] font-extrabold">{f.name}</div>
-                                    <div
-                                      className={cn(
-                                        "text-[10px] font-semibold mt-0.5",
-                                        isSelected ? "text-emerald-100" : "text-emerald-700 dark:text-emerald-300"
-                                      )}
-                                    >
-                                      {fAcres} एकड़ {f.crop ? `• ${f.crop.split("(")[0].trim()}` : ""}
-                                    </div>
                                   </button>
                                 );
                               })}

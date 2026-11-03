@@ -834,7 +834,7 @@ export const sugarcaneDossier: ResearchDossierOverlay = {
       {
         technical: "Halosulfuron-methyl 75% WG",
         dose: "~36 ग्राम प्रति एकड़ — जहाँ गन्ना लेबल हो",
-        timing: "मोथा 4–6 पत्ती अवस्था",
+        timing: "मोथा 4 से 6 पत्ती अवस्था",
         targets: "मुख्यतः मोथा (Cyperus)",
         note: "छिड़काव समय खेत में नमी ज़रूरी; फसल-अनुमोदन जाँचें",
       },

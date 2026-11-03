@@ -26,6 +26,15 @@ import {
   Stethoscope,
 } from "lucide-react";
 import type { AIHistoryEntry } from "@/hooks/useAIHistory";
+import { useClientReady } from "@/hooks/useClientReady";
+
+function DevGeminiHint() {
+  const ready = useClientReady();
+  if (!ready) return null;
+  const host = window.location.hostname;
+  if (host !== "localhost" && host !== "127.0.0.1") return null;
+  return <p className="mt-2 text-[10px] opacity-70">Dev: GEMINI_API_KEY .env.local में जोड़ें।</p>;
+}
 
 /** @deprecated Prefer getSymptomChipsForCrop — kept for older imports */
 export const SYMPTOM_CHIPS = DEFAULT_SYMPTOM_CHIPS;
@@ -97,10 +106,7 @@ export function AiDoctorHero({
               एक्सपर्ट से पूछें
             </AppLink>
           </div>
-          {typeof window !== "undefined" &&
-          (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? (
-            <p className="mt-2 text-[10px] opacity-70">Dev: GEMINI_API_KEY .env.local में जोड़ें।</p>
-          ) : null}
+          <DevGeminiHint />
         </div>
       )}
     </section>

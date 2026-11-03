@@ -554,7 +554,7 @@ export const wheatDossier: ResearchDossierOverlay = {
       type: "घास (संकरी पत्ती) — गेहूँ का सबसे बड़ा खरपतवार खतरा",
       criticalPeriod: "DAS 25–35 (पहली सिंचाई से पहले-बाद)",
       preEmergenceHerbicide: "Pendimethalin 30% EC ~1.3 L/एकड़, 0–3 DAS नम मिट्टी में; प्रतिरोधी बायोटाइप में Pyroxasulfone 85% WG ~60 g/एकड़ (0–3 DAS या बुवाई के 20 दिन बाद पहली सिंचाई से पहले)",
-      postEmergenceHerbicide: "Clodinafop 15% WP (Topik) ~160 g/एकड़ या Pinoxaden 5.1% EC (Axial) ~400 ml/एकड़ (HRAC A) — 30–35 DAS, 3–4 पत्ती अवस्था; प्रतिरोधी क्षेत्र में Sulfosulfuron 75% WG (Leader) ~13.3 g/एकड़ या Mesosulfuron+Iodosulfuron WG (Atlantis) ~160 g/एकड़ (HRAC B)",
+      postEmergenceHerbicide: "Clodinafop 15% WP (Topik) ~160 g/एकड़ या Pinoxaden 5.1% EC (Axial) ~400 ml/एकड़ (HRAC A) — 30–35 DAS, 3 से 4 पत्ती अवस्था; प्रतिरोधी क्षेत्र में Sulfosulfuron 75% WG (Leader) ~13.3 g/एकड़ या Mesosulfuron+Iodosulfuron WG (Atlantis) ~160 g/एकड़ (HRAC B)",
       hracGroup: "K1/K3 (pre) → A (Clodinafop/Pinoxaden) → B (Sulfosulfuron/Atlantis)",
       dose: "लेबल अनुसार — हर साल MoA group ज़रूर बदलें, resistance सबसे बड़ी चुनौती है",
     },
@@ -610,35 +610,35 @@ export const wheatDossier: ResearchDossierOverlay = {
       {
         technical: "Clodinafop-propargyl 15% WP",
         dose: "160 ग्राम प्रति एकड़",
-        timing: "30–35 DAS POST, Phalaris/Avena 3–4 पत्ती अवस्था",
+        timing: "30–35 DAS POST, Phalaris/Avena 3 से 4 पत्ती अवस्था",
         targets: "Phalaris minor, Avena ludoviciana",
         note: "2,4-D या किसी भी ब्रॉडलीफ हर्बिसाइड के साथ एक साथ न मिलाएँ — कम-से-कम 7–10 दिन का अंतर रखें, वरना grassy control घट जाता है",
       },
       {
         technical: "Pinoxaden 5.1% EC (Axial)",
         dose: "400 मिलीलीटर प्रति एकड़ (300 लीटर पानी में)",
-        timing: "30–35 DAS, Phalaris/Avena 3–5 पत्ती अवस्था",
+        timing: "30–35 DAS, Phalaris/Avena 3 से 5 पत्ती अवस्था",
         targets: "Phalaris minor, Avena — मिश्रित घास प्रकोप में एक ही स्प्रे में असरदार",
         note: "30 मिनट में rainfast, लचीली स्प्रे विंडो — Clodinafop-प्रतिरोधी क्षेत्रों में rotation के लिए अच्छा विकल्प",
       },
       {
         technical: "Sulfosulfuron 75% WG (Leader)",
         dose: "13.3 ग्राम प्रति एकड़ + 200 मिलीलीटर सर्फेक्टेंट",
-        timing: "30–35 DAS, Phalaris 2–4 पत्ती अवस्था",
+        timing: "30–35 DAS, Phalaris 2 से 4 पत्ती अवस्था",
         targets: "Phalaris minor + चौड़ी पत्ती (Chenopodium album, Melilotus alba) — broad-spectrum",
         note: "जहाँ फसल में कोई दलहन/चौड़ी पत्ती अंतरफसल हो वहाँ इस्तेमाल न करें; अगली फसल ज्वार/मक्का न लगाएँ — मिट्टी में अवशेष रहता है",
       },
       {
         technical: "Mesosulfuron-methyl 3% + Iodosulfuron-methyl 0.6% WG (Atlantis)",
         dose: "160 ग्राम प्रति एकड़ + सर्फेक्टेंट (Genapol) ~200 मिलीलीटर",
-        timing: "30–35 DAS, Phalaris 2–4 पत्ती अवस्था (advanced-stage पर भी असरदार)",
+        timing: "30–35 DAS, Phalaris 2 से 4 पत्ती अवस्था (advanced-stage पर भी असरदार)",
         targets: "Group A-प्रतिरोधी Phalaris minor सहित घास, सेज व चौड़ी पत्ती (broad-spectrum)",
         note: "जहाँ Clodinafop/Pinoxaden असर न दें वहाँ प्राथमिकता दें — व्यापक स्पेक्ट्रम व लचीली स्प्रे विंडो",
       },
       {
         technical: "Metsulfuron-methyl 20% WG (Algrip)",
         dose: "8 ग्राम प्रति एकड़",
-        timing: "25–35 DAS, चौड़ी पत्ती 2–4 पत्ती अवस्था",
+        timing: "25–35 DAS, चौड़ी पत्ती 2 से 4 पत्ती अवस्था",
         targets: "Chenopodium album (बथुआ), Melilotus alba (सेंजी) व अन्य चौड़ी पत्ती",
         note: "बहुत कम मात्रा वाला हर्बिसाइड — मात्रा में सटीकता ज़रूरी; अगली संवेदनशील फसल पर carryover से बचने को लेबल प्लांट-बैक अवधि देखें",
       },
@@ -675,7 +675,7 @@ export const wheatDossier: ResearchDossierOverlay = {
     {
       question: "गुल्ली-डंडा (Phalaris) हर साल एक ही दवा से नहीं मर रहा — क्या करें?",
       answer:
-        "यह हर्बिसाइड प्रतिरोध (resistance) का स्पष्ट संकेत है। हर साल group बदलें — एक साल Clodinafop/Pinoxaden (Group A) तो अगले साल Sulfosulfuron/Atlantis (Group B), और गंभीर प्रतिरोध में Pyroxasulfone (PRE) अपनाएँ। समय पर (30–35 DAS, 2–4 पत्ती अवस्था) स्प्रे करना भी उतना ही ज़रूरी है जितना सही दवा चुनना।",
+        "यह हर्बिसाइड प्रतिरोध (resistance) का स्पष्ट संकेत है। हर साल group बदलें — एक साल Clodinafop/Pinoxaden (Group A) तो अगले साल Sulfosulfuron/Atlantis (Group B), और गंभीर प्रतिरोध में Pyroxasulfone (PRE) अपनाएँ। समय पर (30–35 DAS, 2 से 4 पत्ती अवस्था) स्प्रे करना भी उतना ही ज़रूरी है जितना सही दवा चुनना।",
     },
     {
       question: "करनाल बंट से बचने के लिए स्प्रे कब करें?",

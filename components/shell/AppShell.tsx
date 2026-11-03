@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { AgriVedaSparkleIcon } from "@/components/brand/icons";
@@ -11,6 +11,7 @@ import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import { usePathname, useRouter } from "next/navigation";
 import { navigateBack, recordNavVisit } from "@/lib/navigationTracker";
+import { useSafeReducedMotion } from "@/hooks/useClientReady";
 
 interface Breadcrumb {
   label: string;
@@ -52,7 +53,7 @@ export default function AppShell({
 }: AppShellProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const reduced = useReducedMotion();
+  const reduced = useSafeReducedMotion();
   const Comp = reduced ? "div" : motion.div;
   const isHub = variant === "hub";
   const isGreenHub = hubTheme === "green";

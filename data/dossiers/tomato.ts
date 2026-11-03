@@ -665,7 +665,7 @@ export const tomatoDossier: ResearchDossierOverlay = {
       type: "घास",
       criticalPeriod: "रोपाई के 0–40 दिन",
       preEmergenceHerbicide: "Pendimethalin 30% EC ~1.3 लीटर/एकड़, रोपाई के 3–5 दिन बाद नम मिट्टी पर",
-      postEmergenceHerbicide: "Quizalofop-p-ethyl 5% EC ~400 मिलीलीटर/एकड़, घास 2–4 पत्ती अवस्था — केवल घास पर असर",
+      postEmergenceHerbicide: "Quizalofop-p-ethyl 5% EC ~400 मिलीलीटर/एकड़, घास 2 से 4 पत्ती अवस्था — केवल घास पर असर",
       hracGroup: "K1 (pre) / A (post)",
       dose: "लेबल अनुसार",
     },
@@ -718,7 +718,7 @@ export const tomatoDossier: ResearchDossierOverlay = {
       {
         technical: "Quizalofop-p-ethyl 5% EC",
         dose: "~400 मिलीलीटर प्रति एकड़",
-        timing: "घास 2–4 पत्ती अवस्था (post-emergence)",
+        timing: "घास 2 से 4 पत्ती अवस्था (post-emergence)",
         targets: "केवल घास (Echinochloa, Digitaria, Eleusine)",
         note: "चौड़ी पत्ती herbicide के साथ टंकी-मिक्स न करें — असर घट सकता है",
       },
@@ -738,7 +738,8 @@ export const tomatoDossier: ResearchDossierOverlay = {
   resistanceRotation: [
     "फल छेदक/तंबाकू इल्ली: IRAC 28 (Chlorantraniliprole) → 6 (Emamectin) → 22A/15 (Indoxacarb/Novaluron) — एक AI लगातार 2 बार से ज़्यादा नहीं",
     "सफ़ेद मक्खी/एफिड/थ्रिप्स: IRAC 29 (Flonicamid) → 12A (Diafenthiuron) → 23 (Spiromesifen) → 4A (नियोनिकोटिनॉइड, सीमित इस्तेमाल)",
-    "झुलसा/फफूंद रोग (early/late blight): FRAC M3 (Mancozeb) → 11 (Azoxystrobin) → 40 (Mandipropamid) → M3 — कभी एक ही समूह लगातार नहीं",
+    "अगेती झुलसा (Alternaria): FRAC M3 (Mancozeb) → 11+3 (Azoxystrobin + Difenoconazole) — यह कनॉज़ोल पछेती झुलसा पर नहीं चलता",
+    "पछेती झुलसा (Phytophthora): FRAC M3 (Mancozeb) → 27+M3 (Cymoxanil + Mancozeb) → 40 (Mandipropamid) — अगेती वाली कनॉज़ोल दवा यहाँ मत डालें",
   ],
   faqs: [
     {
@@ -767,7 +768,7 @@ export const tomatoDossier: ResearchDossierOverlay = {
     {
       question: "टमाटर में खरपतवार के लिए कौन सी दवा इस्तेमाल करूँ?",
       answer:
-        "रोपाई के 3–5 दिन बाद Pendimethalin (pre-emergence, घास व छोटे-बीज खरपतवार), चौड़ी पत्ती खरपतवार के लिए रोपाई से पहले/15 DAT पर Metribuzin (संवेदनशील किस्म में सावधानी), और सिर्फ घास पर 2–4 पत्ती अवस्था में Quizalofop-p-ethyl — साथ में प्लास्टिक/स्ट्रॉ मल्च खरपतवार व नमी दोनों में मदद करता है।",
+        "रोपाई के 3–5 दिन बाद Pendimethalin (pre-emergence, घास व छोटे-बीज खरपतवार), चौड़ी पत्ती खरपतवार के लिए रोपाई से पहले/15 DAT पर Metribuzin (संवेदनशील किस्म में सावधानी), और सिर्फ घास पर 2 से 4 पत्ती अवस्था में Quizalofop-p-ethyl — साथ में प्लास्टिक/स्ट्रॉ मल्च खरपतवार व नमी दोनों में मदद करता है।",
     },
   ],
   physiologicalDisorders: [

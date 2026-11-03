@@ -1,25 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Camera,
   Check,
-  CheckCheck,
-  Clock,
+  Leaf,
   Mic,
-  MicOff,
-  Phone,
   Send,
-  Sparkles,
-  Stethoscope,
   Square,
   X,
 } from "lucide-react";
-import { AgriAiQuerySparkleIcon } from "@/components/brand/icons";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -167,6 +160,27 @@ function generateDoctorAdvice(
   return `👨‍🌾 **${cropName} फसल विशेषज्ञ सलाह:**\n\nआपकी समस्या नोट कर ली गई है। सामान्य तौर पर इस अवस्था में संतुलित NPK 19:19:19 @ 1 kg/एकड़ का स्प्रे पौधों को नई ऊर्जा देता है। यदि किसी बीमारी या कीट के लक्षण दिख रहे हैं, तो प्रभावित पत्ती या कीड़े की स्पष्ट फोटो भेजें ताकि सटीक दवा की सिफारिश की जा सके।`;
 }
 
+function MessageBody({ text }: { text: string }) {
+  const cleaned = text.replace(
+    /^(?:[\u{1F300}-\u{1FAFF}\u2600-\u27BF]\uFE0F?\s*)+/u,
+    ""
+  );
+  const parts = cleaned.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.startsWith("**") && part.endsWith("**") && part.length > 4 ? (
+          <strong key={i} className="font-semibold">
+            {part.slice(2, -2)}
+          </strong>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
 export default function AskQueryPage() {
   const router = useRouter();
   const { crops } = useMyCrops();
@@ -177,6 +191,7 @@ export default function AskQueryPage() {
   const isHi = locale === "hi";
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const timerIntervalRef = useRef<any>(null);
@@ -202,7 +217,7 @@ export default function AskQueryPage() {
       {
         id: "msg-welcome",
         sender: "doctor",
-        text: "नमस्ते किसान भाई! 🙏 अपनी फसल की बीमारी, कीट या खाद संबंधी समस्या लिखकर या फोटो खींचकर भेजें। आपको तुरंत सही समाधान और दवा की खुराक मिलेगी।",
+        text: "बीमारी, कीड़ा या खाद का सवाल लिखें, या पत्ती की फोटो भेजें। दवा और खुराक यहीं मिलेगी।",
         time: "अभी",
       },
     ];
@@ -279,10 +294,11 @@ export default function AskQueryPage() {
   }, [isHi, showToast]);
 
   // Dynamic visualViewport tracking for software keyboard docking & WhatsApp-style layout
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [viewportStyle, setViewportStyle] = useState<React.CSSProperties>({
     height: "100dvh",
     top: 0,
-    width: "100vw",
+    width: "100%",
     maxWidth: "100%",
     overflowX: "hidden",
   });
@@ -300,18 +316,27 @@ export default function AskQueryPage() {
     const updateViewport = () => {
       const vv = window.visualViewport;
       if (vv) {
+        const keyboardGap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+        setKeyboardOpen(keyboardGap > 80);
         setViewportStyle({
+          position: "fixed",
+          top: `${vv.offsetTop}px`,
+          left: 0,
+          right: 0,
           height: `${vv.height}px`,
-          top: 0,
-          width: "100vw",
+          width: "100%",
           maxWidth: "100%",
           overflowX: "hidden",
         });
       } else {
+        setKeyboardOpen(false);
         setViewportStyle({
-          height: "100dvh",
+          position: "fixed",
           top: 0,
-          width: "100vw",
+          left: 0,
+          right: 0,
+          height: "100dvh",
+          width: "100%",
           maxWidth: "100%",
           overflowX: "hidden",
         });
@@ -342,6 +367,21 @@ export default function AskQueryPage() {
   useEffect(() => {
     scrollToBottom(true);
   }, [messages, isTyping, scrollToBottom]);
+
+  // Open the phone keyboard as soon as the chat screen is shown.
+  useEffect(() => {
+    const focusInput = () => {
+      const el = chatInputRef.current;
+      if (!el) return;
+      el.focus({ preventScroll: true });
+    };
+    const frame = window.requestAnimationFrame(focusInput);
+    const timer = window.setTimeout(focusInput, 280);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   // Check speech recognition support
   useEffect(() => {
@@ -590,60 +630,53 @@ export default function AskQueryPage() {
 
   const activeSuggestions =
     CROP_SUGGESTIONS[selectedCrop] || CROP_SUGGESTIONS.general;
+  const onlyWelcome =
+    messages.length === 1 && messages[0]?.id === "msg-welcome";
 
   return (
     <div
-      className="fixed inset-x-0 top-0 h-[100dvh] max-h-[100dvh] w-full max-w-full flex flex-col bg-[#f4fbf7] overflow-hidden overflow-x-hidden z-50 text-stone-900 select-none overscroll-none dark:bg-[#0b141a] dark:text-stone-100"
+      className="fixed inset-x-0 top-0 z-50 flex h-[100dvh] max-h-[100dvh] w-full max-w-full select-none flex-col overflow-hidden overflow-x-hidden overscroll-none bg-[#f3efe4] text-[var(--av-text-primary)] dark:bg-[var(--av-surface-muted)]"
       style={viewportStyle}
     >
-      {/* Part A: Top Header (shrink-0) */}
-      <header className="sticky top-0 z-30 flex shrink-0 items-center justify-between bg-[#008069] px-3 py-2 text-white shadow-md dark:bg-[#1f2c34]">
-        <div className="flex items-center gap-2.5">
+      <header className="shrink-0 border-b border-[color:rgba(168,132,62,0.4)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]">
+        <div className="flex items-center gap-2.5 px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <button
             type="button"
             onClick={() => router.back()}
-            className="rounded-full p-1.5 text-white hover:bg-white/10 active:scale-95"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--av-text-primary)] active:bg-[var(--av-surface-inset)]"
             aria-label="वापस"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
 
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-lg font-bold backdrop-blur-sm border border-white/25 shadow-sm">
-            👨‍🌾
-          </div>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0c3b2e] text-[#f3e6c8] shadow-[var(--av-shadow-sm)]">
+            <Leaf className="h-5 w-5" />
+          </span>
 
-          <div className="min-w-0">
-            <h1 className="text-[15px] font-bold leading-tight text-white">
-              AgriVeda कृषि डॉक्टर
-            </h1>
-            <p className="text-[11px] font-medium text-emerald-100/80">
-              फसल परामर्श एवं रोग निदान
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold tracking-[0.18em] text-[#8a6a32]">
+              AGRIVEDA
             </p>
+            <h1 className="truncate text-[20px] font-semibold leading-tight text-[var(--av-text-primary)]">
+              कृषि डॉक्टर
+            </h1>
           </div>
-        </div>
 
-        <div className="flex items-center gap-1.5">
           <Link
             href="/my-queries"
-            className="flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-white/25 active:scale-95"
-            title="पुराने सवाल व जवाब"
+            className="shrink-0 text-[13px] font-semibold text-[#0c3b2e] dark:text-emerald-300"
           >
-            <span>इतिहास</span>
-            {queries.length > 0 && (
-              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-400 px-1 text-[10px] font-black text-stone-900">
-                {queries.length}
-              </span>
-            )}
+            पुराने जवाब
+            {queries.length > 0 ? ` · ${queries.length}` : ""}
           </Link>
         </div>
       </header>
 
-      {/* Part A2: Crop Selector Bar - Pinned at the TOP below Header */}
-      <div className="shrink-0 z-20 w-full max-w-full overflow-hidden border-b border-emerald-900/10 bg-[#e8f5ee] px-3 py-2 shadow-xs dark:border-white/5 dark:bg-[#182229]">
-        <div className="flex w-full items-center gap-1.5 overflow-x-auto whitespace-nowrap pr-4 box-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <span className="shrink-0 text-xs font-black tracking-wide text-stone-700 uppercase dark:text-stone-300">
-            🌾 फसल:
-          </span>
+      <div className="shrink-0 border-b border-[color:rgba(168,132,62,0.22)] bg-[#fbf8f1] px-3 pb-3 pt-2.5 dark:border-white/10 dark:bg-[var(--av-surface)]">
+        <p className="mb-2 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+          किस फसल पर बात करें
+        </p>
+        <div className="flex w-full items-center gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_0,black_calc(100%-1.75rem),transparent)] [&::-webkit-scrollbar]:hidden">
           {COMMON_CROP_CHIPS.map((chip) => {
             const active = selectedCrop === chip.slug;
             return (
@@ -651,104 +684,135 @@ export default function AskQueryPage() {
                 key={chip.slug}
                 type="button"
                 onClick={() => setSelectedCrop(chip.slug)}
-                className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-[12.5px] font-bold transition active:scale-95 ${
+                className={`shrink-0 rounded-full px-4 py-2.5 text-[15px] font-semibold active:scale-[0.98] ${
                   active
-                    ? "bg-[#008069] text-white shadow-sm ring-2 ring-emerald-500/30 dark:bg-emerald-600"
-                    : "bg-white text-stone-800 border border-stone-200/90 hover:bg-stone-100 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700"
+                    ? "bg-[#0c3b2e] text-[#f7f3ea] shadow-[var(--av-shadow-sm)]"
+                    : "border border-[color:rgba(168,132,62,0.35)] bg-white text-[var(--av-text-primary)] dark:border-white/10 dark:bg-[var(--av-surface-muted)]"
                 }`}
               >
-                <span className="text-base">{chip.emoji}</span>
-                <span>{chip.nameHi}</span>
+                {chip.nameHi}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Part B: Scrollable Messages Area */}
-      <div className="flex-1 min-h-0 space-y-3 overflow-y-auto overflow-x-hidden px-3 py-4 select-text [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-y-contain">
-        {/* Date pill */}
-        <div className="flex justify-center">
-          <span className="rounded-lg bg-black/10 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs backdrop-blur-sm dark:bg-white/10 dark:text-stone-300">
-            आज
-          </span>
-        </div>
+      <div
+        className={`min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain select-text [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+          onlyWelcome ? "flex flex-col" : "space-y-3 px-4 py-4"
+        }`}
+      >
+        {onlyWelcome ? (
+          <div className="flex flex-1 flex-col items-center justify-center px-6 pb-4 text-center">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full border border-[color:rgba(168,132,62,0.45)] bg-[#fbf8f1] text-[#0c3b2e] shadow-[var(--av-shadow-sm)] dark:bg-[var(--av-surface)] dark:text-emerald-200">
+              <Leaf className="h-7 w-7" />
+            </span>
+            <h2 className="mt-5 text-[26px] font-semibold leading-tight text-[var(--av-text-primary)]">
+              नमस्ते किसान भाई
+            </h2>
+            <span className="mt-3 h-px w-10 bg-[#a6843e]" />
+            {selectedCrop !== "general" ? (
+              <p className="mt-3 text-[16px] font-semibold text-[#0c3b2e] dark:text-emerald-200">
+                {selectedCropObj.nameHi}
+              </p>
+            ) : null}
+            <p className="mt-3 max-w-[22rem] select-text text-[17px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+              {messages[0]?.text}
+            </p>
+          </div>
+        ) : null}
 
-        {messages.map((m) => {
+        {!onlyWelcome ? (
+        <p className="text-center text-[12px] font-medium text-[var(--av-text-muted)]">
+          आज
+        </p>
+        ) : null}
+
+        {!onlyWelcome && messages.map((m) => {
           const isMe = m.sender === "user";
+          const isWelcome = m.id === "msg-welcome";
+          if (isWelcome) {
+            return (
+              <div
+                key={m.id}
+                className="rounded-3xl border border-[color:rgba(168,132,62,0.28)] bg-[#fbf8f1] px-4 py-4 dark:bg-[var(--av-surface)]"
+              >
+                <p className="text-[13px] font-semibold text-[#8a6a32]">
+                  नमस्ते किसान भाई
+                </p>
+                <p className="mt-1.5 select-text text-[16px] font-medium leading-relaxed text-[var(--av-text-primary)]">
+                  {m.text}
+                </p>
+              </div>
+            );
+          }
           return (
             <div
               key={m.id}
-              className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in duration-200`}
+              className={`flex ${isMe ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`relative max-w-[88%] rounded-2xl p-3.5 shadow-sm sm:max-w-[75%] ${
+                className={`max-w-[88%] px-3.5 py-3 sm:max-w-[75%] ${
                   isMe
-                    ? "rounded-tr-none bg-[#d9fdd3] text-stone-900 dark:bg-[#005c4b] dark:text-stone-100"
-                    : "rounded-tl-none bg-white text-stone-900 dark:bg-[#202c33] dark:text-stone-100"
+                    ? "rounded-[22px] rounded-br-md bg-[#0c3b2e] text-[#f7f3ea]"
+                    : "rounded-[22px] rounded-bl-md border border-[color:rgba(168,132,62,0.22)] border-l-[3px] border-l-[#0c3b2e] bg-[#fbf8f1] text-[var(--av-text-primary)] dark:border-white/10 dark:bg-[var(--av-surface)]"
                 }`}
               >
-                {/* Crop Badge */}
-                {isMe && m.cropName && (
-                  <div className="mb-1.5 flex items-center gap-1">
-                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-600/15 px-2 py-0.5 text-[11px] font-extrabold text-emerald-900 dark:bg-emerald-400/20 dark:text-emerald-200">
-                      🌾 {m.cropName}
-                    </span>
-                  </div>
-                )}
+                {isMe && m.cropName ? (
+                  <p className="mb-1 text-[12px] font-semibold text-[#e7d7b1]">
+                    {m.cropName}
+                  </p>
+                ) : null}
 
-                {/* Attached Photo */}
-                {m.photo && (
-                  <div className="mb-2.5 overflow-hidden rounded-xl border border-black/10 shadow-xs dark:border-white/10">
+                {m.photo ? (
+                  <div className="mb-2.5 overflow-hidden rounded-2xl">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={m.photo}
-                      alt="Crop disease photo"
+                      alt="फसल की फोटो"
                       className="max-h-60 w-full object-cover"
                     />
                   </div>
-                )}
+                ) : null}
 
-                {/* Message Body */}
-                <div className="whitespace-pre-wrap text-[14.5px] leading-relaxed select-text font-normal">
-                  {m.text}
+                <div className="select-text whitespace-pre-wrap text-[16px] font-medium leading-relaxed">
+                  <MessageBody text={m.text} />
                 </div>
-
-                {/* Bottom Row: Timestamp and status tick */}
-                <div className="mt-1 flex items-center justify-end gap-1 text-[11px] font-medium text-stone-500 dark:text-stone-400">
-                  <span>{m.time}</span>
-                  {isMe && (
-                    <CheckCheck className="h-3.5 w-3.5 text-[#53bdeb]" />
-                  )}
-                </div>
+                <p
+                  className={`mt-1.5 text-right text-[11px] ${
+                    isMe ? "text-[#d9cba8]" : "text-[var(--av-text-muted)]"
+                  }`}
+                >
+                  {m.time}
+                </p>
               </div>
             </div>
           );
         })}
 
-        {/* Doctor Typing Indicator */}
-        {isTyping && (
-          <div className="flex justify-start animate-in fade-in">
-            <div className="flex items-center gap-2 rounded-2xl rounded-tl-none bg-white px-4 py-2.5 text-xs font-bold text-stone-700 shadow-sm dark:bg-[#202c33] dark:text-stone-300">
-              <Stethoscope className="h-4 w-4 text-emerald-600 animate-pulse" />
-              <span>डॉक्टर साहब जांच कर रहे हैं…</span>
-              <span className="flex gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-bounce" />
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-bounce [animation-delay:0.2s]" />
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-bounce [animation-delay:0.4s]" />
-              </span>
-            </div>
-          </div>
-        )}
+        {isTyping ? (
+          <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
+            जवाब लिख रहे हैं…
+          </p>
+        ) : null}
 
         <div ref={messagesEndRef} />
       </div>
 
       {/* Part C: Bottom Input Bar (shrink-0 mt-auto) */}
-      <div className="shrink-0 mt-auto w-full max-w-full overflow-hidden bg-white border-t border-stone-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-4 sm:pb-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] dark:border-white/10 dark:bg-[#1f2c34]">
-        {/* Suggested Quick Question Chips */}
-        <div className="w-full max-w-full overflow-hidden border-b border-stone-100 bg-[#f9fafb] px-3 py-1.5 box-border dark:border-white/5 dark:bg-[#111b21]">
-          <div className="flex w-full items-center gap-2 overflow-x-auto whitespace-nowrap pr-4 box-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div
+        className={cn(
+          "mt-auto w-full max-w-full shrink-0 overflow-hidden border-t border-[color:rgba(168,132,62,0.28)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]",
+          keyboardOpen
+            ? "pb-1.5"
+            : "pb-[max(0.45rem,env(safe-area-inset-bottom))]"
+        )}
+      >
+        <div className="border-b border-[var(--av-border-subtle)] px-3 py-2.5">
+          <p className="mb-2 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+            ये पूछ सकते हैं
+          </p>
+          <div className="flex w-full items-center gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_0,black_calc(100%-1.75rem),transparent)] [&::-webkit-scrollbar]:hidden">
             {activeSuggestions.map((prompt) => (
               <button
                 key={prompt}
@@ -757,7 +821,7 @@ export default function AskQueryPage() {
                   setInputText(prompt);
                   scrollToBottom(true);
                 }}
-                className="shrink-0 rounded-full border border-stone-200 bg-white px-2.5 py-1 text-[12px] font-semibold text-stone-700 shadow-2xs hover:border-emerald-500 hover:text-emerald-700 active:scale-95 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                className="shrink-0 rounded-full border border-[color:rgba(168,132,62,0.4)] bg-[#f3efe4] px-4 py-2.5 text-[15px] font-semibold text-[var(--av-text-primary)] active:scale-[0.98] dark:bg-[var(--av-surface-muted)]"
               >
                 {prompt}
               </button>
@@ -768,7 +832,7 @@ export default function AskQueryPage() {
         {/* Live Voice Recording Status Overlay & Photo Preview */}
         <div className="p-2.5 pt-1 space-y-2">
           {isRecording && (
-            <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-rose-700 animate-in fade-in dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300">
+            <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300">
               <div className="flex items-center gap-2.5">
                 <span className="h-3 w-3 rounded-full bg-rose-600 animate-ping" />
                 <div className="flex flex-col">
@@ -843,29 +907,32 @@ export default function AskQueryPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-stone-600 hover:bg-stone-100 active:scale-95 dark:text-stone-300 dark:hover:bg-white/10"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[color:rgba(168,132,62,0.28)] bg-[#f3efe4] text-[#0c3b2e] active:scale-95 dark:border-white/10 dark:bg-[var(--av-surface-muted)] dark:text-emerald-200"
               title="पत्ती या कीड़े की फोटो जोड़ें"
             >
-              <Camera className="h-6 w-6" />
+              <Camera className="h-5 w-5" />
             </button>
 
-            {/* Mic Button (Real Speech Recognition) */}
             <button
               type="button"
               onClick={handleToggleVoice}
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-95 ${
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full active:scale-95 ${
                 isRecording
-                  ? "bg-rose-600 text-white shadow-md shadow-rose-600/40 animate-pulse"
-                  : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/10"
+                  ? "bg-rose-600 text-white"
+                  : "border border-[color:rgba(168,132,62,0.28)] bg-[#f3efe4] text-[#0c3b2e] dark:border-white/10 dark:bg-[var(--av-surface-muted)] dark:text-emerald-200"
               }`}
               title="बोलकर सवाल पूछें"
             >
-              {isRecording ? <Square className="h-5 w-5" /> : <Mic className="h-6 w-6" />}
+              {isRecording ? <Square className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
             </button>
 
             {/* Text Input Field */}
             <input
+              ref={chatInputRef}
               type="text"
+              autoFocus
+              enterKeyHint="send"
+              autoComplete="off"
               placeholder={
                 isRecording
                   ? "आपकी आवाज़ दर्ज हो रही है… बोलें"
@@ -886,7 +953,7 @@ export default function AskQueryPage() {
                   handleSend();
                 }
               }}
-              className="flex-1 rounded-2xl border border-stone-300 bg-stone-100 px-4 py-2.5 text-[15px] text-stone-900 outline-none transition focus:border-[#008069] focus:bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:focus:border-emerald-500"
+              className="h-12 flex-1 rounded-full border border-[color:rgba(168,132,62,0.35)] bg-white px-4 text-[16px] font-medium text-[var(--av-text-primary)] outline-none focus:border-[#0c3b2e] dark:border-white/15 dark:bg-[var(--av-surface-muted)]"
             />
 
             {/* Send Button */}
@@ -894,7 +961,7 @@ export default function AskQueryPage() {
               type="button"
               onClick={handleSend}
               disabled={!inputText.trim() && !photoPreview}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#008069] text-white shadow-md transition hover:bg-[#00705c] active:scale-95 disabled:opacity-40 dark:bg-emerald-600"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0c3b2e] text-[#f7f3ea] shadow-[var(--av-shadow-sm)] active:scale-95 disabled:opacity-40"
               title="भेजें"
             >
               <Send className="h-5 w-5" />

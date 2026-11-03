@@ -45,7 +45,7 @@ export type CropWeedFieldGuide = {
 };
 
 export const WEED_GLOBAL_PRINCIPLES_HI: string[] = [
-  "खरपतवार 2 से 4 पत्ती का हो तब स्प्रे सबसे अच्छा लगता है। 6–8 पत्ती पर सिर्फ ऊपर जल सकता है।",
+  "खरपतवार 2 से 4 पत्ती का हो तब स्प्रे सबसे अच्छा लगता है। 6 से 8 पत्ती पर सिर्फ ऊपर जल सकता है।",
   "खेत में पैर धंसने जैसी अच्छी नमी हो — सूखी जमीन पर स्प्रे कम असर करता है, फसल पर झटका भी लग सकता है।",
   "नोजल: Flat Fan या कट नोजल लगाओ। गोल Cone नोजल से दवा उड़कर फसल पर गिर सकती है।",
   "पानी: कम से कम 150 लीटर प्रति एकड़ (लगभग 15 टंकी × 10 लीटर)। 5–6 टंकी में पूरा स्प्रे अधूरा असर।",
@@ -89,14 +89,14 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       { applicationType: "pre", timingHi: "बुवाई के 0–3 दिन · 48–72 घंटे के भीतर", technical: "Pyroxasulfone 85% WG", brands: ["Shaked","Momiji","Awkira"], doseHi: "60 ग्राम प्रति एकड़", waterHi: "150–200 लीटर पानी", targetsHi: ["गुल्ली डंडा", "बथुआ"], fieldConditionHi: "पलेवा में अच्छी नमी हो", noteHi: "जहाँ Clodinafop या Sulfosulfuron का असर कम हो गया हो, वहाँ सबसे असरदार विकल्प" },
     ],
     postEmergence: [
-      { applicationType: "post", timingHi: "पहली सिंचाई के बाद · गुल्ली 2–3 पत्ती", technical: "Clodinafop-propargyl 15% WP", brands: ["Topik","Point"], doseHi: "160 ग्राम प्रति एकड़", targetsHi: ["गुल्ली डंडा","जंगली जई"] },
-      { applicationType: "post", timingHi: "पहली सिंचाई के बाद · गुल्ली 2–3 पत्ती", technical: "Pinoxaden 5.1% EC", brands: ["Axial","Axel"], doseHi: "350–400 मिली प्रति एकड़", targetsHi: ["गुल्ली डंडा","जंगली जई"] },
+      { applicationType: "post", timingHi: "पहली सिंचाई के बाद · गुल्ली 2 से 3 पत्ती", technical: "Clodinafop-propargyl 15% WP", brands: ["Topik","Point"], doseHi: "160 ग्राम प्रति एकड़", targetsHi: ["गुल्ली डंडा","जंगली जई"] },
+      { applicationType: "post", timingHi: "पहली सिंचाई के बाद · गुल्ली 2 से 3 पत्ती", technical: "Pinoxaden 5.1% EC", brands: ["Axial","Axel"], doseHi: "350–400 मिली प्रति एकड़", targetsHi: ["गुल्ली डंडा","जंगली जई"] },
       { applicationType: "post", timingHi: "बुवाई के 32–35 दिन बाद", technical: "Metsulfuron-methyl 20% WP", brands: ["Algrip"], doseHi: "8 ग्राम प्रति एकड़", targetsHi: ["बथुआ","हिरनखुरी","कृष्णनील"] },
       { applicationType: "post", timingHi: "बुवाई के 32–35 दिन बाद", technical: "2,4-D Amine Salt 58% SL", doseHi: "400 मिली प्रति एकड़", targetsHi: ["बथुआ","हिरनखुरी","कृष्णनील"] },
       { applicationType: "combo", timingHi: "घास और चौड़ी पत्ती दोनों के लिए", technical: "Sulfosulfuron 75% + Metsulfuron-methyl 5% WG", brands: ["Total","Leader Plus"], doseHi: "16 ग्राम प्रति एकड़", waterHi: "150 लीटर पानी", targetsHi: ["गुल्ली डंडा","जंगली जई","बथुआ","हिरनखुरी"], adjuvantHi: "गोंद / surfactant पैक के साथ मिलाएँ" },
     ],
     fieldDoctorTips: [
-      { titleHi: "गेहूं में खाद बुरकाव व स्प्रे का सही क्रम", pointsHi: ["ज़मीन में बुरकाव: पहली सिंचाई (21 दिन) पर यूरिया + जिंक का ज़मीन पर बुरकाव करें, फिर 2–3 दिन बाद खेत में पैर टिकने (ओट) पर खरपतवारनाशी का स्प्रे करें ताकि गुल्ली-डंडा 2–3 पत्ती पर ही खत्म हो जाए।", "पत्तियों पर फोलियर स्प्रे: खरपतवारनाशी स्प्रे के तुरंत बाद पत्तियों पर यूरिया, जिंक या 19:19:19 का फोलियर स्प्रे कभी न करें; दोनों के पत्तों पर छिड़काव में कम से कम 5 से 7 दिन का गैप रखें ताकि गेहूं पीला न पड़े।"] },
+      { titleHi: "गेहूं में खाद बुरकाव व स्प्रे का सही क्रम", pointsHi: ["ज़मीन में बुरकाव: पहली सिंचाई (21 दिन) पर यूरिया + जिंक का ज़मीन पर बुरकाव करें, फिर 2–3 दिन बाद खेत में पैर टिकने (ओट) पर खरपतवारनाशी का स्प्रे करें ताकि गुल्ली-डंडा 2 से 3 पत्ती पर ही खत्म हो जाए।", "पत्तियों पर फोलियर स्प्रे: खरपतवारनाशी स्प्रे के तुरंत बाद पत्तियों पर यूरिया, जिंक या 19:19:19 का फोलियर स्प्रे कभी न करें; दोनों के पत्तों पर छिड़काव में कम से कम 5 से 7 दिन का गैप रखें ताकि गेहूं पीला न पड़े।"] },
       { titleHi: "2,4-D की सावधानी", pointsHi: ["गेहूं के पास सरसों, मटर, आलू या चना हो तो हवा चलते समय 2,4-D मत डालो", "2,4-D पड़ोसी फसल पर उड़ सकती है — पत्ते मुड़ जाते हैं"] },
       { titleHi: "कट नोजल से स्प्रे करो", pointsHi: ["दवा और यूरिया एक नली से मिलाकर फेंकने से गुल्ली डंडा नहीं मरता", "कट नोजल से लाइन बनाकर जमीन पर स्प्रे करो"] },
     ],
@@ -133,7 +133,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
         doseHi: "80–100 मिली प्रति एकड़",
         waterHi: "120–150 लीटर पानी",
         nozzleHi: "कट नोजल",
-        targetsHi: ["सांवा घास", "2–4 पत्ती की अवस्था"],
+        targetsHi: ["सांवा घास", "2 से 4 पत्ती की अवस्था"],
       },
       {
         applicationType: "post",
@@ -219,7 +219,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
     postEmergence: [
       {
         applicationType: "post",
-        timingHi: "15–22 दिन · खरपतवार 2–4 पत्ती",
+        timingHi: "15–22 दिन · खरपतवार 2 से 4 पत्ती",
         technical: "Tembotrione 34.4% SC",
         brands: ["Laudis"],
         doseHi: "115 मिली प्रति एकड़",
@@ -229,7 +229,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       },
       {
         applicationType: "post",
-        timingHi: "15–22 दिन · खरपतवार 2–4 पत्ती",
+        timingHi: "15–22 दिन · खरपतवार 2 से 4 पत्ती",
         technical: "Topramezone 33.6% SC",
         brands: ["Tynzer"],
         doseHi: "30 मिली प्रति एकड़",
@@ -324,7 +324,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       },
     ],
     postEmergence: [
-      { applicationType: "post", timingHi: "25 से 45 दिन · मोथा 3–4 पत्ती · अच्छी नमी हो", technical: "Halosulfuron-methyl 75% WG", brands: ["Sempra"], doseHi: "36 ग्राम प्रति एकड़", waterHi: "150 लीटर पानी", nozzleHi: "Flat Fan nozzle", noteHi: "मोथा की जमीन के नीचे की गाँठों को सुखा देती है", targetsHi: ["नागरमोथा"] },
+      { applicationType: "post", timingHi: "25 से 45 दिन · मोथा 3 से 4 पत्ती · अच्छी नमी हो", technical: "Halosulfuron-methyl 75% WG", brands: ["Sempra"], doseHi: "36 ग्राम प्रति एकड़", waterHi: "150 लीटर पानी", nozzleHi: "Flat Fan nozzle", noteHi: "मोथा की जमीन के नीचे की गाँठों को सुखा देती है", targetsHi: ["नागरमोथा"] },
       { applicationType: "post", timingHi: "चौड़ी पत्ती और लतर / बेलें", technical: "2,4-D Amine Salt 58% SL", doseHi: "800 मिली प्रति एकड़", waterHi: "150–200 लीटर पानी", targetsHi: ["चौड़ी पत्ती वाले खरपतवार", "लतर / बेल वाली घास"] },
     ],
     fieldDoctorTips: [
@@ -519,7 +519,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       { applicationType: "pre", timingHi: "बुवाई के 0 से 2 दिन", technical: "Pendimethalin 38.7% CS", doseHi: "700 मिली प्रति एकड़", waterHi: "150–200 लीटर पानी" },
     ],
     postEmergence: [
-      { applicationType: "early_post", timingHi: "15 से 25 दिन · खरपतवार 2–4 पत्ती", technical: "Imazethapyr 10% SL", brands: ["Pursuit", "Lurit"], doseHi: "300 से 350 मिली प्रति एकड़", waterHi: "150 लीटर", nozzleHi: "Cut nozzle", targetsHi: ["सांठी", "जंगली चौलाई", "छोटी घास", "मोथा की ऊपरी बढ़वार"] },
+      { applicationType: "early_post", timingHi: "15 से 25 दिन · खरपतवार 2 से 4 पत्ती", technical: "Imazethapyr 10% SL", brands: ["Pursuit", "Lurit"], doseHi: "300 से 350 मिली प्रति एकड़", waterHi: "150 लीटर", nozzleHi: "Cut nozzle", targetsHi: ["सांठी", "जंगली चौलाई", "छोटी घास", "मोथा की ऊपरी बढ़वार"] },
       { applicationType: "combo", timingHi: "घास और चौड़ी पत्ती एक साथ", technical: "Propaquizafop 2.5% + Imazethapyr 3.75% ME", brands: ["Shaked", "Iris"], doseHi: "800 मिली प्रति एकड़", waterHi: "150 लीटर पानी" },
     ],
     fieldDoctorTips: [
@@ -624,9 +624,9 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       { applicationType: "pre", timingHi: "बुवाई के तुरंत बाद · 0 से 48 घंटे", technical: "Diclosulam 84% WDG", brands: ["Strongarm"], doseHi: "12.4 ग्राम प्रति एकड़", waterHi: "150 लीटर पानी", targetsHi: ["कनकौआ / केना", "सांठी"], noteHi: "उगने से पहले रोकता है — सोयाबीन के लिए भरोसेमंद विकल्प" },
     ],
     postEmergence: [
-      { applicationType: "combo", timingHi: "बुवाई के 15 से 22 दिन · खरपतवार 2–4 पत्ती", technical: "Fomesafen 11.1% + Quizalofop-ethyl 5.5% EC", brands: ["Patela", "Saket"], doseHi: "400 मिली प्रति एकड़", waterHi: "150 लीटर" },
-      { applicationType: "combo", timingHi: "बुवाई के 15 से 22 दिन · खरपतवार 2–4 पत्ती", technical: "Sodium acifluorfen 16.5% + Clodinafop-propargyl 8% EC", brands: ["Iris", "Fateh", "Vesta"], doseHi: "400 मिली प्रति एकड़" },
-      { applicationType: "post", timingHi: "बुवाई के 15 से 22 दिन · खरपतवार 2–4 पत्ती", technical: "Imazethapyr 10% SL", brands: ["Pursuit"], doseHi: "350–400 मिली प्रति एकड़" },
+      { applicationType: "combo", timingHi: "बुवाई के 15 से 22 दिन · खरपतवार 2 से 4 पत्ती", technical: "Fomesafen 11.1% + Quizalofop-ethyl 5.5% EC", brands: ["Patela", "Saket"], doseHi: "400 मिली प्रति एकड़", waterHi: "150 लीटर" },
+      { applicationType: "combo", timingHi: "बुवाई के 15 से 22 दिन · खरपतवार 2 से 4 पत्ती", technical: "Sodium acifluorfen 16.5% + Clodinafop-propargyl 8% EC", brands: ["Iris", "Fateh", "Vesta"], doseHi: "400 मिली प्रति एकड़" },
+      { applicationType: "post", timingHi: "बुवाई के 15 से 22 दिन · खरपतवार 2 से 4 पत्ती", technical: "Imazethapyr 10% SL", brands: ["Pursuit"], doseHi: "350–400 मिली प्रति एकड़" },
       { applicationType: "post", timingHi: "केवल कनकौआ / केना की समस्या हो", technical: "Chlorimuron-ethyl 25% WP", brands: ["Cloben"], doseHi: "15 ग्राम प्रति एकड़", adjuvantHi: "Surfactant के साथ मिलाएँ", targetsHi: ["कनकौआ", "केना"] },
     ],
     fieldDoctorTips: [
@@ -893,7 +893,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       { applicationType: "pre", timingHi: "रोपाई से पहले · या रोपाई के 0–3 दिन", technical: "Oxyfluorfen 23.5% EC", brands: ["Goal", "Oxygold"], doseHi: "150 से 180 मिली प्रति एकड़" },
     ],
     postEmergence: [
-      { applicationType: "early_post", timingHi: "रोपाई के 20 से 30 दिन बाद · खरपतवार 2–3 पत्ती", technical: "Propaquizafop 5% + Oxyfluorfen 12% w/w EC", brands: ["Dekel", "Shaked Onion"], doseHi: "350 से 400 मिली प्रति एकड़", waterHi: "150 लीटर पानी", nozzleHi: "Flat Fan", targetsHi: ["घास और चौड़ी पत्ती"] },
+      { applicationType: "early_post", timingHi: "रोपाई के 20 से 30 दिन बाद · खरपतवार 2 से 3 पत्ती", technical: "Propaquizafop 5% + Oxyfluorfen 12% w/w EC", brands: ["Dekel", "Shaked Onion"], doseHi: "350 से 400 मिली प्रति एकड़", waterHi: "150 लीटर पानी", nozzleHi: "Flat Fan", targetsHi: ["घास और चौड़ी पत्ती"] },
       { applicationType: "combo", timingHi: "किसान अक्सर टंकी में मिलाकर डालते हैं", technical: "Oxyfluorfen 23.5% EC + Quizalofop 5% EC", brands: ["Goal", "Targa Super"], doseHi: "Oxyfluorfen 100 मिली + Quizalofop 350 मिली प्रति एकड़", noteHi: "किसान अपनी टंकी में मिलाकर बनाते हैं — खेत में दर्ज तरीका" },
     ],
     fieldDoctorTips: [

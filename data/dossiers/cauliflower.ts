@@ -771,7 +771,7 @@ export const cauliflowerDossier: ResearchDossierOverlay = {
       {
         technical: "Quizalofop-P-ethyl 5% / 7.5% EC (लेबल फॉर्मूलेशन)",
         dose: "लेबल-अनुमोदित मात्रा (अक्सर ~300–400 ml/एकड़ वर्ग — बोतल देखें)",
-        timing: "घास 2–4 पत्ती POST, फसल जमी होने पर",
+        timing: "घास 2 से 4 पत्ती POST, फसल जमी होने पर",
         targets: "केवल घास",
         note: "चौड़ी पत्ती हर्बिसाइड से न मिलाएँ; फसल फाइटोटॉक्सिसिटी से बचें — लेबल अनिवार्य",
       },

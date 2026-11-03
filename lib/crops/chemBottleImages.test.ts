@@ -185,6 +185,13 @@ describe("Chemical Bottle Photorealistic Images Resolution", () => {
     expect(chemBottleImageSrc("Sulfosulfuron 75% WG")).toBe("/images/chem/real/sulfosulfuron-75-wg.jpg");
     expect(chemBottleImageSrc("Metsulfuron-methyl 20% WP")).toBe("/images/chem/real/metsulfuron-methyl-20-wp.jpg");
     expect(chemBottleImageSrc("Ethoxysulfuron 15% WDG")).toBe("/images/chem/real/ethoxysulfuron-15-wdg.jpg");
+    expect(chemBottleImageSrc("Triafamone 20% + Ethoxysulfuron 10% WG (Council Activ)")).toBe(
+      "/images/chem/real/triafamone-ethoxysulfuron-wg.jpg"
+    );
+    expect(chemBottleImageSrc("Metsulfuron-methyl + Chlorimuron-ethyl (Almix)")).toBe(
+      "/images/chem/real/metsulfuron-chlorimuron-wp.jpg"
+    );
+    expect(lookupChemBottle("Metsulfuron-methyl 20% WP")?.slug).toBe("metsulfuron-methyl-20-wp");
     expect(chemBottleImageSrc("Halosulfuron-methyl 75% WG")).toBe("/images/chem/real/halosulfuron-75-wg.jpg");
     expect(chemBottleImageSrc("Metribuzin 70% WP")).toBe("/images/chem/real/metribuzin-70-wp.jpg");
     expect(chemBottleImageSrc("Pyrazosulfuron-ethyl 10% WP")).toBe("/images/chem/real/pyrazosulfuron-10-wp.jpg");

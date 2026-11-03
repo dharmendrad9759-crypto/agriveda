@@ -51,7 +51,19 @@ export default function SprayRotationPage() {
   const withProducts = useMemo(() => attachProducts(fieldLogs), [fieldLogs]);
   const risk = useMemo(() => checkResistanceRisk(fieldLogs), [fieldLogs]);
 
-  if (!hydrated) return null;
+  if (!hydrated) {
+    return (
+      <AppShell
+        title="स्प्रे चक्र व डायरी"
+        breadcrumbs={[{ label: uiT("navHome"), href: "/" }, { label: "स्प्रे डायरी" }]}
+      >
+        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 py-10 text-center">
+          <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
+          <p className="text-xs font-semibold text-[var(--av-text-muted)]">स्प्रे डायरी लोड हो रही है…</p>
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell
@@ -144,30 +156,29 @@ export default function SprayRotationPage() {
           </span>
         </div>
 
-        {/* Status of Resistance Risk */}
-        <div className="mt-3">
-          <RiskBanner
-            result={risk}
-            labels={{
-              low: "सुरक्षित रोटेशन",
-              medium: "मध्यम जोखिम — दवा बदलें",
-              high: "उच्च जोखिम — तुरंत दवा बदलें!",
-              consecutive: "लगातार एक ही ग्रुप का स्प्रे न दोहराएं",
-            }}
-          />
-        </div>
-
-        {/* Spray Timeline History */}
-        {withProducts.length > 0 && (
-          <div className="mt-4">
-            <p className="text-[12px] font-black text-[var(--av-text-primary)]">
-              इस सीजन की छिड़काव सूची ({currentCrop.nameHi || currentCrop.name}):
-            </p>
+        {withProducts.length > 0 ? (
+          <>
             <div className="mt-3">
-              <SprayTimeline sprays={withProducts} />
+              <RiskBanner
+                result={risk}
+                labels={{
+                  low: "सुरक्षित रोटेशन",
+                  medium: "मध्यम जोखिम — दवा बदलें",
+                  high: "उच्च जोखिम — तुरंत दवा बदलें!",
+                  consecutive: "लगातार एक ही ग्रुप का स्प्रे न दोहराएं",
+                }}
+              />
             </div>
-          </div>
-        )}
+            <div className="mt-4">
+              <p className="text-[12px] font-black text-[var(--av-text-primary)]">
+                इस सीजन की छिड़काव सूची ({currentCrop.nameHi || currentCrop.name}):
+              </p>
+              <div className="mt-3">
+                <SprayTimeline sprays={withProducts} />
+              </div>
+            </div>
+          </>
+        ) : null}
 
         {/* Add Spray Log Button */}
         <AppLink

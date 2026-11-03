@@ -873,14 +873,14 @@ export const moongfaliDossier: ResearchDossierOverlay = {
       {
         technical: "Imazethapyr 10% SL",
         dose: "400–500 मिलीलीटर प्रति एकड़ (लेबल अनुसार)",
-        timing: "Early post — खरपतवार 2–4 पत्ती, आमतौर पर DAS 15–20",
+        timing: "Early post — खरपतवार 2 से 4 पत्ती, आमतौर पर DAS 15–20",
         targets: "चौड़ी पत्ती + कुछ घास (मूंगफली में जहाँ पंजीकृत)",
         note: "ALS दवा — मात्रा/फसल-अनुमोदन लेबल पर ज़रूर; अगली फसल carryover जोखिम; इंटरक्रॉप (मक्का आदि) हो तो बहुत सावधानी",
       },
       {
         technical: "Quizalofop-ethyl 5% EC",
         dose: "300–400 मिलीलीटर प्रति एकड़ (लेबल अनुसार)",
-        timing: "POST — सक्रिय घास 3–5 पत्ती",
+        timing: "POST — सक्रिय घास 3 से 5 पत्ती",
         targets: "मुख्यतः घास (Echinochloa, Digitaria, Cynodon हल्की)",
         note: "चौड़ी पत्ती पर असर नहीं — Pendimethalin/Imazethapyr/निराई के साथ कार्यक्रम; PHI देखें",
       },

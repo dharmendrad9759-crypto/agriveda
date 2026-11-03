@@ -13,17 +13,17 @@ import {
   Sparkles,
   CheckCircle2,
   Calculator,
-  Layers,
   ChevronRight,
   ShieldAlert,
   X,
 } from "lucide-react";
 import { LatLng, getFieldMeasurement } from "@/lib/geo/fieldGeometry";
-import { REGIONAL_BIGHA_OPTIONS } from "@/lib/bighaConversion";
 import { useFarmData } from "@/hooks/useFarmData";
 import FieldHUD from "@/components/farm/FieldHUD";
 import SaveFieldModal from "@/components/farm/SaveFieldModal";
 import type { FarmField } from "@/lib/farm/types";
+import { fieldPlaceFor, type FieldPlace } from "@/lib/farm/placeProfile";
+import type { MapViewCenter } from "@/components/farm/SmartFieldMap";
 
 // Dynamic import for Leaflet-based SmartFieldMap (no SSR)
 const SmartFieldMap = dynamic(() => import("@/components/farm/SmartFieldMap"), {
@@ -60,7 +60,8 @@ function FieldMeasureContent() {
   const { data, addField, updateField } = useFarmData();
 
   const [coords, setCoords] = useState<LatLng[]>([]);
-  const [selectedBighaId, setSelectedBighaId] = useState<string>("up");
+  const [place, setPlace] = useState<FieldPlace | null>(null);
+  const [viewCenter, setViewCenter] = useState<MapViewCenter | null>(null);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [savedSuccessField, setSavedSuccessField] =
     useState<FarmField | null>(null);
@@ -82,24 +83,20 @@ function FieldMeasureContent() {
   ) {
     setHydratedEditId(editingField.id);
     setCoords(editingField.boundary ?? []);
+    if (editingField.placeState) {
+      setPlace(fieldPlaceFor(editingField.placeState, editingField.placeDistrict));
+    }
   }
-
-  const activeBigha = useMemo(() => {
-    return (
-      REGIONAL_BIGHA_OPTIONS.find((option) => option.id === selectedBighaId) ||
-      REGIONAL_BIGHA_OPTIONS[0]
-    );
-  }, [selectedBighaId]);
 
   const currentMeasurement = useMemo(() => {
     if (coords.length < 3) return null;
     return getFieldMeasurement(
       coords,
-      activeBigha.acresPerBigha,
-      activeBigha.label,
-      activeBigha.note
+      place && place.acresPerBigha > 0 ? place.acresPerBigha : undefined,
+      place?.bighaLineHi,
+      place?.climateHi
     );
-  }, [coords, activeBigha]);
+  }, [coords, place]);
 
   const handleSaveField = (fieldPayload: Omit<FarmField, "id">) => {
     if (editingField) {
@@ -112,9 +109,10 @@ function FieldMeasureContent() {
     router.push("/my-farm");
   };
 
-  const bighaDisplayString = currentMeasurement?.bigha
-    ? `${currentMeasurement.bigha.value.toFixed(2)} बीघा (${activeBigha.state})`
-    : undefined;
+  const bighaDisplayString =
+    place && currentMeasurement?.bigha
+      ? `${currentMeasurement.bigha.value.toFixed(2)} बीघा (${place.stateHi})`
+      : undefined;
 
   return (
     <div className="min-h-screen bg-[var(--av-surface-inset)] pb-16 text-[var(--av-text-primary)]">
@@ -255,7 +253,7 @@ function FieldMeasureContent() {
               </span>
             </p>
             <span className="shrink-0 rounded-full bg-[var(--av-surface-inset)] px-2 py-0.5 text-[9px] font-semibold text-[var(--av-text-muted)]">
-              {activeBigha.state}
+              {place ? place.stateHi : "राज्य चुनें"}
             </span>
           </div>
 
@@ -264,6 +262,7 @@ function FieldMeasureContent() {
             initialCoords={editingField?.boundary || []}
             mode="draw"
             onCoordsChange={(newCoords) => setCoords(newCoords)}
+            onViewCenter={setViewCenter}
             onSaveLocationPin={(position) => {
               setPinnedLocation(position);
               if (coords.length < 3) {
@@ -278,8 +277,9 @@ function FieldMeasureContent() {
         {/* Live Calculation HUD */}
         <FieldHUD
           coords={coords}
-          selectedBighaId={selectedBighaId}
-          onBighaIdChange={(id) => setSelectedBighaId(id)}
+          place={place}
+          viewCenter={viewCenter}
+          onPlaceChange={setPlace}
           onSave={() => setIsSaveModalOpen(true)}
           canSave={coords.length >= 3}
         />
@@ -295,6 +295,11 @@ function FieldMeasureContent() {
           coords.length >= 3 ? coords : pinnedLocation ? [pinnedLocation] : coords
         }
         bighaDisplay={bighaDisplayString}
+        placeVillage={place?.village}
+        placeSoil={place?.soil}
+        climateNote={place?.climateHi}
+        placeState={place?.stateEn}
+        placeDistrict={place?.district}
         initialData={editingField || undefined}
         onSave={handleSaveField}
       />

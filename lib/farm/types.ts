@@ -32,6 +32,11 @@ export interface FarmField {
   measurementMethod?: "manual_map" | "gps_walk" | "manual_entry";
   soilType?: string;
   irrigationType?: string;
+  /** English state key the farmer confirmed for this field. */
+  placeState?: string;
+  placeDistrict?: string;
+  /** Usual climate of that state — not a lab reading of this field. */
+  climateNote?: string;
   notes?: string;
   createdAt?: string;
   updatedAt?: string;

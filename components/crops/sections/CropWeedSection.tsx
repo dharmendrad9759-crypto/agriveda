@@ -33,6 +33,7 @@ import {
   farmerWeedHi,
   farmerWeedTipPointsHi,
   farmerWeedTipTitleHi,
+  herbicideUseCropsHi,
 } from "@/lib/crops/simplifyWeedHi";
 import { bilingualAgriName } from "@/lib/crops/bilingualAgriName";
 import { cn } from "@/lib/cn";
@@ -153,7 +154,17 @@ function DosePill({ label, value }: { label: string; value: string }) {
   );
 }
 
-function HerbicideCard({ opt, hi, index }: { opt: HerbicideOption; hi: boolean; index: number }) {
+function HerbicideCard({
+  opt,
+  hi,
+  index,
+  cropSlug,
+}: {
+  opt: HerbicideOption;
+  hi: boolean;
+  index: number;
+  cropSlug: string;
+}) {
   const typeHi =
     opt.applicationType === "pre"
       ? hi
@@ -190,6 +201,11 @@ function HerbicideCard({ opt, hi, index }: { opt: HerbicideOption; hi: boolean; 
           <p className="text-[14px] font-black leading-snug text-emerald-950">
             {hi ? bilingualAgriName(opt.technical) : opt.technical}
           </p>
+          {hi ? (
+            <p className="mt-1 text-[12px] font-semibold leading-snug text-emerald-900/80">
+              {herbicideUseCropsHi(opt.technical, cropSlug)}
+            </p>
+          ) : null}
         </div>
 
         <div className="grid grid-cols-2 gap-1.5">
@@ -562,7 +578,7 @@ function FieldDoctorWeedCards({
         title={hi ? "3. उगने से पहले की दवा" : "3. Pre-emergence"}
         subtitle={
           hi
-            ? "बुवाई/रोपाई के 0–3 दिन · खरपतवार निकलने से पहले"
+            ? "बुवाई/रोपाई के 0 से 3 दिन · खरपतवार निकलने से पहले"
             : "0–3 days after sowing/transplant"
         }
         accent="bg-gradient-to-r from-teal-900 to-emerald-800 border-teal-900/20"
@@ -575,6 +591,7 @@ function FieldDoctorWeedCards({
                 opt={opt}
                 hi={hi}
                 index={i}
+                cropSlug={crop.slug}
               />
             ))}
           </div>
@@ -594,7 +611,7 @@ function FieldDoctorWeedCards({
         title={hi ? "4. उगने के बाद की दवा" : "4. Post-emergence"}
         subtitle={
           hi
-            ? "सबसे अच्छा: खरपतवार 2–4 पत्ती · सही नोजल और पानी"
+            ? "2 से 4 पत्ती का खरपतवार होने पर इन दवाओं का इस्तेमाल करें"
             : "Ideal: weeds at 2–4 leaf · right nozzle & water"
         }
         accent="bg-gradient-to-r from-emerald-800 to-teal-700 border-emerald-900/20"
@@ -607,6 +624,7 @@ function FieldDoctorWeedCards({
                 opt={opt}
                 hi={hi}
                 index={i}
+                cropSlug={crop.slug}
               />
             ))}
           </div>
@@ -866,15 +884,15 @@ function LegacyWeedSection({ crop }: { crop: Crop }) {
                       <span className="font-bold text-[var(--av-text-primary)]">
                         {hi ? "उगने से पहले: " : "Before sprout: "}
                       </span>
-                      {w.preEmergenceHerbicide}
+                      {hi ? farmerWeedHi(w.preEmergenceHerbicide) : w.preEmergenceHerbicide}
                     </p>
                     <p>
                       <span className="font-bold text-[var(--av-text-primary)]">
                         {hi ? "उगने के बाद: " : "After sprout: "}
                       </span>
-                      {w.postEmergenceHerbicide}
+                      {hi ? farmerWeedHi(w.postEmergenceHerbicide) : w.postEmergenceHerbicide}
                     </p>
-                    <p>{w.dose}</p>
+                    <p>{hi ? farmerWeedHi(w.dose) : w.dose}</p>
                     {w.href ? (
                       <AppLink
                         href={w.href}

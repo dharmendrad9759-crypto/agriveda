@@ -275,7 +275,7 @@ export default function AlertsHub() {
             className="flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-md shadow-emerald-950/30 transition hover:bg-emerald-500 active:scale-95"
           >
             <Plus className="h-4 w-4" />
-            <span>{hi ? "+ नया अलर्ट" : "+ Add alert"}</span>
+            <span>{hi ? "नया अलर्ट" : "Add alert"}</span>
           </button>
         </div>
       </div>

@@ -2,12 +2,13 @@
 
 import AppLink from "@/components/ui/AppLink";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Camera, Home, Sprout, IndianRupee, User } from "lucide-react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { softTap } from "@/lib/appEssentials";
 import type { FarmerUiKey } from "@/lib/i18n/farmer-ui";
 import { cn } from "@/lib/cn";
+import { useSafeReducedMotion } from "@/hooks/useClientReady";
 
 const SIDE_ITEMS: {
   id?: string;
@@ -71,7 +72,7 @@ function NavItem({
   path: string;
   icon: typeof Home;
   isActive: boolean;
-  reduced: boolean | null;
+  reduced: boolean;
 }) {
   return (
     <AppLink
@@ -80,16 +81,15 @@ function NavItem({
       onClick={() => softTap(10)}
       className="relative flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 transition-colors duration-150"
     >
-      {isActive && !reduced && (
+      {isActive && !reduced ? (
         <motion.span
           layoutId="bottom-nav-active"
           className="absolute inset-1 rounded-xl bg-emerald-500/20 shadow-[inset_0_0_0_1px_rgba(16,185,129,0.25)]"
           transition={{ type: "spring", stiffness: 420, damping: 34 }}
         />
-      )}
-      {isActive && reduced && (
+      ) : isActive ? (
         <span className="absolute inset-1 rounded-xl bg-emerald-500/20" />
-      )}
+      ) : null}
       <motion.span
         className="relative z-10 flex flex-col items-center gap-0.5"
         whileTap={reduced ? undefined : { scale: 0.92 }}
@@ -118,7 +118,7 @@ function NavItem({
 export default function BottomNav() {
   const pathname = usePathname();
   const { t } = useLocale();
-  const reduced = useReducedMotion();
+  const reduced = useSafeReducedMotion();
   const aiActive = pathname.startsWith("/ai-doctor");
 
   // Hide BottomNav on inner scheme detail/guide screens and dedicated expert chat

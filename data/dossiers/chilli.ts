@@ -642,7 +642,7 @@ export const chilliDossier: ResearchDossierOverlay = {
       type: "घास",
       criticalPeriod: "DAT 0–45",
       preEmergenceHerbicide: "Pendimethalin 38.7% CS ~700 ml/एकड़ या 30% EC ~1.3 लीटर/एकड़ (0–3 DAT, नम मिट्टी पर)",
-      postEmergenceHerbicide: "Quizalofop-P-ethyl 5% EC ~400 ml/एकड़ (केवल घास, 2–4 पत्ती अवस्था)",
+      postEmergenceHerbicide: "Quizalofop-P-ethyl 5% EC ~400 ml/एकड़ (केवल घास, 2 से 4 पत्ती अवस्था)",
       hracGroup: "K1 (pre) / A (post)",
       dose: "लेबल अनुसार; रेतीली मिट्टी में Pendimethalin मात्रा कम रखें",
     },
@@ -695,7 +695,7 @@ export const chilliDossier: ResearchDossierOverlay = {
       {
         technical: "Quizalofop-P-ethyl 5% EC",
         dose: "~400 मिलीलीटर प्रति एकड़",
-        timing: "घास 2–4 पत्ती अवस्था (post-emergence), DAT 20–30",
+        timing: "घास 2 से 4 पत्ती अवस्था (post-emergence), DAT 20–30",
         targets: "केवल घास (Digitaria, Echinochloa, Eleusine)",
         note: "चौड़ी पत्ती/सेज herbicide के साथ टंकी-मिक्स न करें — असर घट सकता है",
       },

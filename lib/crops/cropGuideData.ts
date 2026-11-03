@@ -242,48 +242,84 @@ export const TOMATO_CROP_GUIDE: CropGuideData = {
           ]
         },
         {
-          pest_id: "disease_blight",
-          pest_name: "अगेती व पछेती झुलसा (Early & Late Blight)",
-          scientific_name: "Alternaria solani / Phytophthora infestans",
+          pest_id: "disease_early_blight",
+          pest_name: "अगेती झुलसा (Early Blight)",
+          scientific_name: "Alternaria solani",
           category: "disease",
-          identification_text: "अगेती झुलसा में निचली पत्तियों पर गोल संकेन्द्री छल्ले (Target Board spots) बनते हैं। पछेती झुलसा में पत्तियों के किनारों पर पानी से भीगे हुए भूरे-काले धब्बे और निचली सतह पर सफेद फफूंद दिखती है।",
-          damage_nature: "धब्बे तेजी से फैलकर पूरी पत्ती और तने को जला देते हैं। पौधे झुलसकर सूख जाते हैं और फलों पर गहरे धंसे हुए कत्थई-काले धब्बे पड़कर फल सड़ जाते हैं।",
+          identification_text: "निचली पुरानी पत्तियों पर गोल संकेन्द्री छल्ले (टारगेट बोर्ड) बनते हैं, चारों तरफ पीला घेरा होता है।",
+          damage_nature: "धब्बे नीचे की पत्तियों से ऊपर बढ़ते हैं। पत्ती झड़ती है और फल के डंठल पर काले धब्बे पड़ते हैं।",
           images: [
             "/images/jobs/job-fertilizer.jpg",
             "/images/crops/tomato.jpg"
           ],
-          organic_control: "ट्राइकोडर्मा हार्जिएनम (Trichoderma harzianum) @ 5 ग्राम/लीटर पानी का फोलियर स्प्रे। रोगग्रस्त पत्तियों व डंठलों को तोड़कर खेत से दूर जलाएं। पौधों पर ऊपर से पानी छिड़कने (Overhead sprinkling) से बचें।",
-          etl_threshold: "मौसम में बादल, नमी >80% और पत्ती पर पहला धब्बा दिखते ही",
+          organic_control: "नीचे की बीमार पत्ती तोड़कर खेत से हटाएँ। ट्राइकोडर्मा मिट्टी उपचार सहायक है। ऊपर से पानी की फुहार न डालें।",
+          etl_threshold: "पहला छल्लेदार धब्बा दिखते ही",
           chemical_control: [
             {
               chemical_name: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC (Amistar Top)",
               active_ingredient: "Azoxystrobin + Difenoconazole",
-              frac_irac_group: "FRAC 11 + FRAC 3 (QoI + DMI Dual Action)",
+              frac_irac_group: "FRAC 11 + FRAC 3",
               dosage: "1 मिली",
               volume: "1 लीटर पानी (200 मिली/एकड़)",
               per_volume: "1 लीटर पानी",
               waiting_period_days: 5,
-              safety_note: "अगेती व पछेती दोनों झुलसा पर उत्कृष्ट सिस्टमिक असर।"
+              safety_note: "सिर्फ अगेती झुलसा पर। पछेती झुलसा पर यह कनॉज़ोल नहीं चलता।"
             },
             {
-              chemical_name: "Metalaxyl-M 4% + Mancozeb 64% WP (Ridomil Gold MZ 68 WP)",
-              active_ingredient: "Metalaxyl-M 4% + Mancozeb 64% WP",
-              frac_irac_group: "FRAC 4 + FRAC M3 (PA-fungicide + Multi-site)",
+              chemical_name: "Mancozeb 75% WP (Dithane M-45)",
+              active_ingredient: "Mancozeb",
+              frac_irac_group: "FRAC M3",
+              dosage: "2.5–3 ग्राम",
+              volume: "1 लीटर पानी (600 ग्राम/एकड़)",
+              per_volume: "1 लीटर पानी",
+              waiting_period_days: 7,
+              safety_note: "धब्बे आने से पहले की सुरक्षा वाली दवा।"
+            }
+          ]
+        },
+        {
+          pest_id: "disease_late_blight",
+          pest_name: "पछेती झुलसा (Late Blight)",
+          scientific_name: "Phytophthora infestans",
+          category: "disease",
+          identification_text: "पत्ती पर पानी से भीगे अनियमित भूरे-काले धब्बे। नम मौसम में धब्बे के नीचे सफेद फफूंद जाली दिखती है।",
+          damage_nature: "ठंड और कोहरे में पूरा खेत जल्दी झुलस जाता है। फल पर कठोर भूरा सड़न आता है।",
+          images: [
+            "/images/jobs/job-fertilizer.jpg",
+            "/images/crops/tomato.jpg"
+          ],
+          organic_control: "कोहरा शुरू होने से पहले सुरक्षा स्प्रे रखें। बीमार पत्ती और फल तुरंत हटाएँ। खेत में पानी न रुकने दें।",
+          etl_threshold: "ठंडी-नम मौसम या पहला जल-भीगा धब्बा दिखते ही",
+          chemical_control: [
+            {
+              chemical_name: "Mandipropamid 23.4% SC (Revus)",
+              active_ingredient: "Mandipropamid",
+              frac_irac_group: "FRAC 40",
+              dosage: "0.8 मिली",
+              volume: "1 लीटर पानी (160 मिली/एकड़)",
+              per_volume: "1 लीटर पानी",
+              waiting_period_days: 3,
+              safety_note: "पछेती झुलसा की ट्रायल दवा। अगेती झुलसा पर यह नहीं चलती।"
+            },
+            {
+              chemical_name: "Cymoxanil 8% + Mancozeb 64% WP (Curzate)",
+              active_ingredient: "Cymoxanil + Mancozeb",
+              frac_irac_group: "FRAC 27 + FRAC M3",
+              dosage: "3 ग्राम",
+              volume: "1 लीटर पानी (600 ग्राम/एकड़)",
+              per_volume: "1 लीटर पानी",
+              waiting_period_days: 7,
+              safety_note: "पछेती झुलसा पर। अगेती झुलसा की मुख्य दवा यह नहीं है।"
+            },
+            {
+              chemical_name: "Metalaxyl-M 4% + Mancozeb 64% WP (Ridomil Gold)",
+              active_ingredient: "Metalaxyl-M + Mancozeb",
+              frac_irac_group: "FRAC 4 + FRAC M3",
               dosage: "2.5 ग्राम",
               volume: "1 लीटर पानी (500 ग्राम/एकड़)",
               per_volume: "1 लीटर पानी",
               waiting_period_days: 7,
-              safety_note: "पछेती झुलसा के शुरुआती लक्षण पर तुरंत छिड़काव करें।"
-            },
-            {
-              chemical_name: "Copper Oxychloride 50% WP (Blitox)",
-              active_ingredient: "Copper Oxychloride",
-              frac_irac_group: "FRAC M1 (Inorganic Multi-site Contact)",
-              dosage: "2.5–3.0 ग्राम",
-              volume: "1 लीटर पानी (500–600 ग्राम/एकड़)",
-              per_volume: "1 लीटर पानी",
-              waiting_period_days: 3,
-              safety_note: "सुरक्षात्मक (Preventive) संपर्क फफूंदनाशक के रूप में सर्वोत्तम।"
+              safety_note: "पछेती झुलसा के लिए। बार-बार अकेले मेटालैक्सिल न दोहराएँ।"
             }
           ]
         }

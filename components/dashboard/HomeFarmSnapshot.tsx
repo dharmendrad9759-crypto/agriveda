@@ -48,7 +48,7 @@ export default function HomeFarmSnapshot() {
             </div>
             <div className="min-w-0">
               <p className="text-[12px] font-semibold text-[var(--av-text-primary)]">
-                मेरा खेत
+                खेत सारांश
               </p>
               {hasFields ? (
                 <p className="truncate text-[10.5px] text-[var(--av-text-muted)]">

@@ -503,6 +503,7 @@ export const REAL_BOTTLE_PHOTOS: Record<string, string> = {
   "ethalfluralin": "/images/chem/real/ethalfluralin-35-4-ec.jpg",
   "ethalfluralin-35-4-ec": "/images/chem/real/ethalfluralin-35-4-ec.jpg",
   "ethoxysulfuron": "/images/chem/real/ethoxysulfuron-15-wdg.jpg",
+  "metsulfuron-chlorimuron-wp": "/images/chem/real/metsulfuron-chlorimuron-wp.jpg",
   "ethoxysulfuron-15-wdg": "/images/chem/real/ethoxysulfuron-15-wdg.jpg",
   "etofenprox": "/images/chem/real/etofenprox-10-ew.jpg",
   "etofenprox-10-ew": "/images/chem/real/etofenprox-10-ew.jpg",

@@ -50,7 +50,19 @@ export default function PestOutbreakRadarPage() {
     refresh,
   } = useOutbreakRadar();
 
-  if (!hydrated) return null;
+  if (!hydrated) {
+    return (
+      <AppShell
+        title={t("toolOutbreak")}
+        breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: t("toolOutbreak") }]}
+      >
+        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 py-10 text-center">
+          <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
+          <p className="text-xs font-semibold text-[var(--av-text-muted)]">कीट अलर्ट लोड हो रहे हैं…</p>
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell

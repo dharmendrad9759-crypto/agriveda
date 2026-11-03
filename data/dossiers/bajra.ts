@@ -788,7 +788,7 @@ export const bajraDossier: ResearchDossierOverlay = {
       {
         technical: "Quizalofop-ethyl 5% EC",
         dose: "300–400 मिलीलीटर प्रति एकड़ (लेबल)",
-        timing: "POST — घास 3–5 पत्ती, आमतौर पर DAS 20–30",
+        timing: "POST — घास 3 से 5 पत्ती, आमतौर पर DAS 20–30",
         targets: "मुख्यतः घास",
         note: "चौड़ी पत्ती नहीं कटती — Pendimethalin/निराई के साथ; बाजरा-लेबल व PHI जाँचें",
       },

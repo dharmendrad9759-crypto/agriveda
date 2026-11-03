@@ -659,7 +659,37 @@ export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
       }
     }
   }
+
+  // "Triafamone 20% + Ethoxysulfuron" must not fall through to Ethoxysulfuron alone.
+  // Drop strengths and form codes, then prefer the longest multi-word active name.
+  const qSoft = strengthlessKey(n);
+  let softBest: ChemBottleEntry | undefined;
+  let softLen = 0;
+  for (const [key, entry] of byAlias) {
+    const soft = strengthlessKey(key);
+    if (soft.length < 8 || !soft.includes(" ")) continue;
+    const idx = qSoft.indexOf(soft);
+    if (idx === -1) continue;
+    const before = idx > 0 ? qSoft[idx - 1] : " ";
+    const after = idx + soft.length < qSoft.length ? qSoft[idx + soft.length] : " ";
+    if (before !== " " || after !== " ") continue;
+    if (soft.length > softLen) {
+      softBest = entry;
+      softLen = soft.length;
+    }
+  }
+  if (softBest && softLen > bestLen) return softBest;
+
   return best;
+}
+
+function strengthlessKey(s: string): string {
+  return s
+    .replace(/\b\d+\b/g, " ")
+    .replace(/\b(?:ec|sc|wp|wg|wdg|wdp|gr|sl|sp|sg|od|fs|df|se|ew|dc|zc|as|cs|me|wsp)\b/gi, " ")
+    .replace(/\+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function hyphenSplit(word: string, max: number): string[] {

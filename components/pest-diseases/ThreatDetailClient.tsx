@@ -26,6 +26,7 @@ import {
   stripMoaCodes,
 } from "@/lib/crops/farmerSprayDose";
 import { bilingualAgriName } from "@/lib/crops/bilingualAgriName";
+import { herbicideAcreDoseHi, herbicideUseCropsHi } from "@/lib/crops/simplifyWeedHi";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 import { farmerThreatDisplayName } from "@/lib/crops/farmerThreatTitle";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
@@ -121,7 +122,7 @@ function weedIdentifyTips(threat: EnrichedThreat, hi: boolean): string[] {
   return hi
     ? [
         typeHint,
-        `खरपतवार निकालने का सबसे ज़रूरी समय: ${threat.stage || "2–4 पत्ती / शुरू के 30–45 दिन"}`,
+        `खरपतवार निकालने का सबसे ज़रूरी समय: ${threat.stage || "2 से 4 पत्ती, शुरू के 30 से 45 दिन"}`,
         "जड़ या गांठ निकालकर अपनी फसल से मिलाओ",
         "शक हो तो साफ फोटो AI Doctor को भेजो",
       ]
@@ -131,6 +132,18 @@ function weedIdentifyTips(threat: EnrichedThreat, hi: boolean): string[] {
         "Pull root/tiller and compare with your crop",
         "If unsure, send a clear photo to AI Doctor",
       ];
+}
+
+function farmerWeedWhen(when: string | undefined, isPre: boolean, hi: boolean): string {
+  if (!hi) return when || (isPre ? "Pre-emergence" : "Post-emergence");
+  const text = (when || "")
+    .replace(/(\d+)\s*[–\-]\s*(\d+)\s*DAT/gi, "रोपाई के $1 से $2 दिन बाद")
+    .replace(/(\d+)\s*[–\-]\s*(\d+)\s*DAS/gi, "बुवाई के $1 से $2 दिन बाद")
+    .replace(/(\d+)\s*DAT/gi, "रोपाई के $1 दिन बाद")
+    .replace(/(\d+)\s*DAS/gi, "बुवाई के $1 दिन बाद")
+    .trim();
+  if (text && !/\b(council|activ|stomp|rifit)\b/i.test(text)) return text;
+  return isPre ? "उगने से पहले" : "उगने के बाद";
 }
 
 function weedChemCards(
@@ -152,28 +165,28 @@ function weedChemCards(
       {
         technical: "Pendimethalin 30% EC (पेंडीमेथालिन 30% EC - जैसे Stomp)",
         dose: hi ? "1.0–1.3 लीटर प्रति एकड़ | 200 लीटर पानी" : "1.0–1.3 L/acre in 200 L water",
-        stage: hi ? "बुवाई के 0–3 दिन अंदर (उगने से पहले)" : "0–3 DAS (before emergence)",
+        stage: hi ? "बुवाई के 0 से 3 दिन अंदर (उगने से पहले)" : "0–3 DAS (before emergence)",
         timing: hi ? "उगने से पहले (PRE)" : "Pre-emergence (PRE)",
         group: "pre",
       },
       {
         technical: "Pyroxasulfone 85% WG (पाइरॉक्सासल्फोन 85% WG - जैसे Yamato)",
         dose: hi ? "60 ग्राम प्रति एकड़ | 150 लीटर पानी" : "60 g/acre | 150 L water",
-        stage: hi ? "बुवाई के 0–3 दिन अंदर (उगने से पहले)" : "0–3 DAS (PRE)",
+        stage: hi ? "बुवाई के 0 से 3 दिन अंदर (उगने से पहले)" : "0–3 DAS (PRE)",
         timing: hi ? "उगने से पहले (PRE)" : "Pre-emergence (PRE)",
         group: "pre",
       },
       {
         technical: "Clodinafop-propargyl 15% WP (क्लोडिनाफॉप 15% WP - जैसे Topik)",
         dose: hi ? "160 ग्राम प्रति एकड़ (8 पाउच) | 120–150 लीटर पानी" : "160 g/acre | 120–150 L water",
-        stage: hi ? "पहली सिंचाई के बाद (30–35 दिन, 2–4 पत्ती)" : "30–35 DAS (2–4 leaf)",
+        stage: hi ? "2 से 4 पत्ती का खरपतवार होने पर (पहली सिंचाई के बाद)" : "30–35 DAS (2–4 leaf)",
         timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
         group: "post",
       },
       {
         technical: "Sulfosulfuron 75% WG (सल्फोसल्फ्यूरॉन 75% WG - जैसे Leader)",
         dose: hi ? "13.5 ग्राम प्रति एकड़ | 120–150 लीटर पानी" : "13.5 g/acre | 120–150 L water",
-        stage: hi ? "पहली सिंचाई के बाद (25–30 दिन, 2–4 पत्ती)" : "25–30 DAS (2–4 leaf)",
+        stage: hi ? "2 से 4 पत्ती का खरपतवार होने पर (पहली सिंचाई के बाद)" : "25–30 DAS (2–4 leaf)",
         timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
         group: "post",
       },
@@ -186,14 +199,14 @@ function weedChemCards(
       {
         technical: "Pendimethalin 30% EC (पेंडीमेथालिन 30% EC - जैसे Stomp)",
         dose: hi ? "1.0–1.2 लीटर प्रति एकड़ | 200 लीटर पानी" : "1.0–1.2 L/acre | 200 L water",
-        stage: hi ? "बुवाई के तुरंत बाद (0–3 दिन अंदर)" : "0–3 DAS (Pre-emergence)",
+        stage: hi ? "बुवाई के तुरंत बाद (0 से 3 दिन अंदर)" : "0–3 DAS (Pre-emergence)",
         timing: hi ? "उगने से पहले (PRE)" : "Pre-emergence (PRE)",
         group: "pre",
       },
       {
         technical: "Metsulfuron-methyl 20% WP (मेटसल्फ्यूरॉन 20% WP - जैसे Algrip)",
         dose: hi ? "8 ग्राम प्रति एकड़ | 150 लीटर पानी" : "8 g/acre | 150 L water",
-        stage: hi ? "बुवाई के 30–35 दिन बाद (2–4 पत्ती अवस्था)" : "30–35 DAS (2–4 leaf)",
+        stage: hi ? "2 से 4 पत्ती का खरपतवार होने पर (बुवाई के 30 से 35 दिन बाद)" : "30–35 DAS (2–4 leaf)",
         timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
         group: "post",
       },
@@ -222,7 +235,7 @@ function weedChemCards(
       cards.push({
         technical: "Pretilachlor 50% EC (प्रेटिलाक्लोर 50% EC - जैसे Rifit)",
         dose: hi ? "500 मिली प्रति एकड़ | 150 लीटर पानी" : "500 ml/acre | 150 L water",
-        stage: hi ? "रोपाई के 0–3 दिन अंदर (पानी भरा हो)" : "0–3 DAT (standing water)",
+        stage: hi ? "रोपाई के 0 से 3 दिन अंदर (पानी भरा हो)" : "0–3 DAT (standing water)",
         timing: hi ? "उगने से पहले (PRE)" : "Pre-emergence (PRE)",
         group: "pre",
       });
@@ -238,7 +251,7 @@ function weedChemCards(
     cards.push({
       technical: "Halosulfuron-methyl 75% WG (हैलोसल्फ्यूरॉन 75% WG - जैसे Sempra)",
       dose: hi ? "36 ग्राम प्रति एकड़ | 150 लीटर पानी" : "36 g/acre | 150 L water",
-      stage: hi ? "मोथा की 3–4 पत्ती अवस्था (20–25 दिन)" : "3–4 leaf stage (20–25 DAS)",
+      stage: hi ? "3 से 4 पत्ती का खरपतवार होने पर (20 से 25 दिन)" : "3–4 leaf stage (20–25 DAS)",
       timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
       group: "post",
     });
@@ -253,42 +266,30 @@ function weedChemCards(
       .trim();
 
     const formatted = formatFarmerChemicalLine(cleanLine, hi);
-    const doseMatch =
-      formatted.match(
-        /(\d+(?:\.\d+)?(?:\s*[–\-]\s*\d+(?:\.\d+)?)?\s*(?:ml|g|ली|लीटर|ग्राम)(?:\/लीटर\s*पानी|\/L\s*water|\/एकड़|\/acre)?)/i
-      ) || formatted.match(/@\s*([^—(·]+)/i);
-    const stageMatch = line.match(/\(([^)]+)\)/);
-
-    const isPre = /pre-emergence|PRE\b|बुवाई के (?:तुरंत|0[–-]3)|0[–-]3\s*DAS/i.test(line);
+    const isPre = /pre-emergence|\bPRE\b|उगने से पहले|0\s*[–-]\s*[35]\s*DAT|0\s*[–-]\s*3\s*DAS/i.test(line);
+    const when = line.match(/\(([^)]*(?:दिन|DAT|DAS|हफ्ता|week)[^)]*)\)/i)?.[1]?.trim();
 
     const technical = stripMoaCodes(
-      formatted
-        .split(/·|@/)[0]
+      cleanLine
+        .split(/@|→/)[0]
         ?.replace(/^Chemical:\s*/i, "")
-        .replace(/—.*$/, "")
+        .replace(/\([^)]*(?:दिन|DAT|DAS)[^)]*\)/gi, "")
         .trim() || formatted.slice(0, 40)
-    );
+    ).slice(0, 96);
+
+    const acre = hi ? herbicideAcreDoseHi(technical, cleanLine, threat?.cropSlug) : "";
 
     return {
-      technical: technical.slice(0, 56),
-      dose: doseMatch?.[1]?.trim() || doseMatch?.[0]?.trim() || (hi ? "लेबल अनुसार" : "Follow label"),
+      technical,
+      dose: acre || (hi ? "लेबल अनुसार प्रति एकड़" : "Follow label / acre"),
       stage: isPre
         ? hi
-          ? "बुवाई के तुरंत बाद (0–3 दिन, खरपतवार उगने से पहले)"
+          ? "खरपतवार उगने से पहले, बुवाई के 0 से 3 दिन अंदर"
           : "0–3 DAS (Pre-emergence)"
         : hi
-        ? "2–4 पत्ती अवस्था (15–30 दिन)"
+        ? "2 से 4 पत्ती का खरपतवार होने पर"
         : "2–4 leaf stage (15–30 DAS)",
-      timing: stripMoaCodes(
-        stageMatch?.[1]?.trim() ||
-          (isPre
-            ? hi
-              ? "उगने से पहले (PRE)"
-              : "Pre-emergence (PRE)"
-            : hi
-            ? "उगने के बाद (POST)"
-            : "Post-emergence (POST)")
-      ),
+      timing: farmerWeedWhen(when, isPre, hi),
       group: isPre ? ("pre" as const) : ("post" as const),
     };
   });
@@ -1009,7 +1010,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                         🌱 {hi ? "1. उगने से पहले (Pre-emergence)" : "1. Pre-emergence"}
                       </span>
                       <span className="text-[11px] font-bold text-teal-800 dark:text-teal-300">
-                        {hi ? "बुवाई के 0–3 दिन अंदर" : "0–3 DAS"}
+                        {hi ? "बुवाई के 0 से 3 दिन अंदर" : "0–3 DAS"}
                       </span>
                     </div>
                     <ul className="space-y-2">
@@ -1028,6 +1029,11 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                             <p className="mt-1 text-[14px] font-extrabold leading-snug text-[var(--av-text-primary)]">
                               {hi ? bilingualAgriName(card.technical) : card.technical}
                             </p>
+                            {hi ? (
+                              <p className="mt-1 text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+                                {herbicideUseCropsHi(card.technical, threat.cropSlug)}
+                              </p>
+                            ) : null}
                             <p className="mt-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300">
                               {hi ? "खुराक" : "Dose"}: {card.dose}
                             </p>
@@ -1051,7 +1057,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                         🌿 {hi ? "2. उगने के बाद (Post-emergence)" : "2. Post-emergence"}
                       </span>
                       <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
-                        {hi ? "2–4 पत्ती / पहली सिंचाई बाद" : "2–4 leaf / post-irrigation"}
+                        {hi ? "2 से 4 पत्ती का खरपतवार होने पर" : "2–4 leaf / post-irrigation"}
                       </span>
                     </div>
                     <ul className="space-y-2">
@@ -1070,6 +1076,11 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                             <p className="mt-1 text-[14px] font-extrabold leading-snug text-[var(--av-text-primary)]">
                               {hi ? bilingualAgriName(card.technical) : card.technical}
                             </p>
+                            {hi ? (
+                              <p className="mt-1 text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+                                {herbicideUseCropsHi(card.technical, threat.cropSlug)}
+                              </p>
+                            ) : null}
                             <p className="mt-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300">
                               {hi ? "खुराक" : "Dose"}: {card.dose}
                             </p>

@@ -171,9 +171,6 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
                 <h3 className="text-[15px] font-black text-[var(--av-text-primary)]">
                   {hi ? "बीज उपचार (Seed Treatment)" : "Seed Treatment"}
                 </h3>
-                <p className="text-[11px] font-semibold text-[var(--av-text-muted)]">
-                  {hi ? "बीज जनित रोगों व कीटों से 100% सुरक्षा" : "Protection against seed-borne pests & diseases"}
-                </p>
               </div>
             </div>
           </div>

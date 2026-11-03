@@ -2,12 +2,13 @@
 
 import AppLink from "@/components/ui/AppLink";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { MessageCircle, Leaf } from "lucide-react";
 import { SHELL_NAV_MORE, SHELL_NAV_PRIMARY, isNavActive, type ShellNavItem } from "@/lib/shell/nav";
 import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { useSafeReducedMotion } from "@/hooks/useClientReady";
 
 function NavRow({
   item,
@@ -17,7 +18,7 @@ function NavRow({
 }: {
   item: ShellNavItem;
   active: boolean;
-  reduced: boolean | null;
+  reduced: boolean;
   dense?: boolean;
 }) {
   const { t } = useLocale();
@@ -33,16 +34,15 @@ function NavRow({
           : "text-[var(--av-text-muted)] hover:bg-[var(--av-surface-muted)] hover:text-[var(--av-text-primary)]"
       }`}
     >
-      {active && !reduced && (
+      {active && !reduced ? (
         <motion.span
           layoutId="sidebar-active"
           className="absolute inset-0 rounded-lg bg-[var(--av-accent-soft)] ring-1 ring-[var(--av-accent)]/25"
           transition={{ type: "spring", stiffness: 400, damping: 32 }}
         />
-      )}
-      {active && reduced && (
+      ) : active ? (
         <span className="absolute inset-0 rounded-lg bg-[var(--av-accent-soft)] ring-1 ring-[var(--av-accent)]/25" />
-      )}
+      ) : null}
       <Icon className="relative z-10 h-4 w-4 shrink-0" />
       <span className="relative z-10 truncate">{t(item.labelKey)}</span>
     </AppLink>
@@ -51,7 +51,7 @@ function NavRow({
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const reduced = useReducedMotion();
+  const reduced = useSafeReducedMotion();
   const { t } = useLocale();
 
   return (

@@ -42,7 +42,16 @@ export default function SprayWindowCard({ compact = false }: { compact?: boolean
     nextGoodHi,
   } = useSprayWindow();
 
-  if (!hydrated) return null;
+  if (!hydrated) {
+    return (
+      <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3">
+        <div className="flex items-center gap-2">
+          <div className="h-3.5 w-3.5 animate-pulse rounded-full bg-emerald-500/40" />
+          <p className="text-xs font-semibold text-[var(--av-text-muted)]">स्प्रे मौसम लोड हो रहा है…</p>
+        </div>
+      </div>
+    );
+  }
 
   const status = analysis?.current.status;
 

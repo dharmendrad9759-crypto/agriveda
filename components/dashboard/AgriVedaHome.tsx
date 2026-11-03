@@ -2,21 +2,18 @@
 
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   Camera,
-  CheckCircle2,
   ChevronRight,
   Droplets,
   MessageCircle,
-  Sprout,
   TrendingUp,
-  Landmark,
   ClipboardList,
   type LucideIcon,
 } from "lucide-react";
-import { CropDoctorSparkleIcon, FieldAdviceSparkleIcon } from "@/components/brand/icons";
+import { CropDoctorSparkleIcon } from "@/components/brand/icons";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
@@ -35,6 +32,7 @@ import HomeCropStatusCard from "@/components/dashboard/HomeCropStatusCard";
 import HomeAddCropHero from "@/components/dashboard/HomeAddCropHero";
 import HomeFarmSnapshot from "@/components/dashboard/HomeFarmSnapshot";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
+import { useClientReady, useSafeReducedMotion } from "@/hooks/useClientReady";
 
 
 
@@ -93,9 +91,6 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
               <h3 className="text-[13.5px] sm:text-[14.5px] font-black leading-tight text-white group-hover:text-emerald-200 transition-colors">
                 {isHi ? "पत्ती की फोटो लें" : "Take Leaf Photo"}
               </h3>
-              <p className="mt-0.5 text-[10px] sm:text-[10.5px] font-medium leading-tight text-emerald-100/80 line-clamp-1">
-                {isHi ? "रोग पहचान व सही दवा" : "Diagnosis & medicine"}
-              </p>
             </div>
 
             {/* Clickable Action Pill Button */}
@@ -140,9 +135,6 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
               <h3 className="text-[13.5px] sm:text-[14.5px] font-black leading-tight text-white group-hover:text-teal-200 transition-colors">
                 {isHi ? "लक्षणों से पहचानें" : "Identify by Symptoms"}
               </h3>
-              <p className="mt-0.5 text-[10px] sm:text-[10.5px] font-medium leading-tight text-teal-100/80 line-clamp-1">
-                {isHi ? "रोग, कीट व सही दवा" : "Pests & treatment"}
-              </p>
             </div>
 
             {/* Clickable Action Pill Button */}
@@ -188,21 +180,21 @@ const QUICK_JOBS: {
     imageSrc: "/images/home/home-job-mandi.jpg",
   },
   {
-    id: "schemes",
-    hi: "सरकारी योजना व लोन",
-    en: "Govt Schemes & Loan",
-    hintHi: "सरकारी लोन और सब्सिडी की पूरी जानकारी",
-    hintEn: "Farmer loans & subsidy guides",
-    href: "/schemes",
-    icon: Landmark,
-    imageSrc: "/images/home/home-cta-schemes.jpg",
+    id: "field-advisor",
+    hi: "मेरी खेत सलाह",
+    en: "My Field Advice",
+    hintHi: "आज और इस हफ्ते के ज़रूरी काम",
+    hintEn: "Today & this week's farm tasks",
+    href: "/field-advisor",
+    icon: ClipboardList,
+    imageSrc: "/images/home/home-job-plan.jpg",
   },
   {
     id: "ask",
-    hi: "विशेषज्ञ सलाह",
-    en: "Field Advice",
-    hintHi: "खेत के बारे में जो पूछना हो, विशेषज्ञ से पूछें",
-    hintEn: "Ask any farming question to agronomist",
+    hi: "विशेषज्ञ से पूछें",
+    en: "Ask an Expert",
+    hintHi: "खेत का सवाल पूछें, जवाब पाएँ",
+    hintEn: "Ask any farming question",
     href: "/ask-query",
     icon: MessageCircle,
     imageSrc: "/images/home/ask-expert-trust.jpg",
@@ -312,17 +304,6 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         imageSrc: "/images/jobs/job-my-farm.jpg",
       },
       {
-        id: "farm",
-        hi: "मेरा खेत",
-        en: "My Farm",
-        subHi: "खेत प्रोफाइल, रकबा व फसलें",
-        subEn: "Farm profile & crops",
-        tagHi: "रकबा रिकॉर्ड",
-        tagEn: "Field Record",
-        href: "/my-farm",
-        imageSrc: "/images/jobs/job-my-farm.jpg",
-      },
-      {
         id: "plan",
         hi: "फसल प्लानर",
         en: "Crop Planner",
@@ -343,6 +324,17 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         tagEn: "Live Alerts",
         href: "/alerts",
         imageSrc: "/images/jobs/job-alerts.jpg",
+      },
+      {
+        id: "schemes",
+        hi: "सरकारी योजना व लोन",
+        en: "Govt Schemes & Loan",
+        subHi: "लोन और सब्सिडी की जानकारी",
+        subEn: "Loans & subsidy guides",
+        tagHi: "योजनाएँ",
+        tagEn: "Schemes",
+        href: "/schemes",
+        imageSrc: "/images/home/home-cta-schemes.jpg",
       },
     ],
   },
@@ -384,8 +376,16 @@ function fieldCard(field: FarmField, index: number) {
 export default function AgriVedaHome() {
   const { locale } = useLocale();
   const isHi = locale === "hi";
-  const reduced = useReducedMotion();
+  const ready = useClientReady();
+  const reduced = useSafeReducedMotion();
   const { profile } = useFarmerProfile();
+  const todayLabel = ready
+    ? new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      })
+    : null;
   const { showToast } = useToast();
   const { weather, loading: weatherLoading, error: weatherError } = useLiveWeather();
   const { data: farm, setFields, addField } = useFarmData();
@@ -501,15 +501,15 @@ export default function AgriVedaHome() {
               <h1 className="mt-0.5 font-display text-[1.45rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
                 {isHi ? "आज क्या करना है?" : "What do you need today?"}
               </h1>
-              <div className="mt-1 flex flex-wrap items-center gap-2">
-                <span className="text-[12px] font-semibold text-[var(--av-text-muted)]">
-                  {new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                  })}
-                </span>
-              </div>
+              {todayLabel ? (
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="text-[12px] font-semibold text-[var(--av-text-muted)]" suppressHydrationWarning>
+                    {todayLabel}
+                  </span>
+                </div>
+              ) : (
+                <div className="mt-1 h-[18px]" aria-hidden />
+              )}
             </div>
             <HomeWeatherButton weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
           </div>
@@ -576,36 +576,6 @@ export default function AgriVedaHome() {
               </AppLink>
             );
           })}
-        </motion.section>
-
-        {/* Premium Field Advisory Banner */}
-        <motion.section {...fade(0.045)} className="px-0.5">
-          <AppLink
-            href="/field-advisor"
-            onClick={() => track("tool_open", { href: "/field-advisor", label: "home_premium_advisor" })}
-            className="group relative flex min-h-[100px] w-full overflow-hidden rounded-[1.35rem] shadow-lg active:scale-[0.99]"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-700 to-sky-800" />
-            <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-20 mix-blend-overlay" />
-            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-teal-400/30 blur-2xl transition duration-500 group-hover:bg-teal-300/40" />
-            
-            <div className="relative z-10 flex w-full items-center gap-4 p-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
-                <FieldAdviceSparkleIcon className="h-6 w-6 text-emerald-100" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-[17px] font-extrabold tracking-tight text-white drop-shadow-sm">
-                  {isHi ? "मेरी खेत सलाह" : "My Field Advice"}
-                </h3>
-                <p className="mt-0.5 text-[12px] font-medium text-emerald-50/90 leading-snug line-clamp-1">
-                  {isHi ? "खेत के लिए आज की ज़रूरी टिप्स" : "Today's important tips for your farm"}
-                </p>
-              </div>
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-teal-700 shadow-sm transition-transform group-hover:translate-x-1">
-                <ChevronRight className="h-5 w-5" />
-              </div>
-            </div>
-          </AppLink>
         </motion.section>
 
         {lastScan ? (
@@ -714,7 +684,7 @@ export default function AgriVedaHome() {
                 return (
                   <AppLink
                     key={card.key}
-                    href="/my-farm"
+                    href={`/my-farm/${card.id}`}
                     className="flex items-center gap-3 overflow-hidden rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] p-3 shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)]"
                   >
                     <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">

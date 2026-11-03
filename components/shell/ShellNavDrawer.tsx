@@ -1,7 +1,8 @@
 "use client";
 
 import AppLink from "@/components/ui/AppLink";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useSafeReducedMotion } from "@/hooks/useClientReady";
 import {
   BookOpen,
   Bug,
@@ -128,7 +129,7 @@ const DRAWER_CATEGORIES: DrawerCategory[] = [
       {
         labelHi: "खाद योजना",
         labelEn: "Fertilizer Plan",
-        href: "/fertilizer",
+        href: "/services/fertilizer-calculator",
         icon: FlaskConical,
         match: (p) => p.startsWith("/fertilizer") || p.includes("/services/fertilizer"),
       },
@@ -209,7 +210,7 @@ const DRAWER_CATEGORIES: DrawerCategory[] = [
 
 export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
   const pathname = usePathname();
-  const reduced = useReducedMotion();
+  const reduced = useSafeReducedMotion();
   const { locale, t } = useLocale();
   const isHi = locale === "hi";
   const { profile } = useFarmerProfile();

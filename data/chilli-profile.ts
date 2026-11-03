@@ -32,7 +32,7 @@ export const chilliProfile: CropManagementProfile = {
   ],
   sowingTime: [
     "नर्सरी: जून–जुलाई (खरीफ); अक्टूबर–नवंबर (कई राज्यों में रबी)।",
-    "30–35 दिन की पौध 4–5 पत्ती अवस्था में रोपें।",
+    "30–35 दिन की पौध 4 से 5 पत्ती अवस्था में रोपें।",
     "जलभराव या बहुत गर्म सूखी मिट्टी में रोपाई से बचें।",
   ],
   seedRate: "नर्सरी: 150–200 ग्राम/एकड़",
@@ -105,7 +105,7 @@ export const chilliProfile: CropManagementProfile = {
       preEmergenceHerbicide: "Pendimethalin 30 EC @ 1.0 kg a.i./ha",
       postEmergenceHerbicide: "Quizalofop-ethyl 5 EC @ 50 g a.i./ha (directed between rows if label allows)",
       hracGroup: "HRAC 3 / HRAC 1",
-      dose: "Quizalofop ≈1 L/ha product; घास 2–4 पत्ती पर छिड़कें; drift फसल पर न जाए",
+      dose: "Quizalofop ≈1 L/ha product; घास 2 से 4 पत्ती पर छिड़कें; drift फसल पर न जाए",
     },
   ],
 

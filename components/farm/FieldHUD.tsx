@@ -1,27 +1,38 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
   Save,
-  Layers,
+  MapPin,
   Info,
+  ChevronRight,
 } from "lucide-react";
 import {
   LatLng,
   getFieldMeasurement,
   validateFieldPolygon,
 } from "@/lib/geo/fieldGeometry";
-import { REGIONAL_BIGHA_OPTIONS } from "@/lib/bighaConversion";
 import { cn } from "@/lib/cn";
+import StatePlaceSheet from "@/components/farm/StatePlaceSheet";
+import { fieldPlaceFor, matchStateName, type FieldPlace } from "@/lib/farm/placeProfile";
+import { INDIAN_STATES } from "@/lib/india-locations";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+
+export type FieldViewCenter = {
+  lat: number;
+  lng: number;
+  villageHint?: string;
+};
 
 interface FieldHUDProps {
   coords: LatLng[];
+  viewCenter?: FieldViewCenter | null;
   onSave?: () => void;
   canSave?: boolean;
-  selectedBighaId?: string;
-  onBighaIdChange?: (id: string) => void;
+  place?: FieldPlace | null;
+  onPlaceChange?: (place: FieldPlace) => void;
   className?: string;
 }
 
@@ -51,46 +62,108 @@ function Stat({
   );
 }
 
+function cellKey(lat: number, lng: number): string {
+  return `${lat.toFixed(2)},${lng.toFixed(2)}`;
+}
+
 export default function FieldHUD({
   coords,
+  viewCenter = null,
   onSave,
   canSave = true,
-  selectedBighaId = "up",
-  onBighaIdChange,
+  place = null,
+  onPlaceChange,
   className = "",
 }: FieldHUDProps) {
-  const [bighaId, setBighaId] = useState(selectedBighaId);
-
-  const selectedBigha = useMemo(() => {
-    return (
-      REGIONAL_BIGHA_OPTIONS.find(
-        (option) =>
-          option.id === (onBighaIdChange ? selectedBighaId : bighaId)
-      ) || REGIONAL_BIGHA_OPTIONS[0]
-    );
-  }, [bighaId, selectedBighaId, onBighaIdChange]);
+  const { profile } = useFarmerProfile();
+  const [placeOpen, setPlaceOpen] = useState(false);
+  const [looking, setLooking] = useState(false);
+  const lockedCell = useRef<string | null>(null);
+  const onPlaceChangeRef = useRef(onPlaceChange);
+  onPlaceChangeRef.current = onPlaceChange;
 
   const validation = useMemo(
     () => validateFieldPolygon(coords),
     [coords]
   );
 
+  const center = useMemo(() => {
+    if (coords.length >= 3) {
+      const lat = coords.reduce((sum, point) => sum + point.lat, 0) / coords.length;
+      const lng = coords.reduce((sum, point) => sum + point.lng, 0) / coords.length;
+      const hintNear =
+        viewCenter &&
+        Math.abs(viewCenter.lat - lat) < 0.05 &&
+        Math.abs(viewCenter.lng - lng) < 0.05
+          ? viewCenter.villageHint
+          : undefined;
+      return { lat, lng, villageHint: hintNear };
+    }
+    return viewCenter;
+  }, [coords, viewCenter]);
+
+  useEffect(() => {
+    if (!center) return;
+    const here = cellKey(center.lat, center.lng);
+    if (lockedCell.current === here) return;
+    const lat = center.lat;
+    const lng = center.lng;
+    const villageHint = center.villageHint;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      setLooking(true);
+      fetch(`/api/geo/reverse?lat=${lat}&lon=${lng}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { state?: string; district?: string; village?: string } | null) => {
+          if (cancelled || lockedCell.current === here || !data?.state) return;
+          onPlaceChangeRef.current?.(
+            fieldPlaceFor(data.state, data.district, villageHint || data.village)
+          );
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (!cancelled) setLooking(false);
+        });
+    }, 400);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [center]);
+
   const measurement = useMemo(() => {
     if (!validation.valid || coords.length < 3) return null;
     return getFieldMeasurement(
       coords,
-      selectedBigha.acresPerBigha,
-      selectedBigha.label,
-      selectedBigha.note
+      place && place.acresPerBigha > 0 ? place.acresPerBigha : undefined,
+      place?.bighaLineHi,
+      place?.climateHi
     );
-  }, [coords, validation.valid, selectedBigha]);
+  }, [coords, validation.valid, place]);
 
-  const handleBighaChange = (newId: string) => {
-    setBighaId(newId);
-    onBighaIdChange?.(newId);
-  };
+  const canSubmit = canSave && validation.valid && coords.length >= 3 && Boolean(place);
 
-  const canSubmit = canSave && validation.valid && coords.length >= 3;
+  const profileState = matchStateName(profile?.state || "", INDIAN_STATES);
+  const hints = profileState
+    ? [
+        {
+          label: "आपकी प्रोफ़ाइल",
+          state: profileState,
+          district: profile?.district || undefined,
+        },
+      ]
+    : [];
+
+  const placeTitle = place
+    ? [place.village, place.district, place.stateHi].filter(Boolean).join(" · ")
+    : looking
+      ? "जगह देख रहे हैं"
+      : "राज्य चुनें";
+  const placeDetail = place
+    ? [place.soil, place.climateHi].filter(Boolean).join(" · ")
+    : looking
+      ? "मिट्टी और जलवायु इसी जगह से लगेंगे"
+      : "नक्शे पर जगह चुनें";
 
   return (
     <div
@@ -119,22 +192,24 @@ export default function FieldHUD({
           </span>
         )}
 
-        <label className="flex shrink-0 items-center gap-1 rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-1 text-[10px] text-[var(--av-text-secondary)]">
-          <Layers className="h-3 w-3 text-emerald-600 dark:text-emerald-300" />
-          <span className="sr-only">क्षेत्रीय बीघा मानक</span>
-          <select
-            value={onBighaIdChange ? selectedBighaId : bighaId}
-            onChange={(event) => handleBighaChange(event.target.value)}
-            className="max-w-[7.5rem] cursor-pointer bg-transparent text-[10px] font-medium text-[var(--av-text-secondary)] outline-none"
-          >
-            {REGIONAL_BIGHA_OPTIONS.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.state} · {option.acresPerBigha} एकड़
-              </option>
-            ))}
-          </select>
-        </label>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setPlaceOpen(true)}
+        className="mt-2.5 flex w-full items-center gap-2 rounded-xl border border-emerald-700/30 bg-emerald-500/10 px-3 py-2.5 text-left"
+      >
+        <MapPin className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-[13px] font-extrabold text-[var(--av-text-primary)]">
+            {placeTitle}
+          </span>
+          <span className="mt-0.5 block text-[11px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+            {placeDetail}
+          </span>
+        </span>
+        <ChevronRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
+      </button>
 
       <div className="mt-2.5 grid grid-cols-4 divide-x divide-[var(--av-border-subtle)] rounded-xl bg-[var(--av-surface-inset)] py-1">
         <Stat
@@ -142,11 +217,13 @@ export default function FieldHUD({
           value={measurement ? measurement.acres.toFixed(2) : "0.00"}
         />
         <Stat
-          label={selectedBigha.state}
+          label={place ? "बीघा" : "बीघा"}
           value={
-            measurement?.bigha ? measurement.bigha.value.toFixed(2) : "0.00"
+            place && measurement?.bigha
+              ? measurement.bigha.value.toFixed(2)
+              : "—"
           }
-          unit="बीघा"
+          unit=""
         />
         <Stat
           label="हेक्टेयर"
@@ -177,6 +254,16 @@ export default function FieldHUD({
           </button>
         ) : null}
       </div>
+
+      <StatePlaceSheet
+        open={placeOpen}
+        onClose={() => setPlaceOpen(false)}
+        hints={hints}
+        onPick={(next) => {
+          if (center) lockedCell.current = cellKey(center.lat, center.lng);
+          onPlaceChange?.(next);
+        }}
+      />
     </div>
   );
 }

@@ -876,7 +876,7 @@ export const cucumberDossier: ResearchDossierOverlay = {
       {
         technical: "Quizalofop-P-ethyl 5% EC",
         dose: "300–400 मिलीलीटर प्रति एकड़",
-        timing: "घास 2–4 पत्ती; फसल पर तेज़ तनाव न हो",
+        timing: "घास 2 से 4 पत्ती; फसल पर तेज़ तनाव न हो",
         targets: "वार्षिक घास",
         note: "चौड़ी पत्ती पर असर नहीं; ड्रिफ्ट से फसल नुकसान जाँचें",
       },

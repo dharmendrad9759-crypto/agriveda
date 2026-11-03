@@ -48,7 +48,7 @@ const BASE_SPRAY_PRODUCTS: SprayProduct[] = [
   p("po03", "Revus 250 SC", "Mandipropamid 23.4% SC", "fungicide", "FRAC", "40", POTATO, { diseases: ["d1"] }, "0.8 ml/L"),
   p("po04", "Equation Pro", "Famoxadone 16.6% + Cymoxanil 22.1% SC", "fungicide", "FRAC", "11+27", POTATO, { diseases: ["d1"] }, "1 ml/L"),
   p("po05", "Zampro 525 SC", "Ametoctradin 27% + Dimethomorph 20.27% SC", "fungicide", "FRAC", "45+40", POTATO, { diseases: ["d1"] }, "1.5–2 ml/L"),
-  p("po06", "Custodia 325 SC", "Azoxystrobin 11% + Tebuconazole 18.3% SC", "fungicide", "FRAC", "11+3", POTATO, { diseases: ["d1", "d2"] }, "1.25 ml/L"),
+  p("po06", "Custodia 325 SC", "Azoxystrobin 11% + Tebuconazole 18.3% SC", "fungicide", "FRAC", "11+3", POTATO, { diseases: ["d2"] }, "1.25 ml/L"),
   p("po07", "Emesto Prime 240 FS", "Penflufen 240 FS", "fungicide", "FRAC", "7", POTATO, { diseases: ["d2"] }, "100 ml / 100 kg बीज"),
 
   // ─── WHEAT INSECTICIDES & FUNGICIDES ───

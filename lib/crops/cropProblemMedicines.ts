@@ -156,25 +156,12 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dose": "2.5–3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
                 "brands": [
                       "Dithane M-45 (Corteva)",
-                      "Kavach (Chlorothalonil 400g)"
+                      "Indofil M-45"
                 ],
-                "safety": "संपर्क फफूंदनाशक; बीमारी आने से पहले सुरक्षा चक्र बनाता है।",
+                "safety": "अगेती झुलसा से पहले की सुरक्षा वाली दवा। धब्बे फैल चुके हों तो अकेले काफी नहीं।",
                 "level": 1,
                 "levelLabelHi": "स्तर 1 · शुरुआती / सुरक्षात्मक स्तर",
                 "dosePerAcre": "600 ग्राम / एकड़"
-          },
-          {
-                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-                "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
-                ],
-                "safety": "सिस्टेमिक उपचार व सुरक्षा — धब्बों को तुरंत बढ़ने से रोकता है।",
-                "level": 2,
-                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
-                "dosePerAcre": "200 मिली / एकड़"
           },
           {
                 "nameHi": "फ्लुक्सापाइरॉक्साड + पायराक्लोस्ट्रोबिन SC (मेरीवोन)",
@@ -183,10 +170,22 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "Merivon (BASF)"
                 ],
-                "safety": "SDHI + स्ट्रोबिल्यूरिन का सबसे शक्तिशाली संयोजन; 21 दिन सुरक्षा।",
+                "safety": "अगेती झुलसा की बदलने वाली दवा। पछेती झुलसा पर यह नहीं चलती।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "100 मिली / एकड़"
+          },
+          {
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
+                "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Amistar Top (Syngenta)"
+                ],
+                "safety": "अगेती झुलसा पर ट्रायल में मजबूत। पछेती झुलसा पर यह कनॉज़ोल नहीं चलता — पछेती के लिए अलग दवा लें।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-                "dosePerAcre": "100 मिली / एकड़",
+                "dosePerAcre": "200 मिली / एकड़",
                 "isTopPerformer": true
           }
     ],
@@ -430,6 +429,18 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "late-blight": [
           {
+                "nameHi": "मैंकोजेब 75% WP (डाइथेन एम-45)",
+                "technical": "Mancozeb 75% WP",
+                "dose": "2.5–3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Dithane M-45 (Corteva)"
+                ],
+                "safety": "ठंड और कोहरा शुरू होने से पहले पछेती झुलसा की सुरक्षा। धब्बे फैल चुके हों तो अकेले काफी नहीं।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · सुरक्षात्मक स्तर",
+                "dosePerAcre": "600 ग्राम / एकड़"
+          },
+          {
                 "nameHi": "साइमोक्सानिल 8% + मैंकोजेब 64% WP (करजेट)",
                 "technical": "Cymoxanil 8% + Mancozeb 64% WP",
                 "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
@@ -437,35 +448,22 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                       "Curzate (Corteva)",
                       "Moximate"
                 ],
-                "safety": "शुरुआती लक्षण या कोहरे में तुरंत स्प्रे करें।",
-                "level": 1,
-                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
+                "safety": "पछेती झुलसा पर काम करती है। अगेती झुलसा की मुख्य दवा यह नहीं है।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
                 "dosePerAcre": "600 ग्राम / एकड़"
           },
           {
-                "nameHi": "डाइमेथोमॉर्फ 50% WP + मेटीराम 70% WG",
-                "technical": "Dimethomorph 50% WP + Metiram 70% WG",
-                "dose": "200 ग्राम एक्रोबैट + 400 ग्राम पॉलीराम प्रति एकड़",
+                "nameHi": "मैंडीप्रोपामिड 23.4% SC (रिवस)",
+                "technical": "Mandipropamid 23.4% SC",
+                "dose": "0.8 मिली / लीटर पानी (160 मिली प्रति एकड़)",
                 "brands": [
-                      "Acrobat (BASF) + Polyram"
+                      "Revus (Syngenta)"
                 ],
-                "safety": "ओओमाइसिटी कवक की कोशिका भित्ति को नष्ट करता है।",
-                "level": 2,
-                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
-                "dosePerAcre": "200 g + 400 g / एकड़"
-          },
-          {
-                "nameHi": "एमिटोक्ट्राडिन + डाइमेथोमॉर्फ (ज़ैमप्रो)",
-                "technical": "Ametoctradin + Dimethomorph",
-                "dose": "1.5 मिली / लीटर पानी (300 मिली प्रति एकड़)",
-                "brands": [
-                      "Zampro (BASF)",
-                      "Famoxadone + Cymoxanil (Equation Pro - 200 ml)"
-                ],
-                "safety": "पछेती झुलसा पर सबसे उन्नत और बारिश में न धुलने वाला कवकनाशी।",
+                "safety": "पछेती झुलसा की ट्रायल दवा। अगेती झुलसा पर यह नहीं चलती — अगेती के लिए अलग दवा लें।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-                "dosePerAcre": "300 मिली / एकड़",
+                "dosePerAcre": "160 मिली / एकड़",
                 "isTopPerformer": true
           }
     ]
@@ -3302,10 +3300,9 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
-                "safety": "अगेती झुलसा को तुरंत सुखाकर नई पत्तियों को स्वस्थ रखता है।",
+                "safety": "अगेती झुलसा पर ट्रायल में मजबूत। पछेती झुलसा पर यह कनॉज़ोल नहीं चलता।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "200 मिली / एकड़",

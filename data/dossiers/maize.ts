@@ -676,7 +676,7 @@ export const maizeDossier: ResearchDossierOverlay = {
       type: "घास",
       criticalPeriod: "15–45 DAS",
       preEmergenceHerbicide: "Atrazine 50% WP ~500 g/एकड़ या Pendimethalin 30% EC ~1–1.3 L/एकड़, 0–3 DAS नम मिट्टी में",
-      postEmergenceHerbicide: "Tembotrione 42% SC (Laudis) ~115–120 ml/एकड़ + सर्फेक्टेंट, 15–25 DAS (खरपतवार 2–4 पत्ती अवस्था)",
+      postEmergenceHerbicide: "Tembotrione 42% SC (Laudis) ~115–120 ml/एकड़ + सर्फेक्टेंट, 15–25 DAS (खरपतवार 2 से 4 पत्ती अवस्था)",
       hracGroup: "C1 / K1 (pre) → F2 (post)",
       dose: "लेबल अनुसार",
     },
@@ -696,7 +696,7 @@ export const maizeDossier: ResearchDossierOverlay = {
       type: "सेज (मोथा प्रकार)",
       criticalPeriod: "20–45 DAS",
       preEmergenceHerbicide: "Atrazine 50% WP ~500 g/एकड़, 0–3 DAS (जहाँ लेबल-अनुमोदित)",
-      postEmergenceHerbicide: "Halosulfuron-methyl 75% WG (Sempra) ~36 g/एकड़, 20–25 DAS (मोथा 4–6 पत्ती अवस्था)",
+      postEmergenceHerbicide: "Halosulfuron-methyl 75% WG (Sempra) ~36 g/एकड़, 20–25 DAS (मोथा 4 से 6 पत्ती अवस्था)",
       hracGroup: "C1 (pre) → B (post)",
       dose: "लेबल अनुसार — छिड़काव के समय खेत में नमी ज़रूरी",
     },
@@ -741,7 +741,7 @@ export const maizeDossier: ResearchDossierOverlay = {
       {
         technical: "Tembotrione 42% SC (Laudis)",
         dose: "115–120 मिलीलीटर प्रति एकड़ + सर्फेक्टेंट (Adigor/Angle) ~500 ml/एकड़",
-        timing: "15–25 DAS, खरपतवार 2–4 पत्ती अवस्था",
+        timing: "15–25 DAS, खरपतवार 2 से 4 पत्ती अवस्था",
         targets: "घास (Echinochloa, Dactyloctenium) + चौड़ी पत्ती (ब्रॉड-स्पेक्ट्रम पोस्ट-इमर्जेंस)",
         note: "मक्का V2–V6 अवस्था तक ही छिड़काव करें; Organophosphate कीटनाशक के साथ कम-से-कम 7 दिन का अंतर रखें",
       },
@@ -755,7 +755,7 @@ export const maizeDossier: ResearchDossierOverlay = {
       {
         technical: "Halosulfuron-methyl 75% WG (Sempra)",
         dose: "36 ग्राम प्रति एकड़",
-        timing: "20–25 DAS, मोथा 4–6 पत्ती अवस्था",
+        timing: "20–25 DAS, मोथा 4 से 6 पत्ती अवस्था",
         targets: "मुख्यतः मोथा (Cyperus rotundus) व कुछ चौड़ी पत्ती",
         note: "जहाँ मोथा की गंभीर समस्या हो वहाँ प्राथमिकता दें — छिड़काव के समय खेत में नमी ज़रूरी",
       },
@@ -797,7 +797,7 @@ export const maizeDossier: ResearchDossierOverlay = {
     {
       question: "मोथा (Cyperus) के लिए कौन सी दवा असरदार है?",
       answer:
-        "Halosulfuron-methyl (Sempra) ~36 g/एकड़, मोथा 4–6 पत्ती अवस्था (20–25 DAS) पर, खेत में नमी होने पर छिड़कें। Atrazine pre-emergence शुरुआती अवस्था में सहायक है पर मोथा पर अकेले पूरा असर नहीं देता।",
+        "Halosulfuron-methyl (Sempra) ~36 g/एकड़, मोथा 4 से 6 पत्ती अवस्था (20–25 DAS) पर, खेत में नमी होने पर छिड़कें। Atrazine pre-emergence शुरुआती अवस्था में सहायक है पर मोथा पर अकेले पूरा असर नहीं देता।",
     },
     {
       question: "Atrazine के बाद अगली फसल में सब्जी लगा सकते हैं?",

@@ -30,7 +30,6 @@ import {
   fertilizerBagLabel,
   fertilizerBagPurposeHi,
   fertilizerPackHi,
-  GOLDEN_FIELD_RULES_HI,
 } from "@/data/agriveda2/fertilizer-data";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
@@ -54,7 +53,6 @@ import {
   FileText,
   FlaskConical,
   Leaf,
-  Lightbulb,
   Minus,
   Plus,
   Share2,
@@ -1485,41 +1483,6 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       ========================================================================= */}
       {activeSubTab === "notes" && (
         <div className="space-y-3.5">
-          {/* 3 Golden Field Rules Card */}
-          <DarkCard>
-            <div className="flex items-center gap-2 pb-1">
-              <Lightbulb className="h-4 w-4 text-amber-500" />
-              <h3 className="text-[14px] font-black text-[var(--av-text-primary)]">
-                {hi ? "💡 किसान टिप: कैलकुलेटर के 3 गोल्डन फील्ड नियम" : "3 Golden Field Rules"}
-              </h3>
-            </div>
-            <div className="mt-2.5 space-y-2.5">
-              {GOLDEN_FIELD_RULES_HI.map((rule) => (
-                <div
-                  key={rule.id}
-                  className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3"
-                >
-                  <p className="text-xs font-black text-amber-950 dark:text-amber-200">
-                    {rule.titleHi}
-                  </p>
-                  <p className="mt-1 text-[11.5px] font-medium leading-relaxed text-[var(--av-text-primary)]">
-                    {rule.bodyHi}
-                  </p>
-                </div>
-              ))}
-              {plan?.categoryRuleHi && (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
-                  <p className="text-xs font-black text-emerald-950 dark:text-emerald-200">
-                    🌾 इस फसल श्रेणी का विशेष नियम
-                  </p>
-                  <p className="mt-1 text-[11.5px] font-medium leading-relaxed text-[var(--av-text-primary)]">
-                    {plan.categoryRuleHi}
-                  </p>
-                </div>
-              )}
-            </div>
-          </DarkCard>
-
           {/* Do's Card */}
           <DarkCard>
             <div className="flex items-center gap-2 pb-1">

@@ -793,7 +793,7 @@ export const potatoDossier: ResearchDossierOverlay = {
       type: "घास",
       criticalPeriod: "0–40 DAP",
       preEmergenceHerbicide: "Pendimethalin 30% EC ~1–1.3 L/एकड़, 0–3 DAP नम मिट्टी",
-      postEmergenceHerbicide: "Quizalofop-P-ethyl 5% EC ~300–400 ml/एकड़ (घास 2–4 पत्ती)",
+      postEmergenceHerbicide: "Quizalofop-P-ethyl 5% EC ~300–400 ml/एकड़ (घास 2 से 4 पत्ती)",
       hracGroup: "K1 (pre) → A (post)",
       dose: "लेबल अनुसार",
     },
@@ -856,7 +856,7 @@ export const potatoDossier: ResearchDossierOverlay = {
       {
         technical: "Quizalofop-P-ethyl 5% EC",
         dose: "300–400 मिलीलीटर प्रति एकड़",
-        timing: "खड़ी फसल में, घास 2–4 पत्ती अवस्था",
+        timing: "खड़ी फसल में, घास 2 से 4 पत्ती अवस्था",
         targets: "वार्षिक/सक्रिय घास",
         note: "चौड़ी पत्ती खरपतवार पर असर नहीं; Solanum हाथ से हटाएँ",
       },

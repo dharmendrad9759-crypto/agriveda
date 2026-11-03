@@ -629,7 +629,7 @@ export const cottonDossier: ResearchDossierOverlay = {
       {
         technical: "Pyrithiobac-sodium 10% EC",
         dose: "250–300 मिलीलीटर प्रति एकड़ — cotton-लेबल व राज्य अनुमोदन ज़रूर पुष्टि करें",
-        timing: "DAS 15–30, खरपतवार 2–4 पत्ती अवस्था",
+        timing: "DAS 15–30, खरपतवार 2 से 4 पत्ती अवस्था",
         targets: "Trianthema, Cyperus, Digera arvensis व अन्य चौड़ी पत्ती/सेज",
         note: "सभी राज्यों/hybrid पर पंजीकृत नहीं — इस्तेमाल से पहले लेबल व स्थानीय कृषि विभाग से पुष्टि करें; फसल पर कभी-कभी हल्की पत्ती-पीलापन (फाइटो) दिख सकती है जो कुछ दिन में ठीक हो जाती है",
       },

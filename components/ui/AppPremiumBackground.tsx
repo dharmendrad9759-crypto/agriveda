@@ -1,13 +1,22 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { useReducedMotion } from "framer-motion";
 import { isCapacitorNative } from "@/lib/capacitorNav";
+import { useClientReady } from "@/hooks/useClientReady";
 
 /** Living agritech atmosphere — static on native phones for smooth open */
 export default function AppPremiumBackground() {
+  const ready = useClientReady();
   const reduceMotion = useReducedMotion();
-  const native = typeof window !== "undefined" ? isCapacitorNative() : false;
-  const animateParticles = !reduceMotion && !native;
+  const native = useSyncExternalStore(
+    () => () => {},
+    () => isCapacitorNative(),
+    () => false
+  );
+  // SSR + first hydrate: no grid/particles (identical markup). Enable after ready.
+  const showGrid = ready && !native;
+  const animateParticles = ready && reduceMotion !== true && !native;
 
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
@@ -20,7 +29,7 @@ export default function AppPremiumBackground() {
       <div className="absolute -right-24 top-0 h-72 w-72 rounded-full bg-lime-300/[0.08] blur-[90px] dark:bg-cyan-500/[0.08]" />
       <div className="absolute bottom-1/4 left-1/3 h-56 w-56 rounded-full bg-amber-300/[0.06] blur-[80px]" />
 
-      {!native && (
+      {showGrid && (
         <div
           className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]"
           style={{

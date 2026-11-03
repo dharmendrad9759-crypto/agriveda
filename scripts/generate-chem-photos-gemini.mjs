@@ -53,6 +53,8 @@ const ITEMS = [
   { slug: "pinoxaden-5-ec", kind: "bottle", cat: "herbicide", title: ["PINOXADEN 5.1% EC"], sub: "SELECTIVE HERBICIDE", qty: "400 ml" },
   { slug: "oxyfluorfen-23-5-ec", kind: "bottle", cat: "herbicide", title: ["OXYFLUORFEN 23.5% EC"], sub: "HERBICIDE", qty: "500 ml" },
   { slug: "penoxsulam-21-7-sc", kind: "bottle", cat: "herbicide", title: ["PENOXSULAM 21.7% SC"], sub: "SELECTIVE HERBICIDE", qty: "100 ml" },
+  { slug: "triafamone-ethoxysulfuron-wg", kind: "pouch", cat: "herbicide", title: ["TRIAFAMONE 20% +", "ETHOXYSULFURON 10% WG"], sub: "SELECTIVE HERBICIDE", qty: "90 g" },
+  { slug: "metsulfuron-chlorimuron-wp", kind: "pouch", cat: "herbicide", title: ["METSULFURON-METHYL 10% +", "CHLORIMURON-ETHYL 10% WP"], sub: "SELECTIVE HERBICIDE", qty: "8 g" },
   { slug: "cyhalofop-butyl-10-ec", kind: "bottle", cat: "herbicide", title: ["CYHALOFOP-BUTYL 10% EC"], sub: "SELECTIVE HERBICIDE", qty: "500 ml" },
   { slug: "pyrithiobac-sodium-10-ec", kind: "bottle", cat: "herbicide", title: ["PYRITHIOBAC-SODIUM 10% EC"], sub: "SELECTIVE HERBICIDE", qty: "250 ml" },
   { slug: "fluchloralin-45-ec", kind: "bottle", cat: "herbicide", title: ["FLUCHLORALIN 45% EC"], sub: "PRE-PLANT HERBICIDE", qty: "1 LITRE" },

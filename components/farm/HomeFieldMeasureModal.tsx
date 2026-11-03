@@ -7,12 +7,13 @@ import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X, Ruler, Maximize2, MapPin } from "lucide-react";
 import { LatLng, getFieldMeasurement } from "@/lib/geo/fieldGeometry";
-import { REGIONAL_BIGHA_OPTIONS } from "@/lib/bighaConversion";
 import { useFarmData } from "@/hooks/useFarmData";
 import FieldHUD from "@/components/farm/FieldHUD";
 import SaveFieldModal from "@/components/farm/SaveFieldModal";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import type { FarmField } from "@/lib/farm/types";
+import type { FieldPlace } from "@/lib/farm/placeProfile";
+import type { MapViewCenter } from "@/components/farm/SmartFieldMap";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 
 const SmartFieldMap = dynamic(() => import("@/components/farm/SmartFieldMap"), {
@@ -39,7 +40,8 @@ export default function HomeFieldMeasureModal({
   const { addField } = useFarmData();
   const reduced = useReducedMotion();
   const [coords, setCoords] = useState<LatLng[]>([]);
-  const [selectedBighaId, setSelectedBighaId] = useState<string>("up");
+  const [place, setPlace] = useState<FieldPlace | null>(null);
+  const [viewCenter, setViewCenter] = useState<MapViewCenter | null>(null);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [pinnedLocation, setPinnedLocation] = useState<LatLng | null>(null);
 
@@ -55,6 +57,8 @@ export default function HomeFieldMeasureModal({
   useEffect(() => {
     if (isOpen && !wasOpen.current) {
       setCoords([]);
+      setPlace(null);
+      setViewCenter(null);
       setPinnedLocation(null);
       setIsSaveModalOpen(false);
     }
@@ -70,23 +74,20 @@ export default function HomeFieldMeasureModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, isSaveModalOpen, onClose]);
 
-  const activeBigha =
-    REGIONAL_BIGHA_OPTIONS.find((option) => option.id === selectedBighaId) ||
-    REGIONAL_BIGHA_OPTIONS[0];
-
   const currentMeasurement =
     coords.length >= 3
       ? getFieldMeasurement(
           coords,
-          activeBigha.acresPerBigha,
-          activeBigha.label,
-          activeBigha.note
+          place && place.acresPerBigha > 0 ? place.acresPerBigha : undefined,
+          place?.bighaLineHi,
+          place?.climateHi
         )
       : null;
 
-  const bighaDisplayString = currentMeasurement?.bigha
-    ? `${currentMeasurement.bigha.value.toFixed(2)} बीघा (${activeBigha.state})`
-    : undefined;
+  const bighaDisplayString =
+    place && currentMeasurement?.bigha
+      ? `${currentMeasurement.bigha.value.toFixed(2)} बीघा (${place.stateHi})`
+      : undefined;
 
   const handleSaveField = (fieldPayload: Omit<FarmField, "id">) => {
     const newId = addField(fieldPayload);
@@ -186,6 +187,7 @@ export default function HomeFieldMeasureModal({
                     initialCoords={coords}
                     mode="draw"
                     onCoordsChange={(newCoords) => setCoords(newCoords)}
+                    onViewCenter={setViewCenter}
                     onSaveLocationPin={handlePinLocation}
                     height="360px"
                   />
@@ -195,8 +197,9 @@ export default function HomeFieldMeasureModal({
               <div className="p-3">
                 <FieldHUD
                   coords={coords}
-                  selectedBighaId={selectedBighaId}
-                  onBighaIdChange={(id) => setSelectedBighaId(id)}
+                  place={place}
+                  viewCenter={viewCenter}
+                  onPlaceChange={setPlace}
                   onSave={() => setIsSaveModalOpen(true)}
                   canSave={coords.length >= 3}
                 />
@@ -217,6 +220,11 @@ export default function HomeFieldMeasureModal({
                   : coords
             }
             bighaDisplay={bighaDisplayString}
+            placeVillage={place?.village}
+            placeSoil={place?.soil}
+            climateNote={place?.climateHi}
+            placeState={place?.stateEn}
+            placeDistrict={place?.district}
             onSave={handleSaveField}
           />
               </motion.div>

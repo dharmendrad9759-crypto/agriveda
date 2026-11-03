@@ -171,7 +171,7 @@ export default function HomeAddCropHero({
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-300 py-3.5 text-sm font-black text-emerald-950 shadow-[0_8px_24px_rgba(16,185,129,0.35)] transition-all hover:brightness-105 active:scale-[0.98]"
             >
               <Plus className="h-4 w-4 stroke-[3]" />
-              <span>{isHi ? "+ अन्य सभी 40+ फसलों में से चुनें" : "+ Explore All 40+ Crops"}</span>
+              <span>{isHi ? "अन्य सभी 40+ फसलों में से चुनें" : "Explore All 40+ Crops"}</span>
               <ChevronRight className="h-4 w-4 stroke-[3]" />
             </button>
           </div>

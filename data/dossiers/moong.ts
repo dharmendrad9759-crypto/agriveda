@@ -335,7 +335,7 @@ export const moongDossier: ResearchDossierOverlay = {
       {
         technical: "Quizalofop-ethyl 5% EC",
         dose: "400 मिलीलीटर प्रति एकड़",
-        timing: "POST घास 3–5 पत्ती",
+        timing: "POST घास 3 से 5 पत्ती",
         targets: "केवल घास",
         note: "चौड़ी पत्ती नहीं",
       },

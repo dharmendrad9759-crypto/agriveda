@@ -78,6 +78,11 @@ const nextConfig: NextConfig = {
         destination: "/ask-query",
         permanent: true,
       },
+      {
+        source: "/fertilizer",
+        destination: "/services/fertilizer-calculator",
+        permanent: true,
+      },
     ];
   },
   async headers() {

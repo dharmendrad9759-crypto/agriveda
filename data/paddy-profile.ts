@@ -32,7 +32,7 @@ export const paddyProfile: CropManagementProfile = {
   ],
   sowingTime: [
     "नर्सरी: मई–जून (खरीफ); नवंबर–दिसंबर (कुछ क्षेत्रों में रबी)।",
-    "25–30 दिन की पौध 2–3 पत्ती अवस्था में रोपें।",
+    "25–30 दिन की पौध 2 से 3 पत्ती अवस्था में रोपें।",
     "खरीफ रोपाई का समय: जून–जुलाई।",
   ],
   seedRate: "हाइब्रिड रोपाई: 4–6 किलो/एकड़",
@@ -85,7 +85,7 @@ export const paddyProfile: CropManagementProfile = {
       preEmergenceHerbicide: "Pretilachlor 50 EC (e.g. Refit / Sofit) @ 0.6–0.75 kg a.i./ha at 3 DAS on moist soil",
       postEmergenceHerbicide: "Bispyribac-sodium 10 SC (e.g. Nominee Gold) @ 25 g a.i./ha at 15–20 DAS",
       hracGroup: "HRAC 15 (pre) / HRAC 2 (post)",
-      dose: "Pre: 500 L पानी में 1.2–1.5 L/ha product; Post: जब खरपतवार 2–4 पत्ती — 250 ml/ha product",
+      dose: "Pre: 500 L पानी में 1.2–1.5 L/ha product; Post: जब खरपतवार 2 से 4 पत्ती — 250 ml/ha product",
     },
     {
       weedName: "मोथा (Flat Sedge)",

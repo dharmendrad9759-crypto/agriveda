@@ -407,8 +407,8 @@ const TITLE_MAP: TitleMap[] = [
   },
   {
     match: /monochoria|मोनोकोरिया/i,
-    primary: "Monochoria",
-    secondary: "चौड़ी पत्ती खरपतवार",
+    primary: "मोनोकोरिया",
+    secondary: "नीलकंठी",
   },
   {
     match: /phalaris|गुल्ली|गुल्ली-डंडा/i,

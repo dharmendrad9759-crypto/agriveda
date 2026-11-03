@@ -793,7 +793,7 @@ export const onionDossier: ResearchDossierOverlay = {
       {
         technical: "Quizalofop-P-ethyl 5% EC",
         dose: "300–400 मिलीलीटर प्रति एकड़ + sticker",
-        timing: "POST, घास 2–4 पत्ती अवस्था",
+        timing: "POST, घास 2 से 4 पत्ती अवस्था",
         targets: "केवल घास (Echinochloa, Digitaria आदि)",
         note: "चौड़ी पत्ती/मोथा पर असर नहीं — उनके लिए निराई/PRE; broadleaf हर्बिसाइड संग अंधाधुंध मिक्स न करें",
       },

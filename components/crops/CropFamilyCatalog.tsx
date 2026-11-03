@@ -96,15 +96,6 @@ export default function CropFamilyCatalog({ query = "" }: Props) {
         })}
       </div>
 
-      <p className="text-xs font-bold uppercase tracking-wide text-[var(--av-text-muted)]">
-        {isHi ? `${cards.length} फसल` : `${cards.length} crops`}
-        {familyId !== "all" && (
-          <span className="ml-1.5 font-medium normal-case tracking-normal text-[var(--av-text-secondary)]">
-            · {families.find((f) => f.id === familyId)?.shortHi}
-          </span>
-        )}
-      </p>
-
       <motion.div
         layout
         className="grid grid-cols-2 gap-3.5 sm:gap-4 md:grid-cols-3 xl:grid-cols-4"

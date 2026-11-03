@@ -5,7 +5,7 @@ import { getCropAgroMeta, getCropTempGuide } from "@/lib/crops/cropAgroMeta";
 import { formatInrRange, getCropFieldBand } from "@/lib/crops/cropFieldBands";
 import { plainTalk } from "@/lib/crops/farmerSpeak";
 import type { Crop } from "@/types/crop";
-import { CloudSun, Coins, Calendar, ChevronDown, Timer, Wheat } from "lucide-react";
+import { CloudSun, Coins, ChevronDown, Timer, Wheat } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -187,12 +187,6 @@ export default function CropGeneralInfoCard({ crop, onSelectStage }: Props) {
       value: crop.durationDays,
     },
     {
-      id: "sowing",
-      icon: Calendar,
-      label: hi ? "बुवाई का समय" : "Sowing time",
-      value: crop.sowingGuide.bestSowingTime,
-    },
-    {
       id: "yield",
       icon: Wheat,
       label: hi ? "औसत उत्पादन / एकड़" : "Avg yield / acre",
@@ -275,10 +269,7 @@ export default function CropGeneralInfoCard({ crop, onSelectStage }: Props) {
       {/* Stage navigation shortcuts */}
       {onSelectStage && (
         <div className="border-t border-[var(--av-border-subtle)] bg-[color-mix(in_srgb,var(--av-surface-inset)_50%,transparent)] px-3 py-2.5 sm:px-4">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[var(--av-text-muted)]">
-            {hi ? "चरण अनुसार जानकारी देखें:" : "Explore by crop stage:"}
-          </p>
-          <div className="mt-1.5 grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
             <button
               type="button"
               onClick={() => onSelectStage("sowing")}

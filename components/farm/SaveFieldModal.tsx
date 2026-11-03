@@ -32,6 +32,11 @@ interface SaveFieldModalProps {
   onClose: () => void;
   coords: LatLng[];
   bighaDisplay?: string;
+  placeVillage?: string;
+  placeSoil?: string;
+  climateNote?: string;
+  placeState?: string;
+  placeDistrict?: string;
   initialData?: Partial<FarmField>;
   onSave: (fieldData: Omit<FarmField, "id">) => void;
 }
@@ -145,7 +150,13 @@ const SOIL_OPTIONS = [
   "जलोढ़ मिट्टी (Alluvial)",
   "बलुई दोमट (Sandy Loam)",
   "चिकनी मिट्टी (Clay)",
+  "लाल मिट्टी (Red)",
 ];
+
+function knownSoil(value?: string): string {
+  if (!value) return "";
+  return SOIL_OPTIONS.includes(value) ? value : "";
+}
 
 function resolveCrop(initialData?: Partial<FarmField>): CropOption {
   const bySlug = initialData?.cropSlug
@@ -179,6 +190,11 @@ export default function SaveFieldModal({
   onClose,
   coords,
   bighaDisplay,
+  placeVillage,
+  placeSoil,
+  climateNote,
+  placeState,
+  placeDistrict,
   initialData,
   onSave,
 }: SaveFieldModalProps) {
@@ -194,7 +210,7 @@ export default function SaveFieldModal({
 
   const [name, setName] = useState(initialData?.name || "मेरा खेत 1");
   const [village, setVillage] = useState(
-    initialData?.village || profile?.village || profile?.district || "मेरा गांव"
+    initialData?.village || placeVillage || profile?.village || profile?.district || "मेरा गांव"
   );
   const [farmerName, setFarmerName] = useState(
     initialData?.farmerName || profile?.name || ""
@@ -211,7 +227,7 @@ export default function SaveFieldModal({
     initialData?.irrigationType || IRRIGATION_OPTIONS[0].value
   );
   const [soilType, setSoilType] = useState(
-    initialData?.soilType || SOIL_OPTIONS[0]
+    knownSoil(initialData?.soilType) || knownSoil(placeSoil)
   );
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [error, setError] = useState<string | null>(null);
@@ -234,7 +250,11 @@ export default function SaveFieldModal({
 
     setName(initialData?.name || "मेरा खेत 1");
     setVillage(
-      initialData?.village || profile?.village || profile?.district || "मेरा गांव"
+      initialData?.village ||
+        placeVillage ||
+        profile?.village ||
+        profile?.district ||
+        "मेरा गांव"
     );
     setFarmerName(initialData?.farmerName || profile?.name || "");
     setSelectedCropSlug(crop.slug);
@@ -247,7 +267,7 @@ export default function SaveFieldModal({
         daysAgoISO(22)
     );
     setIrrigationType(initialData?.irrigationType || IRRIGATION_OPTIONS[0].value);
-    setSoilType(initialData?.soilType || SOIL_OPTIONS[0]);
+    setSoilType(knownSoil(initialData?.soilType) || knownSoil(placeSoil));
     setNotes(initialData?.notes || "");
     setError(null);
   }, [
@@ -257,7 +277,23 @@ export default function SaveFieldModal({
     profile?.village,
     profile?.district,
     profile?.name,
+    placeSoil,
+    placeVillage,
   ]);
+
+  useEffect(() => {
+    if (!isOpen || !placeVillage) return;
+    setVillage((current) =>
+      !current || current === "मेरा गांव" ? placeVillage : current
+    );
+  }, [isOpen, placeVillage]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const suggested = knownSoil(placeSoil);
+    if (!suggested) return;
+    setSoilType((current) => current || suggested);
+  }, [isOpen, placeSoil]);
 
   const activeCropObj = useMemo(
     () =>
@@ -274,6 +310,10 @@ export default function SaveFieldModal({
     event.preventDefault();
     if (!name.trim()) {
       setError("कृपया खेत का नाम दर्ज करें");
+      return;
+    }
+    if (!soilType) {
+      setError("मिट्टी चुनें — राज्य चुनने पर यह अपने आप भर जाती है");
       return;
     }
 
@@ -324,6 +364,9 @@ export default function SaveFieldModal({
         : initialData?.sowingDateIso,
       irrigationType,
       soilType,
+      placeState: placeState || initialData?.placeState,
+      placeDistrict: placeDistrict || initialData?.placeDistrict,
+      climateNote: climateNote || initialData?.climateNote,
       notes: notes.trim() || undefined,
       createdAt: initialData?.createdAt,
       updatedAt: new Date().toISOString(),
@@ -572,12 +615,18 @@ export default function SaveFieldModal({
               onChange={(event) => setSoilType(event.target.value)}
               className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none focus:border-emerald-500"
             >
+              <option value="">मिट्टी चुनें</option>
               {SOIL_OPTIONS.map((option) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
               ))}
             </select>
+            {climateNote || initialData?.climateNote ? (
+              <p className="mt-1.5 text-[11px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+                {climateNote || initialData?.climateNote}
+              </p>
+            ) : null}
           </div>
         </div>
 

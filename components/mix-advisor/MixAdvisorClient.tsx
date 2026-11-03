@@ -20,14 +20,12 @@ import {
   Info,
   Layers,
   Plus,
-  RotateCcw,
   Share2,
   ShieldAlert,
   ShieldCheck,
   Trash2,
   X,
 } from "lucide-react";
-import { TankMixSparkleIcon } from "@/components/brand/icons";
 import AppShell from "@/components/shell/AppShell";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
@@ -60,10 +58,10 @@ import { EASE_OUT } from "@/lib/motion/variants";
 type StepId = "problem" | "weather" | "mix" | "guide";
 
 const STEPS: { id: StepId; label: string; sub: string }[] = [
-  { id: "problem", label: "फसल व समस्या", sub: "1. चयन" },
-  { id: "weather", label: "मौसम सलाह", sub: "2. जाँच" },
-  { id: "mix", label: "स्मार्ट टैंक-मिक्स", sub: "3. दवाएँ" },
-  { id: "guide", label: "घोल बनाने की विधि", sub: "4. गाइड" },
+  { id: "problem", label: "फसल और बीमारी", sub: "1" },
+  { id: "weather", label: "मौसम", sub: "2" },
+  { id: "mix", label: "दवा मिलाएँ", sub: "3" },
+  { id: "guide", label: "घोल बनाएँ", sub: "4" },
 ];
 
 const MAX_PROBLEMS = 4;
@@ -204,9 +202,15 @@ function MixAdvisorInner() {
         if (parsed.stage) setStage(parsed.stage);
         if (parsed.problemIds && Array.isArray(parsed.problemIds) && parsed.problemIds.length > 0) {
           setProblemIds(parsed.problemIds);
+          const savedSlug = typeof parsed.cropSlug === "string" ? parsed.cropSlug : cropSlug;
+          const curCrop = CROP_PROBLEM_CROPS.find((c) => c.slug === savedSlug) || CROP_PROBLEM_CROPS[0];
+          const selectedProbs = curCrop.problems.filter((p) => parsed.problemIds.includes(p.id));
+          const autoPlan = buildMixPlanFromProblems(savedSlug, selectedProbs);
+          if (autoPlan && autoPlan.medicines.length > 0) {
+            setPlan(autoPlan);
+            setMeds(autoPlan.medicines);
+          }
         }
-        if (parsed.meds && Array.isArray(parsed.meds) && parsed.meds.length > 0) setMeds(parsed.meds);
-        if (parsed.plan) setPlan(parsed.plan);
         if (parsed.step && (parsed.step === "mix" || parsed.step === "guide")) {
           setStep(parsed.step);
         }
@@ -382,30 +386,6 @@ function MixAdvisorInner() {
     return getProblemSpecificAlternatives(cropSlug, activeSlotMed);
   }, [cropSlug, activeSlotMed]);
 
-  // Replace incompatible pair with safe fallback
-  const fixIncompatiblePair = () => {
-    if (!mixVerdict.badPair) return;
-    const [badA, badB] = mixVerdict.badPair;
-    // If one is copper, swap copper for Mancozeb or Azoxystrobin
-    setMeds((prev) => {
-      return prev.map((m) => {
-        if (m.activeId === badA.activeId && /copper/i.test(m.technical)) {
-          return POPULAR_FUNGICIDES[0]; // Mancozeb
-        }
-        if (m.activeId === badB.activeId && /copper/i.test(m.technical)) {
-          return POPULAR_FUNGICIDES[0]; // Mancozeb
-        }
-        if (m.activeId === badA.activeId && /sulphur/i.test(m.technical)) {
-          return POPULAR_FUNGICIDES[4]; // Hexaconazole
-        }
-        if (m.activeId === badB.activeId && /sulphur/i.test(m.technical)) {
-          return POPULAR_FUNGICIDES[4]; // Hexaconazole
-        }
-        return m;
-      });
-    });
-  };
-
   const toggleSticker = () => {
     if (!plan) return;
     const next = planWithStickerToggle(plan, !plan.includeSticker);
@@ -425,7 +405,7 @@ function MixAdvisorInner() {
       title="दवा घोल जांच"
       onBack={handleBackStep}
     >
-      <div className="mx-auto max-w-xl space-y-4 px-2 pb-4">
+      <div className="mx-auto max-w-xl space-y-4 px-2 pb-28 lg:pb-4">
         <Stepper step={step} />
 
         <AnimatePresence mode="wait">
@@ -446,7 +426,7 @@ function MixAdvisorInner() {
               {/* Crop Selection Section - Collapsible to avoid long scrolling */}
               <div>
                 <div className="flex items-center justify-between">
-                  <p className={AV.sectionTitle}>1. फसल चुनें (Crop)</p>
+                  <p className={AV.sectionTitle}>1. कौन सी फसल है?</p>
                 </div>
 
                 {/* Selected Crop Compact Banner */}
@@ -458,11 +438,11 @@ function MixAdvisorInner() {
                     </span>
                     <div className="min-w-0">
                       <span className="block truncate text-[14px] font-black text-emerald-950 dark:text-emerald-100">
-                        {crop.nameHi} <span className="text-[11px] font-medium text-[var(--av-text-muted)]">({crop.nameEn})</span>
+                        {crop.nameHi}
                       </span>
                       <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
                         <CheckCircle2 className="h-3.5 w-3.5" />
-                        चयनित फसल
+                        यह फसल चुनी है
                       </span>
                     </div>
                   </div>
@@ -485,7 +465,7 @@ function MixAdvisorInner() {
                       className="overflow-hidden"
                     >
                       <p className="mt-2 text-[11px] text-[var(--av-text-muted)]">
-                        अपनी फसल पर टैप करें — चुनते ही पेज आगे बढ़ जाएगा:
+                        अपनी फसल पर टैप करें:
                       </p>
                       <div className="mt-2 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-2.5">
                         {CROP_PROBLEM_CROPS.map((c) => {
@@ -527,9 +507,6 @@ function MixAdvisorInner() {
                                 >
                                   {c.nameHi}
                                 </span>
-                                <span className="text-[10px] font-semibold text-[var(--av-text-muted)]">
-                                  {c.nameEn}
-                                </span>
                               </div>
                             </button>
                           );
@@ -542,7 +519,7 @@ function MixAdvisorInner() {
 
               {/* Growth Stage Selection */}
               <div id="growth-stage-section">
-                <p className={AV.sectionTitle}>2. फसल का चरण (Growth Stage)</p>
+                <p className={AV.sectionTitle}>2. फसल अभी कैसी है?</p>
                 <div className="mt-2 grid grid-cols-3 gap-2 sm:gap-2.5">
                   {GROWTH_STAGES.map((s) => {
                     const active = stage === s.id;
@@ -584,7 +561,7 @@ function MixAdvisorInner() {
               <div>
                 <div className="flex items-end justify-between gap-2">
                   <div>
-                    <p className={AV.sectionTitle}>3. समस्याएँ चुनें (कीट व बीमारियाँ)</p>
+                    <p className={AV.sectionTitle}>3. खेत में क्या दिक्कत है?</p>
                   </div>
                   <span className="shrink-0 rounded-full bg-emerald-600/15 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
                     {problemIds.length}/{MAX_PROBLEMS} चुनी
@@ -595,7 +572,7 @@ function MixAdvisorInner() {
                 {selectedProblems.length > 0 && (
                   <div className="mt-2 flex flex-wrap items-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-2.5 shadow-2xs">
                     <span className="text-[11px] font-black text-emerald-950 dark:text-emerald-100 mr-1">
-                      चुने गए रोग/कीट:
+                      आपने ये चुना:
                     </span>
                     {selectedProblems.map((p) => (
                       <span
@@ -674,9 +651,6 @@ function MixAdvisorInner() {
                           <span className="line-clamp-1 text-[13px] font-black text-[var(--av-text-primary)]">
                             {getCleanHindiTitle(p.nameHi)}
                           </span>
-                          <span className="line-clamp-1 text-[10px] font-medium text-[var(--av-text-muted)]">
-                            {p.nameEn}
-                          </span>
                         </span>
                       </button>
                     );
@@ -688,9 +662,9 @@ function MixAdvisorInner() {
                 type="button"
                 disabled={!problemIds.length}
                 onClick={runCheck}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-black text-white shadow-lg shadow-emerald-600/25 transition active:scale-[0.98] disabled:opacity-40"
+                className="relative z-20 mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-black text-white shadow-lg shadow-emerald-600/25 transition active:scale-[0.98] disabled:opacity-40 lg:mb-0"
               >
-                आगे बढ़ें: स्मार्ट मिक्स जाँच
+                आगे बढ़ें — मौसम देखें
                 <ArrowRight className="h-5 w-5" />
               </button>
             </motion.div>
@@ -833,42 +807,22 @@ function MixAdvisorInner() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={cn(
-                          "rounded-md px-2.5 py-0.5 text-[10.5px] font-extrabold tracking-wide text-white",
-                          isSafe && "bg-emerald-700",
-                          isCaution && "bg-amber-600",
-                          isIncompatible && "bg-rose-700"
-                        )}
-                      >
-                        {mixVerdict.badgeHi}
-                      </span>
-                    </div>
-
-                    <p className="mt-1 text-[15px] font-black leading-snug">
+                    <p className="text-[15px] font-black leading-snug">
                       {mixVerdict.title}
                     </p>
 
-                    <p className="mt-1 text-[12px] font-semibold leading-relaxed opacity-95">
-                      {mixVerdict.messageHi}
-                    </p>
+                    {mixVerdict.messageHi && mixVerdict.messageHi !== mixVerdict.title && (
+                      <p className="mt-1 text-[12px] font-semibold leading-relaxed opacity-95">
+                        {mixVerdict.messageHi}
+                      </p>
+                    )}
 
-                    {/* Conflict remedy action if incompatible */}
-                    {isIncompatible && (
-                      <div className="mt-3 rounded-xl bg-white/40 dark:bg-black/30 p-2.5">
-                        <p className="text-[11px] font-extrabold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
-                          <Info className="h-3.5 w-3.5 shrink-0" />
-                          <span>समाधान: {mixVerdict.remedyHi || "असंगत रसायनों को अलग-अलग छिड़कें।"}</span>
+                    {isIncompatible && mixVerdict.remedyHi && (
+                      <div className="mt-3 rounded-xl bg-white/50 p-2.5 dark:bg-black/30">
+                        <p className="flex items-start gap-1.5 text-[12px] font-bold leading-relaxed text-rose-950 dark:text-rose-100">
+                          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          <span>{mixVerdict.remedyHi}</span>
                         </p>
-                        <button
-                          type="button"
-                          onClick={fixIncompatiblePair}
-                          className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-[11px] font-bold text-white shadow transition hover:bg-rose-700 active:scale-[0.98]"
-                        >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                          सुरक्षित विकल्प से स्वतः बदलें
-                        </button>
                       </div>
                     )}
                   </div>
@@ -877,7 +831,7 @@ function MixAdvisorInner() {
 
               {/* Medicine Tank Slot Cards */}
               <div>
-                <p className={AV.sectionTitle}>टैंक में दवाएँ (Tank Mix Items)</p>
+                <p className={AV.sectionTitle}>टंकी में ये दवाएँ डालें</p>
 
                 <div className="mt-2.5 space-y-3">
                   {meds.map((m, idx) => {
@@ -892,12 +846,6 @@ function MixAdvisorInner() {
                             <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-black text-emerald-900 dark:text-emerald-200">
                               दवा {idx + 1}
                             </span>
-                            {m.isTopPerformer && (
-                              <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
-                                <TankMixSparkleIcon className="h-3 w-3 text-amber-600" />
-                                बेस्ट ट्रायल रिजल्ट (Top Performer)
-                              </span>
-                            )}
                             {m.resistanceWarning && (
                               <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/15 px-2 py-0.5 text-[9.5px] font-bold text-rose-800 dark:text-rose-300">
                                 <AlertTriangle className="h-3 w-3 text-rose-600" />
@@ -943,14 +891,6 @@ function MixAdvisorInner() {
                             </div>
                           )}
 
-                          {m.synergyNoticeHi && (
-                            <div className="mt-2 rounded-xl border border-emerald-500/35 bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 p-2.5 text-[11px] font-bold text-emerald-950 dark:text-emerald-100 shadow-2xs">
-                              <p className="flex items-center gap-1.5">
-                                <span className="shrink-0 text-base">✨</span>
-                                <span>{m.synergyNoticeHi}</span>
-                              </p>
-                            </div>
-                          )}
                         </div>
 
                         {/* Doses Grid */}
@@ -1005,7 +945,7 @@ function MixAdvisorInner() {
                       className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-emerald-500/40 bg-emerald-500/5 py-3 text-[13px] font-extrabold text-emerald-800 dark:text-emerald-200 hover:bg-emerald-500/10 transition active:scale-[0.98]"
                     >
                       <Plus className="h-4 w-4 stroke-[3]" />
-                      + एक और दवा जोड़ें (कीटनाशक / फफूंदनाशक / टॉनिक)
+                      एक और दवा जोड़ें (कीटनाशक / फफूंदनाशक / टॉनिक)
                     </button>
                   )}
                 </div>
@@ -1175,17 +1115,6 @@ function MixAdvisorInner() {
                                   <span className="rounded-md bg-emerald-600/15 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-200">
                                     {opt.formCode} {opt.formHi ? `(${opt.formHi})` : ""}
                                   </span>
-                                  {opt.levelLabelHi && (
-                                    <span className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[10px] font-extrabold text-blue-900 dark:text-blue-200">
-                                      {opt.levelLabelHi}
-                                    </span>
-                                  )}
-                                  {opt.isTopPerformer && (
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-black text-amber-900 dark:text-amber-200 border border-amber-500/40">
-                                      <TankMixSparkleIcon className="h-3 w-3 text-amber-600" />
-                                      बेस्ट ट्रायल रिजल्ट
-                                    </span>
-                                  )}
                                   {opt.resistanceWarning && (
                                     <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/15 px-2 py-0.5 text-[9.5px] font-bold text-rose-800 dark:text-rose-300">
                                       <AlertTriangle className="h-3 w-3 text-rose-600" />
@@ -1260,7 +1189,7 @@ function MixAdvisorInner() {
                       <div className="flex items-center justify-between border-b border-[var(--av-border)] px-4 py-3.5">
                         <div>
                           <p className="text-[15px] font-black text-[var(--av-text-primary)]">
-                            टैंक में नई दवा जोड़ें
+                            टंकी में और दवा जोड़ें
                           </p>
                           <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
                             कीटनाशक, फफूंदनाशक या टॉनिक चुनें:
@@ -1278,9 +1207,9 @@ function MixAdvisorInner() {
                       {/* Category Switcher Tabs */}
                       <div className="flex border-b border-[var(--av-border)] px-2 pt-2 bg-[var(--av-surface-inset)]/50">
                         {[
-                          { id: "insecticide", label: "कीटनाशक (Insecticides)" },
-                          { id: "fungicide", label: "फफूंदनाशक (Fungicides)" },
-                          { id: "tonic", label: "टॉनिक/NPK (Tonics)" },
+                          { id: "insecticide", label: "कीड़े की दवा" },
+                          { id: "fungicide", label: "फफूंद की दवा" },
+                          { id: "tonic", label: "ताकत की दवा" },
                         ].map((t) => (
                           <button
                             key={t.id}
@@ -1380,7 +1309,7 @@ function MixAdvisorInner() {
                     W-A-L-E वैज्ञानिक विधि
                   </span>
                   <p className="mt-1 text-[16px] font-black leading-tight">
-                    टैंक में सही क्रम से घोल बनाने की विधि
+                    टंकी में घोल बनाने का सही तरीका
                   </p>
                   <p className="text-[11px] text-white/90">
                     क्रम से मिलाने पर दवा कभी नहीं फटती और 100% असर देती है
@@ -1443,7 +1372,7 @@ function MixAdvisorInner() {
                     <thead className="border-b border-[var(--av-border)] bg-[var(--av-surface-inset)]">
                       <tr>
                         <th className="px-3 py-2 font-bold text-[var(--av-text-secondary)]">दवा</th>
-                        <th className="px-3 py-2 font-bold text-[var(--av-text-secondary)]">1L पानी</th>
+                        <th className="px-3 py-2 font-bold text-[var(--av-text-secondary)]">1 लीटर पानी</th>
                         <th className="px-3 py-2 font-bold text-[var(--av-text-secondary)]">1 एकड़ खुराक</th>
                       </tr>
                     </thead>

@@ -265,7 +265,12 @@ export const CHEM_BOTTLE_CATALOG: ChemBottleEntry[] = [
     name: "Triafamone + Ethoxysulfuron",
     formulation: "30% WG",
     category: "herbicide",
-    aliases: ["triafamone ethoxysulfuron","council activ"],
+    aliases: [
+      "triafamone ethoxysulfuron",
+      "triafamone 20% + ethoxysulfuron 10% wg",
+      "triafamone 20 + ethoxysulfuron 10",
+      "council activ",
+    ],
   },
   {
     slug: "haloxyfop-r-methyl-10-5-ec",
@@ -2099,7 +2104,6 @@ export const CHEM_BOTTLE_CATALOG: ChemBottleEntry[] = [
       "metsulfuron methyl",
       "metsulfuron",
       "algrip",
-      "almix",
       "मेटसल्फ्यूरॉन मिथाइल 20% wp",
       "मेटसल्फ्यूरॉन",
       "एल्ग्रिप",
@@ -2269,6 +2273,20 @@ export const CHEM_BOTTLE_CATALOG: ChemBottleEntry[] = [
     formulation: "22.9% SC",
     category: "fungicide",
     aliases: ["pencycuron 22.9% sc", "pencycuron", "monceren", "पेन्सीक्यूरॉन"],
+  },
+  {
+    slug: "metsulfuron-chlorimuron-wp",
+    name: "Metsulfuron-methyl + Chlorimuron-ethyl",
+    formulation: "10% + 10% WP",
+    category: "herbicide",
+    aliases: [
+      "metsulfuron methyl + chlorimuron ethyl",
+      "metsulfuron + chlorimuron",
+      "metsulfuron methyl 10% + chlorimuron ethyl 10% wp",
+      "almix",
+      "एल्मिक्स",
+      "मेटसल्फ्यूरॉन + क्लोरीम्यूरॉन",
+    ],
   },
   {
     slug: "chlorimuron-ethyl-25-wp",

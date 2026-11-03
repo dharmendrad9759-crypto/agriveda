@@ -90,11 +90,7 @@ export default function CropsListingClient({ crops }: Props) {
         </div>
       </div>
 
-      <div id="crop-grid" className="flex items-center justify-between gap-3 scroll-mt-28">
-        <p className="text-xs font-bold uppercase tracking-wide text-[var(--av-text-muted)]">
-          {isHi ? `${filtered.length} फसल` : `${filtered.length} crops`}
-        </p>
-      </div>
+      <div id="crop-grid" className="scroll-mt-28" />
 
       <motion.div
         layout

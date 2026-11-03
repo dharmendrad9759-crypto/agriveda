@@ -58,10 +58,17 @@ const MAP_SURFACE =
 const MAP_ICON_BUTTON =
   "flex h-9 w-9 items-center justify-center rounded-xl text-[var(--av-text-secondary)] transition hover:text-[var(--av-text-primary)] active:scale-95";
 
+export type MapViewCenter = {
+  lat: number;
+  lng: number;
+  villageHint?: string;
+};
+
 export interface SmartFieldMapProps {
   initialCoords?: LatLng[];
   mode?: "draw" | "walk" | "view";
   onCoordsChange?: (coords: LatLng[]) => void;
+  onViewCenter?: (center: MapViewCenter) => void;
   onValidationChange?: (isValid: boolean, error?: string) => void;
   onSaveLocationPin?: (coords: LatLng) => void;
   height?: string;
@@ -160,6 +167,7 @@ export default function SmartFieldMap({
   initialCoords = [],
   mode: initialMode = "draw",
   onCoordsChange,
+  onViewCenter,
   onValidationChange,
   onSaveLocationPin,
   height = "520px",
@@ -194,6 +202,9 @@ export default function SmartFieldMap({
   const lastRecordedTimeRef = useRef<number>(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const onViewCenterRef = useRef(onViewCenter);
+  onViewCenterRef.current = onViewCenter;
+  const locateGen = useRef(0);
 
   // Validation
   const validation = useMemo(() => validateFieldPolygon(coords), [coords]);
@@ -209,6 +220,7 @@ export default function SmartFieldMap({
         setFuture([]);
       }
       setCoords(newCoords);
+      if (newCoords.length) locateGen.current += 1;
       onCoordsChange?.(newCoords);
     },
     [coords, onCoordsChange]
@@ -263,6 +275,7 @@ export default function SmartFieldMap({
     e.preventDefault();
     const query = searchQuery.trim();
     if (!query) return;
+    locateGen.current += 1;
 
     setSearching(true);
     setSearchMessage(null);
@@ -275,6 +288,7 @@ export default function SmartFieldMap({
         const lng = parseFloat(coordMatch[3]);
         if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
           setFocusCenter([lat, lng]);
+          onViewCenterRef.current?.({ lat, lng });
           setSearching(false);
           return;
         }
@@ -292,8 +306,13 @@ export default function SmartFieldMap({
       if (data && data.length > 0) {
         const lat = parseFloat(data[0].lat);
         const lon = parseFloat(data[0].lon);
+        const label = String(data[0].display_name || "");
+        const first = label.split(",")[0]?.trim() || "";
+        const villageHint =
+          first && !/district|india|pradesh|भारत/i.test(first) ? first : undefined;
         setFocusCenter([lat, lon]);
-        setSearchMessage(`स्थान मिला: ${data[0].display_name.split(",").slice(0, 3).join(",")}`);
+        onViewCenterRef.current?.({ lat, lng: lon, villageHint });
+        setSearchMessage(`स्थान मिला: ${label.split(",").slice(0, 3).join(",")}`);
       } else {
         setSearchMessage("स्थान नहीं मिला, कृपया पिन कोड या जिला नाम जोड़ें।");
       }
@@ -306,12 +325,15 @@ export default function SmartFieldMap({
 
   // GPS Locate Me (Resilient Multi-Tier Location Resolver)
   const handleLocateMe = useCallback(async (isAuto = false) => {
+    const gen = ++locateGen.current;
     setLocating(true);
     setSearchMessage(null);
 
     const applyLocation = (lat: number, lng: number, accuracy?: number) => {
+      if (locateGen.current !== gen) return;
       setFocusCenter([lat, lng]);
       setUserGpsPos({ lat, lng });
+      onViewCenterRef.current?.({ lat, lng });
       if (typeof accuracy === "number") setGpsAccuracy(accuracy);
       try {
         localStorage.setItem(
@@ -547,13 +569,14 @@ export default function SmartFieldMap({
             <button
               type="button"
               onClick={() => {
-                const targetPos =
-                  userGpsPos ||
-                  (coords.length > 0
-                    ? coords[0]
-                    : focusCenter
-                    ? { lat: focusCenter[0], lng: focusCenter[1] }
-                    : { lat: defaultCenter[0], lng: defaultCenter[1] });
+                const targetPos = focusCenter
+                  ? { lat: focusCenter[0], lng: focusCenter[1] }
+                  : coords.length > 0
+                    ? coords[coords.length - 1]
+                    : userGpsPos || {
+                        lat: defaultCenter[0],
+                        lng: defaultCenter[1],
+                      };
                 onSaveLocationPin(targetPos);
               }}
               title="खेत की लोकेशन सहेजें (Save Field Location)"

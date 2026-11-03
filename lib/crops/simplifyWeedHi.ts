@@ -3,7 +3,10 @@
  * शुद्ध साहित्यिक नहीं, आधी-अंग्रेज़ी भी नहीं।
  */
 
+import { MODERN_TECHNICALS } from "@/data/modern-technicals";
 import { applyBilingualAgriNames } from "@/lib/crops/bilingualAgriName";
+import { getCropHindiName } from "@/lib/crops/crop-display";
+import { getCropWeedFieldGuide, WEED_FIELD_GUIDES } from "@/lib/crops/weedFieldDoctorGuide";
 
 function replaceAll(text: string, pairs: [RegExp | string, string][]): string {
   let out = text;
@@ -221,6 +224,7 @@ export function farmerWeedHi(text: string): string {
     .trim();
   // Product actives: Technical (हिंदी)
   t = applyBilingualAgriNames(t);
+  t = t.replace(/(\d)\s*[–\-]\s*(\d)(?=\s*पत्ती)/g, "$1 से $2");
   return t;
 }
 
@@ -242,4 +246,75 @@ export function farmerWeedTipPointsHi(points: string[]): string[] {
 /** लक्ष्य सूची लेबल — निशाना नहीं */
 export function weedTargetsLabelHi(): string {
   return "खरपतवार";
+}
+
+function activeTokens(name: string): string[] {
+  return name
+    .toLowerCase()
+    .split(/\s*\+\s*/)
+    .map((part) => part.trim().split(/[\s-]/)[0]?.replace(/[^a-z0-9]/g, "") ?? "")
+    .filter((part) => part.length > 4 || (part.length >= 3 && /[a-z]/.test(part) && /\d/.test(part)));
+}
+
+function sameActives(a: string, b: string): boolean {
+  const left = activeTokens(a);
+  const right = activeTokens(b);
+  if (!left.length || left.length !== right.length) return false;
+  return left.every((token) => b.toLowerCase().includes(token));
+}
+
+/** किन फसलों में यह खरपतवार दवा पहले से लिखी है — वही नाम दिखाओ। */
+export function herbicideUseCropsHi(technical: string, currentSlug?: string): string {
+  const slugs = new Set<string>();
+  if (currentSlug) slugs.add(currentSlug);
+  for (const item of MODERN_TECHNICALS) {
+    if (item.kind !== "weed" || !sameActives(technical, item.name)) continue;
+    for (const crop of item.crops) slugs.add(crop);
+  }
+  for (const [slug, guide] of Object.entries(WEED_FIELD_GUIDES)) {
+    const options = [...(guide.preEmergence ?? []), ...(guide.postEmergence ?? [])];
+    if (options.some((opt) => sameActives(technical, opt.technical))) slugs.add(slug);
+  }
+  const names: string[] = [];
+  for (const slug of slugs) {
+    const hi = getCropHindiName(slug);
+    if (hi && !names.includes(hi)) names.push(hi);
+  }
+  if (!names.length) return "";
+  const shown = names.slice(0, 5);
+  if (names.length > shown.length) {
+    return `${shown.join(", ")} और अन्य फसलों में इस दवा का इस्तेमाल करें। बोतल का लेबल ज़रूर देखें।`;
+  }
+  return `${shown.join(", ")} की फसल में इस दवा का इस्तेमाल करें`;
+}
+
+/** खुराक हमेशा एकड़ पर। लीटर वाली लाइन हो तो गाइड की एकड़ खुराक लो। */
+export function herbicideAcreDoseHi(technical: string, raw: string, currentSlug?: string): string {
+  const direct = acrePhrase(raw);
+  if (direct) return direct;
+  for (const item of MODERN_TECHNICALS) {
+    if (item.kind === "weed" && sameActives(technical, item.name) && /एकड़|acre/i.test(item.doseAcre)) {
+      return item.doseAcre.replace(/(\d+(?:\.\d+)?)\s*[–\-]\s*(\d+(?:\.\d+)?)/g, "$1 से $2");
+    }
+  }
+  const currentGuide = currentSlug ? getCropWeedFieldGuide(currentSlug) : null;
+  const ordered = currentGuide
+    ? [currentGuide, ...Object.values(WEED_FIELD_GUIDES)]
+    : Object.values(WEED_FIELD_GUIDES);
+  for (const guide of ordered) {
+    const options = [...(guide.preEmergence ?? []), ...(guide.postEmergence ?? [])];
+    const hit = options.find((opt) => sameActives(technical, opt.technical) && /एकड़|acre/i.test(opt.doseHi));
+    if (hit) return hit.doseHi.replace(/(\d+(?:\.\d+)?)\s*[–\-]\s*(\d+(?:\.\d+)?)/g, "$1 से $2");
+  }
+  return "";
+}
+
+function acrePhrase(raw: string): string {
+  const m = raw.match(
+    /(\d+(?:\.\d+)?(?:\s*[–\-]\s*\d+(?:\.\d+)?)?)\s*(मिलीलीटर|मिली|ml|लीटर|ग्राम|g|L)\s*(?:\/\s*|प्रति\s+)?(?:एकड़|acre)/i
+  );
+  if (!m) return "";
+  const qty = m[1].replace(/\s*[–\-]\s*/g, " से ");
+  const unit = /मिली|ml/i.test(m[2]) ? "मिलीलीटर" : /लीटर|^l$/i.test(m[2]) ? "लीटर" : "ग्राम";
+  return `${qty} ${unit} प्रति एकड़`;
 }

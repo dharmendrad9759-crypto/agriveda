@@ -77,6 +77,8 @@ export type MixMedicine = {
   isVirusTarget?: boolean;
   /** Multi-target broad-spectrum synergy notice */
   synergyNoticeHi?: string;
+  /** Problems this one technical is allowed to cover — only when it is in each problem's trial list */
+  coveredProblemIds?: string[];
 };
 
 export type DynamicMixStep = {
@@ -111,20 +113,20 @@ export const GROWTH_STAGES: {
 }[] = [
   {
     id: "vegetative",
-    labelHi: "वनस्पति अवस्था",
-    subHi: "बढ़वार / पत्ती",
+    labelHi: "पत्ती बढ़ रही है",
+    subHi: "शुरुआती बढ़वार",
     icon3d: "/images/icons/3d/stage-vegetative.jpg",
   },
   {
     id: "flowering",
-    labelHi: "फूल अवस्था",
-    subHi: "कलियाँ व फूल",
+    labelHi: "फूल आ रहे हैं",
+    subHi: "कली और फूल",
     icon3d: "/images/icons/3d/stage-flowering.jpg",
   },
   {
     id: "fruiting",
-    labelHi: "फल व दाना",
-    subHi: "फल / बाली भराव",
+    labelHi: "फल या दाना",
+    subHi: "भराव का समय",
     icon3d: "/images/icons/3d/stage-fruiting.jpg",
   },
 ];
@@ -437,8 +439,8 @@ export const POPULAR_FUNGICIDES: MixMedicine[] = [
     doseHi: "1 मिली / ली. पानी (200 मिली प्रति एकड़)",
     dosePerLiter: "1 मिली / लीटर पानी",
     dosePerAcre: "200 मिली / एकड़",
-    brands: ["Amistar Top (Syngenta)", "Custodia (Adama)"],
-    safetyHi: "सिस्टेमिक + उपचारात्मक दोहरा असर; पत्तों में हरियाली व चमक बढ़ाता है।",
+    brands: ["Amistar Top (Syngenta)"],
+    safetyHi: "अगेती झुलसा और पत्ती धब्बे पर। पछेती झुलसा पर यह कनॉज़ोल नहीं चलता।",
   },
   {
     activeId: "tebuconazole+trifloxystrobin",
@@ -704,7 +706,10 @@ export function curativeToMixMedicine(
   if (/copper.*strepto/i.test(curative.technical) || /strepto.*copper/i.test(curative.technical)) {
     dosePerLiter = "कॉपर: 2 g/L + स्ट्रेप्टो: 1 g प्रति 10 L पानी";
     dosePerAcre = "350 g + 18 g / एकड़";
-  } else if (/kasugamycin.*copper/i.test(curative.technical) || /कासु-बी.*ब्लाइटॉक्स/i.test(curative.nameHi)) {
+  } else if (
+    (/kasugamycin/i.test(curative.technical) && /\bSL\b/i.test(curative.technical) && /copper/i.test(curative.technical)) ||
+    /कासु-बी.*ब्लाइटॉक्स/i.test(curative.nameHi)
+  ) {
     dosePerLiter = "कासुगामाइसिन: 2 ml/L + कॉपर: 2 g/L पानी";
     dosePerAcre = "400 ml + 400 g / एकड़";
   } else {
@@ -824,18 +829,19 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
       // 2. Copper Oxychloride / Copper Hydroxide / Bordeaux + EC Formulation
       const isCopper = (m: MixMedicine) =>
         /copper|कॉपर|blitox|blue copper|bordeaux|बोर्डो/i.test(m.technical + " " + m.nameHi + " " + m.activeId);
-      const isEC = (m: MixMedicine) => m.formCode === "EC" || /ec/i.test(m.technical);
+      const isEC = (m: MixMedicine) =>
+        m.formCode === "EC" || /\bEC\b|%\s*EC/i.test(m.technical);
 
       if ((isCopper(a) && isEC(b)) || (isCopper(b) && isEC(a))) {
         const copperMed = isCopper(a) ? a : b;
         const ecMed = isCopper(a) ? b : a;
         return {
           status: "incompatible",
-          title: "❌ यह घोल फट जाएगा / पत्तियां झुलस जाएंगी!",
-          badgeHi: "🔴 गंभीर खतरा: घोल फटने व पत्ती झुलसने का डर",
-          messageHi: `गंभीर खतरा: यह घोल फट जाएगा और फसल की पत्तियां झुलस जाएंगी! ${copperMed.nameHi} (कॉपर) को ${ecMed.nameHi} (तेल आधारित तरल दवा) के साथ टैंक में कभी न मिलाएँ। घोल तुरंत फटकर दही जैसा हो जाएगा और फसल जल सकती है।`,
-          conflictReason: "कॉपर और तेल आधारित तरल दवा आपस में मिलकर घोल फाड़ देते हैं।",
-          remedyHi: "कॉपर को केवल पाउडर या सुरक्षित तरल के साथ मिलाएँ, या इस दवा को 3 दिन बाद अलग छिड़कें।",
+          title: "ये दोनों दवाएँ एक टंकी में मत मिलाओ।",
+          badgeHi: "",
+          messageHi: `${copperMed.nameHi} और ${ecMed.nameHi} साथ मिलाने से घोल फट जाता है और पत्ते झुलस जाते हैं।`,
+          conflictReason: "कॉपर और तेल वाली दवा एक टंकी में नहीं मिलती।",
+          remedyHi: `अलग-अलग छिड़काव करें। आज ${ecMed.nameHi} छिड़कें। 3 दिन बाद ${copperMed.nameHi} छिड़कें। कॉपर वाली दवा जीवाणु की बीमारी पर काम करती है। कीड़े वाली दवा जीवाणु पर काम नहीं करती, इसलिए उसे हटाकर कॉपर की जगह मत लगाएँ।`,
           badPair: [a, b],
         };
       }
@@ -1073,43 +1079,83 @@ export function generateDynamicMixSteps(
 }
 
 // --------------------------------------------------------------------------
+// Trial-list matching
+// A technical is allowed on a problem only when that crop's own trial list
+// contains the same active ingredients. Early-blight conazoles never qualify
+// for late blight, and a maize molecule is never copied onto another crop.
+// --------------------------------------------------------------------------
+
+export function activeKey(technical: string): string {
+  const parts = technical
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/\d+(?:\.\d+)?\s*(?:%|g\/l|g\/kg)?/g, " ")
+    .replace(/\b(?:wp|wdp|wg|wdg|df|sp|sg|sc|ec|sl|od|fs|gr|zc|se|cs|ds|ws|wsp|me|ew)\b/g, " ")
+    .split("+")
+    .map((part) => part.replace(/[^a-z]/g, ""))
+    .filter((part) => part.length > 3);
+  return [...new Set(parts)].sort().join("+");
+}
+
+function pickBestCurative(list: CurativeMedicine[]): CurativeMedicine {
+  return list.find((item) => item.isTopPerformer) ?? [...list].sort((a, b) => (b.level ?? 0) - (a.level ?? 0))[0];
+}
+
+function problemItemFor(
+  cropSlug: string,
+  problemId: string,
+  fallbackName: string,
+  kindHi: string
+): CropProblemItem {
+  const crop = CROP_PROBLEM_CROPS.find((c) => c.slug === cropSlug);
+  return (
+    crop?.problems.find((p) => p.id === problemId) ?? {
+      id: problemId,
+      nameHi: fallbackName,
+      nameEn: "",
+      tagHi: kindHi,
+      image: "",
+      stageHi: "",
+      whatHi: "",
+      whyHi: [],
+      cureOrganicHi: [],
+      cureChemicalHi: [],
+      whenToActHi: "",
+      tipHi: "",
+    }
+  );
+}
+
+// --------------------------------------------------------------------------
 // Problem-Specific Alternatives Resolution
 // --------------------------------------------------------------------------
 
 /**
- * Returns strictly the ICAR/CIBRC approved alternatives for the specific disease/pest.
- * Ensures Early Blight only shows Early Blight technicals, Late Blight only Late Blight, etc.
+ * Returns strictly the trial technicals for the disease or pest on this crop.
+ * If one spray covers two problems, only technicals present on every covered list are shown.
  */
 export function getProblemSpecificAlternatives(
   cropSlug: string,
   medicine: MixMedicine
 ): MixMedicine[] {
-  // If targetProblemId is specified, fetch ONLY the curatives for that exact problem!
-  if (medicine.targetProblemId) {
-    const cropMedsRecord = CROP_PROBLEM_MEDICINES[cropSlug] ?? {};
-    const curatives = cropMedsRecord[medicine.targetProblemId];
+  const cropMedsRecord = CROP_PROBLEM_MEDICINES[cropSlug] ?? {};
+  const ids = (medicine.coveredProblemIds?.length
+    ? medicine.coveredProblemIds
+    : medicine.targetProblemId
+      ? [medicine.targetProblemId]
+      : []
+  ).filter((id) => (cropMedsRecord[id]?.length ?? 0) > 0);
 
-    if (curatives && curatives.length > 0) {
-      const crop = CROP_PROBLEM_CROPS.find((c) => c.slug === cropSlug);
-      const problemItem = crop?.problems.find((p) => p.id === medicine.targetProblemId) ?? {
-        id: medicine.targetProblemId,
-        nameHi: medicine.targetProblemHi || "",
-        nameEn: "",
-        tagHi: medicine.kindHi,
-        image: "",
-        stageHi: "",
-        whatHi: "",
-        whyHi: [],
-        cureOrganicHi: [],
-        cureChemicalHi: [],
-        whenToActHi: "",
-        tipHi: "",
-      };
-
-      const mappedList = curatives.map((c) => curativeToMixMedicine(c, problemItem));
-      // Return the exact technicals in strict 1 -> 2 -> 3 sequence
-      return mappedList;
-    }
+  if (ids.length > 0) {
+    const lists = ids.map((id) => {
+      const problemItem = problemItemFor(cropSlug, id, medicine.targetProblemHi || "", medicine.kindHi);
+      return (cropMedsRecord[id] ?? []).map((c) => curativeToMixMedicine(c, problemItem));
+    });
+    const [first, ...rest] = lists;
+    if (rest.length === 0) return first;
+    return first.filter((med) =>
+      rest.every((list) => list.some((other) => activeKey(other.technical) === activeKey(med.technical)))
+    );
   }
 
   // Fallback for manually added slots without a target problem
@@ -1130,129 +1176,10 @@ export function getProblemSpecificAlternatives(
 }
 
 // --------------------------------------------------------------------------
-// Broad-Spectrum Agronomic Consolidation Rules
-// --------------------------------------------------------------------------
-
-interface BroadSpectrumRule {
-  cropSlug: string;
-  problemIds: string[];
-  medicine: CurativeMedicine;
-  combinedTargetHi: string;
-  category: MedicineCategory;
-}
-
-const BROAD_SPECTRUM_RULES: BroadSpectrumRule[] = [
-  // Paddy: Stem Borer + Leaf Folder
-  {
-    cropSlug: "paddy",
-    problemIds: ["stem-borer", "leaf-folder"],
-    medicine: {
-      nameHi: "क्लोरेंट्रानिलिप्रोल 18.5% SC (कोराजन / बायेगो)",
-      technical: "Chlorantraniliprole 18.5% SC",
-      dose: "0.3 मिली / लीटर पानी (60 मिली प्रति एकड़)",
-      brands: ["Coragen (FMC)", "Vayego (Bayer)"],
-      safety: "एक ही ब्रॉड-स्पेक्ट्रम दवा से तना छेदक और पत्ती लपेटक दोनों पर संपूर्ण नियंत्रण।",
-      level: 3,
-      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-      dosePerAcre: "60 मिली / एकड़",
-      isTopPerformer: true,
-    },
-    combinedTargetHi: "तना छेदक + पत्ती लपेटक",
-    category: "insecticide",
-  },
-  // Paddy: Sheath Blight + Blast
-  {
-    cropSlug: "paddy",
-    problemIds: ["sheath-blight", "blast"],
-    medicine: {
-      nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप)",
-      technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-      dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-      brands: ["Amistar Top (Syngenta)"],
-      safety: "शीथ ब्लाइट और ब्लास्ट (झोंका) दोनों फफूंद रोगों का एक ही स्प्रे में संपूर्ण खात्मा।",
-      level: 3,
-      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-      dosePerAcre: "200 मिली / एकड़",
-      isTopPerformer: true,
-    },
-    combinedTargetHi: "शीथ ब्लाइट + ब्लास्ट (झोंका)",
-    category: "fungicide",
-  },
-  // Tomato: Early Blight + Late Blight
-  {
-    cropSlug: "tomato",
-    problemIds: ["early-blight", "late-blight"],
-    medicine: {
-      nameHi: "एज़ोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC (एमिस्टार टॉप / कस्टोडिया)",
-      technical: "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
-      dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-      brands: ["Amistar Top (Syngenta)", "Custodia (Adama)"],
-      safety: "अगेती और पछेती दोनों झुलसा रोगों पर ब्रॉड-स्पेक्ट्रम दोहरी मार।",
-      level: 3,
-      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-      dosePerAcre: "200 मिली / एकड़",
-      isTopPerformer: true,
-    },
-    combinedTargetHi: "अगेती झुलसा + पछेती झुलसा",
-    category: "fungicide",
-  },
-  // Tomato: Leafminer / Whitefly
-  {
-    cropSlug: "tomato",
-    problemIds: ["leaf-miner", "whitefly"],
-    medicine: {
-      nameHi: "साइएंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
-      technical: "Cyantraniliprole 10.26% OD",
-      dose: "1.8 मिली / लीटर पानी (360 मिली प्रति एकड़)",
-      brands: ["Benevia (FMC)"],
-      safety: "पत्ती सुरंगक और सफेद मक्खी दोनों रस चूसक व छेदक कीटों पर अचूक असर।",
-      level: 3,
-      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-      dosePerAcre: "360 मिली / एकड़",
-      isTopPerformer: true,
-    },
-    combinedTargetHi: "पत्ती सुरंगक + सफेद मक्खी",
-    category: "insecticide",
-  },
-  // Chilli: Thrips + Mites
-  {
-    cropSlug: "chilli",
-    problemIds: ["thrips", "broad-mite"],
-    medicine: {
-      nameHi: "डायाफेंथियूरॉन 50% WP (पेगासस / पोलो)",
-      technical: "Diafenthiuron 50% WP",
-      dose: "1.25 ग्राम / लीटर पानी (250 ग्राम प्रति एकड़)",
-      brands: ["Pegasus (Syngenta)", "Polo"],
-      safety: "थ्रिप्स (माथा बंधना) और माइट्स (पीली मकड़ी) दोनों पर एक साथ ब्रॉड-स्पेक्ट्रम नियंत्रण।",
-      level: 3,
-      levelLabelHi: "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-      dosePerAcre: "250 ग्राम / एकड़",
-      isTopPerformer: true,
-    },
-    combinedTargetHi: "थ्रिप्स + माइट्स (मकड़ी)",
-    category: "insecticide",
-  },
-  // Wheat: Yellow Rust + Spot Blotch
-  {
-    cropSlug: "wheat",
-    problemIds: ["yellow-rust", "spot-blotch"],
-    medicine: {
-      nameHi: "प्रोपिकोनाज़ोल 25% EC (टिल्ट / बंपर)",
-      technical: "Propiconazole 25% EC",
-      dose: "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
-      brands: ["Tilt (Syngenta)", "Bumper (Adama)"],
-      safety: "पीला रतुआ और पत्ती धब्बा दोनों फफूंद रोगों पर एक साथ संपूर्ण नियंत्रण।",
-      level: 2,
-      levelLabelHi: "स्तर 2 · मध्यम स्तर",
-      dosePerAcre: "200 मिली / एकड़",
-    },
-    combinedTargetHi: "पीला रतुआ + पत्ती धब्बा",
-    category: "fungicide",
-  },
-];
-
-// --------------------------------------------------------------------------
 // Build Complete Mix Plan from Selected Problems
+// Each problem gets its own best trial technical for THIS crop.
+// Two problems share one spray only when that same technical is the best
+// pick on both trial lists. Nothing is borrowed from another disease.
 // --------------------------------------------------------------------------
 
 export function buildMixPlanFromProblems(
@@ -1265,141 +1192,48 @@ export function buildMixPlanFromProblems(
   const recommendedMedicines: MixMedicine[] = [];
   const alternativesPool: MixMedicine[] = [];
 
-  const isSameMed = (a: MixMedicine, b: MixMedicine) => {
-    if (a.activeId === b.activeId) return true;
-    const techA = a.technical.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const techB = b.technical.toLowerCase().replace(/[^a-z0-9]/g, "");
-    if (techA === techB || (techA.length > 5 && techB.length > 5 && (techA.includes(techB) || techB.includes(techA)))) {
-      return true;
-    }
-    if (a.brands && b.brands && a.brands.some((brA) => b.brands?.some((brB) => brA.toLowerCase() === brB.toLowerCase()))) {
-      return true;
-    }
-    return false;
-  };
-
-  const handledProblemIds = new Set<string>();
-
-  // 1. Check Broad-Spectrum Consolidation Rules (Consolidate multiple targets into 1 common molecule)
-  for (const rule of BROAD_SPECTRUM_RULES) {
-    if (rule.cropSlug === cropSlug) {
-      const matchCount = rule.problemIds.filter((id) => selected.some((p) => p.id === id)).length;
-      if (matchCount >= 2 && !rule.problemIds.some((id) => handledProblemIds.has(id))) {
-        const dummyProb: CropProblemItem = {
-          id: rule.problemIds.join("+"),
-          nameHi: rule.combinedTargetHi,
-          nameEn: "",
-          tagHi: rule.category === "insecticide" ? "कीट नियंत्रण" : "फफूंद नियंत्रण",
-          image: "",
-          stageHi: "",
-          whatHi: "",
-          whyHi: [],
-          cureOrganicHi: [],
-          cureChemicalHi: [],
-          whenToActHi: "",
-          tipHi: "",
-        };
-        const consolidatedMed = curativeToMixMedicine(rule.medicine, dummyProb);
-        consolidatedMed.targetProblemHi = rule.combinedTargetHi;
-        recommendedMedicines.push(consolidatedMed);
-        rule.problemIds.forEach((id) => handledProblemIds.add(id));
-      }
-    }
-  }
-
-  // 2. For each selected problem, find the authoritative ICAR curative recommendation
   for (const prob of selected) {
-    if (handledProblemIds.has(prob.id)) {
-      // Add its curatives to alternatives pool so farmer can view/swap
-      const curatives = cropMedsRecord[prob.id] ?? [];
-      for (const c of curatives) {
-        const altMed = curativeToMixMedicine(c, prob);
-        if (!alternativesPool.some((a) => isSameMed(a, altMed))) {
-          alternativesPool.push(altMed);
-        }
-      }
-      continue;
-    }
-
     const curatives = cropMedsRecord[prob.id];
-    if (curatives && curatives.length > 0) {
-      const isVirus = Boolean(
-        prob.isVirus ||
-        prob.tagHi.includes("वायरस") ||
-        prob.id.includes("ymv") ||
-        prob.id.includes("leaf-curl") ||
-        prob.id.includes("mosaic")
-      );
-      const isPest = isVirus || prob.tagHi.includes("कीट") || prob.tagHi.includes("कीड़ा");
-      const category: MedicineCategory = isPest ? "insecticide" : "fungicide";
+    if (!curatives || curatives.length === 0) continue;
 
-      // Check if we already have a medicine in the tank of this exact category
-      const existingSameCat = recommendedMedicines.find((m) => m.category === category && !m.isAdjuvant);
+    const chosenMed = curativeToMixMedicine(pickBestCurative(curatives), prob);
+    chosenMed.coveredProblemIds = [prob.id];
+    const key = activeKey(chosenMed.technical);
+    const sameBest =
+      key.length > 0
+        ? recommendedMedicines.find((m) => !m.isAdjuvant && activeKey(m.technical) === key)
+        : undefined;
 
-      if (existingSameCat) {
-        // Check if existing medicine already matches one of curatives for this problem
-        const matchesExisting = curatives.some((c) => {
-          const med = curativeToMixMedicine(c, prob);
-          return isSameMed(med, existingSameCat);
-        });
-
-        if (matchesExisting) {
-          if (existingSameCat.targetProblemHi && !existingSameCat.targetProblemHi.includes(formatCleanProblemTarget(prob.nameHi))) {
-            existingSameCat.targetProblemHi = `${existingSameCat.targetProblemHi} + ${formatCleanProblemTarget(prob.nameHi)}`;
-          }
-          existingSameCat.synergyNoticeHi = `💡 बहु-रोग नियंत्रण: यह ब्रॉड-स्पेक्ट्रम दवा दोनों समस्याओं पर एक साथ असर करती है; अलग दवा की ज़रूरत नहीं है।`;
-        } else {
-          // Check if there is an advanced/broad-spectrum common curative (e.g. Level 2 or 3)
-          const advancedCurative = curatives.find((c) => (c.level ?? 1) >= 2) || curatives[0];
-          if (existingSameCat.targetProblemHi && !existingSameCat.targetProblemHi.includes(formatCleanProblemTarget(prob.nameHi))) {
-            existingSameCat.targetProblemHi = `${existingSameCat.targetProblemHi} + ${formatCleanProblemTarget(prob.nameHi)}`;
-          }
-          existingSameCat.synergyNoticeHi = isPest
-            ? `💡 बहु-कीट सुरक्षा: दो अलग कीटनाशक मिलाने से फसल पर तनाव आता है; यह ब्रॉड-स्पेक्ट्रम दवा दोनों कीटों को एक साथ नियंत्रित करती है।`
-            : `💡 बहु-रोग सुरक्षा: दो अलग फफूंदनाशक मिलाने से पत्ते जल सकते हैं; यह ब्रॉड-स्पेक्ट्रम दवा दोनों रोगों की फफूंद को समाप्त करती है।`;
-        }
-      } else {
-        // No medicine of this category in the tank yet — add primary recommendation
-        const chosenCurative = curatives[0];
-        const chosenMed = curativeToMixMedicine(chosenCurative, prob);
-        recommendedMedicines.push(chosenMed);
+    if (sameBest) {
+      const targetLabel = formatCleanProblemTarget(prob.nameHi);
+      if (sameBest.targetProblemHi && !sameBest.targetProblemHi.includes(targetLabel)) {
+        sameBest.targetProblemHi = `${sameBest.targetProblemHi} + ${targetLabel}`;
       }
-
-      // Add all curatives to alternatives pool
-      for (const c of curatives) {
-        const altMed = curativeToMixMedicine(c, prob);
-        if (!alternativesPool.some((a) => isSameMed(a, altMed))) {
-          alternativesPool.push(altMed);
-        }
+      if (!sameBest.coveredProblemIds) {
+        sameBest.coveredProblemIds = sameBest.targetProblemId ? [sameBest.targetProblemId] : [];
+      }
+      if (!sameBest.coveredProblemIds.includes(prob.id)) {
+        sameBest.coveredProblemIds.push(prob.id);
       }
     } else {
-      // Fallback from curated catalog if no specific match
-      const isVirus = Boolean(
-        prob.isVirus ||
-        prob.tagHi.includes("वायरस") ||
-        prob.id.includes("ymv") ||
-        prob.id.includes("leaf-curl") ||
-        prob.id.includes("mosaic")
-      );
-      const isPest = isVirus || prob.tagHi.includes("कीट") || prob.tagHi.includes("कीड़ा");
-      const pool = isPest ? POPULAR_INSECTICIDES : POPULAR_FUNGICIDES;
-      const fallback = pool.find((item) => !recommendedMedicines.some((m) => isSameMed(m, item))) ?? pool[0];
-      const withTarget: MixMedicine = {
-        ...fallback,
-        targetProblemId: prob.id,
-        targetProblemHi: formatCleanProblemTarget(prob.nameHi, prob.nameEn),
-        isVirusTarget: isVirus,
-      };
-      if (!recommendedMedicines.some((m) => isSameMed(m, withTarget))) {
-        recommendedMedicines.push(withTarget);
-      } else {
-        const existing = recommendedMedicines.find((m) => isSameMed(m, withTarget));
-        if (existing && existing.targetProblemHi && !existing.targetProblemHi.includes(prob.nameHi)) {
-          existing.targetProblemHi = `${existing.targetProblemHi} + ${formatCleanProblemTarget(prob.nameHi)}`;
-        }
+      recommendedMedicines.push(chosenMed);
+    }
+
+    for (const c of curatives) {
+      const altMed = curativeToMixMedicine(c, prob);
+      const altKey = activeKey(altMed.technical);
+      if (
+        !alternativesPool.some(
+          (a) => a.targetProblemId === altMed.targetProblemId && activeKey(a.technical) === altKey
+        )
+      ) {
+        alternativesPool.push(altMed);
       }
     }
   }
+
+  if (recommendedMedicines.length === 0) return null;
+
 
   // Calculate dynamic steps
   const includeSticker = true;
