@@ -47,6 +47,11 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem("agriveda-theme");document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");var l=localStorage.getItem("agriveda-app-locale");if(!l){l=localStorage.getItem("agriveda-translate-lang");}document.documentElement.lang=l==="hi"?"hi":"en";var s=localStorage.getItem("agriveda-app-settings");if(s){try{var j=JSON.parse(s);if(j.fieldMode)document.documentElement.setAttribute("data-field-mode","true");}catch(e){}}if(/; wv\\)/.test(navigator.userAgent)||(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())){document.documentElement.setAttribute("data-capacitor-native","true");document.documentElement.setAttribute("data-theme","dark");}}catch(e){document.documentElement.setAttribute("data-theme","light");document.documentElement.lang="en";}})();`,
           }}
         />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: ".av-page-enter{opacity:1!important;animation:none!important;visibility:visible!important}",
+          }}
+        />
       </head>
       <body
         className="flex min-h-screen min-w-0 flex-col overflow-x-hidden antialiased"

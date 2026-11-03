@@ -10,7 +10,11 @@ export default function ServiceWorkerRegister() {
     let warmTimer: number | undefined;
     const register = async () => {
       try {
-        const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        const reg = await navigator.serviceWorker.register("/sw.js", {
+          scope: "/",
+          updateViaCache: "none",
+        });
+        await reg.update().catch(() => {});
         await syncMandiHistoryToServiceWorker(reg);
         warmTimer = window.setTimeout(() => {
           navigator.serviceWorker.ready.then((r) => warmMyCropPages(r)).catch(() => {});
@@ -19,6 +23,13 @@ export default function ServiceWorkerRegister() {
         /* dev / unsupported */
       }
     };
+
+    const onController = () => {
+      if (sessionStorage.getItem("agriveda-sw-reload") === "1") return;
+      sessionStorage.setItem("agriveda-sw-reload", "1");
+      window.location.reload();
+    };
+    navigator.serviceWorker.addEventListener("controllerchange", onController);
 
     if (process.env.NODE_ENV === "production") {
       void register();
@@ -32,6 +43,7 @@ export default function ServiceWorkerRegister() {
     window.addEventListener("online", onOnline);
     return () => {
       window.removeEventListener("online", onOnline);
+      navigator.serviceWorker.removeEventListener("controllerchange", onController);
       if (warmTimer) window.clearTimeout(warmTimer);
     };
   }, []);

@@ -1,7 +1,6 @@
-/* Agriveda offline pack — crop assets, emergency data, stale page shell */
-const CACHE = "agriveda-offline-v4";
+/* Agriveda offline pack. Pages are never cached — a saved shell hid the whole app. */
+const CACHE = "agriveda-offline-v5";
 const PRECACHE = [
-  "/",
   "/offline/emergency.json",
   "/manifest.webmanifest",
   "/images/crops/_placeholder.svg",
@@ -9,24 +8,43 @@ const PRECACHE = [
 ];
 
 self.addEventListener("install", (event) => {
+  // Activate even if a precache file fails. A rejected install left phones
+  // on the old worker, which kept serving the blank saved page.
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting())
+    caches
+      .open(CACHE)
+      .then((cache) =>
+        Promise.all(PRECACHE.map((url) => cache.add(url).catch(() => undefined)))
+      )
+      .catch(() => undefined)
   );
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
-      .then(() =>
-        self.clients.matchAll({ type: "window" }).then((clients) =>
-          Promise.all(
-            clients.map((client) => (typeof client.navigate === "function" ? client.navigate(client.url) : undefined))
-          )
-        )
-      )
+    (async () => {
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
+        await self.clients.claim();
+        const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+        await Promise.all(
+          clients.map(async (client) => {
+            try {
+              if (typeof client.navigate !== "function") return;
+              const url = new URL(client.url);
+              url.searchParams.set("av", "5");
+              await client.navigate(url.href);
+            } catch {
+              /* next cold start still loads from the network */
+            }
+          })
+        );
+      } catch {
+        /* activation must succeed so the old blank cache is dropped */
+      }
+    })()
   );
 });
 
@@ -78,36 +96,23 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  const isDocument =
-    req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
   const isRsc = req.headers.get("RSC") === "1" || url.searchParams.has("_rsc");
+  const isDocument = req.mode === "navigate" && !isRsc;
 
-  // App pages and flight data must come from the network. A cache-first
-  // copy from the previous deploy served an empty shell: header and nav
-  // stayed, every opened screen was blank.
-  if (isDocument || isRsc) {
+  // Never answer a page from cache. The saved copy was a blank shell:
+  // bottom nav stayed, every screen above it was empty.
+  // Do not pass RequestInit with a navigate Request — that throws in the WebView.
+  if (isRsc) {
+    event.respondWith(fetch(req).catch(() => new Response("", { status: 504 })));
+    return;
+  }
+  if (isDocument) {
     event.respondWith(
-      networkWithTimeout(req, 25000)
-        .then((res) => {
-          if (req.mode === "navigate" && res.ok && !isRsc) {
-            const copy = res.clone();
-            event.waitUntil(
-              caches.open(CACHE).then((cache) =>
-                cache.put(new Request(self.location.origin + url.pathname), copy)
-              )
-            );
-          }
-          return res;
-        })
-        .catch(async () => {
-          if (req.mode === "navigate") {
-            const cache = await caches.open(CACHE);
-            const cached = await cache.match(url.pathname);
-            if (cached) return cached;
-            return slowPage();
-          }
-          return new Response("", { status: 504 });
-        })
+      fetch(url.href, {
+        cache: "reload",
+        credentials: "same-origin",
+        headers: { Accept: "text/html" },
+      }).catch(() => slowPage())
     );
     return;
   }
@@ -136,21 +141,8 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
-async function warmPages(urls) {
-  const cache = await caches.open(CACHE);
-  for (const raw of urls.slice(0, 40)) {
-    try {
-      const url = new URL(raw, self.location.origin);
-      if (url.origin !== self.location.origin || isApi(url)) continue;
-      const req = new Request(url.href, { headers: { Accept: "text/html" }, credentials: "same-origin" });
-      if (await cache.match(req)) continue;
-      const res = await networkWithTimeout(req, 15000);
-      const type = res.headers.get("content-type") || "";
-      if (res.ok && type.includes("text/html")) await cache.put(req, res);
-    } catch {
-      /* skip this page; try again next time */
-    }
-  }
+async function warmPages() {
+  /* Page HTML is not stored. A cached shell is what blanked the phone. */
 }
 
 self.addEventListener("message", (event) => {
