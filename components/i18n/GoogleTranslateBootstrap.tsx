@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { isCapacitorNative } from "@/lib/capacitorNav";
 
 declare global {
@@ -42,26 +42,18 @@ function injectTranslate() {
   document.body.appendChild(script);
 }
 
-/** Loads Google Translate — deferred on native so cold open stays smooth */
+/** Web only. On the phone this script rewrote the page after a good first open. */
 export default function GoogleTranslateBootstrap() {
-  useEffect(() => {
-    const native = isCapacitorNative();
-    if (native) {
-      const idle =
-        "requestIdleCallback" in window
-          ? window.requestIdleCallback(() => injectTranslate(), { timeout: 12000 })
-          : null;
-      const fallback = window.setTimeout(injectTranslate, 12000);
-      return () => {
-        if (idle != null && "cancelIdleCallback" in window) {
-          window.cancelIdleCallback(idle);
-        }
-        window.clearTimeout(fallback);
-      };
-    }
+  const [native] = useState(() =>
+    typeof window !== "undefined" ? isCapacitorNative() : false
+  );
 
+  useEffect(() => {
+    if (native) return;
     injectTranslate();
-  }, []);
+  }, [native]);
+
+  if (native) return null;
 
   return <div id="google_translate_element" className="hidden" aria-hidden />;
 }
