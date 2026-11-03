@@ -44,6 +44,11 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(navigator.serviceWorker){navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister()}))}).then(function(){if(navigator.serviceWorker.controller&&location.search.indexOf("sw=0")===-1){var u=new URL(location.href);u.searchParams.set("sw","0");location.replace(u.href);}});}}catch(e){}})();`,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem("agriveda-theme");document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");var l=localStorage.getItem("agriveda-app-locale");if(!l){l=localStorage.getItem("agriveda-translate-lang");}document.documentElement.lang=l==="hi"?"hi":"en";var s=localStorage.getItem("agriveda-app-settings");if(s){try{var j=JSON.parse(s);if(j.fieldMode)document.documentElement.setAttribute("data-field-mode","true");}catch(e){}}if(/; wv\\)/.test(navigator.userAgent)||(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())){document.documentElement.setAttribute("data-capacitor-native","true");document.documentElement.setAttribute("data-theme","dark");}}catch(e){document.documentElement.setAttribute("data-theme","light");document.documentElement.lang="en";}})();`,
           }}
         />
