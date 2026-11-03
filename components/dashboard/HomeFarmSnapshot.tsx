@@ -11,7 +11,7 @@ import {
   Radio,
   Sprout,
 } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import HomeFieldMeasureModal from "@/components/farm/HomeFieldMeasureModal";
 
@@ -19,14 +19,13 @@ export default function HomeFarmSnapshot() {
   const { data: farm, stats } = useFarmData();
   const hasFields = farm.fields.length > 0;
   const firstField = farm.fields[0];
-  const reduced = useReducedMotion();
   const [showMeasureModal, setShowMeasureModal] = useState(false);
 
   return (
     <>
       <motion.div
-        initial={reduced ? false : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={false}
+        animate={{ y: 0 }}
         transition={{ duration: MOTION.slow, ease: EASE_OUT, delay: 0.05 }}
         className="relative overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3.5 py-3 shadow-[var(--av-shadow-sm)]"
       >

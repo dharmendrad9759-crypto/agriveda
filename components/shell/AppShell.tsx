@@ -1,17 +1,13 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { motion } from "framer-motion";
-import Image from "next/image";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { AgriVedaSparkleIcon } from "@/components/brand/icons";
-import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import AppLink from "@/components/ui/AppLink";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
 import { usePathname, useRouter } from "next/navigation";
 import { navigateBack, recordNavVisit } from "@/lib/navigationTracker";
-import { useSafeReducedMotion } from "@/hooks/useClientReady";
 
 interface Breadcrumb {
   label: string;
@@ -53,8 +49,6 @@ export default function AppShell({
 }: AppShellProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const reduced = useSafeReducedMotion();
-  const Comp = reduced ? "div" : motion.div;
   const isHub = variant === "hub";
   const isGreenHub = hubTheme === "green";
   const isAmberHub = hubPremium || hubTheme === "amber";
@@ -156,16 +150,7 @@ export default function AppShell({
 
   return (
     <div className={cn("av-page min-w-0 font-sans", className)}>
-      <Comp
-        {...(reduced
-          ? {}
-          : {
-              initial: { opacity: 0, y: 8 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: MOTION.normal, ease: EASE_OUT },
-            })}
-        className="mx-auto w-full min-w-0 max-w-lg overflow-x-hidden px-3 py-3 pb-28 sm:max-w-2xl sm:px-4 sm:py-4 md:max-w-4xl lg:max-w-7xl lg:px-6 lg:pb-8 lg:pt-5"
-      >
+      <div className="mx-auto w-full min-w-0 max-w-lg overflow-x-hidden px-3 py-3 pb-28 sm:max-w-2xl sm:px-4 sm:py-4 md:max-w-4xl lg:max-w-7xl lg:px-6 lg:pb-8 lg:pt-5">
         {/* Mobile Unified Sticky App Bar (< lg) */}
         {!isHome && (title || showBackOnMobile || actions) && (
           <header className="sticky top-0 z-30 -mx-3 -mt-3 mb-3 border-b border-emerald-500/10 bg-[var(--av-surface)]/90 px-3 py-2.5 backdrop-blur-xl sm:-mx-4 sm:-mt-4 sm:px-4 lg:hidden">
@@ -252,7 +237,7 @@ export default function AppShell({
         {hero}
 
         {children}
-      </Comp>
+      </div>
     </div>
   );
 }

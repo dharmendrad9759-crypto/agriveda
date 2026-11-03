@@ -1,5 +1,5 @@
 /* Agriveda offline pack — crop assets, emergency data, stale page shell */
-const CACHE = "agriveda-offline-v3";
+const CACHE = "agriveda-offline-v4";
 const PRECACHE = [
   "/",
   "/offline/emergency.json",
@@ -16,9 +16,17 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    )
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+      .then(() =>
+        self.clients.matchAll({ type: "window" }).then((clients) =>
+          Promise.all(
+            clients.map((client) => (typeof client.navigate === "function" ? client.navigate(client.url) : undefined))
+          )
+        )
+      )
   );
 });
 
@@ -70,13 +78,41 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  const isPage =
-    req.mode === "navigate" ||
-    req.headers.get("RSC") === "1" ||
-    url.searchParams.has("_rsc") ||
-    (req.headers.get("accept") || "").includes("text/html");
+  const isDocument =
+    req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
+  const isRsc = req.headers.get("RSC") === "1" || url.searchParams.has("_rsc");
 
-  if (isStaticAsset(url) || isPage) {
+  // App pages and flight data must come from the network. A cache-first
+  // copy from the previous deploy served an empty shell: header and nav
+  // stayed, every opened screen was blank.
+  if (isDocument || isRsc) {
+    event.respondWith(
+      networkWithTimeout(req, 25000)
+        .then((res) => {
+          if (req.mode === "navigate" && res.ok && !isRsc) {
+            const copy = res.clone();
+            event.waitUntil(
+              caches.open(CACHE).then((cache) =>
+                cache.put(new Request(self.location.origin + url.pathname), copy)
+              )
+            );
+          }
+          return res;
+        })
+        .catch(async () => {
+          if (req.mode === "navigate") {
+            const cache = await caches.open(CACHE);
+            const cached = await cache.match(url.pathname);
+            if (cached) return cached;
+            return slowPage();
+          }
+          return new Response("", { status: 504 });
+        })
+    );
+    return;
+  }
+
+  if (isStaticAsset(url)) {
     event.respondWith(
       caches.open(CACHE).then(async (cache) => {
         const cached = await cache.match(req);
@@ -89,12 +125,10 @@ self.addEventListener("fetch", (event) => {
           return cached;
         }
         try {
-          // Generous timeout for rural 2G/3G connections
-          const res = await networkWithTimeout(req, isPage ? 25000 : 30000);
+          const res = await networkWithTimeout(req, 30000);
           remember(cache, req, res);
           return res;
         } catch {
-          if (isPage && req.mode === "navigate") return slowPage();
           return new Response("", { status: 504 });
         }
       })

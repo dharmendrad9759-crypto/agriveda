@@ -475,8 +475,8 @@ export default function AgriVedaHome() {
     reduced
       ? {}
       : {
-          initial: { opacity: 0, y: 10 },
-          animate: { opacity: 1, y: 0 },
+          initial: false as const,
+          animate: { y: 0 },
           transition: { duration: MOTION.slow, ease: EASE_OUT, delay },
         };
 
