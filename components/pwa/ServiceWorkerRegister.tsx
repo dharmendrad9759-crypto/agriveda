@@ -1,50 +1,36 @@
 "use client";
 
 import { useEffect } from "react";
-import { syncMandiHistoryToServiceWorker, warmMyCropPages } from "@/lib/offline/offlinePack";
 
+/**
+ * Do not register a service worker.
+ * The offline worker was intercepting screens and leaving them blank after the first good open.
+ */
 export default function ServiceWorkerRegister() {
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
 
-    let warmTimer: number | undefined;
-    const register = async () => {
+    let cancelled = false;
+    const drop = async () => {
       try {
-        const reg = await navigator.serviceWorker.register("/sw.js", {
-          scope: "/",
-          updateViaCache: "none",
-        });
-        await reg.update().catch(() => {});
-        await syncMandiHistoryToServiceWorker(reg);
-        warmTimer = window.setTimeout(() => {
-          navigator.serviceWorker.ready.then((r) => warmMyCropPages(r)).catch(() => {});
-        }, 15000);
+        const regs = await navigator.serviceWorker.getRegistrations();
+        if (!regs.length || cancelled) return;
+        await Promise.all(regs.map((reg) => reg.unregister()));
+        if (!cancelled && navigator.serviceWorker.controller) {
+          const url = new URL(window.location.href);
+          if (url.searchParams.get("av") !== "off") {
+            url.searchParams.set("av", "off");
+            window.location.replace(url.href);
+          }
+        }
       } catch {
-        /* dev / unsupported */
+        /* ignore */
       }
     };
 
-    const onController = () => {
-      if (sessionStorage.getItem("agriveda-sw-reload") === "1") return;
-      sessionStorage.setItem("agriveda-sw-reload", "1");
-      window.location.reload();
-    };
-    navigator.serviceWorker.addEventListener("controllerchange", onController);
-
-    if (process.env.NODE_ENV === "production") {
-      void register();
-    } else if (process.env.NEXT_PUBLIC_ENABLE_SW === "1") {
-      void register();
-    }
-
-    const onOnline = () => {
-      navigator.serviceWorker.ready.then((reg) => syncMandiHistoryToServiceWorker(reg)).catch(() => {});
-    };
-    window.addEventListener("online", onOnline);
+    void drop();
     return () => {
-      window.removeEventListener("online", onOnline);
-      navigator.serviceWorker.removeEventListener("controllerchange", onController);
-      if (warmTimer) window.clearTimeout(warmTimer);
+      cancelled = true;
     };
   }, []);
 
