@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,11 +15,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Droplets,
-  Sparkles,
   Layers,
-  ChevronRight,
   Info,
-  CalendarDays,
 } from "lucide-react";
 import { CropStageDefinition } from "@/lib/farm/types";
 import { cn } from "@/lib/cn";
@@ -34,7 +31,7 @@ export interface WheatStageVideoPlayerProps {
   variant?: "inline" | "standalone";
 }
 
-const STAGE_VIDEO_MAP: Record<string, { video: string; photo: string; order: number; label: string; phase: string }> = {
+export const STAGE_VIDEO_MAP: Record<string, { video: string; photo: string; order: number; label: string; phase: string }> = {
   germination: {
     video: "/videos/wheat-stages/stage-1-germination.mp4",
     photo: "/images/wheat-stages/stage-1-germination.jpg",
@@ -132,9 +129,9 @@ export default function WheatStageVideoPlayer({
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
-  const [viewMode, setViewMode] = useState<"video" | "photo">("video");
+  const [viewMode, setViewMode] = useState<"video" | "photo">("photo");
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<"identify" | "tasks" | "cautions">("identify");
@@ -227,13 +224,13 @@ export default function WheatStageVideoPlayer({
     };
   }, [selectedStage.stageId]);
 
-  // Reset video play status when stage changes
   useEffect(() => {
     setVideoLoaded(false);
     if (videoRef.current) {
       videoRef.current.playbackRate = playbackSpeed;
       videoRef.current.currentTime = 0;
-      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      videoRef.current.pause();
+      setIsPlaying(false);
     }
   }, [selectedStage.stageId, playbackSpeed]);
 
@@ -378,7 +375,6 @@ export default function WheatStageVideoPlayer({
                 key={stageMeta.video}
                 src={stageMeta.video}
                 poster={stageMeta.photo}
-                autoPlay
                 loop
                 muted
                 playsInline

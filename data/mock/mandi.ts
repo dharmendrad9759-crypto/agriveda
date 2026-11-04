@@ -14,6 +14,7 @@ export interface MandiRow {
   trend: number[];
   category: string;
   arrivalDate?: string;
+  arrivals?: number;
 }
 
 export const MANDI_STATS = {

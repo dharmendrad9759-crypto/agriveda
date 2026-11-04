@@ -85,7 +85,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
                         <main
                           className={cn(
                             "min-w-0 flex-grow overflow-x-hidden bg-transparent text-[var(--foreground)] lg:pb-0",
-                            isFullScreenChat ? "pb-0" : "pb-24"
+                            isFullScreenChat ? "pb-0" : "pb-28"
                           )}
                         >
                           <PageReveal>{children}</PageReveal>

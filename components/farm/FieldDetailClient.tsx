@@ -17,6 +17,7 @@ import {
   updateTaskStatusesByAge,
 } from "@/lib/farm/cropJourneyEngine";
 import { cn } from "@/lib/cn";
+import { rememberField } from "@/lib/farm/fieldName";
 import { EASE_OUT, MOTION, tabPanel } from "@/lib/motion/variants";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -25,6 +26,7 @@ import {
   Sprout,
   Compass,
   Tractor,
+  Trash2,
 } from "lucide-react";
 
 interface FieldDetailClientProps {
@@ -37,7 +39,7 @@ type FarmTab = "live" | "radar" | "journey";
 const TABS: { id: FarmTab; label: string; icon: LucideIcon }[] = [
   { id: "live", label: "खेत स्थिति", icon: Compass },
   { id: "radar", label: "फसल सेहत", icon: Radio },
-  { id: "journey", label: "फसल बढ़वार", icon: Sprout },
+  { id: "journey", label: "फसल अवस्था", icon: Sprout },
 ];
 
 function validTab(tab?: string | null): FarmTab {
@@ -64,6 +66,7 @@ export default function FieldDetailClient({
     addSeason,
     updateSeason,
     updateField,
+    deleteField,
     addTask,
     updateTaskStatus,
     addObservation,
@@ -192,6 +195,7 @@ export default function FieldDetailClient({
   };
 
   const handleSelectField = (newFieldId: string) => {
+    rememberField(newFieldId);
     router.push(`/my-farm/${newFieldId}?tab=${activeTab}`);
   };
 
@@ -256,17 +260,19 @@ export default function FieldDetailClient({
               />
             </div>
 
-            <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-[var(--av-surface-inset)] px-2.5 py-1 text-[9.5px] font-medium text-[var(--av-text-muted)] sm:flex">
-              <span
-                className={cn(
-                  "h-1.5 w-1.5 rounded-full",
-                  field.status === "Active"
-                    ? "bg-emerald-500"
-                    : "bg-[var(--av-text-muted)]"
-                )}
-              />
-              {field.status === "Active" ? "सक्रिय" : field.status}
-            </span>
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(`क्या आप '${field.name}' हटा दें? यह वापस नहीं आएगा।`)) {
+                  deleteField(field.id);
+                  router.replace("/my-farm");
+                }
+              }}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+              aria-label="खेत हटाएं"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
           </div>
 
           <nav

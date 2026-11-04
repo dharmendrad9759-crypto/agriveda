@@ -14,6 +14,8 @@ export interface MandiRow {
   trend: number[];
   category: string;
   arrivalDate?: string;
+  /** Arrivals in quintals, when the mandi reported them */
+  arrivals?: number;
 }
 
 export interface MandiFilterOptions {

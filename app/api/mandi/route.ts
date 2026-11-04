@@ -56,12 +56,20 @@ export async function GET(request: NextRequest) {
   try {
     const live = await getMandiRowsForLocation(normalizedState, district);
     if (live.rows.length) {
+      let rows = live.rows;
+      if (district) {
+        const key = district.toLowerCase();
+        const hasDistrict = rows.some((r) => (r.district || "").toLowerCase() === key);
+        if (!hasDistrict) {
+          rows = [...rows, ...enrichMockWithChange(expandMockMandi(normalizedState, district))];
+        }
+      }
       const body: MandiApiResponse = {
         source: "live",
         state: normalizedState,
         district,
         lastUpdated: now,
-        rows: live.rows,
+        rows,
       };
       return NextResponse.json(body);
     }

@@ -26,6 +26,7 @@ import FarmSheet from "@/components/farm/FarmSheet";
 import { cn } from "@/lib/cn";
 import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
 import { resolveCropImage } from "@/lib/crops/cropImages";
+import { suggestFieldName } from "@/lib/farm/fieldName";
 
 interface SaveFieldModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ interface SaveFieldModalProps {
   placeState?: string;
   placeDistrict?: string;
   initialData?: Partial<FarmField>;
+  existingFields?: Pick<FarmField, "name">[];
   onSave: (fieldData: Omit<FarmField, "id">) => void;
 }
 
@@ -196,6 +198,7 @@ export default function SaveFieldModal({
   placeState,
   placeDistrict,
   initialData,
+  existingFields = [],
   onSave,
 }: SaveFieldModalProps) {
   const { profile } = useFarmerProfile();
@@ -208,7 +211,14 @@ export default function SaveFieldModal({
   const seasonalCrops = useMemo(() => sortCropsByCurrentSeason(CROPS_CATALOG), []);
   const initialCrop = useMemo(() => resolveCrop(initialData), [initialData]);
 
-  const [name, setName] = useState(initialData?.name || "मेरा खेत 1");
+  const [name, setName] = useState(
+    initialData?.name ||
+      suggestFieldName({
+        existing: existingFields,
+        cropHi: initialCrop.nameHi,
+        village: initialData?.village || placeVillage || profile?.village,
+      })
+  );
   const [village, setVillage] = useState(
     initialData?.village || placeVillage || profile?.village || profile?.district || "मेरा गांव"
   );
@@ -248,7 +258,14 @@ export default function SaveFieldModal({
     const initialVariety = initialData?.variety || "";
     const isKnownVariety = crop.popularVarieties.includes(initialVariety);
 
-    setName(initialData?.name || "मेरा खेत 1");
+    setName(
+      initialData?.name ||
+        suggestFieldName({
+          existing: existingFields,
+          cropHi: crop.nameHi,
+          village: initialData?.village || placeVillage || profile?.village,
+        })
+    );
     setVillage(
       initialData?.village ||
         placeVillage ||
@@ -279,6 +296,7 @@ export default function SaveFieldModal({
     profile?.name,
     placeSoil,
     placeVillage,
+    existingFields,
   ]);
 
   useEffect(() => {
@@ -492,6 +510,15 @@ export default function SaveFieldModal({
                     setSelectedCropSlug(crop.slug);
                     setVariety(crop.popularVarieties[0] || "");
                     setCustomVariety("");
+                    if (!initialData?.name) {
+                      setName(
+                        suggestFieldName({
+                          existing: existingFields,
+                          cropHi: crop.nameHi,
+                          village: village || placeVillage,
+                        })
+                      );
+                    }
                   }}
                   className={cn(
                     "rounded-xl px-1 py-2 text-center transition active:scale-95",

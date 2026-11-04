@@ -66,8 +66,8 @@ export default function MiniFieldMap({
       >
         <AutoBounds boundary={boundary} />
         <TileLayer
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          maxZoom={19}
+          url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+          maxZoom={20}
         />
         <Polygon
           positions={boundary.map((p) => [p.lat, p.lng])}

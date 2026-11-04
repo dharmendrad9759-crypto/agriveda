@@ -64,6 +64,12 @@ export type MapViewCenter = {
   villageHint?: string;
 };
 
+export type SavedMapField = {
+  id: string;
+  name: string;
+  boundary?: LatLng[];
+};
+
 export interface SmartFieldMapProps {
   initialCoords?: LatLng[];
   mode?: "draw" | "walk" | "view";
@@ -71,11 +77,20 @@ export interface SmartFieldMapProps {
   onViewCenter?: (center: MapViewCenter) => void;
   onValidationChange?: (isValid: boolean, error?: string) => void;
   onSaveLocationPin?: (coords: LatLng) => void;
+  onSavedFieldClick?: (fieldId: string) => void;
+  savedFields?: SavedMapField[];
   height?: string;
   defaultCenter?: [number, number];
   defaultZoom?: number;
   readOnly?: boolean;
 }
+
+type PlaceHit = {
+  lat: number;
+  lon: number;
+  label: string;
+  village?: string;
+};
 
 // Marker icons
 function createVertexIcon(index: number, isFirst: boolean = false) {
@@ -170,6 +185,8 @@ export default function SmartFieldMap({
   onViewCenter,
   onValidationChange,
   onSaveLocationPin,
+  onSavedFieldClick,
+  savedFields = [],
   height = "520px",
   defaultCenter = [27.502, 78.053], // Default Aligarh / UP Agricultural Belt
   defaultZoom = 16,
@@ -177,11 +194,12 @@ export default function SmartFieldMap({
 }: SmartFieldMapProps) {
   const [coords, setCoords] = useState<LatLng[]>(initialCoords);
   const [mode, setMode] = useState<"draw" | "walk" | "view">(initialMode);
-  const [layerType, setLayerType] = useState<MapLayerType>("satellite");
+  const [layerType, setLayerType] = useState<MapLayerType>("google_hybrid");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
+  const [searchHits, setSearchHits] = useState<PlaceHit[]>([]);
   const [locating, setLocating] = useState(false);
 
   // Undo / Redo stacks
@@ -270,51 +288,100 @@ export default function SmartFieldMap({
     updateCoordinates(updated);
   };
 
+  const applyPlaceHit = (hit: PlaceHit) => {
+    locateGen.current += 1;
+    setFocusCenter([hit.lat, hit.lon]);
+    onViewCenterRef.current?.({
+      lat: hit.lat,
+      lng: hit.lon,
+      villageHint: hit.village,
+    });
+    setSearchQuery(hit.village || hit.label.split(",")[0] || "");
+    setSearchHits([]);
+    setSearchMessage(`गांव मिला: ${hit.label.split(",").slice(0, 3).join(",")}`);
+  };
+
+  const lookupPlaces = useCallback(async (raw: string): Promise<PlaceHit[]> => {
+    const query = raw.trim();
+    if (query.length < 2) return [];
+
+    const coordMatch = query.match(/^(-?\d+(\.\d+)?)[,\s]+(-?\d+(\.\d+)?)$/);
+    if (coordMatch) {
+      const lat = parseFloat(coordMatch[1]);
+      const lng = parseFloat(coordMatch[3]);
+      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+        return [{ lat, lon: lng, label: `${lat.toFixed(5)}, ${lng.toFixed(5)}` }];
+      }
+    }
+
+    const q = /india|भारत/i.test(query) ? query : `${query}, India`;
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=in&limit=6&q=${encodeURIComponent(q)}`,
+      { headers: { "Accept-Language": "hi,en" } }
+    );
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.map((row: {
+      lat?: string;
+      lon?: string;
+      display_name?: string;
+      address?: {
+        village?: string;
+        hamlet?: string;
+        town?: string;
+        suburb?: string;
+        city?: string;
+        county?: string;
+        state?: string;
+      };
+    }) => {
+      const addr = row.address || {};
+      const village =
+        addr.village || addr.hamlet || addr.town || addr.suburb || addr.city || "";
+      const parts = [village || row.display_name?.split(",")[0], addr.county, addr.state].filter(Boolean);
+      return {
+        lat: parseFloat(row.lat || "0"),
+        lon: parseFloat(row.lon || "0"),
+        label: parts.join(", ") || String(row.display_name || ""),
+        village: village || undefined,
+      };
+    });
+  }, []);
+
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (query.length < 2) {
+      setSearchHits([]);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        setSearching(true);
+        try {
+          setSearchHits(await lookupPlaces(query));
+        } catch {
+          setSearchHits([]);
+        } finally {
+          setSearching(false);
+        }
+      })();
+    }, 320);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery, lookupPlaces]);
+
   // Search by village / PIN / coordinates
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     const query = searchQuery.trim();
     if (!query) return;
-    locateGen.current += 1;
-
     setSearching(true);
     setSearchMessage(null);
-
     try {
-      // 1. Direct coordinate check: "27.50, 78.05"
-      const coordMatch = query.match(/^(-?\d+(\.\d+)?)[,\s]+(-?\d+(\.\d+)?)$/);
-      if (coordMatch) {
-        const lat = parseFloat(coordMatch[1]);
-        const lng = parseFloat(coordMatch[3]);
-        if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-          setFocusCenter([lat, lng]);
-          onViewCenterRef.current?.({ lat, lng });
-          setSearching(false);
-          return;
-        }
-      }
-
-      // 2. Search Nominatim (India prioritized)
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&countrycodes=in&limit=1&q=${encodeURIComponent(
-          query
-        )}`,
-        { headers: { "Accept-Language": "hi,en" } }
-      );
-      const data = await res.json();
-
-      if (data && data.length > 0) {
-        const lat = parseFloat(data[0].lat);
-        const lon = parseFloat(data[0].lon);
-        const label = String(data[0].display_name || "");
-        const first = label.split(",")[0]?.trim() || "";
-        const villageHint =
-          first && !/district|india|pradesh|भारत/i.test(first) ? first : undefined;
-        setFocusCenter([lat, lon]);
-        onViewCenterRef.current?.({ lat, lng: lon, villageHint });
-        setSearchMessage(`स्थान मिला: ${label.split(",").slice(0, 3).join(",")}`);
+      const hits = searchHits.length ? searchHits : await lookupPlaces(query);
+      if (hits.length) {
+        applyPlaceHit(hits[0]);
       } else {
-        setSearchMessage("स्थान नहीं मिला, कृपया पिन कोड या जिला नाम जोड़ें।");
+        setSearchMessage("गांव नहीं मिला। पिन कोड या ज़िला नाम भी लिखें।");
       }
     } catch {
       setSearchMessage("स्थान खोजने में त्रुटि हुई।");
@@ -388,9 +455,27 @@ export default function SmartFieldMap({
     }
   }, []);
 
-  // Auto-request location on screen mount so farmer's field is focused immediately
+  // Center quietly only if GPS permission is already granted — never pop a
+  // system dialog over the status bar / search field on open.
   useEffect(() => {
-    handleLocateMe(true);
+    let cancelled = false;
+    const maybeCenter = async () => {
+      try {
+        const nav = navigator as Navigator & {
+          permissions?: { query: (d: { name: string }) => Promise<{ state: string }> };
+        };
+        const status = await nav.permissions?.query({ name: "geolocation" });
+        if (!cancelled && status?.state === "granted") {
+          void handleLocateMe(true);
+        }
+      } catch {
+        /* farmer can tap locate */
+      }
+    };
+    void maybeCenter();
+    return () => {
+      cancelled = true;
+    };
   }, [handleLocateMe]);
 
   // GPS Walking Mode Handler
@@ -506,20 +591,28 @@ export default function SmartFieldMap({
       }`}
       style={{ height: isFullscreen ? "100vh" : height }}
     >
-      {/* Top Floating Control Bar: Search & Modes */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+      {/* Top Floating Control Bar: Search & Modes — below Android status / network icons */}
+      <div
+        className="absolute left-3 right-3 z-[1000] flex flex-wrap items-start justify-between gap-2 pointer-events-none"
+        style={{
+          top: isFullscreen
+            ? "max(12px, calc(env(safe-area-inset-top, 0px) + 10px))"
+            : "12px",
+        }}
+      >
         {/* Search Bar */}
+        <div className="pointer-events-auto relative w-full sm:w-80 max-w-full">
         <form
           onSubmit={handleSearch}
-          className="pointer-events-auto flex items-center bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-gray-200 px-3 py-1.5 w-full sm:w-72 max-w-full text-xs"
+          className="flex items-center bg-white rounded-xl shadow-lg border border-gray-200 px-3 py-2 text-xs"
         >
           <Search className="w-3.5 h-3.5 text-gray-400 mr-2 shrink-0" />
           <input
             type="text"
-            placeholder="गांव, कस्बा, पिन कोड या निर्देशांक..."
+            placeholder="गाँव का नाम लिखें…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent text-gray-800 placeholder-gray-400 focus:outline-none text-xs font-medium"
+            className="w-full bg-transparent text-gray-800 placeholder-gray-400 focus:outline-none text-[13px] font-medium"
           />
           {searching ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 shrink-0" />
@@ -532,6 +625,28 @@ export default function SmartFieldMap({
             </button>
           )}
         </form>
+        {searchHits.length > 0 ? (
+          <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[1001] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+            {searchHits.map((hit) => (
+              <li key={`${hit.lat}-${hit.lon}-${hit.label}`}>
+                <button
+                  type="button"
+                  onClick={() => applyPlaceHit(hit)}
+                  className="flex w-full items-start gap-2 px-3 py-2 text-left hover:bg-emerald-50"
+                >
+                  <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-700" />
+                  <span className="min-w-0">
+                    <span className="block truncate text-[12px] font-bold text-gray-900">
+                      {hit.village || hit.label.split(",")[0]}
+                    </span>
+                    <span className="block truncate text-[10px] text-gray-500">{hit.label}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        </div>
 
         {/* Mode Switcher Buttons */}
         <div className="pointer-events-auto flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1 rounded-xl shadow-lg border border-gray-200 text-xs font-semibold">
@@ -591,7 +706,14 @@ export default function SmartFieldMap({
 
       {/* Search notification pill */}
       {searchMessage && (
-        <div className="absolute top-16 left-3 right-3 sm:left-4 sm:w-auto z-[1000] pointer-events-none">
+        <div
+          className="absolute left-3 right-3 sm:left-4 sm:w-auto z-[1000] pointer-events-none"
+          style={{
+            top: isFullscreen
+              ? "max(4.75rem, calc(env(safe-area-inset-top, 0px) + 4.25rem))"
+              : "4.75rem",
+          }}
+        >
           <div className="bg-emerald-900/90 text-white px-3.5 py-1.5 rounded-xl shadow-lg text-xs font-medium backdrop-blur-sm border border-emerald-500/30">
             {searchMessage}
           </div>
@@ -599,7 +721,14 @@ export default function SmartFieldMap({
       )}
 
       {/* Right Floating Map Toolbar */}
-      <div className="absolute top-20 right-3 z-[1000] flex flex-col gap-2">
+      <div
+        className="absolute right-3 z-[1000] flex flex-col gap-2"
+        style={{
+          top: isFullscreen
+            ? "max(5.5rem, calc(env(safe-area-inset-top, 0px) + 5rem))"
+            : "5.5rem",
+        }}
+      >
         {/* Layer Selector */}
         <div className="relative group">
           <button
@@ -607,7 +736,7 @@ export default function SmartFieldMap({
             title="नक्शा प्रकार बदलें"
             className="w-9 h-9 bg-white/95 hover:bg-white text-gray-700 rounded-xl shadow-lg border border-gray-200 flex items-center justify-center transition active:scale-95"
             onClick={() => {
-              const types: MapLayerType[] = ["satellite", "hybrid", "osm", "google_hybrid"];
+              const types: MapLayerType[] = ["google_hybrid", "hybrid", "osm", "satellite"];
               const nextIndex = (types.indexOf(layerType) + 1) % types.length;
               setLayerType(types[nextIndex]);
             }}
@@ -615,13 +744,13 @@ export default function SmartFieldMap({
             <Layers className="w-4 h-4 text-emerald-700" />
           </button>
           <span className="absolute right-11 top-2 bg-gray-900 text-white text-[10px] px-2 py-0.5 rounded shadow pointer-events-none opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
-            {layerType === "satellite"
-              ? "सैटेलाइट"
+            {layerType === "google_hybrid"
+              ? "गाँव के नाम"
               : layerType === "hybrid"
-              ? "हाइब्रिड"
-              : layerType === "google_hybrid"
-              ? "गूगल हाइब्रिड"
-              : "सामान्य नक्शा"}
+              ? "नाम + सैटेलाइट"
+              : layerType === "satellite"
+              ? "सैटेलाइट"
+              : "सड़क नक्शा"}
           </span>
         </div>
 
@@ -661,6 +790,14 @@ export default function SmartFieldMap({
           {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
         </button>
       </div>
+
+      {savedFields.some((field) => (field.boundary?.length ?? 0) >= 3) ? (
+        <div className="absolute bottom-[4.25rem] left-3 right-3 z-[900] pointer-events-none sm:left-auto sm:right-16 sm:w-auto">
+          <p className="rounded-xl bg-amber-950/85 px-3 py-1.5 text-[10.5px] font-semibold text-amber-50 shadow">
+            पीला खेत पहले से सेव है — टैप करके खोलें, खाली ज़मीन पर नया बनाएं
+          </p>
+        </div>
+      ) : null}
 
       {/* Bottom Floating Drawing Toolbar (Draw Mode) */}
       {mode === "draw" && !readOnly && (
@@ -847,6 +984,37 @@ export default function SmartFieldMap({
             maxZoom={19}
           />
         )}
+
+        {savedFields.map((field) => {
+          const boundary = field.boundary;
+          if (!boundary || boundary.length < 3) return null;
+          return (
+            <Polygon
+              key={field.id}
+              positions={boundary.map((c) => [c.lat, c.lng])}
+              pathOptions={{
+                color: "#f59e0b",
+                fillColor: "#fbbf24",
+                fillOpacity: 0.22,
+                weight: 2,
+                dashArray: "5, 4",
+              }}
+              eventHandlers={{
+                click: (event) => {
+                  L.DomEvent.stopPropagation(event);
+                  onSavedFieldClick?.(field.id);
+                },
+              }}
+            >
+              <Popup>
+                <div className="px-1 py-0.5 text-center">
+                  <p className="text-[12px] font-bold text-gray-900">{field.name}</p>
+                  <p className="text-[10px] text-gray-500">सहेजा हुआ खेत · टैप करके खोलें</p>
+                </div>
+              </Popup>
+            </Polygon>
+          );
+        })}
 
         {/* Drawn Polygon Layer */}
         {coords.length >= 3 && (

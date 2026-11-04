@@ -42,19 +42,23 @@ function Section({
   children,
 }: {
   eyebrow?: string;
-  title: string;
+  title?: string;
   children: ReactNode;
 }) {
   return (
     <section className="space-y-2.5">
-      <div className="px-0.5">
-        {eyebrow ? (
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700/70 dark:text-emerald-300/70">
-            {eyebrow}
-          </p>
-        ) : null}
-        <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">{title}</h2>
-      </div>
+      {eyebrow || title ? (
+        <div className="px-0.5">
+          {eyebrow ? (
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700/70 dark:text-emerald-300/70">
+              {eyebrow}
+            </p>
+          ) : null}
+          {title ? (
+            <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">{title}</h2>
+          ) : null}
+        </div>
+      ) : null}
       <div className="overflow-hidden rounded-[1.35rem] border border-emerald-900/8 bg-[var(--av-surface)] shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)] dark:border-white/8">
         {children}
       </div>
@@ -164,10 +168,7 @@ export default function ProfilePage() {
           eyebrow={isHi ? "खेत" : "Farm"}
           title={isHi ? "मेरी फसलें" : "My crops"}
         >
-          <div className="flex items-center justify-between gap-2 border-b border-emerald-900/6 px-3.5 py-2.5 dark:border-white/6">
-            <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
-              {isHi ? "खेत में चल रही फसलें" : "Crops on your farm"}
-            </p>
+          <div className="flex items-center justify-end gap-2 border-b border-emerald-900/6 px-3.5 py-2.5 dark:border-white/6">
             <AppLink
               href="/select-crops"
               className="inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
@@ -213,10 +214,7 @@ export default function ProfilePage() {
         </Section>
 
         {/* Shortcuts */}
-        <Section
-          eyebrow={isHi ? "जल्दी" : "Quick"}
-          title={isHi ? "जल्दी बदलें" : "Quick settings"}
-        >
+        <Section>
           <div className="divide-y divide-emerald-900/6 dark:divide-white/6">
             <div className="flex items-center justify-between gap-3 px-3.5 py-3">
               <span className="flex items-center gap-3 text-sm font-bold text-[var(--av-text-primary)]">
@@ -320,11 +318,6 @@ export default function ProfilePage() {
                 : "Log out"}
             </span>
           </button>
-          <p className="text-center text-[11px] font-medium text-[var(--av-text-muted)]">
-            {isHi
-              ? "लॉग आउट करने पर भी आपका खेत और प्रोफ़ाइल डेटा सुरक्षित रहता है"
-              : "Your farm data and profile remain safe on logout"}
-          </p>
         </section>
 
         <p className="flex items-center justify-center gap-1.5 pb-2 pt-1 text-center text-[10px] font-medium text-[var(--av-text-muted)]">

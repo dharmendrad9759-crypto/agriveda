@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
@@ -52,6 +52,7 @@ import {
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { track } from "@/lib/analytics";
+import { lastFieldId, rememberField } from "@/lib/farm/fieldName";
 
 const CATEGORY_HI: Record<string, string> = {
   Cereals: "अनाज",
@@ -150,6 +151,13 @@ export default function MyFarmPage() {
 
   const [showAddField, setShowAddField] = useState(false);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const last = lastFieldId();
+    if (last && data.fields.some((field) => field.id === last)) {
+      setSelectedFieldId(last);
+    }
+  }, [data.fields]);
   const [showAddNote, setShowAddNote] = useState(false);
   const [showAddActivity, setShowAddActivity] = useState(false);
 
@@ -837,7 +845,10 @@ export default function MyFarmPage() {
                       <button
                         key={f.id}
                         type="button"
-                        onClick={() => setSelectedFieldId(f.id)}
+                        onClick={() => {
+                          setSelectedFieldId(f.id);
+                          rememberField(f.id);
+                        }}
                         className={cn(
                           "shrink-0 rounded-2xl px-3.5 py-2 text-xs font-bold transition flex items-center gap-1.5 border active:scale-95",
                           isSelected
@@ -1037,7 +1048,7 @@ export default function MyFarmPage() {
                         >
                           <Sprout className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300" />
                           <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
-                            {isHi ? "फसल बढ़वार" : "Crop Growth"}
+                            {isHi ? "फसल अवस्था" : "Crop stage"}
                           </span>
                           <span className="text-[9.5px] text-[var(--av-text-muted)]">
                             {isHi ? "बुवाई से कटाई" : "Sow to Harvest"}
@@ -1108,13 +1119,15 @@ export default function MyFarmPage() {
                           onClick={() => {
                             if (window.confirm(isHi ? `क्या आप '${f.name}' को हटाना चाहते हैं?` : `Delete field '${f.name}'?`)) {
                               deleteField(f.id);
+                              if (selectedFieldId === f.id) setSelectedFieldId(null);
                               showToast(isHi ? "खेत हटा दिया गया" : "Field deleted", "success");
                             }
                           }}
-                          className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition"
+                          className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-[11px] font-bold text-rose-700 transition hover:bg-rose-100 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
                           title={isHi ? "खेत हटाएं" : "Delete Field"}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
+                          <span>{isHi ? "हटाएं" : "Delete"}</span>
                         </button>
                       </div>
                     </div>

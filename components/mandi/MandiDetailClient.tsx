@@ -243,8 +243,14 @@ export default function MandiDetailClient({ id }: { id: string }) {
             </p>
             <p className="flex items-center gap-2 text-sm text-slate-700">
               <Star className="h-4 w-4 text-amber-400" />
-              ग्रेड: {row.variety || "FAQ / Grade A"}
+              वैरायटी / ग्रेड: {row.variety || "FAQ"}
             </p>
+            {row.arrivals != null ? (
+              <p className="flex items-center gap-2 text-sm text-slate-700">
+                <Folder className="h-4 w-4 text-amber-600" />
+                आज आगमन: {row.arrivals.toLocaleString("en-IN")} क्विंटल
+              </p>
+            ) : null}
           </div>
 
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

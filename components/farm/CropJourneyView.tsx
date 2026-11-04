@@ -174,7 +174,7 @@ export default function CropJourneyView({
     event.preventDefault();
     if (!seasonSowingDate) return;
     onStartSeason?.(seasonSowingDate);
-    showToast("नया सीजन शुरू हो गया", "success");
+    showToast("बुवाई की तारीख सेव हो गई", "success");
     setShowSeasonModal(false);
   };
 
@@ -191,13 +191,13 @@ export default function CropJourneyView({
           </span>
           <h2 className="mt-3 text-sm font-semibold text-[var(--av-text-primary)]">
             {hasSeasonHistory
-              ? `${field.crop || "यह फसल"} का सीजन पूरा हो चुका है`
-              : "नया सीजन शुरू करें"}
+              ? "कटाई हो चुकी है — अगली बुवाई डालें"
+              : "बुवाई की तारीख डालें"}
           </h2>
           <p className="mx-auto mt-1.5 max-w-sm text-[11px] leading-relaxed text-[var(--av-text-muted)]">
             {hasSeasonHistory
-              ? "कटाई दर्ज हो चुकी है। अगली बुवाई की तारीख जोड़कर नया सीजन शुरू करें।"
-              : "बुवाई की तारीख जोड़कर अवस्था-वार कार्य और सिंचाई योजना सक्रिय करें।"}
+              ? "अगली फसल की बुवाई की तारीख से खाद, पानी और छिड़काव का समय फिर से चलेगा।"
+              : "खेत में कब बोया, यही से ऐप बताएगा — आज पानी देना है या खाद, फसल किस अवस्था में है।"}
           </p>
 
           {onStartSeason ? (
@@ -207,7 +207,7 @@ export default function CropJourneyView({
               className="mx-auto mt-4 inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.99]"
             >
               <Plus className="h-4 w-4" />
-              {hasSeasonHistory ? "नया सीजन शुरू करें" : "सीजन जोड़ें"}
+              {hasSeasonHistory ? "अगली बुवाई दर्ज करें" : "बुवाई की तारीख डालें"}
             </button>
           ) : null}
         </section>
@@ -215,8 +215,8 @@ export default function CropJourneyView({
         <FarmSheet
           open={showSeasonModal}
           onClose={closeSeasonSheet}
-          title="नया सीजन शुरू करें"
-          subtitle="बुवाई की तारीख से चरण और कार्य तय होंगे"
+          title="बुवाई की तारीख"
+          subtitle="इसी तारीख से खाद-पानी और छिड़काव का समय तय होगा"
           icon={<CalendarDays className="h-4 w-4" />}
         >
           <form onSubmit={handleStartSeason} className="space-y-3.5">
@@ -248,7 +248,7 @@ export default function CropJourneyView({
                 type="submit"
                 className="flex-1 rounded-xl bg-emerald-700 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.99]"
               >
-                सीजन शुरू करें
+                तारीख सहेजें
               </button>
             </div>
           </form>
@@ -378,7 +378,7 @@ export default function CropJourneyView({
         <div className="mt-3 flex items-center gap-2 rounded-xl bg-[var(--av-surface-inset)] px-3 py-2.5 text-[11px] text-[var(--av-text-muted)]">
           <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
           {taskFilter === "pending"
-            ? "इस सीजन के सभी कार्य पूरे हैं।"
+            ? "इस फसल के सभी काम पूरे हैं।"
             : "इस सूची में कोई कार्य नहीं है।"}
         </div>
       ) : (
@@ -453,10 +453,10 @@ export default function CropJourneyView({
     <section className="flex items-center justify-between gap-3 rounded-3xl border border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-[var(--av-surface)] to-transparent p-3.5 shadow-[var(--av-shadow-sm)]">
       <div className="min-w-0">
         <h3 className="text-[12px] font-semibold text-[var(--av-text-primary)]">
-          फसल कटाई संपन्न?
+          कटाई हो गई?
         </h3>
         <p className="mt-0.5 text-[10px] leading-snug text-[var(--av-text-muted)]">
-          कटाई दर्ज कर सीजन बंद करें और नया सीजन शुरू करें।
+          कटाई लिख दें — अगली बुवाई पर खाद-पानी फिर से शुरू होगा।
         </p>
       </div>
       <button
@@ -486,8 +486,7 @@ export default function CropJourneyView({
             तैयार हो रही हैं
           </h2>
           <p className="mx-auto mt-1.5 max-w-sm text-[11px] leading-relaxed text-[var(--av-text-muted)]">
-            चरण-वार वीडियो और वैज्ञानिक मार्गदर्शन फिलहाल गेहूँ के लिए सक्रिय है। आप इस
-            सीजन के कार्य यहाँ प्रबंधित कर सकते हैं।
+            गेहूँ पर अवस्था फोटो और आज का काम दिखता है। बाकी फसलों पर नीचे के काम अभी चलते हैं।
           </p>
 
           <div className="mx-auto mt-4 grid max-w-xs grid-cols-3 divide-x divide-[var(--av-border-subtle)] rounded-2xl bg-[var(--av-surface-inset)] py-2.5">

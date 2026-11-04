@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AppLink from "@/components/ui/AppLink";
 import { useFarmData } from "@/hooks/useFarmData";
 import {
@@ -14,11 +14,15 @@ import {
 import { motion } from "framer-motion";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import HomeFieldMeasureModal from "@/components/farm/HomeFieldMeasureModal";
+import { lastFieldId } from "@/lib/farm/fieldName";
 
 export default function HomeFarmSnapshot() {
   const { data: farm, stats } = useFarmData();
   const hasFields = farm.fields.length > 0;
-  const firstField = farm.fields[0];
+  const firstField = useMemo(() => {
+    const last = lastFieldId();
+    return farm.fields.find((field) => field.id === last) || farm.fields[0];
+  }, [farm.fields]);
   const [showMeasureModal, setShowMeasureModal] = useState(false);
 
   return (
@@ -103,7 +107,7 @@ export default function HomeFarmSnapshot() {
               className="flex items-center justify-center gap-1 rounded-lg py-1.5 text-[10.5px] font-medium text-[var(--av-text-secondary)] transition hover:bg-[var(--av-surface)] hover:text-[var(--av-text-primary)] hover:shadow-sm active:scale-95"
             >
               <Sprout className="h-3 w-3 text-amber-600 dark:text-amber-300" />
-              फसल बढ़वार
+              फसल अवस्था
             </AppLink>
           </div>
         ) : null}

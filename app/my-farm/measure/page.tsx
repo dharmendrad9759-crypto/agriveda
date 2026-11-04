@@ -263,6 +263,16 @@ function FieldMeasureContent() {
             mode="draw"
             onCoordsChange={(newCoords) => setCoords(newCoords)}
             onViewCenter={setViewCenter}
+            savedFields={(data.fields || [])
+              .filter((field) => field.id !== editingField?.id)
+              .map((field) => ({
+                id: field.id,
+                name: field.name,
+                boundary: field.boundary,
+              }))}
+            onSavedFieldClick={(fieldId) => {
+              router.replace(`/my-farm/measure?editId=${encodeURIComponent(fieldId)}`);
+            }}
             onSaveLocationPin={(position) => {
               setPinnedLocation(position);
               if (coords.length < 3) {
@@ -301,6 +311,7 @@ function FieldMeasureContent() {
         placeState={place?.stateEn}
         placeDistrict={place?.district}
         initialData={editingField || undefined}
+        existingFields={data.fields || []}
         onSave={handleSaveField}
       />
     </div>

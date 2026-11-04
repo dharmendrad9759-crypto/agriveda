@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X, Ruler, Maximize2, MapPin } from "lucide-react";
 import { LatLng, getFieldMeasurement } from "@/lib/geo/fieldGeometry";
@@ -37,7 +38,8 @@ export default function HomeFieldMeasureModal({
   onClose,
   onSuccess,
 }: HomeFieldMeasureModalProps) {
-  const { addField } = useFarmData();
+  const { addField, data } = useFarmData();
+  const router = useRouter();
   const reduced = useReducedMotion();
   const [coords, setCoords] = useState<LatLng[]>([]);
   const [place, setPlace] = useState<FieldPlace | null>(null);
@@ -189,6 +191,15 @@ export default function HomeFieldMeasureModal({
                     onCoordsChange={(newCoords) => setCoords(newCoords)}
                     onViewCenter={setViewCenter}
                     onSaveLocationPin={handlePinLocation}
+                    savedFields={(data.fields || []).map((field) => ({
+                      id: field.id,
+                      name: field.name,
+                      boundary: field.boundary,
+                    }))}
+                    onSavedFieldClick={(fieldId) => {
+                      onClose();
+                      router.push(`/my-farm/measure?editId=${encodeURIComponent(fieldId)}`);
+                    }}
                     height="360px"
                   />
                 </div>
@@ -225,6 +236,7 @@ export default function HomeFieldMeasureModal({
             climateNote={place?.climateHi}
             placeState={place?.stateEn}
             placeDistrict={place?.district}
+            existingFields={data.fields || []}
             onSave={handleSaveField}
           />
               </motion.div>
