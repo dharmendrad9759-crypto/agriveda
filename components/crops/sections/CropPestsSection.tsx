@@ -14,6 +14,7 @@ import {
   matchCatalogThreat,
   threatCardDetailHref,
 } from "@/lib/pests/matchCatalogThreat";
+import { findHubProblemByName } from "@/lib/crops/intelligenceHub";
 import { getEnrichedCropThreats, threatDetailPath } from "@/lib/pest-disease-catalog";
 import type { CropManagementWithDossier } from "@/types/crop-dossier";
 import type { Crop } from "@/types/crop";
@@ -275,8 +276,10 @@ export default function CropPestsSection({ crop }: { crop: Crop }) {
 
       <ul className="space-y-3">
         {filtered.map((pest, i) => {
-          const href =
-            "detailHref" in pest && pest.detailHref
+          const hubHit = findHubProblemByName(crop.slug, pest.name);
+          const href = hubHit
+            ? `/crop-problems/${hubHit.crop.slug}/${hubHit.problem.id}`
+            : "detailHref" in pest && pest.detailHref
               ? String(pest.detailHref)
               : threatDetailPath(crop.slug, "pest", pest.id);
           const img =

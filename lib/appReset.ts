@@ -1,3 +1,6 @@
+import { signOutGoogle } from "@/lib/firebase/googleAuth";
+import { resetFarmCloudHydration } from "@/lib/farm/cloudSync";
+
 const APP_KEYS = [
   "agriveda-farmer-profile",
   "agriveda-farm-data",
@@ -5,6 +8,9 @@ const APP_KEYS = [
   "agriveda-ai-history",
   "agriveda-user-queries",
   "agriveda-weather-location",
+  "agriveda-last-location",
+  "agriveda-loc-permission-v1",
+  "agriveda-ai-doctor-expert-photo",
   "agriveda-spray-logs",
   "agriveda-spray-fields",
   "agriveda-spray-window-alerts",
@@ -23,6 +29,7 @@ const APP_KEYS = [
   "agriveda-device-id",
   "agriveda-intro-carousel-v2",
   "agriveda-open-splash-v2",
+  "agriveda-farm-sync-meta",
 ];
 
 const PREFIX_WIPE = [
@@ -70,9 +77,8 @@ export function clearAppData(options?: {
 
   if (theme) localStorage.setItem("agriveda-theme", theme);
   if (locale) localStorage.setItem("agriveda-app-locale", locale);
+  resetFarmCloudHydration();
 }
-
-import { signOutGoogle } from "@/lib/firebase/googleAuth";
 
 /** Full reset including onboarding — reloads the app. */
 export async function resetAppAndReload() {
@@ -90,7 +96,7 @@ export async function resetAppAndReload() {
   window.location.href = "/";
 }
 
-/** Logout: clear only the session cookie — keep farm/profile data on device. */
+/** Logout: revoke server session and wipe local PII / farm cache (keep theme + locale). */
 export async function logoutAndReload() {
   try {
     await signOutGoogle();
@@ -102,6 +108,7 @@ export async function logoutAndReload() {
   } catch {
     /* offline */
   }
+  clearAppData({ keepTheme: true, keepLocale: true, fullWipe: false });
   window.location.href = "/";
 }
 

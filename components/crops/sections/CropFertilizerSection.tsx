@@ -12,6 +12,8 @@ import { buildFertilizerPlan, type SoilTestLevels } from "@/lib/agriveda2/fertil
 import { cn } from "@/lib/cn";
 import {
   cropSupportsDripFertigation,
+  dripRowsFromSchedule,
+  dripScheduleFromTiming,
   withoutDripFertigationLines,
 } from "@/lib/crops/dripFertigation";
 import {
@@ -192,6 +194,16 @@ function nutrientTotal(detail: string): number | null {
   return m ? Number(m[1]) : null;
 }
 
+/** Short potash line for the crop hero — SOP/MOP dose, not a generic title. */
+function heroPotashLineHi(detail: string | undefined): string | null {
+  if (!detail) return null;
+  const note = detail.match(/नोट:\s*([^·]+)/)?.[1]?.replace(/\s+/g, " ").trim();
+  if (!note) return null;
+  if (note.length <= 110) return note;
+  const first = note.split(/[।]/)[0]?.trim();
+  return first && first.length >= 20 ? first : `${note.slice(0, 108).trim()}…`;
+}
+
 function NutritionBar({
   label,
   value,
@@ -259,21 +271,15 @@ function findMatchingStageIndex(rows: { time: string; apply: string }[], das: nu
   }
 
   let closestIdx = 0;
-  let minDiff = 999;
+  let bestStart = -1;
   for (let i = 0; i < rows.length; i++) {
-    const text = rows[i].time;
-    const matches = text.match(/\d+/g);
-    if (matches) {
-      for (const m of matches) {
-        const val = parseInt(m, 10);
-        if (val >= 0 && val <= 180) {
-          const diff = Math.abs(val - das);
-          if (diff < minDiff) {
-            minDiff = diff;
-            closestIdx = i;
-          }
-        }
-      }
+    const matches = rows[i].time.match(/\d+/g);
+    if (!matches) continue;
+    const start = Math.min(...matches.map((m) => parseInt(m, 10)).filter((n) => n >= 0 && n <= 180));
+    if (!Number.isFinite(start)) continue;
+    if (start <= das && start >= bestStart) {
+      bestStart = start;
+      closestIdx = i;
     }
   }
   return closestIdx;
@@ -285,11 +291,15 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   const searchParams = useSearchParams();
   const dasParam = searchParams?.get("das");
   const parsedDas = dasParam !== null && !isNaN(Number(dasParam)) ? Number(dasParam) : null;
+  const acresParam = searchParams?.get("acres");
   const [showFullSchedule, setShowFullSchedule] = useState(false);
 
   const [activeSubTab, setActiveSubTab] = useState<SubTabId>("schedule");
   const [fertMode, setFertMode] = useState<FertMode>("normal");
-  const [acresText, setAcresText] = useState("1");
+  const [acresText, setAcresText] = useState(() => {
+    const n = acresParam ? Number.parseFloat(acresParam.replace(",", ".")) : NaN;
+    return Number.isFinite(n) && n > 0 ? String(n) : "1";
+  });
   const [soilTest, setSoilTest] = useState<SoilTestLevels>({});
   const [showProtectionMixin, setShowProtectionMixin] = useState(false);
 
@@ -318,8 +328,14 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
   );
 
   useEffect(() => {
-    if (!supportsDrip) setFertMode("normal");
+    setFertMode(supportsDrip ? "drip" : "normal");
   }, [supportsDrip, crop.slug]);
+
+  useEffect(() => {
+    if (!acresParam) return;
+    const n = Number.parseFloat(acresParam.replace(",", "."));
+    if (Number.isFinite(n) && n > 0) setAcresText(String(n));
+  }, [acresParam]);
 
   const plan = useMemo(
     () => buildFertilizerPlan(crop.slug, acres, soilTest),
@@ -372,10 +388,14 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
 
   const displaySchedule: ScheduleRow[] = useMemo(() => {
     if (supportsDrip && fertMode === "drip") {
+      const dripRows = dripRowsFromSchedule(scheduleForCrop);
+      if (dripRows.length >= 2) return dripRows;
+      const fromTiming = dripScheduleFromTiming(crop.slug, hi);
+      if (fromTiming.length) return fromTiming;
       return toDripSchedule(scheduleForCrop, hi);
     }
     return scheduleForCrop;
-  }, [fertMode, scheduleForCrop, hi, supportsDrip]);
+  }, [fertMode, scheduleForCrop, hi, supportsDrip, crop.slug]);
 
   const currentStageIndex = useMemo(() => {
     if (parsedDas === null) return -1;
@@ -530,6 +550,10 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
       : "Split urea doses — apply in moist soil after light hoeing.");
 
   const npkMax = Math.max(npkAcre.n, npkAcre.p, npkAcre.k, 40) * 1.15;
+  const potashHeroHi = useMemo(() => {
+    const kRow = plan?.nutrients.find((x) => x.nutrient.includes("पोटाश"));
+    return heroPotashLineHi(kRow?.detail);
+  }, [plan]);
 
   const handleStepAcre = (delta: number) => {
     const next = Math.max(0.5, Math.min(50, Math.round((acres + delta) * 2) / 2));
@@ -566,9 +590,14 @@ export default function CropFertilizerSection({ crop }: { crop: Crop }) {
               />
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="text-[20px] font-black leading-tight text-white tracking-tight sm:text-[23px]">
+              <h1 className="text-[20px] font-black leading-tight tracking-tight text-white sm:text-[23px]">
                 {hindi || crop.name} खाद योजना
               </h1>
+              {hi && potashHeroHi ? (
+                <p className="mt-1 text-[12px] font-semibold leading-snug text-emerald-200/95 sm:text-[13px]">
+                  {potashHeroHi}
+                </p>
+              ) : null}
             </div>
           </div>
 

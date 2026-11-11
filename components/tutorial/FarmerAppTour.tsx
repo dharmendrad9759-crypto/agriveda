@@ -185,14 +185,15 @@ export default function FarmerAppTour({
           const currentData = stepsData[activeIndex];
           const total = stepsData.length;
 
-          // 1. Modern Animated Progress Dots
-          let dotsHtml = '<div class="agriveda-tour-dots" aria-hidden="true">';
+          const dots = document.createElement("div");
+          dots.className = "agriveda-tour-dots";
+          dots.setAttribute("aria-hidden", "true");
           for (let i = 0; i < total; i++) {
-            const isActive = i === activeIndex;
-            dotsHtml += `<span class="agriveda-tour-dot ${isActive ? "active" : ""}"></span>`;
+            const dot = document.createElement("span");
+            dot.className = i === activeIndex ? "agriveda-tour-dot active" : "agriveda-tour-dot";
+            dots.appendChild(dot);
           }
-          dotsHtml += "</div>";
-          popoverDOM.progress.innerHTML = dotsHtml;
+          popoverDOM.progress.replaceChildren(dots);
 
           // 2. Audio Speaker Guide Button
           let speakerBtn = popoverDOM.wrapper.querySelector(
@@ -212,25 +213,41 @@ export default function FarmerAppTour({
           }
 
           const updateSpeakerBtn = (speaking: boolean) => {
+            speakerBtn!.replaceChildren();
             if (speaking) {
-              speakerBtn!.innerHTML = `
-                <span class="agriveda-sound-waves" aria-hidden="true">
-                  <span class="wave bar-1"></span>
-                  <span class="wave bar-2"></span>
-                  <span class="wave bar-3"></span>
-                </span>
-                <span class="speaker-text">${isHi ? "बोल रहे हैं..." : "Speaking..."}</span>
-              `;
+              const waves = document.createElement("span");
+              waves.className = "agriveda-sound-waves";
+              waves.setAttribute("aria-hidden", "true");
+              for (const cls of ["bar-1", "bar-2", "bar-3"]) {
+                const bar = document.createElement("span");
+                bar.className = `wave ${cls}`;
+                waves.appendChild(bar);
+              }
+              const label = document.createElement("span");
+              label.className = "speaker-text";
+              label.textContent = isHi ? "बोल रहे हैं..." : "Speaking...";
+              speakerBtn!.append(waves, label);
               speakerBtn!.classList.add("speaking");
             } else {
-              speakerBtn!.innerHTML = `
-                <svg class="speaker-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                </svg>
-                <span class="speaker-text">${isHi ? "आवाज़ सुनें" : "Listen"}</span>
-              `;
+              const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+              svg.setAttribute("class", "speaker-icon");
+              svg.setAttribute("viewBox", "0 0 24 24");
+              svg.setAttribute("fill", "none");
+              svg.setAttribute("stroke", "currentColor");
+              svg.setAttribute("stroke-width", "2.5");
+              svg.setAttribute("stroke-linecap", "round");
+              svg.setAttribute("stroke-linejoin", "round");
+              const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+              poly.setAttribute("points", "11 5 6 9 2 9 2 15 6 15 11 19 11 5");
+              const p1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              p1.setAttribute("d", "M15.54 8.46a5 5 0 0 1 0 7.07");
+              const p2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              p2.setAttribute("d", "M19.07 4.93a10 10 0 0 1 0 14.14");
+              svg.append(poly, p1, p2);
+              const label = document.createElement("span");
+              label.className = "speaker-text";
+              label.textContent = isHi ? "आवाज़ सुनें" : "Listen";
+              speakerBtn!.append(svg, label);
               speakerBtn!.classList.remove("speaking");
             }
           };
@@ -257,7 +274,12 @@ export default function FarmerAppTour({
           };
 
           // 3. Skip Button Text with 'छोड़ें' (Skip) next to ✕
-          popoverDOM.closeButton.innerHTML = `<span>${isHi ? "छोड़ें" : "Skip"}</span> <span class="close-x">✕</span>`;
+          const skipLabel = document.createElement("span");
+          skipLabel.textContent = isHi ? "छोड़ें" : "Skip";
+          const skipX = document.createElement("span");
+          skipX.className = "close-x";
+          skipX.textContent = "✕";
+          popoverDOM.closeButton.replaceChildren(skipLabel, skipX);
           popoverDOM.closeButton.className = "driver-popover-close-btn agriveda-tour-skip-btn";
 
           // 4. Final step button label

@@ -6403,6 +6403,19 @@ for (const [alias, target] of Object.entries(ALIASES)) {
   }
 }
 
+function mappedCuratives(cropSlug: string, problemId: string): CurativeMedicine[] | undefined {
+  const norm = cropSlug.trim().toLowerCase();
+  const mappedSlug = ALIASES[norm] || norm;
+  const normProb = problemId.trim().toLowerCase();
+  const targetProblemId = PROBLEM_ALIASES[mappedSlug]?.[normProb] || normProb;
+  return (
+    CROP_PROBLEM_MEDICINES[mappedSlug]?.[targetProblemId] ||
+    CROP_PROBLEM_MEDICINES[cropSlug]?.[targetProblemId] ||
+    CROP_PROBLEM_MEDICINES[mappedSlug]?.[problemId] ||
+    CROP_PROBLEM_MEDICINES[cropSlug]?.[problemId]
+  );
+}
+
 function sanitizeCurative(med: CurativeMedicine): CurativeMedicine {
   const cleanHi = (med.nameHi || med.technical || "")
     .replace(/\s*\([^)]*\)/g, " ")
@@ -6413,8 +6426,23 @@ function sanitizeCurative(med: CurativeMedicine): CurativeMedicine {
   return {
     ...med,
     nameHi: cleanHi || med.technical,
-    brands: [], // Strictly zero commercial brand names or company names
+    brands: [], // Farmer cards stay technical-only; shop counter looks up brands separately
   };
+}
+
+/** 2–3 brand examples for the shopkeeper card only — never invent names. */
+export function getShopBrandExamples(
+  cropSlug: string,
+  problemId: string,
+  technical: string
+): string[] {
+  const mapped = mappedCuratives(cropSlug, problemId);
+  if (!mapped?.length) return [];
+  const tech = technical.toLowerCase();
+  const hit =
+    mapped.find((m) => m.technical.toLowerCase() === tech) ||
+    mapped.find((m) => m.technical.toLowerCase().includes(tech.slice(0, 12)));
+  return (hit?.brands ?? []).filter(Boolean).slice(0, 3);
 }
 
 export function getCurativeMedicines(
@@ -6422,16 +6450,7 @@ export function getCurativeMedicines(
   problemId: string,
   rawLines?: string[]
 ): CurativeMedicine[] {
-  const norm = cropSlug.trim().toLowerCase();
-  const mappedSlug = ALIASES[norm] || norm;
-  const normProb = problemId.trim().toLowerCase();
-  const targetProblemId = PROBLEM_ALIASES[mappedSlug]?.[normProb] || normProb;
-
-  const mapped =
-    CROP_PROBLEM_MEDICINES[mappedSlug]?.[targetProblemId] ||
-    CROP_PROBLEM_MEDICINES[cropSlug]?.[targetProblemId] ||
-    CROP_PROBLEM_MEDICINES[mappedSlug]?.[problemId] ||
-    CROP_PROBLEM_MEDICINES[cropSlug]?.[problemId];
+  const mapped = mappedCuratives(cropSlug, problemId);
 
   if (mapped && mapped.length > 0) {
     return mapped.map(sanitizeCurative);
@@ -6442,8 +6461,8 @@ export function getCurativeMedicines(
     const raw = line.split("—")[0]?.trim() || line;
     return sanitizeCurative({
       nameHi: raw,
-      technical: i === 0 ? "Standard Technical Formulation" : "Complementary Technical",
-      dose: "अनुशंसित डोज़: 1.5–2 ग्राम/मिली प्रति लीटर पानी (लेबल अनुसार)",
+      technical: raw,
+      dose: "बोतल का लेबल देखो",
       brands: [],
       level: (i + 1) as 1 | 2 | 3,
       levelLabelHi: `स्तर ${i + 1}`,

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, Suspense, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { navigateBack } from "@/lib/navigationTracker";
 import Image from "next/image";
@@ -123,7 +123,6 @@ function MixAdvisorInner() {
     () => false
   );
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { showToast } = useToast();
   const [step, setStep] = useState<StepId>("problem");
   const [cropSlug, setCropSlug] = useState("tomato");
@@ -173,48 +172,10 @@ function MixAdvisorInner() {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [step]);
 
-  // Save mix state continuously to prevent blank screen or state loss on browser back
-  useEffect(() => {
-    if (meds.length > 0 && plan) {
-      try {
-        sessionStorage.setItem(
-          "agriveda_mix_state",
-          JSON.stringify({
-            cropSlug,
-            stage,
-            problemIds,
-            meds,
-            plan,
-            step,
-          })
-        );
-      } catch {}
-    }
-  }, [cropSlug, stage, problemIds, meds, plan, step]);
-
-  // Restore step and mix state on mount or popstate
+  // Always open from step 1. Saved last-visit state made the 4th circle reopen.
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem("agriveda_mix_state");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.cropSlug) setCropSlug(parsed.cropSlug);
-        if (parsed.stage) setStage(parsed.stage);
-        if (parsed.problemIds && Array.isArray(parsed.problemIds) && parsed.problemIds.length > 0) {
-          setProblemIds(parsed.problemIds);
-          const savedSlug = typeof parsed.cropSlug === "string" ? parsed.cropSlug : cropSlug;
-          const curCrop = CROP_PROBLEM_CROPS.find((c) => c.slug === savedSlug) || CROP_PROBLEM_CROPS[0];
-          const selectedProbs = curCrop.problems.filter((p) => parsed.problemIds.includes(p.id));
-          const autoPlan = buildMixPlanFromProblems(savedSlug, selectedProbs);
-          if (autoPlan && autoPlan.medicines.length > 0) {
-            setPlan(autoPlan);
-            setMeds(autoPlan.medicines);
-          }
-        }
-        if (parsed.step && (parsed.step === "mix" || parsed.step === "guide")) {
-          setStep(parsed.step);
-        }
-      }
+      sessionStorage.removeItem("agriveda_mix_state");
     } catch {}
   }, []);
 
@@ -1462,19 +1423,6 @@ function MixAdvisorInner() {
               <button
                 type="button"
                 onClick={() => {
-                  try {
-                    sessionStorage.setItem(
-                      "agriveda_mix_state",
-                      JSON.stringify({
-                        cropSlug,
-                        stage,
-                        problemIds,
-                        meds,
-                        plan,
-                        step: "guide",
-                      })
-                    );
-                  } catch {}
                   const stageObj = GROWTH_STAGES.find((s) => s.id === stage);
                   const stageLabel = stageObj ? stageObj.labelHi : stage;
                   const problemLabel = selectedProblems.map((p) => getCleanHindiTitle(p.nameHi)).join(", ");

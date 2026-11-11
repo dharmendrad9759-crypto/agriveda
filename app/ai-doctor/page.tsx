@@ -12,6 +12,7 @@ import {
 import DiagnosisListenButton from "@/components/ai-doctor/DiagnosisListenButton";
 import ShareOutbreakPrompt from "@/components/outbreak-radar/ShareOutbreakPrompt";
 import VoiceInput from "@/components/query/VoiceInput";
+import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
 import { useToast } from "@/components/ui/Toast";
@@ -70,13 +71,14 @@ import { cn } from "@/lib/cn";
 function findReferenceThreat(
   diseaseName: string,
   cropSlug?: string
-): { nameHi: string; image: string } | null {
+): { nameHi: string; image: string; href?: string; cropSlug?: string; problemId?: string } | null {
   if (!diseaseName) return null;
   const dNorm = diseaseName.toLowerCase().replace(/[^a-z0-9\u0900-\u097F]/g, "");
 
   const allProblems = CROP_PROBLEM_CROPS.flatMap((c) =>
     c.problems.map((p) => ({
       ...p,
+      cropSlug: c.slug,
       isSameCrop: cropSlug ? c.slug === cropSlug : false,
     }))
   ).sort((a, b) => (b.isSameCrop ? 1 : 0) - (a.isSameCrop ? 1 : 0));
@@ -93,7 +95,13 @@ function findReferenceThreat(
       (dNorm.length >= 3 && pEn.includes(dNorm)) ||
       (pId.length >= 3 && dNorm.includes(pId))
     ) {
-      return { nameHi: p.nameHi, image: p.image };
+      return {
+        nameHi: p.nameHi,
+        image: p.image,
+        href: `/crop-problems/${p.cropSlug}/${p.id}`,
+        cropSlug: p.cropSlug,
+        problemId: p.id,
+      };
     }
   }
   return null;
@@ -735,6 +743,22 @@ export default function AIDoctorPage() {
                       </div>
                     </div>
 
+                    {result.confidence >= 70 && referenceThreat?.href ? (
+                      <AppLink
+                        href={referenceThreat.href}
+                        className="mt-2 flex rounded-xl bg-emerald-700 px-3 py-2 text-center text-[12px] font-black text-white"
+                      >
+                        फसल डॉक्टर में पूरी दवा देखें →
+                      </AppLink>
+                    ) : !isHealthy ? (
+                      <AppLink
+                        href={selectedCrop ? `/crop-problems/${selectedCrop}` : "/crop-problems"}
+                        className="mt-2 flex rounded-xl bg-amber-100 px-3 py-2 text-center text-[12px] font-black text-amber-950"
+                      >
+                        पहचान पक्की नहीं — फोटो गैलरी से मिलाएँ
+                      </AppLink>
+                    ) : null}
+
                     {/* Disease Name & Compact Single-Line Badges (Takes minimal height, removes big severity box) */}
                     <div className="mt-2 flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
@@ -829,6 +853,10 @@ export default function AIDoctorPage() {
                         </button>
                       </div>
                     </div>
+                  ) : result.confidence < 70 ? (
+                    <p className="mb-3 rounded-2xl bg-amber-50 px-3 py-2.5 text-[13px] font-bold text-amber-950">
+                      भरोसा कम है — अभी दवा न लें। गैलरी की फोटो से मिलाएँ।
+                    </p>
                   ) : (
                     <>
                       {/* Card 2: "दवा व अनुशंसित मात्रा" (Medicines & Dosage) */}

@@ -92,11 +92,7 @@ export function saveAiDoctorExpertReferral(payload: AiDoctorExpertReferral): voi
     try {
       sessionStorage.setItem(AI_DOCTOR_EXPERT_PHOTO_KEY, photo);
     } catch {
-      try {
-        localStorage.setItem(AI_DOCTOR_EXPERT_PHOTO_KEY, photo);
-      } catch {
-        /* ignore */
-      }
+      /* do not persist photos in localStorage */
     }
   } else {
     try {

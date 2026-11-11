@@ -396,7 +396,12 @@ export const CHEM_BOTTLE_CATALOG: ChemBottleEntry[] = [
     name: "Seaweed + Amino Acids",
     formulation: "Bio-stimulant",
     category: "pgr",
-    aliases: ["seaweed amino acids","seaweed viricide"],
+    aliases: [
+      "seaweed amino acids",
+      "seaweed viricide",
+      "ascophyllum nodosum seaweed extract",
+      "seaweed extract",
+    ],
   },
   {
     slug: "prohydrojasmon-5-sl",
@@ -2649,6 +2654,37 @@ export const CHEM_BOTTLE_CATALOG: ChemBottleEntry[] = [
     formulation: "4.5% SL",
     category: "pgr",
     aliases: ["naa", "naa 4.5% sl", "200 ppm naa", "अल्फा नेफ्थाइल एसिटिक एसिड", "प्लानोफिक्स", "planofix"],
+  },
+  {
+    slug: "hydrolyzed-amino-acids",
+    name: "Hydrolyzed Amino Acids",
+    formulation: "Bio-stimulant",
+    category: "pgr",
+    aliases: [
+      "hydrolyzed protein amino acids complex",
+      "hydrolyzed amino acids",
+      "amino acids complex",
+      "अमीनो एसिड",
+    ],
+  },
+  {
+    slug: "npk-19-19-19",
+    name: "NPK 19:19:19",
+    formulation: "Water Soluble",
+    category: "pgr",
+    aliases: [
+      "100% water soluble npk 19:19:19",
+      "npk 19 19 19",
+      "19:19:19",
+      "घुलनशील खाद",
+    ],
+  },
+  {
+    slug: "metyltetraprorole",
+    name: "Metyltetraprorole",
+    formulation: "QoI",
+    category: "fungicide",
+    aliases: ["metyltetraprorole", "metyltetraprorole qoi", "pavecto"],
   },
 ];
 

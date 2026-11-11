@@ -84,8 +84,10 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireSession(req);
+  if ("error" in auth) return auth.error;
   return NextResponse.json({
-    configured: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY),
+    configured: Boolean(getGeminiApiKey()),
   });
 }

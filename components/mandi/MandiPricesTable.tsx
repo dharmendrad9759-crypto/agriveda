@@ -79,7 +79,7 @@ function getStockTrend(row: MandiRow) {
     const pseudo = (seed % 5) - 2;
     if (pseudo > 0) return { dir: "up" as const, label: `+₹${pseudo * 20} 🔼`, tone: "text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border-emerald-500/30" };
     if (pseudo < 0) return { dir: "down" as const, label: `-₹${Math.abs(pseudo) * 20} 🔽`, tone: "text-rose-700 dark:text-rose-300 bg-rose-500/15 border-rose-500/30" };
-    return { dir: "neutral" as const, label: "= स्थिर", tone: "text-slate-600 dark:text-slate-300 bg-slate-500/10 border-slate-500/20" };
+    return { dir: "neutral" as const, label: "जैसा कल था", tone: "text-slate-600 dark:text-slate-300 bg-slate-500/10 border-slate-500/20" };
   }
 }
 

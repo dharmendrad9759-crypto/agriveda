@@ -1,5 +1,6 @@
 import type { MandiRow } from "@/lib/mandi/types";
 import { CROP_CATEGORY, CROP_HI } from "@/lib/mandi/constants";
+import { prettyMandiVariety } from "@/lib/mandi/varieties";
 import type { MandiRow as MockRow } from "@/data/mock/mandi";
 
 interface DataGovRecord {
@@ -57,12 +58,12 @@ export function mapDataGovRecords(records: DataGovRecord[]): MandiRow[] {
     if (!modal && !min && !max) return;
 
     const modalVal = modal || Math.round((min + max) / 2);
-    const grade = r.grade?.trim() || r.variety?.trim() || "—";
+    const variety = prettyMandiVariety(crop, r.variety, r.grade);
     rows.push({
-        id: `live-${r.market ?? "m"}-${crop}-${grade}-${r.arrival_date ?? i}-${i}`,
+        id: `live-${r.market ?? "m"}-${crop}-${variety || "v"}-${r.arrival_date ?? i}-${i}`,
       crop,
       cropHi: CROP_HI[crop] ?? crop,
-      variety: grade,
+      variety,
       mandi: r.market?.trim() || "—",
       state: r.state?.trim() || "—",
       district: r.district?.trim() || undefined,

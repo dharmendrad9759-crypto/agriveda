@@ -1,17 +1,26 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import AppLink from "@/components/ui/AppLink";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import ProblemFlowShell, { MockCard } from "@/components/crop-problems/ProblemFlowShell";
 import { getCropProblem } from "@/data/crop-curative-problems";
 import { getCleanHindiTitle } from "@/components/crop-problems/CropProblemGalleryClient";
 import { getCurativeMedicines } from "@/lib/crops/cropProblemMedicines";
-import { cleanTechnicalName } from "@/data/mix-advisor/mix-plans";
+import { cleanTechnicalName, curativeToMixMedicine, generateDynamicMixSteps } from "@/data/mix-advisor/mix-plans";
 import { lookupChemBottle } from "@/lib/crops/chemBottle";
 import { isPreMixFormulation } from "@/lib/crops/medicineParser";
 import { parseFarmerDose } from "@/lib/crops/tankDose";
+import {
+  assembleHubProblem,
+  formulationHint,
+  groupsOverlap,
+  moaGroupsFromTechnical,
+  recentSprayMayScorch,
+} from "@/lib/crops/intelligenceHub";
+import ShopCounterCard, { shareSlipPng } from "@/components/crop-problems/ShopCounterCard";
+import { useSprayLogs } from "@/hooks/useSprayLogs";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import AppLink from "@/components/ui/AppLink";
 import { speakFarmerText, stopFarmerSpeech } from "@/lib/speech/farmerVoice";
 import { useToast } from "@/components/ui/Toast";
 import { readStorage, writeStorage } from "@/lib/storage";
@@ -200,7 +209,11 @@ export default function CropProblemDetailClient({
   const found = getCropProblem(cropSlug, problemId);
   if (!found) notFound();
   const { crop, problem: p } = found;
+  const hub = assembleHubProblem(crop.slug, p.id);
+  const overlay = hub?.overlay ?? {};
   const { showToast } = useToast();
+  const { addLog, logs } = useSprayLogs();
+  const { profile } = useFarmerProfile();
 
   const [saved, setSaved] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -211,6 +224,10 @@ export default function CropProblemDetailClient({
     organic: false,
     precautions: false,
   });
+  const [mode, setMode] = useState<"field" | "expert" | "research">("field");
+  const [tankLitres, setTankLitres] = useState<15 | 16>(15);
+  const [counterFor, setCounterFor] = useState<number | null>(null);
+  const [loggedToday, setLoggedToday] = useState(false);
 
   const toggleOption = (idx: number) => {
     setExpandedOptions((prev) => ({
@@ -242,9 +259,31 @@ export default function CropProblemDetailClient({
   // Primary doctor medicine info
   const primaryChem = chemItems[0];
   const primaryDose = useMemo(
-    () => (primaryChem ? parseFarmerDose(primaryChem.dose) : null),
-    [primaryChem]
+    () => (primaryChem ? parseFarmerDose(primaryChem.dose, { tankLitres }) : null),
+    [primaryChem, tankLitres]
   );
+
+  const lastGroupsForProblem = useMemo(() => {
+    const mine = logs.filter((l) => l.cropId === crop.slug && l.problemId === p.id && l.moaGroups?.length);
+    return mine[0]?.moaGroups ?? [];
+  }, [logs, crop.slug, p.id]);
+
+  const scorchWarn =
+    hub &&
+    (hub.symptomChips.includes("yellow") || hub.symptomChips.includes("wilt")) &&
+    recentSprayMayScorch(logs, crop.slug, 4);
+
+  const waleSteps = useMemo(() => {
+    if (chemItems.length < 2) return [];
+    try {
+      return generateDynamicMixSteps(
+        chemItems.map((c) => curativeToMixMedicine(c, p)),
+        false
+      );
+    } catch {
+      return [];
+    }
+  }, [chemItems, p]);
 
   // Spoken voice script in warm, authentic human agronomist Hindi
   const doctorVoiceScript = useMemo(() => {
@@ -311,7 +350,7 @@ export default function CropProblemDetailClient({
   const shareToWhatsApp = () => {
     const chemListText = chemItems
       .map((c, i) => {
-        const d = parseFarmerDose(c.dose);
+        const d = parseFarmerDose(c.dose, { tankLitres });
         return `*विकल्प ${i + 1}: ${c.technical}*\n  • तकनीकी नाम: ${cleanTechnicalName(c.nameHi || c.technical)}\n  • ${d.pill1.label}: ${d.pill1.value}\n  • ${d.pill2.label}: ${d.pill2.value}\n  • ${d.pill3.label}: ${d.pill3.value}\n  • सलाह: खाद-बीज दुकान पर केवल यह टेक्निकल नाम बताएं।`;
       })
       .join("\n\n");
@@ -327,7 +366,40 @@ export default function CropProblemDetailClient({
   return (
     <ProblemFlowShell title={shortName} step={saved ? 5 : 4} backHref={`/crop-problems/${crop.slug}`}>
       <div className="space-y-4 pb-8">
-        {/* Authentic Multi-Photo Field Gallery */}
+        <div className="grid grid-cols-3 gap-1 rounded-2xl bg-emerald-950/90 p-1">
+          {(
+            [
+              ["field", "खेत में अभी"],
+              ["expert", "एक्सपर्ट इलाज"],
+              ["research", "पूरी जानकारी"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setMode(id)}
+              className={`rounded-xl px-1 py-2 text-[11px] font-black ${
+                mode === id ? "bg-white text-emerald-950" : "text-emerald-100"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {scorchWarn ? (
+          <div className="rounded-2xl border border-amber-400 bg-amber-50 px-3 py-2.5 text-[13px] font-bold text-amber-950">
+            रुकिए! पिछले 4 दिन में स्प्रे हो चुका है। यह नए रोग से पहले दवा का झटका हो सकता है — अभी नया केमिकल न डालें।
+          </div>
+        ) : null}
+
+        {mode === "field" && overlay.fieldCheckHi ? (
+          <div className="rounded-2xl border border-emerald-700/30 bg-emerald-50 px-3 py-2.5 text-[13px] font-bold text-emerald-950">
+            {overlay.fieldCheckHi}
+          </div>
+        ) : null}
+
+        {mode !== "research" ? (
         <ThreatPhotoGallery
           primaryImage={p.image}
           title={shortName}
@@ -338,6 +410,70 @@ export default function CropProblemDetailClient({
           threatId={p.id}
           hi={true}
         />
+        ) : null}
+
+        {mode === "field" && overlay.lookAlikes && overlay.lookAlikes.length > 0 ? (
+          <div className="rounded-2xl border border-amber-400/70 bg-amber-50 px-3 py-2.5">
+            <p className="text-[11px] font-black uppercase tracking-wide text-amber-800">ध्यान दें — मिलती-जुलती समस्या</p>
+            {overlay.lookAlikes.map((a) => (
+              <AppLink
+                key={a.id}
+                href={`/crop-problems/${crop.slug}/${a.id}`}
+                className="mt-1 block text-[13px] font-bold text-amber-950"
+              >
+                {a.similarHi}. {a.differHi}
+              </AppLink>
+            ))}
+          </div>
+        ) : null}
+
+        {mode === "field" ? (
+          <p className="rounded-2xl bg-white px-3 py-2 text-[13px] font-bold text-slate-800 ring-1 ring-emerald-900/10">
+            अभी क्या करें: पहले प्रकोप देखो, फिर दवा। नुकसान कम हो तो जैविक उपाय काफ़ी।
+          </p>
+        ) : null}
+
+        {mode === "field" && overlay.dontDoHi?.length ? (
+          <div className="rounded-2xl bg-rose-600 px-3 py-2.5 text-[13px] font-black text-white">
+            {overlay.dontDoHi.map((d) => (
+              <p key={d}>यह मत करना: {d}</p>
+            ))}
+          </div>
+        ) : null}
+
+        {mode === "field" ? (
+          <div className="flex items-center justify-between rounded-2xl border border-emerald-200 bg-white px-3 py-2">
+            <p className="text-[12px] font-bold text-slate-700">मेरी टंकी</p>
+            <div className="flex gap-1">
+              {([15, 16] as const).map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setTankLitres(n)}
+                  className={`rounded-xl px-3 py-1.5 text-[12px] font-black ${
+                    tankLitres === n ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-700"
+                  }`}
+                >
+                  {n} लीटर
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {mode === "field" && overlay.sprayWindow ? (
+          <p className="text-[12px] font-bold text-slate-700">
+            कब छिड़कें: {overlay.sprayWindow === "evening" ? "शाम" : overlay.sprayWindow === "morning" ? "सुबह" : "सुबह या शाम"}
+            {overlay.nozzleHi ? ` · नोज़ल: ${overlay.nozzleHi}` : ""}
+            {overlay.sticker === "yes" ? " · चिपको मिलाएँ" : ""}
+          </p>
+        ) : null}
+
+        {profile.sprayWater === "hard_tubewell" && mode !== "research" ? (
+          <p className="rounded-xl bg-sky-50 px-3 py-2 text-[12px] font-bold text-sky-950">
+            आपका पानी खारा है — घोलकर तुरंत स्प्रे करें, टंकी भरकर न छोड़ें।
+          </p>
+        ) : null}
 
         {/* 🔊 Top Doctor Audio Note (Authentic Human Agronomist Voice) */}
         <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 p-3.5 text-white shadow-md">
@@ -389,7 +525,8 @@ export default function CropProblemDetailClient({
           )}
         </div>
 
-        {/* 🌟 1. PRIORITY #1: डॉक्टर की अनुशंसित दवा व सही डोज़ (Chemical & Tank Dose First) */}
+        {mode !== "research" ? (
+        <>
         <MockCard className="!border-emerald-500/35 !bg-gradient-to-b !from-emerald-50/60 !to-white dark:!from-slate-900 dark:!to-slate-900/95 !p-3 sm:!p-3.5 shadow-sm">
           <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-2">
@@ -406,8 +543,10 @@ export default function CropProblemDetailClient({
 
           <div className="space-y-2.5 mt-2">
             {chemItems.map((c, i) => {
-              const parsed = parseFarmerDose(c.dose);
+              const parsed = parseFarmerDose(c.dose, { tankLitres });
               const isExpanded = Boolean(expandedOptions[i]);
+              const groups = moaGroupsFromTechnical(c.technical);
+              const sameGroup = lastGroupsForProblem.length > 0 && groupsOverlap(groups, lastGroupsForProblem);
 
               return (
                 <div
@@ -489,7 +628,7 @@ export default function CropProblemDetailClient({
                             </div>
                           </div>
                         ) : (
-                          <ChemBottleThumb technical={c.technical} size="sm" className="rounded-xl shrink-0 shadow-xs" />
+                          <ChemBottleThumb technical={c.technical} size="sm" className="relative z-0 rounded-xl shrink-0 shadow-xs" />
                         )}
                         <div className="min-w-0 flex-1 space-y-1">
                           <p className="text-[13px] font-black text-slate-900 dark:text-slate-100 leading-snug">
@@ -550,6 +689,43 @@ export default function CropProblemDetailClient({
                           </p>
                         </div>
                       ) : null}
+                      {parsed.desiMeasureHi ? (
+                        <p className="text-[12px] font-bold text-emerald-900">नाप: {parsed.desiMeasureHi}</p>
+                      ) : null}
+                      {sameGroup ? (
+                        <p className="rounded-xl bg-amber-400 px-2.5 py-2 text-[12px] font-black text-amber-950">
+                          पिछली बार आपने यही ग्रुप डाला था — इस बार इसके नीचे वाली दूसरी दवा चुनें।
+                        </p>
+                      ) : null}
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCounterFor(i);
+                          }}
+                          className="flex-1 rounded-xl bg-emerald-800 py-2.5 text-[12px] font-black text-white"
+                        >
+                          दुकानदार को दिखाएं
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void shareSlipPng({
+                              technical: c.technical,
+                              nameHi: c.nameHi,
+                              acre: parsed.acreDose,
+                              tank: parsed.tankDose,
+                              cropHi: crop.nameHi,
+                              problemHi: shortName,
+                            });
+                          }}
+                          className="rounded-xl border border-emerald-700 px-3 py-2.5 text-[12px] font-black text-emerald-900"
+                        >
+                          फोटो पर्ची
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -557,6 +733,66 @@ export default function CropProblemDetailClient({
             })}
 
             {/* Tank-Mix Safety Advisor Link */}
+            {loggedToday ? (
+              <AppLink
+                href="/spray-rotation"
+                className="flex w-full items-center justify-center rounded-xl bg-emerald-800 py-3 text-[13px] font-black text-white"
+              >
+                आज का स्प्रे डायरी में दर्ज है — देखें
+              </AppLink>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  const med = chemItems[0];
+                  if (!med) return;
+                  addLog({
+                    cropId: crop.slug,
+                    fieldId: "hub",
+                    productId: med.technical,
+                    sprayDate: new Date().toISOString(),
+                    doseUsed: med.dose,
+                    growthStageAtSpray: p.stageHi,
+                    pestId: hub?.kind === "pest" ? p.id : undefined,
+                    diseaseId: hub?.kind === "disease" ? p.id : undefined,
+                    problemId: p.id,
+                    technical: med.technical,
+                    moaGroups: moaGroupsFromTechnical(med.technical),
+                  });
+                  setLoggedToday(true);
+                  showToast("आज का स्प्रे डायरी में दर्ज हो गया", "success");
+                }}
+                className="w-full rounded-xl bg-emerald-700 py-3 text-[13px] font-black text-white"
+              >
+                मैंने आज यह स्प्रे किया
+              </button>
+            )}
+
+            {mode === "expert" && waleSteps.length > 0 ? (
+              <div className="rounded-2xl border border-teal-200 bg-teal-50 p-3">
+                <p className="text-[12px] font-black text-teal-950">घोल बनाने का क्रम (पहले पाउडर, फिर गाढ़ा, अंत में तेल वाली)</p>
+                <ol className="mt-2 space-y-1 text-[12px] font-semibold text-teal-900">
+                  {waleSteps.map((s) => (
+                    <li key={s.stepNo}>
+                      {s.stepNo}. {s.titleHi}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
+
+            {mode === "expert" ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <p className="text-[12px] font-black text-slate-950">दवा काम न करे तो जाँचो</p>
+                <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-[12px] font-semibold text-slate-800">
+                  <li>पहचान — कीट/रोग वही है? मिलती-जुलती समस्या तो नहीं?</li>
+                  <li>कवरेज — पत्ती के नीचे तक पानी पहुँचा?</li>
+                  <li>मौसम — तेज धूप या बारिश में स्प्रे तो नहीं हुआ?</li>
+                  <li>ग्रुप — पिछली बार यही ग्रुप तो नहीं डाला?</li>
+                </ol>
+              </div>
+            ) : null}
+
             <AppLink
               href="/mix-advisor"
               className="flex items-center justify-between rounded-xl border border-teal-500/30 bg-teal-500/10 p-3 text-xs font-black text-teal-950 dark:text-teal-100 hover:bg-teal-500/15 transition active:scale-[0.99]"
@@ -571,8 +807,11 @@ export default function CropProblemDetailClient({
             </AppLink>
           </div>
         </MockCard>
+        </>
+        ) : null}
 
-        {/* 2. खेत में कैसे पहचानें (लक्षण — Interactive Collapsible Accordion) */}
+        {mode !== "field" ? (
+        <>
         <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
           <div
             onClick={() => toggleSection("symptoms")}
@@ -728,11 +967,46 @@ export default function CropProblemDetailClient({
               </li>
               <li className="flex items-start gap-1.5">
                 <span className="text-emerald-600 font-black">✓</span>
-                <span><strong>कटाई से पूर्व अंतर (PHI):</strong> कटाई से कम से कम 15–20 दिन पहले छिड़काव बंद कर दें।</span>
+                <span><strong>कटाई से पूर्व अंतर:</strong> {overlay.phiNoteHi || "बोतल के लेबल पर कटाई अंतर देखें — हर दवा का अलग होता है।"}</span>
               </li>
             </ul>
           )}
         </MockCard>
+        </>
+        ) : null}
+
+        {mode === "research" ? (
+          <MockCard className="!p-3.5">
+            <p className="text-[11px] font-black uppercase tracking-wide text-emerald-800">पूरी जानकारी</p>
+            <p className="mt-1 text-[15px] font-black text-slate-950">{p.nameEn}</p>
+            <p className="text-[13px] font-bold text-slate-600">
+              {hub?.kind === "pest" ? "कीट" : hub?.kind === "disease" ? "रोग" : hub?.kind}{" "}
+              {hub?.subtype === "viral" ? "· वायरस" : hub?.subtype ? `· ${hub.subtype}` : ""}
+            </p>
+            <ul className="mt-3 space-y-2 text-[13px] font-semibold text-slate-800">
+              {chemItems.map((c) => {
+                const groups = moaGroupsFromTechnical(c.technical);
+                const form = formulationHint(c.technical);
+                return (
+                  <li key={c.technical} className="rounded-xl bg-slate-50 px-3 py-2">
+                    <span className="font-mono font-black">{c.technical}</span>
+                    {form ? <span> · {form}</span> : null}
+                    <p className="text-[12px] text-slate-600">
+                      ग्रुप: {groups.length ? groups.join(" + ") : "अभी पक्का नहीं"}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-3 text-[12px] font-bold text-slate-600">
+              स्रोत: {overlay.sourceLabel || "Agriveda फसल डॉक्टर सूची"}
+              {overlay.reviewedOn ? ` · जाँच ${overlay.reviewedOn}` : " · जाँच बाकी"}
+            </p>
+            <p className="mt-2 text-[12px] font-bold text-amber-800">
+              कटाई अंतर (PHI): {overlay.phiNoteHi || "अभी पक्का नहीं — लेबल देखें"}
+            </p>
+          </MockCard>
+        ) : null}
 
         {/* 📋 Doctor Prescription Action Card (WhatsApp & Save) */}
         <MockCard className="!p-4 text-center shadow-md">
@@ -797,6 +1071,21 @@ export default function CropProblemDetailClient({
             </AppLink>
           </div>
         </MockCard>
+
+        {counterFor != null && chemItems[counterFor] ? (
+          <ShopCounterCard
+            open
+            onClose={() => setCounterFor(null)}
+            cropHi={crop.nameHi}
+            problemHi={shortName}
+            cropSlug={crop.slug}
+            problemId={p.id}
+            medicine={chemItems[counterFor]}
+            problemKind={hub?.kind ?? "pest"}
+            lastMoaGroups={lastGroupsForProblem}
+            tankLitres={tankLitres}
+          />
+        ) : null}
       </div>
     </ProblemFlowShell>
   );

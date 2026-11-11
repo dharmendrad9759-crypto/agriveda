@@ -156,15 +156,14 @@ function LogSprayForm() {
       growthStageAtSpray: growthStage || "Not specified",
       pestId: pestId || undefined,
       diseaseId: diseaseId || undefined,
+      technical: prod.activeIngredient || prod.productName,
+      moaGroups: prod.moaGroup
+        ? prod.moaGroup.split("+").map((g) => g.trim()).filter(Boolean)
+        : undefined,
     });
     showToast(t(locale, "saved"));
     if (!isOnline) showToast(t(locale, "offlineNote"), "info");
-
-    if (fromMixAdvisor) {
-      navigate("/mix-advisor?step=guide");
-    } else {
-      navigate("/spray-rotation");
-    }
+    navigate("/spray-rotation");
   };
 
   const handleAddField = () => {
@@ -178,7 +177,7 @@ function LogSprayForm() {
   return (
     <AppShell
       title={t(locale, "logSpray")}
-      backHref={fromMixAdvisor ? "/mix-advisor?step=guide" : "/spray-rotation"}
+      backHref={fromMixAdvisor ? "/mix-advisor" : "/spray-rotation"}
       breadcrumbs={[
         { label: uiT("navHome"), href: "/" },
         { label: uiT("sprayRotation"), href: "/spray-rotation" },

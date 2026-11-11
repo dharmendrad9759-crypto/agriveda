@@ -9,7 +9,8 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { rankCropsForFarmer } from "@/lib/agriveda2/smartCropEngine";
 import { waterIndexForState } from "@/data/agriveda2/region-crop-suitability";
 import { buildSmartCropLocationBanner } from "@/lib/agriveda2/locationAdvisory";
-import { INDIAN_STATES, getDistrictsForState } from "@/lib/india-locations";
+import { INDIAN_STATES, getDistrictsForState, sortStatesForFarmer } from "@/lib/india-locations";
+import { stateLabelHi } from "@/lib/farm/placeProfile";
 
 export default function SmartCropClient() {
   const { profile, saveProfile } = useFarmerProfile();
@@ -64,9 +65,11 @@ export default function SmartCropClient() {
 
         <SearchableSelect
           label="राज्य"
-          placeholder="राज्य search करें"
+          placeholder="राज्य का नाम लिखें"
           value={state}
-          options={INDIAN_STATES}
+          options={sortStatesForFarmer(INDIAN_STATES, state)}
+          getLabel={stateLabelHi}
+          pinFirst={state}
           onChange={(v) => {
             setState(v);
             setDistrict("");

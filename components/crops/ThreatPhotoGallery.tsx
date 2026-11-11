@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Camera, ChevronLeft, ChevronRight, MapPin, ZoomIn } from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import ImageLightbox from "@/components/ui/ImageLightbox";
 import { getThreatGalleryPhotos, type ThreatPhotoItem } from "@/lib/crops/threatGalleryManifest";
 
@@ -68,35 +68,6 @@ export default function ThreatPhotoGallery({
           sizes="(max-width: 768px) 100vw, 800px"
           priority
         />
-
-        {/* Gradient Overlay for legibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45 pointer-events-none" />
-
-        {/* Top Badges (Stage & Plant Location) */}
-        <div className="absolute top-3 left-3 right-14 z-10 pointer-events-none flex flex-wrap items-center gap-1.5">
-          {/* Active Stage Badge */}
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-black/75 px-3 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-md border border-emerald-500/30 shadow-md">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="truncate max-w-[190px]">
-              {hi ? activePhoto.badgeHi : activePhoto.badgeEn}
-            </span>
-          </span>
-
-          {/* Plant Location Pill (e.g. तने के अंदर, पत्ती के नीचे) */}
-          {activePhoto.locationHi && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-medium text-emerald-200 backdrop-blur-md border border-emerald-400/20 shadow-xs">
-              <MapPin className="h-3 w-3 text-emerald-400 shrink-0" />
-              <span className="truncate max-w-[160px]">{activePhoto.locationHi}</span>
-            </span>
-          )}
-        </div>
-
-        {/* Bottom diagnostic caption overlay */}
-        <div className="absolute bottom-2.5 left-3 right-12 z-10 pointer-events-none">
-          <p className="text-xs font-medium text-white/95 drop-shadow-md line-clamp-2 leading-relaxed">
-            {hi ? activePhoto.captionHi : activePhoto.captionEn}
-          </p>
-        </div>
 
         {/* Top Zoom Control */}
         <div className="absolute right-3 top-3 z-10">

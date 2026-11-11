@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
@@ -9,36 +9,20 @@ import { useToast } from "@/components/ui/Toast";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
-import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { categoryOrder, cropCatalog } from "@/data/crop-catalog";
 import {
   ArrowRight,
-  Bell,
-  BookOpen,
-  Calculator,
-  CalendarDays,
   Check,
-  ChevronRight,
-  CloudSun,
   Compass,
-  FlaskConical,
-  Leaf,
-  MapPin,
-  MessageCircle,
   Pencil,
   Plus,
   Radio,
-  RefreshCw,
-  Search,
-  ShieldAlert,
-  Sprout,
-  TrendingUp,
-  type LucideIcon,
-  X,
   Ruler,
+  Search,
+  Sprout,
   Trash2,
-  Map,
+  X,
 } from "lucide-react";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
@@ -52,7 +36,10 @@ import {
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { track } from "@/lib/analytics";
-import { lastFieldId, rememberField } from "@/lib/farm/fieldName";
+import { suggestFieldName } from "@/lib/farm/fieldName";
+import { useActiveField } from "@/hooks/useActiveField";
+import MeasureFieldButton, { measureFieldHref } from "@/components/farm/MeasureFieldButton";
+import MeasureAfterAddPrompt from "@/components/farm/MeasureAfterAddPrompt";
 
 const CATEGORY_HI: Record<string, string> = {
   Cereals: "अनाज",
@@ -108,59 +95,24 @@ function totalAreaLabel(fields?: { area?: string | number }[]) {
   return acres > 0 ? `${acres.toFixed(1)} एकड़` : "—";
 }
 
-function ownershipLabel(ownership: string) {
-  return ownership === "Owned" ? "अपनी ज़मीन" : "बटाई / किराया";
-}
-
-function fieldStatusLabel(status: string) {
-  if (status === "Active") return "सक्रिय";
-  return status;
-}
-
 const MiniFieldMap = dynamic(() => import("@/components/farm/MiniFieldMap"), {
   ssr: false,
   loading: () => <div className="h-[140px] w-full bg-slate-800/10 animate-pulse rounded-xl" />,
 });
 
-const FARM_LINKS: {
-  id: string;
-  hi: string;
-  en: string;
-  href: string;
-  icon3d?: string;
-  icon: LucideIcon;
-}[] = [
-  { id: "measure", hi: "अपना खेत नापें", en: "Measure Field", href: "/my-farm/measure", icon3d: "/images/icons/3d/my-farm.jpg", icon: Ruler },
-  { id: "advisor", hi: "खेत सलाह", en: "Advice", href: "/field-advisor", icon3d: "/images/icons/3d/my-farm.jpg", icon: Sprout },
-  { id: "fertilizer", hi: "खाद कैलकुलेटर", en: "Fertilizer", href: "/services/fertilizer-calculator", icon3d: "/images/icons/3d/fertilizer.jpg", icon: Calculator },
-  { id: "doctor", hi: "फसल डॉक्टर", en: "Crop Doctor", href: "/ai-doctor", icon3d: "/images/icons/3d/crop-doctor.jpg", icon: ShieldAlert },
-  { id: "weather", hi: "मौसम सलाह", en: "Weather", href: "/weather", icon3d: "/images/icons/3d/weather.jpg", icon: CloudSun },
-  { id: "mandi", hi: "मंडी भाव", en: "Mandi", href: "/mandi", icon3d: "/images/icons/3d/mandi.jpg", icon: TrendingUp },
-  { id: "mix", hi: "दवा घोल जांच", en: "Tank Mix", href: "/mix-advisor", icon: FlaskConical },
-];
-
 export default function MyFarmPage() {
   const { showToast } = useToast();
-  const { t, locale } = useLocale();
+  const { locale } = useLocale();
   const isHi = locale === "hi";
   const reduced = useReducedMotion();
   const { profile, setSowingDate } = useFarmerProfile();
-  const { data, stats, addField, updateField, deleteField, addActivity, addNote, parseAreaAcres } = useFarmData();
-  const farmAlerts = useDashboardAlerts(3);
-  const { weather, loading: weatherLoading } = useLiveWeather();
+  const { data, stats, addField, deleteField, hydrated: farmHydrated } = useFarmData();
+  const { activeField, setActiveField } = useActiveField(data.fields, farmHydrated);
+  const farmAlerts = useDashboardAlerts(1);
 
   const [showAddField, setShowAddField] = useState(false);
-  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const last = lastFieldId();
-    if (last && data.fields.some((field) => field.id === last)) {
-      setSelectedFieldId(last);
-    }
-  }, [data.fields]);
-  const [showAddNote, setShowAddNote] = useState(false);
-  const [showAddActivity, setShowAddActivity] = useState(false);
-
+  const [measurePromptId, setMeasurePromptId] = useState<string | null>(null);
+  const selectedFieldId = activeField?.id ?? null;
   const [fieldName, setFieldName] = useState("");
   const [fieldArea, setFieldArea] = useState("");
   const [fieldCropSlug, setFieldCropSlug] = useState("");
@@ -169,11 +121,6 @@ export default function MyFarmPage() {
   const [cropPickerOpen, setCropPickerOpen] = useState(false);
   const [cropQuery, setCropQuery] = useState("");
   const [cropCategory, setCropCategory] = useState<(typeof categoryOrder)[number] | "all">("all");
-  const [noteTitle, setNoteTitle] = useState("");
-  const [noteBody, setNoteBody] = useState("");
-  const [activityTask, setActivityTask] = useState("");
-  const [activityField, setActivityField] = useState("");
-  const [activityDate, setActivityDate] = useState("");
 
   const filteredCrops = useMemo(() => {
     const q = cropQuery.trim().toLowerCase();
@@ -207,11 +154,6 @@ export default function MyFarmPage() {
   const place = [profile.village, profile.district].filter(Boolean).join(", ");
   const hasFields = data.fields.length > 0;
   const topAlert = farmAlerts[0];
-  const nextTask = data.activities[0];
-
-  const temp = weather?.temp ?? "—";
-  const condition = weather?.condition ?? "";
-  const tempShort = String(temp).replace(/\s/g, "").replace("°C", "").replace("°", "") || "—";
 
   const fade = (delay: number) =>
     reduced
@@ -236,14 +178,16 @@ export default function MyFarmPage() {
 
     const cropHindi = catalog ? (getCropHindiName(catalog.slug) || catalog.nameHi || catalog.name) : "";
     const cropLabel = isHi ? (cropHindi || catalog?.name || "") : (catalog?.name || cropHindi || "");
-    const autoFieldName = isHi
-      ? `खेत ${data.fields.length + 1} (${cropHindi || catalog?.name || ""})`
-      : `Field ${data.fields.length + 1} (${catalog?.name || "Crop"})`;
+    const autoFieldName = suggestFieldName({
+      existing: data.fields,
+      cropHi: cropHindi || catalog?.name,
+      village: profile.village,
+    });
     const finalFieldName = fieldName.trim() || autoFieldName;
 
     const sowingIso = parseSowingISO(fieldSowing) || undefined;
     const stage = fieldStageLabel(sowingIso, isHi);
-    addField({
+    const newId = addField({
       name: finalFieldName,
       area: `${areaNum.toFixed(1)} Acre`,
       ownership: "Owned",
@@ -256,6 +200,8 @@ export default function MyFarmPage() {
       emoji: catalog?.emoji ?? "🌾",
       stage,
     });
+    setActiveField(newId);
+    setMeasurePromptId(newId);
     if (sowingIso && fieldCropSlug) {
       setSowingDate(fieldCropSlug, sowingIso);
     }
@@ -275,35 +221,6 @@ export default function MyFarmPage() {
     );
   };
 
-  const handleAddNote = () => {
-    if (!noteTitle.trim() || !noteBody.trim()) {
-      showToast("नोट का शीर्षक और विवरण भरें", "error");
-      return;
-    }
-    addNote({ title: noteTitle.trim(), body: noteBody.trim(), pinned: false });
-    setNoteTitle("");
-    setNoteBody("");
-    setShowAddNote(false);
-    showToast("नोट सेव हो गया ✓");
-  };
-
-  const handleAddActivity = () => {
-    if (!activityTask.trim() || !activityField.trim()) {
-      showToast("कार्य और खेत का नाम भरें", "error");
-      return;
-    }
-    addActivity({
-      task: activityTask.trim(),
-      field: activityField.trim(),
-      date: activityDate.trim() || "इस हफ्ते",
-    });
-    setActivityTask("");
-    setActivityField("");
-    setActivityDate("");
-    setShowAddActivity(false);
-    showToast("कार्य सेव हो गया ✓");
-  };
-
   return (
     <div className="relative mx-auto min-w-0 max-w-lg overflow-x-hidden pb-2 sm:max-w-2xl">
       <div
@@ -313,138 +230,61 @@ export default function MyFarmPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(16,185,129,0.18),transparent_55%),radial-gradient(ellipse_at_90%_10%,rgba(180,140,70,0.1),transparent_45%),linear-gradient(180deg,#e8f6ee_0%,transparent_70%)] dark:bg-[radial-gradient(ellipse_at_20%_0%,rgba(16,185,129,0.12),transparent_55%),linear-gradient(180deg,rgba(6,40,24,0.35)_0%,transparent_70%)]" />
       </div>
 
-      <div className="relative z-10 space-y-4 px-0.5 pt-1">
-        {/* Header — home rhythm */}
-        <motion.section {...fade(0)} className="px-0.5">
-          <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
-            {isHi ? `नमस्ते, ${greetName} जी` : `Namaste, ${greetName}`}
-          </p>
-          <h1 className="mt-0.5 font-display text-[1.45rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
-            {isHi ? "मेरा खेत" : "My farm"}
-          </h1>
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-50/90 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200">
-              <Sprout className="h-3 w-3 shrink-0" />
+      <div className="relative z-10 space-y-3 px-1 pt-1">
+        <motion.section {...fade(0)} className="flex items-start justify-between gap-3 px-0.5">
+          <div className="min-w-0">
+            <p className="text-[12px] font-medium text-[var(--av-text-muted)]">
+              {isHi ? `नमस्ते, ${greetName} जी` : `Namaste, ${greetName}`}
+            </p>
+            <h1 className="mt-0.5 font-display text-[1.35rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
+              {isHi ? "मेरा खेत" : "My farm"}
+            </h1>
+            <p className="mt-0.5 truncate text-[11.5px] font-medium text-[var(--av-text-secondary)]">
               {hasFields
                 ? `${stats.totalFields} ${isHi ? "खेत" : "fields"} · ${totalAreaLabel(data.fields)}`
                 : isHi
-                  ? "खेत जोड़ो"
-                  : "Add a field"}
-            </span>
-
-            {place ? (
-              <span className="inline-flex max-w-[46%] items-center gap-1 rounded-full border border-[var(--av-border)] bg-[var(--av-surface)]/90 px-2.5 py-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-                <MapPin className="h-3 w-3 shrink-0 text-sky-600" />
-                <span className="truncate">{place}</span>
-              </span>
-            ) : null}
+                  ? "अभी खेत नहीं जुड़ा"
+                  : "No field yet"}
+              {place ? ` · ${place}` : ""}
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              setShowAddField((v) => {
+                const next = !v;
+                if (next && !fieldCropSlug) setCropPickerOpen(true);
+                return next;
+              });
+            }}
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-700 px-3.5 py-2 text-[12px] font-bold text-white shadow-sm shadow-emerald-900/20 active:scale-[0.97]"
+          >
+            {showAddField ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+            {showAddField ? (isHi ? "बंद" : "Close") : isHi ? "खेत जोड़ो" : "Add field"}
+          </button>
         </motion.section>
 
-        {/* Unified Hero: Farm Advisory & Daily Action Center */}
-        {!showAddField && hasFields ? (
-          <motion.section {...fade(0.04)}>
-            <div className="relative overflow-hidden rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950 via-[#0a3520] to-[#062013] p-4 text-white shadow-xl shadow-emerald-950/40 sm:p-5">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-emerald-500/15 blur-3xl"
-              />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -bottom-10 -left-10 h-36 w-36 rounded-full bg-teal-500/10 blur-2xl"
-              />
-
-              <div className="relative z-10 flex flex-col gap-2.5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-200 border border-emerald-400/20 backdrop-blur-md">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <Sprout className="h-3 w-3" />
-                    {isHi ? "दैनिक खेत सलाह" : "Daily Advisory"}
-                  </span>
-                  <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[10.5px] font-medium text-emerald-100/80 backdrop-blur-sm">
-                    {stats.activeFields} {isHi ? "सक्रिय खेत" : "active"}
-                  </span>
-                </div>
-
-                {topAlert ? (
-                  <div className="mt-1">
-                    <p className="text-[15px] sm:text-[16px] font-bold leading-tight text-white">
-                      {topAlert.title}
-                    </p>
-                    <p className="mt-1 text-[12px] sm:text-[12.5px] leading-relaxed text-emerald-100/85 line-clamp-2">
-                      {topAlert.body}
-                    </p>
-                  </div>
-                ) : nextTask ? (
-                  <div className="mt-1">
-                    <p className="text-[15px] sm:text-[16px] font-bold leading-tight text-white">
-                      {nextTask.task}
-                    </p>
-                    <p className="mt-1 text-[12px] text-emerald-100/85">
-                      {nextTask.field} · {nextTask.date}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="mt-1">
-                    <p className="text-[15px] font-bold text-white">
-                      {isHi ? "खेत की स्थिति अनुकूल है" : "Field conditions optimal"}
-                    </p>
-                    <p className="mt-1 text-[12px] text-emerald-100/85">
-                      {isHi
-                        ? "मौसम व अवस्था अनुसार समय पर खाद-पानी की योजना बनाएं।"
-                        : "Plan timely fertilizer and irrigation according to crop growth stage."}
-                    </p>
-                  </div>
-                )}
-
-                <AppLink
-                  href={topAlert?.actionHref ?? "/field-advisor"}
-                  onClick={() => track("tool_open", { href: "/field-advisor", label: "farm_advisor_cta" })}
-                  className="mt-1 inline-flex items-center justify-between rounded-xl bg-white/15 hover:bg-white/20 border border-white/20 px-3.5 py-2 text-[12px] font-bold text-white transition backdrop-blur-md active:scale-[0.99]"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <Compass className="h-3.5 w-3.5 text-emerald-300" />
-                    <span>{isHi ? "पूरी सलाह व कार्य योजना देखें" : "View Full Advisory"}</span>
-                  </span>
-                  <ArrowRight className="h-3.5 w-3.5 text-emerald-300" />
-                </AppLink>
-              </div>
-            </div>
+        {!showAddField && hasFields && topAlert ? (
+          <motion.section {...fade(0.03)}>
+            <AppLink
+              href={topAlert.actionHref ?? "/field-advisor"}
+              onClick={() =>
+                track("tool_open", { href: topAlert.actionHref ?? "/field-advisor", label: "farm_alert" })
+              }
+              className="flex items-center gap-2.5 rounded-2xl border border-emerald-900/10 bg-[var(--av-surface)] px-3.5 py-2.5 shadow-[var(--av-shadow-sm)] active:scale-[0.99]"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-600/12 text-emerald-700 dark:text-emerald-300">
+                <Sprout className="h-4 w-4" />
+              </span>
+              <span className="min-w-0 flex-1 truncate text-[13px] font-bold text-[var(--av-text-primary)]">
+                {topAlert.title}
+              </span>
+              <ArrowRight className="h-4 w-4 shrink-0 text-emerald-600" />
+            </AppLink>
           </motion.section>
         ) : null}
 
-        {/* Fields */}
-        <motion.section {...fade(0.07)} className="space-y-2.5">
-          <div className="flex items-center justify-between px-0.5">
-            <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
-              {isHi ? "मेरे खेत" : "My fields"}
-            </h2>
-            <div className="flex items-center gap-1.5">
-              <AppLink
-                href="/my-farm/measure"
-                className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm shadow-emerald-900/20 active:scale-[0.98] transition"
-              >
-                <Ruler className="h-3.5 w-3.5 text-emerald-200" />
-                <span>{isHi ? "अपना खेत नापें" : "Measure Field"}</span>
-              </AppLink>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddField((v) => {
-                    const next = !v;
-                    if (next && !fieldCropSlug) {
-                      setCropPickerOpen(true);
-                    }
-                    return next;
-                  });
-                }}
-                className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm shadow-emerald-700/20 active:scale-[0.98]"
-              >
-                {showAddField ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-                {showAddField ? (isHi ? "बंद" : "Close") : isHi ? "खेत जोड़ो" : "Add field"}
-              </button>
-            </div>
-          </div>
+        <motion.section {...fade(0.05)} className="space-y-2.5">
 
           {showAddField ? (
             <div className="overflow-hidden rounded-2xl border border-emerald-500/30 bg-[var(--av-surface)] shadow-[var(--av-shadow-md)]">
@@ -487,22 +327,6 @@ export default function MyFarmPage() {
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-              </div>
-
-              {/* Smart Field Mapping banner inside Add Field */}
-              <div className="p-3 bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent border-b border-emerald-500/20 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Ruler className="h-4 w-4 text-emerald-700 dark:text-emerald-300 shrink-0" />
-                  <span className="text-[11px] font-bold text-emerald-900 dark:text-emerald-100">
-                    {isHi ? "उपग्रह या GPS से अपना खेत नापें" : "Measure exact area using Satellite & GPS"}
-                  </span>
-                </div>
-                <AppLink
-                  href="/my-farm/measure"
-                  className="shrink-0 px-2.5 py-1 rounded-lg bg-emerald-700 text-white text-[11px] font-bold hover:bg-emerald-800 transition shadow-sm"
-                >
-                  {isHi ? "नक्शे पर नापें →" : "Measure on Map →"}
-                </AppLink>
               </div>
 
               <div className="space-y-4 p-4">
@@ -831,7 +655,7 @@ export default function MyFarmPage() {
             </div>
           ) : null}
 
-          {hasFields ? (
+          {hasFields && !showAddField ? (
             <div className="space-y-3">
               {data.fields.length > 1 ? (
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -846,8 +670,7 @@ export default function MyFarmPage() {
                         key={f.id}
                         type="button"
                         onClick={() => {
-                          setSelectedFieldId(f.id);
-                          rememberField(f.id);
+                          setActiveField(f.id);
                         }}
                         className={cn(
                           "shrink-0 rounded-2xl px-3.5 py-2 text-xs font-bold transition flex items-center gap-1.5 border active:scale-95",
@@ -882,19 +705,33 @@ export default function MyFarmPage() {
                   name: f.crop,
                 });
                 const hi = getCropHindiName(f.cropSlug || "") || f.crop;
-                const displayName = f.name?.match(/^\d+$/) ? (isHi ? `खेत ${f.name}` : `Field ${f.name}`) : f.name;
-                const cropHref = f.cropSlug ? `/crops/${f.cropSlug}` : "/crops";
-                const nutrientHref = f.cropSlug
-                  ? `/crops/${f.cropSlug}/care/nutrients`
-                  : "/deficiencies";
+                const rawName = f.name?.match(/^\d+$/) ? (isHi ? `खेत ${f.name}` : `Field ${f.name}`) : f.name;
+                const displayName =
+                  hi && rawName.includes(hi)
+                    ? rawName.replace(hi, "").replace(/[·•|,]+/g, " ").replace(/\s+/g, " ").trim() || rawName
+                    : rawName;
                 const sowingIso =
-                  f.sowingDateIso ||
+                  parseSowingISO(f.sowingDateIso) ||
                   parseSowingISO(f.sowingDate) ||
-                  (f.cropSlug ? profile.sowingDates?.[f.cropSlug] : undefined);
+                  (f.cropSlug ? parseSowingISO(profile.sowingDates?.[f.cropSlug]) : null);
+                const sowingLabel = sowingIso ? formatSowingDisplay(sowingIso, isHi) : "";
                 const stageNow = fieldStageLabel(sowingIso, isHi);
-                const growthHref = f.cropSlug
-                  ? `/crops/${f.cropSlug}/care/growth`
-                  : "/crops";
+                const areaText = f.areaAcres
+                  ? `${Number(f.areaAcres).toFixed(f.areaAcres % 1 === 0 ? 0 : 2)} एकड़`
+                  : f.area
+                    ? String(f.area).replace(/\s*Acre$/i, " एकड़")
+                    : "—";
+                const tools = [
+                  { href: `/my-farm/${f.id}?tab=live`, icon: Compass, hi: "स्थिति", en: "Live" },
+                  { href: `/my-farm/${f.id}?tab=radar`, icon: Radio, hi: "सेहत", en: "Health" },
+                  { href: `/my-farm/${f.id}?tab=journey`, icon: Sprout, hi: "अवस्था", en: "Stage" },
+                  {
+                    href: measureFieldHref(f.id),
+                    icon: Ruler,
+                    hi: f.boundary?.length ? "सीमा" : "नापें",
+                    en: f.boundary?.length ? "Edit" : "Measure",
+                  },
+                ] as const;
                 return (
                   <motion.article
                     key={f.id}
@@ -909,498 +746,121 @@ export default function MyFarmPage() {
                             delay: 0.04 * Math.min(i, 4),
                           },
                         })}
-                    className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]"
+                    className="overflow-hidden rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] dark:border-emerald-500/15"
                   >
-                    <div className="relative h-[148px] overflow-hidden">
+                    <div className="relative h-[168px] overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                      <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
-                      <div className="relative z-10 flex h-full flex-col justify-between p-3.5">
-                        <div className="flex items-start justify-between gap-2">
-                          <span
-                            className={cn(
-                              "rounded-full px-2.5 py-1 text-[10px] font-bold shadow-sm",
-                              f.status === "Active"
-                                ? "bg-emerald-500 text-white"
-                                : "bg-amber-500 text-white"
-                            )}
-                          >
-                            {fieldStatusLabel(f.status)}
-                          </span>
-                          <span className="inline-flex max-w-[55%] items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-bold text-white backdrop-blur-sm">
-                            <CalendarDays className="h-3 w-3 shrink-0 text-emerald-200" />
-                            <span className="truncate">{stageNow}</span>
-                          </span>
-                        </div>
-                        <div>
-                          <AppLink href={`/my-farm/${f.id}`} className="hover:underline">
-                            <p className="font-display text-[1.25rem] font-bold leading-tight text-white drop-shadow-sm flex items-center gap-1.5">
-                              <span>{displayName}</span>
-                              <ArrowRight className="w-4 h-4 text-emerald-300 inline" />
-                            </p>
-                          </AppLink>
-                          <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-emerald-100">
-                            <span className="flex h-5 w-5 items-center justify-center rounded-md bg-white/20 text-white backdrop-blur-sm">
-                              <Sprout className="h-3 w-3" />
-                            </span>
-                            <span>{hi}</span>
-                            {f.variety ? (
-                              <span className="rounded-md bg-white/20 px-1.5 py-0.5 text-[11px] font-bold text-white backdrop-blur-sm">
-                                {f.variety}
-                              </span>
-                            ) : null}
-                          </div>
-                          <p className="mt-1 text-[11px] font-medium text-white/80">
-                            {f.area ? String(f.area).replace(/\s*Acre$/i, " एकड़") : "—"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2.5 p-3">
-                      <div className="flex items-center justify-between gap-2">
-                        {sowingIso ? (
-                          <p className="text-[11.5px] font-medium text-[var(--av-text-muted)]">
-                            <span className="font-semibold text-[var(--av-text-secondary)]">{isHi ? "बुवाई तारीख" : "Sown"}</span>: {formatSowingDisplay(sowingIso, isHi)}
+                      <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/10" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(isHi ? `क्या आप '${displayName}' हटाएँगे?` : `Delete '${displayName}'?`)) {
+                            deleteField(f.id);
+                            showToast(isHi ? "खेत हटा दिया गया" : "Field deleted", "success");
+                          }
+                        }}
+                        className="absolute right-2.5 top-2.5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white/90 backdrop-blur-sm active:scale-95"
+                        title={isHi ? "खेत हटाएं" : "Delete field"}
+                        aria-label={isHi ? "खेत हटाएं" : "Delete field"}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                      <AppLink
+                        href={`/my-farm/${f.id}`}
+                        className="relative z-10 flex h-full flex-col justify-end p-3.5"
+                      >
+                        <p className="font-display text-[1.35rem] font-bold leading-tight text-white">
+                          {hi}
+                          {f.variety ? ` · ${f.variety}` : ""}
+                        </p>
+                        <p className="mt-0.5 text-[12px] font-medium text-white/85">
+                          {(() => {
+                            const placeLabel = (f.village || profile.village || "").trim();
+                            const nameBit = (displayName || "").trim();
+                            const placeAndName =
+                              placeLabel && nameBit && nameBit.includes(placeLabel)
+                                ? nameBit
+                                : [placeLabel, nameBit].filter(Boolean).join(" · ");
+                            return [placeAndName, areaText].filter(Boolean).join(" · ");
+                          })()}
+                        </p>
+                        {sowingLabel ? (
+                          <p className="mt-0.5 text-[11px] text-white/70">
+                            {sowingLabel}
+                            {stageNow ? ` · ${stageNow}` : ""}
                           </p>
                         ) : (
-                          <AppLink
-                            href={growthHref}
-                            className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
-                          >
-                            {isHi
-                              ? "बुवाई तारीख जोड़ें → आज का काम"
-                              : "Add sowing date → today's work"}
-                          </AppLink>
+                          <p className="mt-0.5 text-[11px] font-semibold text-amber-200">
+                            {isHi ? "बुवाई तारीख जोड़ें" : "Add sowing date"}
+                          </p>
                         )}
-                        <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">{stageNow}</span>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <AppLink
-                          href={cropHref}
-                          className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-2 text-center active:scale-[0.98]"
-                        >
-                          <BookOpen className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
-                          <span className="text-[11px] font-bold text-[var(--av-text-primary)]">
-                            {isHi ? "फसल सुरक्षा गाइड" : "Crop Guide"}
-                          </span>
-                        </AppLink>
-                        <AppLink
-                          href={f.cropSlug ? `/crops/${f.cropSlug}/care/fertilizer` : "/crops"}
-                          className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-2 py-2 text-center active:scale-[0.98]"
-                        >
-                          <Leaf className="h-3.5 w-3.5 text-lime-700 dark:text-lime-300" />
-                          <span className="text-[11px] font-bold text-[var(--av-text-primary)]">
-                            {isHi ? "खाद-पानी तालिका" : "Fertilizer"}
-                          </span>
-                        </AppLink>
-                      </div>
-
-                      <AppLink
-                        href={
-                          f.cropSlug
-                            ? `/field-advisor?crop=${f.cropSlug}&sowing=${f.sowingDate || ""}&name=${encodeURIComponent(f.name)}`
-                            : "/field-advisor"
-                        }
-                        className="flex items-center justify-between rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-[12px] font-bold text-emerald-900 dark:text-emerald-100 transition hover:bg-emerald-500/15"
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <Sprout className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
-                          {isHi ? "इस अवस्था में आज और इस हफ्ते का काम" : "Today & this week's action"}
-                        </span>
-                        <ArrowRight className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
                       </AppLink>
-
-                      {/* Agriveda 360° Farm Intelligence Hub */}
-                      <div className="divide-y divide-[var(--av-border-subtle)] overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]">
-                        <AppLink
-                          href={`/my-farm/${f.id}?tab=live`}
-                          className="flex items-center gap-2.5 px-3 py-2 transition hover:bg-[var(--av-surface)] active:scale-[0.99]"
-                        >
-                          <Compass className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-300" />
-                          <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
-                            {isHi ? "खेत स्थिति" : "Farm Status"}
-                          </span>
-                          <span className="text-[9.5px] text-[var(--av-text-muted)]">
-                            {isHi ? "खेत का हाल" : "Field Overview"}
-                          </span>
-                          <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
-                        </AppLink>
-
-                        <AppLink
-                          href={`/my-farm/${f.id}?tab=radar`}
-                          className="flex items-center gap-2.5 px-3 py-2 transition hover:bg-[var(--av-surface)] active:scale-[0.99]"
-                        >
-                          <Radio className="h-3.5 w-3.5 shrink-0 text-teal-600 dark:text-teal-300" />
-                          <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
-                            {isHi ? "फसल सेहत" : "Crop Health"}
-                          </span>
-                          <span className="text-[9.5px] text-[var(--av-text-muted)]">
-                            {isHi ? "हरियाली की जांच" : "Crop Greenness"}
-                          </span>
-                          <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
-                        </AppLink>
-
-                        <AppLink
-                          href={`/my-farm/${f.id}?tab=journey`}
-                          className="flex items-center gap-2.5 px-3 py-2 transition hover:bg-[var(--av-surface)] active:scale-[0.99]"
-                        >
-                          <Sprout className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300" />
-                          <span className="flex-1 text-[11.5px] font-medium text-[var(--av-text-primary)]">
-                            {isHi ? "फसल अवस्था" : "Crop stage"}
-                          </span>
-                          <span className="text-[9.5px] text-[var(--av-text-muted)]">
-                            {isHi ? "बुवाई से कटाई" : "Sow to Harvest"}
-                          </span>
-                          <ChevronRight className="h-3 w-3 shrink-0 text-[var(--av-text-muted)]" />
-                        </AppLink>
-                      </div>
-
-                      {/* Satellite Boundary Mini Map (if boundary drawn) */}
-                      {f.boundary && f.boundary.length >= 3 ? (
-                        <div className="mt-2.5">
-                          <div className="flex items-center justify-between text-[11px] font-bold text-[var(--av-text-secondary)] mb-1">
-                            <span className="flex items-center gap-1">
-                              <Map className="h-3 w-3 text-emerald-600" />
-                              {isHi ? "उपग्रह सीमा दृश्य" : "Satellite Boundary"}
-                            </span>
-                            <span className="text-emerald-700 dark:text-emerald-300 font-extrabold">
-                              {f.areaAcres ? `${f.areaAcres} एकड़` : f.area}
-                              {f.bighaDisplay ? ` • ${f.bighaDisplay}` : ""}
-                            </span>
-                          </div>
-                          <MiniFieldMap boundary={f.boundary} height="130px" />
-                        </div>
-                      ) : null}
-
-                      {/* Location & Metadata Pills */}
-                      {(f.village || f.soilType || f.irrigationType) ? (
-                        <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px]">
-                          {f.village ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-[var(--av-text-secondary)]">
-                              <MapPin className="h-3 w-3 text-emerald-600" />
-                              {f.village}
-                            </span>
-                          ) : null}
-                          {f.soilType ? (
-                            <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-800 dark:text-amber-200">
-                              {f.soilType}
-                            </span>
-                          ) : null}
-                          {f.irrigationType ? (
-                            <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-800 dark:text-blue-200">
-                              {f.irrigationType}
-                            </span>
-                          ) : null}
-                        </div>
-                      ) : null}
-
-                      {/* Actions Bar */}
-                      <div className="flex items-center justify-between gap-2 pt-2 border-t border-[var(--av-border)]">
-                        <div className="flex items-center gap-1.5">
-                          <AppLink
-                            href={`/my-farm/measure?editId=${f.id}`}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100 text-[11px] font-bold hover:bg-emerald-500/20 transition"
-                          >
-                            <Ruler className="h-3 w-3 text-emerald-600" />
-                            <span>{isHi ? (f.boundary?.length ? "सीमा देखें / बदलें" : "नक्शे पर सीमा बनाएं") : "Edit Map"}</span>
-                          </AppLink>
-                          <AppLink
-                            href={`/services/fertilizer-calculator?acres=${f.areaAcres || parseAreaAcres(f.area) || 1}&crop=${encodeURIComponent(f.cropSlug || f.crop || "")}`}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] text-[11px] font-bold hover:text-[var(--av-text-primary)] transition"
-                          >
-                            <Calculator className="h-3 w-3 text-emerald-600" />
-                            <span>{isHi ? "खाद" : "Fertilizer"}</span>
-                          </AppLink>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (window.confirm(isHi ? `क्या आप '${f.name}' को हटाना चाहते हैं?` : `Delete field '${f.name}'?`)) {
-                              deleteField(f.id);
-                              if (selectedFieldId === f.id) setSelectedFieldId(null);
-                              showToast(isHi ? "खेत हटा दिया गया" : "Field deleted", "success");
-                            }
-                          }}
-                          className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-[11px] font-bold text-rose-700 transition hover:bg-rose-100 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
-                          title={isHi ? "खेत हटाएं" : "Delete Field"}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>{isHi ? "हटाएं" : "Delete"}</span>
-                        </button>
-                      </div>
                     </div>
+
+                    <div className="grid grid-cols-4 gap-1 p-1.5">
+                      {tools.map((tool) => {
+                        const Icon = tool.icon;
+                        return (
+                          <AppLink
+                            key={tool.href}
+                            href={tool.href}
+                            className="flex flex-col items-center gap-1 rounded-xl py-2.5 text-[10.5px] font-bold text-[var(--av-text-primary)] active:scale-[0.97] active:bg-emerald-500/10"
+                          >
+                            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:text-emerald-300">
+                              <Icon className="h-4 w-4" />
+                            </span>
+                            {isHi ? tool.hi : tool.en}
+                          </AppLink>
+                        );
+                      })}
+                    </div>
+
+                    {f.boundary && f.boundary.length >= 3 ? (
+                      <div className="px-1.5 pb-1.5">
+                        <MiniFieldMap boundary={f.boundary} height="110px" />
+                      </div>
+                    ) : null}
                   </motion.article>
                 );
               })}
             </div>
           ) : !showAddField ? (
-            <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-[var(--av-surface)] p-6 text-center shadow-lg">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-                <Sprout className="h-7 w-7" />
+            <div className="rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] px-5 py-8 text-center shadow-[var(--av-shadow-sm)] dark:border-emerald-500/15">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600/10 text-emerald-700 dark:text-emerald-300">
+                <Sprout className="h-6 w-6" />
               </div>
-              <h3 className="mt-3 text-base font-black text-[var(--av-text-primary)]">
-                {isHi ? "अभी तक कोई खेत नहीं जुड़ा है" : "No fields added yet"}
+              <h3 className="mt-3 text-[15px] font-bold text-[var(--av-text-primary)]">
+                {isHi ? "पहला खेत जोड़ें" : "Add your first field"}
               </h3>
-              <p className="mt-1 text-xs text-[var(--av-text-secondary)] max-w-xs mx-auto">
+              <p className="mx-auto mt-1 max-w-[16rem] text-[12px] text-[var(--av-text-muted)]">
                 {isHi
-                  ? "फसल और रकबा दर्ज करें या सीधे उपग्रह नक्शे पर नापें।"
-                  : "Measure your field on satellite map or add details for tailored recommendations."}
+                  ? "पहले फसल और रकबा जोड़ें। नापना बाद में भी हो सकता है।"
+                  : "Add crop and area first. Measuring can wait."}
               </p>
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-                <AppLink
-                  href="/my-farm/measure"
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-emerald-800 active:scale-95 transition"
-                >
-                  <Ruler className="h-4 w-4 text-emerald-200" />
-                  <span>{isHi ? "उपग्रह नक्शे पर नापें" : "Measure on Map"}</span>
-                </AppLink>
+              <div className="mt-4 flex flex-col items-center gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setShowAddField(true);
                     if (!fieldCropSlug) setCropPickerOpen(true);
                   }}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-4 py-2.5 text-xs font-bold text-[var(--av-text-primary)] hover:border-emerald-500/40 active:scale-95 transition"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 px-5 py-2.5 text-xs font-bold text-white shadow-md"
                 >
-                  <Plus className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>{isHi ? "विवरण से जोड़ें" : "Add by Details"}</span>
+                  <Plus className="h-3.5 w-3.5" />
+                  {isHi ? "खेत जोड़ें" : "Add field"}
                 </button>
+                <MeasureFieldButton className="px-5 py-2 text-xs" variant="ghost" />
               </div>
             </div>
           ) : null}
         </motion.section>
-
-        {/* Compact farm shortcuts — not home photo tiles */}
-        <motion.section {...fade(0.09)} className="space-y-2">
-          <AppLink
-            href="/weather"
-            onClick={() => track("tool_open", { href: "/weather", label: "farm_weather_strip" })}
-            className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3.5 py-3 active:scale-[0.99]"
-          >
-            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-sky-500/20 bg-sky-500/10 shadow-sm">
-              <Image
-                src="/images/icons/3d/weather.jpg"
-                alt=""
-                fill
-                sizes="44px"
-                className="object-cover"
-              />
-            </div>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[13px] font-bold text-[var(--av-text-primary)]">
-                {weatherLoading
-                  ? isHi
-                    ? "मौसम…"
-                    : "Weather…"
-                  : `${tempShort}° · ${condition || (isHi ? "मौसम" : "Weather")}`}
-              </span>
-              <span className="block text-[11px] text-[var(--av-text-muted)]">
-                {isHi ? "पूर्वानुमान और स्प्रे सलाह" : "Forecast & spray advice"}
-              </span>
-            </span>
-            <ArrowRight className="h-4 w-4 shrink-0 text-[var(--av-text-muted)]" />
-          </AppLink>
-
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-            {FARM_LINKS.map((link) => {
-              const Icon = link.icon;
-              return (
-                <AppLink
-                  key={link.id}
-                  href={link.href}
-                  onClick={() => track("tool_open", { href: link.href, label: `farm_${link.id}` })}
-                  className="group flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-2 text-center transition hover:border-emerald-500/40 active:scale-[0.98]"
-                >
-                  <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-emerald-500/15 bg-emerald-500/10 shadow-sm">
-                    {link.icon3d ? (
-                      <Image
-                        src={link.icon3d}
-                        alt=""
-                        fill
-                        sizes="40px"
-                        className="object-cover transition duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <Icon className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
-                    )}
-                  </div>
-                  <span className="text-[10px] font-bold text-[var(--av-text-primary)]">
-                    {isHi ? link.hi : link.en}
-                  </span>
-                </AppLink>
-              );
-            })}
-          </div>
-        </motion.section>
-
-        {/* Tasks + notes — one secondary interaction section (hidden when add-field form is open) */}
-        {!showAddField ? (
-          <motion.section {...fade(0.13)} className="space-y-2.5">
-            <div className="flex items-center justify-between px-0.5">
-              <h2 className="text-[14px] font-bold text-[var(--av-text-primary)]">
-                {isHi ? "कार्य और नोट" : "Tasks & notes"}
-              </h2>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddActivity((v) => !v);
-                    setShowAddNote(false);
-                  }}
-                  className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
-                >
-                  + {isHi ? "कार्य" : "Task"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddNote((v) => !v);
-                    setShowAddActivity(false);
-                  }}
-                  className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
-                >
-                  + {isHi ? "नोट" : "Note"}
-                </button>
-              </div>
-            </div>
-
-            {showAddActivity ? (
-              <div className="space-y-2 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3">
-                <input
-                  value={activityTask}
-                  onChange={(e) => setActivityTask(e.target.value)}
-                  placeholder={isHi ? "कार्य (जैसे — खाद डालना)" : "Task"}
-                  className="av-input text-xs"
-                />
-                <input
-                  value={activityField}
-                  onChange={(e) => setActivityField(e.target.value)}
-                  placeholder={isHi ? "खेत का नाम" : "Field name"}
-                  className="av-input text-xs"
-                />
-                <input
-                  value={activityDate}
-                  onChange={(e) => setActivityDate(e.target.value)}
-                  placeholder={isHi ? "तारीख (वैकल्पिक)" : "Date (optional)"}
-                  className="av-input text-xs"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddActivity}
-                  className="av-btn av-btn-sm av-btn-primary"
-                >
-                  {isHi ? "काम सहेजें" : "Save task"}
-                </button>
-              </div>
-            ) : null}
-
-            {showAddNote ? (
-              <div className="space-y-2 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3">
-                <input
-                  value={noteTitle}
-                  onChange={(e) => setNoteTitle(e.target.value)}
-                  placeholder={isHi ? "शीर्षक" : "Title"}
-                  className="av-input text-xs"
-                />
-                <textarea
-                  value={noteBody}
-                  onChange={(e) => setNoteBody(e.target.value)}
-                  placeholder={isHi ? "नोट का विवरण" : "Note details"}
-                  rows={2}
-                  className="av-input w-full resize-none text-xs"
-                />
-                <button type="button" onClick={handleAddNote} className="av-btn av-btn-sm av-btn-primary">
-                  {isHi ? "नोट सहेजें" : "Save note"}
-                </button>
-              </div>
-            ) : null}
-
-            <ul className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]">
-              {data.activities.length === 0 && data.notes.length === 0 ? (
-                <li className="px-3.5 py-4 text-center text-[12px] text-[var(--av-text-muted)]">
-                  {isHi ? "अभी कोई कार्य या नोट नहीं" : "No tasks or notes yet"}
-                </li>
-              ) : (
-                <>
-                  {data.activities.slice(0, 4).map((a) => (
-                    <li
-                      key={a.id}
-                      className="flex items-start gap-2.5 border-b border-[var(--av-border-subtle)] px-3.5 py-3 last:border-0"
-                    >
-                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-700 dark:text-emerald-300">
-                        <CalendarDays className="h-4 w-4" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[13px] font-bold text-[var(--av-text-primary)]">
-                          {a.task}
-                        </span>
-                        <span className="mt-0.5 block text-[11px] text-[var(--av-text-muted)]">
-                          {a.field} · {a.date}
-                        </span>
-                      </span>
-                    </li>
-                  ))}
-                  {data.notes.slice(0, 3).map((n) => (
-                    <li
-                      key={n.id}
-                      className="flex items-start gap-2.5 border-b border-[var(--av-border-subtle)] px-3.5 py-3 last:border-0"
-                    >
-                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/12 text-amber-800 dark:text-amber-200">
-                        <Bell className="h-4 w-4" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[13px] font-bold text-[var(--av-text-primary)]">
-                          {n.title}
-                          {n.pinned ? (
-                            <span className="ml-1.5 inline-flex items-center rounded-md bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-800 dark:text-amber-200">
-                              {isHi ? "पिन" : "PINNED"}
-                            </span>
-                          ) : null}
-                        </span>
-                        <span className="mt-0.5 line-clamp-2 block text-[11px] text-[var(--av-text-muted)]">
-                          {n.body}
-                        </span>
-                      </span>
-                    </li>
-                  ))}
-                </>
-              )}
-            </ul>
-          </motion.section>
-        ) : null}
-
-        {/* Ask CTA */}
-        <motion.section {...fade(0.15)}>
-          <AppLink
-            href="/kisan-saathi"
-            onClick={() => track("tool_open", { href: "/kisan-saathi", label: "farm_saathi" })}
-            className="group flex min-h-[58px] w-full items-center justify-between gap-3 overflow-hidden rounded-2xl border border-emerald-700/30 bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800 p-3 text-white shadow-md shadow-emerald-900/20 active:scale-[0.99]"
-          >
-            <div className="flex items-center gap-3">
-              <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-emerald-400/30 bg-white/10 shadow-sm">
-                <Image
-                  src="/images/icons/3d/kisan-saathi.jpg"
-                  alt=""
-                  fill
-                  sizes="44px"
-                  className="object-cover transition duration-300 group-hover:scale-105"
-                />
-              </div>
-              <div>
-                <span className="block text-[14px] font-bold leading-tight">
-                  {isHi ? "किसान साथी से पूछो" : "Ask Kisan Saathi"}
-                </span>
-                <span className="block text-[11px] font-medium text-emerald-100/90">
-                  {isHi ? "खेत के लिए 24/7 AI सलाह" : "Instant 24/7 AI farm advice"}
-                </span>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200 transition group-hover:translate-x-0.5" />
-          </AppLink>
-        </motion.section>
       </div>
+      <MeasureAfterAddPrompt
+        fieldId={measurePromptId}
+        isHi={isHi}
+        onDismiss={() => setMeasurePromptId(null)}
+      />
     </div>
   );
 }

@@ -68,10 +68,4 @@ export function generateOtp(): string {
   return String(randomInt(100000, 1000000));
 }
 
-export function isProductionRuntime(): boolean {
-  return (
-    process.env.NODE_ENV === "production" ||
-    process.env.VERCEL_ENV === "production" ||
-    process.env.AGRIVEDA_FORCE_PROD_AUTH === "true"
-  );
-}
+export { isProductionRuntime } from "@/lib/runtimeEnv";

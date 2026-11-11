@@ -62,16 +62,12 @@ public class MainActivity extends BridgeActivity {
 
     @JavascriptInterface
     public void setScreenProtection(boolean enable) {
-      runOnUiThread(() -> {
-        if (enable) {
-          getWindow().setFlags(
-              WindowManager.LayoutParams.FLAG_SECURE,
-              WindowManager.LayoutParams.FLAG_SECURE
-          );
-        } else {
-          getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        }
-      });
+      // FLAG_SECURE cannot be disabled from JavaScript.
+      if (!enable) return;
+      runOnUiThread(() -> getWindow().setFlags(
+          WindowManager.LayoutParams.FLAG_SECURE,
+          WindowManager.LayoutParams.FLAG_SECURE
+      ));
     }
   }
 }

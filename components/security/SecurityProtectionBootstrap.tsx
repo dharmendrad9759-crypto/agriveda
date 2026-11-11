@@ -85,8 +85,10 @@ export default function SecurityProtectionBootstrap() {
       showWarning("सुरक्षा नीति: सामग्री कॉपी करना प्रतिबंधित है।");
     };
 
-    // 4. Disable Dragging (Images, Text)
+    // 4. Disable Dragging (Images, Text) — never block Leaflet map pan
     const handleDragStart = (e: DragEvent) => {
+      const target = e.target;
+      if (target instanceof Element && target.closest(".leaflet-container")) return;
       e.preventDefault();
     };
 

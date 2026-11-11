@@ -10,6 +10,8 @@ import {
   Mountain,
   FileText,
   Info,
+  Plus,
+  Ruler,
 } from "lucide-react";
 import {
   LatLng,
@@ -27,6 +29,11 @@ import { cn } from "@/lib/cn";
 import { sortCropsByCurrentSeason } from "@/lib/crops/seasonalCropEngine";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { suggestFieldName } from "@/lib/farm/fieldName";
+import {
+  FARM_SOIL_OPTIONS,
+  matchFarmSoil,
+  soilForPlace,
+} from "@/lib/farm/placeProfile";
 
 interface SaveFieldModalProps {
   isOpen: boolean;
@@ -146,18 +153,26 @@ const IRRIGATION_OPTIONS = [
   { value: "Rainfed / वर्षा-आधारित", label: "वर्षा-आधारित (बारानी)" },
 ];
 
-const SOIL_OPTIONS = [
-  "दोमट मिट्टी (Loam)",
-  "काली मिट्टी (Black)",
-  "जलोढ़ मिट्टी (Alluvial)",
-  "बलुई दोमट (Sandy Loam)",
-  "चिकनी मिट्टी (Clay)",
-  "लाल मिट्टी (Red)",
-];
+function listedOrCustomSoil(value?: string): { listed: string; custom: string } {
+  const raw = (value || "").trim();
+  if (!raw) return { listed: "", custom: "" };
+  const listed = matchFarmSoil(raw);
+  if (listed) return { listed, custom: "" };
+  return { listed: "", custom: raw };
+}
 
-function knownSoil(value?: string): string {
-  if (!value) return "";
-  return SOIL_OPTIONS.includes(value) ? value : "";
+function geoSoilHint(args: {
+  placeSoil?: string;
+  placeState?: string;
+  placeDistrict?: string;
+  profileState?: string;
+  profileDistrict?: string;
+}): string {
+  return (
+    matchFarmSoil(args.placeSoil) ||
+    matchFarmSoil(soilForPlace(args.placeState, args.placeDistrict)) ||
+    matchFarmSoil(soilForPlace(args.profileState, args.profileDistrict))
+  );
 }
 
 function resolveCrop(initialData?: Partial<FarmField>): CropOption {
@@ -211,17 +226,25 @@ export default function SaveFieldModal({
   const seasonalCrops = useMemo(() => sortCropsByCurrentSeason(CROPS_CATALOG), []);
   const initialCrop = useMemo(() => resolveCrop(initialData), [initialData]);
 
+  const villageFromPlace = (placeVillage || "").trim();
+  const villageEdited = useRef(false);
+  const mapCenterKey = useMemo(() => {
+    if (coords.length === 0) return "";
+    const center = getPolygonCenter(coords);
+    return `${center.lat.toFixed(4)},${center.lng.toFixed(4)}`;
+  }, [coords]);
   const [name, setName] = useState(
     initialData?.name ||
       suggestFieldName({
         existing: existingFields,
         cropHi: initialCrop.nameHi,
-        village: initialData?.village || placeVillage || profile?.village,
+        village: initialData?.village || villageFromPlace || profile?.village,
       })
   );
   const [village, setVillage] = useState(
-    initialData?.village || placeVillage || profile?.village || profile?.district || "मेरा गांव"
+    initialData?.village || villageFromPlace || ""
   );
+  const [villageLooking, setVillageLooking] = useState(false);
   const [farmerName, setFarmerName] = useState(
     initialData?.farmerName || profile?.name || ""
   );
@@ -237,10 +260,25 @@ export default function SaveFieldModal({
     initialData?.irrigationType || IRRIGATION_OPTIONS[0].value
   );
   const [soilType, setSoilType] = useState(
-    knownSoil(initialData?.soilType) || knownSoil(placeSoil)
+    listedOrCustomSoil(initialData?.soilType).listed ||
+      listedOrCustomSoil(initialData?.soilType).custom ||
+      geoSoilHint({
+        placeSoil,
+        placeState,
+        placeDistrict,
+        profileState: profile?.state,
+        profileDistrict: profile?.district,
+      })
+  );
+  const [customSoil, setCustomSoil] = useState(
+    listedOrCustomSoil(initialData?.soilType).custom
+  );
+  const [showCustomSoil, setShowCustomSoil] = useState(
+    Boolean(listedOrCustomSoil(initialData?.soilType).custom)
   );
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [error, setError] = useState<string | null>(null);
+  const soilTouched = useRef(Boolean(initialData?.soilType));
 
   // Re-seed on every open and when async "edit field" data arrives with an id.
   const seedKey = isOpen ? initialData?.id ?? "new" : "";
@@ -253,26 +291,23 @@ export default function SaveFieldModal({
     }
     if (seededFor.current === seedKey) return;
     seededFor.current = seedKey;
+    villageEdited.current = Boolean(initialData?.village);
+    soilTouched.current = Boolean(initialData?.soilType);
 
     const crop = resolveCrop(initialData);
     const initialVariety = initialData?.variety || "";
     const isKnownVariety = crop.popularVarieties.includes(initialVariety);
+    const fromPlace = (placeVillage || placeDistrict || "").trim();
 
     setName(
       initialData?.name ||
         suggestFieldName({
           existing: existingFields,
           cropHi: crop.nameHi,
-          village: initialData?.village || placeVillage || profile?.village,
+          village: initialData?.village || fromPlace || profile?.village,
         })
     );
-    setVillage(
-      initialData?.village ||
-        placeVillage ||
-        profile?.village ||
-        profile?.district ||
-        "मेरा गांव"
-    );
+    setVillage(initialData?.village || fromPlace);
     setFarmerName(initialData?.farmerName || profile?.name || "");
     setSelectedCropSlug(crop.slug);
     setVariety(isKnownVariety ? initialVariety : crop.popularVarieties[0] || "");
@@ -284,7 +319,17 @@ export default function SaveFieldModal({
         daysAgoISO(22)
     );
     setIrrigationType(initialData?.irrigationType || IRRIGATION_OPTIONS[0].value);
-    setSoilType(knownSoil(initialData?.soilType) || knownSoil(placeSoil));
+    const seededSoil = listedOrCustomSoil(initialData?.soilType);
+    const suggested = geoSoilHint({
+      placeSoil,
+      placeState,
+      placeDistrict,
+      profileState: profile?.state,
+      profileDistrict: profile?.district,
+    });
+    setSoilType(seededSoil.listed || suggested);
+    setCustomSoil(seededSoil.custom);
+    setShowCustomSoil(Boolean(seededSoil.custom));
     setNotes(initialData?.notes || "");
     setError(null);
   }, [
@@ -294,24 +339,89 @@ export default function SaveFieldModal({
     profile?.village,
     profile?.district,
     profile?.name,
+    profile?.state,
     placeSoil,
     placeVillage,
+    placeState,
+    placeDistrict,
     existingFields,
   ]);
 
   useEffect(() => {
-    if (!isOpen || !placeVillage) return;
-    setVillage((current) =>
-      !current || current === "मेरा गांव" ? placeVillage : current
-    );
-  }, [isOpen, placeVillage]);
+    if (!isOpen) {
+      villageEdited.current = false;
+      setVillageLooking(false);
+      return;
+    }
+
+    const fromVillage = (placeVillage || "").trim();
+    const fromDistrict = (placeDistrict || "").trim();
+    if (!villageEdited.current) {
+      if (fromVillage) {
+        setVillage(fromVillage);
+        setVillageLooking(false);
+      } else if (fromDistrict) {
+        setVillage((current) => current || fromDistrict);
+      }
+    }
+
+    if (!mapCenterKey) return;
+    const [lat, lon] = mapCenterKey.split(",");
+
+    let cancelled = false;
+    setVillageLooking(true);
+    fetch(`/api/geo/reverse?lat=${lat}&lon=${lon}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then(
+        (
+          data: { village?: string; district?: string; state?: string } | null
+        ) => {
+          if (cancelled) return;
+          if (!villageEdited.current) {
+            const next = (data?.village || data?.district || fromDistrict || "").trim();
+            if (next) setVillage(next);
+          }
+          if (!soilTouched.current) {
+            const fromMap = matchFarmSoil(
+              soilForPlace(data?.state, data?.district)
+            );
+            if (fromMap) {
+              setSoilType(fromMap);
+              setShowCustomSoil(false);
+              setCustomSoil("");
+            }
+          }
+        }
+      )
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setVillageLooking(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, placeVillage, placeDistrict, mapCenterKey]);
 
   useEffect(() => {
-    if (!isOpen) return;
-    const suggested = knownSoil(placeSoil);
+    if (!isOpen || soilTouched.current) return;
+    const suggested = geoSoilHint({
+      placeSoil,
+      placeState,
+      placeDistrict,
+      profileState: profile?.state,
+      profileDistrict: profile?.district,
+    });
     if (!suggested) return;
     setSoilType((current) => current || suggested);
-  }, [isOpen, placeSoil]);
+  }, [
+    isOpen,
+    placeSoil,
+    placeState,
+    placeDistrict,
+    profile?.state,
+    profile?.district,
+  ]);
 
   const activeCropObj = useMemo(
     () =>
@@ -326,12 +436,11 @@ export default function SaveFieldModal({
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (!name.trim()) {
-      setError("कृपया खेत का नाम दर्ज करें");
-      return;
-    }
-    if (!soilType) {
-      setError("मिट्टी चुनें — राज्य चुनने पर यह अपने आप भर जाती है");
+    const finalSoil = showCustomSoil
+      ? customSoil.trim() || soilType
+      : soilType || customSoil.trim();
+    if (!finalSoil) {
+      setError("मिट्टी चुनें, या अपनी मिट्टी लिखें");
       return;
     }
 
@@ -339,10 +448,19 @@ export default function SaveFieldModal({
     const geoJson = isPolygon ? coordsToGeoJsonPolygon(coords) : undefined;
     const centerPoint = coords.length > 0 ? getPolygonCenter(coords) : undefined;
     const finalVariety = customVariety.trim() || variety;
+    const villageName =
+      village.trim() || placeVillage?.trim() || placeDistrict?.trim() || "";
+    const fieldName =
+      (initialData?.name || "").trim() ||
+      suggestFieldName({
+        existing: existingFields,
+        cropHi: activeCropObj.nameHi,
+        village: villageName,
+      });
 
     onSave({
-      name: name.trim(),
-      village: village.trim() || "मेरा गांव",
+      name: fieldName,
+      village: villageName,
       farmerName: farmerName.trim() || undefined,
       crop: activeCropObj.nameHi,
       cropSlug: activeCropObj.slug,
@@ -378,10 +496,10 @@ export default function SaveFieldModal({
         : initialData?.measurementMethod || "manual_entry",
       sowingDate,
       sowingDateIso: sowingDate
-        ? new Date(sowingDate).toISOString()
+        ? sowingDate.slice(0, 10)
         : initialData?.sowingDateIso,
       irrigationType,
-      soilType,
+      soilType: finalSoil,
       placeState: placeState || initialData?.placeState,
       placeDistrict: placeDistrict || initialData?.placeDistrict,
       climateNote: climateNote || initialData?.climateNote,
@@ -398,108 +516,137 @@ export default function SaveFieldModal({
       open={isOpen}
       onClose={onClose}
       title={initialData?.id ? "खेत विवरण संशोधित करें" : "खेत जोड़ें"}
-      subtitle="खेत का रकबा और फसल विवरण"
-      icon={<MapPin className="h-4 w-4" />}
+      subtitle="नापा रकबा, फसल और किस्म सहेजें"
+      icon={<Ruler className="h-5 w-5" />}
       size="lg"
       level={10000}
+      footer={
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="av-btn av-btn-secondary min-h-12 flex-1 rounded-2xl text-[14px]"
+          >
+            रद्द करें
+          </button>
+          <button
+            type="submit"
+            form="save-field-form"
+            className="av-btn av-btn-primary min-h-12 flex-[1.35] rounded-2xl text-[14px] shadow-[0_10px_24px_-10px_rgba(5,150,105,0.7)]"
+          >
+            <Check className="h-4 w-4" />
+            {initialData?.id ? "बदलाव सहेजें" : "खेत जोड़ें"}
+          </button>
+        </div>
+      }
     >
-      <div className="mb-3.5 grid grid-cols-3 divide-x divide-[var(--av-border-subtle)] rounded-2xl bg-[var(--av-surface-inset)] py-2.5 text-center">
-        <div>
-          <p className="text-[9px] font-medium uppercase tracking-wider text-[var(--av-text-muted)]">
-            रकबा
-          </p>
-          <p className="mt-0.5 text-sm font-semibold tabular-nums text-[var(--av-text-primary)]">
-            {acres.toFixed(2)} <span className="text-[9px]">एकड़</span>
-          </p>
-          {bighaDisplay ? (
-            <p className="mt-0.5 text-[9px] text-amber-700 dark:text-amber-300">
-              {bighaDisplay}
+      <div className="relative mb-4 overflow-hidden rounded-[24px] border border-emerald-400/20 bg-gradient-to-br from-[#063224] via-[#0a4a32] to-[#0f3d36] p-4 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+        <div className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full bg-emerald-300/15 blur-2xl" />
+        <div className="relative flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[12px] font-semibold text-emerald-200/85">
+              नापा गया रकबा
             </p>
-          ) : null}
+            <p className="mt-1 flex items-end gap-2">
+              <span className="font-av-serif text-[2.35rem] font-bold leading-none tabular-nums tracking-tight">
+                {acres.toFixed(2)}
+              </span>
+              <span className="mb-1 text-[15px] font-semibold text-emerald-50/90">
+                एकड़
+              </span>
+            </p>
+            {bighaDisplay ? (
+              <p className="mt-1.5 text-[12px] font-medium text-amber-200/90">
+                {bighaDisplay}
+              </p>
+            ) : null}
+          </div>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-emerald-100">
+            <Ruler className="h-5 w-5" />
+          </span>
         </div>
-        <div>
-          <p className="text-[9px] font-medium uppercase tracking-wider text-[var(--av-text-muted)]">
-            हेक्टेयर
-          </p>
-          <p className="mt-0.5 text-sm font-semibold tabular-nums text-[var(--av-text-primary)]">
-            {hectares.toFixed(3)}
-          </p>
-          <p className="mt-0.5 text-[9px] text-[var(--av-text-muted)]">
-            {Math.round(sqMeters).toLocaleString("en-IN")} m²
-          </p>
+        <div className="relative mt-3.5 grid grid-cols-3 gap-2">
+          {[
+            { label: "हेक्टेयर", value: hectares.toFixed(3) },
+            {
+              label: "क्षेत्र",
+              value: `${Math.round(sqMeters).toLocaleString("en-IN")} m²`,
+            },
+            { label: "परिधि", value: `${Math.round(perimeter)} m` },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="rounded-2xl bg-black/20 px-2.5 py-2 ring-1 ring-white/10"
+            >
+              <p className="text-[11px] font-medium text-emerald-100/70">{stat.label}</p>
+              <p className="mt-0.5 text-[13px] font-semibold tabular-nums tracking-tight text-white">
+                {stat.value}
+              </p>
+            </div>
+          ))}
         </div>
-        <div>
-          <p className="text-[9px] font-medium uppercase tracking-wider text-[var(--av-text-muted)]">
-            परिधि
-          </p>
-          <p className="mt-0.5 text-sm font-semibold tabular-nums text-[var(--av-text-primary)]">
-            {Math.round(perimeter)} m
-          </p>
-          <p className="mt-0.5 text-[9px] text-[var(--av-text-muted)]">
-            {coords.length} बिंदु
-          </p>
-        </div>
+        <p className="relative mt-2.5 text-[12px] font-medium text-emerald-100/75">
+          {coords.length} बिंदु नापे गए
+        </p>
       </div>
 
       {error ? (
-        <div className="mb-3 flex items-start gap-2 rounded-xl border border-rose-500/25 bg-rose-500/10 p-2.5 text-[11px] font-medium text-rose-700 dark:text-rose-300">
-          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        <div className="mb-3 flex items-start gap-2 rounded-2xl border border-rose-500/25 bg-rose-500/10 p-3 text-[13px] font-medium text-rose-700 dark:text-rose-300">
+          <Info className="mt-0.5 h-4 w-4 shrink-0" />
           {error}
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold text-[var(--av-text-secondary)]">
-              खेत का नाम <span className="text-rose-500">*</span>
-            </label>
+      <form id="save-field-form" onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="mb-2 block text-[13px] font-semibold tracking-tight text-[var(--av-text-secondary)]">
+            गांव / कस्बा
+          </label>
+          <div className="relative">
+            <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-700 dark:text-emerald-300" />
             <input
               type="text"
-              required
-              placeholder="उदा. उत्तर वाला खेत"
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-                if (error) setError(null);
-              }}
-              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-xs font-medium text-[var(--av-text-primary)] outline-none transition placeholder:text-[var(--av-text-muted)] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold text-[var(--av-text-secondary)]">
-              गांव / कस्बा
-            </label>
-            <input
-              type="text"
-              placeholder="उदा. नगला बीच"
+              placeholder={
+                villageLooking ? "लोकेशन से गांव आ रहा है…" : "उदा. नगला बीच"
+              }
               value={village}
-              onChange={(event) => setVillage(event.target.value)}
-              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2.5 text-xs text-[var(--av-text-primary)] outline-none transition placeholder:text-[var(--av-text-muted)] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+              onChange={(event) => {
+                villageEdited.current = true;
+                setVillage(event.target.value);
+              }}
+              className="av-input min-h-11 rounded-2xl bg-[var(--av-surface)] pl-10 text-[14px] font-medium"
             />
           </div>
+          {villageLooking && !village ? (
+            <p className="mt-1.5 text-[12px] font-medium text-[var(--av-text-muted)]">
+              नक्शे की जगह से गांव भर रहे हैं
+            </p>
+          ) : village && !villageEdited.current ? (
+            <p className="mt-1.5 inline-flex rounded-full bg-emerald-500/12 px-2.5 py-0.5 text-[12px] font-semibold text-emerald-800 dark:text-emerald-200">
+              लोकेशन से भरा गया
+            </p>
+          ) : null}
         </div>
 
         <div>
-          <div className="mb-1.5 flex items-center justify-between gap-2">
-            <label className="flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-              <Sprout className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <label className="flex items-center gap-1.5 text-[13px] font-semibold tracking-tight text-[var(--av-text-secondary)]">
+              <Sprout className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
               मुख्य फसल
             </label>
-            <span className="text-[10px] text-[var(--av-text-muted)] flex items-center gap-1.5 font-bold">
-              <span className="relative inline-block h-4 w-4 overflow-hidden rounded-full border border-emerald-500/30">
+            <span className="flex items-center gap-1.5 text-[13px] font-bold text-[var(--av-text-primary)]">
+              <span className="relative inline-block h-5 w-5 overflow-hidden rounded-full outline outline-1 outline-offset-[-1px] outline-black/10">
                 <img
                   src={resolveCropImage({ slug: activeCropObj.slug, name: activeCropObj.nameEn })}
                   alt=""
                   className="h-full w-full object-cover"
                 />
               </span>
-              <span>{activeCropObj.nameHi}</span>
+              {activeCropObj.nameHi}
             </span>
           </div>
 
-          <div className="grid max-h-40 grid-cols-4 gap-1.5 overflow-y-auto rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] p-1.5 sm:grid-cols-6">
+          <div className="grid max-h-52 grid-cols-4 gap-1.5 overflow-y-auto rounded-[22px] bg-[var(--av-surface-inset)] p-2 sm:grid-cols-6">
             {seasonalCrops.map((crop) => {
               const selected = crop.slug === selectedCropSlug;
               return (
@@ -521,20 +668,23 @@ export default function SaveFieldModal({
                     }
                   }}
                   className={cn(
-                    "rounded-xl px-1 py-2 text-center transition active:scale-95",
+                    "rounded-[16px] px-1 py-2 text-center transition-[transform,background-color,color,box-shadow] duration-150 active:scale-[0.96]",
                     selected
-                      ? "bg-emerald-700 text-white shadow-sm"
+                      ? "bg-emerald-800 text-white shadow-[0_8px_18px_-10px_rgba(6,78,59,0.7)]"
                       : "bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
                   )}
                 >
-                  <span className="relative mx-auto block h-8 w-8 overflow-hidden rounded-xl border border-emerald-500/25 shadow-xs" aria-hidden>
+                  <span
+                    className="relative mx-auto block h-10 w-10 overflow-hidden rounded-[14px] outline outline-1 outline-offset-[-1px] outline-black/10"
+                    aria-hidden
+                  >
                     <img
                       src={resolveCropImage({ slug: crop.slug, name: crop.nameEn })}
                       alt=""
                       className="h-full w-full object-cover"
                     />
                   </span>
-                  <span className="mt-1 block truncate text-[10px] font-medium">
+                  <span className="mt-1.5 block truncate text-[12px] font-semibold leading-tight">
                     {crop.nameHi}
                   </span>
                 </button>
@@ -544,45 +694,48 @@ export default function SaveFieldModal({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-[11px] font-semibold text-[var(--av-text-secondary)]">
+          <label className="mb-2 block text-[13px] font-semibold tracking-tight text-[var(--av-text-secondary)]">
             बीज किस्म
           </label>
-          <div className="mb-1.5 flex flex-wrap gap-1.5">
-            {activeCropObj.popularVarieties.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => {
-                  setVariety(item);
-                  setCustomVariety("");
-                }}
-                className={cn(
-                  "rounded-lg px-2.5 py-1 text-[10.5px] font-medium transition",
-                  variety === item && !customVariety
-                    ? "bg-emerald-700 text-white shadow-sm"
-                    : "border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)] hover:text-[var(--av-text-primary)]"
-                )}
-              >
-                {item}
-              </button>
-            ))}
+          <div className="mb-2 flex flex-wrap gap-2">
+            {activeCropObj.popularVarieties.map((item) => {
+              const selected = variety === item && !customVariety;
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => {
+                    setVariety(item);
+                    setCustomVariety("");
+                  }}
+                  className={cn(
+                    "min-h-10 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-[transform,background-color,color,border-color] duration-150 active:scale-[0.97]",
+                    selected
+                      ? "bg-emerald-800 text-white shadow-sm"
+                      : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:border-emerald-500/40 hover:text-[var(--av-text-primary)]"
+                  )}
+                >
+                  {item}
+                </button>
+              );
+            })}
           </div>
           <input
             type="text"
             placeholder="या अपनी किस्म लिखें…"
             value={customVariety}
             onChange={(event) => setCustomVariety(event.target.value)}
-            className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none transition placeholder:text-[var(--av-text-muted)] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            className="av-input min-h-11 rounded-2xl bg-[var(--av-surface)] text-[14px] font-medium"
           />
         </div>
 
         <div>
-          <div className="mb-1.5 flex items-center justify-between gap-2">
-            <label className="flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-              <CalendarDays className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <label className="flex items-center gap-1.5 text-[13px] font-semibold tracking-tight text-[var(--av-text-secondary)]">
+              <CalendarDays className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
               बुवाई की तारीख
             </label>
-            <span className="text-[10px] text-[var(--av-text-muted)]">
+            <span className="text-[12px] font-semibold tabular-nums text-[var(--av-text-muted)]">
               {sowingDate}
             </span>
           </div>
@@ -590,67 +743,129 @@ export default function SaveFieldModal({
           <div className="mb-2 grid grid-cols-4 gap-1.5">
             {[
               { days: 0, label: "आज" },
-              { days: 10, label: "10 दिन" },
-              { days: 21, label: "21 दिन" },
-              { days: 35, label: "35 दिन" },
-            ].map((preset) => (
-              <button
-                key={preset.days}
-                type="button"
-                onClick={() => handleApplySowingPreset(preset.days)}
-                className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] py-1.5 text-[10px] font-medium text-[var(--av-text-secondary)] transition hover:text-[var(--av-text-primary)]"
-              >
-                {preset.label} पहले
-              </button>
-            ))}
+              { days: 10, label: "10 दिन पहले" },
+              { days: 21, label: "21 दिन पहले" },
+              { days: 35, label: "35 दिन पहले" },
+            ].map((preset) => {
+              const selected = sowingDate === daysAgoISO(preset.days);
+              return (
+                <button
+                  key={preset.days}
+                  type="button"
+                  onClick={() => handleApplySowingPreset(preset.days)}
+                  className={cn(
+                    "min-h-10 rounded-2xl px-1 text-[12px] font-semibold leading-tight transition-[transform,background-color,color] duration-150 active:scale-[0.97]",
+                    selected
+                      ? "bg-emerald-800 text-white"
+                      : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                  )}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
           </div>
 
           <input
             type="date"
             value={sowingDate}
             onChange={(event) => setSowingDate(event.target.value)}
-            className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs font-medium text-[var(--av-text-primary)] outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            className="av-input min-h-11 rounded-2xl bg-[var(--av-surface)] text-[14px] font-medium tabular-nums"
           />
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-4">
           <div>
-            <label className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-              <Droplets className="h-3.5 w-3.5 text-sky-600 dark:text-sky-300" />
+            <label className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold tracking-tight text-[var(--av-text-secondary)]">
+              <Droplets className="h-4 w-4 text-sky-600 dark:text-sky-300" />
               सिंचाई व्यवस्था
             </label>
-            <select
-              value={irrigationType}
-              onChange={(event) => setIrrigationType(event.target.value)}
-              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none focus:border-emerald-500"
-            >
-              {IRRIGATION_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {IRRIGATION_OPTIONS.map((option) => {
+                const selected = irrigationType === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setIrrigationType(option.value)}
+                    className={cn(
+                      "min-h-10 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-[transform,background-color,color] duration-150 active:scale-[0.97]",
+                      selected
+                        ? "bg-sky-800 text-white"
+                        : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div>
-            <label className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-              <Mountain className="h-3.5 w-3.5 text-amber-600 dark:text-amber-300" />
+            <label className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold tracking-tight text-[var(--av-text-secondary)]">
+              <Mountain className="h-4 w-4 text-amber-600 dark:text-amber-300" />
               मिट्टी का प्रकार
             </label>
-            <select
-              value={soilType}
-              onChange={(event) => setSoilType(event.target.value)}
-              className="w-full rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none focus:border-emerald-500"
-            >
-              <option value="">मिट्टी चुनें</option>
-              {SOIL_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {FARM_SOIL_OPTIONS.map((option) => {
+                const selected = !showCustomSoil && soilType === option;
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => {
+                      soilTouched.current = true;
+                      setShowCustomSoil(false);
+                      setCustomSoil("");
+                      setSoilType(option);
+                      setError(null);
+                    }}
+                    className={cn(
+                      "min-h-10 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-[transform,background-color,color] duration-150 active:scale-[0.97]",
+                      selected
+                        ? "bg-amber-800 text-white"
+                        : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                    )}
+                  >
+                    {option.replace(/\s*\(.*\)$/, "")}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => {
+                  soilTouched.current = true;
+                  setShowCustomSoil(true);
+                  setSoilType("");
+                  setError(null);
+                }}
+                className={cn(
+                  "inline-flex min-h-10 items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-[transform,background-color,color] duration-150 active:scale-[0.97]",
+                  showCustomSoil
+                    ? "bg-amber-800 text-white"
+                    : "border border-dashed border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                )}
+              >
+                <Plus className="h-3.5 w-3.5" strokeWidth={2.4} />
+                अपनी लिखें
+              </button>
+            </div>
+            {showCustomSoil ? (
+              <input
+                value={customSoil}
+                onChange={(event) => {
+                  soilTouched.current = true;
+                  setCustomSoil(event.target.value);
+                  setError(null);
+                }}
+                placeholder="जैसे: ऊसर, रेतीली, कंकड़ वाली…"
+                className="av-input mt-2 min-h-11 rounded-2xl bg-[var(--av-surface)] text-[14px] font-medium"
+                autoFocus
+              />
+            ) : null}
             {climateNote || initialData?.climateNote ? (
-              <p className="mt-1.5 text-[11px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+              <p className="mt-2 text-[13px] font-medium leading-snug text-[var(--av-text-secondary)]">
                 {climateNote || initialData?.climateNote}
               </p>
             ) : null}
@@ -658,8 +873,8 @@ export default function SaveFieldModal({
         </div>
 
         <div>
-          <label className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-secondary)]">
-            <FileText className="h-3.5 w-3.5 text-[var(--av-text-muted)]" />
+          <label className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold tracking-tight text-[var(--av-text-secondary)]">
+            <FileText className="h-4 w-4 text-[var(--av-text-muted)]" />
             नोट्स
           </label>
           <textarea
@@ -667,25 +882,8 @@ export default function SaveFieldModal({
             onChange={(event) => setNotes(event.target.value)}
             placeholder="खेत, मिट्टी या सिंचाई से जुड़ी कोई खास बात…"
             rows={2}
-            className="w-full resize-none rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-2 text-xs text-[var(--av-text-primary)] outline-none transition placeholder:text-[var(--av-text-muted)] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            className="av-input min-h-[4.5rem] resize-none rounded-2xl bg-[var(--av-surface)] py-3 text-[14px] font-medium"
           />
-        </div>
-
-        <div className="flex gap-2 border-t border-[var(--av-border-subtle)] pt-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 rounded-xl border border-[var(--av-border)] py-2.5 text-xs font-semibold text-[var(--av-text-secondary)] transition hover:bg-[var(--av-surface-inset)]"
-          >
-            रद्द करें
-          </button>
-          <button
-            type="submit"
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-700 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.99]"
-          >
-            <Check className="h-4 w-4" />
-            {initialData?.id ? "बदलाव सुरक्षित करें" : "खेत जोड़ें"}
-          </button>
         </div>
       </form>
     </FarmSheet>

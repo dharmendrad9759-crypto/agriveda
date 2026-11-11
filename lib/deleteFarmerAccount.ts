@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { kvDelete } from "@/lib/durableKv";
+import { deleteFarmerIdentity } from "@/lib/farmerIdentityKv";
 import { createSupabaseServiceClient } from "@/lib/supabase";
 import { deleteFirebaseAuthUser } from "@/lib/firebase/deleteAuthUser";
 
@@ -52,6 +53,7 @@ export async function deleteFarmerAccountServer(opts: {
   }
   if (firebaseUid) {
     await kvDelete(`auth:activeDevice:${firebaseUid}`);
+    await deleteFarmerIdentity(firebaseUid);
   }
 
   const client = createSupabaseServiceClient();

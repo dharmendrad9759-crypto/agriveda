@@ -1,10 +1,8 @@
 import type { GrowthStageItem } from "@/data/crop-dashboard";
+import { daysAfterSowingISO } from "@/lib/farm/fieldStatus";
 
 export function daysAfterSowing(sowingDateISO: string): number {
-  const sowing = new Date(`${sowingDateISO}T00:00:00`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return Math.floor((today.getTime() - sowing.getTime()) / 86400000);
+  return daysAfterSowingISO(sowingDateISO) ?? 0;
 }
 
 function parseDasRange(das: string): { min: number; max: number } | null {

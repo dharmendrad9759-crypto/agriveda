@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import AppLink from "@/components/ui/AppLink";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
@@ -10,6 +10,7 @@ import { AV } from "@/lib/design/tokens";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
 import { useFarmData } from "@/hooks/useFarmData";
+import { useActiveField } from "@/hooks/useActiveField";
 import { daysAfterSowingISO } from "@/lib/farm/fieldStatus";
 import { getStageAdvisory } from "@/lib/field-advisor/stageAdvisories";
 import {
@@ -37,36 +38,30 @@ const COMMON_CROPS = [
 ];
 
 function FieldAdvisorContent() {
-  const { t, locale } = useLocale();
-  const isHi = locale === "hi";
   const searchParams = useSearchParams();
   const qCrop = searchParams.get("crop");
   const qSowing = searchParams.get("sowing");
   const qName = searchParams.get("name");
+  const qFieldId = searchParams.get("fieldId");
 
   const alerts = useDashboardAlerts(4);
-  const { data: farmData } = useFarmData();
+  const { data: farmData, hydrated: farmHydrated } = useFarmData();
   const fields = farmData.fields;
+  const { activeField, setActiveField } = useActiveField(fields, farmHydrated);
+  const appliedQueryRef = useRef<string | null>(null);
 
-  // Selected field index or fallback crop
-  const [selectedFieldId, setSelectedFieldId] = useState<string>(() => {
-    if (fields.length > 0) return fields[0].id;
-    return "custom";
-  });
-
-  // Automatically select the farmer's first active field once fields are loaded
   useEffect(() => {
-    if (fields.length > 0 && (selectedFieldId === "custom" || !fields.some((f) => f.id === selectedFieldId))) {
-      setSelectedFieldId(fields[0].id);
+    if (!farmHydrated) return;
+    if (qFieldId && fields.some((f) => f.id === qFieldId) && appliedQueryRef.current !== qFieldId) {
+      appliedQueryRef.current = qFieldId;
+      setActiveField(qFieldId);
     }
-  }, [fields, selectedFieldId]);
+  }, [farmHydrated, qFieldId, fields, setActiveField]);
 
   const [customCropSlug, setCustomCropSlug] = useState<string>(qCrop || "wheat");
-  const [customDays, setCustomDays] = useState<number>(20);
+  const customDays = 20;
 
-  // Active field information
-  const activeField = fields.find((f) => f.id === selectedFieldId);
-
+  const selectedFieldId = activeField?.id ?? "custom";
   const activeCropSlug = activeField ? activeField.cropSlug : customCropSlug;
   const activeCropName = activeField ? activeField.crop : (COMMON_CROPS.find((c) => c.slug === activeCropSlug)?.nameHi || activeCropSlug);
   const activeFieldName = activeField ? activeField.name : (qName || "मेरा खेत");
@@ -76,9 +71,11 @@ function FieldAdvisorContent() {
       daysAfterSowingISO(activeField?.sowingDateIso) ??
       daysAfterSowingISO(activeField?.sowingDate);
     if (fromField != null) return fromField;
-    const fromQuery = daysAfterSowingISO(qSowing);
-    if (fromQuery != null) return fromQuery;
-    if (!activeField) return customDays;
+    if (!activeField) {
+      const fromQuery = daysAfterSowingISO(qSowing);
+      if (fromQuery != null) return fromQuery;
+      return customDays;
+    }
     return null;
   }, [activeField, qSowing, customDays]);
 
@@ -99,7 +96,7 @@ function FieldAdvisorContent() {
               <button
                 key={f.id}
                 type="button"
-                onClick={() => setSelectedFieldId(f.id)}
+                onClick={() => setActiveField(f.id)}
                 className={`flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
                   isSel
                     ? "bg-emerald-600 text-white shadow-sm"
@@ -127,7 +124,6 @@ function FieldAdvisorContent() {
                 type="button"
                 onClick={() => {
                   setCustomCropSlug(c.slug);
-                  setSelectedFieldId("custom");
                 }}
                 className={`rounded-xl px-2.5 py-1.5 text-xs font-semibold transition ${
                   customCropSlug === c.slug
@@ -210,10 +206,7 @@ function FieldAdvisorContent() {
                   {item.icon}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <span className="inline-block rounded-md bg-[var(--av-surface-inset)] px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                    {item.category}
-                  </span>
-                  <p className="mt-1 text-sm font-semibold leading-snug text-[var(--av-text-primary)]">
+                  <p className="text-sm font-semibold leading-snug text-[var(--av-text-primary)]">
                     {item.action}
                   </p>
                   {item.tip && (

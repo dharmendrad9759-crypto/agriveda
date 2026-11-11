@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getGeminiApiKey } from "@/lib/geminiPlantDoctor";
 import { getSupabaseUrl, hasSupabaseServiceRole } from "@/lib/supabase";
 import { isFcmSendConfigured } from "@/lib/push/fcmSend";
@@ -15,7 +15,7 @@ type Svc = "ready" | "missing_key" | "url_only" | "missing" | "dev_fallback";
  * Public readiness probe — no secrets.
  * Production: statuses only. Dev: short fix hints.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   const gemini = Boolean(getGeminiApiKey());
   const supabaseUrl = Boolean(getSupabaseUrl());
   const supabaseService = hasSupabaseServiceRole();
@@ -42,7 +42,12 @@ export async function GET() {
   const ok = !criticalDown;
 
   if (isProd()) {
-    return NextResponse.json({ ok, services });
+    const probe = request.headers.get("x-agriveda-health")?.trim();
+    const secret = process.env.HEALTH_PROBE_SECRET?.trim();
+    if (secret && probe && probe === secret) {
+      return NextResponse.json({ ok, services });
+    }
+    return NextResponse.json({ ok });
   }
 
   return NextResponse.json({

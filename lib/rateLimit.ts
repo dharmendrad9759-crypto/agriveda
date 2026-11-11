@@ -4,7 +4,7 @@
  */
 import { NextResponse } from "next/server";
 import { durableKvReady, kvIncr } from "@/lib/durableKv";
-import { isProductionRuntime } from "@/lib/otpStore";
+import { isProductionRuntime } from "@/lib/runtimeEnv";
 
 type Bucket = { count: number; resetAt: number };
 
@@ -50,6 +50,9 @@ export async function rateLimit(
     }
     return { ok: true, remaining: Math.max(0, limit - count) };
   } catch {
+    if (isProductionRuntime()) {
+      return { ok: false, retryAfterSec: 15 };
+    }
     return memoryRateLimit(key, limit, windowMs);
   }
 }
@@ -77,7 +80,16 @@ export function rateLimitSync(key: string, limit: number, windowMs: number): Rat
 }
 
 export function clientIp(req: { headers: Headers }): string {
+  const real = req.headers.get("x-real-ip")?.trim();
+  if (real) return real.slice(0, 64);
+
+  const vercel = req.headers.get("x-vercel-forwarded-for")?.trim();
+  if (vercel) return vercel.split(",")[0]?.trim().slice(0, 64) || "unknown";
+
+  // Production: do not trust client-supplied X-Forwarded-For.
+  if (isProductionRuntime()) return "unknown";
+
   const fwd = req.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0]?.trim() || "unknown";
-  return req.headers.get("x-real-ip") || "unknown";
+  if (fwd) return fwd.split(",")[0]?.trim().slice(0, 64) || "unknown";
+  return "unknown";
 }

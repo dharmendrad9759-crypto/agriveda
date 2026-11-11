@@ -1,5 +1,11 @@
-import type { SprayLog, SprayProduct, SprayWithProduct } from "@/types/spray-rotation";
+import type {
+  ProductCategory,
+  SprayLog,
+  SprayProduct,
+  SprayWithProduct,
+} from "@/types/spray-rotation";
 import { sprayProducts, getProductById } from "@/data/spray-products";
+import { lookupMoA } from "@/data/moa-lookup";
 
 const SEASON_START_MONTH = 6; // June — Kharif season start (India)
 
@@ -29,16 +35,40 @@ function getSeasonSprays(logs: SprayLog[]): SprayLog[] {
     });
 }
 
+/** Hub 1-tap and custom diary rows store technical names, not catalog ids. */
+export function productFromLog(log: SprayLog): SprayProduct {
+  const catalog = getProductById(log.productId);
+  if (catalog) return catalog;
+
+  const technical = (log.technical || log.productId || "स्प्रे दवा").trim();
+  const moa = lookupMoA(technical);
+  const groups =
+    log.moaGroups && log.moaGroups.length > 0
+      ? log.moaGroups
+      : moa
+        ? [moa.group]
+        : [];
+  const category: ProductCategory =
+    moa?.scheme === "FRAC" ? "fungicide" : moa?.scheme === "HRAC" ? "herbicide" : "insecticide";
+  const moaType = moa?.scheme ?? (category === "fungicide" ? "FRAC" : category === "herbicide" ? "HRAC" : "IRAC");
+
+  return {
+    id: log.productId || technical,
+    productName: technical,
+    activeIngredient: technical,
+    category,
+    moaType,
+    moaGroup: groups.join("+") || "—",
+    cropRecommended: log.cropId ? [log.cropId] : [],
+    doseHint: log.doseUsed,
+  };
+}
+
 export function attachProducts(logs: SprayLog[]): SprayWithProduct[] {
   if (!Array.isArray(logs) || logs.length === 0) return [];
   return logs
-    .filter((log): log is SprayLog => Boolean(log && log.productId))
-    .map((log) => {
-      const product = getProductById(log.productId);
-      if (!product) return null;
-      return { ...log, product };
-    })
-    .filter((x): x is SprayWithProduct => x !== null);
+    .filter((log): log is SprayLog => Boolean(log && (log.productId || log.technical)))
+    .map((log) => ({ ...log, product: productFromLog(log) }));
 }
 
 export function checkResistanceRisk(sprayHistory: SprayLog[]): import("@/types/spray-rotation").ResistanceCheckResult {

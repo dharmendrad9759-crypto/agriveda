@@ -121,7 +121,7 @@ export default function HomeFieldMeasureModal({
                 style={{ zIndex: 9990 }}
                 role="dialog"
                 aria-modal="true"
-                aria-label="अपना खेत नापें"
+                aria-label="खेत नापें"
                 initial={reduced ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -143,7 +143,7 @@ export default function HomeFieldMeasureModal({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 32 }}
                   transition={{ duration: MOTION.normal, ease: EASE_OUT }}
-                  className="relative flex max-h-[92dvh] sm:max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[32px] sm:rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
+                  className="relative flex h-[92dvh] sm:h-auto sm:max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[32px] sm:rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
                 >
                   {/* Mobile drag handle */}
                   <div className="mx-auto mt-2.5 mb-1 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
@@ -154,7 +154,7 @@ export default function HomeFieldMeasureModal({
               </span>
               <div className="min-w-0 flex-1">
                 <h2 className="text-[15px] font-semibold leading-tight text-[var(--av-text-primary)]">
-                  अपना खेत नापें
+                  खेत नापें
                 </h2>
                 <p className="mt-0.5 text-[11px] leading-snug text-[var(--av-text-muted)]">
                   उपग्रह से सीमा बनाएं या खेत पर चलकर सटीक रकबा नापें
@@ -182,9 +182,9 @@ export default function HomeFieldMeasureModal({
               </div>
             </header>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="px-3 pt-3">
-                <div className="overflow-hidden rounded-2xl border border-[var(--av-border)]">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+              <div className="min-h-0 flex-1 px-3 pt-3">
+                <div className="h-full min-h-[240px] overflow-hidden rounded-2xl border border-[var(--av-border)]">
                   <SmartFieldMap
                     initialCoords={coords}
                     mode="draw"
@@ -200,12 +200,12 @@ export default function HomeFieldMeasureModal({
                       onClose();
                       router.push(`/my-farm/measure?editId=${encodeURIComponent(fieldId)}`);
                     }}
-                    height="360px"
+                    height="100%"
                   />
                 </div>
               </div>
 
-              <div className="p-3">
+              <div className="max-h-[34vh] shrink-0 overflow-y-auto overscroll-contain p-3">
                 <FieldHUD
                   coords={coords}
                   place={place}
@@ -215,8 +215,6 @@ export default function HomeFieldMeasureModal({
                   canSave={coords.length >= 3}
                 />
               </div>
-
-
             </div>
           </motion.div>
 

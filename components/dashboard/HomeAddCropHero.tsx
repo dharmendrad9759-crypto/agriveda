@@ -9,10 +9,12 @@ import {
   Check,
   ChevronRight,
   Plus,
+  Ruler,
   Search,
   Sprout,
   X,
 } from "lucide-react";
+import AppLink from "@/components/ui/AppLink";
 import { cropCatalog } from "@/data/crop-catalog";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { resolveCropImage } from "@/lib/crops/cropImages";
@@ -139,29 +141,23 @@ export default function HomeAddCropHero({
             </p>
           </div>
 
-          {/* Quick Popular Crop Chips Carousel */}
-          <div className="mt-3.5">
-            <p className="text-[10.5px] font-black uppercase tracking-wider text-emerald-300/90">
-              {isHi ? "⚡ एक टैप में चुनें (लोकप्रिय फसलें):" : "⚡ Quick Select (Popular Crops):"}
-            </p>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {seasonalPopularCrops.map((crop) => (
-                <button
-                  key={crop.slug}
-                  type="button"
-                  onClick={() => handleQuickAdd(crop.slug, isHi ? crop.hi : crop.en)}
-                  className="group flex items-center gap-1.5 rounded-xl border border-emerald-400/25 bg-emerald-950/60 px-2.5 py-1.5 text-[12px] font-bold text-white shadow-xs backdrop-blur-md transition-all hover:border-emerald-300 hover:bg-emerald-900/90 active:scale-95"
-                >
-                  <span className="text-sm">{crop.emoji}</span>
-                  <span>{isHi ? crop.hi : crop.en}</span>
-                  <Plus className="h-3 w-3 text-emerald-400 opacity-60 transition-transform group-hover:scale-125 group-hover:opacity-100" />
-                </button>
-              ))}
-            </div>
+          <div className="mt-3.5 flex flex-wrap gap-1.5">
+            {seasonalPopularCrops.map((crop) => (
+              <button
+                key={crop.slug}
+                type="button"
+                onClick={() => handleQuickAdd(crop.slug, isHi ? crop.hi : crop.en)}
+                className="group flex items-center gap-1.5 rounded-xl border border-emerald-400/25 bg-emerald-950/60 px-2.5 py-1.5 text-[12px] font-bold text-white shadow-xs backdrop-blur-md transition-all hover:border-emerald-300 hover:bg-emerald-900/90 active:scale-95"
+              >
+                <span className="text-sm">{crop.emoji}</span>
+                <span>{isHi ? crop.hi : crop.en}</span>
+                <Plus className="h-3 w-3 text-emerald-400 opacity-60 transition-transform group-hover:scale-125 group-hover:opacity-100" />
+              </button>
+            ))}
           </div>
 
-          {/* Primary Action Button */}
-          <div className="mt-4 pt-1">
+          {/* Add crop first; measure is optional after save */}
+          <div className="mt-4 space-y-2 pt-1">
             <button
               type="button"
               onClick={() => {
@@ -171,9 +167,20 @@ export default function HomeAddCropHero({
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-300 py-3.5 text-sm font-black text-emerald-950 shadow-[0_8px_24px_rgba(16,185,129,0.35)] transition-all hover:brightness-105 active:scale-[0.98]"
             >
               <Plus className="h-4 w-4 stroke-[3]" />
-              <span>{isHi ? "अन्य सभी 40+ फसलों में से चुनें" : "Explore All 40+ Crops"}</span>
+              <span>{isHi ? "फसल जोड़ें" : "Add crop"}</span>
               <ChevronRight className="h-4 w-4 stroke-[3]" />
             </button>
+            <AppLink
+              href="/my-farm/measure"
+              onClick={() => {
+                softTap(16);
+                track("tool_open", { href: "/my-farm/measure", label: "home_add_crop_measure" });
+              }}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-400/40 bg-emerald-950/40 py-3 text-sm font-bold text-emerald-100 transition-all hover:bg-emerald-950/60 active:scale-[0.98]"
+            >
+              <Ruler className="h-4 w-4 stroke-[3]" />
+              <span>{isHi ? "खेत नापें (बाद में भी हो सकता है)" : "Measure field (optional)"}</span>
+            </AppLink>
           </div>
         </div>
       </div>

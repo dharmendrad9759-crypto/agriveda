@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { notoSansDevanagari, notoSerifDevanagari } from "@/lib/fonts";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
@@ -19,6 +20,7 @@ interface FarmSheetProps {
   subtitle?: string;
   icon?: ReactNode;
   children: ReactNode;
+  footer?: ReactNode;
   size?: "md" | "lg";
   level?: number;
 }
@@ -34,6 +36,7 @@ export default function FarmSheet({
   subtitle,
   icon,
   children,
+  footer,
   size = "md",
   level = 1000,
 }: FarmSheetProps) {
@@ -95,7 +98,11 @@ export default function FarmSheet({
 
           <motion.div
             className={cn(
-              "relative flex max-h-[92dvh] sm:max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-[32px] sm:rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0",
+              notoSansDevanagari.className,
+              "relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-[32px] border border-[var(--av-border)] bg-[var(--av-surface)] text-left shadow-[0_24px_64px_-16px_rgba(6,45,28,0.45)] sm:max-h-[85dvh] sm:rounded-[28px]",
+              footer
+                ? "pb-0"
+                : "pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0",
               size === "lg" ? "max-w-lg" : "max-w-md"
             )}
             initial={reduced ? false : { opacity: 0, y: 32 }}
@@ -103,21 +110,25 @@ export default function FarmSheet({
             exit={{ opacity: 0, y: 32 }}
             transition={{ duration: MOTION.normal, ease: EASE_OUT }}
           >
-            {/* Mobile pull indicator */}
-            <div className="mx-auto mt-2.5 mb-1 h-1.5 w-12 rounded-full bg-[var(--av-border-strong,rgba(150,150,150,0.3))] sm:hidden" />
+            <div className="mx-auto mt-2.5 mb-0.5 h-1 w-10 rounded-full bg-[var(--av-border)] sm:hidden" />
 
-            <header className="flex items-start gap-3 border-b border-[var(--av-border-subtle)] px-4 pb-3 pt-2 sm:pt-3 sm:px-5">
+            <header className="flex items-start gap-3 px-5 pb-3 pt-2 sm:pt-4">
               {icon ? (
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-700 dark:text-emerald-300">
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600/12 text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-200">
                   {icon}
                 </span>
               ) : null}
               <div className="min-w-0 flex-1">
-                <h2 className="text-[15px] font-semibold leading-tight text-[var(--av-text-primary)]">
+                <h2
+                  className={cn(
+                    notoSerifDevanagari.className,
+                    "text-balance text-[1.2rem] font-bold leading-snug tracking-tight text-[var(--av-text-primary)]"
+                  )}
+                >
                   {title}
                 </h2>
                 {subtitle ? (
-                  <p className="mt-0.5 text-[11px] leading-snug text-[var(--av-text-muted)]">
+                  <p className="text-pretty mt-0.5 text-[13px] font-medium leading-snug text-[var(--av-text-muted)]">
                     {subtitle}
                   </p>
                 ) : null}
@@ -125,16 +136,22 @@ export default function FarmSheet({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[var(--av-text-muted)] transition hover:bg-[var(--av-surface-inset)] hover:text-[var(--av-text-primary)] active:scale-95"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--av-text-muted)] transition-colors hover:bg-[var(--av-surface-inset)] hover:text-[var(--av-text-primary)] active:scale-95"
                 aria-label="बंद करें"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
             </header>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-3.5">
               {children}
             </div>
+
+            {footer ? (
+              <div className="shrink-0 border-t border-[var(--av-border-subtle)] bg-[var(--av-surface)] px-5 pb-[max(0.85rem,env(safe-area-inset-bottom))] pt-3">
+                {footer}
+              </div>
+            ) : null}
           </motion.div>
         </div>
       ) : null}

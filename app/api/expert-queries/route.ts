@@ -96,6 +96,7 @@ export async function POST(request: NextRequest) {
     farmerId = await ensureFarmerRecord(deviceId, client, {
       phone: auth.session.phone,
       name: String(body.farmerName ?? "").trim() || undefined,
+      firebaseUid: auth.session.firebaseUid,
     });
   }
 

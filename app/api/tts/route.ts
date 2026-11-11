@@ -1,15 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireSession } from "@/lib/session";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
+
+const LANGS = new Set(["hi", "en", "hi-IN", "en-IN", "en-US"]);
 
 export async function GET(request: NextRequest) {
+  const auth = await requireSession(request);
+  if ("error" in auth) return auth.error;
+
+  const ip = clientIp(request);
+  const limited = await rateLimit(`tts:${auth.session.deviceId}:${ip}`, 30, 60_000);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: `बहुत अनुरोध — ${limited.retryAfterSec} सेकंड बाद` },
+      { status: 429 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const text = searchParams.get("text")?.trim();
-  const lang = searchParams.get("lang")?.trim() || "hi";
+  const langRaw = searchParams.get("lang")?.trim() || "hi";
+  const lang = LANGS.has(langRaw) ? langRaw : "hi";
 
   if (!text) {
     return NextResponse.json({ error: "Text parameter is required" }, { status: 400 });
   }
 
-  // Google TTS supports sentences up to 200 characters per chunk safely
   const truncated = text.slice(0, 200);
   const targetUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${encodeURIComponent(
     lang
@@ -25,10 +41,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!upstreamRes.ok) {
-      return NextResponse.json(
-        { error: `Upstream TTS error: ${upstreamRes.status}` },
-        { status: upstreamRes.status }
-      );
+      return NextResponse.json({ error: "Speech unavailable" }, { status: 502 });
     }
 
     const audioBuffer = await upstreamRes.arrayBuffer();
@@ -37,11 +50,11 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         "Content-Type": "audio/mpeg",
-        "Cache-Control": "public, max-age=604800, immutable",
+        "Cache-Control": "private, max-age=3600",
       },
     });
-  } catch (error: any) {
-    console.error("TTS fetch failed:", error);
+  } catch (error: unknown) {
+    console.error("TTS fetch failed:", error instanceof Error ? error.message : error);
     return NextResponse.json({ error: "Failed to generate speech audio" }, { status: 500 });
   }
 }

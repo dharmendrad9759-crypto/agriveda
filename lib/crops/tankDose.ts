@@ -1,9 +1,13 @@
 /**
  * Knapsack hint for a field spray.
- * Uses the water volume written in the dose (e.g. 200 लीटर पानी).
- * If none is written, assumes 10 tanks of 15 L per acre (150 L).
- * Seed treatment, soil drench, and kilo-scale granules are handled with clear guidance.
+ * Written water volume on the dose wins. If none is written, Indian field
+ * default is 10 × 15 L tanks = 150 L per acre — labelled as खेत का आम हिसाब,
+ * not as a CIBRC label claim.
+ * Parse failure must NOT invent "15–20 मिली" or "1–2 मिली/लीटर".
  */
+
+export const FIELD_WATER_L_PER_ACRE = 150;
+export const DEFAULT_TANK_L = 15;
 
 function formatQty(n: number): string {
   if (n >= 10) return String(Math.round(n));
@@ -74,6 +78,11 @@ export interface DosePill {
   subtext: string;
 }
 
+export interface ParseDoseOpts {
+  /** 15 L knapsack (default) or 16 L battery pump */
+  tankLitres?: number;
+}
+
 export interface ParsedFarmerDose {
   method: ApplicationMethod;
   methodLabel: string;
@@ -89,9 +98,58 @@ export interface ParsedFarmerDose {
   waterVolume: string;
   perLitre: string;
   raw: string;
+  /** True when 150 L/acre field default was used (not a label water volume) */
+  waterIsFieldDefault: boolean;
+  /** False when no numeric dose could be read — UI must not show fake ml */
+  doseParsed: boolean;
+  tankLitres: number;
+  /** Farmer-friendly cap / spoon / heap hint; null if amount unknown */
+  desiMeasureHi: string | null;
 }
 
-export function parseFarmerDose(doseText: string): ParsedFarmerDose {
+export function desiMeasureHi(amount: number, unit: "ml" | "g"): string | null {
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+  if (unit === "ml") {
+    if (amount < 8) return "लगभग आधा ढक्कन से कम — बोतल का नाप ढक्कन देखें";
+    if (amount < 20) return "लगभग आधा ढक्कन (बोतल के ऊपर वाला नाप)";
+    if (amount <= 40) return "लगभग 1 पूरा ढक्कन (बोतल के ऊपर वाला नाप)";
+    return `लगभग ${Math.max(2, Math.round(amount / 30))} ढक्कन — ढक्कन हर बोतल का अलग हो सकता है`;
+  }
+  if (amount <= 6) return "लगभग 1 चाय का चम्मच (समतल)";
+  if (amount <= 12) return "लगभग 2 चाय के चम्मच (समतल)";
+  if (amount <= 25) return "लगभग 1 बड़ा चम्मच";
+  return "कागज़ पर बराबर ढेरियाँ बाँटें — एक ढेरी एक टंकी में (लगभग)";
+}
+
+function mentionSticker(raw: string): boolean {
+  return /स्टीकर|चिपको|spreader|sticker|सिलिकॉन/i.test(raw);
+}
+
+function emptyFoliar(raw: string, tankLitres: number, waterLabel: string, waterIsFieldDefault: boolean): ParsedFarmerDose {
+  const label = "बोतल का लेबल देखो";
+  return {
+    method: "foliar_spray",
+    methodLabel: `${tankLitres}L स्प्रे टंकी से पत्तियों पर छिड़काव`,
+    isSpray: true,
+    pill1: { icon: "🎒", label: `${tankLitres}L स्प्रे टंकी`, value: label, subtext: "खुराक पढ़ नहीं सकी" },
+    pill2: { icon: "🌾", label: "1 एकड़ दवा", value: label, subtext: "लेबल मिलाएँ" },
+    pill3: { icon: "🚰", label: "पानी की मात्रा", value: waterLabel, subtext: waterIsFieldDefault ? "खेत का आम हिसाब" : "लेबल का पानी" },
+    useSticker: mentionSticker(raw),
+    doctorTip: "बोतल के लेबल पर फसल और खुराक देखकर ही दवा नापें।",
+    voiceActionLine: "बोतल के लेबल पर लिखी खुराक के हिसाब से दवा नापें।",
+    tankDose: "",
+    acreDose: "",
+    waterVolume: waterLabel,
+    perLitre: "",
+    raw,
+    waterIsFieldDefault,
+    doseParsed: false,
+    tankLitres,
+    desiMeasureHi: null,
+  };
+}
+
+export function parseFarmerDose(doseText: string, opts?: ParseDoseOpts): ParsedFarmerDose {
   const raw = doseText.replace(/\s+/g, " ").trim();
 
   // 1. Seed treatment check
@@ -132,6 +190,10 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
       waterVolume: "हल्का पानी छींटा",
       perLitre: "लागू नहीं",
       raw,
+      waterIsFieldDefault: false,
+      doseParsed: true,
+      tankLitres: opts?.tankLitres ?? DEFAULT_TANK_L,
+      desiMeasureHi: null,
     };
   }
 
@@ -178,6 +240,10 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
       waterVolume: `${sandVal} + तुरंत सिंचाई`,
       perLitre: "लागू नहीं",
       raw,
+      waterIsFieldDefault: false,
+      doseParsed: true,
+      tankLitres: opts?.tankLitres ?? DEFAULT_TANK_L,
+      desiMeasureHi: null,
     };
   }
 
@@ -219,6 +285,10 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
       waterVolume: "सिंचाई का पानी",
       perLitre: "लागू नहीं",
       raw,
+      waterIsFieldDefault: false,
+      doseParsed: true,
+      tankLitres: opts?.tankLitres ?? DEFAULT_TANK_L,
+      desiMeasureHi: null,
     };
   }
 
@@ -258,6 +328,10 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
       waterVolume: "पानी की आवश्यकता नहीं",
       perLitre: "लागू नहीं",
       raw,
+      waterIsFieldDefault: false,
+      doseParsed: true,
+      tankLitres: opts?.tankLitres ?? DEFAULT_TANK_L,
+      desiMeasureHi: null,
     };
   }
 
@@ -294,10 +368,18 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
       waterVolume: "हल्का पानी (गीला करने हेतु)",
       perLitre: "लागू नहीं",
       raw,
+      waterIsFieldDefault: false,
+      doseParsed: true,
+      tankLitres: opts?.tankLitres ?? DEFAULT_TANK_L,
+      desiMeasureHi: null,
     };
   }
 
-  // 4. Foliar Spray (पत्तियों पर 15L ढोलकी टंकी से छिड़काव)
+  // 4. Foliar Spray
+  const tankLitres = opts?.tankLitres === 16 ? 16 : DEFAULT_TANK_L;
+  const tanksPerAcre = Math.round(FIELD_WATER_L_PER_ACRE / tankLitres);
+  const fieldWaterLabel = `एकड़ का आम पानी: ${tanksPerAcre} टंकी × ${tankLitres} लीटर (${FIELD_WATER_L_PER_ACRE} लीटर)`;
+
   const unitRe = "(?:मिलीलीटर|मिली|ग्राम|ml|g)";
   const perLMatch = raw.match(
     new RegExp(
@@ -311,14 +393,23 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
       "i"
     )
   );
-  const waterMatch = raw.match(/(\d+(?:\s*[-–से]\s*\d+)?\s*लीटर\s*पानी)/i);
-  const waterVolume = waterMatch ? waterMatch[0] : "150–200 लीटर पानी";
+  const waterNumMatch = raw.match(/(\d+(?:\.\d+)?)\s*लीटर\s*पानी/i);
+  const labelWaterL = waterNumMatch ? Number(waterNumMatch[1]) : null;
+  const waterL =
+    labelWaterL && Number.isFinite(labelWaterL) && labelWaterL >= 15
+      ? labelWaterL
+      : FIELD_WATER_L_PER_ACRE;
+  const waterIsFieldDefault = !(labelWaterL && labelWaterL >= 15);
+  const waterVolume = waterIsFieldDefault
+    ? fieldWaterLabel
+    : `${labelWaterL} लीटर पानी (लेबल)`;
 
   let tankDose = "";
   let acreDose = perAcreMatch ? perAcreMatch[0] : "";
   let perLitre = perLMatch ? perLMatch[0] : "";
+  let tankAmount = 0;
+  let tankUnit: "ml" | "g" = "ml";
 
-  // Check for explicit per-tank dosage (e.g. "कॉपर: 35–40 ग्राम + स्ट्रेप्टो: 1.5–2 ग्राम प्रति 15L टंकी")
   const directTankMatch = raw.match(
     /(?:^|[(,])\s*([^\n();]+?)\s*(?:प्रति|\/)\s*(?:15\s*L|15\s*लीटर)?\s*टंकी/i
   );
@@ -326,7 +417,6 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
     tankDose = directTankMatch[1].trim();
   }
 
-  // Check for explicit combination acre dose inside parentheses, e.g. "(350 g + 18 g / एकड़)"
   const parenAcreMatch = raw.match(/\(([^)]*एकड़[^)]*)\)/i);
   if (parenAcreMatch && parenAcreMatch[1]) {
     acreDose = parenAcreMatch[1].trim();
@@ -335,28 +425,28 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
   if (!tankDose && perLMatch) {
     const a = Number(perLMatch[1]);
     const b = perLMatch[2] ? Number(perLMatch[2]) : a;
-    const unitHi = /ग्राम|^g$/i.test(perLMatch[0]) ? "ग्राम" : "मिली";
-    const low = formatQty(a * 15);
-    const high = formatQty(b * 15);
+    tankUnit = /ग्राम|^g$/i.test(perLMatch[0]) ? "g" : "ml";
+    const unitHi = tankUnit === "g" ? "ग्राम" : "मिली";
+    const low = formatQty(a * tankLitres);
+    const high = formatQty(b * tankLitres);
     tankDose = low === high ? `${low} ${unitHi}` : `${low}–${high} ${unitHi}`;
-
+    tankAmount = (a + b) / 2 * tankLitres;
     if (!acreDose) {
-      acreDose = `${Math.round(a * 150)}–${Math.round(b * 200)} ${unitHi}/एकड़`;
+      acreDose = `${formatQty(((a + b) / 2) * FIELD_WATER_L_PER_ACRE)} ${unitHi} / एकड़`;
     }
   }
 
   if (!tankDose && perAcreMatch && !raw.includes("+")) {
     const a = Number(perAcreMatch[1]);
     const b = perAcreMatch[2] ? Number(perAcreMatch[2]) : a;
-    const unitHi = /ग्राम|^g$/i.test(perAcreMatch[0]) ? "ग्राम" : "मिली";
-    const low = formatQty((a * 15) / 200);
-    const high = formatQty((b * 15) / 150);
+    tankUnit = /ग्राम|^g$/i.test(perAcreMatch[0]) ? "g" : "ml";
+    const unitHi = tankUnit === "g" ? "ग्राम" : "मिली";
+    const low = formatQty((a * tankLitres) / waterL);
+    const high = formatQty((b * tankLitres) / waterL);
     tankDose = low === high ? `${low} ${unitHi}` : `${low}–${high} ${unitHi}`;
-
+    tankAmount = ((a + b) / 2 * tankLitres) / waterL;
     if (!perLitre) {
-      const perLValLow = (a / 200).toFixed(1);
-      const perLValHigh = (b / 150).toFixed(1);
-      perLitre = `${perLValLow}–${perLValHigh} ${unitHi}/लीटर`;
+      perLitre = `${formatQty(((a + b) / 2) / waterL)} ${unitHi}/लीटर`;
     }
   }
 
@@ -365,48 +455,55 @@ export function parseFarmerDose(doseText: string): ParsedFarmerDose {
     if (line) {
       const m = line.match(/लगभग\s*([\d.–\s]+(?:मिली|ग्राम))/i);
       tankDose = m ? m[1].trim() : line.replace(/^15 लीटर टंकी में लगभग\s*/, "");
-    } else {
-      tankDose = "15–20 मिली/ग्राम";
     }
   }
 
-  if (!acreDose) {
-    acreDose = "150–200 मिली/एकड़";
+  if (!tankDose && !acreDose && !perLitre) {
+    return emptyFoliar(raw, tankLitres, waterVolume, waterIsFieldDefault);
   }
 
-  if (!perLitre) {
-    perLitre = "1–2 मिली/लीटर";
-  }
+  const sticker = mentionSticker(raw);
+  const desi = tankAmount > 0 ? desiMeasureHi(tankAmount, tankUnit) : null;
+  const doctorTip = sticker
+    ? "स्प्रे करते समय चिपको (स्टीकर) मिलाएँ — लेबल पर लिखा हो तभी। सुबह या शाम छिड़कें।"
+    : "सुबह या शाम छिड़कें। तेज धूप में दवा उड़ जाती है।";
+  const voiceSticker = sticker ? " दवा के साथ चिपको मिलाएँ अगर लेबल कहे।" : "";
 
   return {
     method: "foliar_spray",
-    methodLabel: "15L स्प्रे टंकी से पत्तियों पर छिड़काव",
+    methodLabel: `${tankLitres}L स्प्रे टंकी से पत्तियों पर छिड़काव`,
     isSpray: true,
     pill1: {
       icon: "🎒",
-      label: "15L स्प्रे टंकी",
-      value: tankDose,
-      subtext: "ढोलकी टंकी में नाप",
+      label: `${tankLitres}L स्प्रे टंकी`,
+      value: tankDose || "लेबल देखो",
+      subtext: desi ?? "ढोलकी टंकी में नाप",
     },
     pill2: {
       icon: "🌾",
       label: "1 एकड़ दवा",
-      value: acreDose,
+      value: acreDose || "लेबल देखो",
       subtext: "कुल रकबा",
     },
     pill3: {
       icon: "🚰",
       label: "पानी की मात्रा",
       value: waterVolume,
-      subtext: "10–12 स्प्रे टंकी",
+      subtext: waterIsFieldDefault ? "खेत का आम हिसाब" : "लेबल का पानी",
     },
-    useSticker: true,
-    doctorTip: "स्प्रे करते समय 5ml सिलिकॉन स्टीकर (चिपको) ज़रूर मिलाएँ ताकि दवा पत्तों पर चिपक कर पूरा असर करे। सुबह 10 बजे से पहले या शाम को छिड़काव करें।",
-    voiceActionLine: `15 लीटर वाली स्प्रे टंकी में ${tankDose} दवा घोलकर पत्तियों पर छिड़काव करें। दवा के साथ 5 मिली सिलिकॉन स्टीकर यानी चिपको ज़रूर मिलाएँ ताकि दवा पत्तों पर चिपक जाए। सुबह या शाम को ही स्प्रे करें।`,
+    useSticker: sticker,
+    doctorTip,
+    voiceActionLine: tankDose
+      ? `${tankLitres} लीटर वाली स्प्रे टंकी में ${tankDose} दवा घोलकर पत्तियों पर छिड़काव करें।${voiceSticker}`
+      : "बोतल के लेबल के हिसाब से दवा नापें।",
     tankDose,
     acreDose,
     waterVolume,
     perLitre,
     raw,
+    waterIsFieldDefault,
+    doseParsed: Boolean(tankDose || acreDose || perLitre),
+    tankLitres,
+    desiMeasureHi: desi,
   };
 }

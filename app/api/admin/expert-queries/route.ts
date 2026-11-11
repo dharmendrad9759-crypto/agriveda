@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { listExpertQueriesAdmin, type ExpertQueryStatus } from "@/lib/expertQueries";
 import { listPanelUsers } from "@/lib/panelUsers";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { publicFarmerPhone, publicLocation } from "@/lib/adminQueryAccess";
 
 export async function GET(request: NextRequest) {
   const auth = requireAdmin(request);
@@ -29,8 +30,9 @@ export async function GET(request: NextRequest) {
     limit: 100,
     viewer: {
       userId: auth.session.userId,
-      viewAll: perms.viewAllQueries || perms.replyAll,
-      cropScopes: undefined,
+      viewAll: perms.viewAllQueries,
+      canSeeUnassigned: perms.assignQueries || perms.viewAllQueries,
+      cropScopes: auth.session.cropScopes,
     },
   });
 
@@ -41,8 +43,8 @@ export async function GET(request: NextRequest) {
     queries: rows.map((r) => ({
       id: r.id,
       farmerName: r.farmer_name,
-      farmerPhone: r.farmer_phone,
-      location: [r.farmer_village, r.farmer_district, r.farmer_state].filter(Boolean).join(" · "),
+      farmerPhone: publicFarmerPhone(auth.session, r),
+      location: publicLocation(auth.session, r),
       cropName: r.crop_name,
       cropSlug: r.crop_slug,
       queryText: r.query_text,

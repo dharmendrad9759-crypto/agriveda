@@ -4,8 +4,8 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
-  --font-sans: "Noto Sans Devanagari", "Nirmala UI", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Noto Sans Devanagari", "Nirmala UI", system-ui, sans-serif;
+  --font-sans: var(--font-noto-sans), "Noto Sans Devanagari", "Nirmala UI", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-noto-sans), "Noto Sans Devanagari", "Nirmala UI", system-ui, sans-serif;
 }
 
 /* Light theme (default) */
@@ -105,7 +105,7 @@ body {
 }
 
 /* Fix Copy Link / Save Image popup bug on mobile long-press */
-a, img, button, [role="button"] {
+a, img:not(.leaflet-tile), button, [role="button"] {
   -webkit-touch-callout: none;
   -webkit-user-drag: none;
   -webkit-tap-highlight-color: transparent;
@@ -126,6 +126,10 @@ input, textarea, [contenteditable="true"] {
 
 h1, h2, .font-display {
   font-family: var(--font-display), var(--font-sans);
+}
+
+.font-av-serif {
+  font-family: var(--font-noto-serif), var(--font-display), var(--font-sans);
 }
 
 /* Accessibility & Large Font Protection for Hindi / Devanagari */
@@ -1480,8 +1484,8 @@ textarea,
   user-select: text !important;
 }
 
-/* Prevent image dragging and long-press save */
-img {
+/* Prevent image dragging and long-press save — Leaflet tiles pan via pointer events */
+img:not(.leaflet-tile) {
   -webkit-user-drag: none !important;
   -khtml-user-drag: none !important;
   -moz-user-drag: none !important;

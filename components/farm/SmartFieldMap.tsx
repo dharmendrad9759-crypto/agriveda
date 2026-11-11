@@ -98,8 +98,8 @@ function createVertexIcon(index: number, isFirst: boolean = false) {
     className: "field-vertex-icon",
     html: `
       <div style="
-        width: 26px;
-        height: 26px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: ${isFirst ? "#059669" : "#10b981"};
         color: white;
@@ -108,24 +108,25 @@ function createVertexIcon(index: number, isFirst: boolean = false) {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 800;
-        cursor: grab;
+        cursor: pointer;
+        pointer-events: auto;
       ">
         ${index + 1}
       </div>
     `,
-    iconSize: [26, 26],
-    iconAnchor: [13, 13],
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
   });
 }
 
 const userLocationIcon = L.divIcon({
   className: "gps-user-pulse",
   html: `
-    <div style="position:relative; width:18px; height:18px;">
-      <div style="position:absolute; width:18px; height:18px; border-radius:50%; background:#2563eb; border:2.5px solid white; box-shadow:0 0 8px rgba(37,99,235,0.8); z-index:2;"></div>
-      <div style="position:absolute; width:34px; height:34px; border-radius:50%; background:rgba(37,99,235,0.25); top:-8px; left:-8px; animation: ping 1.8s cubic-bezier(0,0,0.2,1) infinite;"></div>
+    <div style="position:relative; width:18px; height:18px; pointer-events:none;">
+      <div style="position:absolute; width:18px; height:18px; border-radius:50%; background:#2563eb; border:2.5px solid white; box-shadow:0 0 8px rgba(37,99,235,0.8); z-index:2; pointer-events:none;"></div>
+      <div style="position:absolute; width:34px; height:34px; border-radius:50%; background:rgba(37,99,235,0.25); top:-8px; left:-8px; animation: ping 1.8s cubic-bezier(0,0,0.2,1) infinite; pointer-events:none;"></div>
     </div>
   `,
   iconSize: [18, 18],
@@ -160,19 +161,83 @@ function MapController({
   return null;
 }
 
+/** One-finger pan must move the map, not the page/sheet behind it. Pinch zoom stays on. */
+function EnableMapPan() {
+  const map = useMap();
+
+  useEffect(() => {
+    const el = map.getContainer();
+    el.style.touchAction = "none";
+    map.dragging.enable();
+    map.touchZoom.enable();
+    map.doubleClickZoom.enable();
+    map.scrollWheelZoom.enable();
+    map.boxZoom.enable();
+    map.keyboard.enable();
+    L.DomEvent.disableScrollPropagation(el);
+
+    const blockParentScroll = (event: TouchEvent) => {
+      event.stopPropagation();
+    };
+    el.addEventListener("touchmove", blockParentScroll, { passive: true });
+
+    const resize = () => map.invalidateSize({ animate: false });
+    const t1 = window.setTimeout(resize, 80);
+    const t2 = window.setTimeout(resize, 400);
+    window.addEventListener("resize", resize);
+    window.addEventListener("orientationchange", resize);
+
+    return () => {
+      el.removeEventListener("touchmove", blockParentScroll);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("orientationchange", resize);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [map]);
+
+  return null;
+}
+
 // Map Click Listener Component
 function MapClickHandler({
   onMapClick,
+  onNearVertexClick,
   enabled,
+  coords,
+  consumeIgnoredClick,
 }: {
   onMapClick: (lat: number, lng: number) => void;
+  onNearVertexClick?: (index: number) => void;
   enabled: boolean;
+  coords: LatLng[];
+  consumeIgnoredClick?: () => boolean;
 }) {
-  useMapEvents({
+  const map = useMapEvents({
     click(e) {
-      if (enabled) {
-        onMapClick(e.latlng.lat, e.latlng.lng);
+      if (!enabled) return;
+      if (consumeIgnoredClick?.()) return;
+      const target = e.originalEvent?.target as HTMLElement | null;
+      if (target?.closest?.(".field-vertex-icon, .gps-user-pulse, .leaflet-marker-icon")) {
+        return;
       }
+      const clickPt = map.latLngToContainerPoint(e.latlng);
+      let nearest = -1;
+      let nearestDist = Infinity;
+      coords.forEach((c, i) => {
+        const p = map.latLngToContainerPoint(L.latLng(c.lat, c.lng));
+        const d = clickPt.distanceTo(p);
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearest = i;
+        }
+      });
+      // Fat-finger: tapping a numbered point should remove it, not add another.
+      if (nearest >= 0 && nearestDist <= 28) {
+        onNearVertexClick?.(nearest);
+        return;
+      }
+      onMapClick(e.latlng.lat, e.latlng.lng);
     },
   });
   return null;
@@ -222,6 +287,12 @@ export default function SmartFieldMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const onViewCenterRef = useRef(onViewCenter);
   onViewCenterRef.current = onViewCenter;
+  const onCoordsChangeRef = useRef(onCoordsChange);
+  onCoordsChangeRef.current = onCoordsChange;
+  const coordsRef = useRef(coords);
+  coordsRef.current = coords;
+  const skipMapClickRef = useRef(false);
+  const vertexDragRef = useRef(false);
   const locateGen = useRef(0);
 
   // Validation
@@ -231,40 +302,40 @@ export default function SmartFieldMap({
     onValidationChange?.(validation.valid, validation.error);
   }, [validation, onValidationChange]);
 
-  const updateCoordinates = useCallback(
-    (newCoords: LatLng[], recordHistory: boolean = true) => {
-      if (recordHistory) {
-        setHistory((prev) => [...prev.slice(-25), coords]);
-        setFuture([]);
-      }
-      setCoords(newCoords);
-      if (newCoords.length) locateGen.current += 1;
-      onCoordsChange?.(newCoords);
-    },
-    [coords, onCoordsChange]
-  );
+  const updateCoordinates = useCallback((newCoords: LatLng[], recordHistory: boolean = true) => {
+    if (recordHistory) {
+      setHistory((prev) => [...prev.slice(-25), coordsRef.current]);
+      setFuture([]);
+    }
+    coordsRef.current = newCoords;
+    setCoords(newCoords);
+    if (newCoords.length) locateGen.current += 1;
+    onCoordsChangeRef.current?.(newCoords);
+  }, []);
 
   // Undo / Redo Actions
   const handleUndo = () => {
     if (history.length === 0) return;
     const prev = history[history.length - 1];
     setHistory((h) => h.slice(0, -1));
-    setFuture((f) => [coords, ...f]);
+    setFuture((f) => [coordsRef.current, ...f]);
+    coordsRef.current = prev;
     setCoords(prev);
-    onCoordsChange?.(prev);
+    onCoordsChangeRef.current?.(prev);
   };
 
   const handleRedo = () => {
     if (future.length === 0) return;
     const next = future[0];
     setFuture((f) => f.slice(1));
-    setHistory((h) => [...h, coords]);
+    setHistory((h) => [...h, coordsRef.current]);
+    coordsRef.current = next;
     setCoords(next);
-    onCoordsChange?.(next);
+    onCoordsChangeRef.current?.(next);
   };
 
   const handleClear = () => {
-    if (coords.length === 0) return;
+    if (coordsRef.current.length === 0) return;
     if (window.confirm("क्या आप खेत की सभी सीमाएं साफ करना चाहते हैं? (Clear boundary?)")) {
       updateCoordinates([]);
       setWalkPath([]);
@@ -272,20 +343,27 @@ export default function SmartFieldMap({
     }
   };
 
-  const handleDeleteVertex = (index: number) => {
-    const updated = coords.filter((_, i) => i !== index);
-    updateCoordinates(updated);
-  };
+  const handleDeleteVertex = useCallback(
+    (index: number) => {
+      skipMapClickRef.current = true;
+      const updated = coordsRef.current.filter((_, i) => i !== index);
+      updateCoordinates(updated);
+    },
+    [updateCoordinates]
+  );
 
   const handleDragVertex = (index: number, lat: number, lng: number) => {
-    const updated = coords.map((c, i) => (i === index ? { lat, lng } : c));
+    const updated = coordsRef.current.map((c, i) => (i === index ? { lat, lng } : c));
     updateCoordinates(updated, true);
   };
 
   const handleMapClick = (lat: number, lng: number) => {
+    if (skipMapClickRef.current) {
+      skipMapClickRef.current = false;
+      return;
+    }
     if (readOnly || mode !== "draw") return;
-    const updated = [...coords, { lat, lng }];
-    updateCoordinates(updated);
+    updateCoordinates([...coordsRef.current, { lat, lng }]);
   };
 
   const applyPlaceHit = (hit: PlaceHit) => {
@@ -828,7 +906,7 @@ export default function SmartFieldMap({
             <button
               type="button"
               onClick={() => handleDeleteVertex(coords.length - 1)}
-              title="अंतिम बिंदु हटाएं"
+              title="आखिरी बिंदु हटाएं — नंबर पर टैप करके भी हटा सकते हैं"
               className="px-2.5 py-1.5 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 flex items-center gap-1 font-semibold"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -932,12 +1010,32 @@ export default function SmartFieldMap({
         zoom={defaultZoom}
         zoomControl={false}
         attributionControl={false}
-        className="w-full h-full z-0"
+        dragging
+        touchZoom
+        scrollWheelZoom
+        doubleClickZoom
+        className="h-full w-full z-0"
       >
         <style>{`
           .leaflet-control-attribution { display: none !important; }
           .leaflet-bottom.leaflet-right { display: none !important; }
+          .gps-user-pulse { pointer-events: none !important; }
+          .field-vertex-icon { z-index: 650 !important; }
+          .leaflet-container {
+            touch-action: none !important;
+            -ms-touch-action: none !important;
+            overscroll-behavior: none;
+            cursor: grab;
+          }
+          .leaflet-container:active { cursor: grabbing; }
+          .leaflet-container .leaflet-tile {
+            pointer-events: none;
+            -webkit-user-drag: none !important;
+            user-drag: none;
+          }
         `}</style>
+
+        <EnableMapPan />
 
         <MapController
           coords={coords}
@@ -947,7 +1045,14 @@ export default function SmartFieldMap({
 
         <MapClickHandler
           onMapClick={handleMapClick}
+          onNearVertexClick={handleDeleteVertex}
           enabled={mode === "draw" && !readOnly}
+          coords={coords}
+          consumeIgnoredClick={() => {
+            if (!skipMapClickRef.current) return false;
+            skipMapClickRef.current = false;
+            return true;
+          }}
         />
 
         {/* Tile Layers */}
@@ -1038,43 +1143,6 @@ export default function SmartFieldMap({
           />
         )}
 
-        {/* Draggable Vertex Markers */}
-        {coords.map((c, index) => (
-          <Marker
-            key={`vertex-${index}`}
-            position={[c.lat, c.lng]}
-            icon={createVertexIcon(index, index === 0)}
-            draggable={!readOnly && mode === "draw"}
-            eventHandlers={{
-              dragend: (e) => {
-                const marker = e.target;
-                const position = marker.getLatLng();
-                handleDragVertex(index, position.lat, position.lng);
-              },
-            }}
-          >
-            {!readOnly && (
-              <Popup>
-                <div className="text-center p-1">
-                  <div className="text-xs font-bold text-gray-800 mb-1">
-                    #{index + 1}
-                  </div>
-                  <div className="text-[10px] text-gray-500 mb-2">
-                    {c.lat.toFixed(6)}, {c.lng.toFixed(6)}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteVertex(index)}
-                    className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold shadow"
-                  >
-                    हटाएं
-                  </button>
-                </div>
-              </Popup>
-            )}
-          </Marker>
-        ))}
-
         {/* GPS Walking Path */}
         {walkPath.length >= 2 && (
           <Polyline
@@ -1083,14 +1151,14 @@ export default function SmartFieldMap({
           />
         )}
 
-        {/* GPS User Position Marker & Accuracy Circle */}
+        {/* GPS pulse must not steal taps from numbered field points */}
         {userGpsPos && (
           <>
-            <Marker position={[userGpsPos.lat, userGpsPos.lng]} icon={userLocationIcon} />
             {gpsAccuracy && gpsAccuracy < 60 && (
               <Circle
                 center={[userGpsPos.lat, userGpsPos.lng]}
                 radius={gpsAccuracy}
+                interactive={false}
                 pathOptions={{
                   fillColor: "#3b82f6",
                   fillOpacity: 0.15,
@@ -1099,8 +1167,46 @@ export default function SmartFieldMap({
                 }}
               />
             )}
+            <Marker
+              position={[userGpsPos.lat, userGpsPos.lng]}
+              icon={userLocationIcon}
+              interactive={false}
+              keyboard={false}
+            />
           </>
         )}
+
+        {/* Draggable Vertex Markers — last so they sit above the GPS pulse */}
+        {coords.map((c, index) => (
+          <Marker
+            key={`vertex-${index}`}
+            position={[c.lat, c.lng]}
+            icon={createVertexIcon(index, index === 0)}
+            draggable={!readOnly && mode === "draw"}
+            autoPanOnFocus={false}
+            eventHandlers={{
+              click: (e) => {
+                if (e.originalEvent) L.DomEvent.stop(e.originalEvent);
+                skipMapClickRef.current = true;
+                if (readOnly || mode !== "draw" || vertexDragRef.current) return;
+                handleDeleteVertex(index);
+              },
+              dragstart: () => {
+                vertexDragRef.current = true;
+                skipMapClickRef.current = true;
+              },
+              dragend: (e) => {
+                const marker = e.target;
+                const position = marker.getLatLng();
+                handleDragVertex(index, position.lat, position.lng);
+                window.setTimeout(() => {
+                  vertexDragRef.current = false;
+                  skipMapClickRef.current = false;
+                }, 280);
+              },
+            }}
+          />
+        ))}
       </MapContainer>
     </div>
   );

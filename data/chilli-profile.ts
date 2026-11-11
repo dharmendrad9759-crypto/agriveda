@@ -417,8 +417,8 @@ export const chilliProfile: CropManagementProfile = {
       role: "फल की गुणवत्ता, रोग सहनशीलता, जल नियमन",
       deficiencySymptoms: ["पत्ती किनारे झुलसे", "फल का रंग खराब", "कमज़ोर पौध"],
       excessSymptoms: ["Mg की कमी हो सकती है"],
-      management: ["फल अवस्था में MOP / SOP", "ज़रूरत हो तो KNO₃ पत्ती 1%"],
-      recommendedFertilizers: ["MOP", "SOP", "Potassium nitrate foliar"],
+      management: ["बेसल SOP 42 किग्रा/एकड़ (21 किग्रा K₂O)। SOP न हो तो MOP 35 किग्रा", "ज़रूरत हो तो KNO₃ पत्ती 1%"],
+      recommendedFertilizers: ["SOP 42 किग्रा/एकड़", "MOP 35 किग्रा (SOP न हो तब)", "Potassium nitrate foliar"],
     },
     {
       name: "बोरॉन",

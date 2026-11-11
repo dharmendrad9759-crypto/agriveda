@@ -83,6 +83,7 @@ export async function scheduleLocalAlert(input: {
   at?: Date;
   /** User-requested (e.g. irrigation reminder) — ignore alert toggle settings */
   force?: boolean;
+  href?: string;
 }): Promise<boolean> {
   if (typeof window === "undefined") return false;
 
@@ -120,7 +121,8 @@ export async function scheduleLocalAlert(input: {
             id: input.id,
             title: input.title,
             body: input.body,
-            schedule: input.at ? { at: input.at } : undefined,
+            schedule: input.at ? { at: input.at, allowWhileIdle: true } : undefined,
+            extra: { href: input.href || "/mandi" },
             sound: undefined,
             smallIcon: "ic_stat_icon_config_sample",
           },
@@ -143,9 +145,11 @@ export async function scheduleLocalAlert(input: {
           body: input.body,
           icon: "/icons/icon-192x192.png",
           badge: "/icons/icon-192x192.png",
+          tag: `agriveda-${input.id}`,
         });
         notif.onclick = () => {
           window.focus();
+          if (input.href) window.location.assign(input.href);
           notif.close();
         };
         return true;
@@ -183,5 +187,5 @@ export async function notifyFertilizerReminder(title: string, body: string): Pro
 }
 
 export async function notifyMandiPriceAlert(title: string, body: string): Promise<void> {
-  await scheduleLocalAlert({ id: 9005, title, body, force: true });
+  await scheduleLocalAlert({ id: 9005, title, body, force: true, href: "/mandi" });
 }

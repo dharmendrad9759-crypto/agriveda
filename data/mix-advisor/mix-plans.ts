@@ -611,7 +611,11 @@ export function cleanTechnicalName(name: string): string {
   if (!name) return "";
   return name
     .replace(/\s*\([^)]*\)/g, " ")
-    .replace(/\s*या\s+[A-Za-z0-9\u0900-\u097F\-]+/g, " ")
+    .replace(/\s+या\s+.+$/u, "")
+    .replace(
+      /(\d+(?:\.\d+)?\s*(?:%|g\/L)\s*[A-Za-z]{1,4})\s+\d+(?:\.\d+)?\s*(?:%|g\/L)\s*[A-Za-z]{1,4}\s*$/i,
+      "$1"
+    )
     .replace(/\s{2,}/g, " ")
     .trim();
 }

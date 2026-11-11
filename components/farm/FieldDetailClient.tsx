@@ -18,6 +18,7 @@ import {
 } from "@/lib/farm/cropJourneyEngine";
 import { cn } from "@/lib/cn";
 import { rememberField } from "@/lib/farm/fieldName";
+import { parseSowingISO, todayISO } from "@/lib/farm/fieldStatus";
 import { EASE_OUT, MOTION, tabPanel } from "@/lib/motion/variants";
 import type { LucideIcon } from "lucide-react";
 import {

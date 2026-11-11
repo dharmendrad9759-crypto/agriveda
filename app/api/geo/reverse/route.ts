@@ -93,11 +93,11 @@ export async function GET(req: Request) {
 
   try {
     const nomRes = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=14&accept-language=en`,
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=16&accept-language=hi,en`,
       {
         headers: {
           Accept: "application/json",
-          "Accept-Language": "en",
+          "Accept-Language": "hi,en",
           "User-Agent": "AgrivedaFarmApp/1.0 (farmer-location)",
         },
         next: { revalidate: 86400 },
@@ -117,6 +117,7 @@ export async function GET(req: Request) {
           hamlet?: string;
           locality?: string;
           suburb?: string;
+          neighbourhood?: string;
         };
       };
       displayName = data.display_name ?? "";
@@ -124,7 +125,13 @@ export async function GET(req: Request) {
       stateRaw = address.state ?? "";
       districtRaw = address.state_district || address.county || address.district || "";
       villageRaw =
-        address.village || address.hamlet || address.locality || address.suburb || "";
+        address.village ||
+        address.hamlet ||
+        address.locality ||
+        address.suburb ||
+        address.neighbourhood ||
+        address.town ||
+        "";
     }
 
     if (!stateRaw && owKey) {

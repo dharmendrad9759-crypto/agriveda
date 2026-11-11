@@ -8,21 +8,9 @@ import {
   type ExpertQueryStatus,
 } from "@/lib/expertQueries";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { canAccessQuery, cropInScope } from "@/lib/adminQueryAccess";
 
 type Ctx = { params: Promise<{ id: string }> };
-
-function canAccessQuery(
-  session: {
-    userId: string;
-    permissions: { viewAllQueries: boolean; replyAll: boolean; assignQueries: boolean };
-  },
-  row: { assigned_to: string | null; status: string }
-): boolean {
-  if (session.permissions.viewAllQueries || session.permissions.replyAll) return true;
-  if (row.assigned_to === session.userId) return true;
-  if (!row.assigned_to && (row.status === "pending" || row.status === "in_review")) return true;
-  return false;
-}
 
 export async function GET(request: NextRequest, ctx: Ctx) {
   const auth = requireAdmin(request);
@@ -30,7 +18,7 @@ export async function GET(request: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params;
   const row = await getExpertQueryById(id);
   if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (!canAccessQuery(auth.session, row)) {
+  if (!canAccessQuery(auth.session, row) || !cropInScope(auth.session, row.crop_slug)) {
     return NextResponse.json({ error: "Permission नहीं" }, { status: 403 });
   }
   return NextResponse.json({ query: row });
@@ -49,7 +37,7 @@ export async function PATCH(request: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params;
   const existing = await getExpertQueryById(id);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (!canAccessQuery(auth.session, existing)) {
+  if (!canAccessQuery(auth.session, existing) || !cropInScope(auth.session, existing.crop_slug)) {
     return NextResponse.json({ error: "Permission नहीं" }, { status: 403 });
   }
 

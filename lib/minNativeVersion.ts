@@ -13,21 +13,25 @@ export function minNativeVersionCode(): number {
 }
 
 export function parseNativeBuildHeader(req: NextRequest): number | null {
-  const platform = req.headers.get(NATIVE_HEADER_PLATFORM)?.trim().toLowerCase();
-  if (platform !== "android") return null;
   const buildRaw = req.headers.get(NATIVE_HEADER_BUILD)?.trim();
   if (!buildRaw) return null;
   const build = Number.parseInt(buildRaw, 10);
   return Number.isFinite(build) && build > 0 ? build : null;
 }
 
-/** Web clients (no android platform header) are allowed. */
+function isLikelyAndroidWebView(req: NextRequest): boolean {
+  const ua = req.headers.get("user-agent") || "";
+  return /; wv\)/i.test(ua) || /Capacitor/i.test(ua);
+}
+
+/** Web browsers allowed. Capacitor WebView must send platform+build when min version is set. */
 export function rejectIfNativeAppTooOld(req: NextRequest): NextResponse | null {
   const min = minNativeVersionCode();
   if (min <= 0) return null;
 
   const platform = req.headers.get(NATIVE_HEADER_PLATFORM)?.trim().toLowerCase();
-  if (platform !== "android") return null;
+  const native = platform === "android" || isLikelyAndroidWebView(req);
+  if (!native) return null;
 
   const build = parseNativeBuildHeader(req);
   if (build == null || build < min) {

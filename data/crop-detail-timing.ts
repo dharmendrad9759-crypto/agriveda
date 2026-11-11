@@ -17,6 +17,7 @@ const TRANSPLANT_SLUGS = new Set([
   "cucumber",
   "onion",
   "potato",
+  "capsicum",
 ]);
 
 export function getEstablishment(slug: string): Establishment {
@@ -118,7 +119,7 @@ export const CROP_TIMING: Record<string, CropTimingPack> = {
   chilli: {
     establishment: "transplant",
     fertilizers: [
-      { label: "Basal", dose: "FYM + DAP 50 kg + MOP 25 kg/acre", timing: "0 DAT", timingRef: "DAT" },
+      { label: "Basal", dose: "FYM + DAP 55 kg + SOP 42 kg/acre (SOP न हो तो MOP 35 kg)", timing: "0 DAT", timingRef: "DAT" },
       { label: "Vegetative N", dose: "Urea 20 kg/acre", timing: "20-25 DAT", timingRef: "DAT" },
       { label: "Flowering", dose: "MKP + micronutrient foliar", timing: "40-45 DAT", timingRef: "DAT" },
     ],
@@ -126,6 +127,20 @@ export const CROP_TIMING: Record<string, CropTimingPack> = {
       { label: "Establishment", amount: "Light irrigation", timing: "0 DAT", timingRef: "DAT" },
       { label: "Vegetative", amount: "Every 4-5 days", timing: "1-40 DAT", timingRef: "DAT" },
       { label: "Fruiting", amount: "Every 3-4 days", timing: "40-90 DAT", timingRef: "DAT" },
+    ],
+  },
+  capsicum: {
+    establishment: "transplant",
+    fertilizers: [
+      { label: "Basal", dose: "FYM + DAP 55 kg + SOP 42 kg/acre (SOP न हो तो MOP 35 kg)", timing: "0 DAT", timingRef: "DAT" },
+      { label: "Vegetative", dose: "Urea 25 kg + MgSO4 10 kg/acre", timing: "25-30 DAT", timingRef: "DAT" },
+      { label: "Flowering", dose: "00:52:34 1 kg + boron 150 g + Planofix 40 ml / 150-200 L", timing: "40-45 DAT", timingRef: "DAT" },
+      { label: "After each pick", dose: "Calcium nitrate 4 kg; 5 दिन बाद 13:00:45 3 kg", timing: "harvest cycles", timingRef: "DAT" },
+    ],
+    irrigations: [
+      { label: "Establishment", amount: "हल्की सिंचाई", timing: "0 DAT", timingRef: "DAT" },
+      { label: "Vegetative", amount: "हर 4–5 दिन", timing: "1-40 DAT", timingRef: "DAT" },
+      { label: "Fruiting", amount: "हर 3–4 दिन; जलभराव न हो", timing: "40-90 DAT", timingRef: "DAT" },
     ],
   },
   brinjal: {

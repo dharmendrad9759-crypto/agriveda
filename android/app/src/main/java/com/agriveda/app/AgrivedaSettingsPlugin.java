@@ -41,17 +41,15 @@ public class AgrivedaSettingsPlugin extends Plugin {
   @PluginMethod
   public void setScreenProtection(PluginCall call) {
     boolean enable = call.getBoolean("enable", true);
+    if (!enable) {
+      call.resolve();
+      return;
+    }
     try {
-      getActivity().runOnUiThread(() -> {
-        if (enable) {
-          getActivity().getWindow().setFlags(
-              WindowManager.LayoutParams.FLAG_SECURE,
-              WindowManager.LayoutParams.FLAG_SECURE
-          );
-        } else {
-          getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        }
-      });
+      getActivity().runOnUiThread(() -> getActivity().getWindow().setFlags(
+          WindowManager.LayoutParams.FLAG_SECURE,
+          WindowManager.LayoutParams.FLAG_SECURE
+      ));
       call.resolve();
     } catch (Exception e) {
       call.reject("Could not change screen protection", e);

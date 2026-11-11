@@ -5,6 +5,142 @@ export interface PincodeResult {
   district: string;
   state: string;
   block?: string;
+  /** Post offices / villages under this PIN */
+  villages?: string[];
+}
+
+const DEVANAGARI_RE = /[\u0900-\u097F]/;
+
+/** Strip GPO/SO/BO suffixes so farmers see the गाँव name. */
+export function cleanPostOfficeVillage(raw?: string | null): string {
+  if (!raw) return "";
+  let name = raw.trim().replace(/\s+/g, " ");
+  if (!name || /^na$/i.test(name)) return "";
+  name = name
+    .replace(/\s*\((?:g\.?\s*p\.?\s*o\.?|h\.?\s*o\.?|s\.?\s*o\.?|b\.?\s*o\.?)\)\s*$/i, "")
+    .replace(/\s+(?:G\.?\s*P\.?\s*O\.?|GPO|H\.?O\.?|S\.?O\.?|B\.?O\.?)$/i, "")
+    .trim();
+  return name;
+}
+
+export function hasDevanagari(value: string): boolean {
+  return DEVANAGARI_RE.test(value);
+}
+
+/** Latin core so "भोगपुर (Bhogpur)" and "Bhogpur" collapse to one chip. */
+export function villageMergeKey(name: string): string {
+  const cleaned = cleanPostOfficeVillage(name);
+  if (!cleaned) return "";
+  const latin = cleaned
+    .match(/[A-Za-z][A-Za-z0-9\s'.-]*/g)
+    ?.join(" ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+  return latin || cleaned.toLowerCase();
+}
+
+export function formatVillageLabel(english?: string | null, hindi?: string | null): string {
+  const en = cleanPostOfficeVillage(english);
+  const hi = cleanPostOfficeVillage(hindi);
+  if (hi && en && hi.toLowerCase() !== en.toLowerCase()) return `${hi} (${en})`;
+  return hi || en;
+}
+
+function villageTokens(name: string): string[] {
+  const cleaned = cleanPostOfficeVillage(name);
+  if (!cleaned) return [];
+  const tokens = new Set<string>([cleaned.toLowerCase()]);
+  const latin = cleaned.match(/[A-Za-z][A-Za-z0-9\s'.-]*/g) ?? [];
+  for (const part of latin) {
+    const token = part.replace(/\s+/g, " ").trim().toLowerCase();
+    if (token) tokens.add(token);
+  }
+  const hindi = cleaned.match(/[\u0900-\u097F]+(?:\s+[\u0900-\u097F]+)*/g) ?? [];
+  for (const part of hindi) {
+    const token = part.trim();
+    if (token) tokens.add(token);
+  }
+  return [...tokens];
+}
+
+export function villageNamesMatch(a: string, b: string): boolean {
+  const left = villageTokens(a);
+  const right = new Set(villageTokens(b));
+  if (!left.length || !right.size) return false;
+  return left.some((token) => right.has(token));
+}
+
+function pickPreferredVillageLabel(candidates: string[]): string {
+  const unique = [...new Set(candidates.map((item) => cleanPostOfficeVillage(item)).filter(Boolean))];
+  return unique.find((item) => hasDevanagari(item)) || unique[0] || "";
+}
+
+export function uniqueVillageNames(names: Array<string | undefined | null>): string[] {
+  const groups = new Map<string, string[]>();
+  for (const raw of names) {
+    const cleaned = cleanPostOfficeVillage(raw);
+    if (!cleaned) continue;
+    const key = villageMergeKey(cleaned);
+    const bucket = groups.get(key) ?? [];
+    bucket.push(cleaned);
+    groups.set(key, bucket);
+  }
+  return [...groups.values()]
+    .map(pickPreferredVillageLabel)
+    .filter(Boolean)
+    .sort((a, b) => villageMergeKey(a).localeCompare(villageMergeKey(b), "en"));
+}
+
+export interface PostalBbox {
+  south: number;
+  north: number;
+  west: number;
+  east: number;
+}
+
+/** Nominatim boundingbox is [south, north, west, east]. */
+export function parseNominatimBoundingBox(box?: Array<string | number> | null): PostalBbox | null {
+  if (!box || box.length < 4) return null;
+  const south = Number(box[0]);
+  const north = Number(box[1]);
+  const west = Number(box[2]);
+  const east = Number(box[3]);
+  if (![south, north, west, east].every(Number.isFinite)) return null;
+  return { south, north, west, east };
+}
+
+export function expandPostalBbox(bbox: PostalBbox, padDeg = 0.06): PostalBbox {
+  return {
+    south: bbox.south - padDeg,
+    north: bbox.north + padDeg,
+    west: bbox.west - padDeg,
+    east: bbox.east + padDeg,
+  };
+}
+
+export function splitBboxLatBands(bbox: PostalBbox): [PostalBbox, PostalBbox] {
+  const mid = (bbox.south + bbox.north) / 2;
+  return [
+    { ...bbox, north: mid },
+    { ...bbox, south: mid },
+  ];
+}
+
+/** Nominatim viewbox = left,top,right,bottom */
+export function nominatimViewbox(bbox: PostalBbox): string {
+  return `${bbox.west},${bbox.north},${bbox.east},${bbox.south}`;
+}
+
+export function villageMatchesPinArea(
+  displayName: string,
+  opts: { pin: string; district: string }
+): boolean {
+  const hay = displayName.toLowerCase();
+  if (!hay.trim()) return false;
+  if (opts.pin && hay.includes(opts.pin)) return true;
+  const district = opts.district.trim().toLowerCase();
+  return Boolean(district && hay.includes(district));
 }
 
 const STATE_ALIASES: Record<string, string> = {
@@ -271,6 +407,7 @@ export async function lookupPincode(pin: string): Promise<PincodeResult | null> 
           state,
           district,
           block: body.block,
+          villages: uniqueVillageNames(body.villages ?? [body.block]),
         };
         clientPinCache.set(cleaned, normalized);
         return normalized;

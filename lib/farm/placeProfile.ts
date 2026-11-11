@@ -163,6 +163,43 @@ const STATE_FACTS: Record<string, Facts> = {
     soil: "लाल मिट्टी (Red)",
     climateHi: "गर्म नम समुद्री, मानसून में भारी बारिश",
   },
+  Sikkim: {
+    soil: "दोमट मिट्टी (Loam)",
+    climateHi: "पहाड़ी ठंड, बारिश ज़्यादा, जाड़ा गीला",
+  },
+  "Arunachal Pradesh": {
+    soil: "दोमट मिट्टी (Loam)",
+    climateHi: "पहाड़ी नम, बारिश बहुत, जाड़ा हल्का ठंडा",
+  },
+  Manipur: {
+    soil: "दोमट मिट्टी (Loam)",
+    climateHi: "गर्म नम घाटी, पहाड़ पर ठंडा, मानसून में बारिश",
+  },
+  Meghalaya: {
+    soil: "लाल मिट्टी (Red)",
+    climateHi: "बहुत बारिश, गर्म नम, जाड़ा हल्का",
+  },
+  Mizoram: {
+    soil: "लाल मिट्टी (Red)",
+    climateHi: "गर्म नम पहाड़ी, मानसून में अच्छी बारिश",
+  },
+  Nagaland: {
+    soil: "दोमट मिट्टी (Loam)",
+    climateHi: "पहाड़ी नम, मानसून में बारिश, जाड़ा ठंडा",
+  },
+  Tripura: {
+    soil: "लाल मिट्टी (Red)",
+    climateHi: "गर्म नम, मानसून में अच्छी बारिश",
+  },
+  Chandigarh: {
+    soil: "जलोढ़ मिट्टी (Alluvial)",
+    climateHi: "गर्मियाँ तेज़, जाड़ा ठंडा, बारिश कम",
+    bighaId: "punjab_haryana",
+  },
+  Puducherry: {
+    soil: "लाल मिट्टी (Red)",
+    climateHi: "गर्म तटीय, बारिश अक्टूबर से दिसंबर",
+  },
 };
 
 /** District names that change the state default. Keys are lowercase. */
@@ -174,6 +211,12 @@ const DISTRICT_SOIL: Record<string, { soil: string; bighaId?: string }> = {
   barmer: { soil: "बलुई दोमट (Sandy Loam)", bighaId: "rajasthan_bada" },
   jaisalmer: { soil: "बलुई दोमट (Sandy Loam)", bighaId: "rajasthan_bada" },
   kutch: { soil: "बलुई दोमट (Sandy Loam)" },
+  hisar: { soil: "बलुई दोमट (Sandy Loam)" },
+  sirsa: { soil: "बलुई दोमट (Sandy Loam)" },
+  fatehabad: { soil: "बलुई दोमट (Sandy Loam)" },
+  bhiwani: { soil: "बलुई दोमट (Sandy Loam)" },
+  ganganagar: { soil: "बलुई दोमट (Sandy Loam)" },
+  hanumangarh: { soil: "बलुई दोमट (Sandy Loam)" },
   belagavi: { soil: "काली मिट्टी (Black)" },
   belgaum: { soil: "काली मिट्टी (Black)" },
   vijayapura: { soil: "काली मिट्टी (Black)" },
@@ -284,4 +327,36 @@ export function matchStateName(raw: string, states: string[]): string {
       return n === s || n === hi || s.includes(n) || n.includes(s);
     }) || ""
   );
+}
+
+export const FARM_SOIL_OPTIONS = [
+  "दोमट मिट्टी (Loam)",
+  "काली मिट्टी (Black)",
+  "जलोढ़ मिट्टी (Alluvial)",
+  "बलुई दोमट (Sandy Loam)",
+  "चिकनी मिट्टी (Clay)",
+  "लाल मिट्टी (Red)",
+] as const;
+
+export function matchFarmSoil(value?: string): string {
+  if (!value?.trim()) return "";
+  const v = value.trim();
+  if ((FARM_SOIL_OPTIONS as readonly string[]).includes(v)) return v;
+  const n = v.toLowerCase();
+  const hit = FARM_SOIL_OPTIONS.find((option) => {
+    const hi = option.replace(/\s*\(.*\)$/, "").toLowerCase();
+    const en = (option.match(/\(([^)]+)\)/)?.[1] || "").toLowerCase();
+    return n.includes(hi) || hi.includes(n) || Boolean(en && (n.includes(en) || en.includes(n)));
+  });
+  return hit || "";
+}
+
+/** Dominant soil farmers name for this state/district — not a lab report. */
+export function soilForPlace(state?: string, district?: string): string {
+  const raw = (state || "").trim();
+  if (!raw) return "";
+  const states = Object.keys(STATE_HI);
+  const stateEn = STATE_FACTS[raw] || STATE_HI[raw] ? raw : matchStateName(raw, states);
+  if (!stateEn) return "";
+  return fieldPlaceFor(stateEn, district).soil;
 }

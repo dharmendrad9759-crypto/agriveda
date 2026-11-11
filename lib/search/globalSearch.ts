@@ -3,6 +3,8 @@ import { deficiencies } from "@/data/deficiencies";
 import { getCropPestDisease, pestDiseaseCropList } from "@/data/pest-disease";
 import { toFarmerNutrientView } from "@/lib/nutrients/farmerNutrientView";
 import { cropTabHref } from "@/lib/crops/crop-tabs";
+import { CROP_PROBLEM_CROPS } from "@/data/crop-curative-problems";
+import { getHubOverlay } from "@/data/hub/priorityOverlays";
 
 export type SearchResultType =
   | "crop"
@@ -183,6 +185,22 @@ export function globalSearch(query: string): GlobalSearchResult[] {
         subtitle: "Crop protection guide",
         href: cropTabHref(cropSlug, "pests"),
       });
+    }
+  }
+
+  for (const crop of CROP_PROBLEM_CROPS) {
+    for (const p of crop.problems) {
+      const aliases = getHubOverlay(crop.slug, p.id).localAliases ?? [];
+      if (matches(q, p.nameHi, p.nameEn, p.tagHi, crop.nameHi, crop.nameEn, p.id, ...aliases)) {
+        results.push({
+          id: `hub-${crop.slug}-${p.id}`,
+          type: /कीट|pest/i.test(p.tagHi) ? "pest" : "disease",
+          title: p.nameHi,
+          subtitle: `${crop.nameHi} · फसल डॉक्टर`,
+          href: `/crop-problems/${crop.slug}/${p.id}`,
+          badge: p.tagHi,
+        });
+      }
     }
   }
 

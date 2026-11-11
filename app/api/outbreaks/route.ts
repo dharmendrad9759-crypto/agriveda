@@ -15,6 +15,7 @@ import { requireSession } from "@/lib/session";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 import { OUTBREAK_SEED_REPORTS } from "@/data/outbreak-seed";
 import { sanitizePhotoDataUrl } from "@/lib/expertQueries";
+import { isAllowedHttpsPhotoUrl } from "@/lib/privacyMask";
 
 export async function GET(request: NextRequest) {
   const lat = parseFloat(request.nextUrl.searchParams.get("lat") ?? "");
@@ -102,6 +103,7 @@ export async function POST(request: NextRequest) {
     // Never trust body.farmerId
     const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
       phone: auth.session.phone,
+      firebaseUid: auth.session.firebaseUid,
     });
 
     if (farmerId) {
@@ -118,7 +120,7 @@ export async function POST(request: NextRequest) {
     if (typeof body.photoUrl === "string") {
       if (body.photoUrl.startsWith("data:")) {
         photoUrl = sanitizePhotoDataUrl(body.photoUrl) ?? undefined;
-      } else if (/^https:\/\//i.test(body.photoUrl) && body.photoUrl.length <= 2000) {
+      } else if (isAllowedHttpsPhotoUrl(body.photoUrl)) {
         photoUrl = body.photoUrl;
       }
     }

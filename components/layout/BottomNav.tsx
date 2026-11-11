@@ -136,12 +136,8 @@ export default function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
       aria-label={t("bottomNavLabel")}
     >
-      <div className="relative mx-auto max-w-lg px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-0 left-3 right-3 h-[max(0.75rem,env(safe-area-inset-bottom))] bg-[var(--av-surface)]"
-        />
-        <div className="relative flex items-end justify-around rounded-[22px] border border-emerald-500/25 bg-[var(--av-surface)] px-1 py-1.5 shadow-[0_-10px_32px_rgba(4,40,24,0.18),0_8px_24px_rgba(0,0,0,0.08)]">
+      <div className="mx-auto max-w-lg px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="relative flex items-end justify-around rounded-[22px] border border-emerald-500/20 bg-[var(--av-surface)] px-1 py-1.5 shadow-[0_-8px_40px_rgba(4,120,87,0.18),0_8px_24px_rgba(0,0,0,0.12)]">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent"

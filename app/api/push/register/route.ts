@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
     const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
       phone: auth.session.phone,
       name: auth.session.name,
+      firebaseUid: auth.session.firebaseUid,
     });
     if (!farmerId) {
       return NextResponse.json({ error: "Could not resolve farmer" }, { status: 500 });
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error("[push/register]", error.message);
       return NextResponse.json(
-        { error: "Save failed — run supabase/farmer-cloud-sync.sql", detail: error.message },
+        { error: "Save failed — run supabase/farmer-cloud-sync.sql" },
         { status: 500 }
       );
     }

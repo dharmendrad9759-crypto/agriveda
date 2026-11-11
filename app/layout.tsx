@@ -1,5 +1,6 @@
 // app/layout.tsx
 import ClientProviders from "@/components/ClientProviders";
+import { notoSansDevanagari, notoSerifDevanagari } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata = {
@@ -59,7 +60,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="flex min-h-screen min-w-0 flex-col overflow-x-hidden antialiased"
+        className={`${notoSansDevanagari.variable} ${notoSerifDevanagari.variable} ${notoSansDevanagari.className} flex min-h-screen min-w-0 flex-col overflow-x-hidden antialiased`}
         suppressHydrationWarning
       >
         <ClientProviders>{children}</ClientProviders>

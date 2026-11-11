@@ -2,11 +2,13 @@ import { createHmac, timingSafeEqual, randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import {
   permissionsForUser,
+  verifyPanelPassword,
   type PanelPermissions,
   type PanelRole,
   type PanelUser,
   OWNER_MASTER_ID,
 } from "@/lib/panelUsers";
+import { rejectForeignOrigin } from "@/lib/requestOrigin";
 
 export const ADMIN_COOKIE = "agriveda_admin";
 export const ADMIN_MAX_AGE_SEC = 60 * 60 * 12; // 12 hours
@@ -18,6 +20,7 @@ export type AdminSession = {
   displayName: string;
   username: string;
   permissions: PanelPermissions;
+  cropScopes?: string[];
   exp: number;
 };
 
@@ -56,8 +59,11 @@ export function isAdminConfigured(): boolean {
 }
 
 export function verifyAdminPassword(password: string): boolean {
+  if (!password) return false;
+  const hashed = process.env.ADMIN_PANEL_PASSWORD_HASH?.trim();
+  if (hashed) return verifyPanelPassword(password, hashed);
   const secret = adminSecret();
-  if (!secret || !password) return false;
+  if (!secret) return false;
   return safeEqual(password, secret);
 }
 
@@ -67,6 +73,7 @@ function ownerMasterSession(): Omit<AdminSession, "exp"> {
     userId: OWNER_MASTER_ID,
     displayName: "Main Owner",
     username: "owner",
+    cropScopes: [],
     permissions: permissionsForUser({
       role: "owner",
       canAssign: true,
@@ -83,6 +90,7 @@ export function sessionFromPanelUser(user: PanelUser): Omit<AdminSession, "exp">
     displayName: user.displayName,
     username: user.username,
     permissions: permissionsForUser(user),
+    cropScopes: user.cropScopes ?? [],
   };
 }
 
@@ -154,6 +162,8 @@ export function readAdminFromRequest(req: NextRequest): boolean {
 export function requireAdmin(
   req: NextRequest
 ): { ok: true; session: AdminSession } | { error: NextResponse } {
+  const originBlock = rejectForeignOrigin(req);
+  if (originBlock) return { error: originBlock };
   const session = readAdminSession(req);
   if (!session) {
     return {

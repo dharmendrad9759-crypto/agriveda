@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, Suspense, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 import {
   ArrowLeft,
-  MapPin,
   Ruler,
   HelpCircle,
   Sparkles,
@@ -17,11 +16,12 @@ import {
   ShieldAlert,
   X,
 } from "lucide-react";
-import { LatLng, getFieldMeasurement } from "@/lib/geo/fieldGeometry";
+import { LatLng, getFieldMeasurement, validateFieldPolygon } from "@/lib/geo/fieldGeometry";
 import { useFarmData } from "@/hooks/useFarmData";
 import FieldHUD from "@/components/farm/FieldHUD";
 import SaveFieldModal from "@/components/farm/SaveFieldModal";
 import type { FarmField } from "@/lib/farm/types";
+import { rememberField } from "@/lib/farm/fieldName";
 import { fieldPlaceFor, type FieldPlace } from "@/lib/farm/placeProfile";
 import type { MapViewCenter } from "@/components/farm/SmartFieldMap";
 
@@ -68,6 +68,7 @@ function FieldMeasureContent() {
   const [pinnedLocation, setPinnedLocation] = useState<LatLng | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [hydratedEditId, setHydratedEditId] = useState<string | null>(null);
+  const skipAutoSavePrompt = useRef(false);
 
   // If editId is provided, populate initial field boundary
   const editingField = useMemo(() => {
@@ -83,6 +84,7 @@ function FieldMeasureContent() {
   ) {
     setHydratedEditId(editingField.id);
     setCoords(editingField.boundary ?? []);
+    skipAutoSavePrompt.current = true;
     if (editingField.placeState) {
       setPlace(fieldPlaceFor(editingField.placeState, editingField.placeDistrict));
     }
@@ -98,11 +100,22 @@ function FieldMeasureContent() {
     );
   }, [coords, place]);
 
+  useEffect(() => {
+    if (skipAutoSavePrompt.current) return;
+    if (isSaveModalOpen) return;
+    if (coords.length < 4) return;
+    if (!validateFieldPolygon(coords).valid) return;
+    skipAutoSavePrompt.current = true;
+    setIsSaveModalOpen(true);
+  }, [coords, isSaveModalOpen]);
+
   const handleSaveField = (fieldPayload: Omit<FarmField, "id">) => {
     if (editingField) {
       updateField(editingField.id, fieldPayload);
+      rememberField(editingField.id);
     } else {
-      addField(fieldPayload);
+      const id = addField(fieldPayload);
+      rememberField(id);
     }
     setIsSaveModalOpen(false);
     showToast("खेत सफलतापूर्वक जुड़ गया ✓", "success");
@@ -133,7 +146,7 @@ function FieldMeasureContent() {
               <Ruler className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
               {editingField
                 ? `सीमा संशोधन: ${editingField.name}`
-                : "अपना खेत नापें"}
+                : "खेत नापें"}
             </h1>
             <p className="mt-0.5 hidden truncate text-[10.5px] text-[var(--av-text-muted)] sm:block">
               खेत का रकबा और सीमा मापन
@@ -241,22 +254,6 @@ function FieldMeasureContent() {
 
         {/* Interactive Satellite Field Map */}
         <section className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)]">
-          <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border-subtle)] px-3 py-2">
-            <p className="flex min-w-0 items-center gap-1.5 text-[10.5px] font-medium text-[var(--av-text-muted)]">
-              <MapPin className="h-3 w-3 shrink-0 text-emerald-700 dark:text-emerald-300" />
-              <span className="truncate">
-                {coords.length >= 3
-                  ? `${coords.length} कोनों की सीमा तैयार`
-                  : editingField
-                    ? "पुरानी सीमा संशोधित करें"
-                    : "नक्शे पर खेत के कोने दबाएं"}
-              </span>
-            </p>
-            <span className="shrink-0 rounded-full bg-[var(--av-surface-inset)] px-2 py-0.5 text-[9px] font-semibold text-[var(--av-text-muted)]">
-              {place ? place.stateHi : "राज्य चुनें"}
-            </span>
-          </div>
-
           <SmartFieldMap
             key={editingField?.id ?? "new-field"}
             initialCoords={editingField?.boundary || []}

@@ -14,6 +14,21 @@ export interface LatLng {
   lng: number;
 }
 
+export function isValidLatLng(point?: Partial<LatLng> | null): point is LatLng {
+  return (
+    !!point &&
+    Number.isFinite(point.lat) &&
+    Number.isFinite(point.lng) &&
+    Math.abs(point.lat) <= 90 &&
+    Math.abs(point.lng) <= 180
+  );
+}
+
+export function sanitizeBoundary(boundary?: LatLng[] | null): LatLng[] {
+  if (!Array.isArray(boundary)) return [];
+  return boundary.filter(isValidLatLng);
+}
+
 export interface FieldMeasurement {
   sqMeters: number;
   acres: number;

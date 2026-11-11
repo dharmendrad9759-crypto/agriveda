@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { applySessionCookie, signSession } from "@/lib/session";
 import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import { createSupabaseServiceClient } from "@/lib/supabase";
-import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { clientIp, rateLimit, requireDurableRateLimit } from "@/lib/rateLimit";
+import { rejectForeignOrigin } from "@/lib/requestOrigin";
 import { isValidDeviceId } from "@/lib/deviceIdValidate";
 import {
   activeDeviceStoreReady,
@@ -117,8 +118,14 @@ async function lookupFirebaseUser(
  */
 export async function POST(request: NextRequest) {
   try {
+    const originBlock = rejectForeignOrigin(request);
+    if (originBlock) return originBlock;
+
     const forceUpdate = rejectIfNativeAppTooOld(request);
     if (forceUpdate) return forceUpdate;
+
+    const durable = requireDurableRateLimit();
+    if (durable) return durable;
 
     const ip = clientIp(request);
     const limited = await rateLimit(`firebase-session:${ip}`, 10, 60_000);
@@ -180,9 +187,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Auto-takeover enabled: seamless login without manual device conflict prompts
-    const takeover = true;
-    const claim = await claimActiveDevice(user.localId, deviceId, email, { takeover: true });
+    const takeover = body.takeover === true;
+    const claim = await claimActiveDevice(user.localId, deviceId, email, { takeover });
     if (!claim.ok) {
       return NextResponse.json(
         {
@@ -207,6 +213,7 @@ export async function POST(request: NextRequest) {
       await ensureFarmerRecord(deviceId, client, {
         phone: phone || undefined,
         name: displayName || undefined,
+        firebaseUid: user.localId,
       });
     }
 

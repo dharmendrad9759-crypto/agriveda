@@ -14,7 +14,9 @@ import {
   verifyPanelPassword,
 } from "@/lib/panelUsers";
 import { kvDelete, kvGet, kvSet } from "@/lib/durableKv";
-import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { clientIp, rateLimit, requireDurableRateLimit } from "@/lib/rateLimit";
+import { rejectForeignOrigin } from "@/lib/requestOrigin";
+import { securityEvent } from "@/lib/securityLog";
 
 const FAIL_WINDOW_MS = 30 * 60_000;
 const MAX_FAILS = 12;
@@ -38,11 +40,18 @@ export async function GET(request: NextRequest) {
       displayName: session.displayName,
       role: session.role === "admin" ? "owner" : session.role,
       permissions: session.permissions,
+      cropScopes: session.cropScopes ?? [],
     },
   });
 }
 
 export async function POST(request: NextRequest) {
+  const originBlock = rejectForeignOrigin(request);
+  if (originBlock) return originBlock;
+
+  const durable = requireDurableRateLimit();
+  if (durable) return durable;
+
   const ip = clientIp(request);
   const failKey = `admin-fail:${ip}`;
   const fails = await kvGet<FailBucket>(failKey);
@@ -86,10 +95,12 @@ export async function POST(request: NextRequest) {
       const user = await findPanelUserByUsername(username);
       if (!user || !user.active || !verifyPanelPassword(password, user.passwordHash)) {
         await bumpFail();
+        securityEvent("admin_login_fail", { ip, username, path: "panel" });
         return NextResponse.json({ error: "गलत username / password" }, { status: 401 });
       }
       await kvDelete(failKey);
       await touchPanelLogin(user.id);
+      securityEvent("admin_login_ok", { ip, username: user.username, role: user.role });
       const token = signAdminToken(sessionFromPanelUser(user));
       const res = NextResponse.json({
         ok: true,
@@ -114,10 +125,12 @@ export async function POST(request: NextRequest) {
     }
     if (!verifyAdminPassword(password)) {
       await bumpFail();
+      securityEvent("admin_login_fail", { ip, path: "owner" });
       return NextResponse.json({ error: "गलत पासवर्ड" }, { status: 401 });
     }
 
     await kvDelete(failKey);
+    securityEvent("admin_login_ok", { ip, username: "owner", role: "owner" });
     const token = signAdminToken();
     const res = NextResponse.json({
       ok: true,

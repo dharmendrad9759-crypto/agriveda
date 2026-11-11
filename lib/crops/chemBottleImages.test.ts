@@ -247,4 +247,30 @@ describe("Chemical Bottle Photorealistic Images Resolution", () => {
     expect(chemBottleImageSrc("Metalaxyl+Mancozeb (nursery drench)")).toBe("/images/chem/real/metalaxyl-m-mancozeb-wp.jpg");
     expect(chemBottleImageSrc("Metalaxyl+Mancozeb (drench)")).toBe("/images/chem/real/metalaxyl-m-mancozeb-wp.jpg");
   });
+
+  it("does not treat field hygiene 'खेत साफ' as SAAF (Carbendazim + Mancozeb)", () => {
+    expect(lookupChemBottle("खेत साफ")).toBeUndefined();
+    expect(lookupChemBottle("खेत को खरपतवार मुक्त और साफ रखें")).toBeUndefined();
+    expect(lookupChemBottle("खेत की मैदान साफ")).toBeUndefined();
+    expect(lookupChemBottle("साफ पानी का इस्तेमाल करें")).toBeUndefined();
+    expect(hasRealBottlePhoto("खेत साफ रखें")).toBe(false);
+  });
+
+  it("still maps explicit SAAF / Carbendazim+Mancozeb product names", () => {
+    expect(lookupChemBottle("साफ")?.slug).toBe("carbendazim-mancozeb-wp");
+    expect(lookupChemBottle("साफ फंगीसाइड")?.slug).toBe("carbendazim-mancozeb-wp");
+    expect(lookupChemBottle("Carbendazim 12% + Mancozeb 63% WP")?.slug).toBe("carbendazim-mancozeb-wp");
+  });
+
+  it("resolves remaining mix-advisor tonic bottles to photoreal photos", () => {
+    expect(hasRealBottlePhoto("Ascophyllum Nodosum Seaweed Extract")).toBe(true);
+    expect(hasRealBottlePhoto("Hydrolyzed Protein & Amino Acids Complex")).toBe(true);
+    expect(chemBottleImageSrc("Hydrolyzed Protein & Amino Acids Complex")).toBe(
+      "/images/chem/real/hydrolyzed-amino-acids.jpg"
+    );
+    expect(hasRealBottlePhoto("100% Water Soluble NPK 19:19:19")).toBe(true);
+    expect(chemBottleImageSrc("100% Water Soluble NPK 19:19:19")).toBe(
+      "/images/chem/real/npk-19-19-19.jpg"
+    );
+  });
 });

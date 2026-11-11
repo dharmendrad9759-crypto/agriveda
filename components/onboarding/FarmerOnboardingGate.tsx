@@ -29,7 +29,9 @@ import {
   INDIAN_STATES,
   isValidDistrict,
   isValidState,
+  sortStatesForFarmer,
 } from "@/lib/india-locations";
+import { stateLabelHi } from "@/lib/farm/placeProfile";
 import { isFirebaseConfigured } from "@/lib/firebase/client";
 import {
   completeGoogleRedirectIfAny,
@@ -43,7 +45,7 @@ import { DEMO_FARMER_PROFILE, shouldAutoSkipOnboarding } from "@/lib/onboarding-
 import { getDeviceId } from "@/lib/deviceId";
 import { signalForceUpdate, withNativeAppHeaders } from "@/lib/nativeAppInfo";
 import { markIntroDone } from "@/lib/launchFlags";
-import { lookupPincode } from "@/lib/pincodeLookup";
+import { lookupPincode, villageNamesMatch } from "@/lib/pincodeLookup";
 import { pullFarmCloudSync } from "@/lib/farm/cloudSync";
 import { readStorage } from "@/lib/storage";
 import { cn } from "@/lib/cn";
@@ -92,6 +94,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
   const [district, setDistrict] = useState("");
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
+  const [pinVillages, setPinVillages] = useState<string[]>([]);
   const [pinBusy, setPinBusy] = useState(false);
   const [pinSuccess, setPinSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -101,12 +104,52 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     () => (isValidState(state) ? getDistrictsForState(state) : []),
     [state]
   );
+  const stateOptions = useMemo(() => sortStatesForFarmer(INDIAN_STATES, state), [state]);
 
   const handleStateChange = (next: string) => {
     setState(next);
     if (district && isValidState(next) && !isValidDistrict(next, district)) {
       setDistrict("");
     }
+  };
+
+  const finishLoginFromSavedProfile = (takeoverToast: string | undefined, googleName: string) => {
+    const saved = readStorage<FarmerProfile | null>("agriveda-farmer-profile", null);
+    const savedName = saved?.name?.trim() || "";
+    const savedVillage = saved?.village?.trim() || "";
+    const savedDistrict = saved?.district?.trim() || "";
+    const savedState = saved?.state?.trim() || "";
+    const hasName = Boolean(savedName);
+    const hasLocation = Boolean(savedVillage && savedDistrict && savedState);
+
+    if (hasName) setName(savedName);
+    else if (googleName) setName(googleName);
+
+    if (hasLocation) {
+      setVillage(savedVillage);
+      setDistrict(savedDistrict);
+      setState(savedState);
+      setPincode((saved?.pincode || "").replace(/\D/g, "").slice(0, 6));
+    }
+
+    if (hasName && hasLocation) {
+      completeOnboarding({
+        ...saved,
+        name: savedName,
+        village: savedVillage,
+        district: savedDistrict,
+        state: savedState,
+        onboardingComplete: true,
+        farmSetupComplete: true,
+      });
+      markIntroDone();
+      showToast(takeoverToast || `वापसी पर स्वागत है, ${savedName} जी! 🙏`, "success");
+      return true;
+    }
+
+    setStep(hasName ? "location" : "name");
+    showToast(takeoverToast || "Google लॉगिन सफल ✓", "success");
+    return true;
   };
 
   const continueAsGuest = () => {
@@ -136,7 +179,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       body: JSON.stringify({
         googleIdToken,
         deviceId,
-        takeover: true,
+        takeover: Boolean(options?.takeover),
       }),
     });
     const sessionBody = await sessionRes.json().catch(() => ({}));
@@ -170,33 +213,17 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     if (suggested) setName(suggested);
     setConflictData(null);
 
-    // If returning user has existing profile in cloud or local storage, restore and skip!
     try {
-      await pullFarmCloudSync();
+      await pullFarmCloudSync({ force: true });
     } catch {
       /* ignore */
     }
-    const saved = readStorage<FarmerProfile | null>("agriveda-farmer-profile", null);
-    if (saved?.onboardingComplete && saved.name?.trim() && saved.district?.trim()) {
-      completeOnboarding({ ...saved });
-      markIntroDone();
-      showToast(
-        options?.takeover
-          ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
-          : `वापसी पर स्वागत है, ${saved.name} जी! 🙏`,
-        "success"
-      );
-      return true;
-    }
-
-    setStep("name");
-    showToast(
+    return finishLoginFromSavedProfile(
       options?.takeover
         ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
-        : "Google लॉगिन सफल ✓",
-      "success"
+        : undefined,
+      suggested
     );
-    return true;
   };
 
   const establishSession = async (
@@ -220,7 +247,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       body: JSON.stringify({
         idToken,
         deviceId,
-        takeover: true,
+        takeover: Boolean(options?.takeover),
       }),
     });
     const sessionBody = await sessionRes.json().catch(() => ({}));
@@ -253,33 +280,15 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
     if (suggested) setName(suggested);
     setConflictData(null);
 
-    // If returning user has existing profile in cloud or local storage, restore and skip!
     try {
-      await pullFarmCloudSync();
+      await pullFarmCloudSync({ force: true });
     } catch {
       /* ignore */
     }
-    const saved = readStorage<FarmerProfile | null>("agriveda-farmer-profile", null);
-    if (saved?.onboardingComplete && saved.name?.trim() && saved.district?.trim()) {
-      completeOnboarding({ ...saved });
-      markIntroDone();
-      showToast(
-        options?.takeover
-          ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
-          : `वापसी पर स्वागत है, ${saved.name} जी! 🙏`,
-        "success"
-      );
-      return true;
-    }
-
-    setStep("name");
-    showToast(
-      options?.takeover
-        ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓"
-        : "Google लॉगिन सफल ✓",
-      "success"
+    return finishLoginFromSavedProfile(
+      options?.takeover ? "खाता इस डिवाइस पर ट्रांसफर हुआ ✓" : undefined,
+      suggested
     );
-    return true;
   };
 
   useEffect(() => {
@@ -397,13 +406,21 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
       const result = await lookupPincode(pin);
       if (!result || !result.state || !result.district) {
         setError("PIN कोड नहीं मिला — कृपया ज़िला व राज्य नीचे सूची से चुनें");
+        setPinVillages([]);
         return;
       }
       setPincode(result.pincode);
       setState(result.state);
       setDistrict(result.district);
+      const villages = result.villages ?? [];
+      setPinVillages(villages);
+      if (villages.length === 1) {
+        setVillage(villages[0]);
+      } else if (village) {
+        const match = villages.find((item) => villageNamesMatch(item, village));
+        setVillage(match || village);
+      }
       setPinSuccess(true);
-      showToast(`${result.district}, ${result.state} — PIN से ऑटो-सेट ✓`, "success");
     } catch {
       setError("PIN lookup असफल — कृपया राज्य व ज़िला नीचे चुनें");
     } finally {
@@ -413,7 +430,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
   const finishLocation = () => {
     if (!village.trim() || !district.trim() || !state.trim()) {
-      setError("गाँव/शहर, ज़िला और राज्य — सभी भरना आवश्यक है");
+      setError("गाँव, ज़िला और राज्य — सभी भरना आवश्यक है");
       return;
     }
     if (!isValidState(state.trim())) {
@@ -712,7 +729,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
               {/* PIN Code Lookup */}
               <div>
                 <label className="mb-1 block text-xs font-bold text-gray-700 dark:text-gray-200">
-                  PIN कोड (त्वरित भरें — 6 अंक)
+                  PIN कोड
                 </label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -724,6 +741,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                         const val = e.target.value.replace(/\D/g, "").slice(0, 6);
                         setPincode(val);
                         setPinSuccess(false);
+                        if (val.length !== 6) setPinVillages([]);
                         if (val.length === 6) {
                           void handlePincodeLookup(val);
                         }
@@ -758,7 +776,9 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                   placeholder="अपना राज्य चुनें"
                   value={state}
                   onChange={handleStateChange}
-                  options={INDIAN_STATES}
+                  options={stateOptions}
+                  getLabel={stateLabelHi}
+                  pinFirst={state}
                   emptyHint="राज्य नहीं मिला"
                 />
 
@@ -774,21 +794,21 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                 />
               </div>
 
-              {/* Village Input */}
-              <div>
-                <label className="mb-1 block text-xs font-bold text-gray-700 dark:text-gray-200">
-                  गाँव या शहर (Village / Town) <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                  <input
-                    value={village}
-                    onChange={(e) => setVillage(e.target.value)}
-                    placeholder="अपने गाँव या कस्बे का नाम लिखें"
-                    className="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-gray-900 outline-none transition focus:border-emerald-500 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
-                  />
-                </div>
-              </div>
+              <SearchableSelect
+                key={`onboard-village-${pincode}`}
+                label="गाँव *"
+                placeholder={
+                  pinVillages.length
+                    ? "इस पिन के गाँव में से चुनें"
+                    : "अपने गाँव का नाम लिखें"
+                }
+                value={village}
+                onChange={setVillage}
+                options={pinVillages}
+                allowCustom
+                autoOpen={pinSuccess && pinVillages.length > 1 && !village.trim()}
+                emptyHint="सूची में नहीं — गाँव का नाम लिख दें"
+              />
 
               {/* Navigation */}
               <div className="flex items-center justify-between gap-3 pt-2">

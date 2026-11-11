@@ -1,9 +1,7 @@
-import { MANDI_PRICES } from "@/data/mock/mandi";
 import { CROP_CATEGORY, CROP_HI } from "@/lib/mandi/constants";
 import { getDistrictsForState } from "@/lib/india-locations";
+import { varietiesForCrop } from "@/lib/mandi/varieties";
 import type { MandiRow } from "@/lib/mandi/types";
-
-const GRADES = ["FAQ", "Local", "Hybrid", "Grade A"];
 
 const BASE_PRICE: Record<string, number> = {
   Wheat: 2420,
@@ -23,15 +21,10 @@ function sparkline(modal: number): number[] {
   return Array.from({ length: 7 }, (_, i) => Math.round(base + ((modal - base) * i) / 6));
 }
 
-/** Rich demo dataset aligned strictly with real districts of the selected state */
+/** Rich demo dataset — धान वैरायटी-वाइज, बाकी फसलें जैसे मंडी में भाव लगता है */
 export function expandMockMandi(state: string, district?: string): MandiRow[] {
-  const base = MANDI_PRICES
-    .filter((r) => !r.state || r.state.toLowerCase() === state.toLowerCase())
-    .map((r) => ({ ...r, state, district: district || r.district || r.mandi }));
-
   const stateDistricts = getDistrictsForState(state);
 
-  // District drill-in: three APMC-style markets. State browse: one mandi per district.
   const markets = district
     ? [`${district} मुख्य मंडी`, `${district} अनाज मंडी`, `${district} सब्जी मंडी`]
     : stateDistricts.length > 0
@@ -39,13 +32,13 @@ export function expandMockMandi(state: string, district?: string): MandiRow[] {
       : ["स्थानीय मंडी"];
 
   const allCrops = district
-    ? ["Wheat", "Mustard", "Gram", "Paddy", "Onion", "Potato", "Cotton", "Maize"]
+    ? ["Wheat", "Mustard", "Gram", "Paddy", "Onion", "Potato", "Cotton", "Maize", "Soybean", "Chilli"]
     : ["Wheat", "Mustard", "Gram", "Paddy", "Onion"];
   const grainCrops = allCrops.filter((c) =>
     ["Wheat", "Mustard", "Gram", "Paddy", "Maize", "Cotton", "Soybean"].includes(c)
   );
   const vegCrops = allCrops.filter((c) => ["Onion", "Potato", "Tomato", "Chilli"].includes(c));
-  const rows: MandiRow[] = [...base];
+  const rows: MandiRow[] = [];
   let i = 0;
 
   for (const mandi of markets) {
@@ -62,26 +55,30 @@ export function expandMockMandi(state: string, district?: string): MandiRow[] {
           : allCrops
         : allCrops;
     for (const crop of crops) {
-      if (rows.some((r) => r.mandi.toLowerCase().includes(mandi.toLowerCase()) && r.crop === crop)) continue;
       const seed = (assignedDistrict.length * 97 + mandi.length * 13 + crop.length * 31 + i) * 137;
-      const modal = (BASE_PRICE[crop] ?? 2200) + (seed % 280) - 80;
-      const spread = 70 + (seed % 140);
-      const grades =
-        crop === "Wheat" || crop === "Paddy" || crop === "Mustard"
-          ? [GRADES[seed % GRADES.length], GRADES[(seed + 1) % GRADES.length]]
-          : [GRADES[seed % GRADES.length]];
-      for (const grade of grades) {
+      const quotes = varietiesForCrop(crop);
+      for (const quote of quotes) {
+        const variety = quote.name;
+        const already = rows.some(
+          (r) =>
+            r.mandi.toLowerCase().includes(mandi.toLowerCase()) &&
+            r.crop === crop &&
+            (r.variety || "") === variety
+        );
+        if (already) continue;
+        const modal = (BASE_PRICE[crop] ?? 2200) + quote.offset + (seed % 90) - 30;
+        const spread = 70 + (seed % 140);
         rows.push({
-          id: `mock-${state}-${mandi.replace(/\s+/g, "_")}-${crop}-${grade}-${i}`,
+          id: `mock-${state}-${mandi.replace(/\s+/g, "_")}-${crop}-${variety || "v"}-${i}`,
           crop,
           cropHi: CROP_HI[crop] ?? crop,
-          variety: grade,
+          variety,
           mandi: mandi.includes("मंडी") || mandi.includes("Mandi") ? mandi : `${mandi} Mandi`,
           state,
           district: assignedDistrict,
           min: modal - spread,
           max: modal + spread,
-          modal: modal + (grade === grades[1] ? 40 : 0),
+          modal,
           change: ((seed % 500) - 250) / 100,
           changeAmt: (seed % 120) - 40,
           trend: sparkline(modal),

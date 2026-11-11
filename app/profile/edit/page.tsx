@@ -5,7 +5,6 @@ import AppLink from "@/components/ui/AppLink";
 import SearchableSelect from "@/components/ui/SearchableSelect";
 import {
   User,
-  MapPin,
   Phone,
   Save,
   Calendar,
@@ -15,7 +14,7 @@ import {
   Loader2,
   Search,
 } from "lucide-react";
-import { lookupPincode } from "@/lib/pincodeLookup";
+import { lookupPincode, villageNamesMatch } from "@/lib/pincodeLookup";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useToast } from "@/components/ui/Toast";
@@ -25,7 +24,9 @@ import {
   INDIAN_STATES,
   isValidDistrict,
   isValidState,
+  sortStatesForFarmer,
 } from "@/lib/india-locations";
+import { stateLabelHi } from "@/lib/farm/placeProfile";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { track } from "@/lib/analytics";
 import { useRouter } from "next/navigation";
@@ -81,6 +82,7 @@ export default function EditProfilePage() {
   const [form, setForm] = useState(profile);
   const [pinBusy, setPinBusy] = useState(false);
   const [pinSuccess, setPinSuccess] = useState(false);
+  const [pinVillages, setPinVillages] = useState<string[]>([]);
 
   const handlePincodeLookup = async (targetPin?: string) => {
     const pin = (targetPin ?? form.pincode ?? "").replace(/\D/g, "").slice(0, 6);
@@ -90,19 +92,24 @@ export default function EditProfilePage() {
     try {
       const result = await lookupPincode(pin);
       if (result?.state && result?.district) {
-        setForm((prev) => ({
-          ...prev,
-          pincode: result.pincode,
-          state: result.state,
-          district: result.district,
-        }));
+        const villages = result.villages ?? [];
+        setPinVillages(villages);
+        setForm((prev) => {
+          const listed = prev.village
+            ? villages.find((item) => villageNamesMatch(item, prev.village))
+            : undefined;
+          const keepVillage =
+            listed ||
+            (villages.length === 1 ? villages[0] : prev.village);
+          return {
+            ...prev,
+            pincode: result.pincode,
+            state: result.state,
+            district: result.district,
+            village: keepVillage,
+          };
+        });
         setPinSuccess(true);
-        showToast(
-          isHi
-            ? `${result.district}, ${result.state} — PIN से ऑटो-सेट ✓`
-            : `${result.district}, ${result.state} — Auto-set from PIN ✓`,
-          "success"
-        );
       }
     } catch {
       // Ignore
@@ -119,7 +126,13 @@ export default function EditProfilePage() {
   // Hydrate form once localStorage profile loads (client-only storage).
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (hydrated) setForm(profile);
+    if (!hydrated) return;
+    setForm(profile);
+    const pin = (profile.pincode || "").replace(/\D/g, "");
+    if (pin.length !== 6) return;
+    void lookupPincode(pin).then((result) => {
+      if (result?.villages?.length) setPinVillages(result.villages);
+    });
   }, [hydrated, profile]);
 
   // Live preview + completion — same card language as Settings / Profile
@@ -264,19 +277,10 @@ export default function EditProfilePage() {
         </Section>
 
         <Section eyebrow={isHi ? "खेत" : "Farm"} title={isHi ? "खेत की जगह" : "Farm location"}>
-          <div className="flex items-center gap-2 rounded-2xl bg-sky-500/10 px-3 py-2.5 text-[11px] font-semibold text-sky-900 dark:text-sky-200">
-            <MapPin className="h-4 w-4 shrink-0" />
-            {isHi
-              ? "पहले राज्य चुनें, फिर ज़िला — मौसम और मंडी यहीं से मिलेंगे।"
-              : "Pick state first, then district — weather & mandi use this."}
-          </div>
-
           {/* Quick PIN Code Lookup */}
           <div>
             <span className="mb-1 block text-[11px] font-semibold text-[var(--av-text-muted)]">
-              {isHi
-                ? "पिनकोड (6 अंक — राज्य व ज़िला ऑटो-सेट करें)"
-                : "PIN code (Auto-fill state & district)"}
+              {isHi ? "पिनकोड" : "PIN code"}
             </span>
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -288,6 +292,7 @@ export default function EditProfilePage() {
                     const val = e.target.value.replace(/\D/g, "").slice(0, 6);
                     setForm((prev) => ({ ...prev, pincode: val }));
                     setPinSuccess(false);
+                    if (val.length !== 6) setPinVillages([]);
                     if (val.length === 6) {
                       void handlePincodeLookup(val);
                     }
@@ -313,25 +318,59 @@ export default function EditProfilePage() {
                 <span>{isHi ? "खोजें" : "Search"}</span>
               </button>
             </div>
-            {pinSuccess && (
-              <p className="mt-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                {isHi ? "राज्य व ज़िला ऑटो-सेट हो गए ✓" : "State & District auto-filled ✓"}
-              </p>
-            )}
           </div>
 
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-[var(--av-text-muted)]">
-              {isHi ? "गाँव (वैकल्पिक)" : "Village (optional)"}
+          <div className="block">
+            <span className="mb-1.5 block text-[11px] font-semibold text-[var(--av-text-muted)]">
+              {isHi ? "स्प्रे का पानी" : "Spray water"}
             </span>
-            <input
-              value={form.village}
-              onChange={(e) => setForm({ ...form, village: e.target.value })}
-              placeholder={isHi ? "गाँव का नाम" : "Village name"}
-              className="av-input min-h-12 w-full text-[15px] font-semibold"
-              autoComplete="address-level3"
-            />
-          </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, sprayWater: "canal" })}
+                className={cn(
+                  "rounded-2xl border px-3 py-2.5 text-[12px] font-black",
+                  form.sprayWater === "canal"
+                    ? "border-emerald-700 bg-emerald-50 text-emerald-950"
+                    : "border-[var(--av-border)] text-[var(--av-text-muted)]"
+                )}
+              >
+                {isHi ? "नहर / मीठा" : "Canal / sweet"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, sprayWater: "hard_tubewell" })}
+                className={cn(
+                  "rounded-2xl border px-3 py-2.5 text-[12px] font-black",
+                  form.sprayWater === "hard_tubewell"
+                    ? "border-amber-700 bg-amber-50 text-amber-950"
+                    : "border-[var(--av-border)] text-[var(--av-text-muted)]"
+                )}
+              >
+                {isHi ? "खारा ट्यूबवेल" : "Hard tubewell"}
+              </button>
+            </div>
+          </div>
+
+          <SearchableSelect
+            key={`edit-village-${form.pincode || "none"}`}
+            label={isHi ? "गाँव" : "Village"}
+            placeholder={
+              pinVillages.length
+                ? isHi
+                  ? "इस पिन के गाँव में से चुनें"
+                  : "Pick village for this PIN"
+                : isHi
+                  ? "गाँव का नाम लिखें"
+                  : "Type village name"
+            }
+            value={form.village}
+            onChange={(village) => setForm({ ...form, village })}
+            options={pinVillages}
+            allowCustom
+            autoOpen={pinSuccess && pinVillages.length > 1 && !form.village.trim()}
+            emptyHint={isHi ? "सूची में नहीं — नाम लिख दें" : "Not in list — type the name"}
+          />
 
           <div className="grid gap-3 sm:grid-cols-2">
             <SearchableSelect
@@ -346,7 +385,9 @@ export default function EditProfilePage() {
                     : "";
                 setForm({ ...form, state, district });
               }}
-              options={INDIAN_STATES}
+              options={sortStatesForFarmer(INDIAN_STATES, form.state)}
+              getLabel={isHi ? stateLabelHi : undefined}
+              pinFirst={form.state}
             />
             <SearchableSelect
               key={`district-${form.state}`}

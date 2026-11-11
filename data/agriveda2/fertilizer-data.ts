@@ -875,15 +875,15 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
   "Mirch (Chilli)": {
     N: { total: 35, split: "बेसल DAP 55 किग्रा + 25-30 DAT यूरिया 25 किग्रा + हर तुड़ाई पर कैल्शियम नाइट्रेट व 13:00:45" },
     P: { total: 38, basal: 38, note: "DAP 55 किग्रा + SSP 80 किग्रा" },
-    K: { total: 21, basal: 21, note: "MOP या SOP 35 किग्रा (क्लोरीन मुक्त पोटाश SOP ज्यादा अच्छा रहता है)" },
+    K: { total: 21, basal: 21, note: "SOP 42 किग्रा बेसल (21 किग्रा K₂O)। SOP न हो तो MOP 35 किग्रा" },
     Mg: { total: 10, source: "मैग्नीशियम सल्फेट: 10 किग्रा (25-30 DAT)" },
     Ca: { total: 4, source: "कैल्शियम नाइट्रेट: 4 किग्रा प्रति तुड़ाई चक्र (13:00:45 से 5 दिन पहले अलग से)" },
     B: { dose: "बोरॉन 20%: 150 ग्राम — फूल अवस्था (40-45 DAT) पर स्प्रे" },
     categoryRuleHi:
-      "मिर्च विशेष नियम: मिर्च में क्लोरीन-मुक्त पोटाश (SOP) ज्यादा अच्छा रहता है; फूल झड़ने (Flower Drop) की समस्या रोकने के लिए 40-45 DAT पर 00:52:34 + बोरॉन + प्लानोफिक्स (NAA) का स्प्रे करें।",
+      "मिर्च विशेष नियम: क्लोरीन-मुक्त SOP 42 किग्रा बेसल (21 किग्रा K₂O)। SOP न हो तो MOP 35 किग्रा — दोनों एक साथ नहीं। फूल झड़ने पर 40-45 दिन 00:52:34 + बोरॉन + प्लानोफिक्स (NAA)।",
     fertilizer_bags_per_acre: {
       DAP: "55 किग्रा",
-      MOP: "35 किग्रा (या SOP — सर्वोत्तम)",
+      SOP: "42 किग्रा (न हो तो MOP 35 किग्रा — एक साथ नहीं)",
       SSP: "80 किग्रा",
       Neem_Cake: "100 किग्रा",
       Humic_Acid: "500 ग्राम (ड्रेंचिंग 1)",
@@ -900,8 +900,8 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       {
         time: "रोपाई से पहले (Basal)",
         method: "मिट्टी में (Basal)",
-        apply: "DAP: 55 किग्रा + MOP (या SOP): 35 किग्रा + SSP: 80 किग्रा + नीम खली: 100 किग्रा",
-        benefit: "मिर्च में क्लोरीन मुक्त पोटाश SOP ज्यादा अच्छा रहता है; जड़ व तना मजबूत।",
+        apply: "DAP: 55 किग्रा + SOP: 42 किग्रा + SSP: 80 किग्रा + नीम खली: 100 किग्रा",
+        benefit: "मिर्च में SOP 42 किग्रा (21 किग्रा K₂O) क्लोरीन-मुक्त पोटाश है। SOP न हो तो MOP 35 किग्रा — दोनों एक साथ नहीं।",
       },
       {
         time: "रोपाई के 8-10 दिन बाद",
@@ -935,7 +935,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
   "Shimla Mirch (Capsicum)": {
     N: { total: 35, split: "बेसल DAP 55 किग्रा + 25-30 DAT यूरिया 25 किग्रा + हर तुड़ाई पर कैल्शियम नाइट्रेट व 13:00:45" },
     P: { total: 38, basal: 38, note: "DAP 55 किग्रा + SSP 80 किग्रा" },
-    K: { total: 21, basal: 21, note: "SOP (या MOP) 35 किग्रा बेसल" },
+    K: { total: 21, basal: 21, note: "SOP 42 किग्रा बेसल (21 किग्रा K₂O)। SOP न हो तो MOP 35 किग्रा" },
     Mg: { total: 10, source: "मैग्नीशियम सल्फेट: 10 किग्रा (25-30 DAT)" },
     Ca: { total: 4, source: "कैल्शियम नाइट्रेट: 4 किग्रा प्रति तुड़ाई चक्र" },
     B: { dose: "बोरॉन 20%: 150 ग्राम — फूल अवस्था (40-45 DAT) पर स्प्रे" },
@@ -943,7 +943,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       "शिमला मिर्च विशेष नियम: फल का आकार चौकोर, मोटा और चमकदार रखने के लिए हर तुड़ाई पर कैल्शियम नाइट्रेट और 5 दिन बाद 13:00:45 अलग-अलग चलाएं।",
     fertilizer_bags_per_acre: {
       DAP: "55 किग्रा",
-      MOP: "35 किग्रा (या SOP — सर्वोत्तम)",
+      SOP: "42 किग्रा (न हो तो MOP 35 किग्रा — एक साथ नहीं)",
       SSP: "80 किग्रा",
       Neem_Cake: "100 किग्रा",
       Humic_Acid: "500 ग्राम (ड्रेंचिंग 1)",
@@ -960,8 +960,8 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       {
         time: "रोपाई से पहले (Basal)",
         method: "मिट्टी में (Basal)",
-        apply: "DAP: 55 किग्रा + MOP (या SOP): 35 किग्रा + SSP: 80 किग्रा + नीम खली: 100 किग्रा",
-        benefit: "क्लोरीन मुक्त पोटाश SOP शिमला मिर्च की गुणवत्ता बढ़ाता है; जड़ व तना मजबूत।",
+        apply: "DAP: 55 किग्रा + SOP: 42 किग्रा + SSP: 80 किग्रा + नीम खली: 100 किग्रा",
+        benefit: "शिमला मिर्च में SOP 42 किग्रा छिलका-रंग बेहतर रखता है। SOP न हो तो MOP 35 किग्रा — दोनों एक साथ नहीं।",
       },
       {
         time: "रोपाई के 8-10 दिन बाद",
@@ -1277,7 +1277,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
   "Alu (Potato)": {
     N: { total: 38, split: "बुवाई: 14 किग्रा (DAP से) | मिट्टी चढ़ाते समय (25-30 दिन): 45 किग्रा यूरिया + 15 किग्रा कैल्शियम नाइट्रेट" },
     P: { total: 37, basal: 37 },
-    K: { total: 36, basal: 36, note: "आलू पोटाश-प्रेमी फसल है: MOP 60 किग्रा बेसल + SOP 00:00:50 स्प्रे" },
+    K: { total: 36, basal: 36, note: "SOP 72 किग्रा बेसल (36 किग्रा K₂O) छिलके के लिए बेहतर; SOP न हो तो MOP 60 किग्रा + बाद में 00:00:50 स्प्रे" },
     S: { total: 5, source: "सल्फर WDG: 5 किग्रा बुवाई पर" },
     Zn: { total: 5, source: "जिंक सल्फेट 33%: 5 किग्रा (DAP से अलग डालें)" },
     Ca: { total: 15, source: "कैल्शियम नाइट्रेट: 15 किग्रा — मिट्टी चढ़ाते समय (25-30 दिन) अलग से" },
@@ -1286,7 +1286,7 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       "कंद और जड़ वाली फसलों का स्वर्ण नियम: 50 दिन के बाद यूरिया बिल्कुल बंद कर देना चाहिए, वरना सिर्फ पत्ते (बेल) बढ़ते हैं और नीचे आलू छोटा रह जाता है तथा सड़ने लगता है।",
     fertilizer_bags_per_acre: {
       DAP: "80 किग्रा",
-      MOP: "60 किग्रा",
+      SOP: "72 किग्रा (न हो तो MOP 60 किग्रा — एक साथ नहीं)",
       Sulphur_WDG: "5 किग्रा",
       ZnSO4_33: "5 किग्रा (DAP से अलग)",
       Urea: "45 किग्रा",
@@ -1300,8 +1300,8 @@ export const FERTILIZER_DATA: Record<string, FertilizerCropEntry> = {
       {
         time: "बुवाई के समय (0 दिन - कूड में)",
         method: "मिट्टी में (Basal)",
-        apply: "DAP: 80 किग्रा + MOP: 60 किग्रा + सल्फर (WDG): 5 किग्रा + जिंक (33%): 5 किग्रा (जिंक को DAP में न मिलाएं, अलग डालें)",
-        benefit: "आलू पोटाश-प्रेमी फसल है; छिलका साफ और कंदों की संख्या अधिक।",
+        apply: "DAP: 80 किग्रा + SOP: 72 किग्रा + सल्फर (WDG): 5 किग्रा + जिंक (33%): 5 किग्रा (जिंक को DAP में न मिलाएं, अलग डालें)",
+        benefit: "आलू पोटाश-प्रेमी है; SOP 72 किग्रा छिलका साफ रखता है। SOP न हो तो MOP 60 किग्रा — दोनों एक साथ नहीं।",
       },
       {
         time: "मिट्टी चढ़ाते समय (25-30 दिन)",
@@ -1755,7 +1755,7 @@ export const FERTILIZER_BAG_LABEL_HI: Record<string, string> = {
   DAP: "DAP (डीएपी) 18:46:0",
   Urea: "Urea (यूरिया) 46% N",
   MOP: "MOP (पोटाश) 60%",
-  SOP: "SOP (सल्फेट ऑफ पोटाश) 00:00:50",
+  SOP: "SOP (सल्फेट ऑफ पोटाश) 50%",
   SSP: "SSP (सिंगल सुपर फास्फेट) 16%",
   TSP: "TSP (टीएसपी) 46%",
   Gypsum: "Gypsum (जिप्सम)",
@@ -1924,6 +1924,14 @@ export function fertilizerPackKg(name: string): {
 } {
   const n = name.toLowerCase();
   if (n.includes("urea") || n.includes("यूरिया")) return { kg: 45, unitHi: "बोरी" };
+  // Granular SOP is a 50 kg field bag (50% K₂O). Soluble 00:00:50 stays 1 kg packets below.
+  if (
+    (n.includes("sop") || n.includes("एसओपी") || n.includes("सल्फेट ऑफ पोटाश")) &&
+    !n.includes("00:00:50") &&
+    !n.includes("घुलनशील")
+  ) {
+    return { kg: 50, unitHi: "बोरी" };
+  }
   if (
     n.includes("19:19:19") ||
     n.includes("12:61:00") ||

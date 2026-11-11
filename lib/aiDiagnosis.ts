@@ -55,8 +55,6 @@ function readFileAsDataUrl(file: File): Promise<string> {
  * phones) are returned untouched so the server/Gemini can handle the original
  * instead of the whole scan failing. */
 async function compressImageIfNeeded(file: File): Promise<File> {
-  if (file.size <= 1.2 * 1024 * 1024) return file;
-
   try {
     const dataUrl = await readFileAsDataUrl(file);
     const img = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -113,7 +111,7 @@ export async function fileToBase64Payload(
 
 export async function checkAiDoctorConfigured(): Promise<boolean> {
   try {
-    const res = await fetch("/api/ai-doctor/analyze");
+    const res = await fetch("/api/ai-doctor/analyze", { credentials: "include" });
     if (!res.ok) return false;
     const body = await res.json();
     return Boolean(body.configured);

@@ -418,6 +418,7 @@ export async function listExpertQueriesAdmin(opts: {
   viewer?: {
     userId: string;
     viewAll: boolean;
+    canSeeUnassigned?: boolean;
     cropScopes?: string[];
   };
 }): Promise<ExpertQueryRow[]> {
@@ -450,7 +451,13 @@ export async function listExpertQueriesAdmin(opts: {
   if (viewer && !viewer.viewAll) {
     rows = rows.filter((r) => {
       if (r.assigned_to === viewer.userId) return true;
-      if (!r.assigned_to && (r.status === "pending" || r.status === "in_review")) return true;
+      if (
+        viewer.canSeeUnassigned &&
+        !r.assigned_to &&
+        (r.status === "pending" || r.status === "in_review")
+      ) {
+        return true;
+      }
       return false;
     });
     if (viewer.cropScopes && viewer.cropScopes.length > 0) {

@@ -5,6 +5,7 @@ import {
   fetchDistrictMandi,
   fetchStateMandiBulk,
 } from "@/lib/mandi/fetchDataGov";
+import { prettyMandiVariety } from "@/lib/mandi/varieties";
 import type { MandiRow } from "@/lib/mandi/types";
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;

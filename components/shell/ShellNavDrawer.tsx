@@ -24,7 +24,6 @@ import {
   Tractor,
   TrendingUp,
   X,
-  Ruler,
   type LucideIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -73,17 +72,7 @@ const DRAWER_CATEGORIES: DrawerCategory[] = [
         labelEn: "My Farm",
         href: "/my-farm",
         icon: Tractor,
-        match: (p) => p === "/my-farm",
-      },
-      {
-        labelHi: "अपना खेत नापें",
-        labelEn: "Smart Field Mapping",
-        href: "/my-farm/measure",
-        icon: Ruler,
-        badgeHi: "GPS",
-        badgeEn: "GPS",
-        badgeColor: "bg-emerald-500/20 text-emerald-800 dark:text-emerald-300",
-        match: (p) => p.startsWith("/my-farm/measure"),
+        match: (p) => p === "/my-farm" || p.startsWith("/my-farm/"),
       },
       {
         labelHi: "AI फसल डॉक्टर",

@@ -59,10 +59,10 @@ export function permissionsForUser(u: Pick<
   }
   if (u.role === "manager") {
     return {
-      manageExperts: u.canManageExperts,
-      assignQueries: u.canAssign || true,
-      replyAll: true,
-      viewAllQueries: u.canViewAll || true,
+      manageExperts: Boolean(u.canManageExperts),
+      assignQueries: Boolean(u.canAssign),
+      replyAll: Boolean(u.canViewAll),
+      viewAllQueries: Boolean(u.canViewAll),
       accessSettings: false,
     };
   }

@@ -33,9 +33,9 @@ export default function PriceAlertsPanel({ rows = [], compact = false, className
 
   return (
     <DarkCard className={className} hover={!compact}>
-      <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Alert Setup</h3>
+      <h3 className="text-sm font-bold text-[var(--av-text-primary)]">भाव की खबर</h3>
       <p className={`mt-1 ${AV.micro}`}>
-        अभी सिर्फ ऐप के अंदर दिखेगा — push/SMS notification अभी live नहीं है।
+        आपके ज़िले की मंडी के भाव आने पर फोन पर सूचना मिलेगी — ऐप बंद हो तब भी।
       </p>
       {!settings.masterEnabled && (
         <p className={`mt-1 ${AV.micro}`}>Master toggle OFF — Settings में चालू करें।</p>

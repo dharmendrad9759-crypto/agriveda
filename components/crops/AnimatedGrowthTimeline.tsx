@@ -19,6 +19,7 @@ import {
 } from "@/lib/crops/growthStageImages";
 import { getGrowthHonestyForStage } from "@/lib/crops/growthHonesty";
 import { resolveCurrentCropStageIndex } from "@/lib/cropGrowthStage";
+import { formatSowingDisplay } from "@/lib/farm/fieldStatus";
 import {
   simplifyGrowthPeriodEn,
   simplifyGrowthPeriodHi,
@@ -40,18 +41,6 @@ function todayISO(): string {
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
-}
-
-function formatSowingDisplay(iso: string, hi: boolean): string {
-  try {
-    return new Date(`${iso}T00:00:00`).toLocaleDateString(hi ? "hi-IN" : "en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  } catch {
-    return iso;
-  }
 }
 
 export default function AnimatedGrowthTimeline({ stages, cropSlug, cropName }: Props) {

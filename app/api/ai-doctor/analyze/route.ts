@@ -6,6 +6,7 @@ import {
 } from "@/lib/geminiPlantDoctor";
 import { clientIp, rateLimit, requireDurableRateLimit } from "@/lib/rateLimit";
 import { requireSession } from "@/lib/session";
+import { sniffImageMime } from "@/lib/imageSniff";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -51,14 +52,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const imageBase64 = typeof body.imageBase64 === "string" ? body.imageBase64.trim() : "";
-    const mimeType =
-      typeof body.mimeType === "string" ? body.mimeType.toLowerCase() : "image/jpeg";
     const imageBase64Second =
       typeof body.imageBase64Second === "string" ? body.imageBase64Second.trim() : "";
-    const mimeTypeSecond =
-      typeof body.mimeTypeSecond === "string"
-        ? body.mimeTypeSecond.toLowerCase()
-        : "image/jpeg";
     const cropSlug = typeof body.cropSlug === "string" ? body.cropSlug.trim() : "tomato";
     const symptoms =
       typeof body.symptoms === "string" ? body.symptoms.trim().slice(0, MAX_SYMPTOMS) : "";
@@ -75,12 +70,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ result });
     }
 
-    if (!ALLOWED_MIME.has(mimeType)) {
+    const sniffed = sniffImageMime(imageBase64);
+    if (!sniffed || !ALLOWED_MIME.has(sniffed)) {
       return NextResponse.json(
         { error: "Sirf JPEG/PNG/WebP photo upload karein" },
         { status: 400 }
       );
     }
+    const mime = sniffed;
 
     const byteLength = Math.ceil((imageBase64.length * 3) / 4);
     if (byteLength > MAX_BYTES) {
@@ -92,7 +89,8 @@ export async function POST(request: NextRequest) {
 
     let second: { base64: string; mimeType: string } | undefined;
     if (imageBase64Second) {
-      if (!ALLOWED_MIME.has(mimeTypeSecond)) {
+      const sniffedSecond = sniffImageMime(imageBase64Second);
+      if (!sniffedSecond || !ALLOWED_MIME.has(sniffedSecond)) {
         return NextResponse.json(
           { error: "Dusri photo sirf JPEG/PNG/WebP ho" },
           { status: 400 }
@@ -105,12 +103,12 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      second = { base64: imageBase64Second, mimeType: mimeTypeSecond };
+      second = { base64: imageBase64Second, mimeType: sniffedSecond };
     }
 
     const result = await analyzePlantPhotoWithGemini(
       imageBase64,
-      mimeType,
+      mime,
       cropSlug,
       symptoms || undefined,
       second
@@ -133,7 +131,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await requireSession(request);
+  if ("error" in auth) return auth.error;
   return NextResponse.json({
     configured: Boolean(getGeminiApiKey()),
     provider: "google-gemini",

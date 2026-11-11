@@ -436,7 +436,7 @@ export default function SettingsPage() {
             icon={TrendingUp}
             tone="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
             title={t("settingsMarketAlerts")}
-            hint={isHi ? "मंडी भाव ऊपर-नीचे" : "Mandi price moves"}
+            hint={isHi ? "अपनी मंडी के भाव आने पर खबर" : "Nearby mandi rates when they update"}
             toggle={{
               on: priceSettings.masterEnabled,
               onChange: (v) => {

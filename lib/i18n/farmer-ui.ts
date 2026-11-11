@@ -444,7 +444,7 @@ const STRINGS = {
     voiceSearch: "Voice search",
     settingsPestAlerts: "Pest & disease alerts",
     settingsFertilizerReminders: "Fertilizer reminders",
-    settingsMarketAlerts: "Market price alerts",
+    settingsMarketAlerts: "Nearby mandi rate news",
     settingsManagePriceAlerts: "Manage price alerts",
     settingsQuietHours: "Quiet hours",
     shareAgriveda: "Share AgriVeda with others",

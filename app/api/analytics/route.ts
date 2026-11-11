@@ -19,7 +19,12 @@ export async function POST(request: NextRequest) {
       props?: Record<string, unknown>;
       t?: string;
     };
-    if (!body?.name || typeof body.name !== "string" || body.name.length > 64) {
+    if (
+      !body?.name ||
+      typeof body.name !== "string" ||
+      body.name.length > 64 ||
+      !/^[a-z][a-z0-9_]{1,63}$/i.test(body.name)
+    ) {
       return NextResponse.json({ ok: false, error: "name required" }, { status: 400 });
     }
 

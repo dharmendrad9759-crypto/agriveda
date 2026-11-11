@@ -8,19 +8,30 @@ export function todayISO(): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Parse ISO yyyy-mm-dd or loose en-IN display dates when possible. */
-export function parseSowingISO(raw: string | undefined | null): string | null {
-  if (!raw?.trim()) return null;
-  const s = raw.trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-  const t = Date.parse(s);
-  if (!Number.isFinite(t)) return null;
-  const d = new Date(t);
+function toCalendarDay(d: Date): string | null {
   if (Number.isNaN(d.getTime())) return null;
   const y = d.getFullYear();
+  if (y < 1990 || y > 2100) return null;
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
+}
+
+/** Parse ISO yyyy-mm-dd, full timestamps, or loose display dates. Never "Invalid Date". */
+export function parseSowingISO(raw: string | undefined | null): string | null {
+  if (!raw?.trim()) return null;
+  const s = raw.trim();
+  if (/invalid date/i.test(s)) return null;
+
+  const dayStamp = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (dayStamp) {
+    const d = new Date(`${dayStamp[1]}T00:00:00`);
+    return toCalendarDay(d);
+  }
+
+  const t = Date.parse(s);
+  if (!Number.isFinite(t)) return null;
+  return toCalendarDay(new Date(t));
 }
 
 export function daysAfterSowingISO(iso: string | null | undefined): number | null {
@@ -52,13 +63,18 @@ export function fieldStageLabel(
 }
 
 export function formatSowingDisplay(iso: string, hi: boolean): string {
+  const parsed = parseSowingISO(iso);
+  if (!parsed) return "";
+  const d = new Date(`${parsed}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return "";
   try {
-    return new Date(`${iso}T00:00:00`).toLocaleDateString(hi ? "hi-IN" : "en-IN", {
+    const label = d.toLocaleDateString(hi ? "hi-IN" : "en-IN", {
       day: "numeric",
       month: "short",
       year: "numeric",
     });
+    return /invalid date/i.test(label) ? "" : label;
   } catch {
-    return iso;
+    return parsed;
   }
 }

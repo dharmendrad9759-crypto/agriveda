@@ -551,7 +551,10 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "सिवांटो": "flupyradifurone-17-09-sl",
   "सिवांतो": "flupyradifurone-17-09-sl",
   "सीमेग्रा": "broflanilide-20-sc",
-  "सीवीड": "seaweed-amino",
+  "सीवीड": "seaweed-amino-acids",
+  "अमीनो एसिड": "hydrolyzed-amino-acids",
+  "19:19:19": "npk-19-19-19",
+  "घुलनशील खाद": "npk-19-19-19",
   "सुमीमैक्स": "flumioxazin-50-sc",
   "सूक्ष्म पोषक तत्व": "micronutrient-mixture",
   "सूक्ष्म पोषक तत्व मिश्रण": "micronutrient-mixture",
@@ -593,9 +596,34 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "ह्यूमिक एसिड 12%": "humic-acid-12",
 };
 
+/** "खेत साफ रखें" is sanitation, not UPL SAAF (Carbendazim + Mancozeb). */
+function isFieldHygienePhrase(raw: string): boolean {
+  return /खेत.{0,30}साफ|मैदान.{0,12}साफ|खरपतवार.{0,16}साफ|साफ\s*(?:रखें|रखो|करें|करो|पानी|बीज)|साफ\s*और\s*प्रमाणित|सफाई/i.test(
+    raw
+  );
+}
+
+function hindiTokenIndex(raw: string, word: string): number {
+  let from = 0;
+  while (from <= raw.length) {
+    const idx = raw.indexOf(word, from);
+    if (idx === -1) return -1;
+    const before = idx > 0 ? raw[idx - 1] : " ";
+    const after = idx + word.length < raw.length ? raw[idx + word.length] : " ";
+    const letter = /[\u0900-\u097Fa-zA-Z0-9]/;
+    if (!letter.test(before) && !letter.test(after)) return idx;
+    from = idx + word.length;
+  }
+  return -1;
+}
+
 /** Prefer the earliest and longest alias match so "एसीफेट 50% + इमिडाक्लोप्रिड 1.8% SP" matches Acephate and "chlorantraniliprole 0.4% gr" beats generic name. */
 export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
   if (!raw) return undefined;
+
+  const hygiene = isFieldHygienePhrase(raw);
+  const reallySaaf =
+    /carbendazim|mancozeb|कार्बेन्डाजिम|मैंकोजेब|मैनकोजेब|साफ\s*फंगीसाइड|\bsaaf\b/i.test(raw);
 
   // 1. Check Hindi mapping first: pick the keyword that appears earliest in raw
   //    (breaking ties by longest keyword length)
@@ -604,7 +632,13 @@ export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
   let bestHindiLen = 0;
 
   for (const [hiWord, targetSlug] of Object.entries(HINDI_AGRI_CHEM_MAP)) {
-    const idx = raw.indexOf(hiWord);
+    if (hiWord === "साफ") {
+      const brandLike =
+        reallySaaf ||
+        /^साफ(?:\s*(?:फंगीसाइड|fungicide|WP|wp))?$/i.test(raw.trim());
+      if (hygiene || !brandLike) continue;
+    }
+    const idx = hindiTokenIndex(raw, hiWord);
     if (idx !== -1) {
       if (idx < bestHindiIdx || (idx === bestHindiIdx && hiWord.length > bestHindiLen)) {
         bestHindiIdx = idx;
@@ -822,7 +856,7 @@ export function toEnglishTechnical(raw: string): string {
     [/कार्बेन्डाजिम|कार्बेंडाजिम/gi, "CARBENDAZIM"],
     [/बाविस्टिन/gi, "CARBENDAZIM"],
     [/रिडोमिल(?:\s*गोल्ड)?|मेटालेक्सिल|मेटालैक्सिल/gi, "METALAXYL-M + MANCOZEB"],
-    [/साफ\s*(?:फंगीसाइड)?/gi, "CARBENDAZIM + MANCOZEB"],
+    [/साफ\s*फंगीसाइड/gi, "CARBENDAZIM + MANCOZEB"],
     [/नेटिवो/gi, "TEBUCONAZOLE + TRIFLOXYSTROBIN"],
     [/एमिस्टार\s*टॉप/gi, "AZOXYSTROBIN + DIFENOCONAZOLE"],
     [/स्ट्रेप्टोसाइक्लिन|स्ट्रेप्टोमाइसिन/gi, "STREPTOCYCLINE"],

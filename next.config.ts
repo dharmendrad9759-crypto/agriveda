@@ -39,11 +39,14 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://www.google.com https://www.googleapis.com https://*.firebaseapp.com https://*.firebase.com",
-      "style-src 'self' 'unsafe-inline' https://www.gstatic.com https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https:",
+      `script-src 'self' 'unsafe-inline'${
+        process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"
+      } https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://www.google.com https://www.googleapis.com https://*.firebaseapp.com https://*.firebase.com`,
+      "style-src 'self' 'unsafe-inline' https://www.gstatic.com https://fonts.googleapis.com https://unpkg.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://*.googleusercontent.com https://lh3.googleusercontent.com https://unpkg.com https://mt0.google.com https://mt1.google.com https://mt2.google.com https://mt3.google.com https://server.arcgisonline.com https://*.tile.openstreetmap.org https://*.googleapis.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https: wss:",
+      "connect-src 'self' https://*.googleapis.com https://*.gstatic.com https://*.firebaseio.com https://*.firebase.com https://*.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseinstallations.googleapis.com https://fcm.googleapis.com https://www.google.com https://apis.google.com https://nominatim.openstreetmap.org https://api.open-meteo.com https://geocoding-api.open-meteo.com https://air-quality-api.open-meteo.com https://translate.googleapis.com https://translate.google.com wss://*.firebaseio.com wss://*.googleapis.com",
+      "media-src 'self' blob: https://translate.google.com",
       "frame-src 'self' https://www.google.com https://*.firebaseapp.com https://translate.google.com",
       "object-src 'none'",
       "base-uri 'self'",
@@ -54,6 +57,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  productionBrowserSourceMaps: false,
   allowedDevOrigins: lanDevOrigins(),
   images: {
     formats: ["image/webp"],

@@ -15,6 +15,7 @@ import {
   getWheatStageById,
   getWheatStageByDays,
 } from "@/lib/farm/wheatZadoksStages";
+import { parseSowingISO } from "@/lib/farm/fieldStatus";
 
 export function isWheatCrop(crop?: {
   crop?: string;
@@ -70,7 +71,7 @@ export function estimateWheatStage(
   }
 
   // Priority 3: Agronomic DAS window
-  const das = calculateDaysAfterSowing(season.sowingDate);
+  const das = calculateDaysAfterSowing(season.sowingDate || "");
   const windowStage = getWheatStageByDays(das);
   return { stage: windowStage, method: "agronomic_window" };
 }

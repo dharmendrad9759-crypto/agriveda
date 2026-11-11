@@ -662,6 +662,16 @@ export function isChemicalMention(text: string): boolean {
   if (!text) return false;
   if (isTrapText(text)) return false;
 
+  // Field hygiene ("खेत साफ") is not the fungicide brand SAAF
+  if (
+    /खेत.{0,30}साफ|मैदान.{0,12}साफ|खरपतवार.{0,16}साफ|साफ\s*(?:रखें|रखो|करें|करो|पानी|बीज)|सफाई/i.test(
+      text
+    ) &&
+    !/कार्बेन्डाजिम|मैंकोजेब|मैनकोजेब|carbendazim|mancozeb|साफ\s*फंगीसाइड|\bsaaf\b/i.test(text)
+  ) {
+    return false;
+  }
+
   // Never classify tree trunk banding or grease sheets as chemicals
   if (/(?:अल्काथीन|एल्काथीन|alkathene|पॉलीथीन\s*शीट|पॉलिथीन\s*शीट|ग्रीस\s*(?:बैंड|पट्टी|लगाना)|तने.*ग्रीस)/i.test(text)) {
     return false;

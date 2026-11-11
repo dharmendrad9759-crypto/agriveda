@@ -3,6 +3,7 @@
  * Uses Supabase `app_kv` when SERVICE_ROLE is set; otherwise in-memory (dev / single node).
  */
 import { createSupabaseServiceClient, hasSupabaseServiceRole } from "@/lib/supabase";
+import { isProductionRuntime } from "@/lib/runtimeEnv";
 
 type MemoryEntry = { value: unknown; expiresAt: number };
 const memory = new Map<string, MemoryEntry>();
@@ -170,10 +171,14 @@ export async function kvIncr(
           }
         }
       } catch {
-        /* fall through to RMW */
+        /* fall through */
       }
 
-      // Non-atomic RMW fallback if RPC not migrated yet
+      if (isProductionRuntime()) {
+        throw new Error("rate-limit rpc unavailable");
+      }
+
+      // Dev-only non-atomic RMW if RPC not migrated yet
       try {
         const now = Date.now();
         const existing = await kvGet<IncrResult>(key);
@@ -189,6 +194,10 @@ export async function kvIncr(
         /* memory */
       }
     }
+  }
+
+  if (isProductionRuntime()) {
+    throw new Error("rate-limit durable store unavailable");
   }
 
   return memoryIncr(key, windowMs);

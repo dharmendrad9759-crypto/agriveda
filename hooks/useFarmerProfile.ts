@@ -22,6 +22,8 @@ export interface FarmerProfile {
   firebaseUid?: string;
   /** ISO date strings keyed by crop slug */
   sowingDates: Record<string, string>;
+  /** canal = मीठा/नहर; hard_tubewell = खारा ट्यूबवेल */
+  sprayWater?: "canal" | "hard_tubewell";
 }
 
 const KEY = "agriveda-farmer-profile";
@@ -70,8 +72,12 @@ export function useFarmerProfile() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setProfile(loadProfileFromStorage());
+    const loaded = loadProfileFromStorage();
+    setProfile(loaded);
     setHydrated(true);
+    if (loaded.onboardingComplete && loaded.name?.trim()) {
+      queueFarmCloudSync(400);
+    }
     const onCloud = () => setProfile(loadProfileFromStorage());
     window.addEventListener("agriveda-farm-cloud-hydrated", onCloud);
     return () => window.removeEventListener("agriveda-farm-cloud-hydrated", onCloud);

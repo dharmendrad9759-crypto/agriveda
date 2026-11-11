@@ -3,63 +3,77 @@
 import { useState, useMemo, useEffect } from "react";
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
-import DarkCard from "@/components/shell/DarkCard";
-import { Plus, Wifi, WifiOff, Droplets } from "lucide-react";
+import { Plus, Wifi, WifiOff, BookOpen, Droplets } from "lucide-react";
 import SprayTimeline from "@/components/spray-rotation/SprayTimeline";
 import RiskBanner from "@/components/spray-rotation/RiskBanner";
 import { useSprayLogs } from "@/hooks/useSprayLogs";
 import { useSprayFields } from "@/hooks/useSprayFields";
-import {
-  attachProducts,
-  checkResistanceRisk,
-} from "@/lib/sprayRotation";
+import { attachProducts, checkResistanceRisk } from "@/lib/sprayRotation";
 import { trySyncPendingSprays } from "@/lib/spraySync";
 import { cropCatalog } from "@/data/crop-catalog";
 import { cn } from "@/lib/cn";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
-const DEFAULT_FIELD = { id: "default-field", name: "मुख्य खेत", cropSlug: "paddy" };
+const ALL = "all";
 
 export default function SprayRotationPage() {
   const { t: uiT } = useLocale();
   const { fields } = useSprayFields();
-  const { hydrated, isOnline, pendingCount, getLogsForField } = useSprayLogs();
+  const { logs, hydrated, isOnline, pendingCount } = useSprayLogs();
 
-  const [selectedFieldId, setSelectedFieldId] = useState(fields[0]?.id ?? DEFAULT_FIELD.id);
-  const [selectedCropSlug, setSelectedCropSlug] = useState<string>("");
-
-  useEffect(() => {
-    if (fields.length > 0 && !selectedFieldId) {
-      setSelectedFieldId(fields[0].id);
-    }
-  }, [fields, selectedFieldId]);
+  const [selectedFieldId, setSelectedFieldId] = useState(ALL);
+  const [selectedCropSlug, setSelectedCropSlug] = useState(ALL);
 
   useEffect(() => {
     if (isOnline) trySyncPendingSprays();
   }, [isOnline]);
 
-  const activeField = fields.find((f) => f.id === selectedFieldId) ?? fields[0] ?? DEFAULT_FIELD;
-  const rawCropSlug = selectedCropSlug || activeField?.cropSlug || "paddy";
-  const cropId = rawCropSlug === "groundnut" ? "moongfali" : rawCropSlug;
-  const currentCrop = cropCatalog.find((c) => c.slug === cropId) ?? cropCatalog[0];
+  const cropId =
+    selectedCropSlug === "groundnut" ? "moongfali" : selectedCropSlug;
 
-  const fieldLogs = useMemo(() => {
-    if (!activeField) return [];
-    return getLogsForField(activeField.id, cropId) ?? [];
-  }, [activeField, cropId, getLogsForField]);
+  const visibleLogs = useMemo(() => {
+    return logs.filter((l) => {
+      if (cropId !== ALL) {
+        const sameCrop =
+          l.cropId === cropId ||
+          (cropId === "moongfali" && l.cropId === "groundnut");
+        if (!sameCrop) return false;
+      }
+      if (selectedFieldId !== ALL) {
+        if (l.fieldId !== selectedFieldId && l.fieldId !== "hub") return false;
+      }
+      return true;
+    });
+  }, [logs, cropId, selectedFieldId]);
 
-  const withProducts = useMemo(() => attachProducts(fieldLogs), [fieldLogs]);
-  const risk = useMemo(() => checkResistanceRisk(fieldLogs), [fieldLogs]);
+  const withProducts = useMemo(() => attachProducts(visibleLogs), [visibleLogs]);
+  const risk = useMemo(() => checkResistanceRisk(visibleLogs), [visibleLogs]);
+
+  const fieldNameById = useMemo(() => {
+    const map: Record<string, string> = { hub: "फसल डॉक्टर" };
+    for (const f of fields) map[f.id] = f.name;
+    return map;
+  }, [fields]);
+
+  const usedCrops = useMemo(() => {
+    const slugs = new Set(logs.map((l) => l.cropId).filter(Boolean));
+    const fromLogs = cropCatalog.filter(
+      (c) => slugs.has(c.slug) || (c.slug === "moongfali" && slugs.has("groundnut"))
+    );
+    return fromLogs.length > 0 ? fromLogs : cropCatalog.slice(0, 8);
+  }, [logs]);
 
   if (!hydrated) {
     return (
       <AppShell
-        title="स्प्रे चक्र व डायरी"
+        title="स्प्रे डायरी"
         breadcrumbs={[{ label: uiT("navHome"), href: "/" }, { label: "स्प्रे डायरी" }]}
       >
         <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 py-10 text-center">
           <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
-          <p className="text-xs font-semibold text-[var(--av-text-muted)]">स्प्रे डायरी लोड हो रही है…</p>
+          <p className="text-xs font-semibold text-[var(--av-text-muted)]">
+            स्प्रे डायरी लोड हो रही है…
+          </p>
         </div>
       </AppShell>
     );
@@ -67,11 +81,14 @@ export default function SprayRotationPage() {
 
   return (
     <AppShell
-      title="स्प्रे चक्र व डायरी"
+      title="स्प्रे डायरी"
       breadcrumbs={[{ label: uiT("navHome"), href: "/" }, { label: "स्प्रे डायरी" }]}
     >
-      <div className="flex items-center justify-end pb-1">
-        <div className="flex items-center gap-1 text-[11px] font-semibold text-[var(--av-text-muted)]">
+      <div className="flex items-center justify-between pb-1">
+        <p className="text-[12px] font-semibold text-[var(--av-text-secondary)]">
+          हर छिड़काव यहाँ दिखेगा — फसल डॉक्टर, मिक्स जाँच, या हाथ से दर्ज।
+        </p>
+        <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-[var(--av-text-muted)]">
           {isOnline ? (
             <>
               <Wifi className="h-3.5 w-3.5 text-emerald-600" />
@@ -87,44 +104,60 @@ export default function SprayRotationPage() {
       </div>
 
       {pendingCount > 0 && (
-        <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-center text-xs font-bold text-amber-600">
+        <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-center text-xs font-bold text-amber-700">
           {pendingCount} छिड़काव सिंक होना बाकी है (इंटरनेट आने पर अपने आप सिंक होगा)
         </p>
       )}
 
-      {/* Field & Crop Selection Bar */}
       <div className="mt-3 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-[var(--av-text-secondary)]">खेत चुनें:</span>
-          {fields && fields.length > 1 && (
-            <span className="text-[11px] text-[var(--av-text-muted)]">{fields.length} खेत उपलब्ध</span>
-          )}
-        </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide py-0.5">
-          {(fields && fields.length > 0 ? fields : [activeField]).map((f) => (
+          <button
+            type="button"
+            onClick={() => setSelectedFieldId(ALL)}
+            className={cn(
+              "shrink-0 rounded-xl border px-3.5 py-1.5 text-xs font-bold transition",
+              selectedFieldId === ALL
+                ? "border-emerald-600 bg-emerald-500/15 text-emerald-900 ring-2 ring-emerald-500/25 dark:text-emerald-100"
+                : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-muted)]"
+            )}
+          >
+            सभी खेत
+          </button>
+          {fields.map((f) => (
             <button
               key={f.id}
               type="button"
               onClick={() => {
                 setSelectedFieldId(f.id);
-                setSelectedCropSlug(f.cropSlug || "");
+                if (f.cropSlug) setSelectedCropSlug(f.cropSlug);
               }}
               className={cn(
                 "shrink-0 rounded-xl border px-3.5 py-1.5 text-xs font-bold transition",
-                activeField?.id === f.id
-                  ? "border-emerald-600 bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 ring-2 ring-emerald-500/25"
+                selectedFieldId === f.id
+                  ? "border-emerald-600 bg-emerald-500/15 text-emerald-900 ring-2 ring-emerald-500/25 dark:text-emerald-100"
                   : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-muted)]"
               )}
             >
-              🌾 {f.name}
+              {f.name}
             </button>
           ))}
         </div>
 
-        {/* Change Crop Pill Selector */}
-        <div className="mt-2 flex items-center gap-2 overflow-x-auto scrollbar-hide py-1">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1">
           <span className="shrink-0 text-[11px] font-bold text-[var(--av-text-muted)]">फसल:</span>
-          {cropCatalog.slice(0, 8).map((c) => (
+          <button
+            type="button"
+            onClick={() => setSelectedCropSlug(ALL)}
+            className={cn(
+              "shrink-0 rounded-full border px-3 py-1 text-[11px] font-bold transition",
+              cropId === ALL
+                ? "border-emerald-600 bg-emerald-600 text-white shadow-xs"
+                : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+            )}
+          >
+            सभी
+          </button>
+          {usedCrops.map((c) => (
             <button
               key={c.slug}
               type="button"
@@ -142,14 +175,11 @@ export default function SprayRotationPage() {
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* मेरा छिड़काव रिकॉर्ड (स्प्रे डायरी) */}
-      {/* ========================================================================= */}
-      <DarkCard className="mt-4" delay={1}>
-        <div className="flex items-center justify-between border-b border-[var(--av-border)] pb-3">
+      <section className="mt-4 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5">
+        <div className="flex items-center justify-between gap-2 border-b border-[var(--av-border)] pb-3">
           <h2 className="flex items-center gap-2 text-[15px] font-black text-[var(--av-text-primary)]">
-            <Droplets className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-            मेरा छिड़काव रिकॉर्ड (स्प्रे डायरी)
+            <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            मेरी छिड़काव डायरी
           </h2>
           <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 dark:text-emerald-200">
             {withProducts.length} छिड़काव
@@ -170,25 +200,29 @@ export default function SprayRotationPage() {
               />
             </div>
             <div className="mt-4">
-              <p className="text-[12px] font-black text-[var(--av-text-primary)]">
-                इस सीजन की छिड़काव सूची ({currentCrop.nameHi || currentCrop.name}):
-              </p>
-              <div className="mt-3">
-                <SprayTimeline sprays={withProducts} />
-              </div>
+              <SprayTimeline sprays={withProducts} fieldNameById={fieldNameById} />
             </div>
           </>
-        ) : null}
+        ) : (
+          <div className="mt-4 rounded-2xl border border-dashed border-emerald-600/30 bg-emerald-500/8 px-4 py-8 text-center">
+            <Droplets className="mx-auto h-8 w-8 text-emerald-700" />
+            <p className="mt-2 text-[14px] font-black text-emerald-950 dark:text-emerald-100">
+              अभी कोई छिड़काव दर्ज नहीं है
+            </p>
+            <p className="mt-1 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+              फसल डॉक्टर से “आज यह स्प्रे किया” दबाएँ, या नीचे से नया छिड़काव लिखें। सेव होते ही यहीं दिखेगा।
+            </p>
+          </div>
+        )}
 
-        {/* Add Spray Log Button */}
         <AppLink
-          href={`/spray-rotation/log?crop=${encodeURIComponent(cropId)}`}
+          href={`/spray-rotation/log${cropId !== ALL ? `?crop=${encodeURIComponent(cropId)}` : ""}`}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-sm font-black text-white shadow-md shadow-emerald-700/20 active:scale-[0.98]"
         >
           <Plus className="h-4 w-4 stroke-[3]" />
-          नया छिड़काव दर्ज करें (स्प्रे डायरी)
+          नया छिड़काव दर्ज करें
         </AppLink>
-      </DarkCard>
+      </section>
     </AppShell>
   );
 }

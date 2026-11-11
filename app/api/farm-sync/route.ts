@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSession } from "@/lib/session";
 import { createSupabaseServiceClient, hasSupabaseServiceRole } from "@/lib/supabase";
 import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
+import { loadFarmerIdentity, saveFarmerIdentity } from "@/lib/farmerIdentityKv";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest) {
   const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
     phone: auth.session.phone,
     name: auth.session.name,
+    firebaseUid: auth.session.firebaseUid,
   });
   if (!farmerId) {
     return NextResponse.json({ error: "Could not resolve farmer" }, { status: 500 });
@@ -56,10 +58,21 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.error("[farm-sync GET]", error.message);
+    const identity = await loadFarmerIdentity(auth.session.firebaseUid);
     return NextResponse.json(
       {
         configured: true,
-        profile: null,
+        profile: identity
+          ? {
+              name: identity.name,
+              village: identity.village,
+              district: identity.district,
+              state: identity.state,
+              pincode: identity.pincode,
+              onboardingComplete: true,
+              farmSetupComplete: true,
+            }
+          : null,
         farm: null,
         needsMigration: true,
         hint: "Run supabase/farmer-cloud-sync.sql in Supabase",
@@ -68,9 +81,30 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  let profile = (data?.profile_json as Record<string, unknown> | null) ?? null;
+  const profileEmpty =
+    !profile ||
+    !String(profile.name || "").trim() ||
+    !String(profile.district || "").trim();
+  if (profileEmpty) {
+    const identity = await loadFarmerIdentity(auth.session.firebaseUid);
+    if (identity) {
+      profile = {
+        ...(profile || {}),
+        name: identity.name || profile?.name,
+        village: identity.village || profile?.village,
+        district: identity.district || profile?.district,
+        state: identity.state || profile?.state,
+        pincode: identity.pincode || profile?.pincode,
+        onboardingComplete: true,
+        farmSetupComplete: true,
+      };
+    }
+  }
+
   return NextResponse.json({
     configured: true,
-    profile: data?.profile_json ?? null,
+    profile,
     farm: data?.farm_data_json ?? null,
     profileUpdatedAt: data?.profile_updated_at ?? null,
     farmUpdatedAt: data?.farm_updated_at ?? null,
@@ -110,6 +144,7 @@ export async function PUT(request: NextRequest) {
     const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
       phone: auth.session.phone,
       name: auth.session.name,
+      firebaseUid: auth.session.firebaseUid,
     });
     if (!farmerId) {
       return NextResponse.json({ error: "Could not resolve farmer" }, { status: 500 });
@@ -142,12 +177,23 @@ export async function PUT(request: NextRequest) {
     }
 
     const { error } = await client.from("farmers").update(patch).eq("id", farmerId);
+    if (body.profile && typeof body.profile === "object") {
+      await saveFarmerIdentity(
+        auth.session.firebaseUid,
+        body.profile as {
+          name?: string;
+          village?: string;
+          district?: string;
+          state?: string;
+          pincode?: string;
+        }
+      );
+    }
     if (error) {
       console.error("[farm-sync PUT]", error.message);
       return NextResponse.json(
         {
           error: "Update failed — run supabase/farmer-cloud-sync.sql if columns missing",
-          detail: error.message,
         },
         { status: 500 }
       );

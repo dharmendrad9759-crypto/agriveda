@@ -398,6 +398,104 @@ export const CROP_STAGE_ADVISORIES: Record<string, CropStageAdvisory[]> = {
       ],
     },
   ],
+  potato: [
+    {
+      stageId: "emergence",
+      stageNameHi: "अंकुरण / कोंपल (0-20 दिन)",
+      stageNameEn: "Emergence",
+      minDas: 0,
+      maxDas: 20,
+      todayTaskHi:
+        "आलू अभी उग रहा है। खेत में हल्की नमी रखें, पानी खड़ा न होने दें। यूरिया अभी न डालें — पहली सिंचाई 21–25 दिन पर होगी।",
+      urgency: "normal",
+      checklist: [
+        {
+          category: "सिंचाई",
+          icon: "💧",
+          action: "मिट्टी में हल्की नमी बनाए रखें। मेड़ पर पानी भराव न होने दें — कंद सड़ सकता है।",
+        },
+        {
+          category: "खाद",
+          icon: "🌱",
+          action: "बुवाई वाली बेसल खाद अभी काफी है। यूरिया 21–25 दिन की पहली सिंचाई के बाद डालेंगे।",
+        },
+        {
+          category: "निराई / देखभाल",
+          icon: "🌿",
+          action: "उभरे पौधों के पास हल्की गुड़ाई करें। खरपतवार दिखें तो हाथ से निकालें।",
+        },
+        {
+          category: "सुरक्षा",
+          icon: "🛡️",
+          action: "कटवर्म या माहू दिखे तभी दवा लें। नहीं दिखे तो स्प्रे की ज़रूरत नहीं।",
+        },
+      ],
+    },
+    {
+      stageId: "first_irrigation",
+      stageNameHi: "पहली सिंचाई व मिट्टी चढ़ाना (21-35 दिन)",
+      stageNameEn: "First irrigation & earthing",
+      minDas: 21,
+      maxDas: 35,
+      todayTaskHi:
+        "21–25 दिन पर पहला पानी दें। पानी सूखने के बाद यूरिया डालें और पौधों पर मिट्टी चढ़ाएँ (earthing-up)।",
+      urgency: "high",
+      checklist: [
+        {
+          category: "सिंचाई",
+          icon: "💧",
+          action: "पहला पानी 21–25 दिन पर हल्का दें। मेड़ पूरी डूबने न दें।",
+        },
+        {
+          category: "खाद",
+          icon: "🌱",
+          action: "पानी के 1–2 दिन बाद यूरिया 25 किग्रा/एकड़ डालें। जिंक बेसल में न गया हो तो जिंक सल्फेट 5 किग्रा यूरिया के साथ मिलाएँ। DAP यूरिया के साथ न मिलाएँ।",
+        },
+        {
+          category: "निराई / देखभाल",
+          icon: "🌿",
+          action: "यूरिया के बाद मिट्टी चढ़ाएँ — कंद धूप से हरे न हों।",
+        },
+        {
+          category: "सुरक्षा",
+          icon: "🛡️",
+          action: "माहू दिखे तो वायरस फैलने से पहले नियंत्रण करें। झुलसा का मौसम हो तो निगरानी शुरू करें।",
+        },
+      ],
+    },
+    {
+      stageId: "tuber",
+      stageNameHi: "कंद बनना / बढ़ना (36-75 दिन)",
+      stageNameEn: "Tuber set & bulking",
+      minDas: 36,
+      maxDas: 75,
+      todayTaskHi:
+        "कंद भर रहे हैं। नमी समान रखें — कभी सूखा कभी ज्यादा पानी से कंद फटते या खोखले होते हैं। बाकी पोटाश इसी समय दें।",
+      urgency: "high",
+      checklist: [
+        {
+          category: "सिंचाई",
+          icon: "💧",
+          action: "हर 5–7 दिन हल्की सिंचाई। नमी का उतार-चढ़ाव न रखें।",
+        },
+        {
+          category: "खाद",
+          icon: "🌱",
+          action: "कंद शुरुआत पर बाकी MOP/SOP दें। ज़्यादा यूरिया अब न डालें — झुलसा का खतरा बढ़ता है।",
+        },
+        {
+          category: "सुरक्षा",
+          icon: "🛡️",
+          action: "लेट ब्लाइट के मौसम में 5–7 दिन पर फफूंदनाशक घुमा-घुमाकर लगाएँ।",
+        },
+        {
+          category: "निराई / देखभाल",
+          icon: "🌿",
+          action: "कंद ऊपर न दिखें — मिट्टी दोबारा चढ़ाएँ।",
+        },
+      ],
+    },
+  ],
 };
 
 export const DEFAULT_STAGE_ADVISORY: CropStageAdvisory[] = [
@@ -504,6 +602,8 @@ const CROP_ALIASES: Record<string, string> = {
   gehun: "wheat",
   sarson: "mustard",
   tamatar: "tomato",
+  alu: "potato",
+  aloo: "potato",
 };
 
 export function getStageAdvisory(cropSlug: string, das: number | null): CropStageAdvisory {

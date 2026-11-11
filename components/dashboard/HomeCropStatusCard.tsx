@@ -4,7 +4,6 @@ import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
-import { speakFarmer } from "@/components/ui/SpeakButton";
 import {
   getCropTimelineGuidance,
   getOptimalSowingWindow,
@@ -17,15 +16,12 @@ import {
   Calendar,
   CheckCircle2,
   ChevronRight,
-  Droplets,
-  Edit3,
-  FlaskConical,
-  Info,
-  Sprout,
-  Volume2,
+  Ruler,
   X,
 } from "lucide-react";
 import { CropGrowthSparkleIcon } from "@/components/brand/icons";
+import { measureFieldHref } from "@/components/farm/MeasureFieldButton";
+import { track } from "@/lib/analytics";
 
 const POPULAR_CROPS = [
   { slug: "wheat", nameHi: "गेहूं", emoji: "🌾", category: "अनाज" },
@@ -50,11 +46,16 @@ export interface HomeCropStatusCardProps {
     stage?: string;
     name?: string;
     sowingDate?: string;
+    sowingDateIso?: string;
+    areaAcres?: number;
+    area?: string;
     img: string;
   };
   isHi: boolean;
+  adviceHref: string;
   onUpdateSowingDate: (fieldId: string, newDateIso: string) => void;
   onChangeCrop?: (cropSlug: string, cropName: string) => void;
+  onSelectField?: (fieldId: string) => void;
   allFields?: Array<{
     id: string;
     crop: string;
@@ -67,13 +68,14 @@ export interface HomeCropStatusCardProps {
 export default function HomeCropStatusCard({
   field,
   isHi,
+  adviceHref,
   onUpdateSowingDate,
   onChangeCrop,
+  onSelectField,
   allFields,
 }: HomeCropStatusCardProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showCropSwitcher, setShowCropSwitcher] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
   const [mounted, setMounted] = useState(false);
   const seasonalPopularCrops = useMemo(() => sortCropsByCurrentSeason(POPULAR_CROPS), []);
   useBodyScrollLock(showDatePicker || showCropSwitcher);
@@ -106,14 +108,16 @@ export default function HomeCropStatusCard({
   const cropSlug = field.cropSlug || "";
   const cropHindi = getCropHindiName(cropSlug) || field.crop;
   const cropDisplayName = isHi ? cropHindi : field.crop;
+  const fieldHomeHref = `/my-farm/${field.id}`;
 
   // Compute live timeline & agricultural guidance
   const timeline = getCropTimelineGuidance({
     cropSlug,
     cropName: field.crop,
-    sowingDate: field.sowingDate,
+    sowingDate: field.sowingDateIso || field.sowingDate,
     isHi,
   });
+  const measureHref = measureFieldHref(field.id);
 
   const optimalWindow = getOptimalSowingWindow(cropSlug, isHi);
 
@@ -130,12 +134,6 @@ export default function HomeCropStatusCard({
     setShowDatePicker(false);
   };
 
-  const handleSpeak = () => {
-    if (isSpeaking) return;
-    setIsSpeaking(true);
-    speakFarmer(timeline.speechScript, isHi, () => setIsSpeaking(false));
-  };
-
   // Preview days in modal
   const modalDaysPreview = (() => {
     if (!selectedDate) return null;
@@ -149,193 +147,94 @@ export default function HomeCropStatusCard({
 
   return (
     <>
-      {/* ── MAIN REDESIGNED CROP CARD ── */}
-      <div className="group relative overflow-hidden rounded-[1.6rem] border border-emerald-900/15 bg-gradient-to-b from-white via-white to-emerald-50/40 shadow-[0_12px_36px_-15px_rgba(11,61,40,0.22)] transition-all dark:border-emerald-500/20 dark:from-[var(--av-surface)] dark:via-[var(--av-surface)] dark:to-emerald-950/20">
-        {/* Soft Agrarian Light Bloom in Background */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-400/15 blur-3xl dark:bg-emerald-500/10"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-16 -bottom-16 h-48 w-48 rounded-full bg-teal-400/10 blur-3xl dark:bg-teal-500/5"
-        />
+      <div className="flex min-h-[76px] overflow-hidden rounded-[1.35rem] border border-emerald-900/12 bg-[var(--av-surface)] shadow-[0_12px_28px_-18px_rgba(11,61,40,0.45)] dark:border-emerald-500/20">
+        <AppLink
+          href={fieldHomeHref}
+          className="relative w-[76px] shrink-0 self-stretch"
+          aria-label={isHi ? `${cropDisplayName} का खेत देखें` : `View ${cropDisplayName} field`}
+        >
+          <Image
+            src={field.img}
+            alt={cropDisplayName}
+            fill
+            sizes="76px"
+            quality={80}
+            priority
+            className="object-cover"
+          />
+        </AppLink>
 
-        {/* ── CARD HEADER: Crop Identity & Sowing Info (Categorized & Compact) ── */}
-        <div className="relative z-10 p-2.5 pb-2 sm:p-3 sm:pb-2">
-          <div className="flex items-center justify-between gap-2.5">
-            {/* Left: Thumbnail + Crop Title + Inline Field & Sowing Date */}
-            <div className="flex min-w-0 flex-1 items-center gap-2.5">
-              <AppLink
-                href={cropSlug ? `/crops/${cropSlug}` : "/my-farm"}
-                className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl ring-2 ring-emerald-600/20 shadow-sm transition-transform active:scale-95"
-                aria-label={isHi ? `${cropDisplayName} का विवरण देखें` : `View ${cropDisplayName}`}
-              >
-                <Image
-                  src={field.img}
-                  alt={cropDisplayName}
-                  fill
-                  sizes="48px"
-                  quality={85}
-                  priority
-                  className="object-cover"
-                />
-              </AppLink>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <AppLink
-                    href={cropSlug ? `/crops/${cropSlug}` : "/my-farm"}
-                    className="font-display text-[17px] sm:text-[18.5px] font-black leading-snug tracking-tight text-[var(--av-text-primary)] hover:text-emerald-700 dark:hover:text-emerald-300"
+        <div className="flex min-w-0 flex-1 flex-col justify-between px-2.5 py-2">
+          <div className="flex items-start gap-1.5">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1">
+                <AppLink
+                  href={fieldHomeHref}
+                  className="truncate text-[15px] font-bold leading-none text-[var(--av-text-primary)]"
+                >
+                  {cropDisplayName}
+                </AppLink>
+                {onChangeCrop ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowCropSwitcher(true)}
+                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300"
+                    title={isHi ? "फ़सल बदलें" : "Switch crop"}
+                    aria-label={isHi ? "फ़सल बदलें" : "Switch crop"}
                   >
-                    {cropDisplayName}
-                  </AppLink>
-                  <AppLink
-                    href={cropSlug ? `/crops/${cropSlug}` : "/my-farm"}
-                    className="text-[var(--av-text-muted)] hover:text-emerald-600 p-0.5"
-                    title={isHi ? "फसल विवरण खोलें" : "Open crop details"}
-                  >
-                    <ChevronRight className="h-4 w-4 shrink-0 stroke-[2.5]" />
-                  </AppLink>
-
-                  {onChangeCrop && (
-                    <button
-                      type="button"
-                      onClick={() => setShowCropSwitcher(true)}
-                      className="inline-flex items-center gap-1 rounded-full border border-emerald-600/30 bg-emerald-50 px-2 py-0.5 text-[10.5px] font-extrabold text-emerald-800 shadow-2xs hover:bg-emerald-100 active:scale-95 dark:border-emerald-500/40 dark:bg-emerald-950/60 dark:text-emerald-300"
-                      title={isHi ? "दूसरी फसल चुनें या बदलें" : "Switch crop"}
-                    >
-                      <ArrowLeftRight className="h-2.5 w-2.5" />
-                      <span>{isHi ? "फ़सल बदलें" : "Change"}</span>
-                    </button>
-                  )}
-                </div>
-
-                {/* Subline: Field Name · Sowing Date (Clean, fully readable, no ellipsis truncation) */}
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] sm:text-[12px] font-semibold text-[var(--av-text-secondary)]">
-                  <span className="shrink-0 text-emerald-800 dark:text-emerald-300 font-bold">
-                    {field.name || (isHi ? "खेत #1" : "Field #1")}
-                  </span>
-                  <span className="opacity-40">·</span>
-                  <span className="text-[var(--av-text-muted)] font-medium">
-                    {timeline.hasSowingDate
-                      ? `${isHi ? "बुवाई:" : "Sown:"} ${timeline.sowingDateFormatted}`
-                      : isHi
-                        ? "तारीख जोड़ें"
-                        : "No date set"}
-                  </span>
-                </div>
+                    <ArrowLeftRight className="h-3 w-3" />
+                  </button>
+                ) : null}
               </div>
+              <p className="mt-1 truncate text-[10.5px] font-medium leading-none text-[var(--av-text-muted)]">
+                {field.name || (isHi ? "खेत" : "Field")}
+                {timeline.hasSowingDate ? ` · ${timeline.days} दिन` : ""}
+              </p>
             </div>
-
-            {/* Right: Days Pill (Single Primary Edit Action) + Speaker Button */}
-            <div className="flex shrink-0 items-center gap-1.5">
-              {/* SOWING DATE PILL - SINGLE PRIMARY EDIT ACTION ("हरा वाला बेस्ट है") */}
+            <div className="flex shrink-0 items-center gap-1">
               <button
                 type="button"
                 onClick={openDatePicker}
-                className={`group/btn relative flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black transition-all active:scale-95 ${
+                className={`flex h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-bold active:scale-95 ${
                   timeline.hasSowingDate
-                    ? "bg-emerald-600 text-white shadow-xs shadow-emerald-700/25 hover:bg-emerald-700"
-                    : "animate-pulse border border-amber-500/40 bg-amber-500/15 text-amber-900 hover:bg-amber-500/25 dark:text-amber-200"
+                    ? "bg-emerald-800 text-white"
+                    : "border border-amber-500/40 bg-amber-500/15 text-amber-900 dark:text-amber-200"
                 }`}
                 title={isHi ? "बुवाई की तारीख बदलें" : "Change sowing date"}
               >
                 <Calendar className="h-3 w-3" />
-                <span>
-                  {timeline.hasSowingDate
-                    ? isHi
-                      ? `${timeline.days} दिन`
-                      : `Day ${timeline.days}`
-                    : isHi
-                      ? "तारीख डालें"
-                      : "Set Date"}
-                </span>
-                <Edit3 className="h-2.5 w-2.5 opacity-75 group-hover/btn:opacity-100" />
+                {timeline.hasSowingDate
+                  ? isHi
+                    ? `${timeline.days} दिन`
+                    : `Day ${timeline.days}`
+                  : isHi
+                    ? "तारीख"
+                    : "Date"}
               </button>
-
-              {/* TTS Listen Button */}
-              <button
-                type="button"
-                onClick={handleSpeak}
-                disabled={isSpeaking}
-                aria-label={isHi ? "फसल सलाह सुनें" : "Listen to advice"}
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all active:scale-95 ${
-                  isSpeaking
-                    ? "bg-emerald-600 text-white ring-2 ring-emerald-400"
-                    : "bg-emerald-100/70 text-emerald-800 ring-1 ring-emerald-600/20 hover:bg-emerald-200/80 dark:bg-emerald-950/60 dark:text-emerald-200"
-                }`}
+              <AppLink
+                href={measureHref}
+                className="inline-flex h-7 shrink-0 items-center gap-1 rounded-full border border-emerald-700/25 px-2 text-[10px] font-bold text-emerald-800 active:scale-95 dark:text-emerald-200"
+                title={isHi ? "अपना खेत नापें" : "Measure your field"}
               >
-                <Volume2 className={`h-3.5 w-3.5 ${isSpeaking ? "animate-pulse" : ""}`} />
-              </button>
+                <Ruler className="h-3 w-3" />
+                {isHi ? "नापें" : "Measure"}
+              </AppLink>
             </div>
           </div>
-        </div>
 
-        {/* ── STAGE MICRO-PROGRESS BAR (COMPACT) ── */}
-        <div className="relative z-10 px-2.5 sm:px-3">
-          <div className="rounded-xl border border-emerald-600/15 bg-white/80 px-2.5 py-1.5 backdrop-blur-xs dark:bg-slate-900/60">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <Sprout className="h-3 w-3 shrink-0 text-emerald-600" />
-                <span className="truncate text-[11px] sm:text-[11.5px] font-black text-emerald-950 dark:text-emerald-200">
-                  {timeline.stageName}
-                </span>
-              </div>
-              <span className="shrink-0 text-[10px] font-extrabold text-[var(--av-text-muted)]">
-                {timeline.stageSubtitle}
-              </span>
-            </div>
-
-            {/* Lifecycle Progress line */}
-            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-emerald-900/10 dark:bg-emerald-950/60">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700"
-                style={{ width: `${Math.max(8, timeline.stageProgressPct)}%` }}
-              />
-            </div>
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <span className="min-w-0 truncate rounded-full bg-emerald-600/10 px-2 py-0.5 text-[10px] font-bold text-emerald-900 dark:bg-emerald-400/10 dark:text-emerald-200">
+              {timeline.stageName}
+            </span>
+            <AppLink
+              href={adviceHref}
+              onClick={() => track("tool_open", { href: adviceHref, label: "home_field_advisor" })}
+              className="ml-auto inline-flex h-7 shrink-0 items-center gap-0.5 rounded-full bg-emerald-700 px-2.5 text-[11px] font-bold text-white active:scale-95"
+            >
+              {isHi ? "सलाह" : "Advice"}
+              <ChevronRight className="h-3.5 w-3.5" />
+            </AppLink>
           </div>
-        </div>
-
-        {/* ── BOTTOM ACTIONS STRIP (COMPACT TWO-BUTTON ROW WITH GATEKEEPER LOGIC) ── */}
-        <div className="relative z-10 mt-1.5 grid grid-cols-2 divide-x divide-emerald-900/10 border-t border-emerald-900/10 bg-emerald-50/70 text-center dark:divide-emerald-500/15 dark:border-emerald-500/15 dark:bg-emerald-950/30">
-          {timeline.hasSowingDate ? (
-            <AppLink
-              href={cropSlug ? `/crops/${cropSlug}/care/fertilizer?das=${timeline.days}` : "/services/fertilizer-calculator"}
-              className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11.5px] sm:text-[12px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
-            >
-              <Droplets className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-              <span>{isHi ? "अभी कौन-सी खाद डालें →" : "Fertilizer for now →"}</span>
-            </AppLink>
-          ) : (
-            <button
-              type="button"
-              onClick={openDatePicker}
-              className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11.5px] sm:text-[12px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
-            >
-              <Droplets className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-              <span>{isHi ? "अभी कौन-सी खाद डालें →" : "Fertilizer for now →"}</span>
-            </button>
-          )}
-
-          {timeline.hasSowingDate ? (
-            <AppLink
-              href={cropSlug ? `/crops/${cropSlug}/care/calendar?das=${timeline.days}` : "/crop-calendar"}
-              className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11.5px] sm:text-[12px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
-            >
-              <Calendar className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-              <span>{isHi ? "इस हफ्ते का काम →" : "This week's tasks →"}</span>
-            </AppLink>
-          ) : (
-            <button
-              type="button"
-              onClick={openDatePicker}
-              className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11.5px] sm:text-[12px] font-extrabold text-emerald-800 transition hover:bg-emerald-100/60 active:scale-[0.98] dark:text-emerald-200"
-            >
-              <Calendar className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-              <span>{isHi ? "इस हफ्ते का काम →" : "This week's tasks →"}</span>
-            </button>
-          )}
         </div>
       </div>
 
@@ -534,7 +433,11 @@ export default function HomeCropStatusCard({
                               key={f.id}
                               type="button"
                               onClick={() => {
-                                onChangeCrop?.(f.cropSlug || f.crop.toLowerCase(), f.crop);
+                                if (onSelectField) {
+                                  onSelectField(f.id);
+                                } else {
+                                  onChangeCrop?.(f.cropSlug || f.crop.toLowerCase(), f.crop);
+                                }
                                 setShowCropSwitcher(false);
                               }}
                               className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition active:scale-95 ${

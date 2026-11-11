@@ -2,6 +2,9 @@ import { createHmac, timingSafeEqual, randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getActiveDevice } from "@/lib/authActiveDevice";
 import { rejectIfNativeAppTooOld } from "@/lib/minNativeVersion";
+import { isProductionRuntime } from "@/lib/runtimeEnv";
+import { rejectForeignOrigin } from "@/lib/requestOrigin";
+import { isSessionRevoked, revokeSessionJti } from "@/lib/sessionRevoke";
 
 export const SESSION_COOKIE = "agriveda_session";
 export const SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
@@ -13,6 +16,8 @@ export type SessionPayload = {
   name?: string;
   deviceId: string;
   firebaseUid?: string;
+  /** Opaque id — denylisted on logout so stolen cookies die immediately. */
+  jti?: string;
   exp: number;
 };
 
@@ -58,6 +63,7 @@ export function signSession(
     name: partial.name,
     deviceId: partial.deviceId,
     firebaseUid: partial.firebaseUid,
+    jti: partial.jti ?? randomBytes(16).toString("base64url"),
     exp: partial.exp ?? Math.floor(Date.now() / 1000) + SESSION_MAX_AGE_SEC,
   };
   const data = b64urlJson(payload);
@@ -114,6 +120,9 @@ export function readSessionFromRequest(req: NextRequest): SessionPayload | null 
 export async function requireSession(
   req: NextRequest
 ): Promise<{ session: SessionPayload } | { error: NextResponse }> {
+  const originBlock = rejectForeignOrigin(req);
+  if (originBlock) return { error: originBlock };
+
   const forceUpdate = rejectIfNativeAppTooOld(req);
   if (forceUpdate) return { error: forceUpdate };
 
@@ -122,6 +131,24 @@ export async function requireSession(
     return {
       error: NextResponse.json(
         { error: "Login required — पहले Google से लॉगिन करें" },
+        { status: 401 }
+      ),
+    };
+  }
+
+  if (isProductionRuntime() && !session.jti) {
+    return {
+      error: NextResponse.json(
+        { error: "Login required — पहले Google से लॉगिन करें" },
+        { status: 401 }
+      ),
+    };
+  }
+
+  if (await isSessionRevoked(session.jti)) {
+    return {
+      error: NextResponse.json(
+        { error: "Session समाप्त — फिर लॉगिन करें" },
         { status: 401 }
       ),
     };
@@ -145,13 +172,18 @@ export async function requireSession(
   return { session };
 }
 
+export async function revokeRequestSession(req: NextRequest): Promise<void> {
+  const session = readSessionFromRequest(req);
+  if (session?.jti) await revokeSessionJti(session.jti, session.exp);
+}
+
 export function applySessionCookie(res: NextResponse, token: string): void {
   const secure =
     process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
   res.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure,
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: SESSION_MAX_AGE_SEC,
   });
@@ -163,7 +195,7 @@ export function clearSessionCookie(res: NextResponse): void {
   res.cookies.set(SESSION_COOKIE, "", {
     httpOnly: true,
     secure,
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: 0,
   });

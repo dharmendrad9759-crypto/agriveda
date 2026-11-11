@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronDown, Tractor, Plus, Check } from "lucide-react";
+import { ChevronDown, Tractor, Check } from "lucide-react";
 import { FarmField } from "@/lib/farm/types";
 import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
+import MeasureFieldButton from "@/components/farm/MeasureFieldButton";
 
 interface FieldSwitcherProps {
   fields: FarmField[];
@@ -150,14 +150,7 @@ export default function FieldSwitcher({
               </div>
 
               <div className="border-t border-[var(--av-border-subtle)] p-1.5">
-                <Link
-                  href="/my-farm/measure"
-                  onClick={() => setIsOpen(false)}
-                  className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-700 py-2 text-[11px] font-semibold text-white shadow-sm transition hover:bg-emerald-800"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  नया खेत नापें
-                </Link>
+                <MeasureFieldButton kind="add" variant="block" />
               </div>
             </motion.div>
         ) : null}

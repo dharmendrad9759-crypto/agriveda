@@ -21,6 +21,10 @@ type SyncMeta = {
 let timer: ReturnType<typeof setTimeout> | null = null;
 let hydratedFromCloud = false;
 
+export function resetFarmCloudHydration() {
+  hydratedFromCloud = false;
+}
+
 function readMeta(): SyncMeta {
   return readStorage<SyncMeta>(META_KEY, {});
 }
@@ -83,9 +87,21 @@ function isoNewer(a?: string | null, b?: string | null): boolean {
   return Date.parse(a) > Date.parse(b);
 }
 
+function localProfileIncomplete(local: FarmerProfile | null): boolean {
+  return (
+    !local?.onboardingComplete ||
+    !local?.name?.trim() ||
+    !local?.village?.trim() ||
+    !local?.district?.trim() ||
+    !local?.state?.trim()
+  );
+}
+
 /** Pull cloud → merge into local (cloud wins if newer). Call once after login/hydrate. */
-export async function pullFarmCloudSync(): Promise<boolean> {
-  if (typeof window === "undefined" || hydratedFromCloud) return false;
+export async function pullFarmCloudSync(options?: { force?: boolean }): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  const localNow = readStorage<FarmerProfile | null>(PROFILE_KEY, null);
+  if (hydratedFromCloud && !options?.force && !localProfileIncomplete(localNow)) return false;
   try {
     const res = await fetch("/api/farm-sync", { credentials: "include", cache: "no-store" });
     if (res.status === 401) return false;
@@ -102,14 +118,17 @@ export async function pullFarmCloudSync(): Promise<boolean> {
     const meta = readMeta();
     let changed = false;
 
-    if (json.profile && isoNewer(json.profileUpdatedAt, meta.cloudProfileAt) && isoNewer(json.profileUpdatedAt, meta.lastPushAt)) {
+    if (json.profile) {
       const local = readStorage<FarmerProfile | null>(PROFILE_KEY, null);
-      // Prefer cloud if local empty/incomplete, or cloud newer than last push
-      if (!local?.onboardingComplete || isoNewer(json.profileUpdatedAt, meta.lastPushAt)) {
+      const shouldRestore =
+        localProfileIncomplete(local) ||
+        (isoNewer(json.profileUpdatedAt, meta.cloudProfileAt) &&
+          isoNewer(json.profileUpdatedAt, meta.lastPushAt));
+      if (shouldRestore) {
         writeStorage(PROFILE_KEY, { ...local, ...json.profile });
         changed = true;
       }
-      meta.cloudProfileAt = json.profileUpdatedAt;
+      meta.cloudProfileAt = json.profileUpdatedAt ?? meta.cloudProfileAt;
     }
 
     if (json.farm && isoNewer(json.farmUpdatedAt, meta.cloudFarmAt) && isoNewer(json.farmUpdatedAt, meta.lastPushAt)) {

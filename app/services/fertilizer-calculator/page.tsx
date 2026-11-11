@@ -19,7 +19,6 @@ import {
   Clock,
   Lightbulb,
   ShieldCheck,
-  Ruler,
 } from "lucide-react";
 import { FertilizerNpkSparkleIcon } from "@/components/brand/icons";
 import Agriveda2Shell from "@/components/agriveda2/Agriveda2Shell";
@@ -45,6 +44,7 @@ import SoilTestInputs from "@/components/fertilizer/SoilTestInputs";
 import { useToast } from "@/components/ui/Toast";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import MeasureFieldButton from "@/components/farm/MeasureFieldButton";
 
 type Step = "ask" | "plan";
 
@@ -648,13 +648,7 @@ function FertilizerCalculatorInner() {
                         {savedFields.length > 0 ? (
                           <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3">
                             <div className="flex items-center justify-end gap-1 mb-2">
-                              <a
-                                href="/my-farm/measure"
-                                className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-0.5"
-                              >
-                                <Ruler className="h-3 w-3" />
-                                खेत नापें
-                              </a>
+                              <MeasureFieldButton variant="link" />
                             </div>
                             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
                               {savedFields.map((f) => {
@@ -688,13 +682,7 @@ function FertilizerCalculatorInner() {
                             <span className="text-[11px] text-[var(--av-text-muted)]">
                               खेत का रकबा नहीं पता?
                             </span>
-                            <a
-                              href="/my-farm/measure"
-                              className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1"
-                            >
-                              <Ruler className="h-3 w-3" />
-                              उपग्रह से अपना खेत नापें →
-                            </a>
+                            <MeasureFieldButton variant="link" />
                           </div>
                         )}
 

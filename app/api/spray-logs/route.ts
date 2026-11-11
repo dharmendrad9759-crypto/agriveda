@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
     // farmerId ALWAYS from session device — never trust body.farmerId
     const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
       phone: auth.session.phone,
+      firebaseUid: auth.session.firebaseUid,
     });
     if (!farmerId) {
       return NextResponse.json({ error: "Could not resolve farmer" }, { status: 500 });
@@ -88,6 +89,7 @@ export async function GET(request: NextRequest) {
 
   const farmerId = await ensureFarmerRecord(auth.session.deviceId, client, {
     phone: auth.session.phone,
+    firebaseUid: auth.session.firebaseUid,
   });
   if (!farmerId) {
     return NextResponse.json({ error: "Could not resolve farmer" }, { status: 500 });

@@ -56,7 +56,6 @@ export default function StatePlaceSheet({
       open={open}
       onClose={onClose}
       title="राज्य चुनें"
-      subtitle="मिट्टी, मौसम और बीघा का नाप इसी राज्य से लगेगा"
       icon={<MapPin className="h-4 w-4" />}
       size="lg"
       level={10020}
@@ -107,10 +106,6 @@ export default function StatePlaceSheet({
                   {place.stateHi}
                 </p>
                 <p className="mt-0.5 text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]">
-                  {place.soil ? `${place.soil} · ` : ""}
-                  {place.climateHi}
-                </p>
-                <p className="mt-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
                   {place.bighaLineHi}
                 </p>
               </button>

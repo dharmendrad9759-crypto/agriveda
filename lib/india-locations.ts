@@ -8,6 +8,53 @@ export const INDIAN_STATES = Object.keys(STATE_DISTRICTS).sort((a, b) =>
   a.localeCompare(b, "en", { sensitivity: "base" })
 );
 
+/** Big farming states first — native <select> otherwise starts at Andaman. */
+const FARMER_STATE_RANK = [
+  "Uttar Pradesh",
+  "Madhya Pradesh",
+  "Haryana",
+  "Punjab",
+  "Rajasthan",
+  "Bihar",
+  "Maharashtra",
+  "Gujarat",
+  "West Bengal",
+  "Andhra Pradesh",
+  "Telangana",
+  "Karnataka",
+  "Tamil Nadu",
+  "Odisha",
+  "Chhattisgarh",
+  "Jharkhand",
+  "Uttarakhand",
+  "Himachal Pradesh",
+  "Assam",
+  "Delhi",
+];
+
+export function sortStatesForFarmer(states: string[], preferred?: string): string[] {
+  const pin = preferred?.trim();
+  return [...states].sort((a, b) => {
+    if (pin && a === pin) return -1;
+    if (pin && b === pin) return 1;
+    const ia = FARMER_STATE_RANK.indexOf(a);
+    const ib = FARMER_STATE_RANK.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b, "hi");
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+}
+
+export function sortDistrictsForFarmer(districts: string[], preferred?: string): string[] {
+  const pin = preferred?.trim();
+  return [...districts].sort((a, b) => {
+    if (pin && a === pin) return -1;
+    if (pin && b === pin) return 1;
+    return a.localeCompare(b, "en", { sensitivity: "base" });
+  });
+}
+
 export function getDistrictsForState(state: string): string[] {
   const districts = STATE_DISTRICTS[state];
   if (!districts) return [];

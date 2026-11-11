@@ -8,6 +8,7 @@
 create table if not exists public.farmers (
   id uuid primary key default gen_random_uuid(),
   device_id text unique not null,
+  firebase_uid text unique,
   name text,
   phone text,
   preferred_language text default 'hi',

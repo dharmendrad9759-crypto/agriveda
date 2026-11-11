@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
-  CheckCircle2,
   Save,
   MapPin,
   Info,
@@ -172,32 +171,31 @@ export default function FieldHUD({
         className
       )}
     >
-      <div className="flex items-center justify-between gap-2">
-        {coords.length < 3 ? (
-          <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-2 py-1 text-[10px] font-medium text-amber-700 dark:text-amber-300">
-            <Info className="h-3 w-3 shrink-0" />
-            {coords.length === 0
-              ? "नक्शे पर खेत के कोने दबाएं"
-              : `कम से कम 3 कोने चाहिए (${coords.length}/3)`}
-          </span>
-        ) : validation.valid ? (
-          <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2 py-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
-            <CheckCircle2 className="h-3 w-3 shrink-0" />
-            माप तैयार
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/10 px-2 py-1 text-[10px] font-medium text-rose-700 dark:text-rose-300">
-            <AlertTriangle className="h-3 w-3 shrink-0" />
-            {validation.error || "सीमा रेखा अमान्य है"}
-          </span>
-        )}
-
-      </div>
+      {coords.length < 3 || !validation.valid ? (
+        <div className="flex items-center justify-between gap-2">
+          {coords.length < 3 ? (
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-2 py-1 text-[10px] font-medium text-amber-700 dark:text-amber-300">
+              <Info className="h-3 w-3 shrink-0" />
+              {coords.length === 0
+                ? "नक्शे पर खेत के कोने दबाएं"
+                : `कम से कम 3 कोने चाहिए (${coords.length}/3)`}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/10 px-2 py-1 text-[10px] font-medium text-rose-700 dark:text-rose-300">
+              <AlertTriangle className="h-3 w-3 shrink-0" />
+              {validation.error || "सीमा रेखा अमान्य है"}
+            </span>
+          )}
+        </div>
+      ) : null}
 
       <button
         type="button"
         onClick={() => setPlaceOpen(true)}
-        className="mt-2.5 flex w-full items-center gap-2 rounded-xl border border-emerald-700/30 bg-emerald-500/10 px-3 py-2.5 text-left"
+        className={cn(
+          "flex w-full items-center gap-2 rounded-xl border border-emerald-700/30 bg-emerald-500/10 px-3 py-2.5 text-left",
+          coords.length < 3 || !validation.valid ? "mt-2.5" : ""
+        )}
       >
         <MapPin className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
         <span className="min-w-0 flex-1">

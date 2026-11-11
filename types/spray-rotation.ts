@@ -35,6 +35,10 @@ export interface SprayLog {
   growthStageAtSpray: string;
   pestId?: string;
   diseaseId?: string;
+  /** Premix stores every IRAC/FRAC/HRAC group, e.g. ["1B", "4A"] */
+  moaGroups?: string[];
+  technical?: string;
+  problemId?: string;
   synced: boolean;
   createdAt: string;
 }

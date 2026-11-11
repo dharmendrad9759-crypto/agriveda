@@ -3,7 +3,10 @@ import {
   clearSessionCookie,
   readSessionFromRequest,
   requireSession,
+  revokeRequestSession,
 } from "@/lib/session";
+import { isSessionRevoked } from "@/lib/sessionRevoke";
+import { isProductionRuntime } from "@/lib/runtimeEnv";
 import { releaseActiveDevice } from "@/lib/authActiveDevice";
 import { ensureFarmerRecord } from "@/lib/supabaseFarmer";
 import { createSupabaseServiceClient } from "@/lib/supabase";
@@ -11,7 +14,11 @@ import { createSupabaseServiceClient } from "@/lib/supabase";
 /** Current session + farmer id (server-derived). */
 export async function GET(request: NextRequest) {
   const session = readSessionFromRequest(request);
-  if (!session) {
+  if (
+    !session ||
+    (isProductionRuntime() && !session.jti) ||
+    (await isSessionRevoked(session.jti))
+  ) {
     return NextResponse.json({ authenticated: false });
   }
 
@@ -21,6 +28,7 @@ export async function GET(request: NextRequest) {
     farmerId = await ensureFarmerRecord(session.deviceId, client, {
       phone: session.phone || undefined,
       name: session.name || undefined,
+      firebaseUid: session.firebaseUid,
     });
   }
 
@@ -36,6 +44,7 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   const session = readSessionFromRequest(request);
+  await revokeRequestSession(request);
   if (session?.firebaseUid) {
     await releaseActiveDevice(session.firebaseUid, session.deviceId);
   }

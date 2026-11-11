@@ -65,7 +65,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const role = (body.role === "manager" ? "manager" : "expert") as PanelRole;
+  const callerIsOwner = auth.session.role === "owner" || auth.session.role === "admin";
+  const role = (
+    callerIsOwner && body.role === "manager" ? "manager" : "expert"
+  ) as PanelRole;
   const result = await createPanelUser({
     username: String(body.username ?? ""),
     displayName: String(body.displayName ?? ""),
@@ -73,8 +76,8 @@ export async function POST(request: NextRequest) {
     role,
     createdBy: auth.session.userId,
     canAssign: body.canAssign,
-    canManageExperts: body.canManageExperts,
-    canViewAll: body.canViewAll,
+    canManageExperts: callerIsOwner ? body.canManageExperts : false,
+    canViewAll: callerIsOwner ? body.canViewAll : false,
   });
 
   if (!result.user) {

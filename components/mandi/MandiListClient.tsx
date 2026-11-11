@@ -26,7 +26,14 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { CROP_HI } from "@/lib/mandi/constants";
 import { expandMockMandi } from "@/lib/mandi/expandMockMandi";
 import { enrichMockWithChange } from "@/lib/mandi/mapDataGov";
-import { getDistrictsForState, INDIAN_STATES } from "@/lib/india-locations";
+import {
+  getDistrictsForState,
+  INDIAN_STATES,
+  sortDistrictsForFarmer,
+  sortStatesForFarmer,
+} from "@/lib/india-locations";
+import { stateLabelHi } from "@/lib/farm/placeProfile";
+import { LocationListSheet, LocationPickButton } from "@/components/ui/LocationListSheet";
 import { resolveFarmerLocationFromGps } from "@/lib/farmerLocation";
 import { cn } from "@/lib/cn";
 import type { MandiRow } from "@/lib/mandi/types";
@@ -44,22 +51,7 @@ const QUICK_CROPS = [
   { hi: "मिर्च", en: "Chilli", emoji: "🌶️" },
 ];
 
-const VARIETY_HI: Record<string, string> = {
-  FAQ: "FAQ · सामान्य",
-  Local: "देसी",
-  Hybrid: "हाइब्रिड",
-  "Grade A": "ग्रेड A",
-  Common: "सामान्य",
-};
-
-const CATEGORY_HI: Record<string, string> = {
-  Cereals: "अनाज",
-  Oilseeds: "तिलहन",
-  Pulses: "दलहन",
-  Vegetables: "सब्ज़ी",
-  "Cash Crops": "नकदी फसल",
-  Others: "अन्य",
-};
+const GENERIC_VARIETY = /^(faq|local|hybrid|common|सामान्य|देसी|हाइब्रिड)$/i;
 
 function inr(n: number) {
   return `₹${Math.round(n).toLocaleString("en-IN")}`;
@@ -74,10 +66,10 @@ function cropEmoji(crop: string) {
   return hit?.emoji ?? "🌾";
 }
 
-function varietyLabel(raw: string | undefined, hi: boolean) {
-  const v = (raw || "FAQ").trim() || "FAQ";
-  if (!hi) return v;
-  return VARIETY_HI[v] || v;
+function varietyLabel(raw: string | undefined) {
+  const v = (raw || "").trim();
+  if (!v || GENERIC_VARIETY.test(v)) return "";
+  return v;
 }
 
 function trendOf(row: MandiRow) {
@@ -131,7 +123,7 @@ function Spark({ values, up }: { values: number[]; up: boolean }) {
 function PriceCard({ row, isHi }: { row: MandiRow; isHi: boolean }) {
   const tr = trendOf(row);
   const up = tr.dir !== "down";
-  const cat = isHi ? CATEGORY_HI[row.category] || row.category : row.category;
+  const variety = varietyLabel(row.variety);
   return (
     <AppLink
       href={`/mandi/${encodeURIComponent(row.id)}?state=${encodeURIComponent(row.state)}&district=${encodeURIComponent(row.district || "")}`}
@@ -145,6 +137,9 @@ function PriceCard({ row, isHi }: { row: MandiRow; isHi: boolean }) {
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="truncate text-[16px] font-black text-[var(--av-text-primary)]">{cropName(row, isHi)}</p>
+              {variety ? (
+                <p className="mt-0.5 truncate text-[13px] font-bold text-amber-800 dark:text-amber-200">{variety}</p>
+              ) : null}
               <p className="mt-0.5 truncate text-[11px] font-semibold text-[var(--av-text-muted)]">
                 {row.mandi}
                 {row.district ? ` · ${row.district}` : ""}
@@ -154,16 +149,6 @@ function PriceCard({ row, isHi }: { row: MandiRow; isHi: boolean }) {
               <p className="whitespace-nowrap text-[22px] font-black leading-none text-emerald-800 dark:text-emerald-300">{inr(row.modal)}</p>
               <p className="mt-0.5 text-[10px] font-bold text-amber-800/80 dark:text-amber-300">{isHi ? "₹ / क्विंटल" : "₹ / quintal"}</p>
             </div>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">
-              {isHi ? "वैरायटी" : "Variety"} · {varietyLabel(row.variety, isHi)}
-            </span>
-            {cat ? (
-              <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
-                {cat}
-              </span>
-            ) : null}
           </div>
         </div>
       </div>
@@ -209,16 +194,13 @@ function PriceCard({ row, isHi }: { row: MandiRow; isHi: boolean }) {
             )}
           >
             {tr.dir === "up" ? <TrendingUp className="h-3.5 w-3.5" /> : tr.dir === "down" ? <TrendingDown className="h-3.5 w-3.5" /> : null}
-            {tr.dir === "flat" ? (isHi ? "स्थिर" : "Flat") : inr(Math.abs(tr.amt))}
+            {tr.dir === "flat" ? (isHi ? "जैसा कल था" : "Same as yesterday") : inr(Math.abs(tr.amt))}
           </span>
         </div>
       </div>
     </AppLink>
   );
 }
-
-const selectClass =
-  "w-full rounded-xl border border-amber-200/80 bg-[var(--av-surface)] px-3 py-2.5 text-[13px] font-semibold text-[var(--av-text-primary)] outline-none focus:border-emerald-500 dark:border-emerald-800";
 
 export default function MandiListClient() {
   const { t, locale } = useLocale();
@@ -238,6 +220,7 @@ export default function MandiListClient() {
   const [mode, setMode] = useState<"commodity" | "market">("commodity");
   const [tab, setTab] = useState<"rates" | "alerts">("rates");
   const [gpsBusy, setGpsBusy] = useState(false);
+  const [placeSheet, setPlaceSheet] = useState<"state" | "district" | null>(null);
 
   const { data, loading, districtLoading, refresh, enrichDistrict } = useMandiPrices({
     state: fetchState,
@@ -277,13 +260,14 @@ export default function MandiListClient() {
     return map;
   }, [rows]);
 
-  const visibleDistricts = useMemo(() => {
-    return [...allDistricts].sort((a, b) => {
-      if (a === profileDistrict) return -1;
-      if (b === profileDistrict) return 1;
-      return a.localeCompare(b, "en");
-    });
-  }, [allDistricts, profileDistrict]);
+  const visibleDistricts = useMemo(
+    () => sortDistrictsForFarmer(allDistricts, profileDistrict),
+    [allDistricts, profileDistrict]
+  );
+  const stateOptions = useMemo(
+    () => sortStatesForFarmer(INDIAN_STATES, profileState),
+    [profileState]
+  );
 
   const districtRows = useMemo(() => {
     if (!district) return [];
@@ -302,7 +286,7 @@ export default function MandiListClient() {
         ? districtRows
         : rows;
     if (crop) list = list.filter((r) => matchesCrop(r, crop));
-    if (variety) list = list.filter((r) => (r.variety || "FAQ") === variety);
+    if (variety) list = list.filter((r) => varietyLabel(r.variety) === variety);
     return [...list].sort((a, b) => b.modal - a.modal);
   }, [mandi, districtRows, district, rows, crop, variety]);
 
@@ -312,7 +296,7 @@ export default function MandiListClient() {
       : mandi
         ? districtRows.filter((r) => r.mandi === mandi)
         : districtRows;
-    return unique(source.map((r) => r.variety || "FAQ"));
+    return unique(source.map((r) => varietyLabel(r.variety)).filter(Boolean));
   }, [rows, crop, mandi, districtRows]);
 
   const heroRows = useMemo(() => {
@@ -321,18 +305,47 @@ export default function MandiListClient() {
       : rows;
     const wanted = myCrops.map((c) => c.name.toLowerCase());
     const picked: MandiRow[] = [];
+    const seen = new Set<string>();
+    const pushRow = (row: MandiRow) => {
+      const key = `${row.crop}|${row.variety}|${row.mandi}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      picked.push(row);
+    };
     for (const name of wanted) {
-      const hit = home.find(
+      const matches = home.filter(
         (r) => r.crop.toLowerCase().includes(name) || r.cropHi.toLowerCase().includes(name)
       );
-      if (hit) picked.push(hit);
+      const uniqueVariety = new Set<string>();
+      const varietyCount = unique(matches.map((r) => varietyLabel(r.variety)).filter(Boolean)).length;
+      for (const hit of [...matches].sort((a, b) => b.modal - a.modal)) {
+        const v = varietyLabel(hit.variety) || hit.crop;
+        if (uniqueVariety.has(v)) continue;
+        uniqueVariety.add(v);
+        pushRow(hit);
+        if (varietyCount <= 1) break;
+        if (picked.length >= 4) break;
+      }
+      if (picked.length >= 4) break;
     }
     if (picked.length) return picked.slice(0, 4);
-    const byCrop = new Map<string, MandiRow>();
-    for (const row of home) {
-      if (!byCrop.has(row.crop)) byCrop.set(row.crop, row);
+    const paddyHome = home.filter((r) => r.crop === "Paddy");
+    if (paddyHome.length) {
+      const uniqueVariety = new Set<string>();
+      for (const hit of [...paddyHome].sort((a, b) => b.modal - a.modal)) {
+        const v = varietyLabel(hit.variety) || hit.crop;
+        if (uniqueVariety.has(v)) continue;
+        uniqueVariety.add(v);
+        pushRow(hit);
+        if (picked.length >= 3) break;
+      }
     }
-    return [...byCrop.values()].slice(0, 4);
+    for (const row of home) {
+      if (picked.length >= 4) break;
+      if (row.crop === "Paddy") continue;
+      pushRow(row);
+    }
+    return picked.slice(0, 4);
   }, [rows, profileDistrict, myCrops]);
 
   const pickState = (next: string) => {
@@ -495,16 +508,20 @@ export default function MandiListClient() {
                           {cropEmoji(row.crop)} {cropName(row, isHi)}
                         </p>
                         <p className="mt-1 whitespace-nowrap text-[18px] font-black leading-none">{inr(row.modal)}</p>
-                        <p className="mt-1 truncate text-[10px] text-emerald-50">
-                          {varietyLabel(row.variety, isHi)}
-                        </p>
+                        {varietyLabel(row.variety) ? (
+                          <p className="mt-1 truncate text-[10px] text-emerald-50">{varietyLabel(row.variety)}</p>
+                        ) : null}
                         <p
                           className={cn(
                             "mt-1 text-[10px] font-bold",
                             tr.dir === "down" ? "text-rose-200" : "text-lime-200"
                           )}
                         >
-                          {tr.dir === "flat" ? (isHi ? "स्थिर" : "Flat") : `${tr.dir === "down" ? "▼" : "▲"} ${inr(Math.abs(tr.amt))}`}
+                          {tr.dir === "flat"
+                            ? isHi
+                              ? "जैसा कल था"
+                              : "Same as yesterday"
+                            : `${tr.dir === "down" ? "▼" : "▲"} ${inr(Math.abs(tr.amt))}`}
                         </p>
                       </AppLink>
                     );
@@ -566,40 +583,27 @@ export default function MandiListClient() {
               ) : null}
 
               <div className="mt-3 grid grid-cols-2 gap-2">
-                <label className="block">
-                  <span className="mb-1 block text-[10px] font-bold uppercase tracking-wide text-amber-800/80 dark:text-amber-300">
-                    {isHi ? "राज्य" : "State"}
-                  </span>
-                  <select className={selectClass} value={fetchState} onChange={(e) => pickState(e.target.value)}>
-                    {INDIAN_STATES.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="mb-1 block text-[10px] font-bold uppercase tracking-wide text-amber-800/80 dark:text-amber-300">
-                    {isHi ? "ज़िला" : "District"}
-                  </span>
-                  <select
-                    className={selectClass}
-                    value={district ?? ""}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      setDistrict(v || null);
-                      setMandi(null);
-                    }}
-                  >
-                    <option value="">{isHi ? "सभी ज़िले" : "All districts"}</option>
-                    {visibleDistricts.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                        {d === profileDistrict ? (isHi ? " (आपका)" : " (yours)") : ""}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <LocationPickButton
+                  label={isHi ? "राज्य" : "State"}
+                  valueLabel={isHi ? stateLabelHi(fetchState) : fetchState}
+                  hint={isHi && stateLabelHi(fetchState) !== fetchState ? fetchState : undefined}
+                  onClick={() => setPlaceSheet("state")}
+                />
+                <LocationPickButton
+                  label={isHi ? "ज़िला" : "District"}
+                  valueLabel={
+                    district
+                      ? district === profileDistrict
+                        ? isHi
+                          ? `${district} · आपका`
+                          : `${district} · yours`
+                        : district
+                      : isHi
+                        ? "सभी ज़िले"
+                        : "All districts"
+                  }
+                  onClick={() => setPlaceSheet("district")}
+                />
               </div>
             </section>
 
@@ -708,9 +712,13 @@ export default function MandiListClient() {
                         <span className="block truncate text-[14px] font-black">{name}</span>
                         <span className="text-[11px] font-semibold text-[var(--av-text-muted)]">
                           {top
-                            ? isHi
-                              ? `${cropName(top, true)} · ${varietyLabel(top.variety, true)} · ${inr(top.modal)}`
-                              : `${cropName(top, false)} · ${top.variety} · ${inr(top.modal)}`
+                            ? [
+                                cropName(top, isHi),
+                                varietyLabel(top.variety),
+                                inr(top.modal),
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")
                             : ""}
                         </span>
                         <span className="mt-0.5 block text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
@@ -727,10 +735,10 @@ export default function MandiListClient() {
             {showPrices ? (
               <section className="space-y-2">
                 <h2 className="px-0.5 text-[15px] font-black">
-                  {crop
+                    {crop
                     ? isHi
-                      ? `${cropEmoji(crop)} ${CROP_HI[crop] || crop} — वैरायटी सहित`
-                      : `${crop} rates by variety`
+                      ? `${cropEmoji(crop)} ${CROP_HI[crop] || crop}${varietyOptions.length > 1 ? " — वैरायटी सहित" : ""}`
+                      : `${crop}${varietyOptions.length > 1 ? " rates by variety" : ""}`
                     : mandi}
                 </h2>
                 {varietyOptions.length > 1 ? (
@@ -759,7 +767,7 @@ export default function MandiListClient() {
                             : "border-amber-200 bg-amber-50 text-amber-950 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100"
                         )}
                       >
-                        {varietyLabel(v, isHi)}
+                        {varietyLabel(v)}
                       </button>
                     ))}
                   </div>
@@ -783,6 +791,42 @@ export default function MandiListClient() {
           </>
         )}
       </div>
+      <LocationListSheet
+        open={placeSheet === "state"}
+        onClose={() => setPlaceSheet(null)}
+        title={isHi ? "राज्य चुनें" : "Choose state"}
+        subtitle={isHi ? "अपना राज्य लिखकर खोजें" : "Search your state"}
+        searchPlaceholder={isHi ? "जैसे हरियाणा, उत्तर प्रदेश" : "Search state"}
+        value={fetchState}
+        onSelect={pickState}
+        options={stateOptions.map((s) => ({
+          value: s,
+          label: isHi ? stateLabelHi(s) : s,
+          hint: isHi && stateLabelHi(s) !== s ? s : undefined,
+          pinned: s === profileState,
+        }))}
+      />
+      <LocationListSheet
+        open={placeSheet === "district"}
+        onClose={() => setPlaceSheet(null)}
+        title={isHi ? "ज़िला चुनें" : "Choose district"}
+        subtitle={isHi ? `${stateLabelHi(fetchState)} के ज़िले` : `Districts in ${fetchState}`}
+        searchPlaceholder={isHi ? "ज़िला का नाम लिखें" : "Search district"}
+        value={district ?? ""}
+        onSelect={(v) => {
+          setDistrict(v || null);
+          setMandi(null);
+          setPlaceSheet(null);
+        }}
+        options={[
+          { value: "", label: isHi ? "सभी ज़िले" : "All districts" },
+          ...visibleDistricts.map((d) => ({
+            value: d,
+            label: d,
+            pinned: d === profileDistrict,
+          })),
+        ]}
+      />
     </AppShell>
   );
 }

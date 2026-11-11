@@ -30,17 +30,22 @@ export async function PATCH(request: NextRequest, ctx: Ctx) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  const callerIsOwner = auth.session.role === "owner" || auth.session.role === "admin";
   const role =
-    body.role === "manager" || body.role === "expert" ? (body.role as PanelRole) : undefined;
+    callerIsOwner && (body.role === "manager" || body.role === "expert")
+      ? (body.role as PanelRole)
+      : body.role === "expert"
+        ? "expert"
+        : undefined;
 
   const result = await updatePanelUser(id, {
     displayName: body.displayName,
     role,
     canAssign: body.canAssign,
-    canManageExperts: body.canManageExperts,
-    canViewAll: body.canViewAll,
+    canManageExperts: callerIsOwner ? body.canManageExperts : undefined,
+    canViewAll: callerIsOwner ? body.canViewAll : undefined,
     active: body.active,
-    password: body.password,
+    password: callerIsOwner ? body.password : undefined,
   });
 
   if (!result.user) {

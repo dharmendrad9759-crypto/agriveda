@@ -3,7 +3,8 @@
 import { useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Polygon, useMap } from "react-leaflet";
 import L from "leaflet";
-import { LatLng } from "@/lib/geo/fieldGeometry";
+import { LatLng, sanitizeBoundary } from "@/lib/geo/fieldGeometry";
+import MapErrorBoundary from "@/components/farm/MapErrorBoundary";
 import "leaflet/dist/leaflet.css";
 
 interface MiniFieldMapProps {
@@ -30,25 +31,28 @@ export default function MiniFieldMap({
   height = "160px",
   className = "",
 }: MiniFieldMapProps) {
+  const safeBoundary = useMemo(() => sanitizeBoundary(boundary), [boundary]);
+  const fallback = (
+    <div
+      className={`w-full bg-emerald-950/20 rounded-xl flex items-center justify-center text-xs text-emerald-800 ${className}`}
+      style={{ height }}
+    >
+      नक्शा उपलब्ध नहीं है
+    </div>
+  );
   const center = useMemo<[number, number]>(() => {
-    if (!boundary || boundary.length === 0) return [27.502, 78.053];
-    const avgLat = boundary.reduce((acc, p) => acc + p.lat, 0) / boundary.length;
-    const avgLng = boundary.reduce((acc, p) => acc + p.lng, 0) / boundary.length;
+    if (safeBoundary.length === 0) return [27.502, 78.053];
+    const avgLat = safeBoundary.reduce((acc, p) => acc + p.lat, 0) / safeBoundary.length;
+    const avgLng = safeBoundary.reduce((acc, p) => acc + p.lng, 0) / safeBoundary.length;
     return [avgLat, avgLng];
-  }, [boundary]);
+  }, [safeBoundary]);
 
-  if (!boundary || boundary.length < 3) {
-    return (
-      <div
-        className={`w-full bg-emerald-950/20 rounded-xl flex items-center justify-center text-xs text-emerald-800 ${className}`}
-        style={{ height }}
-      >
-        नक्शा उपलब्ध नहीं है
-      </div>
-    );
+  if (safeBoundary.length < 3 || !Number.isFinite(center[0]) || !Number.isFinite(center[1])) {
+    return fallback;
   }
 
   return (
+    <MapErrorBoundary fallback={fallback}>
     <div
       className={`relative w-full rounded-xl overflow-hidden border border-emerald-100/80 shadow-inner ${className}`}
       style={{ height }}
@@ -64,13 +68,13 @@ export default function MiniFieldMap({
         touchZoom={false}
         className="w-full h-full z-0 pointer-events-none"
       >
-        <AutoBounds boundary={boundary} />
+        <AutoBounds boundary={safeBoundary} />
         <TileLayer
           url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
           maxZoom={20}
         />
         <Polygon
-          positions={boundary.map((p) => [p.lat, p.lng])}
+          positions={safeBoundary.map((p) => [p.lat, p.lng])}
           pathOptions={{
             color: "#059669",
             fillColor: "#10b981",
@@ -80,5 +84,6 @@ export default function MiniFieldMap({
         />
       </MapContainer>
     </div>
+    </MapErrorBoundary>
   );
 }

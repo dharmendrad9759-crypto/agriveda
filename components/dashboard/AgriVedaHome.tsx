@@ -1,21 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  Bell,
+  CalendarDays,
   Camera,
   ChevronRight,
-  Droplets,
-  MessageCircle,
-  TrendingUp,
   ClipboardList,
+  CloudSun,
+  Droplets,
+  FlaskConical,
+  Landmark,
+  Leaf,
+  MessageCircle,
+  NotebookPen,
+  Ruler,
+  Shield,
+  Sprout,
+  TrendingUp,
   type LucideIcon,
 } from "lucide-react";
+import { cn } from "@/lib/cn";
 import { CropDoctorSparkleIcon } from "@/components/brand/icons";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmData } from "@/hooks/useFarmData";
+import { useActiveField } from "@/hooks/useActiveField";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { useAIHistory } from "@/hooks/useAIHistory";
@@ -30,9 +43,13 @@ import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
 import FarmerAppTour from "@/components/tutorial/FarmerAppTour";
 import HomeCropStatusCard from "@/components/dashboard/HomeCropStatusCard";
 import HomeAddCropHero from "@/components/dashboard/HomeAddCropHero";
-import HomeFarmSnapshot from "@/components/dashboard/HomeFarmSnapshot";
+import MeasureAfterAddPrompt from "@/components/farm/MeasureAfterAddPrompt";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
 import { useClientReady, useSafeReducedMotion } from "@/hooks/useClientReady";
+import { suggestFieldName } from "@/lib/farm/fieldName";
+import { fieldAdvisorHref } from "@/lib/farm/fieldLinks";
+import { parseAreaAcres } from "@/lib/farm/farmInit";
+import { soilForPlace } from "@/lib/farm/placeProfile";
 
 
 
@@ -180,16 +197,6 @@ const QUICK_JOBS: {
     imageSrc: "/images/home/home-job-mandi.jpg",
   },
   {
-    id: "field-advisor",
-    hi: "मेरी खेत सलाह",
-    en: "My Field Advice",
-    hintHi: "आज और इस हफ्ते के ज़रूरी काम",
-    hintEn: "Today & this week's farm tasks",
-    href: "/field-advisor",
-    icon: ClipboardList,
-    imageSrc: "/images/home/home-job-plan.jpg",
-  },
-  {
     id: "ask",
     hi: "विशेषज्ञ से पूछें",
     en: "Ask an Expert",
@@ -198,6 +205,16 @@ const QUICK_JOBS: {
     href: "/ask-query",
     icon: MessageCircle,
     imageSrc: "/images/home/ask-expert-trust.jpg",
+  },
+  {
+    id: "schemes",
+    hi: "सरकारी योजना",
+    en: "Govt Schemes",
+    hintHi: "लोन और सब्सिडी की जानकारी",
+    hintEn: "Loans and subsidy guides",
+    href: "/schemes",
+    icon: Landmark,
+    imageSrc: "/images/home/home-cta-schemes.jpg",
   },
 ];
 
@@ -211,6 +228,7 @@ interface FarmToolItem {
   tagEn: string;
   href: string;
   imageSrc: string;
+  icon: LucideIcon;
 }
 
 interface FarmToolCategory {
@@ -228,8 +246,8 @@ interface FarmToolCategory {
 const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
   {
     id: "protection",
-    titleHi: "फसल सुरक्षा व स्प्रे टूल्स",
-    titleEn: "Crop Protection & Spray Tools",
+    titleHi: "फसल सुरक्षा",
+    titleEn: "Crop Protection",
     descHi: "दवा घोल जांच, खरपतवार व पोषण सुरक्षा",
     descEn: "Spray safety, weed & nutrition solutions",
     badgeHi: "सुरक्षा व स्प्रे",
@@ -245,7 +263,8 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         tagHi: "स्मार्ट चेकर",
         tagEn: "Smart Check",
         href: "/mix-advisor",
-        imageSrc: "/images/jobs/job-spray.jpg",
+        imageSrc: "/images/jobs/job-spray-mix-v2.jpg",
+        icon: FlaskConical,
       },
       {
         id: "weeds",
@@ -256,36 +275,39 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         tagHi: "खरपतवार नाशक",
         tagEn: "Herbicides",
         href: "/pest-diseases?type=weed",
-        imageSrc: "/images/threats/threat-weed.jpg",
+        imageSrc: "/images/jobs/job-weed-control-v2.jpg",
+        icon: Sprout,
       },
       {
         id: "spray-rotation",
-        hi: "स्प्रे चक्र व डायरी",
-        en: "Spray Rotation & Log",
+        hi: "स्प्रे डायरी",
+        en: "Spray Diary",
         subHi: "दवा बदलने और स्प्रे डायरी का हिसाब",
         subEn: "Track MoA & spray logs",
         tagHi: "रोटेशन हिसाब",
         tagEn: "MoA Tracker",
         href: "/spray-rotation",
-        imageSrc: "/images/jobs/job-spray-avoid.jpg",
+        imageSrc: "/images/jobs/job-spray-diary-v2.jpg",
+        icon: NotebookPen,
       },
       {
         id: "leaf",
-        hi: "पत्ती पीली / खराब",
+        hi: "पत्ती पीली",
         en: "Nutrient Deficiencies",
         subHi: "पीले व बीमार पत्तों के पोषक तत्व",
         subEn: "Nutrient solutions",
         tagHi: "पोषण कमी",
         tagEn: "Deficiency",
         href: "/deficiencies",
-        imageSrc: "/images/home/home-job-yellow-leaf.jpg",
+        imageSrc: "/images/jobs/job-yellow-leaf-v2.jpg",
+        icon: Leaf,
       },
     ],
   },
   {
     id: "management",
-    titleHi: "खेत व फसल प्रबंधन",
-    titleEn: "Farm & Crop Management",
+    titleHi: "खेत प्रबंधन",
+    titleEn: "Farm Management",
     descHi: "खेत प्रोफाइल, फसल कैलेंडर व मौसम अलर्ट",
     descEn: "Farm records, calendar & weather alerts",
     badgeHi: "खेत प्रबंधन",
@@ -294,14 +316,15 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
     items: [
       {
         id: "field-measure",
-        hi: "अपना खेत नापें",
-        en: "Field Mapping",
+        hi: "खेत नापें",
+        en: "Measure Field",
         subHi: "उपग्रह व GPS से सटीक रकबा नापें",
         subEn: "Measure exact area with Satellite & GPS",
-        tagHi: "उपग्रह से नापें",
+        tagHi: "खेत नापें",
         tagEn: "GPS Mapping",
         href: "/my-farm/measure",
-        imageSrc: "/images/jobs/job-my-farm.jpg",
+        imageSrc: "/images/jobs/job-measure-field.jpg",
+        icon: Ruler,
       },
       {
         id: "plan",
@@ -312,7 +335,8 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         tagHi: "फसल कैलेंडर",
         tagEn: "Calendar",
         href: "/crop-calendar",
-        imageSrc: "/images/home/home-job-plan.jpg",
+        imageSrc: "/images/jobs/job-crop-planner-v2.jpg",
+        icon: CalendarDays,
       },
       {
         id: "alerts",
@@ -323,23 +347,119 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         tagHi: "लाइव अलर्ट",
         tagEn: "Live Alerts",
         href: "/alerts",
-        imageSrc: "/images/jobs/job-alerts.jpg",
+        imageSrc: "/images/jobs/job-farm-alerts.jpg",
+        icon: Bell,
       },
       {
-        id: "schemes",
-        hi: "सरकारी योजना व लोन",
-        en: "Govt Schemes & Loan",
-        subHi: "लोन और सब्सिडी की जानकारी",
-        subEn: "Loans & subsidy guides",
-        tagHi: "योजनाएँ",
-        tagEn: "Schemes",
-        href: "/schemes",
-        imageSrc: "/images/home/home-cta-schemes.jpg",
+        id: "weather",
+        hi: "मौसम",
+        en: "Weather",
+        subHi: "बारिश, तापमान व स्प्रे विंडो",
+        subEn: "Rain, temperature & spray window",
+        tagHi: "मौसम",
+        tagEn: "Weather",
+        href: "/weather",
+        imageSrc: "/images/jobs/job-weather.jpg",
+        icon: CloudSun,
       },
     ],
   },
 ];
 
+function FarmToolSuites({ isHi }: { isHi: boolean }) {
+  return (
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      {FARM_TOOL_CATEGORIES.map((category) => {
+        const isProtect = category.id === "protection";
+        const Icon = isProtect ? Shield : Ruler;
+        return (
+          <div
+            key={category.id}
+            className={cn(
+              "relative overflow-hidden rounded-[28px] border p-2.5",
+              isProtect
+                ? "border-emerald-400/25 bg-gradient-to-br from-[#073322] via-[#041910] to-[#020c08]"
+                : "border-sky-400/20 bg-gradient-to-br from-[#08222c] via-[#06151c] to-[#03090c]"
+            )}
+          >
+            <div
+              className={cn(
+                "pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full blur-3xl",
+                isProtect ? "bg-emerald-400/18" : "bg-sky-400/16"
+              )}
+            />
+            <div className="relative mb-2.5 flex items-center gap-2.5 px-1 pt-0.5">
+              <span
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white",
+                  isProtect ? "text-emerald-200" : "text-sky-200"
+                )}
+              >
+                <Icon className="h-4 w-4" strokeWidth={2.1} />
+              </span>
+              <p className="font-display text-[17px] font-semibold leading-none tracking-tight text-white">
+                {isHi ? category.titleHi : category.titleEn}
+              </p>
+            </div>
+            <div className="relative grid grid-cols-2 gap-2">
+              {category.items.map((job) => {
+                const JobIcon = job.icon;
+                return (
+                  <AppLink
+                    key={job.id}
+                    href={job.href}
+                    onClick={() =>
+                      track("tool_open", { href: job.href, label: `home_more_${job.id}` })
+                    }
+                    className={cn(
+                      "group relative isolate flex flex-col overflow-hidden rounded-[18px] shadow-[0_10px_20px_-12px_rgba(0,0,0,0.65)] transition duration-300 active:scale-[0.97]",
+                      isProtect
+                        ? "border border-emerald-300/40 hover:border-emerald-200/80"
+                        : "border border-sky-300/40 hover:border-sky-200/80"
+                    )}
+                  >
+                    <span className="relative block h-[86px] w-full overflow-hidden bg-black/40">
+                      <Image
+                        src={job.imageSrc}
+                        alt=""
+                        fill
+                        sizes="(max-width: 640px) 46vw, 180px"
+                        quality={72}
+                        className="object-cover object-center transition duration-500 group-hover:scale-110"
+                      />
+                      <span
+                        className={cn(
+                          "absolute inset-x-0 bottom-0 h-7 bg-gradient-to-t to-transparent",
+                          isProtect ? "from-emerald-950/55" : "from-sky-950/55"
+                        )}
+                      />
+                    </span>
+                    <span
+                      className={cn(
+                        "relative z-10 flex min-h-[40px] items-center justify-between gap-1 px-2 py-1.5",
+                        isProtect
+                          ? "bg-gradient-to-r from-emerald-400 to-lime-300 text-emerald-950"
+                          : "bg-gradient-to-r from-sky-400 to-cyan-300 text-sky-950"
+                      )}
+                    >
+                      <span className="flex min-w-0 items-center gap-1">
+                        <JobIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
+                        <span className="text-[12px] font-black leading-tight">
+                          {isHi ? job.hi : job.en}
+                        </span>
+                      </span>
+                      <ChevronRight className="h-3.5 w-3.5 shrink-0" strokeWidth={2.7} />
+                    </span>
+                  </AppLink>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function daysSince(dateStr: string): number | null {
   if (!dateStr) return null;
@@ -366,11 +486,27 @@ function fieldCard(field: FarmField, index: number) {
   const crop = field.crop;
   const stage = field.stage;
   const name = field.name;
-  const sowingDate = field.sowingDate;
+  const sowingDate = field.sowingDateIso || field.sowingDate;
   const cropSlug = field.cropSlug;
   const days = daysSince(sowingDate);
   const img = resolveCropImage({ slug: cropSlug || crop.toLowerCase(), name: crop });
-  return { id, crop, cropSlug, stage, name, days, sowingDate, img, key: `${name}-${index}` };
+  const areaAcres =
+    typeof field.areaAcres === "number" && field.areaAcres > 0
+      ? field.areaAcres
+      : parseAreaAcres(field.area) || undefined;
+  return {
+    id,
+    crop,
+    cropSlug,
+    stage,
+    name,
+    days,
+    sowingDate,
+    sowingDateIso: field.sowingDateIso,
+    areaAcres,
+    img,
+    key: `${id}-${index}`,
+  };
 }
 
 export default function AgriVedaHome() {
@@ -378,7 +514,7 @@ export default function AgriVedaHome() {
   const isHi = locale === "hi";
   const ready = useClientReady();
   const reduced = useSafeReducedMotion();
-  const { profile } = useFarmerProfile();
+  const { profile, setSowingDate } = useFarmerProfile();
   const todayLabel = ready
     ? new Date().toLocaleDateString(isHi ? "hi-IN" : "en-IN", {
         weekday: "long",
@@ -388,11 +524,14 @@ export default function AgriVedaHome() {
     : null;
   const { showToast } = useToast();
   const { weather, loading: weatherLoading, error: weatherError } = useLiveWeather();
-  const { data: farm, setFields, addField } = useFarmData();
+  const { data: farm, setFields, addField, hydrated: farmHydrated } = useFarmData();
+  const { activeField, setActiveField } = useActiveField(farm.fields, farmHydrated);
   const { history: aiHistory } = useAIHistory();
   const lastScan = aiHistory[0];
+  const [measurePromptId, setMeasurePromptId] = useState<string | null>(null);
 
   const handleUpdateSowingDate = (fieldId: string, newDateIso: string) => {
+    const target = farm.fields.find((f) => f.id === fieldId) ?? farm.fields[0];
     const nextFields = farm.fields.map((f, i) => {
       if (f.id === fieldId || (!fieldId && i === 0)) {
         return {
@@ -404,12 +543,19 @@ export default function AgriVedaHome() {
       return f;
     });
     setFields(nextFields);
+    const slug = target?.cropSlug;
+    if (slug) setSowingDate(slug, newDateIso);
   };
 
   const handleAddCropFromHome = (cropSlug: string, cropName: string, sowingDateIso?: string) => {
     const sDate = sowingDateIso || new Date().toISOString().split("T")[0];
-    addField({
-      name: isHi ? "खेत #1" : "Field #1",
+    const cropHi = getCropHindiName(cropSlug) || cropName;
+    const id = addField({
+      name: suggestFieldName({
+        existing: farm.fields,
+        cropHi,
+        village: profile.village,
+      }),
       area: "1.0 एकड़",
       ownership: "Owned",
       crop: cropName,
@@ -419,38 +565,35 @@ export default function AgriVedaHome() {
       sowingDateIso: sDate,
       emoji: "🌱",
       stage: "सक्रिय",
+      soilType: soilForPlace(profile.state, profile.district) || undefined,
+      placeState: profile.state || undefined,
+      placeDistrict: profile.district || undefined,
     });
+    setActiveField(id);
+    if (cropSlug) setSowingDate(cropSlug, sDate);
+    setMeasurePromptId(id);
+  };
+
+  const handleSelectField = (fieldId: string) => {
+    setActiveField(fieldId);
   };
 
   const handleChangeCrop = (cropSlug: string, cropName: string) => {
-    const existingIndex = farm.fields.findIndex(
+    const existing = farm.fields.find(
       (f) =>
         (f.cropSlug && f.cropSlug.toLowerCase() === cropSlug.toLowerCase()) ||
         f.crop.toLowerCase() === cropName.toLowerCase()
     );
 
-    if (existingIndex > 0) {
-      const selected = farm.fields[existingIndex];
-      const others = farm.fields.filter((_, i) => i !== existingIndex);
-      setFields([selected, ...others]);
-    } else if (existingIndex === 0) {
-      // already primary
+    if (existing) {
+      setActiveField(existing.id);
+    } else if (activeField) {
+      const nextFields = farm.fields.map((f) =>
+        f.id === activeField.id ? { ...f, crop: cropName, cropSlug } : f
+      );
+      setFields(nextFields);
     } else {
-      if (farm.fields.length > 0) {
-        const nextFields = farm.fields.map((f, i) => {
-          if (i === 0) {
-            return {
-              ...f,
-              crop: cropName,
-              cropSlug,
-            };
-          }
-          return f;
-        });
-        setFields(nextFields);
-      } else {
-        handleAddCropFromHome(cropSlug, cropName);
-      }
+      handleAddCropFromHome(cropSlug, cropName);
     }
     showToast(
       isHi ? `सक्रिय फसल बदली: ${cropName} ✓` : `Active crop changed: ${cropName} ✓`,
@@ -462,10 +605,9 @@ export default function AgriVedaHome() {
 
   const weatherIsSample = Boolean(weather?.isDemo || weatherError);
 
-  const sourceFields = farm.fields.slice(0, 2);
-  const extraFields = sourceFields.slice(1);
-  const hasFields = sourceFields.length > 0;
-  const primary = hasFields ? fieldCard(sourceFields[0], 0) : null;
+  const extraFields = farm.fields.filter((f) => f.id !== activeField?.id).slice(0, 2);
+  const primary = activeField ? fieldCard(activeField, 0) : null;
+  const adviceHref = activeField ? fieldAdvisorHref(activeField) : "/field-advisor";
 
   const greetName = name.trim()
     ? name.trim().charAt(0).toUpperCase() + name.trim().slice(1)
@@ -516,12 +658,16 @@ export default function AgriVedaHome() {
         </motion.section>
 
         <motion.section {...fade(0.015)}>
-          {primary ? (
+          {!farmHydrated ? (
+            <div className="h-[76px] rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)]" aria-hidden />
+          ) : primary ? (
             <HomeCropStatusCard
               field={primary}
               isHi={isHi}
+              adviceHref={adviceHref}
               onUpdateSowingDate={handleUpdateSowingDate}
               onChangeCrop={handleChangeCrop}
+              onSelectField={handleSelectField}
               allFields={farm.fields}
             />
           ) : (
@@ -530,11 +676,6 @@ export default function AgriVedaHome() {
               onAddCrop={handleAddCropFromHome}
             />
           )}
-        </motion.section>
-
-        {/* Agriveda 360° Farm Intelligence Snapshot */}
-        <motion.section {...fade(0.018)}>
-          <HomeFarmSnapshot />
         </motion.section>
 
         {/* Unified Disease & Crop Doctor Module (AI photo + manual list in one place) */}
@@ -609,63 +750,11 @@ export default function AgriVedaHome() {
           </motion.section>
         ) : null}
 
-        {/* Farm tools & utilities — Categorized & Space-Optimized */}
-        <motion.section {...fade(0.07)} className="space-y-2 pt-0.5">
-          <div className="px-1">
-            <h2 className="text-[15px] sm:text-[16px] font-black tracking-tight text-[var(--av-text-primary)]">
-              {isHi ? "खेत के टूल्स" : "Farm Tools"}
-            </h2>
-          </div>
-
-          <div className="space-y-2">
-            {FARM_TOOL_CATEGORIES.map((category) => (
-              <div
-                key={category.id}
-                className="rounded-2xl border border-emerald-900/10 bg-gradient-to-b from-[var(--av-surface)] to-[var(--av-surface-inset)]/30 p-2 sm:p-2.5 shadow-2xs dark:border-emerald-500/15"
-              >
-                {/* Category Header */}
-                <div className="mb-1.5 px-1 pt-0.5">
-                  <span className="text-[12.5px] font-black tracking-tight text-[var(--av-text-primary)]">
-                    {isHi ? category.titleHi : category.titleEn}
-                  </span>
-                </div>
-
-                {/* Items Grid */}
-                <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-                  {category.items.map((job) => (
-                    <AppLink
-                      key={job.id}
-                      href={job.href}
-                      onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
-                      className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-emerald-900/8 bg-[var(--av-surface)] p-1.5 sm:p-2 shadow-2xs transition-all duration-150 hover:border-emerald-500/40 hover:shadow-xs active:scale-[0.98] dark:border-white/5"
-                    >
-                      <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-lg border border-black/5 dark:border-white/10 shadow-2xs">
-                        <Image
-                          src={job.imageSrc}
-                          alt=""
-                          fill
-                          sizes="40px"
-                          quality={60}
-                          className="object-cover transition duration-300 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div>
-                          <p className="truncate text-[12.5px] sm:text-[13px] font-black text-[var(--av-text-primary)] group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
-                            {isHi ? job.hi : job.en}
-                          </p>
-                        </div>
-                        <p className="truncate text-[10px] sm:text-[10.5px] font-medium text-[var(--av-text-muted)]">
-                          {isHi ? job.subHi : job.subEn}
-                        </p>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[var(--av-text-muted)] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-emerald-600" />
-                    </AppLink>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+        <motion.section {...fade(0.07)} className="space-y-2.5 pt-0.5">
+          <h2 className="px-1 text-[15px] font-semibold tracking-tight text-[var(--av-text-primary)]">
+            {isHi ? "खेत के टूल्स" : "Farm Tools"}
+          </h2>
+          <FarmToolSuites isHi={isHi} />
         </motion.section>
 
         {extraFields.length > 0 ? (
@@ -685,6 +774,7 @@ export default function AgriVedaHome() {
                   <AppLink
                     key={card.key}
                     href={`/my-farm/${card.id}`}
+                    onClick={() => setActiveField(card.id)}
                     className="flex items-center gap-3 overflow-hidden rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] p-3 shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)]"
                   >
                     <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
@@ -719,6 +809,11 @@ export default function AgriVedaHome() {
         ) : null}
 
       </div>
+      <MeasureAfterAddPrompt
+        fieldId={measurePromptId}
+        isHi={isHi}
+        onDismiss={() => setMeasurePromptId(null)}
+      />
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteFarmerAccountServer } from "@/lib/deleteFarmerAccount";
-import { clearSessionCookie, requireSession } from "@/lib/session";
+import { clearSessionCookie, requireSession, revokeRequestSession } from "@/lib/session";
 import { releaseActiveDevice } from "@/lib/authActiveDevice";
 import { rateLimit } from "@/lib/rateLimit";
+import { securityEvent } from "@/lib/securityLog";
 
 /**
  * DELETE /api/account — Play Store account deletion.
@@ -32,6 +33,11 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
 
+  securityEvent("account_delete", {
+    deviceId: auth.session.deviceId,
+    hasUid: Boolean(auth.session.firebaseUid),
+  });
+  await revokeRequestSession(request);
   if (auth.session.firebaseUid) {
     await releaseActiveDevice(auth.session.firebaseUid, auth.session.deviceId);
   }

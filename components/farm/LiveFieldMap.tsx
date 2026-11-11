@@ -12,8 +12,10 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import L from "leaflet";
-import { LatLng } from "@/lib/geo/fieldGeometry";
+import { LatLng, sanitizeBoundary } from "@/lib/geo/fieldGeometry";
+import MapErrorBoundary from "@/components/farm/MapErrorBoundary";
 import { FieldObservation, PotentialInspectionZone } from "@/lib/farm/types";
+import MeasureFieldButton from "@/components/farm/MeasureFieldButton";
 import "leaflet/dist/leaflet.css";
 
 interface LiveFieldMapProps {
@@ -127,14 +129,15 @@ export default function LiveFieldMap({
   className = "",
   allowPinDrop = false,
 }: LiveFieldMapProps) {
+  const safeBoundary = useMemo(() => sanitizeBoundary(boundary), [boundary]);
   const center = useMemo<[number, number]>(() => {
-    if (!boundary || boundary.length === 0) return [27.502, 78.053];
-    const avgLat = boundary.reduce((acc, p) => acc + p.lat, 0) / boundary.length;
-    const avgLng = boundary.reduce((acc, p) => acc + p.lng, 0) / boundary.length;
+    if (safeBoundary.length === 0) return [27.502, 78.053];
+    const avgLat = safeBoundary.reduce((acc, p) => acc + p.lat, 0) / safeBoundary.length;
+    const avgLng = safeBoundary.reduce((acc, p) => acc + p.lng, 0) / safeBoundary.length;
     return [avgLat, avgLng];
-  }, [boundary]);
+  }, [safeBoundary]);
 
-  if (!boundary || boundary.length < 3) {
+  if (safeBoundary.length < 3 || !Number.isFinite(center[0]) || !Number.isFinite(center[1])) {
     return (
       <div
         className={`w-full bg-emerald-950/20 rounded-2xl flex flex-col items-center justify-center text-xs text-emerald-800 p-6 text-center ${className}`}
@@ -144,17 +147,26 @@ export default function LiveFieldMap({
         <p className="text-gray-500 text-xs max-w-xs mb-3">
           सटीक उपग्रह निगरानी के लिए अपने खेत की सीमा रेखा बनाएं।
         </p>
-        <a
-          href="/my-farm/measure"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 text-white font-bold text-xs shadow-sm hover:bg-emerald-800 transition active:scale-95"
-        >
-          नक्शे पर खेत नापें →
-        </a>
+        <MeasureFieldButton className="px-4 py-2 text-xs shadow-sm" />
       </div>
     );
   }
 
+  const mapFallback = (
+    <div
+      className={`w-full bg-emerald-950/20 rounded-2xl flex flex-col items-center justify-center text-xs text-emerald-800 p-6 text-center ${className}`}
+      style={{ height }}
+    >
+      <p className="font-bold text-sm mb-1 text-[var(--av-text-primary)]">नक्शा अभी नहीं खुल पाया</p>
+      <p className="text-gray-500 text-xs max-w-xs mb-3">
+        खेत का डेटा सुरक्षित है। सीमा फिर से नापें या पेज दोबारा खोलें।
+      </p>
+      <MeasureFieldButton className="px-4 py-2 text-xs shadow-sm" />
+    </div>
+  );
+
   return (
+    <MapErrorBoundary fallback={mapFallback}>
     <div
       className={`relative w-full rounded-2xl overflow-hidden border border-emerald-900/15 shadow-md ${className}`}
       style={{ height }}
@@ -167,7 +179,7 @@ export default function LiveFieldMap({
         scrollWheelZoom={false}
         className="w-full h-full z-0"
       >
-        <AutoBounds boundary={boundary} />
+        <AutoBounds boundary={safeBoundary} />
         {allowPinDrop && <MapClickHandler onClick={onMapClick} />}
 
         {/* ArcGIS World Imagery Satellite Layer */}
@@ -178,7 +190,7 @@ export default function LiveFieldMap({
 
         {/* Boundary Polygon */}
         <Polygon
-          positions={boundary.map((p) => [p.lat, p.lng])}
+          positions={safeBoundary.map((p) => [p.lat, p.lng])}
           pathOptions={{
             color: "#10b981",
             fillColor: "#059669",
@@ -226,6 +238,7 @@ export default function LiveFieldMap({
         {/* Observation Pins */}
         {observations.map((obs) => {
           if (!obs.location) return null;
+          if (!Number.isFinite(obs.location.lat) || !Number.isFinite(obs.location.lng)) return null;
           const meta = getCategoryMeta(obs.category);
           return (
             <Marker
@@ -257,5 +270,6 @@ export default function LiveFieldMap({
         </span>
       </div>
     </div>
+    </MapErrorBoundary>
   );
 }

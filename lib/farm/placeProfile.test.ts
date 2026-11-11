@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fieldPlaceFor } from "@/lib/farm/placeProfile";
+import { fieldPlaceFor, matchFarmSoil, soilForPlace } from "@/lib/farm/placeProfile";
 
 describe("field place from state", () => {
   it("uses the UP pucca bigha and alluvial soil", () => {
@@ -39,6 +39,23 @@ describe("field place from state", () => {
     const place = fieldPlaceFor("Sikkim");
     expect(place.acresPerBigha).toBe(0);
     expect(place.bighaLineHi).not.toContain("0.625");
-    expect(place.soil).toBe("");
+    expect(place.soil).toContain("दोमट");
+  });
+});
+
+describe("soil from geography", () => {
+  it("picks alluvial soil for Aligarh from Hindi or English state", () => {
+    expect(soilForPlace("Uttar Pradesh", "Aligarh")).toContain("जलोढ़");
+    expect(soilForPlace("उत्तर प्रदेश", "Aligarh")).toContain("जलोढ़");
+  });
+
+  it("overrides western desert belts to sandy loam", () => {
+    expect(soilForPlace("Haryana", "Hisar")).toContain("बलुई");
+    expect(soilForPlace("Rajasthan", "Jodhpur")).toContain("बलुई");
+  });
+
+  it("matches listed soil chips from short farmer names", () => {
+    expect(matchFarmSoil("जलोढ़")).toBe("जलोढ़ मिट्टी (Alluvial)");
+    expect(matchFarmSoil("Black")).toBe("काली मिट्टी (Black)");
   });
 });
