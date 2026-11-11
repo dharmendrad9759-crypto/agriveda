@@ -15,12 +15,16 @@ export interface LatLng {
 }
 
 export function isValidLatLng(point?: Partial<LatLng> | null): point is LatLng {
+  if (!point) return false;
+  const lat = point.lat;
+  const lng = point.lng;
   return (
-    !!point &&
-    Number.isFinite(point.lat) &&
-    Number.isFinite(point.lng) &&
-    Math.abs(point.lat) <= 90 &&
-    Math.abs(point.lng) <= 180
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    Math.abs(lat) <= 90 &&
+    Math.abs(lng) <= 180
   );
 }
 
