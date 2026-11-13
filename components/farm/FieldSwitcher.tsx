@@ -41,6 +41,21 @@ export default function FieldSwitcher({
 
   if (!currentField) return null;
 
+  const fieldTitle = formatFieldName(currentField.name);
+  const crop = currentField.crop?.trim() || "";
+  const variety = currentField.variety?.trim() || "";
+  const acres = currentField.areaAcres
+    ? `${currentField.areaAcres} एकड़`
+    : currentField.area || "";
+  const alreadyInTitle = (bit: string) => Boolean(bit) && fieldTitle.includes(bit);
+  const fieldLine = [
+    alreadyInTitle(variety) ? "" : variety,
+    alreadyInTitle(crop) ? "" : crop,
+    acres,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <div className={cn("relative min-w-0 text-left", className)}>
       <button
@@ -54,16 +69,14 @@ export default function FieldSwitcher({
           <Tractor className="h-3.5 w-3.5" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[12px] font-semibold leading-tight text-[var(--av-text-primary)]">
-            {formatFieldName(currentField.name)}
+          <span className="block truncate text-[15px] font-semibold leading-tight text-[var(--av-text-primary)]">
+            {fieldTitle}
           </span>
-          <span className="mt-0.5 block truncate text-[9.5px] leading-tight text-[var(--av-text-muted)]">
-            {currentField.crop}
-            {" · "}
-            {currentField.areaAcres
-              ? `${currentField.areaAcres} एकड़`
-              : currentField.area}
-          </span>
+          {fieldLine ? (
+            <span className="mt-0.5 block truncate text-[12px] leading-tight text-[var(--av-text-muted)]">
+              {fieldLine}
+            </span>
+          ) : null}
         </span>
         <ChevronDown
           className={cn(

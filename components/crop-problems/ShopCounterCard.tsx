@@ -31,7 +31,7 @@ export default function ShopCounterCard({
   tankLitres: number;
 }) {
   const [swapText, setSwapText] = useState("");
-  const parsed = parseFarmerDose(medicine.dose, { tankLitres });
+  const parsed = parseFarmerDose(medicine.dose, { tankLitres, technical: medicine.technical });
   const form = formulationHint(medicine.technical);
   const premix = isLikelyPremix(medicine.technical);
   const brands = useMemo(() => {

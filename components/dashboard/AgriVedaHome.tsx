@@ -10,7 +10,6 @@ import {
   CalendarDays,
   Camera,
   ChevronRight,
-  ClipboardList,
   CloudSun,
   Droplets,
   FlaskConical,
@@ -58,18 +57,9 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
   return (
     <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/20 bg-gradient-to-br from-[#063320] via-[#042416] to-[#02180e] p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-12px_rgba(2,24,14,0.5)]">
       {/* Header section — Clean badges + punchy heading */}
-      <div className="relative z-10 flex items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/25 px-2.5 py-0.5 text-[10.5px] font-extrabold tracking-wide text-emerald-200">
-          <CropDoctorSparkleIcon className="h-3.5 w-3.5 text-emerald-300" />
-          {isHi ? "फसल डॉक्टर" : "Crop Doctor"}
-        </span>
-      </div>
-
-      <div className="relative z-10 mt-1.5">
-        <h2 className="text-[17px] sm:text-[19px] font-black leading-tight text-white tracking-tight">
-          {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop Disease or Pest Issue?"}
-        </h2>
-      </div>
+      <h2 className="relative z-10 text-[15px] font-bold leading-snug text-white">
+        {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop disease or pest?"}
+      </h2>
 
       {/* Dual Split Cards: 1) Camera Photo Scan, 2) Symptoms & Disease Directory */}
       <div className="relative z-10 mt-3 grid grid-cols-2 gap-2.5 sm:gap-3">
@@ -91,21 +81,13 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
               priority
               className="object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105"
             />
-            {/* Top floating glass badge */}
-            <div className="absolute left-2 top-2 z-10">
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/75 px-2 py-0.5 text-[9.5px] font-extrabold text-white backdrop-blur-md border border-white/20 shadow-xs">
-                <Camera className="h-3 w-3 text-emerald-300 animate-pulse" />
-                {isHi ? "कैमरा जाँच" : "Camera"}
-              </span>
-            </div>
-            {/* Bottom edge transition */}
             <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-emerald-950/90 to-transparent" />
           </div>
 
           {/* Lower Content & High-Affordance CTA */}
           <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1.5">
             <div>
-              <h3 className="text-[13.5px] sm:text-[14.5px] font-black leading-tight text-white group-hover:text-emerald-200 transition-colors">
+              <h3 className="text-[13px] font-bold leading-tight text-white">
                 {isHi ? "पत्ती की फोटो लें" : "Take Leaf Photo"}
               </h3>
             </div>
@@ -135,21 +117,13 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
               priority
               className="object-cover object-[center_32%] transition-transform duration-500 group-hover:scale-105"
             />
-            {/* Top floating glass badge */}
-            <div className="absolute left-2 top-2 z-10">
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/75 px-2 py-0.5 text-[9.5px] font-extrabold text-white backdrop-blur-md border border-white/20 shadow-xs">
-                <ClipboardList className="h-3 w-3 text-teal-300" />
-                {isHi ? "कीट व रोग" : "Pests & Disease"}
-              </span>
-            </div>
-            {/* Bottom edge transition */}
             <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-teal-950/90 to-transparent" />
           </div>
 
           {/* Lower Content & High-Affordance CTA */}
           <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1.5">
             <div>
-              <h3 className="text-[13.5px] sm:text-[14.5px] font-black leading-tight text-white group-hover:text-teal-200 transition-colors">
+              <h3 className="text-[13px] font-bold leading-tight text-white">
                 {isHi ? "लक्षणों से पहचानें" : "Identify by Symptoms"}
               </h3>
             </div>
@@ -224,8 +198,6 @@ interface FarmToolItem {
   en: string;
   subHi: string;
   subEn: string;
-  tagHi: string;
-  tagEn: string;
   href: string;
   imageSrc: string;
   icon: LucideIcon;
@@ -235,11 +207,6 @@ interface FarmToolCategory {
   id: string;
   titleHi: string;
   titleEn: string;
-  descHi: string;
-  descEn: string;
-  badgeHi: string;
-  badgeEn: string;
-  accent: string;
   items: FarmToolItem[];
 }
 
@@ -248,11 +215,6 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
     id: "protection",
     titleHi: "फसल सुरक्षा",
     titleEn: "Crop Protection",
-    descHi: "दवा घोल जांच, खरपतवार व पोषण सुरक्षा",
-    descEn: "Spray safety, weed & nutrition solutions",
-    badgeHi: "सुरक्षा व स्प्रे",
-    badgeEn: "Protection",
-    accent: "emerald",
     items: [
       {
         id: "mix",
@@ -260,10 +222,8 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         en: "Spray Mix Safety",
         subHi: "दो दवाएँ मिलाने से पहले सुरक्षा जाँचें",
         subEn: "Check compatibility before mixing",
-        tagHi: "स्मार्ट चेकर",
-        tagEn: "Smart Check",
         href: "/mix-advisor",
-        imageSrc: "/images/jobs/job-spray-mix-v2.jpg",
+        imageSrc: "/images/jobs/tool-mix.jpg",
         icon: FlaskConical,
       },
       {
@@ -272,10 +232,8 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         en: "Weeds Control",
         subHi: "घास व खरपतवार नाशक दवाएं",
         subEn: "Herbicide solutions",
-        tagHi: "खरपतवार नाशक",
-        tagEn: "Herbicides",
         href: "/pest-diseases?type=weed",
-        imageSrc: "/images/jobs/job-weed-control-v2.jpg",
+        imageSrc: "/images/jobs/tool-weeds.jpg",
         icon: Sprout,
       },
       {
@@ -284,10 +242,8 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         en: "Spray Diary",
         subHi: "दवा बदलने और स्प्रे डायरी का हिसाब",
         subEn: "Track MoA & spray logs",
-        tagHi: "रोटेशन हिसाब",
-        tagEn: "MoA Tracker",
         href: "/spray-rotation",
-        imageSrc: "/images/jobs/job-spray-diary-v2.jpg",
+        imageSrc: "/images/jobs/tool-diary.jpg",
         icon: NotebookPen,
       },
       {
@@ -296,8 +252,6 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         en: "Nutrient Deficiencies",
         subHi: "पीले व बीमार पत्तों के पोषक तत्व",
         subEn: "Nutrient solutions",
-        tagHi: "पोषण कमी",
-        tagEn: "Deficiency",
         href: "/deficiencies",
         imageSrc: "/images/jobs/job-yellow-leaf-v2.jpg",
         icon: Leaf,
@@ -308,11 +262,6 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
     id: "management",
     titleHi: "खेत प्रबंधन",
     titleEn: "Farm Management",
-    descHi: "खेत प्रोफाइल, फसल कैलेंडर व मौसम अलर्ट",
-    descEn: "Farm records, calendar & weather alerts",
-    badgeHi: "खेत प्रबंधन",
-    badgeEn: "Management",
-    accent: "teal",
     items: [
       {
         id: "field-measure",
@@ -320,10 +269,8 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         en: "Measure Field",
         subHi: "उपग्रह व GPS से सटीक रकबा नापें",
         subEn: "Measure exact area with Satellite & GPS",
-        tagHi: "खेत नापें",
-        tagEn: "GPS Mapping",
         href: "/my-farm/measure",
-        imageSrc: "/images/jobs/job-measure-field.jpg",
+        imageSrc: "/images/jobs/tool-measure-v3.jpg",
         icon: Ruler,
       },
       {
@@ -332,10 +279,8 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         en: "Crop Planner",
         subHi: "बुवाई से कटाई का पूरा कैलेंडर",
         subEn: "Sowing to harvest schedule",
-        tagHi: "फसल कैलेंडर",
-        tagEn: "Calendar",
         href: "/crop-calendar",
-        imageSrc: "/images/jobs/job-crop-planner-v2.jpg",
+        imageSrc: "/images/jobs/tool-planner-v5.jpg",
         icon: CalendarDays,
       },
       {
@@ -344,10 +289,8 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         en: "Farm Alerts",
         subHi: "मौसम, कीट व स्प्रे चेतावनी",
         subEn: "Weather, pests & spray warnings",
-        tagHi: "लाइव अलर्ट",
-        tagEn: "Live Alerts",
         href: "/alerts",
-        imageSrc: "/images/jobs/job-farm-alerts.jpg",
+        imageSrc: "/images/jobs/tool-alerts-v3.jpg",
         icon: Bell,
       },
       {
@@ -356,107 +299,154 @@ const FARM_TOOL_CATEGORIES: FarmToolCategory[] = [
         en: "Weather",
         subHi: "बारिश, तापमान व स्प्रे विंडो",
         subEn: "Rain, temperature & spray window",
-        tagHi: "मौसम",
-        tagEn: "Weather",
         href: "/weather",
-        imageSrc: "/images/jobs/job-weather.jpg",
+        imageSrc: "/images/jobs/tool-weather-v3.jpg",
         icon: CloudSun,
       },
     ],
   },
 ];
 
+const PROTECT_ROW: Record<string, { wash: string; frame: string }> = {
+  mix: { wash: "bg-amber-50 dark:bg-amber-950/35", frame: "rounded-[22px]" },
+  weeds: { wash: "bg-lime-50 dark:bg-lime-950/30", frame: "rounded-full" },
+  "spray-rotation": { wash: "bg-stone-100 dark:bg-stone-800/60", frame: "rounded-lg" },
+  leaf: { wash: "bg-yellow-50 dark:bg-yellow-950/30", frame: "rounded-[42%_58%_48%_52%]" },
+};
+
+const MANAGE_STAMP: Record<string, { ring: string; focus: string }> = {
+  plan: { ring: "ring-amber-500/70", focus: "bg-[#f6f1e7] object-contain object-center" },
+  alerts: { ring: "ring-rose-500/70", focus: "object-cover object-[34%_center]" },
+  weather: { ring: "ring-sky-500/70", focus: "object-cover object-center" },
+};
+
 function FarmToolSuites({ isHi }: { isHi: boolean }) {
+  const protection = FARM_TOOL_CATEGORIES[0];
+  const management = FARM_TOOL_CATEGORIES[1];
+  const measure = management.items[0];
+  const stamps = management.items.slice(1);
+
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      {FARM_TOOL_CATEGORIES.map((category) => {
-        const isProtect = category.id === "protection";
-        const Icon = isProtect ? Shield : Ruler;
-        return (
-          <div
-            key={category.id}
-            className={cn(
-              "relative overflow-hidden rounded-[28px] border p-2.5",
-              isProtect
-                ? "border-emerald-400/25 bg-gradient-to-br from-[#073322] via-[#041910] to-[#020c08]"
-                : "border-sky-400/20 bg-gradient-to-br from-[#08222c] via-[#06151c] to-[#03090c]"
-            )}
-          >
-            <div
-              className={cn(
-                "pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full blur-3xl",
-                isProtect ? "bg-emerald-400/18" : "bg-sky-400/16"
-              )}
-            />
-            <div className="relative mb-2.5 flex items-center gap-2.5 px-1 pt-0.5">
-              <span
-                className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white",
-                  isProtect ? "text-emerald-200" : "text-sky-200"
-                )}
-              >
-                <Icon className="h-4 w-4" strokeWidth={2.1} />
-              </span>
-              <p className="font-display text-[17px] font-semibold leading-none tracking-tight text-white">
-                {isHi ? category.titleHi : category.titleEn}
+    <div className="space-y-3.5">
+      <section className="rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface)] p-3">
+        <div className="mb-2.5 flex items-start justify-between gap-3 px-1">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white">
+              <Shield className="h-4 w-4" strokeWidth={2.2} />
+            </span>
+            <div>
+              <p className="text-[15px] font-bold leading-tight text-[var(--av-text-primary)]">
+                {isHi ? protection.titleHi : protection.titleEn}
               </p>
             </div>
-            <div className="relative grid grid-cols-2 gap-2">
-              {category.items.map((job) => {
-                const JobIcon = job.icon;
-                return (
-                  <AppLink
-                    key={job.id}
-                    href={job.href}
-                    onClick={() =>
-                      track("tool_open", { href: job.href, label: `home_more_${job.id}` })
-                    }
-                    className={cn(
-                      "group relative isolate flex flex-col overflow-hidden rounded-[18px] shadow-[0_10px_20px_-12px_rgba(0,0,0,0.65)] transition duration-300 active:scale-[0.97]",
-                      isProtect
-                        ? "border border-emerald-300/40 hover:border-emerald-200/80"
-                        : "border border-sky-300/40 hover:border-sky-200/80"
-                    )}
-                  >
-                    <span className="relative block h-[86px] w-full overflow-hidden bg-black/40">
-                      <Image
-                        src={job.imageSrc}
-                        alt=""
-                        fill
-                        sizes="(max-width: 640px) 46vw, 180px"
-                        quality={72}
-                        className="object-cover object-center transition duration-500 group-hover:scale-110"
-                      />
-                      <span
-                        className={cn(
-                          "absolute inset-x-0 bottom-0 h-7 bg-gradient-to-t to-transparent",
-                          isProtect ? "from-emerald-950/55" : "from-sky-950/55"
-                        )}
-                      />
-                    </span>
-                    <span
-                      className={cn(
-                        "relative z-10 flex min-h-[40px] items-center justify-between gap-1 px-2 py-1.5",
-                        isProtect
-                          ? "bg-gradient-to-r from-emerald-400 to-lime-300 text-emerald-950"
-                          : "bg-gradient-to-r from-sky-400 to-cyan-300 text-sky-950"
-                      )}
-                    >
-                      <span className="flex min-w-0 items-center gap-1">
-                        <JobIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
-                        <span className="text-[12px] font-black leading-tight">
-                          {isHi ? job.hi : job.en}
-                        </span>
-                      </span>
-                      <ChevronRight className="h-3.5 w-3.5 shrink-0" strokeWidth={2.7} />
-                    </span>
-                  </AppLink>
-                );
-              })}
-            </div>
           </div>
-        );
-      })}
+        </div>
+        <div className="space-y-2">
+          {protection.items.map((job) => {
+            const tone = PROTECT_ROW[job.id] ?? PROTECT_ROW.mix;
+            return (
+              <AppLink
+                key={job.id}
+                href={job.href}
+                onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
+                className={cn(
+                  "flex items-center gap-3 rounded-[22px] p-1.5 pr-2.5 transition active:scale-[0.99]",
+                  tone.wash
+                )}
+              >
+                <span className={cn("relative h-[68px] w-[68px] shrink-0 overflow-hidden bg-black/10", tone.frame)}>
+                  <Image
+                    src={job.imageSrc}
+                    alt=""
+                    fill
+                    sizes="68px"
+                    quality={75}
+                    className="object-cover"
+                  />
+                </span>
+                <span className="min-w-0 flex-1 py-1">
+                  <span className="block text-[14px] font-bold leading-tight text-[var(--av-text-primary)]">
+                    {isHi ? job.hi : job.en}
+                  </span>
+                  <span className="mt-0.5 block text-[12px] leading-snug text-[var(--av-text-secondary)]">
+                    {isHi ? job.subHi : job.subEn}
+                  </span>
+                </span>
+              </AppLink>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-[var(--av-border)] bg-[var(--av-surface-muted)] p-3">
+        <div className="mb-2.5 flex items-center gap-2 px-1">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-700 text-white">
+            <Ruler className="h-4 w-4" strokeWidth={2.2} />
+          </span>
+          <div>
+            <p className="text-[15px] font-bold leading-tight text-[var(--av-text-primary)]">
+              {isHi ? management.titleHi : management.titleEn}
+            </p>
+          </div>
+        </div>
+
+        <AppLink
+          href={measure.href}
+          onClick={() => track("tool_open", { href: measure.href, label: "home_more_field-measure" })}
+          className="flex min-h-[124px] overflow-hidden rounded-[24px] border border-[var(--av-border)] bg-[var(--av-surface)] active:scale-[0.99]"
+        >
+          <span className="flex min-w-0 flex-1 flex-col justify-between p-3.5">
+            <span>
+              <span className="block text-[15px] font-bold leading-tight text-[var(--av-text-primary)]">
+                {isHi ? measure.hi : measure.en}
+              </span>
+              <span className="mt-1 block text-[12px] leading-snug text-[var(--av-text-secondary)]">
+                {isHi ? measure.subHi : measure.subEn}
+              </span>
+            </span>
+          </span>
+          <span className="relative w-[46%] shrink-0">
+            <Image
+              src={measure.imageSrc}
+              alt=""
+              fill
+              sizes="180px"
+              quality={75}
+              className="object-cover object-[center_68%]"
+            />
+          </span>
+        </AppLink>
+
+        <div className="mt-2.5 grid grid-cols-3 gap-2">
+          {stamps.map((job) => (
+            <AppLink
+              key={job.id}
+              href={job.href}
+              onClick={() => track("tool_open", { href: job.href, label: `home_more_${job.id}` })}
+              className="flex flex-col items-center rounded-[22px] bg-[var(--av-surface)] px-1.5 pb-2.5 pt-2.5 text-center active:scale-[0.98]"
+            >
+              <span
+                className={cn(
+                  "relative h-[92px] w-full overflow-hidden rounded-2xl ring-[3px]",
+                  MANAGE_STAMP[job.id]?.ring ?? "ring-sky-500/70"
+                )}
+              >
+                <Image
+                  src={job.imageSrc}
+                  alt=""
+                  fill
+                  sizes="160px"
+                  quality={75}
+                  className={MANAGE_STAMP[job.id]?.focus ?? "object-cover"}
+                />
+              </span>
+              <span className="mt-2 text-[13px] font-bold leading-tight text-[var(--av-text-primary)]">
+                {isHi ? job.hi : job.en}
+              </span>
+            </AppLink>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
@@ -640,7 +630,7 @@ export default function AgriVedaHome() {
               <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
                 {isHi ? `नमस्ते, ${greetName} जी 🙏` : `Namaste, ${greetName} 🙏`}
               </p>
-              <h1 className="mt-0.5 font-display text-[1.45rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
+              <h1 className="mt-0.5 font-display text-[1.15rem] font-bold leading-tight text-[var(--av-text-primary)]">
                 {isHi ? "आज क्या करना है?" : "What do you need today?"}
               </h1>
               {todayLabel ? (

@@ -21,12 +21,10 @@ import FarmSheet from "@/components/farm/FarmSheet";
 import { cn } from "@/lib/cn";
 import { EASE_OUT } from "@/lib/motion/variants";
 import {
-  Satellite,
   Radio,
   AlertTriangle,
   CheckCircle2,
   CalendarDays,
-  Cloud,
   Layers,
   Camera,
   Search,
@@ -393,22 +391,12 @@ export default function HealthRadarView({
       <section className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-[#0a211b] text-white shadow-[0_18px_50px_-24px_rgba(6,78,59,0.75)]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(110%_80%_at_85%_0%,rgba(45,212,191,0.16),transparent_55%)]" />
 
-        <header className="relative flex items-center justify-between gap-2 px-4 pt-4 sm:px-5">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-400/25 bg-emerald-400/10 text-emerald-300">
-              <Satellite className="h-4 w-4" aria-hidden />
-            </span>
-            <div className="min-w-0">
-              <h2 className="truncate text-[14px] font-semibold leading-tight">फसल सेहत</h2>
-              <p className="text-[10px] text-emerald-200/70">उपग्रह द्वारा हरियाली व बढ़वार की स्थिति</p>
-            </div>
-          </div>
-
+        <header className="relative flex justify-end px-4 pt-3.5 sm:px-5">
           <button
             type="button"
             onClick={triggerScan}
             disabled={isRadarScanning}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1.5 text-[10px] font-semibold text-emerald-200 transition active:scale-95 disabled:opacity-70"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1.5 text-[12px] font-semibold text-emerald-100 transition active:scale-95 disabled:opacity-70"
           >
             <Radio
               className={cn("h-3 w-3", isRadarScanning ? "animate-spin text-amber-300" : "animate-pulse")}
@@ -436,11 +424,7 @@ export default function HealthRadarView({
             <div className="mt-2.5 flex flex-wrap items-center gap-2 text-[10.5px] text-emerald-200/75">
               <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1">
                 <CalendarDays className="h-3 w-3 text-emerald-300" aria-hidden />
-                उपग्रह तस्वीर: {formatShortDate(currentObservation.acquisitionDate)}
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1">
-                <Cloud className="h-3 w-3 text-emerald-300" aria-hidden />
-                मौसम: साफ
+                तस्वीर: {formatShortDate(currentObservation.acquisitionDate)}
               </span>
             </div>
           </div>

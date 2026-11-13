@@ -49,6 +49,19 @@ function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(ba, bb);
 }
 
+/** Local demo only. Production never invents a session. */
+function devSkipSession(): SessionPayload | null {
+  if (process.env.NODE_ENV !== "development") return null;
+  if (isProductionRuntime()) return null;
+  if (process.env.NEXT_PUBLIC_SKIP_ONBOARDING !== "true") return null;
+  return {
+    phone: "9999999999",
+    name: "Demo Kisan",
+    deviceId: "dev-demo-device",
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+  };
+}
+
 function isEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
 }
@@ -126,7 +139,7 @@ export async function requireSession(
   const forceUpdate = rejectIfNativeAppTooOld(req);
   if (forceUpdate) return { error: forceUpdate };
 
-  const session = readSessionFromRequest(req);
+  const session = readSessionFromRequest(req) ?? devSkipSession();
   if (!session) {
     return {
       error: NextResponse.json(

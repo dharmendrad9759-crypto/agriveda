@@ -57,10 +57,7 @@ export default function WheatStageVisualizer(props: WheatStageVideoPlayerProps) 
     >
       <div className="flex items-start justify-between gap-3 px-4 pt-4">
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-            फसल अवस्था
-          </p>
-          <h2 className="mt-0.5 text-[17px] font-black text-[var(--av-text-primary)]">
+          <h2 className="text-[17px] font-semibold text-[var(--av-text-primary)]">
             {selectedStage.stageNameHi}
           </h2>
           <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">

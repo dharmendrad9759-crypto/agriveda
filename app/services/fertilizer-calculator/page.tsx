@@ -855,7 +855,9 @@ export default function FertilizerCalculatorPage() {
           backHref="/dashboard"
           hubTheme="green"
         >
-          <div className="py-12 text-center text-sm text-[var(--av-text-muted)]">
+          <div className="flex flex-col items-center gap-3 py-12 text-center text-sm text-[var(--av-text-muted)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo-mark.png" alt="" className="h-12 w-12 object-contain" />
             लोड हो रहा है…
           </div>
         </Agriveda2Shell>

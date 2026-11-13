@@ -58,10 +58,12 @@ function SectionLabel({ title, step, hint }: { title: string; step?: number; hin
 /** AI Doctor hero — compact and sleek */
 export function AiDoctorHero({
   aiConfigured,
+  needsLogin,
   onHistoryClick,
   historyCount,
 }: {
   aiConfigured: boolean | null;
+  needsLogin?: boolean;
   onHistoryClick: () => void;
   historyCount: number;
 }) {
@@ -95,7 +97,13 @@ export function AiDoctorHero({
         </button>
       </div>
 
-      {aiConfigured === false && (
+      {needsLogin ? (
+        <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs font-semibold leading-snug text-amber-900 dark:text-amber-200">
+          <p>फोटो जांच के लिए पहले Google से लॉगिन करें। चाबी लगी हुई है, लॉगिन नहीं है।</p>
+        </div>
+      ) : null}
+
+      {!needsLogin && aiConfigured === false && (
         <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs font-semibold leading-snug text-amber-900 dark:text-amber-200">
           <p>फोटो जांच अभी बंद है। तब तक फसल की समस्याएँ खुद देखें या एक्सपर्ट से पूछें।</p>
           <div className="mt-2 flex flex-wrap gap-2">

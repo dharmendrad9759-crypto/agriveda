@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
-import { AgriVedaSparkleIcon } from "@/components/brand/icons";
+import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
 import AppLink from "@/components/ui/AppLink";
 import { AV } from "@/lib/design/tokens";
 import { cn } from "@/lib/cn";
@@ -101,12 +101,7 @@ export default function AppShell({
                   </button>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <AgriVedaSparkleIcon
-                    className={cn(
-                      "h-3.5 w-3.5 shrink-0",
-                      isGreenHub ? "text-emerald-300" : isAmberHub ? "text-amber-400" : "text-emerald-600"
-                    )}
-                  />
+                  <AgriVedaBrandMark sizeClassName="h-4 w-4" />
                   <span
                     className={cn(
                       "text-[10px] font-black tracking-wide",

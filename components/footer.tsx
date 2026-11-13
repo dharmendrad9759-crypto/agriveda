@@ -34,7 +34,9 @@ export default function Footer() {
     <footer className="mt-6 w-full border-t border-[var(--panel-border)] bg-[var(--panel-bg)] py-4 backdrop-blur-md sm:mt-12 sm:py-6">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 text-xs theme-text-muted sm:gap-4 sm:px-6 lg:flex-row lg:px-8">
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="agriveda-gradient-text font-bold">{BRAND}</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-mark.png" alt="" className="h-5 w-5 object-contain" />
+          <span className="font-bold text-[#0c3b2e] dark:text-emerald-200">{BRAND}</span>
           <span>© 2026 · 18+</span>
         </div>
         <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-semibold">

@@ -356,7 +356,11 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
               </button>
 
               <div className="mt-2 flex items-center justify-between px-1 text-[9.5px] text-[var(--av-text-muted)]">
-                <span>{BRAND} v{APP_VERSION}</span>
+                <span className="flex items-center gap-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/brand/logo-mark.png" alt="" className="h-4 w-4 object-contain" />
+                  {BRAND} v{APP_VERSION}
+                </span>
                 <span>{isHi ? "किसानों के लिए समर्पित" : "Built for Farmers"}</span>
               </div>
             </div>
@@ -386,7 +390,8 @@ export function NavDrawerTrigger({
         className={`flex items-center gap-1.5 text-left ${className}`}
         aria-label={t("shellNavAria")}
       >
-        <Leaf className="h-4 w-4 text-[var(--av-accent)]" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo-mark.png" alt="" className="h-5 w-5 object-contain" />
         <span className="text-xs font-black tracking-wide text-[var(--av-text-primary)]">{BRAND}</span>
       </button>
     );

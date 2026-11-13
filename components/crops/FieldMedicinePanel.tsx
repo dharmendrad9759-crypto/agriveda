@@ -7,19 +7,32 @@ import {
   parseMedicineItem,
   type ParsedMedicineItem,
 } from "@/lib/crops/medicineParser";
-import { getChemPackageType } from "@/lib/crops/chemBottle";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import {
   Check,
   ChevronDown,
   Copy,
-  Droplets,
-  Info,
   Layers,
   Scissors,
-  ShieldCheck,
 } from "lucide-react";
-import { CropMedicineSparkleIcon } from "@/components/brand/icons";
+
+function pinpointDose(item: ParsedMedicineItem): string {
+  const d = item.farmerDose;
+  if (!d) return item.dose;
+  const notPump = !d.perLiter || d.perLiter.includes("लागू नहीं");
+  if (notPump) {
+    const line = d.perAcre || d.perTank || item.dose;
+    return line.replace(/\s*\([^)]{18,}\)/g, "").trim();
+  }
+  const liter = d.perLiter
+    .replace(/\s*प्रति लीटर पानी/g, "/लीटर")
+    .replace(/\s*प्रति लीटर/g, "/लीटर");
+  const tank = d.perTank
+    .replace(/\s*प्रति 16L पंप \(टंकी\)/g, "")
+    .replace(/\s*प्रति 16L पंप/g, "");
+  const acre = d.perAcre.replace(/\s*\(200 लीटर पानी\)/g, "");
+  return [`${liter}`, tank ? `पंप ${tank}` : "", acre].filter(Boolean).join(" · ");
+}
 
 const TIER_THEME = [
   {
@@ -112,16 +125,6 @@ export default function FieldMedicinePanel({
 
   return (
     <div className="space-y-2.5">
-      {/* Friendly Farmer Advisory Banner */}
-      <div className="flex items-center gap-2 rounded-xl border border-emerald-800/15 bg-emerald-50/80 px-3 py-2 dark:bg-emerald-950/30">
-        <CropMedicineSparkleIcon className="h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-300" />
-        <p className="text-[11.5px] font-bold text-emerald-950 dark:text-emerald-100">
-          {hi
-            ? "हर दवाई की बोतल पर असली 'टेक्निकल नाम' छपा होता है। दुकान पर यही नाम मांगें।"
-            : "Every bottle displays its official technical formula. Ask for this technical name."}
-        </p>
-      </div>
-
       {/* Medicine Tiers */}
       {guide.tiers.map((tier, tIdx) => {
         const theme = TIER_THEME[tIdx % TIER_THEME.length];
@@ -192,7 +195,7 @@ export default function FieldMedicinePanel({
             {/* Medicine Option Cards (Rendered when accordion is open) */}
             {isOpen && (
               <div className="mt-2.5 space-y-2.5">
-                {parsedItems.map((item, oIdx) => {
+                {parsedItems.map((item) => {
                   const isCopied = copiedId === item.id;
 
                   // ─── 1. PHEROMONE / STICKY TRAP CARD (IPM) ───
@@ -282,11 +285,7 @@ export default function FieldMedicinePanel({
                         </div>
 
                         {/* Bottom Action Bar */}
-                        <div className="mt-2.5 flex items-center justify-between border-t border-emerald-200/60 pt-2 dark:border-emerald-900/40">
-                          <span className="text-[10px] font-bold text-stone-500 dark:text-stone-400">
-                            {hi ? "कीट प्रजनन रोकने हेतु शून्य रसायन उपाय" : "Zero-chemical mating disruption"}
-                          </span>
-
+                        <div className="mt-2.5 flex justify-end border-t border-emerald-200/60 pt-2 dark:border-emerald-900/40">
                           <button
                             type="button"
                             onClick={() => copyForShop(item)}
@@ -333,20 +332,11 @@ export default function FieldMedicinePanel({
                             <Layers className="h-3 w-3" />
                             {item.tankMix.isBaitSpray
                               ? hi
-                                ? "फल मक्खी चारा स्प्रे (Poison Bait Spray)"
-                                : "Fruit Fly Poison Bait Spray"
+                                ? "फल मक्खी चारा"
+                                : "Fruit fly bait"
                               : hi
-                              ? "संयुक्त टैंक मिश्रण (Tank Mix)"
-                              : "Tank Mix Combination"}
-                          </span>
-                          <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300">
-                            {item.tankMix.isBaitSpray
-                              ? hi
-                                ? "मीठी गंध से आकर्षण + कीट अंत"
-                                : "Attract & Kill Bait"
-                              : hi
-                              ? "प्रतिरोध तोड़ने हेतु दोहरा वार"
-                              : "Resistance Breaker"}
+                              ? "एक टंकी में दोनों"
+                              : "Both in one tank"}
                           </span>
                         </div>
 
@@ -360,9 +350,6 @@ export default function FieldMedicinePanel({
                                 size="sm"
                                 className="rounded-lg shadow-sm"
                               />
-                              <span className="mt-1 text-center text-[9.5px] font-black text-stone-800 dark:text-stone-200 max-w-[90px] truncate">
-                                {comp1.nameHi}
-                              </span>
                             </div>
                           )}
 
@@ -378,9 +365,6 @@ export default function FieldMedicinePanel({
                                 size="sm"
                                 className="rounded-lg shadow-sm"
                               />
-                              <span className="mt-1 text-center text-[9.5px] font-black text-stone-800 dark:text-stone-200 max-w-[90px] truncate">
-                                {comp2.nameHi}
-                              </span>
                             </div>
                           )}
                         </div>
@@ -398,17 +382,9 @@ export default function FieldMedicinePanel({
                                 </span>
                               )}
                             </div>
-                            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10.5px]">
-                              <span className="rounded bg-emerald-50 px-2 py-0.5 font-bold text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">
-                                💧 {comp1.dosePerLiter}
-                              </span>
-                              <span className="rounded bg-teal-50 px-2 py-0.5 font-black text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
-                                🎒 16L पंप: {comp1.dosePerTank}
-                              </span>
-                              <span className="rounded bg-blue-50 px-2 py-0.5 font-bold text-blue-900 dark:bg-blue-950/60 dark:text-blue-200">
-                                🚜 एकड़: {comp1.dosePerAcre}
-                              </span>
-                            </div>
+                            <p className="mt-1 text-[13px] font-black leading-snug text-emerald-900 dark:text-emerald-200">
+                              {[comp1.dosePerLiter, comp1.dosePerTank ? `पंप ${comp1.dosePerTank}` : "", comp1.dosePerAcre ? `एकड़ ${comp1.dosePerAcre}` : ""].filter(Boolean).join(" · ")}
+                            </p>
                           </div>
                         )}
 
@@ -425,17 +401,9 @@ export default function FieldMedicinePanel({
                                 </span>
                               )}
                             </div>
-                            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10.5px]">
-                              <span className="rounded bg-emerald-50 px-2 py-0.5 font-bold text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">
-                                💧 {comp2.dosePerLiter}
-                              </span>
-                              <span className="rounded bg-teal-50 px-2 py-0.5 font-black text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
-                                🎒 16L पंप: {comp2.dosePerTank}
-                              </span>
-                              <span className="rounded bg-blue-50 px-2 py-0.5 font-bold text-blue-900 dark:bg-blue-950/60 dark:text-blue-200">
-                                🚜 एकड़: {comp2.dosePerAcre}
-                              </span>
-                            </div>
+                            <p className="mt-1 text-[13px] font-black leading-snug text-emerald-900 dark:text-emerald-200">
+                              {[comp2.dosePerLiter, comp2.dosePerTank ? `पंप ${comp2.dosePerTank}` : "", comp2.dosePerAcre ? `एकड़ ${comp2.dosePerAcre}` : ""].filter(Boolean).join(" · ")}
+                            </p>
                           </div>
                         )}
 
@@ -465,11 +433,7 @@ export default function FieldMedicinePanel({
                         </div>
 
                         {/* Bottom Action Bar */}
-                        <div className="mt-2.5 flex items-center justify-between border-t border-stone-200 pt-2 dark:border-stone-800">
-                          <span className="text-[10px] font-bold text-stone-500">
-                            {hi ? "दुकानदार को दोनों दवाओं के नाम दिखाएँ" : "Show both chemistries to dealer"}
-                          </span>
-
+                        <div className="mt-2.5 flex justify-end border-t border-stone-200 pt-2 dark:border-stone-800">
                           <button
                             type="button"
                             onClick={() => copyForShop(item)}
@@ -503,168 +467,42 @@ export default function FieldMedicinePanel({
                         key={item.id}
                         className="flex flex-col overflow-hidden rounded-xl border border-emerald-500/35 bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/30 p-3 shadow-xs transition hover:shadow-md dark:border-emerald-800/50 dark:from-stone-900 dark:to-emerald-950/20"
                       >
-                        <div className="flex items-start gap-2.5">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-                            <ShieldCheck className="h-5 w-5" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="rounded bg-emerald-600 px-2 py-0.5 text-[9.5px] font-black text-white">
-                                {hi ? "बचाव व रोकथाम उपाय" : "Preventive Agronomic Practice"}
-                              </span>
-                              <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
-                                {hi ? "प्राकृतिक व खेत प्रबंधन" : "Zero Chemical / Field Management"}
-                              </span>
-                            </div>
-                            <p className="mt-1.5 text-[13.5px] font-bold leading-relaxed text-stone-900 dark:text-stone-100">
-                              {item.raw}
-                            </p>
-                          </div>
-                        </div>
+                        <p className="text-[13.5px] font-bold leading-snug text-stone-900 dark:text-stone-100">
+                          {item.raw}
+                        </p>
                       </article>
                     );
                   }
 
-                  // ─── 3. REGULAR CHEMICAL CARD ───
                   return (
                     <article
                       key={item.id}
-                      className="flex flex-col overflow-hidden rounded-xl border border-stone-200/90 bg-white p-2.5 shadow-xs transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
+                      className="overflow-hidden rounded-xl border border-stone-200/90 bg-white p-2.5 dark:border-stone-800 dark:bg-stone-900"
                     >
                       <div className="flex items-start gap-2.5">
-                        {/* Left: Bottle Photo/Visual with Technical Name on Bottle */}
-                        <div className="flex flex-col items-center shrink-0">
-                          <ChemBottleThumb
-                            technical={item.technicalEn || item.technicalHi}
-                            category={item.category}
-                            size="sm"
-                            className="rounded-lg shadow-xs"
-                          />
-                          <span className="mt-0.5 text-[8.5px] font-extrabold text-stone-400">
-                            {getChemPackageType(
-                              item.technicalEn || item.technicalHi,
-                              item.formulation
-                            ) === "pouch"
-                              ? hi
-                                ? "पैकेट"
-                                : "Pouch"
-                              : hi
-                              ? "बोतल"
-                              : "Bottle"}
-                          </span>
-                        </div>
-
-                        {/* Right: Technical Information, Dose & Brands */}
+                        <ChemBottleThumb
+                          technical={item.technicalEn || item.technicalHi}
+                          category={item.category}
+                          size="sm"
+                          className="rounded-lg"
+                        />
                         <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-1">
-                            <span className="rounded bg-stone-100 px-1.5 py-0.2 text-[9.5px] font-black text-stone-700 dark:bg-stone-800 dark:text-stone-300">
-                              {hi ? `विकल्प ${oIdx + 1}` : `Option ${oIdx + 1}`}
-                            </span>
-
-                            <span className="rounded bg-emerald-50 px-1.5 py-0.2 text-[9.5px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                              {item.categoryLabelHi}
-                            </span>
-
-                            {item.formulation && (
-                              <span className="rounded bg-blue-50 px-1.5 py-0.2 text-[9.5px] font-black text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
-                                {item.formulation}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Technical Name Headline */}
-                          <h4 className="mt-0.5 text-[14px] font-black leading-snug text-stone-950 dark:text-stone-50">
-                            {item.technicalHi}
+                          <h4 className="text-[15px] font-black leading-snug text-stone-950 dark:text-stone-50">
+                            {item.technicalEn && item.technicalEn !== item.technicalHi
+                              ? item.technicalEn
+                              : item.technicalHi}
                           </h4>
-
-                          {/* Standard English Technical if different */}
-                          {item.technicalEn &&
-                            item.technicalEn !== item.technicalHi && (
-                              <p className="text-[10.5px] font-extrabold text-stone-500 dark:text-stone-400">
-                                {item.technicalEn}
-                              </p>
-                            )}
-
-                          {/* Dose & Water Information */}
-                          <div className="mt-1.5 space-y-1">
-                            <div className="flex flex-wrap items-center gap-1 text-[10.5px]">
-                              {/* Per Liter (Only shown when liquid spray applies) */}
-                              {item.farmerDose?.perLiter && !item.farmerDose.perLiter.includes("लागू नहीं") && (
-                                <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">
-                                  <Droplets className="h-2.5 w-2.5 text-emerald-600" />
-                                  <span className="font-medium text-stone-500 dark:text-stone-400">
-                                    {hi ? "प्रति ली: " : "Per L: "}
-                                  </span>
-                                  <span>{item.farmerDose.perLiter}</span>
-                                </span>
-                              )}
-
-                              {/* Per 16L Tank (Only shown when spray pump applies) */}
-                              {item.farmerDose?.perTank && !item.farmerDose.perTank.includes("लागू नहीं") && (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-teal-50 px-2 py-0.5 font-bold text-teal-900 dark:bg-teal-950/60 dark:text-teal-200">
-                                  <span>🎒</span>
-                                  <span className="font-medium text-stone-500 dark:text-stone-400">
-                                    {hi ? "16L पंप: " : "16L Tank: "}
-                                  </span>
-                                  <span>{item.farmerDose.perTank}</span>
-                                </span>
-                              )}
-
-                              {/* Per Acre or Soil / Basin / Seed Treatment Application Method */}
-                              {item.farmerDose?.perAcre && (
-                                <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-bold ${
-                                  item.farmerDose?.perLiter?.includes("लागू नहीं")
-                                    ? "bg-amber-50 text-amber-950 dark:bg-amber-950/60 dark:text-amber-200 border border-amber-300/40"
-                                    : "bg-blue-50 text-blue-900 dark:bg-blue-950/60 dark:text-blue-200"
-                                }`}>
-                                  <span>
-                                    {item.farmerDose?.perLiter?.includes("बीज")
-                                      ? "🌱"
-                                      : item.farmerDose?.perLiter?.includes("जड़")
-                                      ? "🌿"
-                                      : item.farmerDose?.perLiter?.includes("चारा")
-                                      ? "🪤"
-                                      : item.farmerDose?.perLiter?.includes("लागू नहीं")
-                                      ? "🪴"
-                                      : "🚜"}
-                                  </span>
-                                  <span className="font-medium text-stone-500 dark:text-stone-400">
-                                    {item.farmerDose?.perLiter?.includes("बीज")
-                                      ? hi
-                                        ? "बीजोपचार विधि: "
-                                        : "Seed Treatment: "
-                                      : item.farmerDose?.perLiter?.includes("जड़")
-                                      ? hi
-                                        ? "पौध जड़ शोधन: "
-                                        : "Root Dip: "
-                                      : item.farmerDose?.perLiter?.includes("चारा")
-                                      ? hi
-                                        ? "चारा विधि: "
-                                        : "Bait Method: "
-                                      : item.farmerDose?.perLiter?.includes("लागू नहीं")
-                                      ? hi
-                                        ? "प्रयोग विधि व मात्रा: "
-                                        : "Application & Dose: "
-                                      : hi
-                                      ? "प्रति एकड़: "
-                                      : "Per Acre: "}
-                                  </span>
-                                  <span>{item.farmerDose.perAcre}</span>
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                          {item.technicalEn && item.technicalEn !== item.technicalHi ? (
+                            <p className="text-[12px] font-bold leading-snug text-stone-500 dark:text-stone-400">
+                              {item.technicalHi}
+                            </p>
+                          ) : null}
+                          <p className="mt-1 text-[13px] font-black leading-snug text-emerald-900 dark:text-emerald-200">
+                            {pinpointDose(item)}
+                          </p>
                         </div>
                       </div>
-
-                      {/* Bottom Action Bar: Show to Agro Dealer */}
-                      <div className="mt-2.5 flex items-center justify-between border-t border-stone-100 pt-2 dark:border-stone-800">
-                        <span className="text-[10px] font-semibold text-stone-400">
-                          {hi
-                            ? "दुकानदार से यही टेक्निकल नाम मांगें"
-                            : "Ask shop for this exact technical"}
-                        </span>
-
+                      <div className="mt-2 flex justify-end">
                         <button
                           type="button"
                           onClick={() => copyForShop(item)}

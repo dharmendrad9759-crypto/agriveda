@@ -425,15 +425,15 @@ export default function MandiListClient() {
           >
             <Navigation className={cn("h-4 w-4", gpsBusy && "animate-spin")} />
           </button>
-          <button
-            type="button"
-            onClick={() => refresh()}
-            disabled={loading}
+        <button
+          type="button"
+          onClick={() => refresh()}
+          disabled={loading}
             className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
             aria-label={isHi ? "ताज़ा करें" : "Refresh"}
-          >
+        >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
-          </button>
+        </button>
         </div>
       }
     >
@@ -680,10 +680,10 @@ export default function MandiListClient() {
                             {isHi ? "आपका ज़िला" : "Yours"}
                           </span>
                         ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
+              </button>
+            );
+          })}
+        </div>
               </section>
             ) : null}
 

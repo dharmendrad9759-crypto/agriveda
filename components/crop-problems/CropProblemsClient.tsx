@@ -55,7 +55,7 @@ const GROUPS: { id: string; title: string; match: (c: CropProblemCrop) => boolea
 function CropTile({ crop }: { crop: CropProblemCrop }) {
   return (
     <AppLink
-      href={`/crop-problems/${crop.slug}`}
+      href={`/crop-problems/${crop.slug}/xray`}
       className="group relative overflow-hidden rounded-[22px] border border-emerald-900/10 bg-white p-2.5 shadow-[0_14px_36px_-26px_rgba(4,120,87,0.55)] transition active:scale-[0.97] hover:border-emerald-600/40"
     >
       <span className="pointer-events-none absolute -right-6 -top-6 h-16 w-16 rounded-full bg-emerald-400/15 blur-2xl transition group-hover:bg-emerald-400/25" />
@@ -98,27 +98,6 @@ export default function CropProblemsClient() {
       title="फसल चुनें"
       step={1}
     >
-      {/* Header Banner */}
-      <div className="mb-4 overflow-hidden rounded-[24px] border border-emerald-900/10 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 p-4 text-white shadow-[0_20px_50px_-30px_rgba(4,47,26,0.7)]">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
-              🌾 फसल डॉक्टर क्लिनिक
-            </p>
-            <h1 className="font-display text-[22px] font-bold leading-tight mt-0.5">
-              खेत में क्या समस्या है?
-            </h1>
-          </div>
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-xl backdrop-blur-xs">
-            🌿
-          </span>
-        </div>
-        <p className="text-[11px] text-emerald-100/80 mt-1">
-          अपनी फसल चुनकर कीट, रोग या पीली पत्ती का 15L टंकी डोज़ व इलाज देखें
-        </p>
-      </div>
-
-      {/* Sections Grid without duplicate numbers or filter bars */}
       <div className="space-y-6 pb-6">
         {sections.map((section) => (
           <section key={section.id}>
@@ -145,15 +124,14 @@ export default function CropProblemsClient() {
               <Camera className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-xs font-black">फसल नहीं पहचान पा रहे?</p>
-              <p className="text-[10px] text-emerald-200">कैमरे से फोटो लें — AI डॉक्टर तुरंत रोग और दवा बताएगा</p>
+              <p className="text-[13px] font-bold">फसल नहीं दिख रही?</p>
             </div>
           </div>
           <AppLink
             href="/ai-doctor"
             className="shrink-0 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-black text-emerald-950 active:scale-95 shadow-xs"
           >
-            कैमरा खोलें 📸
+            कैमरा
           </AppLink>
         </div>
       </div>

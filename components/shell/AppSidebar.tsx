@@ -3,7 +3,7 @@
 import AppLink from "@/components/ui/AppLink";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { MessageCircle, Leaf } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { SHELL_NAV_MORE, SHELL_NAV_PRIMARY, isNavActive, type ShellNavItem } from "@/lib/shell/nav";
 import { BRAND } from "@/lib/brand";
 import { APP_VERSION } from "@/lib/appMeta";
@@ -56,14 +56,16 @@ export default function AppSidebar() {
 
   return (
     <aside className="av-sidebar hidden lg:flex lg:w-60 xl:w-64 lg:shrink-0 lg:flex-col">
-      <div className="flex h-14 flex-col justify-center border-b border-[var(--av-border)] px-4 py-2">
-        <AppLink href="/" className="flex items-center gap-2">
-          <Leaf className="h-5 w-5 text-[var(--av-accent)]" />
-          <span className="text-sm font-black tracking-wider text-[var(--av-text-primary)]">
-            {BRAND.toUpperCase()}
-          </span>
+      <div className="flex flex-col justify-center border-b border-[var(--av-border)] px-4 py-3">
+        <AppLink href="/" aria-label={BRAND} className="block">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo-horizontal.png"
+            alt={BRAND}
+            className="h-12 w-auto max-w-full object-contain object-left"
+          />
         </AppLink>
-        <p className="mt-0.5 pl-7 text-[9px] font-medium text-[var(--av-text-muted)]">
+        <p className="mt-1 text-[9px] font-medium text-[var(--av-text-muted)]">
           {t("shellTagline")}
         </p>
       </div>

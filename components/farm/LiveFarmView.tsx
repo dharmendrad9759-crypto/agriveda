@@ -23,8 +23,6 @@ import FarmSheet from "@/components/farm/FarmSheet";
 import { cn } from "@/lib/cn";
 import {
   Droplets,
-  Wind,
-  Thermometer,
   CalendarDays,
   CheckCircle2,
   Circle,
@@ -32,7 +30,6 @@ import {
   Plus,
   MapPin,
   ChevronRight,
-  ShieldCheck,
   Bug,
   Leaf,
   Sprout,
@@ -207,26 +204,34 @@ export default function LiveFarmView({
     [observations, field.id]
   );
 
-  const sprayAdvisory = useMemo(() => {
-    const windSpeed = toNumber(weather?.windSpeed) ?? 8;
-    const temperature = toNumber(weather?.temp) ?? 24;
+  const sprayHold = useMemo(() => {
+    if (!weather || weather.isDemo) return null;
+    const rain = weather.rainfallAlert?.trim() ?? "";
+    const rainPct = Number(rain.match(/(\d+)\s*%/)?.[1]);
+    const rainStopsWork =
+      /बंद|न करें|जल निकासी|तूफ़ान/.test(rain) ||
+      (Number.isFinite(rainPct) && rainPct >= 55);
+    if (rainStopsWork) return rain;
+    const windSpeed = toNumber(weather.windSpeed);
+    const temperature = toNumber(weather.temp);
+    if (windSpeed != null && windSpeed > 15) {
+      return `हवा ${weather.windSpeed} · छिड़काव रोकें`;
+    }
+    if (temperature != null && temperature > 35) {
+      return "गर्मी ज़्यादा है · सुबह या शाम छिड़कें";
+    }
+    return null;
+  }, [weather]);
 
-    if (weather?.rainfallAlert) {
-      return { safe: false, message: weather.rainfallAlert };
-    }
-    if (windSpeed > 15) {
-      return {
-        safe: false,
-        message: `हवा तेज़ है (${windSpeed} km/h) — छिड़काव टालें`,
-      };
-    }
-    if (temperature > 35) {
-      return {
-        safe: false,
-        message: "तापमान अधिक है — सुबह या शाम छिड़कें",
-      };
-    }
-    return { safe: true, message: "छिड़काव के लिए मौसम अनुकूल है" };
+  const weatherLine = useMemo(() => {
+    if (!weather || weather.isDemo) return "";
+    return [
+      weather.temp ? weather.temp : "",
+      weather.humidity ? `नमी ${weather.humidity}` : "",
+      weather.windSpeed ? `हवा ${weather.windSpeed}` : "",
+    ]
+      .filter(Boolean)
+      .join(" · ");
   }, [weather]);
 
   const areaLabel = field.areaAcres
@@ -290,89 +295,37 @@ export default function LiveFarmView({
 
   return (
     <div className="space-y-3.5 pb-12">
-      {/* Live conditions */}
-      <section className="relative overflow-hidden rounded-3xl border border-emerald-900/40 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 p-4 text-white shadow-[var(--av-shadow-md)]">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-emerald-400/15 blur-3xl"
-        />
-
-        <div className="relative flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-200/65">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
-              </span>
-              खेत स्थिति
+      <section className="overflow-hidden rounded-[1.35rem] border border-[rgba(168,132,62,0.28)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]">
+        <div className="px-3.5 py-3">
+          <p className="flex items-baseline gap-1.5">
+            <span className="text-[28px] font-semibold leading-none tabular-nums text-[var(--av-text-primary)]">
+              {das ?? "—"}
+            </span>
+            <span className="text-[13px] font-medium text-[var(--av-text-secondary)]">
+              दिन बुवाई के बाद
+            </span>
+          </p>
+          {stageLabel ? (
+            <button
+              type="button"
+              onClick={() => onSwitchTab("journey")}
+              className="mt-1 flex max-w-full items-center gap-0.5 text-left text-[15px] font-semibold text-[#0c3b2e] dark:text-emerald-200"
+            >
+              <span className="truncate">{stageLabel}</span>
+              <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
+            </button>
+          ) : null}
+          {weatherLine ? (
+            <p className="mt-2 text-[13px] leading-snug text-[var(--av-text-secondary)]">
+              {weatherLine}
             </p>
-            <p className="mt-2.5 flex items-baseline gap-1.5">
-              <span className="text-[28px] font-semibold leading-none tabular-nums">
-                {das ?? "—"}
-              </span>
-              <span className="text-[11px] font-medium text-emerald-200/60">
-                दिन बुवाई के बाद
-              </span>
-            </p>
-            <p className="mt-1.5 truncate text-xs text-emerald-100/70">
-              {field.crop || activeSeason?.cropName || "फसल"}
-              {field.variety ? ` · ${field.variety}` : ""}
-              {field.village ? ` · ${field.village}` : ""}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => onSwitchTab("journey")}
-            className="flex max-w-[45%] items-center gap-1 rounded-xl border border-white/10 bg-white/[0.07] px-2.5 py-1.5 text-left text-[11px] font-medium text-emerald-50 backdrop-blur-sm transition hover:bg-white/[0.12] active:scale-95"
-          >
-            <span className="truncate">{stageLabel || "फसल अवस्था"}</span>
-            <ChevronRight className="h-3.5 w-3.5 shrink-0 text-emerald-200/70" />
-          </button>
+          ) : null}
         </div>
-
-        <div className="relative mt-4 grid grid-cols-3 divide-x divide-white/10 rounded-2xl bg-white/[0.06] py-2.5 backdrop-blur-sm">
-          <div className="px-1.5 text-center sm:px-2">
-            <p className="flex items-center justify-center gap-1 text-[9px] font-medium uppercase tracking-wider text-emerald-200/55">
-              <Thermometer className="h-3 w-3" /> तापमान
-            </p>
-            <p className="mt-1 text-[12px] sm:text-[13px] font-semibold tabular-nums">
-              {weather?.temp || "24°C"}
-            </p>
-          </div>
-          <div className="px-1.5 text-center sm:px-2">
-            <p className="flex items-center justify-center gap-1 text-[9px] font-medium uppercase tracking-wider text-emerald-200/55">
-              <Droplets className="h-3 w-3" /> नमी
-            </p>
-            <p className="mt-1 text-[12px] sm:text-[13px] font-semibold tabular-nums">
-              {weather?.humidity || "58%"}
-            </p>
-          </div>
-          <div className="px-1.5 text-center sm:px-2">
-            <p className="flex items-center justify-center gap-1 text-[9px] font-medium uppercase tracking-wider text-emerald-200/55">
-              <Wind className="h-3 w-3" /> हवा
-            </p>
-            <p className="mt-1 text-[12px] sm:text-[13px] font-semibold tabular-nums">
-              {weather?.windSpeed || "8 km/h"}
-            </p>
-          </div>
-        </div>
-
-        <div className="relative mt-2.5 flex items-center gap-1.5 text-[11px] leading-snug">
-          {sprayAdvisory.safe ? (
-            <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-emerald-300" />
-          ) : (
-            <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-300" />
-          )}
-          <span
-            className={cn(
-              "text-emerald-100/75",
-              !sprayAdvisory.safe && "text-amber-100/85"
-            )}
-          >
-            {sprayAdvisory.message}
-          </span>
-        </div>
+        {sprayHold ? (
+          <p className="border-t border-[#7a4510]/15 bg-[#7a4510] px-3.5 py-2 text-[13px] font-medium leading-snug text-[#fff4df]">
+            {sprayHold}
+          </p>
+        ) : null}
       </section>
 
       {/* Field map */}

@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import CropProblemDetailClient from "@/components/crop-problems/CropProblemDetailClient";
+import PlantXrayClient from "@/components/crop-problems/plant-xray/PlantXrayClient";
 import { CROP_PROBLEM_CROPS } from "@/data/crop-curative-problems";
 
 export function generateStaticParams() {
@@ -20,5 +22,16 @@ export default async function CropProblemDetailPage({
   params: Promise<{ crop: string; problemId: string }>;
 }) {
   const { crop, problemId } = await params;
-  return <CropProblemDetailClient cropSlug={crop} problemId={problemId} />;
+  if (problemId === "xray") {
+    return (
+      <Suspense fallback={null}>
+        <PlantXrayClient cropSlug={crop} />
+      </Suspense>
+    );
+  }
+  return (
+    <Suspense fallback={null}>
+      <CropProblemDetailClient cropSlug={crop} problemId={problemId} />
+    </Suspense>
+  );
 }

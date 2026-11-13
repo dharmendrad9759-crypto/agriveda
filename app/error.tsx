@@ -54,13 +54,9 @@ export default function GlobalError({
 
   return (
     <div className="mx-auto flex min-h-[65vh] max-w-md flex-col items-center justify-center px-4 py-8 text-center animate-fade-in">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
-        {isNetwork ? <WifiOff className="h-7 w-7" /> : <span className="text-2xl">🌱</span>}
-      </div>
-
-      <p className="mt-3 text-[11px] font-black uppercase tracking-widest text-[var(--av-accent)]">
-        AgriVeda
-      </p>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/logo-mark.png" alt="AgriVeda" className="h-16 w-16 object-contain" />
+      {isNetwork ? <WifiOff className="mt-2 h-5 w-5 text-amber-700" /> : null}
 
       <h1 className="mt-1 text-xl font-extrabold text-[var(--av-text-primary)]">
         {isNetwork ? "इंटरनेट धीमा या बंद है" : "कुछ गलत हो गया"}

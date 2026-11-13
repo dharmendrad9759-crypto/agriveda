@@ -306,7 +306,7 @@ export default function TractorHpCalculatorClient() {
               ट्रैक्टर HP व उपकरण मैचिंग कैलकुलेटर
             </h2>
           </div>
-          <span className="text-[11px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/30">
+          <span className="shrink-0 rounded-full bg-[#7a4510] px-2.5 py-1 text-[11px] font-bold leading-none text-[#fff4df]">
             डीजल व कार्य क्षमता
           </span>
         </div>

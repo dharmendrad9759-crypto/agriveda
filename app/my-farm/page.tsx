@@ -14,10 +14,8 @@ import { categoryOrder, cropCatalog } from "@/data/crop-catalog";
 import {
   ArrowRight,
   Check,
-  Compass,
   Pencil,
   Plus,
-  Radio,
   Ruler,
   Search,
   Sprout,
@@ -28,6 +26,7 @@ import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { getVarietiesForCrop } from "@/lib/crops/cropVarieties";
 import {
+  daysAfterSowingISO,
   fieldStageLabel,
   formatSowingDisplay,
   parseSowingISO,
@@ -145,12 +144,6 @@ export default function MyFarmPage() {
     setFieldSowing(iso);
   };
 
-  const greetName = profile.name.trim()
-    ? profile.name.trim().charAt(0).toUpperCase() + profile.name.trim().slice(1)
-    : isHi
-      ? "किसान"
-      : "Farmer";
-
   const place = [profile.village, profile.district].filter(Boolean).join(", ");
   const hasFields = data.fields.length > 0;
   const topAlert = farmAlerts[0];
@@ -231,15 +224,12 @@ export default function MyFarmPage() {
       </div>
 
       <div className="relative z-10 space-y-3 px-1 pt-1">
-        <motion.section {...fade(0)} className="flex items-start justify-between gap-3 px-0.5">
+        <motion.section {...fade(0)} className="flex items-end justify-between gap-3 px-0.5">
           <div className="min-w-0">
-            <p className="text-[12px] font-medium text-[var(--av-text-muted)]">
-              {isHi ? `नमस्ते, ${greetName} जी` : `Namaste, ${greetName}`}
-            </p>
-            <h1 className="mt-0.5 font-display text-[1.35rem] font-bold leading-tight tracking-tight text-[var(--av-text-primary)]">
+            <h1 className="font-display text-[1.15rem] font-bold leading-tight text-[var(--av-text-primary)]">
               {isHi ? "मेरा खेत" : "My farm"}
             </h1>
-            <p className="mt-0.5 truncate text-[11.5px] font-medium text-[var(--av-text-secondary)]">
+            <p className="mt-0.5 truncate text-[13px] font-medium text-[var(--av-text-secondary)]">
               {hasFields
                 ? `${stats.totalFields} ${isHi ? "खेत" : "fields"} · ${totalAreaLabel(data.fields)}`
                 : isHi
@@ -248,41 +238,21 @@ export default function MyFarmPage() {
               {place ? ` · ${place}` : ""}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setShowAddField((v) => {
-                const next = !v;
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddField((v) => {
+                    const next = !v;
                 if (next && !fieldCropSlug) setCropPickerOpen(true);
-                return next;
-              });
-            }}
+                    return next;
+                  });
+                }}
             className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-700 px-3.5 py-2 text-[12px] font-bold text-white shadow-sm shadow-emerald-900/20 active:scale-[0.97]"
-          >
-            {showAddField ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-            {showAddField ? (isHi ? "बंद" : "Close") : isHi ? "खेत जोड़ो" : "Add field"}
-          </button>
+              >
+                {showAddField ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                {showAddField ? (isHi ? "बंद" : "Close") : isHi ? "खेत जोड़ो" : "Add field"}
+              </button>
         </motion.section>
-
-        {!showAddField && hasFields && topAlert ? (
-          <motion.section {...fade(0.03)}>
-            <AppLink
-              href={topAlert.actionHref ?? "/field-advisor"}
-              onClick={() =>
-                track("tool_open", { href: topAlert.actionHref ?? "/field-advisor", label: "farm_alert" })
-              }
-              className="flex items-center gap-2.5 rounded-2xl border border-emerald-900/10 bg-[var(--av-surface)] px-3.5 py-2.5 shadow-[var(--av-shadow-sm)] active:scale-[0.99]"
-            >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-600/12 text-emerald-700 dark:text-emerald-300">
-                <Sprout className="h-4 w-4" />
-              </span>
-              <span className="min-w-0 flex-1 truncate text-[13px] font-bold text-[var(--av-text-primary)]">
-                {topAlert.title}
-              </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-emerald-600" />
-            </AppLink>
-          </motion.section>
-        ) : null}
 
         <motion.section {...fade(0.05)} className="space-y-2.5">
 
@@ -716,22 +686,15 @@ export default function MyFarmPage() {
                   (f.cropSlug ? parseSowingISO(profile.sowingDates?.[f.cropSlug]) : null);
                 const sowingLabel = sowingIso ? formatSowingDisplay(sowingIso, isHi) : "";
                 const stageNow = fieldStageLabel(sowingIso, isHi);
+                const days = daysAfterSowingISO(sowingIso);
+                const phase = stageNow.includes("·")
+                  ? stageNow.split("·").pop()?.trim() || stageNow
+                  : stageNow;
                 const areaText = f.areaAcres
                   ? `${Number(f.areaAcres).toFixed(f.areaAcres % 1 === 0 ? 0 : 2)} एकड़`
                   : f.area
                     ? String(f.area).replace(/\s*Acre$/i, " एकड़")
                     : "—";
-                const tools = [
-                  { href: `/my-farm/${f.id}?tab=live`, icon: Compass, hi: "स्थिति", en: "Live" },
-                  { href: `/my-farm/${f.id}?tab=radar`, icon: Radio, hi: "सेहत", en: "Health" },
-                  { href: `/my-farm/${f.id}?tab=journey`, icon: Sprout, hi: "अवस्था", en: "Stage" },
-                  {
-                    href: measureFieldHref(f.id),
-                    icon: Ruler,
-                    hi: f.boundary?.length ? "सीमा" : "नापें",
-                    en: f.boundary?.length ? "Edit" : "Measure",
-                  },
-                ] as const;
                 return (
                   <motion.article
                     key={f.id}
@@ -746,35 +709,35 @@ export default function MyFarmPage() {
                             delay: 0.04 * Math.min(i, 4),
                           },
                         })}
-                    className="overflow-hidden rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] dark:border-emerald-500/15"
+                    className="relative overflow-hidden rounded-[1.35rem] border border-emerald-900/10 bg-[var(--av-surface)] shadow-[var(--av-shadow-sm)] dark:border-emerald-500/15"
                   >
-                    <div className="relative h-[168px] overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(isHi ? `क्या आप '${displayName}' हटाएँगे?` : `Delete '${displayName}'?`)) {
+                          deleteField(f.id);
+                          showToast(isHi ? "खेत हटा दिया गया" : "Field deleted", "success");
+                        }
+                      }}
+                      className="absolute right-2.5 top-2.5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white active:scale-95"
+                      title={isHi ? "खेत हटाएं" : "Delete field"}
+                      aria-label={isHi ? "खेत हटाएं" : "Delete field"}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                    <AppLink href={`/my-farm/${f.id}`} className="flex gap-3 p-3 pr-12">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                      <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/10" />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (window.confirm(isHi ? `क्या आप '${displayName}' हटाएँगे?` : `Delete '${displayName}'?`)) {
-                            deleteField(f.id);
-                            showToast(isHi ? "खेत हटा दिया गया" : "Field deleted", "success");
-                          }
-                        }}
-                        className="absolute right-2.5 top-2.5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white/90 backdrop-blur-sm active:scale-95"
-                        title={isHi ? "खेत हटाएं" : "Delete field"}
-                        aria-label={isHi ? "खेत हटाएं" : "Delete field"}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                      <AppLink
-                        href={`/my-farm/${f.id}`}
-                        className="relative z-10 flex h-full flex-col justify-end p-3.5"
-                      >
-                        <p className="font-display text-[1.35rem] font-bold leading-tight text-white">
+                      <img
+                        src={img}
+                        alt=""
+                        className="h-[92px] w-[92px] shrink-0 rounded-2xl object-cover"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[16px] font-bold leading-tight text-[var(--av-text-primary)]">
                           {hi}
                           {f.variety ? ` · ${f.variety}` : ""}
-                        </p>
-                        <p className="mt-0.5 text-[12px] font-medium text-white/85">
+                        </span>
+                        <span className="mt-1 block truncate text-[13px] font-medium text-[var(--av-text-secondary)]">
                           {(() => {
                             const placeLabel = (f.village || profile.village || "").trim();
                             const nameBit = (displayName || "").trim();
@@ -784,43 +747,70 @@ export default function MyFarmPage() {
                                 : [placeLabel, nameBit].filter(Boolean).join(" · ");
                             return [placeAndName, areaText].filter(Boolean).join(" · ");
                           })()}
-                        </p>
-                        {sowingLabel ? (
-                          <p className="mt-0.5 text-[11px] text-white/70">
-                            {sowingLabel}
-                            {stageNow ? ` · ${stageNow}` : ""}
-                          </p>
+                        </span>
+                        {days != null && days >= 0 ? (
+                          <span className="mt-1.5 block text-[13px] font-bold text-emerald-800 dark:text-emerald-200">
+                            {isHi ? `${days} दिन` : `Day ${days}`}
+                            {phase ? ` · ${phase}` : ""}
+                          </span>
                         ) : (
-                          <p className="mt-0.5 text-[11px] font-semibold text-amber-200">
-                            {isHi ? "बुवाई तारीख जोड़ें" : "Add sowing date"}
-                          </p>
+                          <span className="mt-1.5 block text-[13px] font-bold text-[#8a5a12]">
+                            {isHi ? "बुवाई की तारीख डालें" : "Add sowing date"}
+                          </span>
                         )}
+                        {sowingLabel ? (
+                          <span className="mt-0.5 block text-[12px] text-[var(--av-text-muted)]">
+                            {isHi ? `${sowingLabel} को बोया` : `Sown ${sowingLabel}`}
+                          </span>
+                        ) : null}
+                      </span>
+                    </AppLink>
+
+                    {!showAddField && topAlert ? (
+                      <AppLink
+                        href={topAlert.actionHref ?? "/field-advisor"}
+                        onClick={() =>
+                          track("tool_open", {
+                            href: topAlert.actionHref ?? "/field-advisor",
+                            label: "farm_alert",
+                          })
+                        }
+                        className="mx-3 mb-2 flex items-center gap-2 rounded-xl bg-emerald-700 px-3 py-2.5 text-white active:scale-[0.99]"
+                      >
+                        <span className="min-w-0 flex-1 text-[13px] font-bold leading-snug">
+                          {topAlert.title}
+                        </span>
+                        <ArrowRight className="h-4 w-4 shrink-0" />
+                      </AppLink>
+                    ) : null}
+
+                    <div className="flex gap-2 px-3 pb-3">
+                      <AppLink
+                        href={`/my-farm/${f.id}`}
+                        className="inline-flex h-10 flex-1 items-center justify-center rounded-xl bg-[#0c3b2e] text-[13px] font-bold text-[#f7f3ea] active:scale-[0.98]"
+                      >
+                        {isHi ? "खेत खोलो" : "Open field"}
+                      </AppLink>
+                      <AppLink
+                        href={measureFieldHref(f.id)}
+                        className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-emerald-800/20 px-3 text-[13px] font-bold text-emerald-900 active:scale-[0.98] dark:text-emerald-100"
+                      >
+                        <Ruler className="h-3.5 w-3.5" />
+                        {f.boundary?.length
+                          ? isHi
+                            ? "सीमा"
+                            : "Boundary"
+                          : isHi
+                            ? "नापें"
+                            : "Measure"}
                       </AppLink>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-1 p-1.5">
-                      {tools.map((tool) => {
-                        const Icon = tool.icon;
-                        return (
-                          <AppLink
-                            key={tool.href}
-                            href={tool.href}
-                            className="flex flex-col items-center gap-1 rounded-xl py-2.5 text-[10.5px] font-bold text-[var(--av-text-primary)] active:scale-[0.97] active:bg-emerald-500/10"
-                          >
-                            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:text-emerald-300">
-                              <Icon className="h-4 w-4" />
-                            </span>
-                            {isHi ? tool.hi : tool.en}
-                          </AppLink>
-                        );
-                      })}
-                    </div>
-
-                    {f.boundary && f.boundary.length >= 3 ? (
+                      {f.boundary && f.boundary.length >= 3 ? (
                       <div className="px-1.5 pb-1.5">
                         <MiniFieldMap boundary={f.boundary} height="110px" />
-                      </div>
-                    ) : null}
+                        </div>
+                      ) : null}
                   </motion.article>
                 );
               })}
@@ -855,7 +845,7 @@ export default function MyFarmPage() {
             </div>
           ) : null}
         </motion.section>
-      </div>
+            </div>
       <MeasureAfterAddPrompt
         fieldId={measurePromptId}
         isHi={isHi}

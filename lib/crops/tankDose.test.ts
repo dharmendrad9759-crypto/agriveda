@@ -36,4 +36,12 @@ describe("parseFarmerDose foliar safety", () => {
     const d = parseFarmerDose("1 मिली / लीटर", { tankLitres: 16 });
     expect(d.tankDose).toMatch(/16 मिली/);
   });
+
+  it("irrigation-with-water is drench, not foliar spray", () => {
+    const d = parseFarmerDose("1 लीटर प्रति एकड़ (सिंचाई के पानी के साथ)", {
+      technical: "Chlorpyrifos 50% EC",
+    });
+    expect(d.isSpray).toBe(false);
+    expect(d.method).toBe("drench_irrigation");
+  });
 });

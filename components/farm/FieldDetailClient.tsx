@@ -20,15 +20,7 @@ import { cn } from "@/lib/cn";
 import { rememberField } from "@/lib/farm/fieldName";
 import { parseSowingISO, todayISO } from "@/lib/farm/fieldStatus";
 import { EASE_OUT, MOTION, tabPanel } from "@/lib/motion/variants";
-import type { LucideIcon } from "lucide-react";
-import {
-  ArrowLeft,
-  Radio,
-  Sprout,
-  Compass,
-  Tractor,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft, Tractor, Trash2 } from "lucide-react";
 
 interface FieldDetailClientProps {
   fieldId: string;
@@ -37,10 +29,10 @@ interface FieldDetailClientProps {
 
 type FarmTab = "live" | "radar" | "journey";
 
-const TABS: { id: FarmTab; label: string; icon: LucideIcon }[] = [
-  { id: "live", label: "खेत स्थिति", icon: Compass },
-  { id: "radar", label: "फसल सेहत", icon: Radio },
-  { id: "journey", label: "फसल अवस्था", icon: Sprout },
+const TABS: { id: FarmTab; label: string }[] = [
+  { id: "live", label: "आज" },
+  { id: "radar", label: "सेहत" },
+  { id: "journey", label: "अवस्था" },
 ];
 
 function validTab(tab?: string | null): FarmTab {
@@ -204,6 +196,8 @@ export default function FieldDetailClient({
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--av-surface-inset)] p-6 text-center">
         <div className="space-y-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-mark.png" alt="" className="mx-auto h-14 w-14 object-contain" />
           <div className="mx-auto h-9 w-9 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
           <p className="text-[11px] font-medium text-[var(--av-text-muted)]">
             खेत डेटा लोड हो रहा है…
@@ -281,7 +275,6 @@ export default function FieldDetailClient({
             aria-label="खेत दृश्य"
           >
             {TABS.map((tab) => {
-              const Icon = tab.icon;
               const active = activeTab === tab.id;
               return (
                 <button
@@ -290,9 +283,9 @@ export default function FieldDetailClient({
                   onClick={() => handleSwitchTab(tab.id)}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative rounded-xl py-2 text-[11px] font-semibold transition",
+                    "relative rounded-xl py-2 text-[13px] font-semibold transition",
                     active
-                      ? "text-[var(--av-text-primary)]"
+                      ? "text-[#0c3b2e] dark:text-[var(--av-text-primary)]"
                       : "text-[var(--av-text-muted)] hover:text-[var(--av-text-secondary)]"
                   )}
                 >
@@ -307,17 +300,7 @@ export default function FieldDetailClient({
                       }
                     />
                   ) : null}
-                  <span className="relative z-10 flex items-center justify-center gap-1.5">
-                    <Icon
-                      className={cn(
-                        "h-3.5 w-3.5",
-                        active
-                          ? "text-emerald-700 dark:text-emerald-300"
-                          : "text-current"
-                      )}
-                    />
-                    {tab.label}
-                  </span>
+                  <span className="relative z-10">{tab.label}</span>
                 </button>
               );
             })}

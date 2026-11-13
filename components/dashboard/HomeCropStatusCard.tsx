@@ -164,21 +164,23 @@ export default function HomeCropStatusCard({
           />
         </AppLink>
 
-        <div className="flex min-w-0 flex-1 flex-col justify-between px-2.5 py-2">
-          <div className="flex items-start gap-1.5">
+        <div className="relative flex min-w-0 flex-1 flex-col justify-between px-2.5 py-2">
+          <AppLink
+            href={fieldHomeHref}
+            className="absolute inset-0 z-0 rounded-[1.1rem]"
+            aria-label={isHi ? `${cropDisplayName} का खेत खोलें` : `Open ${cropDisplayName} field`}
+          />
+          <div className="pointer-events-none relative z-10 flex items-start gap-1.5">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1">
-                <AppLink
-                  href={fieldHomeHref}
-                  className="truncate text-[15px] font-bold leading-none text-[var(--av-text-primary)]"
-                >
+                <span className="truncate text-[15px] font-bold leading-none text-[var(--av-text-primary)]">
                   {cropDisplayName}
-                </AppLink>
+                </span>
                 {onChangeCrop ? (
                   <button
                     type="button"
                     onClick={() => setShowCropSwitcher(true)}
-                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300"
+                    className="pointer-events-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300"
                     title={isHi ? "फ़सल बदलें" : "Switch crop"}
                     aria-label={isHi ? "फ़सल बदलें" : "Switch crop"}
                   >
@@ -195,7 +197,7 @@ export default function HomeCropStatusCard({
               <button
                 type="button"
                 onClick={openDatePicker}
-                className={`flex h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-bold active:scale-95 ${
+                className={`pointer-events-auto flex h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-bold active:scale-95 ${
                   timeline.hasSowingDate
                     ? "bg-emerald-800 text-white"
                     : "border border-amber-500/40 bg-amber-500/15 text-amber-900 dark:text-amber-200"
@@ -213,7 +215,7 @@ export default function HomeCropStatusCard({
               </button>
               <AppLink
                 href={measureHref}
-                className="inline-flex h-7 shrink-0 items-center gap-1 rounded-full border border-emerald-700/25 px-2 text-[10px] font-bold text-emerald-800 active:scale-95 dark:text-emerald-200"
+                className="pointer-events-auto inline-flex h-7 shrink-0 items-center gap-1 rounded-full border border-emerald-700/25 px-2 text-[10px] font-bold text-emerald-800 active:scale-95 dark:text-emerald-200"
                 title={isHi ? "अपना खेत नापें" : "Measure your field"}
               >
                 <Ruler className="h-3 w-3" />
@@ -222,14 +224,14 @@ export default function HomeCropStatusCard({
             </div>
           </div>
 
-          <div className="mt-1.5 flex items-center gap-1.5">
+          <div className="pointer-events-none relative z-10 mt-1.5 flex items-center gap-1.5">
             <span className="min-w-0 truncate rounded-full bg-emerald-600/10 px-2 py-0.5 text-[10px] font-bold text-emerald-900 dark:bg-emerald-400/10 dark:text-emerald-200">
               {timeline.stageName}
             </span>
             <AppLink
               href={adviceHref}
               onClick={() => track("tool_open", { href: adviceHref, label: "home_field_advisor" })}
-              className="ml-auto inline-flex h-7 shrink-0 items-center gap-0.5 rounded-full bg-emerald-700 px-2.5 text-[11px] font-bold text-white active:scale-95"
+              className="pointer-events-auto ml-auto inline-flex h-7 shrink-0 items-center gap-0.5 rounded-full bg-emerald-700 px-2.5 text-[11px] font-bold text-white active:scale-95"
             >
               {isHi ? "सलाह" : "Advice"}
               <ChevronRight className="h-3.5 w-3.5" />

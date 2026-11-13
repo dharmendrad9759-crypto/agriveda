@@ -35,7 +35,6 @@ import {
   Sun,
   Trash2,
   TrendingUp,
-  UserRound,
   type LucideIcon,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
@@ -508,9 +507,8 @@ export default function SettingsPage() {
 
         <section className="relative overflow-hidden rounded-[1.75rem] border border-emerald-500/20 bg-gradient-to-br from-emerald-50 via-[var(--av-surface)] to-amber-50/50 p-4 dark:from-emerald-950/40 dark:to-amber-950/20">
           <div className="flex items-start gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white">
-              <UserRound className="h-5 w-5" />
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo-mark.png" alt="" className="h-11 w-11 shrink-0 object-contain" />
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300">
                 {BRAND}

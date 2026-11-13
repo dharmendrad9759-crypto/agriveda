@@ -137,6 +137,7 @@ export default function AIDoctorPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFile2, setSelectedFile2] = useState<File | null>(null);
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
+  const [needsLogin, setNeedsLogin] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<DiagnosisResult | null>(null);
 
@@ -176,7 +177,10 @@ export default function AIDoctorPage() {
   const hasInput = Boolean(previewUrl || selectedFile || result || hasSymptoms || hasCrop);
 
   useEffect(() => {
-    checkAiDoctorConfigured().then(setAiConfigured);
+    checkAiDoctorConfigured().then((status) => {
+      setNeedsLogin(status === "login");
+      setAiConfigured(status === "ready");
+    });
   }, []);
 
   useEffect(() => {
@@ -425,6 +429,7 @@ export default function AIDoctorPage() {
       <div className="mx-auto w-full max-w-lg space-y-3.5 sm:max-w-none sm:space-y-5">
         <AiDoctorHero
           aiConfigured={aiConfigured}
+          needsLogin={needsLogin}
           onHistoryClick={scrollToHistory}
           historyCount={history.length}
         />

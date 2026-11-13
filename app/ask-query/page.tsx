@@ -296,7 +296,8 @@ export default function AskQueryPage() {
   // Dynamic visualViewport tracking for software keyboard docking & WhatsApp-style layout
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [viewportStyle, setViewportStyle] = useState<React.CSSProperties>({
-    height: "100dvh",
+    height: "100svh",
+    maxHeight: "100svh",
     top: 0,
     width: "100%",
     maxWidth: "100%",
@@ -318,12 +319,14 @@ export default function AskQueryPage() {
       if (vv) {
         const keyboardGap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
         setKeyboardOpen(keyboardGap > 80);
+        const visible = Math.max(0, Math.round(vv.height));
         setViewportStyle({
           position: "fixed",
           top: `${vv.offsetTop}px`,
           left: 0,
           right: 0,
-          height: `${vv.height}px`,
+          height: `${visible}px`,
+          maxHeight: `${visible}px`,
           width: "100%",
           maxWidth: "100%",
           overflowX: "hidden",
@@ -335,7 +338,8 @@ export default function AskQueryPage() {
           top: 0,
           left: 0,
           right: 0,
-          height: "100dvh",
+          height: "100svh",
+          maxHeight: "100svh",
           width: "100%",
           maxWidth: "100%",
           overflowX: "hidden",
@@ -635,7 +639,7 @@ export default function AskQueryPage() {
 
   return (
     <div
-      className="fixed inset-x-0 top-0 z-50 flex h-[100dvh] max-h-[100dvh] w-full max-w-full select-none flex-col overflow-hidden overflow-x-hidden overscroll-none bg-[#f3efe4] text-[var(--av-text-primary)] dark:bg-[var(--av-surface-muted)]"
+      className="fixed inset-x-0 top-0 z-50 flex h-[100svh] max-h-[100svh] w-full max-w-full select-none flex-col overflow-hidden overflow-x-hidden overscroll-none bg-[#f3efe4] text-[var(--av-text-primary)] dark:bg-[var(--av-surface-muted)]"
       style={viewportStyle}
     >
       <header className="shrink-0 border-b border-[color:rgba(168,132,62,0.4)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]">
@@ -649,15 +653,18 @@ export default function AskQueryPage() {
             <ArrowLeft className="h-5 w-5" />
           </button>
 
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0c3b2e] text-[#f3e6c8] shadow-[var(--av-shadow-sm)]">
-            <Leaf className="h-5 w-5" />
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo-mark.png"
+            alt=""
+            className="h-10 w-10 shrink-0 object-contain"
+          />
 
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-semibold tracking-[0.18em] text-[#8a6a32]">
+            <p className="text-[11px] font-semibold tracking-[0.12em] text-[#8a6a32]">
               AGRIVEDA
             </p>
-            <h1 className="truncate text-[20px] font-semibold leading-tight text-[var(--av-text-primary)]">
+            <h1 className="truncate text-[16px] font-semibold leading-tight text-[var(--av-text-primary)]">
               कृषि डॉक्टर
             </h1>
           </div>
@@ -673,10 +680,10 @@ export default function AskQueryPage() {
       </header>
 
       <div className="shrink-0 border-b border-[color:rgba(168,132,62,0.22)] bg-[#fbf8f1] px-3 pb-3 pt-2.5 dark:border-white/10 dark:bg-[var(--av-surface)]">
-        <p className="mb-2 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+        <p className="mb-1.5 text-[13px] font-semibold text-[var(--av-text-secondary)]">
           किस फसल पर बात करें
         </p>
-        <div className="flex w-full items-center gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_0,black_calc(100%-1.75rem),transparent)] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-full items-center gap-1.5 overflow-x-auto whitespace-nowrap pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {COMMON_CROP_CHIPS.map((chip) => {
             const active = selectedCrop === chip.slug;
             return (
@@ -684,7 +691,7 @@ export default function AskQueryPage() {
                 key={chip.slug}
                 type="button"
                 onClick={() => setSelectedCrop(chip.slug)}
-                className={`shrink-0 rounded-full px-4 py-2.5 text-[15px] font-semibold active:scale-[0.98] ${
+                className={`shrink-0 rounded-full px-3 py-1.5 text-[13px] font-semibold active:scale-[0.98] ${
                   active
                     ? "bg-[#0c3b2e] text-[#f7f3ea] shadow-[var(--av-shadow-sm)]"
                     : "border border-[color:rgba(168,132,62,0.35)] bg-white text-[var(--av-text-primary)] dark:border-white/10 dark:bg-[var(--av-surface-muted)]"
@@ -707,16 +714,16 @@ export default function AskQueryPage() {
             <span className="flex h-16 w-16 items-center justify-center rounded-full border border-[color:rgba(168,132,62,0.45)] bg-[#fbf8f1] text-[#0c3b2e] shadow-[var(--av-shadow-sm)] dark:bg-[var(--av-surface)] dark:text-emerald-200">
               <Leaf className="h-7 w-7" />
             </span>
-            <h2 className="mt-5 text-[26px] font-semibold leading-tight text-[var(--av-text-primary)]">
+            <h2 className="mt-4 text-[18px] font-semibold leading-tight text-[var(--av-text-primary)]">
               नमस्ते किसान भाई
             </h2>
-            <span className="mt-3 h-px w-10 bg-[#a6843e]" />
+            <span className="mt-2.5 h-px w-10 bg-[#a6843e]" />
             {selectedCrop !== "general" ? (
-              <p className="mt-3 text-[16px] font-semibold text-[#0c3b2e] dark:text-emerald-200">
+              <p className="mt-2.5 text-[15px] font-semibold text-[#0c3b2e] dark:text-emerald-200">
                 {selectedCropObj.nameHi}
               </p>
             ) : null}
-            <p className="mt-3 max-w-[22rem] select-text text-[17px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+            <p className="mt-2.5 max-w-[22rem] select-text text-[15px] font-medium leading-snug text-[var(--av-text-secondary)]">
               {messages[0]?.text}
             </p>
           </div>
@@ -740,7 +747,7 @@ export default function AskQueryPage() {
                 <p className="text-[13px] font-semibold text-[#8a6a32]">
                   नमस्ते किसान भाई
                 </p>
-                <p className="mt-1.5 select-text text-[16px] font-medium leading-relaxed text-[var(--av-text-primary)]">
+                <p className="mt-1.5 select-text text-[15px] font-medium leading-snug text-[var(--av-text-primary)]">
                   {m.text}
                 </p>
               </div>
@@ -775,7 +782,7 @@ export default function AskQueryPage() {
                   </div>
                 ) : null}
 
-                <div className="select-text whitespace-pre-wrap text-[16px] font-medium leading-relaxed">
+                <div className="select-text whitespace-pre-wrap text-[15px] font-medium leading-snug">
                   <MessageBody text={m.text} />
                 </div>
                 <p
@@ -802,17 +809,17 @@ export default function AskQueryPage() {
       {/* Part C: Bottom Input Bar (shrink-0 mt-auto) */}
       <div
         className={cn(
-          "mt-auto w-full max-w-full shrink-0 overflow-hidden border-t border-[color:rgba(168,132,62,0.28)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]",
+          "mt-auto w-full max-w-full shrink-0 border-t border-[color:rgba(168,132,62,0.28)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]",
           keyboardOpen
-            ? "pb-1.5"
-            : "pb-[max(0.45rem,env(safe-area-inset-bottom))]"
+            ? "pb-2"
+            : "pb-[max(1rem,env(safe-area-inset-bottom))]"
         )}
       >
         <div className="border-b border-[var(--av-border-subtle)] px-3 py-2.5">
-          <p className="mb-2 text-[12px] font-semibold text-[var(--av-text-secondary)]">
+          <p className="mb-1.5 text-[13px] font-semibold text-[var(--av-text-secondary)]">
             ये पूछ सकते हैं
           </p>
-          <div className="flex w-full items-center gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_0,black_calc(100%-1.75rem),transparent)] [&::-webkit-scrollbar]:hidden">
+          <div className="flex w-full items-center gap-1.5 overflow-x-auto whitespace-nowrap pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {activeSuggestions.map((prompt) => (
               <button
                 key={prompt}
@@ -821,7 +828,7 @@ export default function AskQueryPage() {
                   setInputText(prompt);
                   scrollToBottom(true);
                 }}
-                className="shrink-0 rounded-full border border-[color:rgba(168,132,62,0.4)] bg-[#f3efe4] px-4 py-2.5 text-[15px] font-semibold text-[var(--av-text-primary)] active:scale-[0.98] dark:bg-[var(--av-surface-muted)]"
+                className="shrink-0 rounded-full border border-[color:rgba(168,132,62,0.4)] bg-[#f3efe4] px-3 py-1.5 text-[13px] font-semibold text-[var(--av-text-primary)] active:scale-[0.98] dark:bg-[var(--av-surface-muted)]"
               >
                 {prompt}
               </button>
@@ -893,7 +900,7 @@ export default function AskQueryPage() {
           )}
 
           {/* Input Controls Row */}
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             {/* File Upload Hidden Input */}
             <input
               ref={fileInputRef}
@@ -953,7 +960,7 @@ export default function AskQueryPage() {
                   handleSend();
                 }
               }}
-              className="h-12 flex-1 rounded-full border border-[color:rgba(168,132,62,0.35)] bg-white px-4 text-[16px] font-medium text-[var(--av-text-primary)] outline-none focus:border-[#0c3b2e] dark:border-white/15 dark:bg-[var(--av-surface-muted)]"
+              className="h-12 min-w-0 flex-1 rounded-full border border-[color:rgba(168,132,62,0.35)] bg-white px-4 text-[16px] font-medium text-[var(--av-text-primary)] outline-none focus:border-[#0c3b2e] dark:border-white/15 dark:bg-[var(--av-surface-muted)]"
             />
 
             {/* Send Button */}

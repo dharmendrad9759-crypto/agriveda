@@ -12,7 +12,7 @@ import {
   MessageSquare,
   ExternalLink,
 } from "lucide-react";
-import { AgriVedaSparkleIcon } from "@/components/brand/icons";
+import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
 import { getAgrivedaShareData, softTap } from "@/lib/appEssentials";
 
 interface ShareAgrivedaModalProps {
@@ -300,7 +300,7 @@ export function ShareAgrivedaModal({
 
             {/* Motivational message */}
             <div className="mt-3.5 flex items-center gap-2 rounded-xl bg-amber-500/10 px-3 py-2 text-[11px] text-amber-800 dark:text-amber-300 font-medium">
-              <AgriVedaSparkleIcon className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <AgriVedaBrandMark sizeClassName="h-4 w-4" />
               <span>
                 {isHi
                   ? "आपके एक शेयर से किसी किसान भाई की फसल रोग से बच सकती है।"

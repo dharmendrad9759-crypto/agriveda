@@ -498,9 +498,8 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
         <div className="relative border-b border-emerald-950/10 bg-gradient-to-r from-emerald-800 via-emerald-700 to-green-700 px-5 py-4 text-white shadow-sm dark:border-emerald-500/20 sm:px-6 sm:py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 shadow-inner backdrop-blur-md">
-                <Sprout className="h-5 w-5 text-emerald-200" strokeWidth={2.5} />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo-mark.png" alt="" className="h-9 w-9 object-contain" />
               <div>
                 <span className="block text-[10px] font-black uppercase tracking-[0.25em] text-emerald-200/90">
                   AgriVeda

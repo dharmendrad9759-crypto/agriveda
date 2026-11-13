@@ -131,13 +131,11 @@ export default function HomeAddCropHero({
 
           {/* Punchy Headline */}
           <div>
-            <h2 className="font-display text-[19px] sm:text-[21px] font-black leading-tight tracking-tight text-white drop-shadow-sm">
-              {isHi ? "अपनी मुख्य फसल जोड़ें" : "Add Your Primary Crop"}
+            <h2 className="font-display text-[1.15rem] font-bold leading-snug text-white">
+              {isHi ? "अपनी मुख्य फसल जोड़ें" : "Add your crop"}
             </h2>
-            <p className="mt-1 text-[12px] sm:text-[12.5px] font-medium leading-relaxed text-emerald-100/80">
-              {isHi
-                ? "दैनिक खाद-पानी कैलेंडर, बीमारी अलर्ट और सटीक मौसम सलाह पाने के लिए फसल चुनें।"
-                : "Select your crop to get personalized fertilizer, spray timeline, and live mandi rates."}
+            <p className="mt-1 text-[13px] font-medium leading-snug text-emerald-100/85">
+              {isHi ? "खाद, स्प्रे और मौसम इसी फसल पर चलेंगे।" : "Fertilizer, spray and weather follow this crop."}
             </p>
           </div>
 
@@ -179,7 +177,7 @@ export default function HomeAddCropHero({
               className="flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-400/40 bg-emerald-950/40 py-3 text-sm font-bold text-emerald-100 transition-all hover:bg-emerald-950/60 active:scale-[0.98]"
             >
               <Ruler className="h-4 w-4 stroke-[3]" />
-              <span>{isHi ? "खेत नापें (बाद में भी हो सकता है)" : "Measure field (optional)"}</span>
+              <span>{isHi ? "खेत नापें" : "Measure field"}</span>
             </AppLink>
           </div>
         </div>
@@ -219,12 +217,9 @@ export default function HomeAddCropHero({
                       <Sprout className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-display text-[17px] font-black leading-tight text-white">
-                        {isHi ? "फसल चुनें व जोड़ें" : "Select & Add Crop"}
+                      <h3 className="text-[15px] font-bold leading-tight text-white">
+                        {isHi ? "फसल चुनें" : "Choose a crop"}
                       </h3>
-                      <p className="text-[11px] text-emerald-100/70">
-                        {isHi ? "अपनी ज़मीन पर उगाई गई फसल तय करें" : "Pick the crop currently in your field"}
-                      </p>
                     </div>
                   </div>
                   <button

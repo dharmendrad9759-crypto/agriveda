@@ -15,6 +15,8 @@ export default async function FieldDetailPage({ params, searchParams }: PageProp
       fallback={
         <div className="min-h-screen bg-[var(--av-surface-inset)] flex items-center justify-center p-6 text-center">
           <div className="space-y-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo-mark.png" alt="" className="mx-auto h-14 w-14 object-contain" />
             <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
             <p className="text-xs font-bold text-gray-500">खेत लोड हो रहा है...</p>
           </div>

@@ -68,7 +68,10 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "इमामेक्टिन": "emamectin-benzoate-5-sg",
   "इमिडाक्लोप्रिड": "imidacloprid-17-8-sl",
   "इमिडाक्लोप्रिड 48%": "imidacloprid-48-fs",
-  "इमिडाक्लोप्रिड 70%": "imidacloprid-70-ws",
+  "इमिडाक्लोप्रिड 70%": "imidacloprid-70-wg",
+  "इमिडाक्लोप्रिड 70% wg": "imidacloprid-70-wg",
+  "इमिडाक्लोप्रिड 70% WG": "imidacloprid-70-wg",
+  "इमिडाक्लोप्रिड 70% ws": "imidacloprid-70-ws",
   "इलाटस प्लस": "benzovindiflupyr-100-ec",
   "ईटोफेनप्रॉक्स": "etofenprox-10-ew",
   "ईथालफ्लूरालिन": "ethalfluralin-35-4-ec",
@@ -173,27 +176,35 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "क्लोथियानिडिन 50%": "clothianidin-50-wdg",
   "क्लोथियानिडिन 50% wdg": "clothianidin-50-wdg",
   "क्लोरएंट्रानिलिप्रोल": "chlorantraniliprole-18-5-sc",
-  "क्लोरपायरीफॉस": "chlorpyrifos-50-cypermethrin-5-ec",
+  "क्लोरपायरीफॉस": "chlorpyrifos-20-ec",
   "क्लोरपायरीफॉस + साइपरमेथ्रिन": "chlorpyrifos-50-cypermethrin-5-ec",
   "क्लोरपायरीफॉस 1.5": "chlorpyrifos-1-5-dp",
   "क्लोरपायरीफॉस 1.5%": "chlorpyrifos-1-5-dp",
   "क्लोरपायरीफॉस 1.5% dp": "chlorpyrifos-1-5-dp",
+  "क्लोरपायरीफॉस 50%": "chlorpyrifos-50-ec",
+  "क्लोरपायरीफॉस 50% ec": "chlorpyrifos-50-ec",
   "क्लोरपायरीफॉस 50% + साइपरमेथ्रिन 5%": "chlorpyrifos-50-cypermethrin-5-ec",
   "क्लोरपायरीफॉस 50% + साइपरमेथ्रिन 5% ec": "chlorpyrifos-50-cypermethrin-5-ec",
   "क्लोरपायरीफॉस डस्ट": "chlorpyrifos-1-5-dp",
   "क्लोरफेनापायर": "chlorfenapyr-10-sc",
   "क्लोरांट्रानिलिप्रोल": "chlorantraniliprole-18-5-sc",
   "क्लोरांट्रानिलिप्रोल 0.4%": "chlorantraniliprole-0-4-gr",
+  "क्लोरांट्रानिलिप्रोल 9.3%": "chlorantraniliprole-lambda-zc",
   "क्लोरांट्रानिलीप्रोल": "chlorantraniliprole-18-5-sc",
   "क्लोरांट्रानिलीप्रोल 0.4%": "chlorantraniliprole-0-4-gr",
   "क्लोरेंट्रानिलिप्रोल": "chlorantraniliprole-18-5-sc",
   "क्लोरेंट्रानिलिप्रोल 0.4%": "chlorantraniliprole-0-4-gr",
+  "क्लोरेंट्रानिलिप्रोल 9.3%": "chlorantraniliprole-lambda-zc",
+  "एम्पलिगो": "chlorantraniliprole-lambda-zc",
+  "एम्प्लिगो": "chlorantraniliprole-lambda-zc",
   "क्लोरोथैलोनिल": "chlorothalonil-75-wp",
-  "क्लोरोपायरीफॉस": "chlorpyrifos-50-cypermethrin-5-ec",
+  "क्लोरोपायरीफॉस": "chlorpyrifos-20-ec",
   "क्लोरोपायरीफॉस + साइपरमेथ्रिन": "chlorpyrifos-50-cypermethrin-5-ec",
   "क्लोरोपायरीफॉस 1.5": "chlorpyrifos-1-5-dp",
   "क्लोरोपायरीफॉस 1.5%": "chlorpyrifos-1-5-dp",
   "क्लोरोपायरीफॉस 1.5% dp": "chlorpyrifos-1-5-dp",
+  "क्लोरोपायरीफॉस 50%": "chlorpyrifos-50-ec",
+  "क्लोरोपायरीफॉस 50% ec": "chlorpyrifos-50-ec",
   "क्लोरोपायरीफॉस 50% + साइपरमेथ्रिन 5%": "chlorpyrifos-50-cypermethrin-5-ec",
   "क्लोरोपायरीफॉस 50% + साइपरमेथ्रिन 5% ec": "chlorpyrifos-50-cypermethrin-5-ec",
   "क्लोरोपायरीफॉस डस्ट": "chlorpyrifos-1-5-dp",
@@ -213,6 +224,10 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "ग्लाइफोसेट": "glyphosate-41-sl",
   "घुलनशील गंधक": "wettable-sulphur-80-wdg",
   "घुलनशील सल्फर": "wettable-sulphur-80-wdg",
+  "घुलनशील सल्फर 80% wp": "wettable-sulphur-80-wp",
+  "घुलनशील सल्फर 80% WP": "wettable-sulphur-80-wp",
+  "कासुगामाइसिन 5%": "kasugamycin-copper-wp",
+  "कासुगामाइसिन + कॉपर": "kasugamycin-copper-wp",
   "चिपको": "silicon-spreader",
   "चिलेटेड कैल्शियम": "calcium-boron",
   "चिलेटेड जिंक": "chelated-zinc-12",
@@ -282,6 +297,8 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "डाईमेथोमॉर्फ": "dimethomorph-50-wp",
   "डानटॉप": "clothianidin-50-wdg",
   "डायफेंथियूरॉन": "diafenthiuron-50-wp",
+  "डायफेंथियूरॉन 47.8%": "diafenthiuron-47-8-sc",
+  "डायफेंथियूरॉन 47.8% sc": "diafenthiuron-47-8-sc",
   "डिनोटेफ्यूरन": "dinotefuran-20-sg",
   "डिनोटेफ्यूरॉन": "dinotefuran-20-sg",
   "डिफेनथियूरॉन": "diafenthiuron-50-wp",
@@ -379,8 +396,8 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "प्लियोरा": "pyridalyl-10-ec",
   "फरटेरा": "chlorantraniliprole-0-4-gr",
   "फर्टेरा": "chlorantraniliprole-0-4-gr",
-  "फिप्रोनिल": "fipronil-0-3-gr",
-  "फ़िप्रोनिल": "fipronil-0-3-gr",
+  "फिप्रोनिल": "fipronil-5-sc",
+  "फ़िप्रोनिल": "fipronil-5-sc",
   "फिप्रोनिल .3%": "fipronil-0-3-gr",
   "फ़िप्रोनिल .3%": "fipronil-0-3-gr",
   "फिप्रोनिल .6%": "fipronil-0-6-gr",
@@ -586,6 +603,9 @@ const HINDI_AGRI_CHEM_MAP: Record<string, string> = {
   "हमला 550": "chlorpyrifos-50-cypermethrin-5-ec",
   "हिनोसन": "edifenphos-50-ec",
   "हेक्साकोनाज़ोल": "hexaconazole-5-ec",
+  "हेक्साकोनाज़ोल 5% sc": "hexaconazole-5-sc",
+  "हेक्साकोनाज़ोल 5% SC": "hexaconazole-5-sc",
+  "जम्प": "fipronil-80-wg",
   "हेक्सीथियाज़ॉक्स": "hexythiazox-5-45-ec",
   "हैलॉक्सीफेन": "halauxifen-methyl-ec",
   "हैलॉक्सीफॉप": "haloxyfop-r-methyl-10-ec",
@@ -617,6 +637,74 @@ function hindiTokenIndex(raw: string, word: string): number {
   return -1;
 }
 
+const FORM_TOKEN_RE =
+  /\b(wdp|wdg|wp|wg|sg|sp|gr|cg|df|ws|dp|ec|sc|sl|fs|od|zc|ew|cs|dc|se|me|as|ds)\b/gi;
+
+function formTokens(s: string): string[] {
+  const n = normalizeKey(s).replace(/\bg\s*\/\s*l\b/g, " gl ");
+  return [...n.matchAll(FORM_TOKEN_RE)].map((m) => m[1]);
+}
+
+function isMixText(s: string): boolean {
+  const n = normalizeKey(s);
+  return n.includes(" + ") || n.includes("+") || /\bplus\b/.test(n);
+}
+
+function entryIsMix(entry: ChemBottleEntry): boolean {
+  return (
+    entry.name.includes("+") ||
+    entry.formulation.includes("+") ||
+    (entry.aliases ?? []).some((a) => a.includes("+"))
+  );
+}
+
+function sulphurHerbicideGuard(n: string, entry: ChemBottleEntry): boolean {
+  if (entry.slug !== "wettable-sulphur-80-wdg" && entry.slug !== "wettable-sulphur-80-wp") {
+    return false;
+  }
+  return (
+    n.includes("uron") ||
+    n.includes("sulfuron") ||
+    n.includes("sulfone") ||
+    n.includes("herbicide") ||
+    n.includes("weed") ||
+    n.includes("घास") ||
+    n.includes("खरपतवार")
+  );
+}
+
+/** Formulation, mix vs single-active, and strength beat a short generic alias. */
+function scoreCatalogHit(raw: string, entry: ChemBottleEntry, aliasLen: number, idx: number): number {
+  let score = aliasLen * 20 - Math.min(idx, 80);
+  const qForms = formTokens(raw);
+  const eForms = formTokens(`${entry.formulation} ${entry.slug.replace(/-/g, " ")}`);
+  if (qForms.length && eForms.length) {
+    if (qForms.some((f) => eForms.includes(f))) score += 2500;
+    else if (
+      (qForms.includes("wp") && eForms.includes("wdg")) ||
+      (qForms.includes("wdg") && eForms.includes("wp"))
+    ) {
+      score += 200;
+    } else {
+      score -= 4500;
+    }
+    // Tank-mix of two packs (SL + WP) must not steal a single premix pouch.
+    if (qForms.length >= 2 && !eForms.includes(qForms[0])) score -= 3000;
+  }
+  const qMix = isMixText(raw);
+  const eMix = entryIsMix(entry);
+  if (qMix && eMix) score += 3200;
+  else if (qMix && !eMix) score -= 1800;
+  else if (!qMix && eMix) score -= 3800;
+
+  const qNums = [...normalizeKey(raw).matchAll(/\d+(?:\.\d+)?/g)].map((x) => x[0]);
+  const eNums = [...normalizeKey(entry.formulation).matchAll(/\d+(?:\.\d+)?/g)].map((x) => x[0]);
+  const overlap = qNums.filter((n) => eNums.includes(n)).length;
+  score += overlap * 700;
+  if (qNums.length && eNums.length && overlap === 0) score -= 500;
+  return score;
+}
+
 /** Prefer the earliest and longest alias match so "एसीफेट 50% + इमिडाक्लोप्रिड 1.8% SP" matches Acephate and "chlorantraniliprole 0.4% gr" beats generic name. */
 export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
   if (!raw) return undefined;
@@ -625,11 +713,11 @@ export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
   const reallySaaf =
     /carbendazim|mancozeb|कार्बेन्डाजिम|मैंकोजेब|मैनकोजेब|साफ\s*फंगीसाइड|\bsaaf\b/i.test(raw);
 
-  // 1. Check Hindi mapping first: pick the keyword that appears earliest in raw
-  //    (breaking ties by longest keyword length)
-  let bestHindiSlug: string | undefined;
-  let bestHindiIdx = Infinity;
-  let bestHindiLen = 0;
+  type Cand = { entry: ChemBottleEntry; score: number };
+  const cands: Cand[] = [];
+  const remember = (entry: ChemBottleEntry, aliasLen: number, idx: number, extra = 0) => {
+    cands.push({ entry, score: scoreCatalogHit(raw, entry, aliasLen, idx) + extra });
+  };
 
   for (const [hiWord, targetSlug] of Object.entries(HINDI_AGRI_CHEM_MAP)) {
     if (hiWord === "साफ") {
@@ -639,66 +727,33 @@ export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
       if (hygiene || !brandLike) continue;
     }
     const idx = hindiTokenIndex(raw, hiWord);
-    if (idx !== -1) {
-      if (idx < bestHindiIdx || (idx === bestHindiIdx && hiWord.length > bestHindiLen)) {
-        bestHindiIdx = idx;
-        bestHindiLen = hiWord.length;
-        bestHindiSlug = targetSlug;
-      }
-    }
+    if (idx === -1) continue;
+    const match = CHEM_BOTTLE_CATALOG.find((e) => e.slug === targetSlug);
+    if (match) remember(match, hiWord.length, idx, 400);
   }
 
-  if (bestHindiSlug) {
-    const match = CHEM_BOTTLE_CATALOG.find((e) => e.slug === bestHindiSlug);
-    if (match) return match;
-  }
-
-  // 2. English / normalized search
   const n = normalizeKey(raw);
-  if (!n) return undefined;
-  if (byAlias.has(n)) return byAlias.get(n);
+  if (!n) {
+    if (!cands.length) return undefined;
+    cands.sort((a, b) => b.score - a.score);
+    return cands[0].entry;
+  }
 
-  let best: ChemBottleEntry | undefined;
-  let bestLen = 0;
-  let bestIdx = Infinity;
+  const exact = byAlias.get(n);
+  if (exact) remember(exact, n.length, 0, 5000);
+
   for (const [key, entry] of byAlias) {
     if (key.length < 4) continue;
-    // Guard: wettable sulphur must never match herbicides or weeds with sulf- in name
-    if (entry.slug === "wettable-sulphur-80-wdg") {
-      if (
-        n.includes("uron") ||
-        n.includes("sulfuron") ||
-        n.includes("sulfone") ||
-        n.includes("herbicide") ||
-        n.includes("weed") ||
-        n.includes("घास") ||
-        n.includes("खरपतवार")
-      ) {
-        continue;
-      }
-    }
+    if (sulphurHerbicideGuard(n, entry)) continue;
     const idx = n.indexOf(key);
-    if (idx !== -1) {
-      // Require whole word boundary match so "sulfur" does not match within "sulfosulfuron"
-      const charBefore = idx > 0 ? n[idx - 1] : " ";
-      const charAfter = idx + key.length < n.length ? n[idx + key.length] : " ";
-      if (charBefore !== " " || charAfter !== " ") {
-        continue;
-      }
-
-      if (key.length > bestLen || (key.length === bestLen && idx < bestIdx)) {
-        best = entry;
-        bestLen = key.length;
-        bestIdx = idx;
-      }
-    }
+    if (idx === -1) continue;
+    const charBefore = idx > 0 ? n[idx - 1] : " ";
+    const charAfter = idx + key.length < n.length ? n[idx + key.length] : " ";
+    if (charBefore !== " " || charAfter !== " ") continue;
+    remember(entry, key.length, idx);
   }
 
-  // "Triafamone 20% + Ethoxysulfuron" must not fall through to Ethoxysulfuron alone.
-  // Drop strengths and form codes, then prefer the longest multi-word active name.
   const qSoft = strengthlessKey(n);
-  let softBest: ChemBottleEntry | undefined;
-  let softLen = 0;
   for (const [key, entry] of byAlias) {
     const soft = strengthlessKey(key);
     if (soft.length < 8 || !soft.includes(" ")) continue;
@@ -707,14 +762,12 @@ export function lookupChemBottle(raw: string): ChemBottleEntry | undefined {
     const before = idx > 0 ? qSoft[idx - 1] : " ";
     const after = idx + soft.length < qSoft.length ? qSoft[idx + soft.length] : " ";
     if (before !== " " || after !== " ") continue;
-    if (soft.length > softLen) {
-      softBest = entry;
-      softLen = soft.length;
-    }
+    remember(entry, soft.length, idx, 200);
   }
-  if (softBest && softLen > bestLen) return softBest;
 
-  return best;
+  if (!cands.length) return undefined;
+  cands.sort((a, b) => b.score - a.score);
+  return cands[0].entry;
 }
 
 function strengthlessKey(s: string): string {

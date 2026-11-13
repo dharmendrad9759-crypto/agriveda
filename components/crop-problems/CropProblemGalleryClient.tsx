@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import AppLink from "@/components/ui/AppLink";
 import ProblemFlowShell from "@/components/crop-problems/ProblemFlowShell";
 import { getCropProblemCrop } from "@/data/crop-curative-problems";
@@ -20,6 +21,14 @@ import {
   type HubSymptomChip,
 } from "@/lib/crops/intelligenceHub";
 import { useSprayLogs } from "@/hooks/useSprayLogs";
+import {
+  isPlantPart,
+  matchProblems,
+  partLabel,
+  symptomPhrase,
+  xrayHref,
+  type PlantPart,
+} from "@/lib/crops/plantAnatomy";
 
 function tagTone(tag: string) {
   if (/कीट|इल्ली|मक्खी|माइट|थ्रिप्स|फुदका|सुंडी/i.test(tag)) {
@@ -47,6 +56,22 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
   const crop = getCropProblemCrop(cropSlug);
   if (!crop) notFound();
 
+  const params = useSearchParams();
+  const fromXray = params.get("from") === "xray";
+  const partParam = params.get("part");
+  const part: PlantPart | null = partParam && isPlantPart(partParam) ? partParam : null;
+  const symptomKey = params.get("symptoms") ?? "";
+  const symptomIds = symptomKey
+    .split(",")
+    .filter((s): s is HubSymptomChip => SYMPTOM_CHIPS.some((c) => c.id === s));
+  const xrayFilter = Boolean(part || symptomIds.length);
+  const xrayMatch = useMemo(() => {
+    if (!part && !symptomKey) return null;
+    return matchProblems({ cropId: crop.slug, part, symptoms: symptomIds });
+    // symptomIds is derived from symptomKey
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [crop.slug, part, symptomKey]);
+
   const { logs } = useSprayLogs();
   const [kind, setKind] = useState<KindFilter>("all");
   const [symptom, setSymptom] = useState<HubSymptomChip | "all">("all");
@@ -61,12 +86,14 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
   );
 
   const filtered = useMemo(() => {
+    const allowed = xrayMatch ? new Set(xrayMatch.matches.map((m) => m.hub.problem.id)) : null;
     return hubs.filter((h) => {
+      if (allowed && !allowed.has(h.problem.id)) return false;
       if (kind !== "all" && h.kind !== kind) return false;
       if (symptom !== "all" && !h.symptomChips.includes(symptom)) return false;
       return true;
     });
-  }, [hubs, kind, symptom]);
+  }, [hubs, kind, symptom, xrayMatch]);
 
   const ranked = rankProblemsForStage(filtered, stage);
   const yellowing = symptom === "yellow" || symptom === "wilt";
@@ -93,24 +120,30 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
   );
 
   const CardGrid = ({ items }: { items: HubProblem[] }) => (
-    <div className="grid grid-cols-2 gap-3">
+    <div className={fromXray ? "grid grid-cols-1 gap-2.5" : "grid grid-cols-2 gap-3"}>
       {items.map((h) => {
         const p = h.problem;
         const cleanTitle = getCleanHindiTitle(p.nameHi);
         return (
           <AppLink
             key={p.id}
-            href={`/crop-problems/${crop.slug}/${p.id}`}
-            className="group relative overflow-hidden rounded-[22px] border border-emerald-900/10 bg-white shadow-[0_16px_40px_-28px_rgba(4,120,87,0.5)] active:scale-[0.98] transition"
+            href={`/crop-problems/${crop.slug}/${p.id}${fromXray ? `?${params.toString()}` : ""}`}
+            className={
+              fromXray
+                ? "flex gap-3 rounded-[22px] bg-[#f6f1e6] p-2 ring-1 ring-[#14382c]/10"
+                : "group relative overflow-hidden rounded-[22px] border border-emerald-900/10 bg-white shadow-[0_16px_40px_-28px_rgba(4,120,87,0.5)] active:scale-[0.98] transition"
+            }
           >
-            <div className="relative aspect-[4/5] overflow-hidden bg-emerald-50">
+            <div className={fromXray ? "relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl" : "relative aspect-[4/5] overflow-hidden bg-emerald-50"}>
               <Image
                 src={p.image}
                 alt={cleanTitle || p.nameHi}
                 fill
-                className="object-cover transition duration-500 group-hover:scale-[1.04]"
-                sizes="50vw"
+                className="object-cover"
+                sizes={fromXray ? "96px" : "50vw"}
               />
+              {fromXray ? null : (
+                <>
               <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
               <span className={`absolute left-2 top-2 rounded-full px-2.5 py-0.5 text-[9.5px] shadow ${tagTone(p.tagHi)}`}>
                 {p.tagHi}
@@ -124,18 +157,34 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
                   सटीक दवा व डोज़ देखें →
                 </span>
               </div>
+                </>
+              )}
             </div>
+            {fromXray ? (
+              <span className="flex min-w-0 flex-1 flex-col justify-center py-1 pr-1">
+                <span className={`w-fit rounded-full px-2 py-0.5 text-[10px] ${tagTone(p.tagHi)}`}>{p.tagHi}</span>
+                <span className="mt-1 text-[15px] font-black leading-snug text-[#10281c]">{cleanTitle || p.nameHi}</span>
+                <span className="mt-1 line-clamp-3 text-[12px] font-semibold leading-snug text-[#14382c]/70">
+                  {xrayMatch?.matches.find((m) => m.hub.problem.id === p.id)?.reasonHi}
+                </span>
+              </span>
+            ) : null}
           </AppLink>
         );
       })}
     </div>
   );
 
+  const selectionLabel = symptomIds
+    .map((id) => (part ? symptomPhrase(part, id) : id))
+    .join(" · ");
+
   return (
     <ProblemFlowShell
-      title="समस्या चुनें"
+      title={fromXray ? selectionLabel || "संभावित कारण" : "समस्या चुनें"}
+      subtitle={fromXray && part ? `${crop.nameHi} · ${partLabel(crop.slug, part)}` : undefined}
       step={2}
-      backHref="/crop-problems"
+      backHref={fromXray ? xrayHref(crop.slug, part, symptomIds) : "/crop-problems"}
       rightSlot={
         <span className="flex max-w-[8.5rem] items-center gap-1.5 overflow-hidden rounded-2xl border border-emerald-900/15 bg-white px-2 py-1 shadow-xs">
           <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-xl">
@@ -145,6 +194,14 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
         </span>
       }
     >
+      {fromXray ? (
+        <p className="mb-3 text-[13px] font-semibold leading-snug text-[#14382c]/70">
+          {selectionLabel
+            ? `${crop.nameHi} में ${selectionLabel} लिखा मिला। यही कारण नीचे हैं।`
+            : `${crop.nameHi} के ${part ? partLabel(crop.slug, part) : "इस भाग"} वाले रिकॉर्ड।`}
+        </p>
+      ) : (
+        <>
       <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1">
         {KIND_CHIPS.map((c) => (
           <Chip key={c.id} active={kind === c.id} onClick={() => setKind(c.id)}>
@@ -174,6 +231,8 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
           </Chip>
         ))}
       </div>
+        </>
+      )}
 
       {scorch ? (
         <div className="mb-3 rounded-2xl border border-amber-400 bg-amber-50 px-3 py-2 text-[13px] font-bold text-amber-950">
@@ -181,7 +240,16 @@ export default function CropProblemGalleryClient({ cropSlug }: { cropSlug: strin
         </div>
       ) : null}
 
-      {stage !== "all" && ranked.featured.length > 0 ? (
+      {xrayFilter && filtered.length === 0 ? (
+        <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-3 py-3 text-[13px] font-bold text-amber-950">
+          <p>पर्याप्त जानकारी नहीं — इस भाग और लक्षण पर कोई मिलान नहीं मिला।</p>
+          <AppLink href={`/crop-problems/${crop.slug}`} className="mt-2 inline-flex min-h-11 items-center text-emerald-800 underline">
+            अन्य समस्याएँ देखें
+          </AppLink>
+        </div>
+      ) : null}
+
+      {stage !== "all" && !fromXray && ranked.featured.length > 0 ? (
         <>
           <p className="mb-2 text-[12px] font-black text-emerald-950">इस अवस्था में मुख्य खतरा</p>
           <CardGrid items={ranked.featured} />

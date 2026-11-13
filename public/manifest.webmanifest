@@ -4,7 +4,7 @@
   "description": "Smart crop advisory, spray rotation, weather and pest outbreak radar for Indian farmers",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#006432",
+  "background_color": "#fffdf8",
   "theme_color": "#006432",
   "orientation": "portrait-primary",
   "lang": "hi",

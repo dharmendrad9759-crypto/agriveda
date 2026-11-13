@@ -1111,7 +1111,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "तना गलन व उकठा (Collar Rot & Fusarium Wilt)",
         "nameEn": "Collar Rot & Fusarium Wilt",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-fusarium-ciceri-2.jpg",
+        "image": "/images/diseases/disease-sclerotium-rolfsii-2.jpg",
         "stageHi": "वानस्पतिक अवस्था (10-35 दिन)",
         "stages": [
           "vegetative"
@@ -1192,7 +1192,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "चूर्णी फफूंद (Powdery Mildew)",
         "nameEn": "Chilli Powdery Mildew",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-podosphaera-xanthii-2.jpg",
+        "image": "/images/diseases/disease-leveillula-taurica-2.jpg",
         "stageHi": "फूल व फल अवस्था",
         "stages": [
           "flowering",
@@ -1279,7 +1279,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "तना गलन व उकठा (Collar Rot & Fusarium Wilt)",
         "nameEn": "Collar Rot & Fusarium Wilt",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-fusarium-ciceri-2.jpg",
+        "image": "/images/diseases/disease-sclerotium-rolfsii-2.jpg",
         "stageHi": "वानस्पतिक अवस्था (10-35 दिन)",
         "stages": [
           "vegetative"
@@ -1360,7 +1360,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "चूर्णी फफूंद (Powdery Mildew)",
         "nameEn": "Chilli Powdery Mildew",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-podosphaera-xanthii-2.jpg",
+        "image": "/images/diseases/disease-leveillula-taurica-2.jpg",
         "stageHi": "फूल व फल अवस्था",
         "stages": [
           "flowering",
@@ -3137,7 +3137,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "फली छेदक व जाले वाली इल्ली (Pod Borer - Helicoverpa & Maruca)",
         "nameEn": "Pod Borer (Helicoverpa & Maruca)",
         "tagHi": "कीट",
-        "image": "/images/pests/pest-helicoverpa-armigera-2.jpg",
+        "image": "/images/pests/pest-maruca-vitrata.jpg",
         "stageHi": "फूल व फली अवस्था (40+ दिन)",
         "stages": [
           "flowering",
@@ -3164,7 +3164,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "चूर्णी फफूंद व एस्कोकाइटा झुलसा (Powdery Mildew & Ascochyta Blight)",
         "nameEn": "Powdery Mildew & Ascochyta Blight",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-podosphaera-xanthii-2.jpg",
+        "image": "/images/diseases/disease-erysiphe-polygoni.jpg",
         "stageHi": "फूल व फली अवस्था",
         "stages": [
           "flowering",
@@ -3280,7 +3280,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "फली छेदक व जाले वाली इल्ली (Pod Borer - Helicoverpa & Maruca)",
         "nameEn": "Pod Borer (Helicoverpa & Maruca)",
         "tagHi": "कीट",
-        "image": "/images/pests/pest-helicoverpa-armigera-2.jpg",
+        "image": "/images/pests/pest-maruca-vitrata.jpg",
         "stageHi": "फूल व फली अवस्था (40+ दिन)",
         "stages": [
           "flowering",
@@ -3307,7 +3307,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "चूर्णी फफूंद व एस्कोकाइटा झुलसा (Powdery Mildew & Ascochyta Blight)",
         "nameEn": "Powdery Mildew & Ascochyta Blight",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-podosphaera-xanthii-2.jpg",
+        "image": "/images/diseases/disease-erysiphe-polygoni.jpg",
         "stageHi": "फूल व फली अवस्था",
         "stages": [
           "flowering",
@@ -3369,7 +3369,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "पीला मोज़ेक वायरस व सफेद मक्खी (YMV & Whitefly)",
         "nameEn": "Yellow Mosaic Virus & Whitefly",
         "tagHi": "वायरस व कीट",
-        "image": "/images/diseases/disease-mungbean-yellow-mosaic-virus-2.jpg",
+        "image": "/images/pests/pest-bemisia-tabaci-2.jpg",
         "stageHi": "वानस्पतिक व फूल अवस्था (15-40 दिन)",
         "stages": [
           "vegetative",
@@ -3426,7 +3426,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "फली छेदक व जाले वाली इल्ली (Pod Borer - Helicoverpa & Maruca)",
         "nameEn": "Pod Borer (Helicoverpa & Maruca)",
         "tagHi": "कीट",
-        "image": "/images/pests/pest-helicoverpa-armigera-2.jpg",
+        "image": "/images/pests/pest-maruca-vitrata.jpg",
         "stageHi": "फूल व फली अवस्था (40+ दिन)",
         "stages": [
           "flowering",
@@ -3454,7 +3454,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "चूर्णी फफूंद व एस्कोकाइटा झुलसा (Powdery Mildew & Ascochyta Blight)",
         "nameEn": "Powdery Mildew & Ascochyta Blight",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-podosphaera-xanthii-2.jpg",
+        "image": "/images/diseases/disease-erysiphe-polygoni.jpg",
         "stageHi": "फूल व फली अवस्था",
         "stages": [
           "flowering",
@@ -3517,7 +3517,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "पीला मोज़ेक वायरस व सफेद मक्खी (YMV & Whitefly)",
         "nameEn": "Yellow Mosaic Virus & Whitefly",
         "tagHi": "वायरस व कीट",
-        "image": "/images/diseases/disease-mungbean-yellow-mosaic-virus-2.jpg",
+        "image": "/images/pests/pest-bemisia-tabaci-2.jpg",
         "stageHi": "वानस्पतिक व फूल अवस्था (15-40 दिन)",
         "stages": [
           "vegetative",
@@ -3574,7 +3574,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "फली छेदक व जाले वाली इल्ली (Pod Borer - Helicoverpa & Maruca)",
         "nameEn": "Pod Borer (Helicoverpa & Maruca)",
         "tagHi": "कीट",
-        "image": "/images/pests/pest-helicoverpa-armigera-2.jpg",
+        "image": "/images/pests/pest-maruca-vitrata.jpg",
         "stageHi": "फूल व फली अवस्था (40+ दिन)",
         "stages": [
           "flowering",
@@ -3602,7 +3602,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "चूर्णी फफूंद व एस्कोकाइटा झुलसा (Powdery Mildew & Ascochyta Blight)",
         "nameEn": "Powdery Mildew & Ascochyta Blight",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-podosphaera-xanthii-2.jpg",
+        "image": "/images/diseases/disease-erysiphe-polygoni.jpg",
         "stageHi": "फूल व फली अवस्था",
         "stages": [
           "flowering",
@@ -3665,7 +3665,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "पीला मोज़ेक वायरस व सफेद मक्खी (YMV & Whitefly)",
         "nameEn": "Yellow Mosaic Virus & Whitefly",
         "tagHi": "वायरस व कीट",
-        "image": "/images/diseases/disease-mungbean-yellow-mosaic-virus-2.jpg",
+        "image": "/images/pests/pest-bemisia-tabaci-2.jpg",
         "stageHi": "वानस्पतिक व फूल अवस्था (15-40 दिन)",
         "stages": [
           "vegetative",
@@ -3722,7 +3722,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "फली छेदक व जाले वाली इल्ली (Pod Borer - Helicoverpa & Maruca)",
         "nameEn": "Pod Borer (Helicoverpa & Maruca)",
         "tagHi": "कीट",
-        "image": "/images/pests/pest-helicoverpa-armigera-2.jpg",
+        "image": "/images/pests/pest-maruca-vitrata.jpg",
         "stageHi": "फूल व फली अवस्था (40+ दिन)",
         "stages": [
           "flowering",
@@ -3750,7 +3750,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "चूर्णी फफूंद व एस्कोकाइटा झुलसा (Powdery Mildew & Ascochyta Blight)",
         "nameEn": "Powdery Mildew & Ascochyta Blight",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-podosphaera-xanthii-2.jpg",
+        "image": "/images/diseases/disease-erysiphe-polygoni.jpg",
         "stageHi": "फूल व फली अवस्था",
         "stages": [
           "flowering",
@@ -4054,7 +4054,7 @@ export const RAW_CROP_PROBLEM_CROPS: CropProblemCrop[] = [
         "nameHi": "सफेद चूर्ण रोग व सर्कोस्पोरा धब्बा (Powdery Mildew & Leaf Spot)",
         "nameEn": "Powdery Mildew & Cercospora Leaf Spot",
         "tagHi": "फफूंद",
-        "image": "/images/diseases/disease-podosphaera-xanthii-2.jpg",
+        "image": "/images/diseases/disease-erysiphe-polygoni.jpg",
         "stageHi": "फल अवस्था",
         "stages": [
           "fruiting"

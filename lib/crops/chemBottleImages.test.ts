@@ -23,7 +23,7 @@ describe("Chemical Bottle Photorealistic Images Resolution", () => {
 
   it("resolves Cartap Hydrochloride 50% SP to real pouch photo", () => {
     expect(hasRealBottlePhoto("Cartap Hydrochloride 50% SP")).toBe(true);
-    expect(chemBottleImageSrc("Cartap Hydrochloride 50% SP")).toBe("/images/chem/real/cartap-50-sp.jpg");
+    expect(chemBottleImageSrc("Cartap Hydrochloride 50% SP")).toBe("/images/chem/real/cartap-50-sp-v2.jpg");
   });
 
   it("resolves Chlorantraniliprole 18.5% SC to real bottle photo", () => {
@@ -157,7 +157,7 @@ describe("Chemical Bottle Photorealistic Images Resolution", () => {
 
     // 13. Cartap Hydrochloride 50% SP - Dedicated metallic pouch
     expect(hasRealBottlePhoto("Cartap Hydrochloride 50% SP")).toBe(true);
-    expect(chemBottleImageSrc("Cartap Hydrochloride 50% SP")).toBe("/images/chem/real/cartap-50-sp.jpg");
+    expect(chemBottleImageSrc("Cartap Hydrochloride 50% SP")).toBe("/images/chem/real/cartap-50-sp-v2.jpg");
   });
 
   it("resolves bidirectional combo technical names correctly", () => {

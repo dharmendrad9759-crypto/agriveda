@@ -687,15 +687,6 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                   <h2 className="font-display text-[1.2rem] font-bold tracking-tight text-[var(--av-text-primary)]">
                     {hi ? "दवा और मात्रा" : "Medicine & dose"}
                   </h2>
-                  <p className="mt-0.5 text-[13px] text-[var(--av-text-muted)]">
-                    {fieldMedicine
-                      ? hi
-                        ? "सब दवाएँ नीचे हैं — शुरू की रोकथाम से तेज़ प्रकोप तक"
-                        : "Every dose is below, from early prevention to heavy attack"
-                      : hi
-                        ? "ऊपर वाली पहली पसंद से शुरू करें"
-                        : "Start with the first pick"}
-                  </p>
                 </div>
                 <FlaskConical className="mb-1 h-5 w-5 text-emerald-800/45" />
               </div>

@@ -25,10 +25,13 @@ export default function Navbar() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-12 items-center justify-between gap-3 sm:h-14">
           <MotionPressable as="span">
-            <AppLink href="/" className="flex items-center">
-              <span className="text-base font-black tracking-wide agriveda-gradient-text sm:text-lg">
-                {BRAND}
-              </span>
+            <AppLink href="/" className="flex items-center" aria-label={BRAND}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/brand/logo-horizontal.png"
+                alt={BRAND}
+                className="h-9 w-auto object-contain"
+              />
             </AppLink>
           </MotionPressable>
 

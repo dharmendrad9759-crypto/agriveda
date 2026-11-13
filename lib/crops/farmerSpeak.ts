@@ -73,7 +73,7 @@ const PHRASES: [RegExp, string][] = [
   [/\bintegrated\s*pest\s*management\b/gi, "मिला-जुला कीट प्रबंधन (IPM)"],
   [/\bIPM\b/g, "मिला-जुला प्रबंधन (IPM)"],
   [/\bEconomic Threshold Level\b/gi, "नुकसान सीमा (ETL)"],
-  [/\bETL\b/g, "नुकसान सीमा (ETL)"],
+  [/(?<!नुकसान सीमा \()\bETL\b/g, "नुकसान सीमा (ETL)"],
   [/\bMEDIUM\s*RISK\b/gi, "मध्यम खतरा (Medium)"],
   [/\bHIGH\s*RISK\b/gi, "ज्यादा खतरा (High)"],
   [/\bLOW\s*RISK\b/gi, "कम खतरा (Low)"],

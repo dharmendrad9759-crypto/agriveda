@@ -512,22 +512,35 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "stem-borer": [
           {
-                "nameHi": "कार्टाप हाइड्रोक्लोराइड 4% GR / 50% SP",
-                "technical": "Cartap Hydrochloride 4% GR / 50% SP",
-                "dose": "8 किग्रा दानेदार या 400 ग्राम स्प्रे प्रति एकड़",
+                "nameHi": "कार्टाप हाइड्रोक्लोराइड 4% GR",
+                "technical": "Cartap Hydrochloride 4% GR",
+                "dose": "8 किग्रा प्रति एकड़, 20 किग्रा रेत में मिलाकर खड़े पानी में बुरकाव",
                 "brands": [
                       "Padan (Dhanuka)",
                       "Caldan"
                 ],
-                "safety": "जड़ों द्वारा अवशोषित होकर तने तक पहुंचता है।",
+                "safety": "दाना है। स्प्रे टंकी में नहीं घोलना। सूखी रेत में मिलाकर खड़े पानी में बिखेरें।",
                 "level": 1,
-                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
-                "dosePerAcre": "8 kg GR / 400 g SP प्रति एकड़"
+                "levelLabelHi": "दाना · रेत में मिलाकर खेत में",
+                "dosePerAcre": "8 किग्रा / एकड़"
+          },
+          {
+                "nameHi": "कार्टाप हाइड्रोक्लोराइड 50% SP",
+                "technical": "Cartap Hydrochloride 50% SP",
+                "dose": "2.7 ग्राम / लीटर पानी (400 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Padan (Dhanuka)",
+                      "Caldan"
+                ],
+                "safety": "पाउडर है, स्प्रे वाला। 4% दाने वाली बोरी से अलग।",
+                "level": 1,
+                "levelLabelHi": "पाउडर · स्प्रे",
+                "dosePerAcre": "400 ग्राम / एकड़"
           },
           {
                 "nameHi": "फिप्रोनिल 0.3% GR (रीजेंट)",
                 "technical": "Fipronil 0.3% GR",
-                "dose": "8–10 किग्रा प्रति एकड़ (खेत में खाद के साथ बुरकाव)",
+                "dose": "8–10 किग्रा प्रति एकड़, 20 किग्रा रेत में मिलाकर खड़े पानी में बुरकाव",
                 "brands": [
                       "Regent (Bayer)"
                 ],
@@ -800,16 +813,28 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "400 मिली / एकड़"
           },
           {
-                "nameHi": "थियामेथोक्साम 25% WG + लैम्ब्डा-साइहेलोथ्रिन 5% EC",
-                "technical": "Thiamethoxam 25% WG + Lambda-cyhalothrin 5% EC",
-                "dose": "100 ग्राम थियामेथोक्साम + 200 मिली लैम्ब्डा प्रति एकड़",
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
                 "brands": [
-                      "Actara + Karate"
+                      "Actara (Syngenta)"
                 ],
-                "safety": "सिस्टेमिक रस चूसक और संपर्क सुंडी नाशक का मिश्रण।",
+                "safety": "रस चूसक गंधी — अलिका (ZC मिश्रण) यह दवा नहीं है।",
                 "level": 2,
                 "levelLabelHi": "स्तर 2 · मध्यम स्तर",
-                "dosePerAcre": "100 g + 200 ml / एकड़"
+                "dosePerAcre": "100 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "लैम्ब्डा-साइहेलोथ्रिन 5% EC (कराटे)",
+                "technical": "Lambda-cyhalothrin 5% EC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Karate (Syngenta)"
+                ],
+                "safety": "संपर्क सुंडी नाशक। अकतारा से अलग बोतल।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · वैकल्पिक",
+                "dosePerAcre": "200 मिली / एकड़"
           },
           {
                 "nameHi": "थियामेथोक्साम 12.6% + लैम्ब्डा-साइहेलोथ्रिन 9.5% ZC (अलिका)",
@@ -1075,7 +1100,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "फिप्रोनिल 0.3% GR (रीजेंट)",
                 "technical": "Fipronil 0.3% GR",
-                "dose": "7-8 किग्रा प्रति एकड़ (हल्की नमी में खेत में डालें)",
+                "dose": "7-8 किग्रा प्रति एकड़, सूखी रेत में मिलाकर हल्की नमी में बुरकाव",
                 "brands": [
                       "Regent 0.3 GR (Bayer)",
                       "Mortar"
@@ -1101,7 +1126,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
                 "technical": "Chlorantraniliprole 0.4% GR",
-                "dose": "4 किग्रा प्रति एकड़ (सीधे पोंगली/गोभ के अंदर डालें)",
+                "dose": "4 किग्रा प्रति एकड़, सीधे पोंगली/गोभ के अंदर डालें — स्प्रे पंप में मत डालें",
                 "brands": [
                       "Ferterra (FMC)"
                 ],
@@ -1139,25 +1164,36 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "80 मिली / एकड़"
           },
           {
-                "nameHi": "थियामेथोक्साम 30% FS (क्रूजर) या सायंट्रानिलिप्रोल 19.8% + थायोमेथोक्सम 19.8% FS",
-                "technical": "Thiamethoxam 30% FS / Cyantraniliprole 19.8% + Thiamethoxam 19.8% FS",
-                "dose": "8 मिली प्रति किलो बीज (बीज उपचार) या 100 मिली प्रति एकड़ स्प्रे",
+                "nameHi": "थियामेथोक्साम 30% FS (क्रूजर)",
+                "technical": "Thiamethoxam 30% FS",
+                "dose": "8 मिली प्रति किलो बीज (बीज उपचार)",
                 "brands": [
-                      "Cruiser (Syngenta)",
-                      "Fortenza Duo"
+                      "Cruiser (Syngenta)"
                 ],
-                "safety": "बीज उपचार से शुरुआती 21 दिनों तक तना मक्खी का 100% सुरक्षा कवच।",
+                "safety": "बीज उपचार — स्प्रे पंप में मत डालें। शुरुआती 21 दिन तना मक्खी से बचाव।",
                 "level": 3,
-                "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-                "dosePerAcre": "बीज उपचार / 100 मिली एकड़",
+                "levelLabelHi": "स्तर 3 · बीज उपचार",
+                "dosePerAcre": "8 मिली / किलो बीज",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "सायंट्रानिलिप्रोल 19.8% + थियामेथोक्साम 19.8% FS",
+                "technical": "Cyantraniliprole 19.8% + Thiamethoxam 19.8% FS",
+                "dose": "8 मिली प्रति किलो बीज (बीज उपचार)",
+                "brands": [
+                      "Fortenza Duo (Syngenta)"
+                ],
+                "safety": "बीज उपचार — स्प्रे पंप में मत डालें।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · बीज उपचार",
+                "dosePerAcre": "8 मिली / किलो बीज"
           }
     ],
     "shoot-fly-stem-borer": [
           {
                 "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
                 "technical": "Chlorantraniliprole 0.4% GR",
-                "dose": "4 किग्रा प्रति एकड़ (सीधे पोंगली/गोभ के अंदर डालें)",
+                "dose": "4 किग्रा प्रति एकड़, सीधे पोंगली/गोभ के अंदर डालें — स्प्रे पंप में मत डालें",
                 "brands": [
                       "Ferterra (FMC)"
                 ],
@@ -1574,18 +1610,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "thrips": [
           {
-                "nameHi": "फिप्रोनिल 80% WG (जम्प) या इमिडाक्लोप्रिड 70% WG",
+                "nameHi": "फिप्रोनिल 80% WG (जम्प)",
                 "technical": "Fipronil 80% WG",
                 "dose": "40 ग्राम प्रति एकड़ (0.2 ग्राम प्रति लीटर पानी)",
                 "brands": [
-                      "Jump (Bayer)",
-                      "Confidor 70 WG (40 g)"
+                      "Jump (Bayer)"
                 ],
-                "safety": "शुरुआती थ्रिप्स नियंत्रण।",
+                "safety": "शुरुआती थ्रिप्स नियंत्रण। यह दानेदार 0.3% GR नहीं है — घोलकर स्प्रे करें।",
                 "level": 1,
                 "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
                 "dosePerAcre": "40 ग्राम / एकड़",
                 "resistanceWarning": "⚠️ पुराना रसायन — काले थ्रिप्स (Black Thrips) पर कम असरदार; स्तर 2 या 3 चुनें।"
+          },
+          {
+                "nameHi": "इमिडाक्लोप्रिड 70% WG (कान्फिडोर)",
+                "technical": "Imidacloprid 70% WG",
+                "dose": "40 ग्राम प्रति एकड़ (0.2 ग्राम प्रति लीटर पानी)",
+                "brands": [
+                      "Confidor 70 WG"
+                ],
+                "safety": "जम्प से अलग दवा। काले थ्रिप्स पर कमजोर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · वैकल्पिक",
+                "dosePerAcre": "40 ग्राम / एकड़"
           },
           {
                 "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या बेनेविया (200 ml)",
@@ -1822,18 +1869,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "thrips": [
           {
-                "nameHi": "फिप्रोनिल 80% WG (जम्प) या इमिडाक्लोप्रिड 70% WG",
+                "nameHi": "फिप्रोनिल 80% WG (जम्प)",
                 "technical": "Fipronil 80% WG",
                 "dose": "40 ग्राम प्रति एकड़ (0.2 ग्राम प्रति लीटर पानी)",
                 "brands": [
-                      "Jump (Bayer)",
-                      "Confidor 70 WG (40 g)"
+                      "Jump (Bayer)"
                 ],
-                "safety": "शुरुआती थ्रिप्स नियंत्रण।",
+                "safety": "शुरुआती थ्रिप्स नियंत्रण। यह दानेदार 0.3% GR नहीं है — घोलकर स्प्रे करें।",
                 "level": 1,
                 "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
                 "dosePerAcre": "40 ग्राम / एकड़",
                 "resistanceWarning": "⚠️ पुराना रसायन — काले थ्रिप्स (Black Thrips) पर कम असरदार; स्तर 2 या 3 चुनें।"
+          },
+          {
+                "nameHi": "इमिडाक्लोप्रिड 70% WG (कान्फिडोर)",
+                "technical": "Imidacloprid 70% WG",
+                "dose": "40 ग्राम प्रति एकड़ (0.2 ग्राम प्रति लीटर पानी)",
+                "brands": [
+                      "Confidor 70 WG"
+                ],
+                "safety": "जम्प से अलग दवा। काले थ्रिप्स पर कमजोर।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · वैकल्पिक",
+                "dosePerAcre": "40 ग्राम / एकड़"
           },
           {
                 "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या बेनेविया (200 ml)",
@@ -2566,16 +2624,28 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "80 ग्राम / एकड़"
           },
           {
-                "nameHi": "एबामेक्टिन 1.9% EC + थियामेथोक्साम 25% WG",
-                "technical": "Abamectin 1.9% EC + Thiamethoxam 25% WG",
-                "dose": "150 मिली एबामेक्टिन + 80 ग्राम थियामेथोक्साम प्रति एकड़",
+                "nameHi": "एबामेक्टिन 1.9% EC (वर्टीमेक)",
+                "technical": "Abamectin 1.9% EC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
                 "brands": [
-                      "Vertimec + Actara"
+                      "Vertimec"
                 ],
-                "safety": "पत्ती सुरंगक और सफेद मक्खी दोनों पर दोहरा वार।",
+                "safety": "पत्ती सुरंगक।",
                 "level": 2,
                 "levelLabelHi": "स्तर 2 · मध्यम स्तर",
-                "dosePerAcre": "150 ml + 80 g / एकड़"
+                "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "थियामेथोक्साम 25% WG (अकतारा)",
+                "technical": "Thiamethoxam 25% WG",
+                "dose": "0.4 ग्राम / लीटर पानी (80 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Actara (Syngenta)"
+                ],
+                "safety": "सफेद मक्खी — वर्टीमेक से अलग पैकेट।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · वैकल्पिक",
+                "dosePerAcre": "80 ग्राम / एकड़"
           },
           {
                 "nameHi": "सायंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
@@ -2957,7 +3027,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "कार्टाप हाइड्रोक्लोराइड 4% GR",
                 "technical": "Cartap Hydrochloride 4% GR",
-                "dose": "10 किग्रा प्रति एकड़ (कल्लों के पास डालकर मिट्टी चढ़ाएँ)",
+                "dose": "10 किग्रा प्रति एकड़, कल्लों के पास रेत में मिलाकर बुरकाव, फिर मिट्टी चढ़ाएँ",
                 "brands": [
                       "Padan 4G (Dhanuka)"
                 ],
@@ -2969,7 +3039,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "फिप्रोनिल 0.6% GR (फर्टेरा)",
                 "technical": "Fipronil 0.6% GR",
-                "dose": "5 किग्रा प्रति एकड़ (कल्लों के पास डालकर सिंचाई करें)",
+                "dose": "5 किग्रा प्रति एकड़, कल्लों के पास रेत में मिलाकर बुरकाव, फिर सिंचाई करें",
                 "brands": [
                       "Ferterra (FMC)"
                 ],
@@ -2994,21 +3064,9 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "top-borer": [
           {
-                "nameHi": "कार्बोफ्यूरॉन 3% CG",
-                "technical": "Carbofuran 3% CG",
-                "dose": "12 किग्रा प्रति एकड़ (गोभ के पास डालें)",
-                "brands": [
-                      "Furadan"
-                ],
-                "safety": "पारंपरिक सिस्टेमिक दानेदार।",
-                "level": 1,
-                "levelLabelHi": "स्तर 1 · शुरुआती स्तर",
-                "dosePerAcre": "12 किग्रा / एकड़"
-          },
-          {
                 "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
                 "technical": "Chlorantraniliprole 0.4% GR",
-                "dose": "6 किग्रा प्रति एकड़ (खेत में डालकर हल्की सिंचाई करें)",
+                "dose": "6 किग्रा प्रति एकड़, खेत में रेत में मिलाकर बुरकाव, फिर हल्की सिंचाई करें",
                 "brands": [
                       "Ferterra (FMC)"
                 ],
@@ -3517,7 +3575,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "कार्टाप हाइड्रोक्लोराइड 4% GR",
                 "technical": "Cartap Hydrochloride 4% GR",
-                "dose": "8 किग्रा प्रति एकड़ (सिंचाई से पहले खेत में बिखेरें)",
+                "dose": "8 किग्रा प्रति एकड़, सिंचाई से पहले सूखी रेत में मिलाकर बिखेरें",
                 "brands": [
                       "Padan 4G (Dhanuka)"
                 ],
@@ -3529,7 +3587,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
           {
                 "nameHi": "क्लोरेंट्रानिलिप्रोल 0.4% GR (फर्टेरा)",
                 "technical": "Chlorantraniliprole 0.4% GR",
-                "dose": "4 किग्रा प्रति एकड़",
+                "dose": "4 किग्रा प्रति एकड़, सूखी रेत में मिलाकर जड़ के पास बुरकाव",
                 "brands": [
                       "Ferterra (FMC)"
                 ],
@@ -4867,17 +4925,28 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "100 ग्राम / एकड़"
           },
           {
-                "nameHi": "इंडोक्साकार्ब 14.5% SC या फ्लूबेन्डियामाइड 39.35% SC",
-                "technical": "Indoxacarb 14.5% SC (150 ml) या Flubendiamide 39.35% SC (40 ml)",
-                "dose": "0.75 मिली / लीटर पानी",
+                "nameHi": "इंडोक्साकार्ब 14.5% SC (अवांट)",
+                "technical": "Indoxacarb 14.5% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
                 "brands": [
-                      "Avaunt (FMC)",
-                      "Fame (Bayer)"
+                      "Avaunt (FMC)"
                 ],
                 "safety": "बड़ी सुंडियों के भोजन को तुरंत बंद कर देता है।",
                 "level": 2,
                 "levelLabelHi": "स्तर 2 · मध्यम स्तर",
                 "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लूबेन्डियामाइड 39.35% SC (फेम)",
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "0.2 मिली / लीटर पानी (40 मिली प्रति एकड़)",
+                "brands": [
+                      "Fame (Bayer)"
+                ],
+                "safety": "फली छेदक की बड़ी सुंडी पर अलग मॉलिक्यूल — इंडोक्साकार्ब के साथ एक ही टंकी में न मिलाएँ।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "40 मिली / एकड़"
           },
           {
                 "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
@@ -5083,17 +5152,28 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "100 ग्राम / एकड़"
           },
           {
-                "nameHi": "इंडोक्साकार्ब 14.5% SC या फ्लूबेन्डियामाइड 39.35% SC",
-                "technical": "Indoxacarb 14.5% SC (150 ml) या Flubendiamide 39.35% SC (40 ml)",
-                "dose": "0.75 मिली / लीटर पानी",
+                "nameHi": "इंडोक्साकार्ब 14.5% SC (अवांट)",
+                "technical": "Indoxacarb 14.5% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
                 "brands": [
-                      "Avaunt (FMC)",
-                      "Fame (Bayer)"
+                      "Avaunt (FMC)"
                 ],
                 "safety": "बड़ी सुंडियों के भोजन को तुरंत बंद कर देता है।",
                 "level": 2,
                 "levelLabelHi": "स्तर 2 · मध्यम स्तर",
                 "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लूबेन्डियामाइड 39.35% SC (फेम)",
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "0.2 मिली / लीटर पानी (40 मिली प्रति एकड़)",
+                "brands": [
+                      "Fame (Bayer)"
+                ],
+                "safety": "फली छेदक की बड़ी सुंडी पर अलग मॉलिक्यूल — इंडोक्साकार्ब के साथ एक ही टंकी में न मिलाएँ।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "40 मिली / एकड़"
           },
           {
                 "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
@@ -5299,17 +5379,28 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "100 ग्राम / एकड़"
           },
           {
-                "nameHi": "इंडोक्साकार्ब 14.5% SC या फ्लूबेन्डियामाइड 39.35% SC",
-                "technical": "Indoxacarb 14.5% SC (150 ml) या Flubendiamide 39.35% SC (40 ml)",
-                "dose": "0.75 मिली / लीटर पानी",
+                "nameHi": "इंडोक्साकार्ब 14.5% SC (अवांट)",
+                "technical": "Indoxacarb 14.5% SC",
+                "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
                 "brands": [
-                      "Avaunt (FMC)",
-                      "Fame (Bayer)"
+                      "Avaunt (FMC)"
                 ],
                 "safety": "बड़ी सुंडियों के भोजन को तुरंत बंद कर देता है।",
                 "level": 2,
                 "levelLabelHi": "स्तर 2 · मध्यम स्तर",
                 "dosePerAcre": "150 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लूबेन्डियामाइड 39.35% SC (फेम)",
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "0.2 मिली / लीटर पानी (40 मिली प्रति एकड़)",
+                "brands": [
+                      "Fame (Bayer)"
+                ],
+                "safety": "फली छेदक की बड़ी सुंडी पर अलग मॉलिक्यूल — इंडोक्साकार्ब के साथ एक ही टंकी में न मिलाएँ।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · मध्यम स्तर",
+                "dosePerAcre": "40 मिली / एकड़"
           },
           {
                 "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
@@ -5485,12 +5576,11 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "250 मिली / एकड़"
           },
           {
-                "nameHi": "एज़ोक्सीस्ट्रोबिन + टेबुकोनाज़ोल (कस्टोडिया) या बोस्केलिड + पायराक्लोस्ट्रोबिन",
-                "technical": "Azoxystrobin + Tebuconazole SC (250 ml) या Boscalid + Pyraclostrobin",
+                "nameHi": "एज़ोक्सीस्ट्रोबिन 11% + टेबुकोनाज़ोल 18.3% SC (कस्टोडिया)",
+                "technical": "Azoxystrobin 11% + Tebuconazole 18.3% SC",
                 "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
                 "brands": [
-                      "Custodia (Adama)",
-                      "Signum (BASF)"
+                      "Custodia (Adama)"
                 ],
                 "safety": "तना गलन पर आधुनिक रिसर्च फंगीसाइड, तने को टूटने से पूरी तरह बचाता है।",
                 "level": 3,
@@ -5528,18 +5618,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "80 ग्राम / एकड़"
           },
           {
-                "nameHi": "फ्लोनिकामिड 50% WG (उलाला) या पाइमेट्रोज़िन 50% WG (चेस)",
-                "technical": "Flonicamid 50% WG (60 g) या Pymetrozine 50% WG (100 g)",
+                "nameHi": "फ्लोनिकामिड 50% WG (उलाला)",
+                "technical": "Flonicamid 50% WG",
                 "dose": "0.3 ग्राम / लीटर पानी (60 ग्राम प्रति एकड़)",
                 "brands": [
-                      "Ulala (UPL)",
-                      "Chess (Syngenta)"
+                      "Ulala (UPL)"
                 ],
                 "safety": "माहू के सुई जैसे मुंह को तुरंत पैरालाइज करता है, मित्र कीटों और मधुमक्खियों के लिए सुरक्षित।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "60 ग्राम / एकड़",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "पाइमेट्रोज़िन 50% WG (चेस)",
+                "technical": "Pymetrozine 50% WG",
+                "dose": "0.5 ग्राम / लीटर पानी (100 ग्राम प्रति एकड़)",
+                "brands": [
+                      "Chess (Syngenta)"
+                ],
+                "safety": "माहू का रस चूसना बंद — उलाला से अलग मॉलिक्यूल, एक साथ न मिलाएँ।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · वैकल्पिक",
+                "dosePerAcre": "100 ग्राम / एकड़"
           }
     ]
   },
@@ -5614,18 +5715,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "60 ग्राम / एकड़"
           },
           {
-                "nameHi": "डायाफेन्थियूरॉन 50% WP (पेगासस) या एफिडोपायरोपेन 50 DC (सेफिना)",
-                "technical": "Diafenthiuron 50% WP (200 g) या Afidopyropen 50 DC (400 ml)",
+                "nameHi": "डायाफेन्थियूरॉन 50% WP (पेगासस)",
+                "technical": "Diafenthiuron 50% WP",
                 "dose": "1 ग्राम / लीटर पानी (200 ग्राम प्रति एकड़)",
                 "brands": [
-                      "Pegasus (Syngenta)",
-                      "Sefina (BASF)"
+                      "Pegasus (Syngenta)"
                 ],
-                "safety": "वयस्क सफेद मक्खी और तेला दोनों पर वाष्पशील व सिस्टेमिक मारक क्षमता।",
+                "safety": "वयस्क सफेद मक्खी और तेला दोनों पर वाष्पशील मारक क्षमता।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "200 ग्राम / एकड़",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "एफिडोपायरोपेन 50 g/L DC (सेफिना)",
+                "technical": "Afidopyropen 50 g/L DC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Sefina (BASF)"
+                ],
+                "safety": "तेला/सफेद मक्खी — स्प्रे है, दाना नहीं। पेगासस के साथ एक टंकी में न मिलाएँ।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · वैकल्पिक",
+                "dosePerAcre": "400 मिली / एकड़"
           }
     ],
     "ymv": [
@@ -5656,17 +5768,16 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "250 मिली / एकड़"
           },
           {
-                "nameHi": "डायाफेन्थियूरॉन 47.8% SC + सीवीड / वायरस रोधक",
-                "technical": "Diafenthiuron 47.8% SC (200 ml) + Seaweed / Viricide (250 ml)",
-                "dose": "1 मिली + 1.25 मिली / लीटर पानी",
+                "nameHi": "डायाफेन्थियूरॉन 47.8% SC (पेगासस SC)",
+                "technical": "Diafenthiuron 47.8% SC",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Pegasus SC",
-                      "Viroban / Biovita"
+                      "Pegasus SC"
                 ],
-                "safety": "वेक्टर सफेद मक्खी का तुरंत नॉकडाउन + पौधे की प्रतिरोधक क्षमता में वृद्धि।",
+                "safety": "सफेद मक्खी वेक्टर का नॉकडाउन। वायरस की दवा नहीं — कीट रोकें। चाहें तो अलग से समुद्री शैवाल टॉनिक मिला सकते हैं।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
-                "dosePerAcre": "200 मिली + 250 मिली / एकड़",
+                "dosePerAcre": "200 मिली / एकड़",
                 "isTopPerformer": true
           }
     ],
@@ -5698,18 +5809,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "60 मिली / एकड़"
           },
           {
-                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट) या फ्लूबेन्डियामाइड 39.35% SC (फेम)",
-                "technical": "Spinetoram 11.7% SC (150 ml) या Flubendiamide 39.35% SC (40 ml)",
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
                 "dose": "0.75 मिली / लीटर पानी (150 मिली प्रति एकड़)",
                 "brands": [
-                      "Delegate (Corteva)",
-                      "Fame (Bayer)"
+                      "Delegate (Corteva)"
                 ],
-                "safety": "बड़ी से बड़ी इल्ली का तुरंत खात्मा, आधुनिक ग्रीन मॉलिक्यूल।",
+                "safety": "बड़ी इल्ली का तुरंत खात्मा।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "150 मिली / एकड़",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "फ्लूबेन्डियामाइड 39.35% SC (फेम)",
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "0.2 मिली / लीटर पानी (40 मिली प्रति एकड़)",
+                "brands": [
+                      "Fame (Bayer)"
+                ],
+                "safety": "फल छेदक — डेलिगेट से अलग मॉलिक्यूल, एक टंकी में न मिलाएँ।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · वैकल्पिक",
+                "dosePerAcre": "40 मिली / एकड़"
           }
     ],
     "red-spider-mite": [
@@ -5813,17 +5935,28 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "resistanceWarning": "पुरानी केमिस्ट्री; लगातार प्रयोग से बचें।"
           },
           {
-                "nameHi": "लैम्ब्डा-साइहेलोथ्रिन 5% EC (कराटे) या फ्लूबेन्डियामाइड 39.35% SC",
-                "technical": "Lambda-cyhalothrin 5% EC (250 ml) या Flubendiamide (50 ml)",
-                "dose": "1.25 मिली / लीटर पानी",
+                "nameHi": "लैम्ब्डा-साइहेलोथ्रिन 5% EC (कराटे)",
+                "technical": "Lambda-cyhalothrin 5% EC",
+                "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
                 "brands": [
-                      "Karate (Syngenta)",
-                      "Fame (Bayer)"
+                      "Karate (Syngenta)"
                 ],
                 "safety": "तने के अंदर छिपी सुंडी पर तेज नॉकडाउन असर।",
                 "level": 2,
                 "levelLabelHi": "स्तर 2 · मध्यम स्तर",
                 "dosePerAcre": "250 मिली / एकड़"
+          },
+          {
+                "nameHi": "फ्लूबेन्डियामाइड 39.35% SC (फेम)",
+                "technical": "Flubendiamide 39.35% SC",
+                "dose": "0.25 मिली / लीटर पानी (50 मिली प्रति एकड़)",
+                "brands": [
+                      "Fame (Bayer)"
+                ],
+                "safety": "तना छेदक — कराटे से अलग मॉलिक्यूल।",
+                "level": 2,
+                "levelLabelHi": "स्तर 2 · वैकल्पिक",
+                "dosePerAcre": "50 मिली / एकड़"
           },
           {
                 "nameHi": "क्लोरएंट्रानिलिप्रोल 18.5% SC (कोराजन)",
@@ -5868,18 +6001,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "500 ग्राम / एकड़"
           },
           {
-                "nameHi": "फेनामिडोन 10% + मैंकोजेब 50% WG (सेक्टिन) या फॉसेटिल-अल 80% WP (एलियेट)",
-                "technical": "Fenamidone 10% + Mancozeb 50% WG (600 g) या Fosetyl-Al 80% WP (500 g)",
-                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़)",
+                "nameHi": "फेनामिडोन 10% + मैंकोजेब 50% WG (सेक्टिन)",
+                "technical": "Fenamidone 10% + Mancozeb 50% WG",
+                "dose": "3 ग्राम / लीटर पानी (600 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
                 "brands": [
-                      "Sectin (Bayer)",
-                      "Aliette (Bayer)"
+                      "Sectin (Bayer)"
                 ],
-                "safety": "प्रकंद सड़न पर आधुनिक रिसर्च फंगीसाइड, पौधे के दोनों संवहनी तंतुओं (Xylem व Phloem) में संचरित।",
+                "safety": "प्रकंद सड़न — जड़ों में ड्रेंचिंग।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "600 ग्राम / एकड़",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "फॉसेटिल-अल 80% WP (एलियेट)",
+                "technical": "Fosetyl-Al 80% WP",
+                "dose": "2.5 ग्राम / लीटर पानी (500 ग्राम प्रति एकड़ — जड़ों में ड्रेंचिंग)",
+                "brands": [
+                      "Aliette (Bayer)"
+                ],
+                "safety": "जड़ों में ड्रेंचिंग। सेक्टिन के साथ एक टंकी में न मिलाएँ जब तक दुकान न बताए।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · वैकल्पिक",
+                "dosePerAcre": "500 ग्राम / एकड़"
           }
     ],
     "bacterial-wilt": [
@@ -5994,18 +6138,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "60 ग्राम / 200 लीटर पानी"
           },
           {
-                "nameHi": "डिनोटिफ्यूरान 20% SG (ओशीन) या बुप्रोफेजिन 25% SC",
-                "technical": "Dinotefuran 20% SG (0.4 g/L) या Buprofezin 25% SC (1.5 ml/L)",
+                "nameHi": "डिनोटिफ्यूरान 20% SG (ओशीन)",
+                "technical": "Dinotefuran 20% SG",
                 "dose": "0.4 ग्राम / लीटर पानी",
                 "brands": [
-                      "Oshin (PI Industries)",
-                      "Applaud"
+                      "Oshin (PI Industries)"
                 ],
-                "safety": "तीसरी पीढ़ी का नियोनिकोटिनोइड, हॉपर और उसके शिशुओं पर तुरंत ड्रॉप-डाउन असर।",
+                "safety": "हॉपर पर तुरंत ड्रॉप-डाउन असर।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "80 ग्राम / 200 लीटर पानी",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "बुप्रोफेजिन 25% SC (अप्लाउड)",
+                "technical": "Buprofezin 25% SC",
+                "dose": "1.5 मिली / लीटर पानी",
+                "brands": [
+                      "Applaud"
+                ],
+                "safety": "हॉपर के शिशु — ओशीन से अलग मॉलिक्यूल।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · वैकल्पिक",
+                "dosePerAcre": "300 मिली / 200 लीटर पानी"
           }
     ],
     "powdery-mildew": [
@@ -6132,8 +6287,8 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "sigatoka": [
           {
-                "nameHi": "प्रोपिकोनाज़ोल 25% EC + मिनरल ऑयल/स्टिकर",
-                "technical": "Propiconazole 25% EC (200 ml/एकड़) + Mineral Oil / Sticker",
+                "nameHi": "प्रोपिकोनाज़ोल 25% EC (टिल्ट)",
+                "technical": "Propiconazole 25% EC",
                 "dose": "1 मिली / लीटर पानी + 1 मिली स्टिकर",
                 "brands": [
                       "Tilt (Syngenta)",
@@ -6199,18 +6354,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "300 ग्राम / 200 लीटर पानी"
           },
           {
-                "nameHi": "स्पिनोसैड 45% SC (ट्रेसर) या स्पिनेटोरम 11.7% SC (डेलिगेट)",
-                "technical": "Spinosad 45% SC (0.4 ml/L) या Spinetoram 11.7% SC (0.5 ml/L)",
+                "nameHi": "स्पिनोसैड 45% SC (ट्रेसर)",
+                "technical": "Spinosad 45% SC",
                 "dose": "0.4 मिली / लीटर पानी",
                 "brands": [
-                      "Tracer (Corteva)",
-                      "Delegate"
+                      "Tracer (Corteva)"
                 ],
-                "safety": "केले के छिलके पर शून्य दाग, निर्यात गुणवत्ता के लिए सबसे सुरक्षित ग्रीन मॉलिक्यूल।",
+                "safety": "केले के छिलके पर दाग कम, घौद पर स्प्रे।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "80 मिली / 200 लीटर पानी",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
+                "technical": "Spinetoram 11.7% SC",
+                "dose": "0.5 मिली / लीटर पानी",
+                "brands": [
+                      "Delegate (Corteva)"
+                ],
+                "safety": "ट्रेसर से अलग मॉलिक्यूल — एक टंकी में न मिलाएँ।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · वैकल्पिक",
+                "dosePerAcre": "100 मिली / 200 लीटर पानी"
           }
     ]
   },
@@ -6322,16 +6488,28 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
     ],
     "thrips-mealybug": [
           {
-                "nameHi": "फिप्रोनिल 80% WG + बुप्रोफेजिन 25% SC",
-                "technical": "Fipronil 80% WG (40 g) + Buprofezin 25% SC (400 ml)",
-                "dose": "0.2 ग्राम + 2 मिली / लीटर पानी",
+                "nameHi": "फिप्रोनिल 80% WG (जम्प)",
+                "technical": "Fipronil 80% WG",
+                "dose": "0.2 ग्राम / लीटर पानी (40 ग्राम प्रति एकड़)",
                 "brands": [
-                      "Jump + Applaud"
+                      "Jump (Bayer)"
                 ],
-                "safety": "थ्रिप्स पर तीव्र मारक क्षमता व मिलीबग के शिशुओं की रोकथाम।",
+                "safety": "थ्रिप्स — यह 0.3% GR दाना नहीं है।",
                 "level": 1,
-                "levelLabelHi": "स्तर 1 · दोहरा वार",
-                "dosePerAcre": "40 ग्राम + 400 मिली / एकड़"
+                "levelLabelHi": "स्तर 1 · थ्रिप्स",
+                "dosePerAcre": "40 ग्राम / एकड़"
+          },
+          {
+                "nameHi": "बुप्रोफेजिन 25% SC (अप्लाउड)",
+                "technical": "Buprofezin 25% SC",
+                "dose": "2 मिली / लीटर पानी (400 मिली प्रति एकड़)",
+                "brands": [
+                      "Applaud"
+                ],
+                "safety": "मिलीबग के शिशु — जम्प से अलग बोतल।",
+                "level": 1,
+                "levelLabelHi": "स्तर 1 · मिलीबग",
+                "dosePerAcre": "400 मिली / एकड़"
           },
           {
                 "nameHi": "स्पिनेटोरम 11.7% SC (डेलिगेट)",
@@ -6346,18 +6524,29 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "dosePerAcre": "150 मिली / एकड़"
           },
           {
-                "nameHi": "स्पाइरोटेट्रामैट 150 OD (मोवेन्टो) या सायंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
-                "technical": "Spirotetramat 150 OD (250 ml) या Cyantraniliprole 10.26% OD (200 ml)",
+                "nameHi": "स्पाइरोटेट्रामैट 15.31% OD (मोवेन्टो)",
+                "technical": "Spirotetramat 15.31% OD",
                 "dose": "1.25 मिली / लीटर पानी (250 मिली प्रति एकड़)",
                 "brands": [
-                      "Movento (Bayer)",
-                      "Benevia (FMC)"
+                      "Movento (Bayer)"
                 ],
-                "safety": "दोनों दिशाओं में चलने वाला (Two-way systemic) आधुनिक कीटनाशक, गुच्छों के अंदर छिपे मिलीबग का संपूर्ण खात्मा।",
+                "safety": "गुच्छों के अंदर छिपे मिलीबग / थ्रिप्स।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "250 मिली / एकड़",
                 "isTopPerformer": true
+          },
+          {
+                "nameHi": "सायंट्रानिलिप्रोल 10.26% OD (बेनेविया)",
+                "technical": "Cyantraniliprole 10.26% OD",
+                "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
+                "brands": [
+                      "Benevia (FMC)"
+                ],
+                "safety": "मोवेन्टो से अलग मॉलिक्यूल — एक टंकी में न मिलाएँ।",
+                "level": 3,
+                "levelLabelHi": "स्तर 3 · वैकल्पिक",
+                "dosePerAcre": "200 मिली / एकड़"
           }
     ]
   }

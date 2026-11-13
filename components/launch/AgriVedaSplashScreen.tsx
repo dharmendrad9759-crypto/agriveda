@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
 import { BRAND } from "@/lib/brand";
 
 const SPLASH_MS = 1800;
@@ -41,105 +40,36 @@ export default function AgriVedaSplashScreen({ onComplete, reducedMotion = false
       role="status"
       aria-live="polite"
       aria-busy={!exiting}
-      className={`fixed inset-0 z-[100000] flex flex-col items-center justify-center overflow-hidden bg-[#020617] ${
+      className={`fixed inset-0 z-[100000] flex flex-col items-center justify-center overflow-hidden bg-[#fffdf8] ${
         exiting ? "agriveda-splash--exit" : "agriveda-splash"
       }`}
     >
-      {/* Quick Skip for Farmers */}
       <button
         type="button"
         onClick={onComplete}
-        className="absolute top-4 right-4 z-50 rounded-full border border-emerald-500/30 bg-slate-900/80 px-3.5 py-1.5 text-xs font-bold text-emerald-400 backdrop-blur-md transition hover:bg-slate-800 active:scale-95"
+        className="absolute top-4 right-4 z-50 rounded-full border border-[#0c3b2e]/15 bg-white/80 px-3.5 py-1.5 text-xs font-bold text-[#0c3b2e] backdrop-blur-md transition hover:bg-white active:scale-95"
       >
         स्किप करें (Skip) ›
       </button>
 
-      {/* Futuristic Atmosphere Glows */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 0%, rgba(16,185,129,0.15) 0%, transparent 65%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full opacity-30 blur-[100px]"
-        style={{
-          background: "rgba(56, 189, 248, 0.2)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-32 top-1/4 h-96 w-96 rounded-full opacity-20 blur-[120px]"
-        style={{
-          background: "rgba(16, 185, 129, 0.2)",
-        }}
-      />
-      
-      {/* Tech Grid Pattern */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
-
       <div className="agriveda-splash__brand relative z-10 flex flex-col items-center px-6 text-center">
-        {/* Futuristic Logo Container */}
-        <div className="agriveda-splash__logo relative mb-8">
-          {/* Animated Cyber Rings */}
-          <div
-            aria-hidden
-            className="agriveda-splash__ring-outer absolute left-1/2 top-1/2 h-[180px] w-[180px] -translate-x-1/2 -translate-y-1/2 rounded-[40px] border border-emerald-500/20"
-          />
-          <div
-            aria-hidden
-            className="agriveda-splash__ring-inner absolute left-1/2 top-1/2 h-[152px] w-[152px] -translate-x-1/2 -translate-y-1/2 rounded-[36px]"
-            style={{
-              background: "conic-gradient(from 180deg, rgba(16,185,129,0) 0%, rgba(16,185,129,0.5) 50%, rgba(56,189,248,0.8) 100%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="absolute left-1/2 top-1/2 h-[146px] w-[146px] -translate-x-1/2 -translate-y-1/2 rounded-[34px] bg-[#020617]"
-          />
-          
-          <AgriVedaBrandMark
-            sizeClassName="relative h-[120px] w-[120px] rounded-[30px] shadow-[0_0_40px_rgba(16,185,129,0.3)] bg-gradient-to-br from-slate-900 to-black border border-white/10"
-            iconClassName="h-16 w-16"
+        <div className="agriveda-splash__logo relative mb-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo-stacked.png"
+            alt={BRAND}
+            className="h-auto w-[min(78vw,280px)] object-contain"
           />
         </div>
-
-        <h1 className="m-0 font-display text-[clamp(2.2rem,9vw,3rem)] font-extrabold leading-none tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-sky-400 drop-shadow-sm">
-          {BRAND}
-        </h1>
-        <p className="mt-3 text-[13px] font-bold tracking-[0.2em] text-emerald-300">
+        <p className="text-[13px] font-bold tracking-[0.18em] text-[#0c3b2e]">
           स्मार्ट किसान सलाहकार
         </p>
-
-        {/* Tech Line Decorator */}
-        <div aria-hidden className="mt-5 flex items-center gap-3">
-          <span className="h-px w-12 bg-gradient-to-r from-transparent to-emerald-500/50" />
-          <div className="h-1.5 w-1.5 rotate-45 border border-emerald-400 bg-transparent shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-          <span className="h-px w-12 bg-gradient-to-l from-transparent to-emerald-500/50" />
-        </div>
-
-        <div className="mt-5 inline-flex max-w-[min(92vw,340px)] items-center justify-center rounded-2xl border border-emerald-500/25 bg-emerald-950/50 px-6 py-2.5 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <span className="text-[13px] font-bold leading-none text-emerald-100 sm:text-[14px]">
-            🌱 डिजिटल किसान • समृद्ध फसल
-          </span>
-        </div>
       </div>
 
       <div className="absolute bottom-[max(2.8rem,env(safe-area-inset-bottom))] z-10 flex flex-col items-center gap-4">
         {/* Futuristic Spinner */}
         <div className="relative flex h-10 w-10 items-center justify-center">
-          <div className="agriveda-splash__spinner-track absolute inset-0 rounded-full border-2 border-slate-800" />
+          <div className="agriveda-splash__spinner-track absolute inset-0 rounded-full border-2 border-[#0c3b2e]/15" />
           <div className="agriveda-splash__spinner-head absolute inset-0 rounded-full border-2 border-transparent border-t-emerald-400 border-l-emerald-400" />
           <div className="h-2 w-2 rounded-full bg-sky-400 shadow-[0_0_10px_rgba(56,189,248,1)] animate-pulse" />
         </div>

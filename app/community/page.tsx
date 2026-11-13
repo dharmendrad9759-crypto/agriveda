@@ -106,9 +106,11 @@ export default function CommunityPage() {
 
         {!hydrated ? (
           <DarkCard>
-            <p className="py-8 text-center text-sm text-[var(--av-text-muted)]">
+            <div className="flex flex-col items-center gap-3 py-8 text-center text-sm text-[var(--av-text-muted)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo-mark.png" alt="" className="h-12 w-12 object-contain" />
               {isHi ? "लोड हो रहा है…" : "Loading…"}
-            </p>
+            </div>
           </DarkCard>
         ) : filtered.length === 0 ? (
           <DarkCard className="text-center">

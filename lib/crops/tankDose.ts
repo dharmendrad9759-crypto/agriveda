@@ -20,6 +20,7 @@ export function tankDoseLine(dose: string): string | null {
   if (!raw) return null;
   if (/बीज|seed|किलोग्राम\s*बीज|kg\s*seed/i.test(raw)) return null;
   if (/ड्रेंच|drench|मिट्टी/i.test(raw)) return null;
+  if (/बालू|रेत|बुरकाव|भुरकाव|broadcast|\b(?:GR|CG)\b|गोभ|पोंगली/i.test(raw)) return null;
 
   const unitRe = "(मिलीलीटर|मिली|ml|ग्राम|g)";
   const perLitre = raw.match(
@@ -81,6 +82,8 @@ export interface DosePill {
 export interface ParseDoseOpts {
   /** 15 L knapsack (default) or 16 L battery pump */
   tankLitres?: number;
+  /** Technical + formulation, so GR/CG never compute a spray tank */
+  technical?: string;
 }
 
 export interface ParsedFarmerDose {
@@ -198,8 +201,18 @@ export function parseFarmerDose(doseText: string, opts?: ParseDoseOpts): ParsedF
   }
 
   // 2. Soil / Sand Broadcast check (रेत/बालू में मिलाकर बुरकाव या दानेदार GR)
+  const tech = opts?.technical ?? "";
+  const granuleForm =
+    /\b(?:GR|CG)\b/i.test(tech) && !/\b(?:SC|EC|WG|WP|SP|SL|OD|ZC|FS|DC)\b/i.test(tech);
+  const kgOnField =
+    /(?:किग्रा|किलो|\bkg\b)/i.test(raw) &&
+    /(?:एकड़|acre)/i.test(raw) &&
+    !/(?:मिली|ml|ग्राम|g)\s*\/\s*(?:लीटर|L)/i.test(raw);
   const isBroadcast =
-    /बालू|रेत|बखेर|बिखेर|बुरकाव|भुरकाव|broadcast|दानेदार|granule|\b(?:GR|CG|4G|3G|10G)\b|यूरिया\s*में\s*मिला/i.test(raw) &&
+    (/बालू|रेत|बखेर|बिखेर|बुरकाव|भुरकाव|broadcast|दानेदार|granule|\b(?:GR|CG|4G|3G|10G)\b|यूरिया\s*में\s*मिला|गोभ|पोंगली|कल्लों के पास/i.test(
+      raw
+    ) ||
+      (granuleForm && kgOnField)) &&
     !/पत्तियों\s*पर\s*स्प्रे|लीटर\s*पानी\s*में\s*घोलकर\s*स्प्रे/i.test(raw);
 
   if (isBroadcast) {
@@ -233,8 +246,12 @@ export function parseFarmerDose(doseText: string, opts?: ParseDoseOpts): ParsedF
         subtext: "बुरकाव बाद तुरंत पानी दें",
       },
       useSticker: false,
-      doctorTip: "पहली सिंचाई के समय एकसार बुरकाव करें ताकि जड़ क्षेत्र में कीटों का तुरंत खात्मा हो सके।",
-      voiceActionLine: `इसे पहली सिंचाई से ठीक पहले खेत में एकसार बिखेरें और तुरंत पानी लगाएँ।`,
+      doctorTip: /खड़े पानी|खड़ा पानी/.test(raw)
+        ? "सूखी रेत में मिलाकर 2–3 सेमी खड़े पानी में बिखेरें। स्प्रे पंप में मत डालें।"
+        : "सूखी रेत में मिलाकर जड़ के पास बिखेरें। स्प्रे पंप में मत डालें।",
+      voiceActionLine: /खड़े पानी|खड़ा पानी/.test(raw)
+        ? `${acreVal} दवा सूखी रेत में मिलाकर खड़े पानी में बिखेरें। स्प्रे पंप में मत डालें।`
+        : `${acreVal} दवा सूखी रेत में मिलाकर जड़ के पास बिखेरें। स्प्रे पंप में मत डालें।`,
       tankDose: "बालू में बुरकाव",
       acreDose: acreVal,
       waterVolume: `${sandVal} + तुरंत सिंचाई`,
@@ -248,7 +265,7 @@ export function parseFarmerDose(doseText: string, opts?: ParseDoseOpts): ParsedF
   }
 
   // 3. Soil Drenching / Canal Irrigation check (सिंचाई में बहाना / ड्रेंचिंग)
-  const isDrench = /सिंचाई\s*के\s*साथ|पानी\s*के\s*साथ\s*बहा|ड्रेंच|drench|जड़ों\s*में\s*डाल/i.test(raw);
+  const isDrench = /सिंचाई\s*के\s*(?:पानी\s*के\s*)?साथ|पानी\s*के\s*साथ\s*बहा|ड्रेंच|drench|जड़ों\s*में\s*डाल/i.test(raw);
   if (isDrench) {
     const acreMatch = raw.match(
       /([\d.]+(?:\s*[-–से]\s*[\d.]+)?\s*(?:लीटर|मिली|किग्रा|kg|L|ml)\s*(?:प्रति|\/)?\s*एकड़)/i

@@ -109,14 +109,17 @@ export async function fileToBase64Payload(
   return { mimeType: match[1], base64: match[2] };
 }
 
-export async function checkAiDoctorConfigured(): Promise<boolean> {
+export type AiDoctorStatus = "ready" | "login" | "off";
+
+export async function checkAiDoctorConfigured(): Promise<AiDoctorStatus> {
   try {
     const res = await fetch("/api/ai-doctor/analyze", { credentials: "include" });
-    if (!res.ok) return false;
+    if (res.status === 401) return "login";
+    if (!res.ok) return "off";
     const body = await res.json();
-    return Boolean(body.configured);
+    return body.configured ? "ready" : "off";
   } catch {
-    return false;
+    return "off";
   }
 }
 

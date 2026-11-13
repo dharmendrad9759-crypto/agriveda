@@ -317,7 +317,15 @@ export default function FieldAdvisorPage() {
       title="खेत सलाह (आज और इस हफ्ते का काम)"
       breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: "खेत सलाह" }]}
     >
-      <Suspense fallback={<div className="p-8 text-center text-sm text-[var(--av-text-muted)]">लोड हो रहा है…</div>}>
+      <Suspense
+        fallback={
+          <div className="flex flex-col items-center gap-3 p-8 text-center text-sm text-[var(--av-text-muted)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo-mark.png" alt="" className="h-12 w-12 object-contain" />
+            लोड हो रहा है…
+          </div>
+        }
+      >
         <FieldAdvisorContent />
       </Suspense>
     </AppShell>

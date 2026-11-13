@@ -10,7 +10,6 @@ import {
   Camera,
   CloudSun,
   FileSearch,
-  Leaf,
   MapPin,
   ShieldCheck,
   Sprout,
@@ -248,14 +247,12 @@ export default function IntroCarousel({ onComplete }: Props) {
 
       {/* Top Bar: Brand Pill + Skip Button */}
       <header className="relative z-20 flex shrink-0 items-center justify-between px-5 pt-[max(0.75rem,env(safe-area-inset-top))]">
-        <div className="flex items-center gap-2 rounded-full border border-emerald-900/10 bg-white/70 px-3 py-1 shadow-xs backdrop-blur-md">
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white shadow-xs">
-            <Leaf className="h-3 w-3" />
-          </span>
-          <span className="font-[family-name:var(--font-display)] text-xs font-black tracking-tight text-emerald-950">
-            AgriVeda
-          </span>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/brand/logo-horizontal.png"
+          alt="AgriVeda"
+          className="h-11 w-auto max-w-[11rem] object-contain object-left"
+        />
 
         <button
           type="button"
@@ -404,8 +401,9 @@ export default function IntroCarousel({ onComplete }: Props) {
             onClick={next}
             className="group flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-4 text-base font-black text-white shadow-[0_12px_28px_-8px_rgba(5,150,105,0.5)] transition duration-200 hover:from-emerald-500 hover:to-teal-600 active:scale-[0.98]"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform group-hover:rotate-12">
-              <Leaf className="h-4 w-4 text-white" strokeWidth={2.4} />
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo-mark.png" alt="" className="h-5 w-5 object-contain" />
             </span>
             <span className="tracking-wide">{slide.ctaHi}</span>
             <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2.6} />

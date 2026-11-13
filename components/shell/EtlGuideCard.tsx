@@ -41,11 +41,13 @@ export default function EtlGuideCard({ etl, pestName, monitoring, compact }: Pro
               {monitor}
             </p>
           ) : null}
+          {compact ? null : (
           <ul className="mt-2 space-y-1 text-[11px] leading-snug text-[var(--av-text-muted)]">
             <li>• नुकसान सीमा (ETL) से पहले छिड़काव (Spray) न करें — मित्र कीट बचते हैं</li>
             <li>• खेत में गिनती करो — याद रखो / नोट करो</li>
             <li>• दोबारा दवा लगे तो अलग किस्म की दवा लो (Rotation)</li>
           </ul>
+          )}
         </div>
       </div>
     </div>

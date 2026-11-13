@@ -26,7 +26,9 @@ export default function CropsPageShell({ children }: { children: React.ReactNode
 
             <div className="relative flex h-full min-h-[72px] items-center justify-between gap-2 px-3 py-2 sm:min-h-[80px] sm:px-5 sm:py-2.5 lg:min-h-[88px] lg:px-6">
               <div className="min-w-0">
-                <p className="font-display text-[10px] font-semibold tracking-[0.14em] text-emerald-300/95">
+                <p className="flex items-center gap-1.5 font-display text-[10px] font-semibold tracking-[0.14em] text-emerald-300/95">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/brand/logo-mark.png" alt="" className="h-4 w-4 object-contain" />
                   AGRIVEDA
                 </p>
                 <h1 className="max-w-xl font-display text-lg font-bold leading-tight text-white sm:text-xl">

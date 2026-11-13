@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import {
   Home,
-  Leaf,
   LogOut,
   Menu,
   MessageSquareText,
@@ -112,9 +111,8 @@ export function AdminShell({
             <Menu className="hidden h-4 w-4 lg:block" />
           </button>
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-600/25">
-              <Leaf className="h-4 w-4" strokeWidth={2.25} />
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo-mark.png" alt="" className="h-8 w-8 object-contain" />
             <span className="font-display text-base font-bold tracking-tight text-emerald-900 sm:text-lg">
               Agriveda
             </span>

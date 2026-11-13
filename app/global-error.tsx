@@ -31,9 +31,13 @@ export default function GlobalError({
         }}
       >
         <div>
-          <p style={{ opacity: 0.7, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em" }}>
-            AGRIVEDA
-          </p>
+          <img
+            src="/brand/logo-stacked.png"
+            alt="AgriVeda"
+            width={160}
+            height={160}
+            style={{ width: 160, height: "auto", margin: "0 auto 8px" }}
+          />
           <h1 style={{ fontSize: 22, margin: "8px 0" }}>ऐप अटक गई</h1>
           <p style={{ opacity: 0.85, fontSize: 14, maxWidth: 320, margin: "0 auto" }}>
             पेज क्रैश हो गया। दोबारा लोड करें। समस्या रहे तो support@agriveda.in पर लिखें।

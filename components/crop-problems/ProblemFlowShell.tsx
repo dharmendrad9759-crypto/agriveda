@@ -3,7 +3,6 @@
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { AgriVedaSparkleIcon } from "@/components/brand/icons";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { navigateBack } from "@/lib/navigationTracker";
@@ -17,6 +16,7 @@ export default function ProblemFlowShell({
   backHref = "/crop-problems",
   rightSlot,
   subtitle,
+  onBack,
 }: {
   children: ReactNode;
   title: string;
@@ -25,6 +25,7 @@ export default function ProblemFlowShell({
   backHref?: string;
   rightSlot?: ReactNode;
   subtitle?: string;
+  onBack?: () => void;
 }) {
   const router = useRouter();
   const progress = Math.min(100, Math.round((step / totalSteps) * 100));
@@ -69,13 +70,7 @@ export default function ProblemFlowShell({
           </button>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <AgriVedaSparkleIcon className="h-3 w-3 text-emerald-600" />
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-emerald-700/85">
-                AgriVeda
-              </p>
-            </div>
-            <h1 className="truncate font-display text-[1.2rem] font-bold leading-tight tracking-tight text-[#052e1c]">
+            <h1 className="truncate font-display text-[1.15rem] font-bold leading-tight text-[#052e1c]">
               {title}
             </h1>
             {subtitle ? (

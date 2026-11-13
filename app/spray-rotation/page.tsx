@@ -70,6 +70,8 @@ export default function SprayRotationPage() {
         breadcrumbs={[{ label: uiT("navHome"), href: "/" }, { label: "स्प्रे डायरी" }]}
       >
         <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 py-10 text-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-mark.png" alt="" className="h-12 w-12 object-contain" />
           <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-emerald-600 border-t-transparent" />
           <p className="text-xs font-semibold text-[var(--av-text-muted)]">
             स्प्रे डायरी लोड हो रही है…

@@ -22,6 +22,7 @@ import { useSprayLogs } from "@/hooks/useSprayLogs";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import AppLink from "@/components/ui/AppLink";
 import { speakFarmerText, stopFarmerSpeech } from "@/lib/speech/farmerVoice";
+import { galleryHref, xrayHref } from "@/lib/crops/plantAnatomy";
 import { useToast } from "@/components/ui/Toast";
 import { readStorage, writeStorage } from "@/lib/storage";
 import {
@@ -37,7 +38,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { CropDoctorSparkleIcon } from "@/components/brand/icons";
-import { notFound } from "next/navigation";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
 import ThreatPhotoGallery from "@/components/crops/ThreatPhotoGallery";
 
 const SAVED_KEY = "agriveda-saved-crop-solutions";
@@ -209,6 +210,16 @@ export default function CropProblemDetailClient({
   const found = getCropProblem(cropSlug, problemId);
   if (!found) notFound();
   const { crop, problem: p } = found;
+  const params = useSearchParams();
+  const router = useRouter();
+  const fromXray = params.get("from") === "xray";
+  const backHref = fromXray
+    ? xrayHref(
+        crop.slug,
+        params.get("part"),
+        (params.get("symptoms") ?? "").split(",").filter(Boolean)
+      )
+    : `/crop-problems/${crop.slug}`;
   const hub = assembleHubProblem(crop.slug, p.id);
   const overlay = hub?.overlay ?? {};
   const { showToast } = useToast();
@@ -259,7 +270,10 @@ export default function CropProblemDetailClient({
   // Primary doctor medicine info
   const primaryChem = chemItems[0];
   const primaryDose = useMemo(
-    () => (primaryChem ? parseFarmerDose(primaryChem.dose, { tankLitres }) : null),
+    () =>
+      primaryChem
+        ? parseFarmerDose(primaryChem.dose, { tankLitres, technical: primaryChem.technical })
+        : null,
     [primaryChem, tankLitres]
   );
 
@@ -290,7 +304,7 @@ export default function CropProblemDetailClient({
     const chemName = primaryChem ? primaryChem.technical : "अनुशंसित दवा";
     const action = primaryDose ? primaryDose.voiceActionLine : "दवा को सही मात्रा में डालें।";
 
-    return `राम-राम किसान भाई! ${crop.nameHi} में ${shortName} की समस्या के लिए डॉक्टर की मुख्य सलाह सुनें। इसके लिए सबसे असरदार दवा ${chemName} है। ${action} तीन से चार दिन में इसका पूरा असर दिखेगा और समस्या पर पूरा नियंत्रण हो जाएगा।`;
+    return `${crop.nameHi}, ${shortName}. ${chemName}. ${action}`;
   }, [crop.nameHi, shortName, primaryChem, primaryDose]);
 
   const toggleDoctorAudio = () => {
@@ -350,7 +364,7 @@ export default function CropProblemDetailClient({
   const shareToWhatsApp = () => {
     const chemListText = chemItems
       .map((c, i) => {
-        const d = parseFarmerDose(c.dose, { tankLitres });
+        const d = parseFarmerDose(c.dose, { tankLitres, technical: c.technical });
         return `*विकल्प ${i + 1}: ${c.technical}*\n  • तकनीकी नाम: ${cleanTechnicalName(c.nameHi || c.technical)}\n  • ${d.pill1.label}: ${d.pill1.value}\n  • ${d.pill2.label}: ${d.pill2.value}\n  • ${d.pill3.label}: ${d.pill3.value}\n  • सलाह: खाद-बीज दुकान पर केवल यह टेक्निकल नाम बताएं।`;
       })
       .join("\n\n");
@@ -364,7 +378,19 @@ export default function CropProblemDetailClient({
   };
 
   return (
-    <ProblemFlowShell title={shortName} step={saved ? 5 : 4} backHref={`/crop-problems/${crop.slug}`}>
+    <ProblemFlowShell
+      title={shortName}
+      step={saved ? 5 : 4}
+      backHref={backHref}
+      onBack={
+        fromXray
+          ? () => {
+              if (typeof window !== "undefined" && window.history.length > 1) router.back();
+              else router.replace(backHref);
+            }
+          : undefined
+      }
+    >
       <div className="space-y-4 pb-8">
         <div className="grid grid-cols-3 gap-1 rounded-2xl bg-emerald-950/90 p-1">
           {(
@@ -390,12 +416,6 @@ export default function CropProblemDetailClient({
         {scorchWarn ? (
           <div className="rounded-2xl border border-amber-400 bg-amber-50 px-3 py-2.5 text-[13px] font-bold text-amber-950">
             रुकिए! पिछले 4 दिन में स्प्रे हो चुका है। यह नए रोग से पहले दवा का झटका हो सकता है — अभी नया केमिकल न डालें।
-          </div>
-        ) : null}
-
-        {mode === "field" && overlay.fieldCheckHi ? (
-          <div className="rounded-2xl border border-emerald-700/30 bg-emerald-50 px-3 py-2.5 text-[13px] font-bold text-emerald-950">
-            {overlay.fieldCheckHi}
           </div>
         ) : null}
 
@@ -425,12 +445,6 @@ export default function CropProblemDetailClient({
               </AppLink>
             ))}
           </div>
-        ) : null}
-
-        {mode === "field" ? (
-          <p className="rounded-2xl bg-white px-3 py-2 text-[13px] font-bold text-slate-800 ring-1 ring-emerald-900/10">
-            अभी क्या करें: पहले प्रकोप देखो, फिर दवा। नुकसान कम हो तो जैविक उपाय काफ़ी।
-          </p>
         ) : null}
 
         {mode === "field" && overlay.dontDoHi?.length ? (
@@ -485,12 +499,9 @@ export default function CropProblemDetailClient({
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[12px] font-black uppercase tracking-wider text-emerald-400">
-                    👨‍⚕️ डॉ. कृषि विशेषज्ञ वॉइस नोट
+                    मात्रा सुनो
                   </span>
                 </div>
-                <p className="text-[11px] font-medium text-slate-300">
-                  सुने: सही दवा, 15L टंकी डोज़ और सटीक छिड़काव विधि
-                </p>
               </div>
             </div>
 
@@ -535,7 +546,7 @@ export default function CropProblemDetailClient({
               </span>
               <div>
                 <h2 className="text-[13.5px] font-black text-emerald-950 dark:text-emerald-100">
-                  डॉक्टर की अनुशंसित दवा व सही डोज़ (Treatment)
+                  दवा और मात्रा
                 </h2>
               </div>
             </div>
@@ -543,7 +554,7 @@ export default function CropProblemDetailClient({
 
           <div className="space-y-2.5 mt-2">
             {chemItems.map((c, i) => {
-              const parsed = parseFarmerDose(c.dose, { tankLitres });
+              const parsed = parseFarmerDose(c.dose, { tankLitres, technical: c.technical });
               const isExpanded = Boolean(expandedOptions[i]);
               const groups = moaGroupsFromTechnical(c.technical);
               const sameGroup = lastGroupsForProblem.length > 0 && groupsOverlap(groups, lastGroupsForProblem);
@@ -566,10 +577,7 @@ export default function CropProblemDetailClient({
                               i === 0 ? "bg-emerald-700" : "bg-slate-700 dark:bg-slate-800"
                             }`}
                           >
-                            {i === 0 ? "🌟 पहली पसंद (Best Choice)" : `विकल्प ${i + 1}`}
-                          </span>
-                          <span className="text-[9.5px] font-bold text-slate-500 dark:text-slate-400">
-                            टेक्निकल सॉल्ट
+                            {i === 0 ? "पहली पसंद" : `विकल्प ${i + 1}`}
                           </span>
                         </div>
 
@@ -633,11 +641,6 @@ export default function CropProblemDetailClient({
                         <div className="min-w-0 flex-1 space-y-1">
                           <p className="text-[13px] font-black text-slate-900 dark:text-slate-100 leading-snug">
                             {cleanTechnicalName(c.nameHi || c.technical)}
-                          </p>
-                          <p className="text-[10.5px] font-semibold text-slate-600 dark:text-slate-400 leading-relaxed">
-                            {isTankMix(c.technical)
-                              ? "💡 खाद-बीज दुकान से दोनों टेक्निकल लेकर ऊपर लिखी अलग-अलग मात्रा अनुसार टंकी में घोलें।"
-                              : "💡 खाद-बीज दुकान पर केवल यह टेक्निकल नाम बताएं। किसी भी अच्छी कंपनी का यह सॉल्ट खरीद सकते हैं।"}
                           </p>
                         </div>
                       </div>
@@ -764,7 +767,7 @@ export default function CropProblemDetailClient({
                 }}
                 className="w-full rounded-xl bg-emerald-700 py-3 text-[13px] font-black text-white"
               >
-                मैंने आज यह स्प्रे किया
+                {primaryDose && !primaryDose.isSpray ? "आज खेत में डाल दिया" : "मैंने आज यह स्प्रे किया"}
               </button>
             )}
 
@@ -1064,7 +1067,15 @@ export default function CropProblemDetailClient({
               📷 AI फोटो से जाँच
             </AppLink>
             <AppLink
-              href={`/crop-problems/${crop.slug}`}
+              href={
+                fromXray
+                  ? galleryHref(
+                      crop.slug,
+                      params.get("part"),
+                      (params.get("symptoms") ?? "").split(",").filter(Boolean)
+                    )
+                  : `/crop-problems/${crop.slug}`
+              }
               className="flex min-h-[42px] items-center justify-center rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-black text-slate-800 dark:text-slate-200 active:scale-95"
             >
               ← और समस्याएँ देखें
