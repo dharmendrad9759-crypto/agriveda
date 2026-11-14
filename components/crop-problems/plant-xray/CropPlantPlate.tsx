@@ -42,7 +42,7 @@ export default function CropPlantPlate({ cropId, selected, focus, xray, reducedM
         priority
         quality={75}
         sizes="(max-width: 512px) 100vw, 480px"
-        className="object-cover object-center"
+        className="object-cover object-top"
       />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_42%,rgba(0,0,0,0.5)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/12 to-transparent" />

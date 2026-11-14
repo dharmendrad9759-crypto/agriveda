@@ -110,16 +110,24 @@ export function buildFieldAlerts(
   const dashboard = getCropDashboard(field.cropSlug);
   const das = sowingDate ? daysAfterSowing(sowingDate) : null;
 
-  if (das != null) {
-    const tip = dashboard.irrigationManagement?.tips?.[0] || "उचित नमी बनाए रखें";
-    const isWheatFirstIrr = field.cropSlug === "wheat" && das >= 18 && das <= 28;
+  if (das != null && field.cropSlug === "wheat" && das >= 20 && das <= 25) {
     alerts.push({
       id: `irr-${field.cropSlug}-${field.name}`,
       severity: "info",
       title: "सिंचाई का समय आ गया है",
-      body: isWheatFirstIrr
-        ? "पहली सिंचाई (CRI अवस्था 20–25 दिन) तुरंत दें — क्राउन रूट बनते समय पानी की कमी से कल्ले कम बनते हैं।"
-        : `फसल की अवस्था अनुसार (दिन ${das}): ${tip}`,
+      body: "पहली सिंचाई आज दें (20–22 दिन, जड़ बनने का समय)। इससे पहले पानी न दें — कल्ले कम बनते हैं।",
+      fieldName: field.name,
+      cropSlug: field.cropSlug,
+      actionHref: `/crops/${field.cropSlug}/care/irrigation`,
+      actionLabel: "सिंचाई गाइड →",
+    });
+  } else if (das != null && field.cropSlug !== "wheat") {
+    const tip = dashboard.irrigationManagement?.tips?.[0] || "उचित नमी बनाए रखें";
+    alerts.push({
+      id: `irr-${field.cropSlug}-${field.name}`,
+      severity: "info",
+      title: "पानी की हालत देखें",
+      body: `दिन ${das}: ${tip}`,
       fieldName: field.name,
       cropSlug: field.cropSlug,
       actionHref: `/crops/${field.cropSlug}/care/irrigation`,

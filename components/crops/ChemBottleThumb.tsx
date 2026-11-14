@@ -4,7 +4,7 @@ import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { bottleCategory, getChemPackageType, lookupChemBottle } from "@/lib/crops/chemBottle";
 import { chemBottleImageSrc, hasRealBottlePhoto } from "@/lib/crops/chemBottleSvg";
 import type { ChemBottleCategory } from "@/data/chem-bottle-catalog";
-import { X, ZoomIn } from "lucide-react";
+import { Package, X, ZoomIn } from "lucide-react";
 
 export default function ChemBottleThumb({
   technical,

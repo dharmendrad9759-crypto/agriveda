@@ -129,7 +129,8 @@ export default function MandiDetailClient({ id }: { id: string }) {
     row?.arrivalDate || data?.lastUpdated?.slice(0, 10) || "",
     isHi
   );
-  const placeState = stateLabelHi(row?.state || state);
+  const idState = decodeURIComponent(id).match(/^mock-(.+?)-/)?.[1] || "";
+  const placeState = stateLabelHi(row?.state || idState || state);
   const placeBits = row
     ? [row.mandi, row.district && !row.mandi.includes(row.district) ? row.district : "", placeState]
         .filter(Boolean)

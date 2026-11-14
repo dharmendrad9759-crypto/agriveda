@@ -31,6 +31,9 @@ import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { useFarmData } from "@/hooks/useFarmData";
+import { useActiveField } from "@/hooks/useActiveField";
+import { writeSprayDraft } from "@/lib/sprayDraft";
 import { CROP_PROBLEM_CROPS, type CropProblemItem } from "@/data/crop-curative-problems";
 import { getCleanHindiTitle } from "@/components/crop-problems/CropProblemGalleryClient";
 import {
@@ -125,8 +128,10 @@ function MixAdvisorInner() {
   const router = useRouter();
   const { showToast } = useToast();
   const [step, setStep] = useState<StepId>("problem");
-  const [cropSlug, setCropSlug] = useState("tomato");
-  const [stage, setStage] = useState<GrowthStageId>("fruiting");
+  const farm = useFarmData();
+  const { activeField } = useActiveField(farm.data.fields, farm.hydrated);
+  const [cropSlug, setCropSlug] = useState("");
+  const [stage, setStage] = useState<GrowthStageId | "">("");
   const [problemIds, setProblemIds] = useState<string[]>([]);
   const [meds, setMeds] = useState<MixMedicine[]>([]);
   const [plan, setPlan] = useState<MixPlan | null>(null);
@@ -183,7 +188,11 @@ function MixAdvisorInner() {
   useEffect(() => {
     if ((step === "mix" || step === "guide") && (meds.length === 0 || !plan)) {
       if (problemIds.length > 0) {
-        const curCrop = CROP_PROBLEM_CROPS.find((c) => c.slug === cropSlug) || CROP_PROBLEM_CROPS[0];
+        const curCrop = CROP_PROBLEM_CROPS.find((c) => c.slug === cropSlug);
+        if (!curCrop) {
+          setStep("problem");
+          return;
+        }
         const selectedProbs = curCrop.problems.filter((p) => problemIds.includes(p.id));
         if (selectedProbs.length > 0) {
           const autoPlan = buildMixPlanFromProblems(cropSlug, selectedProbs);
@@ -204,7 +213,7 @@ function MixAdvisorInner() {
   const [addCategoryTab, setAddCategoryTab] = useState<"fungicide" | "insecticide" | "tonic">("insecticide");
 
   // Lock body scroll when modal is open to prevent background bouncing glitch
-  useBodyScrollLock(pickSlot !== null || showAddModal);
+  useBodyScrollLock(pickSlot !== null || showAddModal || cropGridOpen);
 
   // Weather state
   const [weatherLine, setWeatherLine] = useState("मौसम लोड हो रहा है…");
@@ -216,14 +225,25 @@ function MixAdvisorInner() {
   }>({ place: "आपका इलाका", temp: "—", humidity: "—" });
 
   const crop = useMemo(
-    () => CROP_PROBLEM_CROPS.find((c) => c.slug === cropSlug) ?? CROP_PROBLEM_CROPS[0],
+    () => (cropSlug ? CROP_PROBLEM_CROPS.find((c) => c.slug === cropSlug) ?? null : null),
     [cropSlug]
   );
+
+  const sheetCrops = useMemo(() => {
+    const activeSlug = activeField?.cropSlug;
+    if (!activeSlug) return CROP_PROBLEM_CROPS;
+    return [...CROP_PROBLEM_CROPS].sort((a, b) => {
+      if (a.slug === activeSlug) return -1;
+      if (b.slug === activeSlug) return 1;
+      return 0;
+    });
+  }, [activeField?.cropSlug]);
 
   const problems = crop?.problems ?? [];
 
   const visibleProblems = useMemo(() => {
     return problems.filter((p) => {
+      if (!stage) return true;
       if (!p.stages || p.stages.length === 0) return true;
       return p.stages.includes(stage);
     });
@@ -285,6 +305,15 @@ function MixAdvisorInner() {
   };
 
   const runCheck = () => {
+    if (!cropSlug) {
+      setCropGridOpen(true);
+      showToast("पहले फसल चुनें");
+      return;
+    }
+    if (!stage) {
+      showToast("फसल की अवस्था चुनें");
+      return;
+    }
     if (!selectedProblems.length) return;
     const next = buildMixPlanFromProblems(cropSlug, selectedProblems);
     if (!next) return;
@@ -390,92 +419,99 @@ function MixAdvisorInner() {
                   <p className={AV.sectionTitle}>1. कौन सी फसल है?</p>
                 </div>
 
-                {/* Selected Crop Compact Banner */}
                 <div className="mt-2 flex items-center justify-between rounded-2xl border border-emerald-500/35 bg-emerald-500/10 p-3 shadow-xs">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-black/5 border border-emerald-600/20">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={crop.image} alt={crop.nameHi} className="h-full w-full object-cover" />
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-emerald-600/20 bg-black/5">
+                      {crop ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={crop.image} alt={crop.nameHi} className="h-full w-full object-cover" />
+                      ) : null}
                     </span>
                     <div className="min-w-0">
                       <span className="block truncate text-[14px] font-black text-emerald-950 dark:text-emerald-100">
-                        {crop.nameHi}
+                        {crop?.nameHi || "फसल चुनें"}
                       </span>
                       <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        यह फसल चुनी है
+                        {crop ? (
+                          <>
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            यह फसल चुनी है
+                          </>
+                        ) : (
+                          "पहले अपनी फसल चुनें"
+                        )}
                       </span>
                     </div>
                   </div>
                   <button
                     type="button"
-                    onClick={() => setCropGridOpen((prev) => !prev)}
-                    className="shrink-0 rounded-xl border border-emerald-600/30 bg-[var(--av-surface)] px-3 py-1.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-200 transition hover:bg-emerald-500/10 active:scale-95 shadow-2xs"
+                    onClick={() => setCropGridOpen(true)}
+                    className="shrink-0 rounded-xl border border-emerald-600/30 bg-[var(--av-surface)] px-3 py-1.5 text-[11px] font-bold text-emerald-800 shadow-2xs transition hover:bg-emerald-500/10 active:scale-95 dark:text-emerald-200"
                   >
-                    {cropGridOpen ? "बंद करें ▴" : "फसल बदलें ▾"}
+                    {crop ? "फसल बदलें" : "फसल चुनें"}
                   </button>
                 </div>
 
-                {/* Open Grid of all crops when toggled */}
-                <AnimatePresence>
-                  {cropGridOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="mt-2 text-[11px] text-[var(--av-text-muted)]">
-                        अपनी फसल पर टैप करें:
-                      </p>
-                      <div className="mt-2 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-2.5">
-                        {CROP_PROBLEM_CROPS.map((c) => {
-                          const active = c.slug === cropSlug;
-                          return (
-                            <button
-                              key={c.slug}
-                              type="button"
-                              onClick={() => {
-                                setCropSlug(c.slug);
-                                setProblemIds([]); // Clear to avoid carrying over selections from other crop
-                                setCropGridOpen(false);
-                                setTimeout(() => {
-                                  document.getElementById("growth-stage-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                                }, 120);
-                              }}
-                              className={cn(
-                                "relative flex flex-col items-center gap-1.5 rounded-2xl border p-2 text-center transition-all active:scale-[0.97]",
-                                active
-                                  ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-500/40 shadow-sm"
-                                  : "border-[var(--av-border)] bg-[var(--av-surface)] hover:border-emerald-500/30"
-                              )}
-                            >
-                              {active && (
-                                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md">
-                                  <Check className="h-3.5 w-3.5 stroke-[3]" />
-                                </span>
-                              )}
-                              <span className="relative h-14 w-14 overflow-hidden rounded-xl bg-black/5">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={c.image} alt={c.nameHi} className="h-full w-full object-cover" />
-                              </span>
-                              <div className="min-w-0">
-                                <span
+                {mounted && cropGridOpen
+                  ? createPortal(
+                      <div
+                        className="fixed inset-0 z-[80] flex items-end justify-center bg-black/45"
+                        onClick={() => setCropGridOpen(false)}
+                      >
+                        <div
+                          role="dialog"
+                          aria-label="फसल चुनें"
+                          className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border border-[#cfe5d8] bg-[#f3faf6] px-4 pb-24 pt-3 shadow-2xl"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-[#cfe5d8]" />
+                          <p className="text-[16px] font-black text-[#0f6b45]">फसल चुनें</p>
+                          <div className="mt-3 grid grid-cols-3 gap-2">
+                            {sheetCrops.map((c) => {
+                              const active = c.slug === cropSlug;
+                              const isYours = c.slug === activeField?.cropSlug;
+                              return (
+                                <button
+                                  key={c.slug}
+                                  type="button"
+                                  onClick={() => {
+                                    setCropSlug(c.slug);
+                                    setProblemIds([]);
+                                    setCropGridOpen(false);
+                                    setTimeout(() => {
+                                      document
+                                        .getElementById("growth-stage-section")
+                                        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                    }, 120);
+                                  }}
                                   className={cn(
-                                    "block text-[13px] font-black leading-tight",
-                                    active ? "text-emerald-950 dark:text-emerald-100" : "text-[var(--av-text-primary)]"
+                                    "relative flex h-[7.25rem] flex-col items-center justify-start gap-1 rounded-2xl border p-2 text-center active:scale-[0.98]",
+                                    active
+                                      ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-500/40"
+                                      : "border-[#cfe5d8] bg-white"
                                   )}
                                 >
-                                  {c.nameHi}
-                                </span>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                                  {isYours ? (
+                                    <span className="absolute left-1.5 top-1.5 rounded-md bg-[#059669] px-1.5 py-0.5 text-[9px] font-black text-white">
+                                      आपकी फसल
+                                    </span>
+                                  ) : null}
+                                  <span className="relative mt-3 h-11 w-11 overflow-hidden rounded-xl bg-black/5">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={c.image} alt="" className="h-full w-full object-cover" />
+                                  </span>
+                                  <span className="line-clamp-2 min-h-[2rem] text-[13px] font-black leading-tight text-[#143028]">
+                                    {c.nameHi}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>,
+                      document.body
+                    )
+                  : null}
               </div>
 
               {/* Growth Stage Selection */}
@@ -621,7 +657,7 @@ function MixAdvisorInner() {
 
               <button
                 type="button"
-                disabled={!problemIds.length}
+                disabled={!cropSlug || !stage || !problemIds.length}
                 onClick={runCheck}
                 className="relative z-20 mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-black text-white shadow-lg shadow-emerald-600/25 transition active:scale-[0.98] disabled:opacity-40 lg:mb-0"
               >
@@ -789,6 +825,21 @@ function MixAdvisorInner() {
                   </div>
                 </div>
               </div>
+
+              {plan?.splitWarningHi ? (
+                <div className="rounded-2xl border border-rose-500/60 bg-rose-500/15 p-3.5 text-rose-950">
+                  <p className="text-[14px] font-black">{plan.splitWarningHi}</p>
+                  {plan.laterSprays?.length ? (
+                    <ul className="mt-2 space-y-1 text-[12px] font-semibold">
+                      {plan.laterSprays.map((item) => (
+                        <li key={item.technical}>
+                          अगला छिड़काव: {item.nameHi} — {item.dosePerAcre || item.doseHi}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              ) : null}
 
               {/* Medicine Tank Slot Cards */}
               <div>
@@ -1254,7 +1305,7 @@ function MixAdvisorInner() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.28, ease: EASE_OUT }}
-              className="space-y-4"
+              className="space-y-4 pb-28"
             >
               {/* Header Visual Banner */}
               <div className="relative overflow-hidden rounded-2xl shadow-sm">
@@ -1273,7 +1324,7 @@ function MixAdvisorInner() {
                     टंकी में घोल बनाने का सही तरीका
                   </p>
                   <p className="text-[11px] text-white/90">
-                    क्रम से मिलाने पर दवा कभी नहीं फटती और 100% असर देती है
+                    क्रम से मिलाने पर घोल फटने का डर कम होता है
                   </p>
                 </div>
               </div>
@@ -1363,7 +1414,7 @@ function MixAdvisorInner() {
                             <td className="px-3 py-2.5 font-bold text-emerald-800 dark:text-emerald-300">
                               {cleanDoseLiter}
                             </td>
-                            <td className="px-3 py-2.5 font-black text-emerald-800 dark:text-emerald-300">
+                            <td className="whitespace-nowrap px-3 py-2.5 font-black text-emerald-800 dark:text-emerald-300">
                               {cleanDoseAcre}
                             </td>
                           </tr>
@@ -1426,14 +1477,22 @@ function MixAdvisorInner() {
                   const stageObj = GROWTH_STAGES.find((s) => s.id === stage);
                   const stageLabel = stageObj ? stageObj.labelHi : stage;
                   const problemLabel = selectedProblems.map((p) => getCleanHindiTitle(p.nameHi)).join(", ");
-                  const medNames = meds.map((m) => m.technical).join(" + ");
-                  const doseLabel = meds.map((m) => m.dosePerAcre || m.doseHi).join(" + ");
+                  const medNames = meds.map((m) => m.technical).join("\n");
+                  const doseLabel = [
+                    ...meds.map((m) => `${m.nameHi}: ${m.dosePerAcre || m.doseHi}`),
+                    ...(plan?.laterSprays ?? []).map(
+                      (m) => `अगला स्प्रे: ${m.nameHi} — ${m.dosePerAcre || m.doseHi}`
+                    ),
+                  ].join("\n");
+                  writeSprayDraft({
+                    crop: cropSlug,
+                    stage: stageLabel,
+                    problem: problemLabel,
+                    med: medNames,
+                    dose: doseLabel,
+                  });
                   router.push(
-                    `/spray-rotation/log?crop=${encodeURIComponent(cropSlug)}&stage=${encodeURIComponent(
-                      stageLabel
-                    )}&problem=${encodeURIComponent(problemLabel)}&med=${encodeURIComponent(
-                      medNames
-                    )}&dose=${encodeURIComponent(doseLabel)}&from=mix-advisor`
+                    `/spray-rotation/log?from=mix-advisor&crop=${encodeURIComponent(cropSlug)}`
                   );
                 }}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-black text-white shadow-lg shadow-emerald-600/25 active:scale-[0.98]"
@@ -1457,8 +1516,8 @@ function MixAdvisorInner() {
                     if (typeof navigator !== "undefined" && navigator.share) {
                       const names = displayItems.map((m) => m.technical).join(" + ");
                       void navigator.share({
-                        title: `${crop.nameHi} टैंक-मिक्स गाइड — AgriVeda`,
-                        text: `AgriVeda वैज्ञानिक टैंक-मिक्स:\nफसल: ${crop.nameHi}\nदवाएँ: ${names}\nपानी: ${plan.waterHi}`,
+                        title: `${crop?.nameHi || "फसल"} टैंक-मिक्स गाइड — AgriVeda`,
+                        text: `AgriVeda टैंक-मिक्स:\nफसल: ${crop?.nameHi || ""}\nदवाएँ: ${names}\nपानी: ${plan.waterHi}`,
                       });
                     }
                   }}

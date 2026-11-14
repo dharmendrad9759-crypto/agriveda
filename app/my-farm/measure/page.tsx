@@ -119,6 +119,20 @@ function FieldMeasureContent() {
     }
     setIsSaveModalOpen(false);
     showToast("खेत सफलतापूर्वक जुड़ गया ✓", "success");
+    const returnTo = searchParams.get("return");
+    if (returnTo?.startsWith("/my-farm")) {
+      router.push(returnTo);
+      return;
+    }
+    if (returnTo?.startsWith("/services/fertilizer-calculator")) {
+      const url = new URL(returnTo, "http://local");
+      if (fieldPayload.areaAcres) {
+        url.searchParams.set("acres", String(fieldPayload.areaAcres));
+      }
+      const query = url.searchParams.toString();
+      router.push(query ? `${url.pathname}?${query}` : url.pathname);
+      return;
+    }
     router.push("/my-farm");
   };
 

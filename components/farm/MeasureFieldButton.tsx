@@ -6,9 +6,12 @@ import { cn } from "@/lib/cn";
 
 export const MEASURE_FIELD_HREF = "/my-farm/measure";
 
-export function measureFieldHref(editId?: string) {
-  if (!editId) return MEASURE_FIELD_HREF;
-  return `${MEASURE_FIELD_HREF}?editId=${encodeURIComponent(editId)}`;
+export function measureFieldHref(editId?: string, returnTo?: string) {
+  const q = new URLSearchParams();
+  if (editId) q.set("editId", editId);
+  if (returnTo) q.set("return", returnTo);
+  const query = q.toString();
+  return query ? `${MEASURE_FIELD_HREF}?${query}` : MEASURE_FIELD_HREF;
 }
 
 const LABELS = {
@@ -44,6 +47,7 @@ export default function MeasureFieldButton({
   kind = "default",
   variant = "primary",
   editId,
+  returnTo,
   onClick,
   className,
   title = "उपग्रह या GPS से खेत नापें",
@@ -51,12 +55,13 @@ export default function MeasureFieldButton({
   kind?: MeasureFieldKind;
   variant?: MeasureFieldVariant;
   editId?: string;
+  returnTo?: string;
   onClick?: () => void;
   className?: string;
   title?: string;
 }) {
   const label = LABELS[kind];
-  const href = measureFieldHref(editId);
+  const href = measureFieldHref(editId, returnTo);
   const classNames = cn(VARIANT_CLASS[variant], className);
   const inner = (
     <>

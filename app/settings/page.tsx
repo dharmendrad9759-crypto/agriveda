@@ -308,7 +308,7 @@ export default function SettingsPage() {
 
         <div id="look" className="scroll-mt-20 space-y-2.5">
           <h2 className="px-0.5 text-[15px] font-extrabold text-[var(--av-text-primary)]">
-            {isHi ? "देखने का अंदाज़" : "Look & language"}
+            {isHi ? "दिखावट और भाषा" : "Look and language"}
           </h2>
           <div className="grid grid-cols-2 gap-2.5">
             {(

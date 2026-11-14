@@ -121,7 +121,7 @@ export function generateFieldSatelliteObservation(
     qualityStatus,
     isSmallFieldSafeguarded,
     smallFieldMessage: isSmallFieldSafeguarded
-      ? "इस खेत का क्षेत्रफल 0.5 एकड़ से कम होने के कारण 10-मीटर सैटेलाइट रेज़ोल्यूशन पर सीमावर्ती पिक्सल मिश्रित (Mixed Pixels) हो सकते हैं। गलत सलाह से बचने के लिए ज़ोन विश्लेषण सीमित रखा गया है।"
+      ? "खेत छोटा है, इसलिए ऊपर से ली गई तस्वीर धुंधली हो सकती है। हरा या पीला का फैसला खेत में जाकर करें।"
       : undefined,
     potentialInspectionZones,
     processingVersion: "Agriveda S2-L2A v2.4 (Chamberlain-WGS84)",

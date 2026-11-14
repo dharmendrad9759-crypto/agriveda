@@ -19,16 +19,16 @@ export function useSprayLogs() {
   const refreshFromSupabase = useCallback(async () => {
     if (!isSupabaseConfigured()) return;
 
-    const local = readStorage<SprayLog[]>(KEY, []);
     try {
-      const res = await fetch("/api/spray-logs", { credentials: "include" });
-      if (!res.ok) return;
-      const body = (await res.json()) as { logs?: SprayLog[]; farmerId?: string };
-      if (body.farmerId) setFarmerId(body.farmerId);
-      const remote = body.logs ?? [];
-      const merged = mergeSprayLogs(local, remote);
-      writeStorage(KEY, merged);
-      setLogs(merged);
+        const res = await fetch("/api/spray-logs", { credentials: "include" });
+        if (!res.ok) return;
+        const body = (await res.json()) as { logs?: SprayLog[]; farmerId?: string };
+        if (body.farmerId) setFarmerId(body.farmerId);
+        const remote = body.logs ?? [];
+        const local = readStorage<SprayLog[]>(KEY, []);
+        const merged = mergeSprayLogs(local, remote);
+        writeStorage(KEY, merged);
+        setLogs(merged);
     } catch {
       /* keep local */
     }
@@ -47,7 +47,8 @@ export function useSprayLogs() {
           if (res.ok) {
             const body = (await res.json()) as { logs?: SprayLog[]; farmerId?: string };
             if (!cancelled && body.farmerId) setFarmerId(body.farmerId);
-            const merged = mergeSprayLogs(local, body.logs ?? []);
+            const fresh = readStorage<SprayLog[]>(KEY, []);
+            const merged = mergeSprayLogs(fresh.length ? fresh : local, body.logs ?? []);
             writeStorage(KEY, merged);
             if (!cancelled) setLogs(merged);
           }
@@ -95,11 +96,10 @@ export function useSprayLogs() {
         createdAt: new Date().toISOString(),
       };
 
-      setLogs((prev) => {
-        const next = [log, ...prev];
-        writeStorage(KEY, next);
-        return next;
-      });
+      const existing = readStorage<SprayLog[]>(KEY, []);
+      const next = [log, ...existing.filter((item) => item.id !== log.id)];
+      writeStorage(KEY, next);
+      setLogs(next);
 
       queueSpraySync(log);
 

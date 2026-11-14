@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -11,7 +10,6 @@ import {
   Plus,
   Ruler,
   Search,
-  Sprout,
   X,
 } from "lucide-react";
 import AppLink from "@/components/ui/AppLink";
@@ -76,7 +74,7 @@ export default function HomeAddCropHero({
     return `${y}-${m}-${day}`;
   };
 
-  const [sowingDate, setSowingDate] = useState(() => toLocalIso(15));
+  const [sowingDate, setSowingDate] = useState("");
 
   const seasonalPopularCrops = useMemo(() => sortCropsByCurrentSeason(POPULAR_CROPS), []);
 
@@ -100,11 +98,13 @@ export default function HomeAddCropHero({
   const handleQuickAdd = (slug: string, name: string) => {
     softTap(18);
     track("crop_quick_add", { slug, name });
-    onAddCrop(slug, name, toLocalIso(15));
+    setSelectedSlug(slug);
+    setSowingDate("");
+    setModalOpen(true);
   };
 
   const handleConfirmModalAdd = () => {
-    if (!selectedSlug) return;
+    if (!selectedSlug || !sowingDate) return;
     const cropItem = cropCatalog.find((c) => c.slug === selectedSlug);
     const cropName = cropItem ? getCropHindiName(selectedSlug) || cropItem.name : selectedSlug;
     softTap(22);
@@ -204,200 +204,166 @@ export default function HomeAddCropHero({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 32 }}
                     transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    className="relative z-10 flex max-h-[92dvh] sm:max-h-[85dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[32px] sm:rounded-[28px] border border-emerald-500/30 bg-[var(--av-surface,#0c1a14)] text-white shadow-2xl text-left pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
+                    className="relative z-10 flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[28px] border border-[#cfe5d8] bg-[#f3faf6] text-[#143028] shadow-2xl sm:max-h-[85dvh] sm:rounded-[28px] pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Top drag handle for mobile */}
-                    <div className="mx-auto mt-2.5 mb-1 h-1.5 w-12 rounded-full bg-white/20 sm:hidden" />
-                    {/* Modal Header */}
-              <div className="relative border-b border-emerald-500/20 bg-gradient-to-r from-[#042416] to-[#02180e] p-4 sm:p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-300">
-                      <Sprout className="h-5 w-5" />
+                    <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-[#b7d7c6] sm:hidden" />
+                    <div className="border-b border-[#d7ebdf] px-4 pb-3 pt-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="text-[18px] font-semibold leading-tight text-[#0f6b45]">
+                          {isHi ? "फसल चुनें" : "Choose a crop"}
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setModalOpen(false)}
+                          className="flex h-9 w-9 items-center justify-center rounded-full text-[#3d6b56] active:bg-[#e5f5ec]"
+                          aria-label={isHi ? "बंद करें" : "Close"}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <div className="relative mt-2">
+                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5f8f74]" />
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder={isHi ? "गेहूँ, धान, टमाटर…" : "Wheat, paddy, tomato…"}
+                          className="w-full rounded-xl border border-[#cfe5d8] bg-white py-2.5 pl-10 pr-10 text-[16px] text-[#143028] outline-none placeholder:text-[#7aa38c]"
+                        />
+                        {searchQuery ? (
+                          <button
+                            type="button"
+                            onClick={() => setSearchQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5f8f74]"
+                            aria-label={isHi ? "खोज मिटाएँ" : "Clear search"}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        ) : null}
+                      </div>
+
+                      <div className="mt-2.5 flex gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        {CATEGORIES.map((cat) => {
+                          const on = selectedCategory === cat.id;
+                          return (
+                            <button
+                              key={cat.id}
+                              type="button"
+                              onClick={() => setSelectedCategory(cat.id)}
+                              className={cn(
+                                "shrink-0 rounded-full px-3 py-1 text-[13px] font-semibold",
+                                on
+                                  ? "bg-[#059669] text-white"
+                                  : "bg-white text-[#3d6b56]"
+                              )}
+                            >
+                              {isHi ? cat.hi : cat.en}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-[15px] font-bold leading-tight text-white">
-                        {isHi ? "फसल चुनें" : "Choose a crop"}
-                      </h3>
+
+                    <div className="flex-1 overflow-y-auto px-3 py-3">
+                      <div className="grid grid-cols-3 gap-2">
+                        {filteredCrops.map((crop) => {
+                          const isSelected = selectedSlug === crop.slug;
+                          const hi = getCropHindiName(crop.slug) || crop.nameHi || crop.name;
+                          const img = resolveCropImage({ slug: crop.slug, name: crop.name });
+                          return (
+                            <button
+                              key={crop.slug}
+                              type="button"
+                              onClick={() => setSelectedSlug(crop.slug)}
+                              className={cn(
+                                "flex flex-col items-center rounded-2xl border bg-white px-1.5 py-2 text-center active:scale-[0.98]",
+                                isSelected
+                                  ? "border-[#059669] bg-[#f3faf6] shadow-[0_0_0_1px_#059669]"
+                                  : "border-[#d7ebdf]"
+                              )}
+                            >
+                              <span className="relative h-14 w-14 overflow-hidden rounded-xl bg-[#e7f6ee]">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={img}
+                                  alt=""
+                                  className="h-full w-full object-cover"
+                                  onError={(event) => {
+                                    event.currentTarget.src = "/images/crops/_placeholder.svg";
+                                  }}
+                                />
+                                {isSelected ? (
+                                  <span className="absolute bottom-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#059669] text-white">
+                                    <Check className="h-2.5 w-2.5" />
+                                  </span>
+                                ) : null}
+                              </span>
+                              <span className="mt-1.5 line-clamp-2 text-[13px] font-semibold leading-tight text-[#143028]">
+                                {isHi ? hi : crop.name}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {filteredCrops.length === 0 ? (
+                        <p className="py-10 text-center text-[14px] font-semibold text-[#5f8f74]">
+                          {isHi ? "कोई फसल नहीं मिली" : "No crop found"}
+                        </p>
+                      ) : null}
                     </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(false)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-95"
-                    aria-label={isHi ? "बंद करें" : "Close"}
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
 
-                {/* Search Bar */}
-                <div className="relative mt-3">
-                  <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-300/70" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={
-                      isHi
-                        ? "फसल खोजें: गेहूँ, धान, टमाटर, मक्का, कपास..."
-                        : "Search crop: wheat, paddy, tomato, cotton..."
-                    }
-                    className="w-full rounded-xl border border-emerald-500/30 bg-slate-900/80 py-2.5 pl-10 pr-4 text-xs font-bold text-white placeholder-emerald-100/50 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Category Pills */}
-                <div className="mt-2.5 flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                  {CATEGORIES.map((cat) => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={cn(
-                        "shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all",
-                        selectedCategory === cat.id
-                          ? "bg-emerald-500 text-emerald-950 font-black shadow-xs"
-                          : "border border-emerald-500/20 bg-emerald-950/40 text-emerald-200 hover:bg-emerald-900/50"
-                      )}
-                    >
-                      {isHi ? cat.hi : cat.en}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Crops Grid Body */}
-              <div className="flex-1 overflow-y-auto p-3.5 sm:p-4">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {filteredCrops.map((crop) => {
-                    const isSelected = selectedSlug === crop.slug;
-                    const hi = getCropHindiName(crop.slug) || crop.nameHi || crop.name;
-                    const img = resolveCropImage({ slug: crop.slug, name: crop.name });
-
-                    return (
-                      <button
-                        key={crop.slug}
-                        type="button"
-                        onClick={() => setSelectedSlug(crop.slug)}
-                        className={cn(
-                          "group relative flex flex-col items-center overflow-hidden rounded-2xl border p-2 text-center transition-all active:scale-95",
-                          isSelected
-                            ? "border-emerald-400 bg-emerald-500/20 ring-2 ring-emerald-400 shadow-lg"
-                            : "border-white/10 bg-slate-900/50 hover:border-emerald-500/40 hover:bg-slate-900/80"
-                        )}
-                      >
-                        {/* Crop Photo */}
-                        <div className="relative h-16 w-16 overflow-hidden rounded-xl shadow-sm">
-                          <Image
-                            src={img}
-                            alt={hi}
-                            fill
-                            sizes="64px"
-                            className="object-cover transition-transform group-hover:scale-105"
-                          />
-                          {isSelected && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-emerald-600/60 backdrop-blur-xs">
-                              <Check className="h-6 w-6 stroke-[3] text-white" />
-                            </div>
-                          )}
+                    <div className="border-t border-[#d7ebdf] bg-[#f3faf6] px-4 py-3">
+                      {selectedSlug ? (
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#3d6b56]">
+                              <Calendar className="h-3.5 w-3.5" />
+                              {isHi ? "कब बोया?" : "Sown on"}
+                            </span>
+                            <input
+                              type="date"
+                              value={sowingDate}
+                              max={toLocalIso(0)}
+                              onChange={(e) => setSowingDate(e.target.value)}
+                              className="rounded-lg border border-[#cfe5d8] bg-white px-2 py-1 text-[16px] text-[#143028]"
+                            />
+                          </div>
+                          <div className="mt-2 flex gap-1.5">
+                            {[
+                              { days: 0, hi: "आज", en: "Today" },
+                              { days: 15, hi: "15 दिन पहले", en: "15 days ago" },
+                              { days: 30, hi: "1 महीना पहले", en: "1 month ago" },
+                            ].map((preset) => (
+                              <button
+                                key={preset.days}
+                                type="button"
+                                onClick={() => setSowingDate(toLocalIso(preset.days))}
+                                className="rounded-full border border-[#d7ebdf] bg-white px-2.5 py-1 text-[12px] font-semibold text-[#3d6b56]"
+                              >
+                                {isHi ? preset.hi : preset.en}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-
-                        {/* Title */}
-                        <p className="mt-1.5 font-bold text-[13px] leading-tight text-white">
-                          {isHi ? hi : crop.name}
-                        </p>
-                        <p className="text-[10px] text-emerald-200/70">
-                          {isHi ? crop.name : hi}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {filteredCrops.length === 0 && (
-                  <div className="py-12 text-center">
-                    <p className="text-sm font-bold text-gray-400">
-                      {isHi ? "कोई फसल नहीं मिली" : "No crop found"}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Sowing Date & Confirm Footer */}
-              <div className="border-t border-emerald-500/20 bg-slate-950/90 p-4">
-                {selectedSlug && (
-                  <div className="mb-3 rounded-xl border border-emerald-500/30 bg-emerald-950/50 p-2.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-1.5 font-bold text-emerald-200">
-                        <Calendar className="h-3.5 w-3.5 text-emerald-400" />
-                        {isHi ? "बुवाई की तारीख:" : "Sowing Date:"}
-                      </span>
-                      <input
-                        type="date"
-                        value={sowingDate}
-                        max={toLocalIso(0)}
-                        onChange={(e) => setSowingDate(e.target.value)}
-                        className="rounded-lg border border-emerald-500/40 bg-slate-900 px-2.5 py-1 text-xs font-bold text-white outline-none"
-                      />
-                    </div>
-                    {/* Quick date presets */}
-                    <div className="mt-2 flex items-center gap-1.5 text-[10.5px]">
-                      <span className="text-gray-400">{isHi ? "त्वरित:" : "Quick:"}</span>
+                      ) : null}
                       <button
                         type="button"
-                        onClick={() => setSowingDate(toLocalIso(0))}
-                        className="rounded-md bg-white/10 px-2 py-0.5 font-semibold text-emerald-200 hover:bg-white/20"
+                        disabled={!selectedSlug || !sowingDate}
+                        onClick={handleConfirmModalAdd}
+                        className="flex h-11 w-full items-center justify-center rounded-xl bg-[#059669] text-[15px] font-bold text-white active:scale-[0.99] disabled:opacity-40"
                       >
-                        {isHi ? "आज" : "Today"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSowingDate(toLocalIso(15))}
-                        className="rounded-md bg-white/10 px-2 py-0.5 font-semibold text-emerald-200 hover:bg-white/20"
-                      >
-                        {isHi ? "15 दिन पहले" : "15d ago"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSowingDate(toLocalIso(30))}
-                        className="rounded-md bg-white/10 px-2 py-0.5 font-semibold text-emerald-200 hover:bg-white/20"
-                      >
-                        {isHi ? "1 महीना पहले" : "30d ago"}
+                        {selectedSlug
+                          ? isHi
+                            ? `${getCropHindiName(selectedSlug) || selectedSlug} जोड़ें`
+                            : `Add ${selectedSlug}`
+                          : isHi
+                            ? "पहले फसल चुनें"
+                            : "Choose a crop"}
                       </button>
                     </div>
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  disabled={!selectedSlug}
-                  onClick={handleConfirmModalAdd}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-300 py-3.5 text-sm font-black text-emerald-950 shadow-lg transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-50"
-                >
-                  <Check className="h-4 w-4 stroke-[3]" />
-                  <span>
-                    {selectedSlug
-                      ? isHi
-                        ? `यह फसल जोड़ें (${getCropHindiName(selectedSlug) || selectedSlug})`
-                        : `Add Crop (${selectedSlug})`
-                      : isHi
-                        ? "कृपया ऊपर से फसल चुनें"
-                        : "Please select a crop above"}
-                  </span>
-                </button>
-              </div>
-            </motion.div>
+                  </motion.div>
                 </div>
               )}
             </AnimatePresence>,

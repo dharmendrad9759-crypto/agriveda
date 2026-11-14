@@ -59,7 +59,23 @@ function formatShortDate(isoDate: string) {
   });
 }
 
-function getNdviBand(value: number) {
+function getNdviBand(value: number, cropAgeDays: number | null) {
+  if (cropAgeDays != null && cropAgeDays < 25 && value < 0.45) {
+    return {
+      label: "शुरुआती अंकुरण अवस्था (पौधे अभी छोटे हैं)",
+      detail: "बुवाई के पहले 25 दिनों में हरियाली कम होना सामान्य है। यह कमजोरी नहीं है।",
+      badge: "border-emerald-400/30 bg-emerald-400/15 text-emerald-200",
+      dot: "bg-emerald-400",
+    };
+  }
+  if (cropAgeDays == null && value < 0.45) {
+    return {
+      label: "बुवाई की तारीख डालें",
+      detail: "तारीख के बिना कम हरियाली को कमजोरी न मानें। खेत में बुवाई की तारीख जोड़ें।",
+      badge: "border-amber-400/30 bg-amber-400/15 text-amber-200",
+      dot: "bg-amber-400",
+    };
+  }
   if (value >= 0.7) {
     return {
       label: "बहुत घनी और स्वस्थ",
@@ -133,8 +149,8 @@ function NdviGauge({ value }: { value: number }) {
           <p className="text-[26px] font-semibold leading-none tabular-nums text-white">
             {value.toFixed(2)}
           </p>
-          <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-emerald-200/55">
-            NDVI
+          <p className="mt-1 text-[10px] font-semibold text-emerald-100/80">
+            हरियाली
           </p>
         </div>
       </div>
@@ -211,7 +227,7 @@ function NdviSparkline({ series }: { series: SatelliteObservation[] }) {
           </span>
           <span className="text-white/40">·</span>
           <span className="text-amber-300 tabular-nums">
-            NDVI {activePoint.item.meanNdvi.toFixed(2)}
+            हरियाली {activePoint.item.meanNdvi.toFixed(2)}
           </span>
         </div>
       )}
@@ -221,7 +237,7 @@ function NdviSparkline({ series }: { series: SatelliteObservation[] }) {
         viewBox={`0 0 ${width} ${height}`}
         className="w-full cursor-crosshair touch-none overflow-visible"
         role="img"
-        aria-label="पिछले 45 दिनों का NDVI रुझान"
+        aria-label="पिछले 45 दिनों की हरियाली"
         onMouseMove={(e) => handlePointer(e.clientX)}
         onTouchMove={(e) => {
           if (e.touches[0]) handlePointer(e.touches[0].clientX);
@@ -319,22 +335,23 @@ export default function HealthRadarView({
     if (field.sowingDateIso) {
       return calculateDaysAfterSowing(field.sowingDateIso);
     }
-    return 35;
+    return null;
   })();
 
   const currentObservation = useMemo(() => {
     const existing = satelliteObservations.find((item) => item.fieldId === field.id);
     if (existing) return existing;
-    return generateFieldSatelliteObservation(field.id, field.boundary || [], cropAge);
+    return generateFieldSatelliteObservation(field.id, field.boundary || [], cropAge ?? 30);
   }, [satelliteObservations, field.id, field.boundary, cropAge]);
 
   const historicalSeries = useMemo(() => {
-    return generateHistoricalObservations(field.id, field.boundary || [], cropAge);
+    return generateHistoricalObservations(field.id, field.boundary || [], cropAge ?? 30);
   }, [field.id, field.boundary, cropAge]);
 
-  const band = useMemo(() => getNdviBand(currentObservation.meanNdvi), [
-    currentObservation.meanNdvi,
-  ]);
+  const band = useMemo(
+    () => getNdviBand(currentObservation.meanNdvi, cropAge),
+    [currentObservation.meanNdvi, cropAge]
+  );
 
   const ndviDelta = useMemo(() => {
     if (historicalSeries.length < 2) return 0;
@@ -458,7 +475,7 @@ export default function HealthRadarView({
             </div>
           </div>
           <span className="rounded-full bg-[var(--av-surface-inset)] px-2 py-1 text-[9px] font-semibold text-[var(--av-text-muted)]">
-            NDVI
+            हरियाली
           </span>
         </div>
 
@@ -642,7 +659,7 @@ export default function HealthRadarView({
         title="जांच डायरी में दर्ज करें"
         subtitle={
           selectedZone
-            ? `क्षेत्र ${selectedZone.zoneId.split("-").pop()} · NDVI ${selectedZone.meanNdvi.toFixed(2)}`
+            ? `क्षेत्र ${selectedZone.zoneId.split("-").pop()} · हरियाली ${selectedZone.meanNdvi.toFixed(2)}`
             : undefined
         }
         icon={<Search className="h-4 w-4" aria-hidden />}

@@ -248,20 +248,20 @@ export default function KccCalculatorClient() {
 
             {/* Result Highlights */}
             {kccResult && (
-              <div className="mt-5 rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/60 via-emerald-900/20 to-transparent p-4">
-                <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                  <span className="text-xs font-semibold theme-text-muted">
+              <div className="mt-5 rounded-2xl border border-emerald-200 bg-[#ECFDF5] p-4">
+                <div className="flex items-center justify-between pb-3 border-b border-emerald-200">
+                  <span className="text-xs font-semibold text-[#1F2937]">
                     शुद्ध ब्याज (4% समय पर चुकता दर)
                   </span>
-                  <span className="text-2xl font-black text-emerald-400">
+                  <span className="text-2xl font-black text-[#065F46]">
                     ₹{kccResult.netInterest.toLocaleString("en-IN")}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 py-3 border-b border-white/10 text-xs">
+                <div className="grid grid-cols-2 gap-3 py-3 border-b border-emerald-200 text-xs">
                   <div>
-                    <div className="text-amber-400/80 font-medium">देरी होने पर (7% ब्याज)</div>
-                    <div className="text-sm font-bold text-amber-400 mt-0.5">
+                    <div className="font-medium text-[#1F2937]">देरी होने पर (7% ब्याज)</div>
+                    <div className="text-sm font-bold text-[#B91C1C] mt-0.5">
                       ₹{kccResult.normalInterest.toLocaleString("en-IN")}
                     </div>
                   </div>
@@ -483,18 +483,18 @@ export default function KccCalculatorClient() {
 
             {/* Term Loan Result */}
             {termResult && (
-              <div className="mt-5 rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-950/60 via-amber-900/20 to-transparent p-4">
-                <div className="text-xs font-semibold theme-text-muted">
+              <div className="mt-5 rounded-2xl border border-emerald-200 bg-[#F8FAFC] p-4">
+                <div className="text-xs font-semibold text-[#1F2937]">
                   {termResult.labelHi}
                 </div>
-                <div className="text-3xl font-black text-amber-400 mt-1">
+                <div className="text-3xl font-black text-[#065F46] mt-1">
                   ₹{termResult.installment.toLocaleString("en-IN")}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-white/10 text-xs">
                   <div>
                     <div className="theme-text-muted">कुल ब्याज (Interest)</div>
-                    <div className="text-sm font-bold text-amber-400 mt-0.5">
+                    <div className="text-sm font-bold text-[#1F2937] mt-0.5">
                       ₹{termResult.totalInterest.toLocaleString("en-IN")}
                     </div>
                   </div>

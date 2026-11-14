@@ -34,6 +34,8 @@ import {
   fertilizerPackHi,
 } from "@/data/agriveda2/fertilizer-data";
 import { convertToAcres, type AreaUnit } from "@/lib/agriveda2/seedCalculatorEngine";
+import { getBighaInfo } from "@/lib/bighaConversion";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { EASE_OUT } from "@/lib/motion/variants";
 import { normalizeCropSlug, resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
@@ -63,8 +65,11 @@ function FertilizerCalculatorInner() {
     return sortCropsByCurrentSeason(list);
   }, [slugs]);
   const { showToast } = useToast();
+  const { profile } = useFarmerProfile();
   const { data: farmData } = useFarmData();
   const savedFields = farmData?.fields ?? [];
+  const [areaUnit, setAreaUnit] = useState<AreaUnit | "kanal">("acre");
+  const [pickedFieldId, setPickedFieldId] = useState<string | null>(null);
 
   const cropFromUrl = useMemo(() => {
     const raw = searchParams.get("crop");
@@ -114,8 +119,13 @@ function FertilizerCalculatorInner() {
   const acres = useMemo(() => {
     const n = parseFloat(area);
     if (!Number.isFinite(n) || n <= 0) return 0;
-    return convertToAcres(n, "acre" satisfies AreaUnit);
-  }, [area]);
+    if (areaUnit === "kanal") return Math.round(n * 0.125 * 100) / 100;
+    if (areaUnit === "bigha") {
+      const info = getBighaInfo(profile.state, profile.district);
+      return convertToAcres(n, "bigha", info.acresPerBigha);
+    }
+    return convertToAcres(n, "acre");
+  }, [area, areaUnit, profile.state, profile.district]);
 
   const plan = useMemo(() => {
     if (!slug || !acres) return null;
@@ -141,6 +151,7 @@ function FertilizerCalculatorInner() {
   const handleViewPlan = () => {
     if (!canSeePlan) return;
     setShowBottomSheet(false);
+    if (!hasSoilReport) setShowSoilInPlan(false);
     setStep("plan");
   };
 
@@ -236,7 +247,7 @@ function FertilizerCalculatorInner() {
                     फसल चुनें
                   </p>
                 </div>
-                <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
+                <div className="grid grid-cols-3 gap-2.5 pb-28 sm:grid-cols-4">
                   {crops.map((c) => {
                     const active = c.slug === slug;
                     const hi = getCropHindiName(c.slug);
@@ -258,6 +269,12 @@ function FertilizerCalculatorInner() {
                             src={resolveCropImage({ slug: c.slug, name: c.name })}
                             alt=""
                             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                              const img = e.currentTarget;
+                              if (img.dataset.fallback === "1") return;
+                              img.dataset.fallback = "1";
+                              img.src = "/images/crops/_placeholder.svg";
+                            }}
                           />
                           {active && (
                             <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm">
@@ -648,21 +665,26 @@ function FertilizerCalculatorInner() {
                         {savedFields.length > 0 ? (
                           <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3">
                             <div className="flex items-center justify-end gap-1 mb-2">
-                              <MeasureFieldButton variant="link" />
+                              <MeasureFieldButton
+                                variant="link"
+                                returnTo={`/services/fertilizer-calculator?crop=${encodeURIComponent(slug || "")}`}
+                              />
                             </div>
                             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
                               {savedFields.map((f) => {
                                 const fAcres = f.areaAcres ? String(f.areaAcres) : (f.area?.match(/([\d.]+)/)?.[1] ?? "1");
-                                const isSelected = area === fAcres;
+                                const isSelected = pickedFieldId === f.id;
                                 return (
                                   <button
                                     key={f.id}
                                     type="button"
                                     onClick={() => {
-                                      setArea(fAcres);
-                                      if (f.cropSlug && slugs.includes(f.cropSlug)) {
-                                        setSlug(f.cropSlug);
+                                      if (pickedFieldId === f.id) {
+                                        setPickedFieldId(null);
+                                        return;
                                       }
+                                      setPickedFieldId(f.id);
+                                      setArea(fAcres);
                                     }}
                                     className={cn(
                                       "shrink-0 rounded-xl px-3 py-2 text-left text-xs font-bold transition active:scale-95 border",
@@ -682,15 +704,50 @@ function FertilizerCalculatorInner() {
                             <span className="text-[11px] text-[var(--av-text-muted)]">
                               खेत का रकबा नहीं पता?
                             </span>
-                            <MeasureFieldButton variant="link" />
+                            <MeasureFieldButton
+                              variant="link"
+                              returnTo={`/services/fertilizer-calculator?crop=${encodeURIComponent(slug || "")}`}
+                            />
                           </div>
                         )}
 
                         {/* Acre Input with Stepper */}
                         <div>
                           <label className="block text-xs font-extrabold uppercase tracking-wider text-[var(--av-text-muted)]">
-                            खेत कितना एकड़?
+                            खेत कितना है?
                           </label>
+                          <div className="mt-2 flex gap-1.5">
+                            {(
+                              [
+                                ["acre", "एकड़"],
+                                ["bigha", "बीघा"],
+                                ["kanal", "कनाल"],
+                              ] as const
+                            ).map(([unit, label]) => (
+                              <button
+                                key={unit}
+                                type="button"
+                                onClick={() => setAreaUnit(unit)}
+                                className={cn(
+                                  "rounded-full px-3 py-1 text-[12px] font-bold",
+                                  areaUnit === unit
+                                    ? "bg-emerald-700 text-white"
+                                    : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)]"
+                                )}
+                              >
+                                {label}
+                              </button>
+                            ))}
+                          </div>
+                          {areaUnit === "bigha" ? (
+                            <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
+                              {getBighaInfo(profile.state, profile.district).label}
+                            </p>
+                          ) : areaUnit === "kanal" ? (
+                            <p className="mt-1 text-[11px] text-[var(--av-text-muted)]">
+                              हरियाणा / पंजाब: 8 कनाल = 1 एकड़
+                            </p>
+                          ) : null}
                           <div className="mt-2 flex items-center gap-2">
                             <button
                               type="button"

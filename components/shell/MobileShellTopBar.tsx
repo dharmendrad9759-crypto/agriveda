@@ -4,7 +4,9 @@ import AppLink from "@/components/ui/AppLink";
 import AgriVedaBrandMark from "@/components/brand/AgriVedaBrandMark";
 import { Bell, MapPin, Languages } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
-import { farmerPlaceLine } from "@/lib/farmerPlaceName";
+import { preferredFarmerPlace } from "@/lib/farmerPlaceName";
+import { useFarmData } from "@/hooks/useFarmData";
+import { useActiveField } from "@/hooks/useActiveField";
 import { NavDrawerTrigger } from "@/components/shell/ShellNavDrawer";
 import { BRAND } from "@/lib/brand";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -15,6 +17,8 @@ import { usePathname } from "next/navigation";
 export default function MobileShellTopBar() {
   const pathname = usePathname();
   const { profile } = useFarmerProfile();
+  const farm = useFarmData();
+  const { activeField } = useActiveField(farm.data.fields, farm.hydrated);
   const { t, locale, setLocale } = useLocale();
   const [irrCount, setIrrCount] = useState(0);
 
@@ -30,7 +34,7 @@ export default function MobileShellTopBar() {
     return null;
   }
 
-  const place = farmerPlaceLine(profile);
+  const place = preferredFarmerPlace(profile, activeField);
   const hasLocation = place.ok;
   const shortPlace = place.short || "स्थान डालें";
 
@@ -74,11 +78,17 @@ export default function MobileShellTopBar() {
             type="button"
             onClick={toggleLanguage}
             className="flex h-9 items-center gap-1 rounded-xl border border-emerald-500/20 bg-[var(--av-surface)] px-2.5 text-[11px] font-extrabold text-[var(--av-text-primary)] shadow-sm active:scale-95 hover:border-emerald-500/40"
-            aria-label={locale === "hi" ? "Switch to English" : "हिंदी में बदलें"}
-            title={locale === "hi" ? "Switch to English" : "हिंदी में बदलें"}
+            aria-label={locale === "hi" ? "अभी हिंदी। अंग्रेज़ी पर जाएँ" : "अभी English। हिंदी पर जाएँ"}
+            title={locale === "hi" ? "अभी हिंदी" : "English now"}
           >
             <Languages className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>{locale === "hi" ? "EN" : "हिन्दी"}</span>
+            <span className={locale === "hi" ? "text-emerald-800 dark:text-emerald-200" : "opacity-40"}>
+              हिंदी
+            </span>
+            <span className="opacity-30">/</span>
+            <span className={locale === "en" ? "text-emerald-800 dark:text-emerald-200" : "opacity-40"}>
+              EN
+            </span>
           </button>
 
           {/* Notifications / Alerts */}

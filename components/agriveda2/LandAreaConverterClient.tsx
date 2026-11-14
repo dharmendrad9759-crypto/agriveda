@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Compass,
   ArrowRightLeft,
@@ -257,6 +257,12 @@ export default function LandAreaConverterClient() {
     setToUnit(fromUnit);
   };
 
+  useEffect(() => {
+    if (fromUnit !== toUnit) return;
+    const other = preset.highlightUnits.find((unit) => unit !== fromUnit);
+    if (other) setToUnit(other);
+  }, [fromUnit, toUnit, preset]);
+
   // Base calculation in Square Feet
   const areaInSqFt = useMemo(() => {
     const n = parseFloat(inputValue);
@@ -277,7 +283,13 @@ export default function LandAreaConverterClient() {
   // Live grid of all units
   const allUnitValues = useMemo(() => {
     if (areaInSqFt <= 0) return [];
-    return (Object.keys(UNITS) as UnitKey[]).map((key) => {
+    const keys = Object.keys(UNITS) as UnitKey[];
+    const prefer = preset.highlightUnits;
+    const ordered = [
+      ...prefer.filter((key) => keys.includes(key)),
+      ...keys.filter((key) => !prefer.includes(key)),
+    ];
+    return ordered.map((key) => {
       const meta = UNITS[key];
       const val = areaInSqFt / meta.sqFtFactor;
       let formatted: string;
@@ -290,7 +302,7 @@ export default function LandAreaConverterClient() {
         formatted,
       };
     });
-  }, [areaInSqFt]);
+  }, [areaInSqFt, preset]);
 
   const handleCopy = () => {
     const text = `${inputValue} ${UNITS[fromUnit]?.shortHi} = ${convertedTargetValue} ${UNITS[toUnit]?.shortHi} (Agriveda ज़मीन नाप कैलकुलेटर)`;

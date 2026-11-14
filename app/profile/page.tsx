@@ -2,67 +2,68 @@
 
 import AppLink from "@/components/ui/AppLink";
 import AppShell from "@/components/shell/AppShell";
-import ThemeToggle from "@/components/theme/ThemeToggle";
-import { useState, type ReactNode } from "react";
-import {
-  Bug,
-  ChevronRight,
-  Compass,
-  Languages,
-  LogOut,
-  MapPin,
-  MessageCircle,
-  Palette,
-  Pencil,
-  Phone,
-  Settings2,
-  ShieldCheck,
-  Sprout,
-  Stethoscope,
-} from "lucide-react";
+import { useState } from "react";
+import { Bug, ChevronRight, LogOut, Settings2, Sprout } from "lucide-react";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useMyCrops } from "@/hooks/useMyCrops";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useQueryHistory } from "@/hooks/useQueryHistory";
 import { APP_NAME, APP_VERSION } from "@/lib/appMeta";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { getCropEmoji, getCropHindiName } from "@/lib/crops/crop-display";
 import { logoutAndReload } from "@/lib/appReset";
+import { cn } from "@/lib/cn";
+import type { AppLocale } from "@/lib/i18n/farmer-ui";
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return "क";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
   return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
 }
 
-function Section({
-  eyebrow,
-  title,
-  children,
+function Choice({
+  label,
+  options,
+  value,
+  onChange,
 }: {
-  eyebrow?: string;
-  title?: string;
-  children: ReactNode;
+  label: string;
+  options: { id: string; label: string }[];
+  value: string;
+  onChange: (id: string) => void;
 }) {
   return (
-    <section className="space-y-2.5">
-      {eyebrow || title ? (
-        <div className="px-0.5">
-          {eyebrow ? (
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700/70 dark:text-emerald-300/70">
-              {eyebrow}
-            </p>
-          ) : null}
-          {title ? (
-            <h2 className="text-[15px] font-extrabold text-[var(--av-text-primary)]">{title}</h2>
-          ) : null}
-        </div>
-      ) : null}
-      <div className="overflow-hidden rounded-[1.35rem] border border-emerald-900/8 bg-[var(--av-surface)] shadow-[0_10px_28px_-18px_rgba(11,61,40,0.35)] dark:border-white/8">
-        {children}
+    <div>
+      <p className="mb-1.5 text-[13px] font-semibold text-[#3d6b56] dark:text-emerald-100/80">
+        {label}
+      </p>
+      <div
+        className="grid gap-1 rounded-2xl bg-[#e7f6ee] p-1 dark:bg-white/8"
+        style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+      >
+        {options.map((opt) => {
+          const on = opt.id === value;
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              aria-pressed={on}
+              onClick={() => onChange(opt.id)}
+              className={cn(
+                "h-11 rounded-[14px] text-[15px] font-semibold transition active:scale-[0.99]",
+                on
+                  ? "bg-[#059669] text-white shadow-sm"
+                  : "text-[#3d6b56] dark:text-emerald-50/80"
+              )}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -71,7 +72,8 @@ export default function ProfilePage() {
   const { crops } = useMyCrops();
   const { history } = useAIHistory();
   const { queries } = useQueryHistory();
-  const { locale } = useLocale();
+  const { locale, setLocale } = useLocale();
+  const { theme, setTheme, mounted } = useTheme();
   const isHi = locale === "hi";
   const [busyLogout, setBusyLogout] = useState(false);
 
@@ -79,118 +81,112 @@ export default function ProfilePage() {
     .filter(Boolean)
     .join(" · ");
   const displayName = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
-  const shortInitials = initials(displayName);
-  const phoneDisplay = profile.phone
-    ? `+91 ${profile.phone}`
-    : isHi
-      ? "मोबाइल नहीं जोड़ा"
-      : "No mobile added";
-  const farmAcres = profile.totalFarmAreaAcres;
 
   const stats = [
-    { k: isHi ? "फसलें" : "Crops", v: String(crops.length) },
-    { k: isHi ? "फसल जाँच" : "Leaf checks", v: String(history.length) },
-    { k: isHi ? "सवाल" : "Queries", v: String(queries.length) },
+    {
+      href: "/select-crops",
+      k: isHi ? "फसल" : "Crops",
+      v: String(crops.length),
+    },
+    {
+      href: "/ai-doctor",
+      k: isHi ? "जाँच" : "Checks",
+      v: String(history.length),
+    },
+    {
+      href: "/my-queries",
+      k: isHi ? "सवाल" : "Questions",
+      v: String(queries.length),
+    },
+  ];
+
+  const links = [
+    {
+      href: "/settings",
+      icon: Settings2,
+      label: isHi ? "सेटिंग्स" : "Settings",
+    },
+    {
+      href: "/report-bug",
+      icon: Bug,
+      label: isHi ? "समस्या बताएँ" : "Report a problem",
+    },
   ];
 
   return (
-    <AppShell
-      className="!bg-transparent"
-      title={isHi ? "मेरी प्रोफ़ाइल" : "My Profile"}
-    >
-      <div className="mx-auto max-w-lg space-y-5">
-        {/* Identity hero — same language as Settings account card */}
-        <section className="relative overflow-hidden rounded-[1.75rem] border border-white/15 bg-emerald-950 text-white shadow-[0_18px_40px_-20px_rgba(6,78,59,0.7)]">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-emerald-400/25 blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -bottom-16 left-8 h-36 w-36 rounded-full bg-amber-300/15 blur-3xl"
-          />
-          <div className="relative p-4 pb-3.5">
-            <div className="flex items-start gap-3.5">
-              <span className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-emerald-300 via-emerald-500 to-teal-700 text-[1.35rem] font-black tracking-wide text-emerald-950 shadow-lg shadow-emerald-950/30 ring-2 ring-white/25">
-                {shortInitials}
-                {profile.phoneVerified ? (
-                  <span className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full border-2 border-emerald-950 bg-emerald-400 text-emerald-950">
-                    <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.5} />
-                  </span>
-                ) : null}
-              </span>
-              <div className="min-w-0 flex-1 pt-0.5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-200/80">
-                  Agriveda
-                </p>
-                <h2 className="mt-0.5 truncate font-display text-[1.35rem] font-bold leading-tight">
+    <AppShell className="!bg-transparent" title={isHi ? "मेरी प्रोफ़ाइल" : "My profile"}>
+      <div className="mx-auto max-w-lg space-y-4">
+        <section className="rounded-[28px] border border-[#d5eadc] bg-[#f4fbf7] p-4 dark:border-white/10 dark:bg-[var(--av-surface)]">
+          <div className="flex items-start gap-3">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#e7f6ee] text-[18px] font-bold text-[#0f6b45] dark:bg-emerald-400/15 dark:text-emerald-200">
+              {initials(displayName)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="truncate font-display text-[20px] font-semibold leading-tight text-[#143028] dark:text-white">
                   {displayName}
                 </h2>
-                <p className="mt-1 flex items-start gap-1 truncate text-[12px] font-medium text-emerald-100/80">
-                  <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">
-                    {placeLine || (isHi ? "जगह अभी नहीं डाली" : "Location not set yet")}
-                  </span>
-                </p>
-                <p className="mt-1 flex items-center gap-1 text-[12px] font-medium text-emerald-100/80">
-                  <Phone className="h-3.5 w-3.5 shrink-0" />
-                  {phoneDisplay}
-                  {farmAcres != null && farmAcres > 0
-                    ? ` · ${farmAcres} ${isHi ? "एकड़" : "acre"}`
-                    : ""}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {stats.map((s) => (
-                <div
-                  key={s.k}
-                  className="rounded-2xl bg-white/8 px-2 py-2 text-center ring-1 ring-white/10"
+                <AppLink
+                  href="/profile/edit"
+                  className="shrink-0 pt-0.5 text-[14px] font-semibold text-[#0f6b45] dark:text-emerald-300"
                 >
-                  <p className="text-[15px] font-extrabold leading-none">{s.v}</p>
-                  <p className="mt-1 text-[10px] font-semibold text-emerald-100/70">{s.k}</p>
-                </div>
-              ))}
+                  {isHi ? "बदलें" : "Edit"}
+                </AppLink>
+              </div>
+              {placeLine ? (
+                <p className="mt-1 truncate text-[13px] text-[#3d6b56] dark:text-emerald-100/70">
+                  {placeLine}
+                </p>
+              ) : null}
+              {profile.phone ? (
+                <p className="mt-0.5 text-[13px] text-[#3d6b56] dark:text-emerald-100/70">
+                  +91 {profile.phone}
+                </p>
+              ) : null}
             </div>
+          </div>
 
-            <AppLink
-              href="/profile/edit"
-              className="mt-3.5 flex min-h-11 items-center justify-center rounded-2xl bg-white text-[13px] font-extrabold text-emerald-950 active:scale-[0.99]"
-            >
-              {isHi ? "प्रोफ़ाइल बदलें" : "Edit profile"}
-            </AppLink>
+          <div className="mt-4 grid grid-cols-3 overflow-hidden rounded-2xl border border-[#d7ebdf] bg-white dark:border-white/10 dark:bg-black/20">
+            {stats.map((item, index) => (
+              <AppLink
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "px-2 py-3 text-center active:bg-[#e7f6ee] dark:active:bg-white/5",
+                  index > 0 && "border-l border-[#d7ebdf] dark:border-white/10"
+                )}
+              >
+                <p className="text-[18px] font-semibold leading-none text-[#143028] dark:text-white">
+                  {item.v}
+                </p>
+                <p className="mt-1 text-[12px] font-medium text-[#3d6b56] dark:text-emerald-100/70">
+                  {item.k}
+                </p>
+              </AppLink>
+            ))}
           </div>
         </section>
 
-        {/* My crops */}
-        <Section
-          eyebrow={isHi ? "खेत" : "Farm"}
-          title={isHi ? "मेरी फसलें" : "My crops"}
-        >
-          <div className="flex items-center justify-end gap-2 border-b border-emerald-900/6 px-3.5 py-2.5 dark:border-white/6">
-            <AppLink
-              href="/select-crops"
-              className="inline-flex items-center gap-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
-            >
-              {isHi ? "बदलें" : "Change"}
-              <ChevronRight className="h-3.5 w-3.5" />
-            </AppLink>
-          </div>
+        <section className="rounded-[28px] border border-[#d5eadc] bg-white p-4 dark:border-white/10 dark:bg-[var(--av-surface)]">
+          <h2 className="text-[15px] font-semibold text-[#143028] dark:text-white">
+            {isHi ? "मेरी फसलें" : "My crops"}
+          </h2>
           {crops.length > 0 ? (
-            <div className="flex gap-2 overflow-x-auto px-3.5 py-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {crops.map((c) => {
-                const label = isHi ? getCropHindiName(c.slug, c.name) ?? c.name : c.name;
+            <div className="mt-3 flex gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {crops.map((crop) => {
+                const label = isHi
+                  ? getCropHindiName(crop.slug, crop.name) ?? crop.name
+                  : crop.name;
                 return (
                   <AppLink
-                    key={c.slug}
-                    href={`/crops/${c.slug}`}
-                    className="flex min-w-[88px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border border-emerald-500/15 bg-[var(--av-surface-inset)] px-3 py-3 transition hover:border-emerald-500/35"
+                    key={crop.slug}
+                    href={`/crops/${crop.slug}`}
+                    className="flex min-w-[84px] shrink-0 flex-col items-center gap-1.5 rounded-2xl bg-[#f4fbf7] px-3 py-3 dark:bg-white/5"
                   >
-                    <span className="text-2xl leading-none" aria-hidden>
-                      {c.emoji || getCropEmoji(c.slug)}
+                    <span className="text-[22px] leading-none" aria-hidden>
+                      {crop.emoji || getCropEmoji(crop.slug)}
                     </span>
-                    <span className="max-w-[72px] truncate text-center text-[11px] font-bold text-[var(--av-text-primary)]">
+                    <span className="max-w-[72px] truncate text-[12px] font-semibold text-[#143028] dark:text-white">
                       {label}
                     </span>
                   </AppLink>
@@ -198,131 +194,83 @@ export default function ProfilePage() {
               })}
             </div>
           ) : (
-            <div className="px-3.5 py-5 text-center">
-              <p className="flex items-center justify-center gap-1.5 text-sm text-[var(--av-text-muted)]">
-                <Sprout className="h-4 w-4 text-emerald-600" />
-                {isHi ? "अभी कोई फसल नहीं चुनी" : "No crops selected yet"}
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl bg-[#f4fbf7] px-3 py-3 dark:bg-white/5">
+              <p className="flex items-center gap-2 text-[13px] text-[#3d6b56] dark:text-emerald-100/70">
+                <Sprout className="h-4 w-4 text-[#059669]" />
+                {isHi ? "अभी कोई फसल नहीं" : "No crop yet"}
               </p>
               <AppLink
                 href="/select-crops"
-                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-700 px-4 text-xs font-bold text-white"
+                className="shrink-0 text-[14px] font-semibold text-[#0f6b45] dark:text-emerald-300"
               >
-                {isHi ? "फसलें जोड़ें" : "Add crops"}
+                {isHi ? "जोड़ें" : "Add"}
               </AppLink>
             </div>
           )}
-        </Section>
-
-        {/* Shortcuts */}
-        <Section>
-          <div className="divide-y divide-emerald-900/6 dark:divide-white/6">
-            <div className="flex items-center justify-between gap-3 px-3.5 py-3">
-              <span className="flex items-center gap-3 text-sm font-bold text-[var(--av-text-primary)]">
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-700 dark:text-sky-300">
-                  <Languages className="h-4 w-4" />
-                </span>
-                {isHi ? "भाषा" : "Language"}
-              </span>
-              <AppLink
-                href="/settings#look"
-                className="inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--av-text-muted)]"
-              >
-                {locale === "hi" ? "हिंदी" : "English"}
-                <ChevronRight className="h-4 w-4" />
-              </AppLink>
-            </div>
-
-            <div className="flex items-center justify-between gap-3 px-3.5 py-3">
-              <span className="flex items-center gap-3 text-sm font-bold text-[var(--av-text-primary)]">
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-700 dark:text-amber-300">
-                  <Palette className="h-4 w-4" />
-                </span>
-                {isHi ? "स्क्रीन रंग" : "Theme"}
-              </span>
-              <ThemeToggle />
-            </div>
-
-            {[
-              {
-                href: "/?tour=1",
-                icon: Compass,
-                tone: "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300",
-                label: isHi ? "ऐप फीचर्स टूर (Spotlight Walkthrough)" : "App Spotlight Tour",
-              },
-              {
-                href: "/my-queries",
-                icon: MessageCircle,
-                tone: "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300",
-                label: isHi ? "मेरे सवाल / जवाब" : "My queries / replies",
-              },
-              {
-                href: "/ai-doctor",
-                icon: Stethoscope,
-                tone: "bg-teal-500/15 text-teal-800 dark:text-teal-300",
-                label: isHi ? `फसल जाँच (${history.length})` : `Leaf checks (${history.length})`,
-              },
-              {
-                href: "/settings",
-                icon: Settings2,
-                tone: "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300",
-                label: isHi ? "सभी सेटिंग्स" : "All settings",
-              },
-              {
-                href: "/report-bug",
-                icon: Bug,
-                tone: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-                label: isHi ? "समस्या बताएँ" : "Report a problem",
-              },
-            ].map((row) => (
-              <AppLink
-                key={row.href + row.label}
-                href={row.href}
-                className="flex items-center justify-between gap-3 px-3.5 py-3 transition active:bg-emerald-500/5"
-              >
-                <span className="flex items-center gap-3 text-sm font-bold text-[var(--av-text-primary)]">
-                  <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${row.tone}`}>
-                    <row.icon className="h-4 w-4" />
-                  </span>
-                  {row.label}
-                </span>
-                <ChevronRight className="h-4 w-4 text-[var(--av-text-muted)]" />
-              </AppLink>
-            ))}
-          </div>
-        </Section>
-
-        {/* Logout Button (Directly visible on profile) */}
-        <section className="space-y-2 pt-1">
-          <button
-            type="button"
-            onClick={async () => {
-              if (busyLogout) return;
-              setBusyLogout(true);
-              try {
-                await logoutAndReload();
-              } catch {
-                setBusyLogout(false);
-              }
-            }}
-            disabled={busyLogout}
-            className="flex min-h-[50px] w-full items-center justify-center gap-2.5 rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-[14px] font-bold text-rose-600 transition active:scale-[0.98] hover:bg-rose-500/15 disabled:opacity-50 dark:border-rose-500/30 dark:bg-rose-950/30 dark:text-rose-400"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>
-              {busyLogout
-                ? isHi
-                  ? "लॉगआउट हो रहा है…"
-                  : "Logging out…"
-                : isHi
-                ? "लॉग आउट (सुरक्षित बाहर निकलें)"
-                : "Log out"}
-            </span>
-          </button>
         </section>
 
-        <p className="flex items-center justify-center gap-1.5 pb-2 pt-1 text-center text-[10px] font-medium text-[var(--av-text-muted)]">
-          <ShieldCheck className="h-3 w-3 text-emerald-600" />
-          {APP_NAME} v{APP_VERSION} · {isHi ? "भारतीय किसानों के लिए" : "Made for Indian farmers"}
+        <section className="space-y-4 rounded-[28px] border border-[#d5eadc] bg-white p-4 dark:border-white/10 dark:bg-[var(--av-surface)]">
+          <Choice
+            label={isHi ? "दिखावट" : "Theme"}
+            value={mounted ? theme : "light"}
+            onChange={(id) => setTheme(id as "light" | "dark")}
+            options={[
+              { id: "light", label: isHi ? "उजाला" : "Light" },
+              { id: "dark", label: isHi ? "अँधेरा" : "Dark" },
+            ]}
+          />
+          <Choice
+            label={isHi ? "भाषा" : "Language"}
+            value={locale}
+            onChange={(id) => setLocale(id as AppLocale)}
+            options={[
+              { id: "hi", label: "हिंदी" },
+              { id: "en", label: "English" },
+            ]}
+          />
+        </section>
+
+        <section className="overflow-hidden rounded-[28px] border border-[#d5eadc] bg-white dark:border-white/10 dark:bg-[var(--av-surface)]">
+          {links.map((row, index) => (
+            <AppLink
+              key={row.href}
+              href={row.href}
+              className={cn(
+                "flex min-h-14 items-center gap-3 px-4 active:bg-[#f4fbf7] dark:active:bg-white/5",
+                index > 0 && "border-t border-[#e7f3ec] dark:border-white/10"
+              )}
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#e7f6ee] text-[#0f6b45] dark:bg-emerald-400/15 dark:text-emerald-200">
+                <row.icon className="h-4 w-4" />
+              </span>
+              <span className="flex-1 text-[15px] font-semibold text-[#143028] dark:text-white">
+                {row.label}
+              </span>
+              <ChevronRight className="h-4 w-4 text-[#5f8f74]" />
+            </AppLink>
+          ))}
+        </section>
+
+        <button
+          type="button"
+          disabled={busyLogout}
+          onClick={async () => {
+            if (busyLogout) return;
+            setBusyLogout(true);
+            try {
+              await logoutAndReload();
+            } catch {
+              setBusyLogout(false);
+            }
+          }}
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-[15px] font-semibold text-rose-700 active:bg-rose-50 disabled:opacity-50 dark:text-rose-300 dark:active:bg-rose-950/30"
+        >
+          <LogOut className="h-4 w-4" />
+          {isHi ? "लॉग आउट" : "Log out"}
+        </button>
+
+        <p className="pb-2 text-center text-[11px] text-[#5f8f74] dark:text-emerald-100/50">
+          {APP_NAME} · {APP_VERSION}
         </p>
       </div>
     </AppShell>

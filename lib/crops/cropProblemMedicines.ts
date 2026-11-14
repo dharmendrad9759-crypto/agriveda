@@ -6605,6 +6605,12 @@ function mappedCuratives(cropSlug: string, problemId: string): CurativeMedicine[
   );
 }
 
+const UNLISTED_MEDICINE = /streptocycline|streptomycin|bismerthiazol|स्ट्रेप्टोसाइक्लिन|स्ट्रेप्टोमाइसिन|बिस्मर्थिया/i;
+
+function isListedMedicine(med: CurativeMedicine): boolean {
+  return !UNLISTED_MEDICINE.test(`${med.technical} ${med.nameHi} ${med.dose}`);
+}
+
 function sanitizeCurative(med: CurativeMedicine): CurativeMedicine {
   const cleanHi = (med.nameHi || med.technical || "")
     .replace(/\s*\([^)]*\)/g, " ")
@@ -6642,21 +6648,24 @@ export function getCurativeMedicines(
   const mapped = mappedCuratives(cropSlug, problemId);
 
   if (mapped && mapped.length > 0) {
-    return mapped.map(sanitizeCurative);
+    return mapped.map(sanitizeCurative).filter(isListedMedicine);
   }
 
   if (!rawLines || rawLines.length === 0) return [];
-  return rawLines.slice(0, 3).map((line, i) => {
-    const raw = line.split("—")[0]?.trim() || line;
-    return sanitizeCurative({
-      nameHi: raw,
-      technical: raw,
-      dose: "बोतल का लेबल देखो",
-      brands: [],
-      level: (i + 1) as 1 | 2 | 3,
-      levelLabelHi: `स्तर ${i + 1}`,
-    });
-  });
+  return rawLines
+    .slice(0, 3)
+    .map((line, i) => {
+      const raw = line.split("—")[0]?.trim() || line;
+      return sanitizeCurative({
+        nameHi: raw,
+        technical: raw,
+        dose: "बोतल का लेबल देखो",
+        brands: [],
+        level: (i + 1) as 1 | 2 | 3,
+        levelLabelHi: `स्तर ${i + 1}`,
+      });
+    })
+    .filter(isListedMedicine);
 }
 
 

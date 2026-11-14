@@ -98,7 +98,7 @@ export default function CropProblemsClient() {
       title="फसल चुनें"
       step={1}
     >
-      <div className="space-y-6 pb-6">
+      <div className="space-y-6 pb-24">
         {sections.map((section) => (
           <section key={section.id}>
             <div className="mb-2.5 flex items-center gap-2">

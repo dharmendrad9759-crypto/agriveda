@@ -186,6 +186,8 @@ const SINGLE_COMBO_FORMULATIONS = [
 
 function isTankMix(tech: string): boolean {
   if (!tech || !tech.includes("+")) return false;
+  const forms = tech.match(/\b(?:WP|EC|SC|SG|WG|WDG|SL|SP|FS|OD|ZC|DF|GR|CG)\b/gi) || [];
+  if (forms.length >= 2) return true;
   // If text describes a pre-mix formulated product (% + % with formulation), it is a single packaged medicine
   if (isPreMixFormulation(tech)) return false;
 
@@ -230,10 +232,10 @@ export default function CropProblemDetailClient({
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [expandedOptions, setExpandedOptions] = useState<Record<number, boolean>>({ 0: true });
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    symptoms: false,
-    causes: false,
+    symptoms: true,
+    causes: true,
     organic: false,
-    precautions: false,
+    precautions: true,
   });
   const [mode, setMode] = useState<"field" | "expert" | "research">("field");
   const [tankLitres, setTankLitres] = useState<15 | 16>(15);
@@ -391,20 +393,20 @@ export default function CropProblemDetailClient({
           : undefined
       }
     >
-      <div className="space-y-4 pb-8">
+      <div className="space-y-4 pb-24">
         <div className="grid grid-cols-3 gap-1 rounded-2xl bg-emerald-950/90 p-1">
           {(
             [
-              ["field", "खेत में अभी"],
-              ["expert", "एक्सपर्ट इलाज"],
-              ["research", "पूरी जानकारी"],
+              ["field", "पहचान"],
+              ["expert", "मात्रा"],
+              ["research", "सावधानी"],
             ] as const
           ).map(([id, label]) => (
             <button
               key={id}
               type="button"
               onClick={() => setMode(id)}
-              className={`rounded-xl px-1 py-2 text-[11px] font-black ${
+              className={`rounded-xl px-1 py-2.5 text-[15px] font-bold ${
                 mode === id ? "bg-white text-emerald-950" : "text-emerald-100"
               }`}
             >
@@ -419,7 +421,7 @@ export default function CropProblemDetailClient({
           </div>
         ) : null}
 
-        {mode !== "research" ? (
+        {mode === "field" ? (
         <ThreatPhotoGallery
           primaryImage={p.image}
           title={shortName}
@@ -455,7 +457,7 @@ export default function CropProblemDetailClient({
           </div>
         ) : null}
 
-        {mode === "field" ? (
+        {mode === "expert" && primaryDose?.isSpray ? (
           <div className="flex items-center justify-between rounded-2xl border border-emerald-200 bg-white px-3 py-2">
             <p className="text-[12px] font-bold text-slate-700">मेरी टंकी</p>
             <div className="flex gap-1">
@@ -475,7 +477,7 @@ export default function CropProblemDetailClient({
           </div>
         ) : null}
 
-        {mode === "field" && overlay.sprayWindow ? (
+        {mode === "expert" && overlay.sprayWindow ? (
           <p className="text-[12px] font-bold text-slate-700">
             कब छिड़कें: {overlay.sprayWindow === "evening" ? "शाम" : overlay.sprayWindow === "morning" ? "सुबह" : "सुबह या शाम"}
             {overlay.nozzleHi ? ` · नोज़ल: ${overlay.nozzleHi}` : ""}
@@ -483,13 +485,13 @@ export default function CropProblemDetailClient({
           </p>
         ) : null}
 
-        {profile.sprayWater === "hard_tubewell" && mode !== "research" ? (
+        {profile.sprayWater === "hard_tubewell" && mode === "expert" ? (
           <p className="rounded-xl bg-sky-50 px-3 py-2 text-[12px] font-bold text-sky-950">
             आपका पानी खारा है — घोलकर तुरंत स्प्रे करें, टंकी भरकर न छोड़ें।
           </p>
         ) : null}
 
-        {/* 🔊 Top Doctor Audio Note (Authentic Human Agronomist Voice) */}
+        {mode === "expert" ? (
         <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 p-3.5 text-white shadow-md">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
@@ -535,8 +537,9 @@ export default function CropProblemDetailClient({
             </div>
           )}
         </div>
+        ) : null}
 
-        {mode !== "research" ? (
+        {mode === "expert" ? (
         <>
         <MockCard className="!border-emerald-500/35 !bg-gradient-to-b !from-emerald-50/60 !to-white dark:!from-slate-900 dark:!to-slate-900/95 !p-3 sm:!p-3.5 shadow-sm">
           <div className="flex items-center justify-between mb-1.5">
@@ -553,6 +556,11 @@ export default function CropProblemDetailClient({
           </div>
 
           <div className="space-y-2.5 mt-2">
+            {chemItems.length === 0 ? (
+              <p className="rounded-xl bg-amber-50 px-3 py-3 text-[14px] font-bold leading-relaxed text-amber-950">
+                इस समस्या की पक्की दवा यहाँ नहीं लिखी। डिब्बे का लेबल और स्थानीय सलाह देखें।
+              </p>
+            ) : null}
             {chemItems.map((c, i) => {
               const parsed = parseFarmerDose(c.dose, { tankLitres, technical: c.technical });
               const isExpanded = Boolean(expandedOptions[i]);
@@ -644,6 +652,11 @@ export default function CropProblemDetailClient({
                           </p>
                         </div>
                       </div>
+                      {isTankMix(c.technical) ? (
+                        <p className="text-[14px] font-bold leading-snug text-[#14532D]">
+                          दोनों पैकेट अलग लें। एक डिब्बे में दोनों नहीं मिलते।
+                        </p>
+                      ) : null}
 
                       {/* Full-Width 3-Column Compact Dosage Grid */}
                       <div className="w-full rounded-xl bg-amber-500/10 border border-amber-500/30 p-2.5">
@@ -771,7 +784,7 @@ export default function CropProblemDetailClient({
               </button>
             )}
 
-            {mode === "expert" && waleSteps.length > 0 ? (
+            {mode === "expert" && primaryChem && isTankMix(primaryChem.technical) && waleSteps.length > 0 ? (
               <div className="rounded-2xl border border-teal-200 bg-teal-50 p-3">
                 <p className="text-[12px] font-black text-teal-950">घोल बनाने का क्रम (पहले पाउडर, फिर गाढ़ा, अंत में तेल वाली)</p>
                 <ol className="mt-2 space-y-1 text-[12px] font-semibold text-teal-900">
@@ -802,7 +815,7 @@ export default function CropProblemDetailClient({
             >
               <div className="flex items-center gap-2">
                 <FlaskConical className="h-4 w-4 text-teal-700 dark:text-teal-300 shrink-0" />
-                <span>🧪 क्या आप इस दवा के साथ कोई अन्य दवा या टॉनिक मिला रहे हैं?</span>
+                <span>दूसरी दवा साथ मिला रहे हैं?</span>
               </div>
               <span className="flex items-center gap-1 text-[11px] text-teal-800 dark:text-teal-300 shrink-0">
                 सुरक्षा चेक करें <ArrowRight className="h-3.5 w-3.5" />
@@ -813,7 +826,7 @@ export default function CropProblemDetailClient({
         </>
         ) : null}
 
-        {mode !== "field" ? (
+        {mode === "field" ? (
         <>
         <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
           <div
@@ -932,7 +945,12 @@ export default function CropProblemDetailClient({
           </MockCard>
         )}
 
-        {/* 5. आगे के लिए रोकथाम व सुझाव (Precautions — Interactive Collapsible Accordion) */}
+        </>
+        ) : null}
+
+        {mode === "research" ? (
+        <>
+        {/* सावधानी */}
         <MockCard className="!p-3 sm:!p-3.5 shadow-sm">
           <div
             onClick={() => toggleSection("precautions")}
@@ -942,9 +960,7 @@ export default function CropProblemDetailClient({
               <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-sky-600/10 text-sky-800 dark:text-sky-300 text-[11px] font-black">
                 5
               </span>
-              <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
-                सावधानियां व आगे के लिए बचाव (Precautions)
-              </h2>
+                <h2 className="text-[15px] font-bold text-[#14532D]">सावधानी</h2>
             </div>
             <button
               type="button"
@@ -970,7 +986,7 @@ export default function CropProblemDetailClient({
               </li>
               <li className="flex items-start gap-1.5">
                 <span className="text-emerald-600 font-black">✓</span>
-                <span><strong>कटाई से पूर्व अंतर:</strong> {overlay.phiNoteHi || "बोतल के लेबल पर कटाई अंतर देखें — हर दवा का अलग होता है।"}</span>
+                <span>कटाई से पहले का अंतर: {overlay.phiNoteHi || "डिब्बे पर दिया गया सुरक्षा अंतराल देखें।"}</span>
               </li>
             </ul>
           )}
@@ -980,7 +996,7 @@ export default function CropProblemDetailClient({
 
         {mode === "research" ? (
           <MockCard className="!p-3.5">
-            <p className="text-[11px] font-black uppercase tracking-wide text-emerald-800">पूरी जानकारी</p>
+            <p className="text-[13px] font-bold text-[#14532D]">दवा का ग्रुप</p>
             <p className="mt-1 text-[15px] font-black text-slate-950">{p.nameEn}</p>
             <p className="text-[13px] font-bold text-slate-600">
               {hub?.kind === "pest" ? "कीट" : hub?.kind === "disease" ? "रोग" : hub?.kind}{" "}
@@ -995,7 +1011,7 @@ export default function CropProblemDetailClient({
                     <span className="font-mono font-black">{c.technical}</span>
                     {form ? <span> · {form}</span> : null}
                     <p className="text-[12px] text-slate-600">
-                      ग्रुप: {groups.length ? groups.join(" + ") : "अभी पक्का नहीं"}
+                      ग्रुप: {groups.length ? groups.join(" + ") : "डिब्बे पर लिखा ग्रुप देखें"}
                     </p>
                   </li>
                 );
@@ -1006,7 +1022,7 @@ export default function CropProblemDetailClient({
               {overlay.reviewedOn ? ` · जाँच ${overlay.reviewedOn}` : " · जाँच बाकी"}
             </p>
             <p className="mt-2 text-[12px] font-bold text-amber-800">
-              कटाई अंतर (PHI): {overlay.phiNoteHi || "अभी पक्का नहीं — लेबल देखें"}
+              कटाई से पहले का अंतर: {overlay.phiNoteHi || "डिब्बे पर दिया गया सुरक्षा अंतराल देखें।"}
             </p>
           </MockCard>
         ) : null}

@@ -227,7 +227,7 @@ export default function LiveFieldMap({
                   </p>
                   <p className="text-gray-600 mt-1">{zone.explanationHi}</p>
                   <p className="text-[11px] text-emerald-800 font-semibold mt-1">
-                    NDVI: {zone.meanNdvi.toFixed(2)} • ~{Math.round(zone.areaHectares * 10000)} मी²
+                    हरियाली: {zone.meanNdvi.toFixed(2)} • ~{Math.round(zone.areaHectares * 10000)} मी²
                   </p>
                 </div>
               </Popup>

@@ -82,7 +82,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       { localHi: "बथुआ", category: "broadleaf", scientific: "Chenopodium album" },
       { localHi: "कृष्णनील", category: "broadleaf", scientific: "Anagallis arvensis" },
       { localHi: "हिरनखुरी", category: "broadleaf", scientific: "Convolvulus arvensis" },
-      { localHi: "चटरी-मटरी", category: "broadleaf", scientific: "Vicia sativa" },
+      { localHi: "जंगली पालक", category: "broadleaf", scientific: "Rumex dentatus" },
     ],
     preEmergence: [
       { applicationType: "pre", timingHi: "बुवाई के 0–3 दिन (अंकुरण से पहले)", technical: "Pendimethalin 30% EC", brands: ["Stomp","Dost"], doseHi: "1.5 लीटर प्रति एकड़ (हल्की मिट्टी में 1.25–1.5 ली)", waterHi: "200 लीटर पानी", targetsHi: ["गुल्ली डंडा", "बथुआ", "चौड़ी पत्ती"], fieldConditionHi: "खेत में अच्छी नमी (पलेवा) हो", noteHi: "बुवाई के तुरंत बाद छिड़काव करने से खरपतवार का अंकुरण ही नहीं होता" },
@@ -91,8 +91,8 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
     postEmergence: [
       { applicationType: "post", timingHi: "पहली सिंचाई के बाद · गुल्ली 2 से 3 पत्ती", technical: "Clodinafop-propargyl 15% WP", brands: ["Topik","Point"], doseHi: "160 ग्राम प्रति एकड़", targetsHi: ["गुल्ली डंडा","जंगली जई"] },
       { applicationType: "post", timingHi: "पहली सिंचाई के बाद · गुल्ली 2 से 3 पत्ती", technical: "Pinoxaden 5.1% EC", brands: ["Axial","Axel"], doseHi: "350–400 मिली प्रति एकड़", targetsHi: ["गुल्ली डंडा","जंगली जई"] },
-      { applicationType: "post", timingHi: "बुवाई के 32–35 दिन बाद", technical: "Metsulfuron-methyl 20% WP", brands: ["Algrip"], doseHi: "8 ग्राम प्रति एकड़", targetsHi: ["बथुआ","हिरनखुरी","कृष्णनील"] },
-      { applicationType: "post", timingHi: "बुवाई के 32–35 दिन बाद", technical: "2,4-D Amine Salt 58% SL", doseHi: "400 मिली प्रति एकड़", targetsHi: ["बथुआ","हिरनखुरी","कृष्णनील"] },
+      { applicationType: "post", timingHi: "बुवाई के 32–35 दिन बाद", technical: "Metsulfuron-methyl 20% WP", brands: ["Algrip"], doseHi: "8 ग्राम प्रति एकड़", targetsHi: ["बथुआ","हिरनखुरी","कृष्णनील","जंगली पालक"] },
+      { applicationType: "post", timingHi: "बुवाई के 32–35 दिन बाद", technical: "2,4-D Amine Salt 58% SL", doseHi: "400 मिली प्रति एकड़", targetsHi: ["बथुआ","हिरनखुरी","कृष्णनील","जंगली पालक"] },
       { applicationType: "combo", timingHi: "घास और चौड़ी पत्ती दोनों के लिए", technical: "Sulfosulfuron 75% + Metsulfuron-methyl 5% WG", brands: ["Total","Leader Plus"], doseHi: "16 ग्राम प्रति एकड़", waterHi: "150 लीटर पानी", targetsHi: ["गुल्ली डंडा","जंगली जई","बथुआ","हिरनखुरी"], adjuvantHi: "गोंद / surfactant पैक के साथ मिलाएँ" },
     ],
     fieldDoctorTips: [
@@ -107,7 +107,7 @@ export const WEED_FIELD_GUIDES: Record<string, CropWeedFieldGuide> = {
       { localHi: "सांवा / सावां", category: "grass", scientific: "Echinochloa crus-galli / E. colona" },
       { localHi: "मकरा घास", category: "grass" },
       { localHi: "छोटा मोथा / चपटा मोथा", category: "sedge", scientific: "Cyperus iria / C. difformis" },
-      { localHi: "जलकुंभी", category: "broadleaf" },
+      { localHi: "मोनोकोरिया (नीलकंठी)", category: "broadleaf", scientific: "Monochoria vaginalis" },
       { localHi: "मिर्ची घास", category: "broadleaf" },
       { localHi: "Sphenoclea", category: "broadleaf" },
       { localHi: "ब्राह्मी", category: "broadleaf" },

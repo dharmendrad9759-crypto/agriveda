@@ -20,6 +20,7 @@ import {
   Ruler,
   Shield,
   Sprout,
+  Sun,
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
@@ -32,6 +33,7 @@ import { useFarmerProfile } from "@/hooks/useFarmerProfile";
 import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { useAIHistory } from "@/hooks/useAIHistory";
 import { useToast } from "@/components/ui/Toast";
+import { useAppSettings } from "@/hooks/useAppSettings";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { cropCatalog } from "@/data/crop-catalog";
@@ -39,7 +41,6 @@ import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { FarmField } from "@/lib/farm/types";
 import { track } from "@/lib/analytics";
 import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
-import FarmerAppTour from "@/components/tutorial/FarmerAppTour";
 import HomeCropStatusCard from "@/components/dashboard/HomeCropStatusCard";
 import HomeAddCropHero from "@/components/dashboard/HomeAddCropHero";
 import MeasureAfterAddPrompt from "@/components/farm/MeasureAfterAddPrompt";
@@ -55,7 +56,7 @@ import { soilForPlace } from "@/lib/farm/placeProfile";
 /** Unified Crop Disease & Doctor Hero Card — 2-Column Split Photo Cards, High-Affordance, Futuristic & Clean */
 function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-[26px] border border-emerald-500/20 bg-gradient-to-br from-[#063320] via-[#042416] to-[#02180e] p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-12px_rgba(2,24,14,0.5)]">
+    <div className="relative overflow-hidden rounded-[26px] border border-emerald-400/25 bg-gradient-to-br from-[#1a8f5e] via-[#157a50] to-[#116844] p-3.5 sm:p-4 text-white shadow-[0_16px_36px_-12px_rgba(17,104,68,0.35)]">
       {/* Header section — Clean badges + punchy heading */}
       <h2 className="relative z-10 text-[15px] font-bold leading-snug text-white">
         {isHi ? "फसल में कोई समस्या या बीमारी है?" : "Crop disease or pest?"}
@@ -68,7 +69,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
           id="tour-home-camera-card"
           href="/ai-doctor"
           onClick={() => track("tool_open", { href: "/ai-doctor", label: "home_photo_scan" })}
-          className="group relative flex flex-col overflow-hidden rounded-2xl border border-emerald-400/30 bg-emerald-950/70 backdrop-blur-md shadow-md transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-950/90 hover:shadow-xl active:scale-[0.97]"
+          className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/25 bg-[#0f6b45]/55 backdrop-blur-md shadow-md transition-all duration-300 hover:border-white/40 hover:bg-[#0f6b45]/70 hover:shadow-xl active:scale-[0.97]"
         >
           {/* Prominent Photo Window */}
           <div className="relative h-34 sm:h-40 w-full overflow-hidden bg-slate-900">
@@ -81,7 +82,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
               priority
               className="object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-emerald-950/90 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#116844]/80 to-transparent" />
           </div>
 
           {/* Lower Content & High-Affordance CTA */}
@@ -104,7 +105,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
         <AppLink
           href="/crop-problems"
           onClick={() => track("tool_open", { href: "/crop-problems", label: "home_browse_crop_problems" })}
-          className="group relative flex flex-col overflow-hidden rounded-2xl border border-teal-400/30 bg-teal-950/70 backdrop-blur-md shadow-md transition-all duration-300 hover:border-teal-300 hover:bg-teal-950/90 hover:shadow-xl active:scale-[0.97]"
+          className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/25 bg-[#0e6a52]/55 backdrop-blur-md shadow-md transition-all duration-300 hover:border-white/40 hover:bg-[#0e6a52]/70 hover:shadow-xl active:scale-[0.97]"
         >
           {/* Prominent Photo Window */}
           <div className="relative h-34 sm:h-40 w-full overflow-hidden bg-slate-900">
@@ -117,7 +118,7 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
               priority
               className="object-cover object-[center_32%] transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-teal-950/90 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[#116844]/80 to-transparent" />
           </div>
 
           {/* Lower Content & High-Affordance CTA */}
@@ -446,6 +447,23 @@ function FarmToolSuites({ isHi }: { isHi: boolean }) {
             </AppLink>
           ))}
         </div>
+        <div className="mt-2.5 grid grid-cols-3 gap-2">
+          {(
+            [
+              ["/services/land-area-converter", "ज़मीन नाप", "Land"],
+              ["/services/seed-calculator", "बीज दर", "Seed"],
+              ["/services/tractor-hp-calculator", "ट्रैक्टर HP", "Tractor"],
+            ] as const
+          ).map(([href, hi, en]) => (
+            <AppLink
+              key={href}
+              href={href}
+              className="rounded-2xl bg-[var(--av-surface)] px-2 py-3 text-center text-[13px] font-bold text-[var(--av-text-primary)] active:scale-[0.98]"
+            >
+              {isHi ? hi : en}
+            </AppLink>
+          ))}
+        </div>
       </section>
     </div>
   );
@@ -513,6 +531,7 @@ export default function AgriVedaHome() {
       })
     : null;
   const { showToast } = useToast();
+  const { settings, update: updateSettings } = useAppSettings();
   const { weather, loading: weatherLoading, error: weatherError } = useLiveWeather();
   const { data: farm, setFields, addField, hydrated: farmHydrated } = useFarmData();
   const { activeField, setActiveField } = useActiveField(farm.fields, farmHydrated);
@@ -614,7 +633,6 @@ export default function AgriVedaHome() {
 
   return (
     <div className="relative mx-auto min-w-0 max-w-lg overflow-x-hidden pb-2">
-      <FarmerAppTour />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-[-20px] top-0 h-[280px] overflow-hidden"
@@ -638,6 +656,20 @@ export default function AgriVedaHome() {
                   <span className="text-[12px] font-semibold text-[var(--av-text-muted)]" suppressHydrationWarning>
                     {todayLabel}
                   </span>
+                  <button
+                    type="button"
+                    aria-pressed={settings.fieldMode}
+                    onClick={() => updateSettings({ fieldMode: !settings.fieldMode })}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold",
+                      settings.fieldMode
+                        ? "border-amber-700 bg-amber-300 text-amber-950"
+                        : "border-emerald-800/15 text-emerald-900"
+                    )}
+                  >
+                    <Sun className="h-3 w-3" />
+                    {settings.fieldMode ? "धूप मोड चालू" : "धूप में देखें"}
+                  </button>
                 </div>
               ) : (
                 <div className="mt-1 h-[18px]" aria-hidden />

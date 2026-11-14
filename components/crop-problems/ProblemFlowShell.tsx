@@ -37,7 +37,7 @@ export default function ProblemFlowShell({
   }, [step]);
 
   return (
-    <div className="relative mx-auto min-h-[100dvh] w-full max-w-lg overflow-hidden pb-28 text-[#0B1F16]">
+    <div className="relative mx-auto min-h-[100dvh] w-full max-w-lg overflow-x-clip pb-28 text-[#0B1F16]">
       {/* Ambient field */}
       <div
         aria-hidden

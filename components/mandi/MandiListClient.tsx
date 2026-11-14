@@ -299,10 +299,19 @@ export default function MandiListClient() {
     return unique(source.map((r) => varietyLabel(r.variety)).filter(Boolean));
   }, [rows, crop, mandi, districtRows]);
 
+  const heroPlace =
+    district ||
+    (fetchState.trim().toLowerCase() === profileState.trim().toLowerCase() ? profileDistrict : "");
   const heroRows = useMemo(() => {
-    const home = profileDistrict
-      ? rows.filter((r) => (r.district || "").toLowerCase() === profileDistrict.toLowerCase())
-      : rows;
+    const inState = rows.filter((r) => {
+      const rowState = (r.state || "").trim().toLowerCase();
+      const want = fetchState.trim().toLowerCase();
+      return !rowState || rowState === want;
+    });
+    const scoped = inState.length ? inState : rows;
+    const home = heroPlace
+      ? scoped.filter((r) => (r.district || "").toLowerCase() === heroPlace.toLowerCase())
+      : scoped;
     const wanted = myCrops.map((c) => c.name.toLowerCase());
     const picked: MandiRow[] = [];
     const seen = new Set<string>();
@@ -346,7 +355,7 @@ export default function MandiListClient() {
       pushRow(row);
     }
     return picked.slice(0, 4);
-  }, [rows, profileDistrict, myCrops]);
+  }, [rows, heroPlace, fetchState, myCrops]);
 
   const pickState = (next: string) => {
     setFetchState(next);
@@ -622,10 +631,16 @@ export default function MandiListClient() {
               <section className="space-y-2">
                 <div className="flex items-center justify-between px-0.5">
                   <h2 className="text-[15px] font-black text-[var(--av-text-primary)]">
-                    {isHi ? "घर की मंडी — पूरा भाव" : "Your mandi — full rate"}
+                    {heroPlace && heroPlace.toLowerCase() !== profileDistrict.toLowerCase()
+                      ? isHi
+                        ? `${heroPlace} की मंडियां — पूरा भाव`
+                        : `${heroPlace} mandis — full rate`
+                      : isHi
+                        ? "घर की मंडी — पूरा भाव"
+                        : "Your mandi — full rate"}
                   </h2>
                   <p className="text-[11px] font-semibold text-amber-800 dark:text-amber-300">
-                    {profileDistrict || fetchState}
+                    {heroPlace || fetchState}
                   </p>
                 </div>
                 {heroRows.map((row) => (
@@ -783,7 +798,7 @@ export default function MandiListClient() {
             ) : null}
 
             <AppLink
-              href="/market-trends"
+              href={`/market-trends?state=${encodeURIComponent(fetchState)}&crop=${encodeURIComponent(crop || "Wheat")}`}
               className="flex items-center justify-center py-2 text-[13px] font-semibold text-emerald-800 dark:text-emerald-300"
             >
               {isHi ? "7 दिन का बाज़ार रुझान देखें →" : "7-day market trends →"}

@@ -103,6 +103,9 @@ export type MixPlan = {
   phiDays: number;
   dynamicSteps: DynamicMixStep[];
   mixStepsHi: string[];
+  /** Medicines that must go in a later spray — not this tank. */
+  laterSprays?: MixMedicine[];
+  splitWarningHi?: string;
 };
 
 export const GROWTH_STAGES: {
@@ -793,15 +796,56 @@ export type TankMixVerdict = {
  * - Biologicals + Chemical Fungicides = RED (Bio kill)
  * - Calcium + Sulphate/Phosphate = RED (Gypsum precipitation)
  */
+const BANNED_TANK_TECHNICAL = /streptocycline|bismerthiazol/i;
+
+export function isBlockedTankTechnical(technical: string): boolean {
+  return BANNED_TANK_TECHNICAL.test(technical);
+}
+
+function saltTokens(technical: string): string[] {
+  return activeKey(technical)
+    .split("+")
+    .filter((part) => part.length > 4);
+}
+
+function sharesActiveSalt(a: string, b: string): boolean {
+  const right = new Set(saltTokens(b));
+  return saltTokens(a).some((part) => right.has(part));
+}
+
+function formulationCount(technical: string): number {
+  return technical.match(/\b(?:wp|sc|ec|wg|wdg|df|sl|sp|sg)\b/gi)?.length || 1;
+}
+
 export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
   const chems = medicines.filter((m) => !m.isAdjuvant);
+  const blocked = chems.find((m) => isBlockedTankTechnical(m.technical));
+  if (blocked) {
+    return {
+      status: "incompatible",
+      title: "यह दवा टंकी में नहीं डालें",
+      badgeHi: "",
+      messageHi: `${blocked.nameHi} भारत में प्रतिबंधित या अपंजीकृत है। इसे मिश्रण से हटाएँ।`,
+      remedyHi: "इसकी जगह उसी बीमारी की अगली दर्ज दवा चुनें।",
+    };
+  }
 
   if (chems.length <= 1) {
     return {
       status: "safe",
-      title: "बिल्कुल सुरक्षित",
-      badgeHi: "🟢 100% सुरक्षित (Single Chemical)",
-      messageHi: "एकल दवा का छिड़काव पूरी तरह सुरक्षित है। आवश्यकतानुसार सिलिकॉन स्टिकर मिलाएँ।",
+      title: "एक दवा का छिड़काव",
+      badgeHi: "🟢 एकल दवा",
+      messageHi: "एक दवा का छिड़काव। जरूरत हो तो सिलिकॉन स्टिकर मिलाएँ।",
+    };
+  }
+
+  if (chems.length > 3) {
+    return {
+      status: "incompatible",
+      title: "इतनी दवाएं एक साथ न मिलाएं",
+      badgeHi: "",
+      messageHi: "इतनी दवाएं एक साथ न मिलाएं, घोल फट सकता है—दो अलग स्प्रे में डालें",
+      remedyHi: "एक टंकी में 2 दवाएँ रखें। तीसरी तभी जब आपस में मेल खाएँ। बाकी अगले छिड़काव में डालें।",
     };
   }
 
@@ -923,15 +967,15 @@ export function evaluateTankMix(medicines: MixMedicine[]): TankMixVerdict {
         };
       }
 
-      // 7. Same Active Ingredient duplication
-      if (a.activeId === b.activeId) {
+      // 7. Same active salt — even when the second product is a different premix
+      if (a.activeId === b.activeId || sharesActiveSalt(a.technical, b.technical)) {
         return {
           status: "incompatible",
-          title: "गलती: एक ही अणु दो बार चुना गया है!",
-          badgeHi: "🔴 दोहराव (Duplicate Molecule)",
-          messageHi: `एक ही रसायन (${a.nameHi}) को दो बार टैंक में मिलाने से ओवरडोज का खतरा होता है। दो अलग समूह के रसायन चुनें।`,
-          conflictReason: "Same active ingredient",
-          remedyHi: "एक स्लॉट में कोई दूसरा फफूंदनाशक या कीटनाशक चुनें।",
+          title: "एक ही तत्व दो बार जा रहा है",
+          badgeHi: "",
+          messageHi: `${a.nameHi} और ${b.nameHi} में एक ही सक्रिय तत्व है। दोनों एक टंकी में डालने से पत्तियाँ झुलस सकती हैं।`,
+          conflictReason: "Shared active salt",
+          remedyHi: "डुप्लीकेट हटाकर एक ही संयुक्त दवा रखें, या दो अलग स्प्रे करें।",
           badPair: [a, b],
         };
       }
@@ -1101,8 +1145,50 @@ export function activeKey(technical: string): string {
   return [...new Set(parts)].sort().join("+");
 }
 
-function pickBestCurative(list: CurativeMedicine[]): CurativeMedicine {
-  return list.find((item) => item.isTopPerformer) ?? [...list].sort((a, b) => (b.level ?? 0) - (a.level ?? 0))[0];
+function pickBestCurative(list: CurativeMedicine[]): CurativeMedicine | null {
+  const allowed = list.filter((item) => !isBlockedTankTechnical(item.technical));
+  if (!allowed.length) return null;
+  return (
+    allowed.find((item) => item.isTopPerformer) ??
+    [...allowed].sort((a, b) => (b.level ?? 0) - (a.level ?? 0))[0]
+  );
+}
+
+function mergeSaltTargets(winner: MixMedicine, loser: MixMedicine): MixMedicine {
+  const coveredProblemIds = [
+    ...new Set([...(winner.coveredProblemIds ?? []), ...(loser.coveredProblemIds ?? [])]),
+  ];
+  const labels = [
+    ...new Set(
+      [winner.targetProblemHi, loser.targetProblemHi]
+        .flatMap((label) => (label || "").split("+").map((part) => part.trim()))
+        .filter(Boolean)
+    ),
+  ];
+  return {
+    ...winner,
+    coveredProblemIds,
+    targetProblemHi: labels.join(" + "),
+  };
+}
+
+/** Drop a second product that repeats a salt. Keep the single formulated bottle. */
+function collapseSharedSalts(meds: MixMedicine[]): MixMedicine[] {
+  const kept: MixMedicine[] = [];
+  for (const med of meds) {
+    const idx = kept.findIndex((item) => sharesActiveSalt(item.technical, med.technical));
+    if (idx < 0) {
+      kept.push(med);
+      continue;
+    }
+    const other = kept[idx];
+    const preferMed =
+      formulationCount(med.technical) < formulationCount(other.technical) ||
+      (formulationCount(med.technical) === formulationCount(other.technical) &&
+        (med.coveredProblemIds?.length ?? 1) > (other.coveredProblemIds?.length ?? 1));
+    kept[idx] = preferMed ? mergeSaltTargets(med, other) : mergeSaltTargets(other, med);
+  }
+  return kept;
 }
 
 function problemItemFor(
@@ -1153,7 +1239,9 @@ export function getProblemSpecificAlternatives(
   if (ids.length > 0) {
     const lists = ids.map((id) => {
       const problemItem = problemItemFor(cropSlug, id, medicine.targetProblemHi || "", medicine.kindHi);
-      return (cropMedsRecord[id] ?? []).map((c) => curativeToMixMedicine(c, problemItem));
+      return (cropMedsRecord[id] ?? [])
+        .filter((c) => !isBlockedTankTechnical(c.technical))
+        .map((c) => curativeToMixMedicine(c, problemItem));
     });
     const [first, ...rest] = lists;
     if (rest.length === 0) return first;
@@ -1200,7 +1288,9 @@ export function buildMixPlanFromProblems(
     const curatives = cropMedsRecord[prob.id];
     if (!curatives || curatives.length === 0) continue;
 
-    const chosenMed = curativeToMixMedicine(pickBestCurative(curatives), prob);
+    const chosen = pickBestCurative(curatives);
+    if (!chosen) continue;
+    const chosenMed = curativeToMixMedicine(chosen, prob);
     chosenMed.coveredProblemIds = [prob.id];
     const key = activeKey(chosenMed.technical);
     const sameBest =
@@ -1224,6 +1314,7 @@ export function buildMixPlanFromProblems(
     }
 
     for (const c of curatives) {
+      if (isBlockedTankTechnical(c.technical)) continue;
       const altMed = curativeToMixMedicine(c, prob);
       const altKey = activeKey(altMed.technical);
       if (
@@ -1238,10 +1329,23 @@ export function buildMixPlanFromProblems(
 
   if (recommendedMedicines.length === 0) return null;
 
+  const collapsed = collapseSharedSalts(recommendedMedicines);
+  let tankMeds = collapsed;
+  let laterSprays: MixMedicine[] = [];
+  let splitWarningHi: string | undefined;
+  const tooMany = collapsed.length > 3;
+  const threeButUnsafe =
+    collapsed.length === 3 && evaluateTankMix(collapsed).status !== "safe";
+  if (tooMany || threeButUnsafe) {
+    tankMeds = collapsed.slice(0, 2);
+    laterSprays = collapsed.slice(2);
+    splitWarningHi =
+      "इतनी दवाएं एक साथ न मिलाएं, घोल फट सकता है—दो अलग स्प्रे में डालें";
+  }
 
   // Calculate dynamic steps
   const includeSticker = true;
-  const dynamicSteps = generateDynamicMixSteps(recommendedMedicines, includeSticker);
+  const dynamicSteps = generateDynamicMixSteps(tankMeds, includeSticker);
   const mixStepsHi = dynamicSteps.map((s) => `${s.titleHi}: ${s.descHi}`);
 
   // PHI calculation
@@ -1254,7 +1358,9 @@ export function buildMixPlanFromProblems(
   return {
     cropSlug,
     problemIds: selected.map((p) => p.id),
-    medicines: recommendedMedicines,
+    medicines: tankMeds,
+    laterSprays: laterSprays.length ? laterSprays : undefined,
+    splitWarningHi,
     alternatives: alternativesPool,
     safeFallback,
     sticker: SILICONE_STICKER,

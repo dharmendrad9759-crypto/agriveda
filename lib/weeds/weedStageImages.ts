@@ -46,13 +46,13 @@ const BY_SCI: Record<string, WeedStageImages> = {
     late: "/images/weeds/weed-cyperus-iria-late.jpg",
     nameHi: "चपटा नागरमोथा",
   },
-  "monochoria vaginalis": {
-    slug: "monochoria",
-    early: "/images/weeds/weed-monochoria-early.jpg",
-    late: "/images/weeds/weed-monochoria-late.jpg",
-    nameHi: "मोनोकोरिया",
-  },
   "avena fatua": {
+    slug: "wild-oat",
+    early: "/images/weeds/weed-wild-oat-early.jpg",
+    late: "/images/weeds/weed-wild-oat-late.jpg",
+    nameHi: "जंगली जई",
+  },
+  "avena ludoviciana": {
     slug: "wild-oat",
     early: "/images/weeds/weed-wild-oat-early.jpg",
     late: "/images/weeds/weed-wild-oat-late.jpg",

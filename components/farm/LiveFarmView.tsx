@@ -295,7 +295,7 @@ export default function LiveFarmView({
 
   return (
     <div className="space-y-3.5 pb-12">
-      <section className="overflow-hidden rounded-[1.35rem] border border-[rgba(168,132,62,0.28)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]">
+      <section className="overflow-hidden rounded-[1.35rem] border border-[#d5eadc] bg-[#f4fbf7] dark:border-white/10 dark:bg-[var(--av-surface)]">
         <div className="px-3.5 py-3">
           <p className="flex items-baseline gap-1.5">
             <span className="text-[28px] font-semibold leading-none tabular-nums text-[var(--av-text-primary)]">
@@ -309,7 +309,7 @@ export default function LiveFarmView({
             <button
               type="button"
               onClick={() => onSwitchTab("journey")}
-              className="mt-1 flex max-w-full items-center gap-0.5 text-left text-[15px] font-semibold text-[#0c3b2e] dark:text-emerald-200"
+              className="mt-1 flex max-w-full items-center gap-0.5 text-left text-[15px] font-semibold text-[#0f6b45] dark:text-emerald-200"
             >
               <span className="truncate">{stageLabel}</span>
               <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />

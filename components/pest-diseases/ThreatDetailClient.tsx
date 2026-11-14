@@ -32,7 +32,7 @@ import { farmerThreatDisplayName } from "@/lib/crops/farmerThreatTitle";
 import { getWeedProgramForCrop } from "@/lib/crops/weedAbioticBridge";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import SpeakButton from "@/components/ui/SpeakButton";
-import { getWeedStageImages, getWeedCardImage } from "@/lib/weeds/weedStageImages";
+import { getWeedStageImages } from "@/lib/weeds/weedStageImages";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
 import { isChemicalMention } from "@/lib/crops/medicineParser";
 import CropSprayMedicineList from "@/components/crops/CropSprayMedicineList";
@@ -105,44 +105,82 @@ function splitDisplayName(name: string): { primary: string; secondary?: string }
 }
 
 function weedIdentifyTips(threat: EnrichedThreat, hi: boolean): string[] {
-  const name = hi && threat.nameHi ? threat.nameHi : threat.name;
-  const sci = threat.scientificName;
-  const typeHint = /sedge|cyperus/i.test(`${name} ${sci}`)
-    ? hi
-      ? "तनों के कोने तीखे — घास जैसी लेकिन किनारे तेज"
-      : "Triangular stems — grass-like but sharp edges"
-    : /broad|leaf|monochoria|amaranth|कुंदरू|पत्ती/i.test(`${name} ${sci}`)
-      ? hi
-        ? "चौड़ी पत्तियाँ — फसल से अलग दिखती हैं"
-        : "Broad leaves — stands out from the crop"
-      : hi
-        ? "पतली पत्ती / घास जैसी — फसल में मिल जाती है"
-        : "Narrow grassy leaves — mixes with the crop";
-
+  const blob = `${threat.name} ${threat.nameHi || ""} ${threat.scientificName || ""}`;
+  if (/phalaris|गुल्ली/i.test(blob)) {
+    return hi
+      ? [
+          "तने के निचले हिस्से पर गुलाबी या लाल रंग",
+          "पत्ती गेहूँ जैसी संकरी, लेकिन तना चिकना और नीचे से रंगीन",
+          "बाली गेहूँ से छोटी और जल्दी झुकती है",
+        ]
+      : [
+          "Pink or red colour at the stem base",
+          "Narrow leaf like wheat, but the lower stem is coloured",
+          "Seed head is smaller than wheat and bends early",
+        ];
+  }
+  if (/avena|जंगली\s*जई|wild\s*oat/i.test(blob)) {
+    return hi
+      ? [
+          "पत्ती घास जैसी, जड़ के पास गेहूँ वाले बाल नहीं",
+          "पत्ती को मोड़ें तो घड़ी की दिशा में मुड़ती है",
+          "बाली खुली, दाने झुके हुए लटकते हैं",
+        ]
+      : [
+          "Grassy leaf without the hairs wheat has at the base",
+          "A rolled leaf twists clockwise",
+          "Open panicle with hanging seeds",
+        ];
+  }
+  if (/monochoria|मोनोकोरिया|नीलकंठी/i.test(blob)) {
+    return hi
+      ? [
+          "धान के पानी में जमी चौड़ी, दिल जैसी पत्ती",
+          "डंठल लंबा और तना नीचे से मिट्टी में जुड़ा रहता है",
+          "फूल नीला-बैंगनी — जलकुंभी की तैरती झाड़ी नहीं",
+        ]
+      : [
+          "Broad heart-shaped leaf rooted in paddy water",
+          "Long stalk, stem fixed in the mud",
+          "Blue-violet flower — not a floating water-hyacinth mat",
+        ];
+  }
+  if (/anagallis|कृष्णनील/i.test(blob)) {
+    return hi
+      ? ["छोटा पौधा, पत्तियाँ आमने-सामने", "फूल नारंगी या नीला, बहुत छोटा"]
+      : ["Small plant with opposite leaves", "Tiny orange or blue flowers"];
+  }
+  if (/convolvulus|हिरनखुरी/i.test(blob)) {
+    return hi
+      ? ["बेल की तरह फैलती है", "पत्ती तीर जैसी, फूल सफेद-गुलाबी घंटे के आकार का"]
+      : ["Twining vine", "Arrow-shaped leaf and a pale funnel flower"];
+  }
+  if (/rumex|जंगली\s*पालक/i.test(blob)) {
+    return hi
+      ? ["पत्तियाँ पालक जैसी, लेकिन किनारे लहरदार", "तने पर लाल धब्बे"]
+      : ["Spinach-like leaves with wavy edges", "Red marks on the stem"];
+  }
   return hi
-    ? [
-        typeHint,
-        `खरपतवार निकालने का सबसे ज़रूरी समय: ${threat.stage || "2 से 4 पत्ती, शुरू के 30 से 45 दिन"}`,
-        "जड़ या गांठ निकालकर अपनी फसल से मिलाओ",
-        "शक हो तो साफ फोटो AI Doctor को भेजो",
-      ]
-    : [
-        typeHint,
-        `Critical period: ${threat.stage || "2–4 leaf / first 30–45 days"}`,
-        "Pull root/tiller and compare with your crop",
-        "If unsure, send a clear photo to AI Doctor",
-      ];
+    ? ["पत्तियाँ और तना अपनी फसल से अलग करके पहचानें"]
+    : ["Match the leaf and stem against your crop"];
 }
 
-function farmerWeedWhen(when: string | undefined, isPre: boolean, hi: boolean): string {
+function farmerWeedWhen(
+  when: string | undefined,
+  isPre: boolean,
+  hi: boolean,
+  cropSlug?: string
+): string {
   if (!hi) return when || (isPre ? "Pre-emergence" : "Post-emergence");
-  const text = (when || "")
+  let text = (when || "")
     .replace(/(\d+)\s*[–\-]\s*(\d+)\s*DAT/gi, "रोपाई के $1 से $2 दिन बाद")
     .replace(/(\d+)\s*[–\-]\s*(\d+)\s*DAS/gi, "बुवाई के $1 से $2 दिन बाद")
     .replace(/(\d+)\s*DAT/gi, "रोपाई के $1 दिन बाद")
     .replace(/(\d+)\s*DAS/gi, "बुवाई के $1 दिन बाद")
     .trim();
+  if (cropSlug === "paddy") text = text.replace(/बुवाई/g, "रोपाई");
   if (text && !/\b(council|activ|stomp|rifit)\b/i.test(text)) return text;
+  if (isPre && cropSlug === "paddy") return "रोपाई के 0 से 3 दिन अंदर";
   return isPre ? "उगने से पहले" : "उगने के बाद";
 }
 
@@ -259,6 +297,51 @@ function weedChemCards(
     return cards;
   }
 
+  if (/avena|जंगली\s*जई|wild\s*oat/i.test(threatName)) {
+    return [
+      {
+        technical: "Clodinafop-propargyl 15% WP (क्लोडिनाफॉप 15% WP)",
+        dose: hi ? "160 ग्राम प्रति एकड़ | 120–150 लीटर पानी" : "160 g/acre | 120–150 L water",
+        stage: hi ? "3 से 4 पत्ती पर (बुवाई के 30–35 दिन बाद)" : "30–35 DAS",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post" as const,
+      },
+      {
+        technical: "Pinoxaden 5.1% EC (पिनोक्साडेन 5.1% EC)",
+        dose: hi ? "400 मिली प्रति एकड़ | 150 लीटर पानी" : "400 ml/acre | 150 L water",
+        stage: hi ? "3 से 5 पत्ती पर (बुवाई के 30–35 दिन बाद)" : "30–35 DAS",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post" as const,
+      },
+    ];
+  }
+
+  if (/monochoria|मोनोकोरिया|नीलकंठी/i.test(threatName)) {
+    return [
+      {
+        technical: "Pretilachlor 50% EC (प्रेटिलाक्लोर 50% EC)",
+        dose: hi ? "500 मिली प्रति एकड़ | 150 लीटर पानी" : "500 ml/acre | 150 L water",
+        stage: hi ? "रोपाई के 0 से 3 दिन अंदर (पानी भरा हो)" : "0–3 days after transplanting",
+        timing: hi ? "रोपाई के बाद (PRE)" : "Pre-emergence (PRE)",
+        group: "pre" as const,
+      },
+      {
+        technical: "Metsulfuron + Chlorimuron 20% WP (Almix)",
+        dose: hi ? "8 ग्राम प्रति एकड़ | 150 लीटर पानी" : "8 g/acre | 150 L water",
+        stage: hi ? "रोपाई के 15–20 दिन बाद" : "15–20 days after transplanting",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post" as const,
+      },
+      {
+        technical: "2,4-D Na salt (2,4-डी सोडियम)",
+        dose: hi ? "500 ग्राम प्रति एकड़ | 150 लीटर पानी" : "500 g/acre | 150 L water",
+        stage: hi ? "रोपाई के 20–25 दिन बाद" : "20–25 days after transplanting",
+        timing: hi ? "उगने के बाद (POST)" : "Post-emergence (POST)",
+        group: "post" as const,
+      },
+    ];
+  }
+
   const rawCards = lines.slice(0, 6).map((line) => {
     const cleanLine = line
       .replace(/^रासायनिक\s*[—–:]\s*(?:(?:Pre|Post)-emergence)?\s*[:—–]?\s*/i, "")
@@ -284,12 +367,14 @@ function weedChemCards(
       dose: acre || (hi ? "लेबल अनुसार प्रति एकड़" : "Follow label / acre"),
       stage: isPre
         ? hi
-          ? "खरपतवार उगने से पहले, बुवाई के 0 से 3 दिन अंदर"
+          ? threat?.cropSlug === "paddy"
+            ? "खरपतवार उगने से पहले, रोपाई के 0 से 3 दिन अंदर"
+            : "खरपतवार उगने से पहले, बुवाई के 0 से 3 दिन अंदर"
           : "0–3 DAS (Pre-emergence)"
         : hi
         ? "2 से 4 पत्ती का खरपतवार होने पर"
         : "2–4 leaf stage (15–30 DAS)",
-      timing: farmerWeedWhen(when, isPre, hi),
+      timing: farmerWeedWhen(when, isPre, hi, threat?.cropSlug),
       group: isPre ? ("pre" as const) : ("post" as const),
     };
   });
@@ -334,9 +419,30 @@ function chemicalLinesForWeed(threat: EnrichedThreat): string[] {
       return parts.join(" ");
     }) ?? [];
 
+  const weedBlob = `${threat.name} ${threat.nameHi || ""} ${threat.scientificName || ""}`.toLowerCase();
   const seen = new Set<string>();
   const out: string[] = [];
   for (const line of [...fromThreat, ...fromProgram]) {
+    const target = (line.split("→")[1] || "").split("·")[0].toLowerCase();
+    if (target.trim()) {
+      const groups = [
+        ["phalaris", "गुल्ली", "canary"],
+        ["avena", "जई", "oat"],
+        ["chenopodium", "बथुआ", "bathua"],
+        ["monochoria", "मोनोकोरिया", "नीलकंठी"],
+      ];
+      const mine = groups.find((group) => group.some((token) => weedBlob.includes(token)));
+      if (mine) {
+        const mentionsMe = mine.some((token) => target.includes(token));
+        const mentionsOther = groups.some(
+          (group) => group !== mine && group.some((token) => target.includes(token))
+        );
+        if (!mentionsMe && mentionsOther) continue;
+        if (/pyroxasulfone|पाइरॉक्सा/i.test(line) && mine.some((token) => token === "avena" || token === "oat" || token === "जई")) {
+          continue;
+        }
+      }
+    }
     const key = line.toLowerCase().replace(/\s+/g, " ").trim();
     if (!key || seen.has(key)) continue;
     if (/cultural control|maintain weed-free|follow field/i.test(key)) continue;
@@ -857,7 +963,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
         </div>
       ) : (
         /* ─── WEED PATH (kept, lightly cleaned) ─── */
-        <div className="mt-1 space-y-3.5">
+        <div className="mt-1 space-y-3.5 pb-28">
           {(() => {
             const stages = getWeedStageImages(threat.scientificName);
             const soft = farmerThreatDisplayName(
@@ -866,40 +972,27 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
             );
             const displayName = soft.primary;
             const displaySecondary = soft.english;
-            const heroSrc =
-              stages?.late ||
-              stages?.early ||
-              getWeedCardImage(threat.scientificName) ||
-              "/images/threats/threat-weed.jpg";
+            const stagePhotos =
+              stages?.early && stages?.late
+                ? { early: stages.early, late: stages.late }
+                : null;
             return (
               <>
-                <div className="relative min-h-[152px] overflow-hidden rounded-[1.35rem] border border-lime-500/30">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={heroSrc}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
-                  />
-                  <span className="absolute inset-0 bg-gradient-to-r from-lime-950/90 via-black/55 to-transparent" />
-                  <div className="relative z-10 flex min-h-[152px] flex-col justify-between p-4">
-                    <span className="inline-flex w-fit items-center gap-1.5 rounded-md bg-lime-400 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-lime-950">
-                      <Leaf className="h-3 w-3" />
-                      {hi ? "खरपतवार" : "Weed"}
-                    </span>
-                    <div>
-                      <p className="font-display text-[22px] font-bold leading-tight text-white">
-                        {displayName}
-                      </p>
-                      {displaySecondary ? (
-                        <p className="mt-0.5 text-[13px] font-semibold text-white/85">
-                          {displaySecondary}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
+                <div className="px-0.5">
+                  <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                    {hi ? "खरपतवार" : "Weed"}
+                  </p>
+                  <p className="font-display text-[22px] font-bold leading-tight text-[var(--av-text-primary)]">
+                    {displayName}
+                  </p>
+                  {displaySecondary ? (
+                    <p className="mt-0.5 text-[13px] font-semibold text-[var(--av-text-secondary)]">
+                      {displaySecondary}
+                    </p>
+                  ) : null}
                 </div>
 
-                {stages ? (
+                {stagePhotos ? (
                   <div>
                     <p className="mb-2 px-0.5 text-sm font-bold text-[var(--av-text-primary)]">
                       {hi ? "दो अवस्था" : "2 stages"}
@@ -909,7 +1002,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                         [
                           {
                             key: "early",
-                            src: stages.early,
+                            src: stagePhotos.early,
                             titleHi: "छोटा पौधा",
                             titleEn: "Young plant",
                             ring: "border-emerald-400/40",
@@ -919,7 +1012,7 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                           },
                           {
                             key: "late",
-                            src: stages.late,
+                            src: stagePhotos.late,
                             titleHi: "बड़ा पौधा",
                             titleEn: "Grown plant",
                             ring: "border-amber-400/40",

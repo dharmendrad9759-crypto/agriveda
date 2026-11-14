@@ -25,3 +25,15 @@ export function farmerPlaceLine(parts: {
   const full = [head, state].filter(Boolean).join(", ");
   return { short: head || state, full, ok: Boolean(full) };
 }
+
+/** Active field place wins over the profile, so home, weather and the drawer name one place. */
+export function preferredFarmerPlace(
+  profile: { village?: string | null; district?: string | null; state?: string | null },
+  field?: { village?: string | null; placeDistrict?: string | null; placeState?: string | null } | null
+) {
+  return farmerPlaceLine({
+    village: field?.village || profile.village,
+    district: field?.placeDistrict || profile.district,
+    state: field?.placeState || profile.state,
+  });
+}

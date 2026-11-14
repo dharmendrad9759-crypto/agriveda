@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import AppLink from "@/components/ui/AppLink";
 import { useToast } from "@/components/ui/Toast";
@@ -15,6 +16,7 @@ import {
   ArrowRight,
   Check,
   Pencil,
+  Mic,
   Plus,
   Ruler,
   Search,
@@ -36,6 +38,7 @@ import { cn } from "@/lib/cn";
 import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { track } from "@/lib/analytics";
 import { suggestFieldName } from "@/lib/farm/fieldName";
+import { getBighaInfo } from "@/lib/bighaConversion";
 import { useActiveField } from "@/hooks/useActiveField";
 import MeasureFieldButton, { measureFieldHref } from "@/components/farm/MeasureFieldButton";
 import MeasureAfterAddPrompt from "@/components/farm/MeasureAfterAddPrompt";
@@ -82,7 +85,44 @@ function getPopularVarieties(slug: string): string[] {
     .filter(Boolean);
 }
 
-const ACRE_PRESETS = ["0.5", "1", "2", "3", "5"];
+const AREA_PRESETS = ["1", "2", "5", "10"];
+const JUST_ADDED_KEY = "agriveda-field-just-added";
+const POPULAR_SLUGS = ["wheat", "mustard", "paddy", "potato", "chana", "tomato", "onion", "maize", "cotton"];
+
+type AreaUnitPick = "bigha" | "acre" | "kanal" | "hectare";
+
+type SavedFieldCard = {
+  id: string;
+  cropHi: string;
+  slug: string;
+  variety: string;
+  stage: string;
+  areaLabel: string;
+  acresLabel: string;
+  place: string;
+};
+
+function unitForState(state: string): AreaUnitPick {
+  const s = state.trim().toLowerCase();
+  if (/haryana|हरियाणा|punjab|पंजाब/.test(s)) return "kanal";
+  if (/rajasthan|राजस्थान|uttar pradesh|उत्तर प्रदेश/.test(s)) return "bigha";
+  return "acre";
+}
+
+function unitShort(unit: AreaUnitPick, hi: boolean): string {
+  if (unit === "bigha") return hi ? "बीघा" : "bigha";
+  if (unit === "kanal") return hi ? "कनाल" : "kanal";
+  if (unit === "hectare") return hi ? "हेक्टेयर" : "ha";
+  return hi ? "एकड़" : "acre";
+}
+
+function confirmStage(slug: string, iso: string, hi: boolean): string {
+  const days = daysAfterSowingISO(iso);
+  if (slug === "wheat" && days != null && days >= 18 && days <= 30) {
+    return hi ? `${days} दिन · पहली सिंचाई` : `Day ${days} · first irrigation`;
+  }
+  return fieldStageLabel(iso, hi);
+}
 
 function totalAreaLabel(fields?: { area?: string | number }[]) {
   if (!Array.isArray(fields)) return "—";
@@ -100,6 +140,7 @@ const MiniFieldMap = dynamic(() => import("@/components/farm/MiniFieldMap"), {
 });
 
 export default function MyFarmPage() {
+  const router = useRouter();
   const { showToast } = useToast();
   const { locale } = useLocale();
   const isHi = locale === "hi";
@@ -117,18 +158,28 @@ export default function MyFarmPage() {
   const [fieldCropSlug, setFieldCropSlug] = useState("");
   const [fieldVariety, setFieldVariety] = useState("");
   const [fieldSowing, setFieldSowing] = useState("");
+  const [addStep, setAddStep] = useState<1 | 2 | 3>(1);
+  const [areaUnit, setAreaUnit] = useState<AreaUnitPick>("acre");
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [savedCard, setSavedCard] = useState<SavedFieldCard | null>(null);
   const [cropPickerOpen, setCropPickerOpen] = useState(false);
   const [cropQuery, setCropQuery] = useState("");
   const [cropCategory, setCropCategory] = useState<(typeof categoryOrder)[number] | "all">("all");
 
   const filteredCrops = useMemo(() => {
     const q = cropQuery.trim().toLowerCase();
-    return cropCatalog.filter((c) => {
+    const list = cropCatalog.filter((c) => {
       if (cropCategory !== "all" && c.category !== cropCategory) return false;
       if (!q) return true;
       const hay = `${c.name} ${c.nameHi ?? ""} ${c.slug}`.toLowerCase();
       return hay.includes(q);
     });
+    if (q || cropCategory !== "all") return list;
+    const rank = (slug: string) => {
+      const i = POPULAR_SLUGS.indexOf(slug);
+      return i === -1 ? POPULAR_SLUGS.length : i;
+    };
+    return [...list].sort((a, b) => rank(a.slug) - rank(b.slug));
   }, [cropQuery, cropCategory]);
 
   const selectedCrop = fieldCropSlug
@@ -144,7 +195,59 @@ export default function MyFarmPage() {
     setFieldSowing(iso);
   };
 
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(JUST_ADDED_KEY);
+      if (!raw) return;
+      sessionStorage.removeItem(JUST_ADDED_KEY);
+      const card = JSON.parse(raw) as SavedFieldCard;
+      if (card?.id && card.cropHi) {
+        setSavedCard(card);
+        setAddStep(3);
+        setShowAddField(true);
+      }
+    } catch {
+      /* ignore a bad card */
+    }
+  }, []);
+
   const place = [profile.village, profile.district].filter(Boolean).join(", ");
+
+  const acresFromEntry = (raw: string) => {
+    const n = parseFloat(raw);
+    if (!Number.isFinite(n) || n <= 0) return 0;
+    if (areaUnit === "bigha") return Math.round(n * getBighaInfo(profile.state, profile.district).acresPerBigha * 100) / 100;
+    if (areaUnit === "kanal") return Math.round(n * 0.125 * 100) / 100;
+    if (areaUnit === "hectare") return Math.round(n * 2.471 * 100) / 100;
+    return Math.round(n * 100) / 100;
+  };
+
+  const listenForCrop = () => {
+    const w = window as unknown as {
+      SpeechRecognition?: new () => {
+        lang: string;
+        start: () => void;
+        onresult: ((event: { results: { 0: { 0: { transcript?: string } } } }) => void) | null;
+      };
+      webkitSpeechRecognition?: new () => {
+        lang: string;
+        start: () => void;
+        onresult: ((event: { results: { 0: { 0: { transcript?: string } } } }) => void) | null;
+      };
+    };
+    const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!Ctor) {
+      showToast(isHi ? "इस फोन पर बोलकर खोज नहीं चलेगी — नाम लिखें" : "Voice search is not available", "error");
+      return;
+    }
+    const recognition = new Ctor();
+    recognition.lang = "hi-IN";
+    recognition.onresult = (event) => {
+      const said = event.results[0]?.[0]?.transcript?.trim();
+      if (said) setCropQuery(said);
+    };
+    recognition.start();
+  };
   const hasFields = data.fields.length > 0;
   const topAlert = farmAlerts[0];
 
@@ -157,61 +260,94 @@ export default function MyFarmPage() {
           transition: { duration: MOTION.slow, ease: EASE_OUT, delay },
         };
 
-  const handleAddField = () => {
+  const openAddField = () => {
+    setSavedCard(null);
+    setAddStep(1);
+    setShowCalendar(false);
+    setAreaUnit(unitForState(profile.state || ""));
+    setShowAddField(true);
+    if (!fieldCropSlug) setCropPickerOpen(true);
+  };
+
+  const commitField = (goMeasure: boolean) => {
     const catalog = cropCatalog.find((c) => c.slug === fieldCropSlug);
     if (!catalog && !fieldCropSlug) {
-      showToast(isHi ? "कृपया पहले फसल चुनें" : "Please select a crop first", "error");
+      showToast(isHi ? "पहले फसल चुनें" : "Select a crop first", "error");
       return;
     }
-    const areaNum = parseFloat(fieldArea);
-    if (!Number.isFinite(areaNum) || areaNum <= 0) {
-      showToast(isHi ? "कृपया सही रकबा (एकड़) भरें" : "Please enter valid area in acres", "error");
+    const sowingIso = parseSowingISO(fieldSowing);
+    if (!sowingIso) {
+      showToast(isHi ? "बुवाई का समय चुनें — तभी दिन सही बनेंगे" : "Pick when you sowed", "error");
+      setAddStep(1);
+      return;
+    }
+    const entered = parseFloat(fieldArea);
+    const acres = acresFromEntry(fieldArea);
+    if (!Number.isFinite(entered) || entered <= 0 || acres <= 0) {
+      showToast(isHi ? "रकबा भरें" : "Enter the area", "error");
       return;
     }
 
     const cropHindi = catalog ? (getCropHindiName(catalog.slug) || catalog.nameHi || catalog.name) : "";
     const cropLabel = isHi ? (cropHindi || catalog?.name || "") : (catalog?.name || cropHindi || "");
-    const autoFieldName = suggestFieldName({
+    const finalFieldName = fieldName.trim() || suggestFieldName({
       existing: data.fields,
       cropHi: cropHindi || catalog?.name,
       village: profile.village,
     });
-    const finalFieldName = fieldName.trim() || autoFieldName;
-
-    const sowingIso = parseSowingISO(fieldSowing) || undefined;
-    const stage = fieldStageLabel(sowingIso, isHi);
+    const stage = confirmStage(fieldCropSlug, sowingIso, isHi);
+    const localLabel = `${entered} ${unitShort(areaUnit, true)}`;
     const newId = addField({
       name: finalFieldName,
-      area: `${areaNum.toFixed(1)} Acre`,
+      area: `${acres.toFixed(2)} Acre`,
+      areaAcres: acres,
+      bighaDisplay: areaUnit === "acre" ? undefined : localLabel,
       ownership: "Owned",
       crop: cropLabel,
       cropSlug: fieldCropSlug || undefined,
       variety: fieldVariety.trim() || undefined,
       status: "Active",
-      sowingDate: sowingIso ? formatSowingDisplay(sowingIso, isHi) : "",
+      sowingDate: formatSowingDisplay(sowingIso, isHi),
       sowingDateIso: sowingIso,
       emoji: catalog?.emoji ?? "🌾",
       stage,
+      placeState: profile.state || undefined,
+      placeDistrict: profile.district || undefined,
+      village: profile.village || undefined,
+      measurementMethod: "manual_entry",
     });
     setActiveField(newId);
-    setMeasurePromptId(newId);
-    if (sowingIso && fieldCropSlug) {
-      setSowingDate(fieldCropSlug, sowingIso);
+    if (fieldCropSlug) setSowingDate(fieldCropSlug, sowingIso);
+    const card: SavedFieldCard = {
+      id: newId,
+      cropHi: cropHindi || cropLabel,
+      slug: fieldCropSlug,
+      variety: fieldVariety.trim(),
+      stage,
+      areaLabel: localLabel,
+      acresLabel: `${acres} एकड़`,
+      place: [profile.village, profile.district].filter(Boolean).join(", "),
+    };
+    try {
+      sessionStorage.setItem(JUST_ADDED_KEY, JSON.stringify(card));
+    } catch {
+      /* private mode */
     }
+    setSavedCard(card);
     setFieldName("");
     setFieldArea("");
     setFieldVariety("");
     setFieldCropSlug("");
     setFieldSowing("");
-    setCropPickerOpen(false);
     setCropQuery("");
-    setCropCategory("all");
-    setShowAddField(false);
-    showToast(
-      sowingIso
-        ? (isHi ? "खेत सेव · बुवाई तारीख जुड़ गई ✓" : "Field saved · Sowing date attached ✓")
-        : (isHi ? "खेत सेव · बाद में बुवाई तारीख डालना न भूलें" : "Field saved · Sowing date can be added later")
-    );
+    setShowCalendar(false);
+    if (goMeasure) {
+      router.push(`/my-farm/measure?editId=${encodeURIComponent(newId)}&return=${encodeURIComponent("/my-farm")}`);
+      return;
+    }
+    setAddStep(3);
+    setShowAddField(true);
+    showToast(isHi ? "खेत जुड़ गया ✓" : "Field added ✓");
   };
 
   return (
@@ -241,11 +377,13 @@ export default function MyFarmPage() {
               <button
                 type="button"
                 onClick={() => {
-                  setShowAddField((v) => {
-                    const next = !v;
-                if (next && !fieldCropSlug) setCropPickerOpen(true);
-                    return next;
-                  });
+                  if (showAddField) {
+                    setShowAddField(false);
+                    setSavedCard(null);
+                    setAddStep(1);
+                    return;
+                  }
+                  openAddField();
                 }}
             className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-700 px-3.5 py-2 text-[12px] font-bold text-white shadow-sm shadow-emerald-900/20 active:scale-[0.97]"
               >
@@ -300,7 +438,30 @@ export default function MyFarmPage() {
               </div>
 
               <div className="space-y-4 p-4">
-                {/* STEP 1: फसल चुनें (Step 1 - सबसे ऊपर) */}
+                {addStep === 3 && savedCard ? (
+                  <div className="space-y-3 rounded-xl border border-emerald-200 bg-[#F6F9F7] p-4">
+                    <p className="text-[16px] font-bold text-[#14532D]">आपका खेत जुड़ गया है</p>
+                    <p className="text-[15px] font-semibold text-[var(--av-text-primary)]">
+                      फसल: {savedCard.cropHi}
+                      {savedCard.variety ? ` (${savedCard.variety})` : ""}
+                    </p>
+                    <p className="text-[14px] text-[var(--av-text-secondary)]">अवस्था: {savedCard.stage}</p>
+                    <p className="text-[14px] text-[var(--av-text-secondary)]">
+                      रकबा: {savedCard.areaLabel} ({savedCard.acresLabel})
+                    </p>
+                    {savedCard.place ? (
+                      <p className="text-[14px] text-[var(--av-text-secondary)]">स्थान: {savedCard.place}</p>
+                    ) : null}
+                    <AppLink
+                      href={savedCard.slug ? `/crops/${savedCard.slug}` : "/crops"}
+                      className="flex w-full items-center justify-center rounded-xl bg-[#15803D] py-3 text-[15px] font-bold text-white"
+                    >
+                      मेरी फसल की सलाह देखें
+                    </AppLink>
+                  </div>
+                ) : null}
+
+                {addStep === 1 ? (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
@@ -367,9 +528,17 @@ export default function MyFarmPage() {
                         <input
                           value={cropQuery}
                           onChange={(e) => setCropQuery(e.target.value)}
-                          placeholder={isHi ? "खोजें: गेहूँ, धान, टमाटर, कपास..." : "Search: wheat, paddy, tomato, cotton..."}
-                          className="av-input av-input--icon w-full py-2 text-xs"
+                          placeholder={isHi ? "बोलकर या लिखकर फसल खोजें" : "Search a crop"}
+                          className="av-input av-input--icon w-full py-2.5 text-base"
                         />
+                        <button
+                          type="button"
+                          onClick={listenForCrop}
+                          className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-emerald-700 text-white"
+                          aria-label={isHi ? "बोलकर फसल खोजें" : "Speak crop name"}
+                        >
+                          <Mic className="h-4 w-4" />
+                        </button>
                       </div>
 
                       <div className="flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -418,7 +587,10 @@ export default function MyFarmPage() {
                                 onClick={() => {
                                   setFieldCropSlug(crop.slug);
                                   setFieldVariety("");
+                                  setFieldSowing("");
+                                  setShowCalendar(false);
                                   setCropPickerOpen(false);
+                                  setAddStep(1);
                                 }}
                                 className={cn(
                                   "overflow-hidden rounded-xl border text-left transition active:scale-[0.98]",
@@ -446,181 +618,158 @@ export default function MyFarmPage() {
                       </div>
                     </div>
                   )}
-                </div>
-
-                {/* STEP 2: रकबा (एकड़) + खेत का नाम (Step 2) */}
-                <div className="space-y-3 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]/50 p-3">
-                  <label className="text-xs font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                      2
-                    </span>
-                    {isHi ? "रकबा और खेत का नाम" : "Area & Field Name"}
-                  </label>
-
-                  {/* रकबा (एकड़) */}
-                  <div>
-                    <div className="mb-1 flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-[var(--av-text-secondary)]">
-                        {isHi ? "रकबा (एकड़)" : "Area (acres)"} <span className="text-rose-500">*</span>
-                      </span>
-                    </div>
-                    <input
-                      type="number"
-                      step="0.1"
-                      inputMode="decimal"
-                      value={fieldArea}
-                      onChange={(e) => setFieldArea(e.target.value)}
-                      placeholder={isHi ? "जैसे: 2.0" : "e.g. 2.0"}
-                      className="av-input text-sm"
-                    />
-                    {/* Quick select chips */}
-                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] font-semibold text-[var(--av-text-muted)] mr-0.5">
-                        {isHi ? "त्वरित चयन:" : "Quick select:"}
-                      </span>
-                      {ACRE_PRESETS.map((acre) => {
-                        const active = fieldArea === acre;
-                        return (
+                  {fieldCropSlug ? (
+                    <div className="space-y-2 rounded-xl border border-emerald-200 bg-white p-3">
+                      <p className="text-[13px] font-bold text-[#14532D]">बुवाई कब हुई?</p>
+                      <div className="grid grid-cols-1 gap-2">
+                        {[
+                          { label: "आज / कल बोई है", days: 1 },
+                          { label: "लगभग 1 हफ़्ता पहले", days: 7 },
+                          { label: "लगभग 15 दिन पहले", days: 15 },
+                        ].map((opt) => (
                           <button
-                            key={acre}
+                            key={opt.days}
                             type="button"
-                            onClick={() => setFieldArea(acre)}
-                            className={cn(
-                              "rounded-lg px-2.5 py-1 text-xs font-semibold transition active:scale-95",
-                              active
-                                ? "bg-emerald-700 text-white shadow-sm"
-                                : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:border-emerald-500/40"
-                            )}
+                            onClick={() => {
+                              setSowingDaysAgo(opt.days);
+                              setShowCalendar(false);
+                            }}
+                            className="rounded-xl border border-[#d5eadc] bg-[#F6F9F7] px-3 py-2.5 text-left text-[14px] font-semibold text-[var(--av-text-primary)]"
                           >
-                            {acre} {isHi ? "एकड़" : "acre"}
+                            {opt.label}
                           </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* खेत का नाम (वैकल्पिक) */}
-                  <div>
-                    <div className="mb-1 flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-[var(--av-text-secondary)]">
-                        {isHi ? "खेत का नाम (वैकल्पिक)" : "Field Name (optional)"}
-                      </span>
-                      <span className="text-[10px] text-[var(--av-text-muted)]">
-                        {isHi ? "खाली छोड़ने पर स्वतः नाम बनेगा" : "Auto-generated if empty"}
-                      </span>
-                    </div>
-                    <input
-                      value={fieldName}
-                      onChange={(e) => setFieldName(e.target.value)}
-                      placeholder={
-                        selectedCrop
-                          ? isHi
-                            ? `जैसे: खेत ${data.fields.length + 1} (${getCropHindiName(selectedCrop.slug) || selectedCrop.nameHi || selectedCrop.name})`
-                            : `e.g. Field ${data.fields.length + 1} (${selectedCrop.name})`
-                          : isHi
-                            ? `जैसे: खेत ${data.fields.length + 1}`
-                            : `e.g. Field ${data.fields.length + 1}`
-                      }
-                      className="av-input text-sm"
-                    />
-                  </div>
-                </div>
-
-                {/* STEP 3: बुवाई की तारीख (Step 3) */}
-                <div className="space-y-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]/50 p-3">
-                  <label className="text-xs font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                      3
-                    </span>
-                    {isHi ? "बुवाई की तारीख (वैकल्पिक)" : "Sowing Date (optional)"}
-                  </label>
-                  <input
-                    type="date"
-                    max={todayISO()}
-                    value={fieldSowing}
-                    onChange={(e) => setFieldSowing(e.target.value)}
-                    className="av-input text-sm"
-                  />
-                  {/* Date shortcuts */}
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[10px] font-semibold text-[var(--av-text-muted)] mr-0.5">
-                      {isHi ? "शॉर्टकट:" : "Shortcuts:"}
-                    </span>
-                    {[
-                      { labelHi: "आज", labelEn: "Today", days: 0 },
-                      { labelHi: "10 दिन पहले", labelEn: "10d ago", days: 10 },
-                      { labelHi: "20 दिन पहले", labelEn: "20d ago", days: 20 },
-                      { labelHi: "30 दिन पहले", labelEn: "30d ago", days: 30 },
-                    ].map((s) => (
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => setShowCalendar(true)}
+                          className="rounded-xl border border-[#d5eadc] bg-white px-3 py-2.5 text-left text-[14px] font-semibold"
+                        >
+                          तारीख चुनें
+                        </button>
+                      </div>
+                      {showCalendar ? (
+                        <input
+                          type="date"
+                          max={todayISO()}
+                          value={fieldSowing}
+                          onChange={(e) => setFieldSowing(e.target.value)}
+                          className="av-input text-base"
+                        />
+                      ) : null}
+                      {fieldSowing ? (
+                        <p className="text-[12px] font-semibold text-emerald-800">
+                          {formatSowingDisplay(fieldSowing, isHi)} · {confirmStage(fieldCropSlug, fieldSowing, isHi)}
+                        </p>
+                      ) : null}
                       <button
-                        key={s.days}
                         type="button"
-                        onClick={() => setSowingDaysAgo(s.days)}
-                        className="rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] px-2.5 py-1 text-xs font-semibold text-[var(--av-text-secondary)] transition hover:border-emerald-500/40 active:scale-95"
+                        onClick={() => {
+                          if (!parseSowingISO(fieldSowing)) {
+                            showToast(isHi ? "बुवाई का समय चुनें" : "Pick sowing time", "error");
+                            return;
+                          }
+                          setAddStep(2);
+                        }}
+                        className="w-full rounded-xl bg-[#15803D] py-3 text-[15px] font-bold text-white"
                       >
-                        {isHi ? s.labelHi : s.labelEn}
+                        रकबा भरें
                       </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* STEP 4: किस्म / वैरायटी (वैकल्पिक) (Step 4) */}
-                <div className="space-y-2 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface-inset)]/50 p-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-[var(--av-text-primary)] flex items-center gap-1.5">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                        4
-                      </span>
-                      {isHi ? "किस्म / वैरायटी (वैकल्पिक)" : "Variety (optional)"}
-                    </label>
-                  </div>
-                  <input
-                    value={fieldVariety}
-                    onChange={(e) => setFieldVariety(e.target.value)}
-                    placeholder={
-                      isHi
-                        ? "किस्म चुनें या लिखें (जैसे: HD 2967)"
-                        : "Select or type variety (e.g. HD 2967)"
-                    }
-                    className="av-input text-sm"
-                  />
-                  {/* Popular variety chips */}
-                  {varietyChips.length > 0 ? (
-                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                      <span className="text-[10px] font-semibold text-[var(--av-text-muted)] mr-0.5">
-                        {isHi ? "लोकप्रिय किस्में:" : "Popular varieties:"}
-                      </span>
-                      {varietyChips.map((v) => {
-                        const active = fieldVariety === v;
-                        return (
-                          <button
-                            key={v}
-                            type="button"
-                            onClick={() => setFieldVariety(v)}
-                            className={cn(
-                              "rounded-lg px-2.5 py-1 text-xs font-semibold transition active:scale-95",
-                              active
-                                ? "bg-emerald-700 text-white shadow-sm"
-                                : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:border-emerald-500/40"
-                            )}
-                          >
-                            {v}
-                          </button>
-                        );
-                      })}
                     </div>
                   ) : null}
                 </div>
+                ) : null}
 
-                {/* SAVE BUTTON - Active deep green #15803d */}
-                <button
-                  type="button"
-                  onClick={handleAddField}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#15803d] hover:bg-[#166534] py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-900/30 active:scale-[0.99] transition"
-                >
-                  <Check className="h-5 w-5" />
-                  <span>{isHi ? "खेत सुरक्षित करें" : "Save Field"}</span>
-                </button>
+                {addStep === 2 ? (
+                <div className="space-y-3 rounded-xl border border-[var(--av-border)] bg-white p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[13px] font-bold text-[#14532D]">रकबा</p>
+                    <button type="button" onClick={() => setAddStep(1)} className="text-[12px] font-bold text-emerald-800">
+                      फसल बदलें
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {(["bigha", "acre", "kanal", "hectare"] as const).map((unit) => (
+                      <button
+                        key={unit}
+                        type="button"
+                        onClick={() => setAreaUnit(unit)}
+                        className={cn(
+                          "rounded-lg py-2 text-[12px] font-bold",
+                          areaUnit === unit ? "bg-[#15803D] text-white" : "border border-[#d5eadc] bg-[#F6F9F7]"
+                        )}
+                      >
+                        {unitShort(unit, true)}
+                      </button>
+                    ))}
+                  </div>
+                  {areaUnit === "bigha" ? (
+                    <p className="text-[12px] text-[var(--av-text-muted)]">{getBighaInfo(profile.state, profile.district).label}</p>
+                  ) : areaUnit === "kanal" ? (
+                    <p className="text-[12px] text-[var(--av-text-muted)]">8 कनाल = 1 एकड़</p>
+                  ) : null}
+                  <input
+                    type="number"
+                    step="0.1"
+                    inputMode="decimal"
+                    value={fieldArea}
+                    onChange={(e) => setFieldArea(e.target.value)}
+                    placeholder={`जैसे: 4 ${unitShort(areaUnit, true)}`}
+                    className="av-input text-base font-bold"
+                  />
+                  <div className="flex flex-wrap gap-1.5">
+                    {AREA_PRESETS.map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setFieldArea(preset)}
+                        className={cn(
+                          "rounded-lg px-3 py-1.5 text-[13px] font-bold",
+                          fieldArea === preset ? "bg-[#15803D] text-white" : "border border-[#d5eadc] bg-[#F6F9F7]"
+                        )}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                  {fieldArea && acresFromEntry(fieldArea) > 0 ? (
+                    <p className="text-[12px] font-semibold text-emerald-800">
+                      {fieldArea} {unitShort(areaUnit, true)} = {acresFromEntry(fieldArea)} एकड़
+                    </p>
+                  ) : null}
+
+                  {varietyChips.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {varietyChips.map((v) => (
+                        <button
+                          key={v}
+                          type="button"
+                          onClick={() => setFieldVariety(fieldVariety === v ? "" : v)}
+                          className={cn(
+                            "rounded-lg px-2.5 py-1 text-[12px] font-semibold",
+                            fieldVariety === v ? "bg-[#15803D] text-white" : "border border-[#d5eadc] bg-[#F6F9F7]"
+                          )}
+                        >
+                          {v}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => commitField(false)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#15803D] py-3.5 text-[15px] font-bold text-white"
+                  >
+                    आगे बढ़ें
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => commitField(true)}
+                    className="w-full rounded-xl border border-[#15803D] py-3 text-[14px] font-bold text-[#14532D]"
+                  >
+                    नक्शे पर खेत की मेड़ जोड़ें (वैकल्पिक)
+                  </button>
+                </div>
+                ) : null}
               </div>
             </div>
           ) : null}
@@ -787,7 +936,8 @@ export default function MyFarmPage() {
                     <div className="flex gap-2 px-3 pb-3">
                       <AppLink
                         href={`/my-farm/${f.id}`}
-                        className="inline-flex h-10 flex-1 items-center justify-center rounded-xl bg-[#0c3b2e] text-[13px] font-bold text-[#f7f3ea] active:scale-[0.98]"
+                        className="notranslate inline-flex h-10 flex-1 items-center justify-center rounded-xl bg-[#059669] text-[13px] font-bold text-white active:scale-[0.98]"
+                        translate="no"
                       >
                         {isHi ? "खेत खोलो" : "Open field"}
                       </AppLink>

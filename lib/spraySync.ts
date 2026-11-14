@@ -70,7 +70,16 @@ export async function trySyncPendingSprays(): Promise<number> {
   }
 
   if (synced > 0 || updated.length !== logs.length) {
-    writeStorage(LOGS_KEY, updated);
+    const snapshotIds = new Set(logs.map((item) => item.id));
+    const updatedIds = new Set(updated.map((item) => item.id));
+    const latest = readStorage<SprayLog[]>(LOGS_KEY, []);
+    const byId = new Map<string, SprayLog>();
+    for (const item of latest) {
+      if (snapshotIds.has(item.id) && !updatedIds.has(item.id)) continue;
+      byId.set(item.id, item);
+    }
+    for (const item of updated) byId.set(item.id, item);
+    writeStorage(LOGS_KEY, [...byId.values()]);
   }
 
   return synced;

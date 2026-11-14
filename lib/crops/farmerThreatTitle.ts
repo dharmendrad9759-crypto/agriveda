@@ -406,19 +406,19 @@ const TITLE_MAP: TitleMap[] = [
     secondary: "नागरमोथा",
   },
   {
-    match: /monochoria|मोनोकोरिया/i,
+    match: /monochoria|मोनोकोरिया|नीलकंठी/i,
     primary: "मोनोकोरिया",
-    secondary: "नीलकंठी",
+    secondary: "Monochoria vaginalis",
   },
   {
     match: /phalaris|गुल्ली|गुल्ली-डंडा/i,
-    primary: "Phalaris minor",
-    secondary: "गुल्ली डंडा",
+    primary: "गुल्ली डंडा",
+    secondary: "Phalaris minor",
   },
   {
-    match: /wild\s*oat|जंगली\s*जई|avena\s*fatua/i,
-    primary: "Wild Oat",
-    secondary: "जंगली जई",
+    match: /wild\s*oat|जंगली\s*जई|avena/i,
+    primary: "जंगली जई",
+    secondary: "Avena ludoviciana",
   },
   {
     match: /chenopodium|बथुआ|bathua/i,

@@ -33,7 +33,9 @@ import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import { useNavDrawer } from "./NavDrawerProvider";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
-import { farmerPlaceLine } from "@/lib/farmerPlaceName";
+import { preferredFarmerPlace } from "@/lib/farmerPlaceName";
+import { useFarmData } from "@/hooks/useFarmData";
+import { useActiveField } from "@/hooks/useActiveField";
 
 interface ShellNavDrawerProps {
   open: boolean;
@@ -203,10 +205,12 @@ export default function ShellNavDrawer({ open, onClose }: ShellNavDrawerProps) {
   const { locale, t } = useLocale();
   const isHi = locale === "hi";
   const { profile } = useFarmerProfile();
+  const farm = useFarmData();
+  const { activeField } = useActiveField(farm.data.fields, farm.hydrated);
 
   const farmerName = profile.name.trim() || (isHi ? "किसान भाई" : "Farmer");
   const initial = farmerName.charAt(0).toUpperCase() || "क";
-  const place = farmerPlaceLine(profile).full;
+  const place = preferredFarmerPlace(profile, activeField).full;
   const phoneOrPlace = profile.phone
     ? `+91 ${profile.phone}`
     : place || (isHi ? "स्थान जोड़ें" : "Add location");

@@ -94,6 +94,18 @@ function generateDoctorAdvice(
   cropName: string
 ): string {
   const text = queryText.toLowerCase();
+  const mentionsTomato =
+    cropSlug === "tomato" || /tamatar|tomato|टमाटर/.test(text);
+  const leafCurl =
+    /leaf|virus|curl|lip color|लीफ|मरोड़|सफेद मक्खी/.test(text);
+
+  if (mentionsTomato && leafCurl) {
+    return `🍅 **टमाटर: पत्ता मरोड़ — सफेद मक्खी रोकें**\n\n1. **यह वायरस की दवा नहीं है।** पत्ता मरोड़ सफेद मक्खी से फैलता है। कोई स्प्रे वायरस को 100% खत्म नहीं करता।\n2. **सफेद मक्खी:** डायफेनथियूरॉन 50% WP @ 250 ग्राम/एकड़, या एसिटामिप्रिड 20% SP @ 80 ग्राम, 150 लीटर पानी में। लेबल पढ़ें।\n3. **पीले ट्रैप:** 10–12 पीले चिपचिपे कार्ड लगाएं।\n4. **बहुत मरे पौधे** उखाड़कर दबा दें। NPK 19:19:19 इस बीमारी की दवा नहीं है।`;
+  }
+
+  if (/खरपतवार|weed|herbicide|नाशक स्प्रे/.test(text)) {
+    return `🌿 **खरपतवार की दवा यहीं से नहीं**\n\n1. **फसल बताएं** — बिना फसल के खरपतवार नाशक नहीं लिखा जाता। गलत फसल पर दवा फसल जला देती है।\n2. **ऐप में** उस फसल का खरपतवार नियंत्रण खोलें। वहीं अवस्था और मात्रा है।\n3. **NPK 19:19:19 खरपतवार की दवा नहीं है।**`;
+  }
 
   // Wheat (गेहूं)
   if (cropSlug === "wheat" || text.includes("गेहूं") || text.includes("wheat")) {
@@ -121,8 +133,8 @@ function generateDoctorAdvice(
   }
 
   // Tomato (टमाटर)
-  if (cropSlug === "tomato" || text.includes("टमाटर") || text.includes("tomato")) {
-    if (text.includes("मरोड़") || text.includes("curl") || text.includes("पत्ता") || text.includes("सफेद मक्खी")) {
+  if (cropSlug === "tomato" || text.includes("टमाटर") || text.includes("tomato") || text.includes("tamatar")) {
+    if (text.includes("मरोड़") || text.includes("curl") || text.includes("leaf") || text.includes("virus") || text.includes("पत्ता") || text.includes("सफेद मक्खी") || text.includes("lip color")) {
       return `🍅 **टमाटर विशेषज्ञ निदान: पत्ता मरोड़ वायरस (Leaf Curl)**\n\n1. **कारण:** यह वायरस सफेद मक्खी (Whitefly) के रस चूसने से फैलता है।\n2. **दवा:** पेगासस (डायफेनथियूरॉन 50% WP) @ 250 ग्राम/एकड़ या एसिटामिप्रिड 20% SP @ 80 ग्राम प्रति 150 लीटर पानी में स्प्रे करें।\n3. **पीले ट्रैप:** खेत में 10-12 पीले चिपचिपे कार्ड (Yellow Sticky Traps) लगाएं ताकि मक्खियां उसमें फंस जाएं।\n4. **सावधानी:** अत्यधिक ग्रसित पौधों को उखाड़कर जमीन में दबा दें।`;
     }
     if (text.includes("सुंडी") || text.includes("छेदक") || text.includes("फल") || text.includes("borer")) {
@@ -157,7 +169,7 @@ function generateDoctorAdvice(
     return `👨‍🌾 **${cropName} विशेषज्ञ पोषण सलाह:**\n\n1. **बढ़वार व फुटाव:** वानस्पतिक अवस्था में NPK 19:19:19 @ 1 kg/एकड़ के साथ ह्यूमिक एसिड स्प्रे करें।\n2. **फूल व फल अवस्था:** फूल आने के समय 00:52:34 @ 1 kg/एकड़ + बोरॉन 20% @ 1 ग्राम/लीटर स्प्रे करें जिससे फूल झड़ने की समस्या समाप्त हो जाती है।\n3. **सावधानी:** दवा हमेशा साफ पानी में ही घोलें।`;
   }
 
-  return `👨‍🌾 **${cropName} फसल विशेषज्ञ सलाह:**\n\nआपकी समस्या नोट कर ली गई है। सामान्य तौर पर इस अवस्था में संतुलित NPK 19:19:19 @ 1 kg/एकड़ का स्प्रे पौधों को नई ऊर्जा देता है। यदि किसी बीमारी या कीट के लक्षण दिख रहे हैं, तो प्रभावित पत्ती या कीड़े की स्पष्ट फोटो भेजें ताकि सटीक दवा की सिफारिश की जा सके।`;
+  return `👨‍🌾 **इस सवाल का पक्का जवाब नहीं बना**\n\n1. ऊपर से **फसल चुनें**।\n2. बीमार पत्ती या कीड़े की **साफ फोटो** भेजें।\n3. बिना पहचान खाद या दवा नहीं लिख रहा — NPK 19:19:19 बीमारी की दवा नहीं है।`;
 }
 
 function MessageBody({ text }: { text: string }) {
@@ -314,12 +326,16 @@ export default function AskQueryPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    let lastKey = "";
     const updateViewport = () => {
       const vv = window.visualViewport;
       if (vv) {
         const keyboardGap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-        setKeyboardOpen(keyboardGap > 80);
         const visible = Math.max(0, Math.round(vv.height));
+        const key = `${visible}:${Math.round(vv.offsetTop)}:${keyboardGap > 80 ? 1 : 0}`;
+        if (key === lastKey) return;
+        lastKey = key;
+        setKeyboardOpen(keyboardGap > 80);
         setViewportStyle({
           position: "fixed",
           top: `${vv.offsetTop}px`,
@@ -345,9 +361,12 @@ export default function AskQueryPage() {
           overflowX: "hidden",
         });
       }
-      setTimeout(() => {
-        scrollToBottom(false);
-      }, 50);
+      const typing = document.activeElement === chatInputRef.current;
+      if (!typing) {
+        setTimeout(() => {
+          scrollToBottom(false);
+        }, 50);
+      }
     };
 
     const vv = window.visualViewport;
@@ -371,21 +390,6 @@ export default function AskQueryPage() {
   useEffect(() => {
     scrollToBottom(true);
   }, [messages, isTyping, scrollToBottom]);
-
-  // Open the phone keyboard as soon as the chat screen is shown.
-  useEffect(() => {
-    const focusInput = () => {
-      const el = chatInputRef.current;
-      if (!el) return;
-      el.focus({ preventScroll: true });
-    };
-    const frame = window.requestAnimationFrame(focusInput);
-    const timer = window.setTimeout(focusInput, 280);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.clearTimeout(timer);
-    };
-  }, []);
 
   // Check speech recognition support
   useEffect(() => {
@@ -523,6 +527,15 @@ export default function AskQueryPage() {
     }
   };
 
+  const voiceBooted = useRef(false);
+  useEffect(() => {
+    if (voiceBooted.current) return;
+    if (typeof window === "undefined") return;
+    if (new URLSearchParams(window.location.search).get("voice") !== "1") return;
+    voiceBooted.current = true;
+    void startVoiceRecording();
+  }, [startVoiceRecording]);
+
   // Clean up timer/recognition on unmount
   useEffect(() => {
     return () => {
@@ -639,10 +652,10 @@ export default function AskQueryPage() {
 
   return (
     <div
-      className="fixed inset-x-0 top-0 z-50 flex h-[100svh] max-h-[100svh] w-full max-w-full select-none flex-col overflow-hidden overflow-x-hidden overscroll-none bg-[#f3efe4] text-[var(--av-text-primary)] dark:bg-[var(--av-surface-muted)]"
+      className="fixed inset-x-0 top-0 z-50 flex h-[100svh] max-h-[100svh] w-full max-w-full select-none flex-col overflow-hidden overflow-x-hidden overscroll-none bg-[#F8FAF9] text-[var(--av-text-primary)] dark:bg-[var(--av-surface-muted)]"
       style={viewportStyle}
     >
-      <header className="shrink-0 border-b border-[color:rgba(168,132,62,0.4)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]">
+      <header className="shrink-0 border-b border-[#b7dcc8] bg-[#f4fbf7] dark:border-white/10 dark:bg-[var(--av-surface)]">
         <div className="flex items-center gap-2.5 px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <button
             type="button"
@@ -671,7 +684,7 @@ export default function AskQueryPage() {
 
           <Link
             href="/my-queries"
-            className="shrink-0 text-[13px] font-semibold text-[#0c3b2e] dark:text-emerald-300"
+            className="shrink-0 text-[13px] font-semibold text-[#0f6b45] dark:text-emerald-300"
           >
             पुराने जवाब
             {queries.length > 0 ? ` · ${queries.length}` : ""}
@@ -679,7 +692,7 @@ export default function AskQueryPage() {
         </div>
       </header>
 
-      <div className="shrink-0 border-b border-[color:rgba(168,132,62,0.22)] bg-[#fbf8f1] px-3 pb-3 pt-2.5 dark:border-white/10 dark:bg-[var(--av-surface)]">
+      <div className="shrink-0 border-b border-[#d5eadc] bg-[#f4fbf7] px-3 pb-3 pt-2.5 dark:border-white/10 dark:bg-[var(--av-surface)]">
         <p className="mb-1.5 text-[13px] font-semibold text-[var(--av-text-secondary)]">
           किस फसल पर बात करें
         </p>
@@ -693,8 +706,8 @@ export default function AskQueryPage() {
                 onClick={() => setSelectedCrop(chip.slug)}
                 className={`shrink-0 rounded-full px-3 py-1.5 text-[13px] font-semibold active:scale-[0.98] ${
                   active
-                    ? "bg-[#0c3b2e] text-[#f7f3ea] shadow-[var(--av-shadow-sm)]"
-                    : "border border-[color:rgba(168,132,62,0.35)] bg-white text-[var(--av-text-primary)] dark:border-white/10 dark:bg-[var(--av-surface-muted)]"
+                    ? "bg-[#059669] text-white shadow-[var(--av-shadow-sm)]"
+                    : "border border-[#cfe5d8] bg-white text-[var(--av-text-primary)] dark:border-white/10 dark:bg-[var(--av-surface-muted)]"
                 }`}
               >
                 {chip.nameHi}
@@ -711,7 +724,7 @@ export default function AskQueryPage() {
       >
         {onlyWelcome ? (
           <div className="flex flex-1 flex-col items-center justify-center px-6 pb-4 text-center">
-            <span className="flex h-16 w-16 items-center justify-center rounded-full border border-[color:rgba(168,132,62,0.45)] bg-[#fbf8f1] text-[#0c3b2e] shadow-[var(--av-shadow-sm)] dark:bg-[var(--av-surface)] dark:text-emerald-200">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full border border-[#b7dcc8] bg-[#f4fbf7] text-[#0f6b45] shadow-[var(--av-shadow-sm)] dark:bg-[var(--av-surface)] dark:text-emerald-200">
               <Leaf className="h-7 w-7" />
             </span>
             <h2 className="mt-4 text-[18px] font-semibold leading-tight text-[var(--av-text-primary)]">
@@ -719,7 +732,7 @@ export default function AskQueryPage() {
             </h2>
             <span className="mt-2.5 h-px w-10 bg-[#a6843e]" />
             {selectedCrop !== "general" ? (
-              <p className="mt-2.5 text-[15px] font-semibold text-[#0c3b2e] dark:text-emerald-200">
+              <p className="mt-2.5 text-[15px] font-semibold text-[#0f6b45] dark:text-emerald-200">
                 {selectedCropObj.nameHi}
               </p>
             ) : null}
@@ -739,10 +752,11 @@ export default function AskQueryPage() {
           const isMe = m.sender === "user";
           const isWelcome = m.id === "msg-welcome";
           if (isWelcome) {
+            if (messages.some((item) => item.sender === "user")) return null;
             return (
               <div
                 key={m.id}
-                className="rounded-3xl border border-[color:rgba(168,132,62,0.28)] bg-[#fbf8f1] px-4 py-4 dark:bg-[var(--av-surface)]"
+                className="rounded-3xl border border-[#E5E7EB] bg-white px-4 py-4 dark:bg-[var(--av-surface)]"
               >
                 <p className="text-[13px] font-semibold text-[#8a6a32]">
                   नमस्ते किसान भाई
@@ -761,8 +775,8 @@ export default function AskQueryPage() {
               <div
                 className={`max-w-[88%] px-3.5 py-3 sm:max-w-[75%] ${
                   isMe
-                    ? "rounded-[22px] rounded-br-md bg-[#0c3b2e] text-[#f7f3ea]"
-                    : "rounded-[22px] rounded-bl-md border border-[color:rgba(168,132,62,0.22)] border-l-[3px] border-l-[#0c3b2e] bg-[#fbf8f1] text-[var(--av-text-primary)] dark:border-white/10 dark:bg-[var(--av-surface)]"
+                    ? "rounded-[22px] rounded-br-md bg-[#14532D] text-white"
+                    : "rounded-[22px] rounded-bl-md border border-[#E5E7EB] border-l-[3px] border-l-[#16A34A] bg-white text-[var(--av-text-primary)] dark:border-white/10 dark:bg-[var(--av-surface)]"
                 }`}
               >
                 {isMe && m.cropName ? (
@@ -809,7 +823,7 @@ export default function AskQueryPage() {
       {/* Part C: Bottom Input Bar (shrink-0 mt-auto) */}
       <div
         className={cn(
-          "mt-auto w-full max-w-full shrink-0 border-t border-[color:rgba(168,132,62,0.28)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]",
+          "mt-auto w-full max-w-full shrink-0 border-t border-[#d5eadc] bg-[#f4fbf7] dark:border-white/10 dark:bg-[var(--av-surface)]",
           keyboardOpen
             ? "pb-2"
             : "pb-[max(1rem,env(safe-area-inset-bottom))]"
@@ -828,7 +842,7 @@ export default function AskQueryPage() {
                   setInputText(prompt);
                   scrollToBottom(true);
                 }}
-                className="shrink-0 rounded-full border border-[color:rgba(168,132,62,0.4)] bg-[#f3efe4] px-3 py-1.5 text-[13px] font-semibold text-[var(--av-text-primary)] active:scale-[0.98] dark:bg-[var(--av-surface-muted)]"
+                className="shrink-0 rounded-full border border-[#b7dcc8] bg-[#e8f6ee] px-3 py-1.5 text-[13px] font-semibold text-[var(--av-text-primary)] active:scale-[0.98] dark:bg-[var(--av-surface-muted)]"
               >
                 {prompt}
               </button>
@@ -914,7 +928,7 @@ export default function AskQueryPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[color:rgba(168,132,62,0.28)] bg-[#f3efe4] text-[#0c3b2e] active:scale-95 dark:border-white/10 dark:bg-[var(--av-surface-muted)] dark:text-emerald-200"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#d5eadc] bg-[#e8f6ee] text-[#0f6b45] active:scale-95 dark:border-white/10 dark:bg-[var(--av-surface-muted)] dark:text-emerald-200"
               title="पत्ती या कीड़े की फोटो जोड़ें"
             >
               <Camera className="h-5 w-5" />
@@ -926,7 +940,7 @@ export default function AskQueryPage() {
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full active:scale-95 ${
                 isRecording
                   ? "bg-rose-600 text-white"
-                  : "border border-[color:rgba(168,132,62,0.28)] bg-[#f3efe4] text-[#0c3b2e] dark:border-white/10 dark:bg-[var(--av-surface-muted)] dark:text-emerald-200"
+                  : "border border-[#d5eadc] bg-[#e8f6ee] text-[#0f6b45] dark:border-white/10 dark:bg-[var(--av-surface-muted)] dark:text-emerald-200"
               }`}
               title="बोलकर सवाल पूछें"
             >
@@ -960,7 +974,7 @@ export default function AskQueryPage() {
                   handleSend();
                 }
               }}
-              className="h-12 min-w-0 flex-1 rounded-full border border-[color:rgba(168,132,62,0.35)] bg-white px-4 text-[16px] font-medium text-[var(--av-text-primary)] outline-none focus:border-[#0c3b2e] dark:border-white/15 dark:bg-[var(--av-surface-muted)]"
+              className="h-12 min-w-0 flex-1 rounded-full border border-[#cfe5d8] bg-white px-4 text-[16px] font-medium text-[var(--av-text-primary)] outline-none focus:border-[#059669] dark:border-white/15 dark:bg-[var(--av-surface-muted)]"
             />
 
             {/* Send Button */}
@@ -968,7 +982,7 @@ export default function AskQueryPage() {
               type="button"
               onClick={handleSend}
               disabled={!inputText.trim() && !photoPreview}
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0c3b2e] text-[#f7f3ea] shadow-[var(--av-shadow-sm)] active:scale-95 disabled:opacity-40"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#059669] text-white shadow-[var(--av-shadow-sm)] active:scale-95 disabled:opacity-40"
               title="भेजें"
             >
               <Send className="h-5 w-5" />

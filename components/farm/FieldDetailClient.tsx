@@ -68,6 +68,7 @@ export default function FieldDetailClient({
   } = useFarmData();
 
   const [activeTab, setActiveTab] = useState<FarmTab>(validTab(initialTab));
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const initializedFor = useRef<string | null>(null);
   const derivedSignature = useRef<string>("");
 
@@ -257,12 +258,7 @@ export default function FieldDetailClient({
 
             <button
               type="button"
-              onClick={() => {
-                if (window.confirm(`क्या आप '${field.name}' हटा दें? यह वापस नहीं आएगा।`)) {
-                  deleteField(field.id);
-                  router.replace("/my-farm");
-                }
-              }}
+              onClick={() => setConfirmDelete(true)}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
               aria-label="खेत हटाएं"
             >
@@ -285,7 +281,7 @@ export default function FieldDetailClient({
                   className={cn(
                     "relative rounded-xl py-2 text-[13px] font-semibold transition",
                     active
-                      ? "text-[#0c3b2e] dark:text-[var(--av-text-primary)]"
+                      ? "text-[#0f6b45] dark:text-[var(--av-text-primary)]"
                       : "text-[var(--av-text-muted)] hover:text-[var(--av-text-secondary)]"
                   )}
                 >
@@ -356,6 +352,41 @@ export default function FieldDetailClient({
           </motion.div>
         </AnimatePresence>
       </main>
+      {confirmDelete ? (
+        <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/45 p-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div
+            role="dialog"
+            aria-labelledby="delete-field-title"
+            className="w-full max-w-md rounded-2xl bg-[var(--av-surface)] p-4 shadow-2xl"
+          >
+            <h2 id="delete-field-title" className="text-[16px] font-bold text-[var(--av-text-primary)]">
+              यह खेत हटाएँ?
+            </h2>
+            <p className="mt-1 text-[13px] text-[var(--av-text-secondary)]">
+              {field.name} वापस नहीं आएगा।
+            </p>
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(false)}
+                className="h-11 flex-1 rounded-xl border border-[var(--av-border)] text-[14px] font-bold"
+              >
+                रहने दें
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  deleteField(field.id);
+                  router.replace("/my-farm");
+                }}
+                className="h-11 flex-1 rounded-xl bg-rose-700 text-[14px] font-bold text-white"
+              >
+                हटाएँ
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

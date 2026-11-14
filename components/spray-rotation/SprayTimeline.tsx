@@ -123,10 +123,19 @@ export default function SprayTimeline({ sprays, fieldNameById }: SprayTimelinePr
                   </span>
                 ) : null}
               </div>
-              <p className="mt-1.5 text-[11px] font-semibold text-[var(--av-text-muted)]">
-                मात्रा: {spray.doseUsed || "लेबल अनुसार"}
-                {spray.growthStageAtSpray ? ` · ${spray.growthStageAtSpray}` : ""}
-              </p>
+              <div className="mt-1.5 text-[11px] font-semibold leading-relaxed text-[var(--av-text-muted)]">
+                <p>मात्रा:</p>
+                {(spray.doseUsed || "लेबल अनुसार")
+                  .split(/\s*\+\s*|\n/)
+                  .map((line) => line.trim())
+                  .filter(Boolean)
+                  .map((line, index) => (
+                    <p key={`${index}-${line}`} className="break-words">
+                      {line}
+                    </p>
+                  ))}
+                {spray.growthStageAtSpray ? <p>{spray.growthStageAtSpray}</p> : null}
+              </div>
             </div>
           </article>
         );

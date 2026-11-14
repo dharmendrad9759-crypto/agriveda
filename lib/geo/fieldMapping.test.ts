@@ -50,7 +50,7 @@ describe("Smart Field Mapping & Land Area Measurement System", () => {
 
     const validation = validateFieldPolygon(crossingCoords);
     expect(validation.valid).toBe(false);
-    expect(validation.error).toContain("आपस में कट");
+    expect(validation.error).toContain("काट रही");
   });
 
   it("properly converts coordinates to GeoJSON Polygon format and back", () => {

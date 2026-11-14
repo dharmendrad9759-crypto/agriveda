@@ -69,7 +69,9 @@ export default function ThreatBrowseCard({
             {names.english}
           </span>
         ) : null}
-        {scientific ? (
+        {scientific &&
+        scientific !== names.primary &&
+        scientific !== names.english ? (
           <span className="line-clamp-1 text-[10px] italic text-[var(--av-text-muted)]">
             {scientific}
           </span>

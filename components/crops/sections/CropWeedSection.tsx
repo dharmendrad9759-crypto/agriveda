@@ -9,7 +9,6 @@ import FarmerSplitCard from "@/components/ui/FarmerSplitCard";
 import ThreatImage from "@/components/ui/ThreatImage";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { weedDisplayName } from "@/lib/crops/weedNamesHi";
-import { farmerThreatDisplayName } from "@/lib/crops/farmerThreatTitle";
 import { getCropHindiName } from "@/lib/crops/crop-display";
 import { resolveCropImage } from "@/lib/crops/cropImages";
 import { threatDetailPath } from "@/lib/pest-disease-catalog";
@@ -488,21 +487,14 @@ function FieldDoctorWeedCards({
               <ul className="space-y-2.5">
                 {items.map((w) => {
                   const open = openWeed === w.id;
-                  const soft = farmerThreatDisplayName(
-                    `${w.localHi} (${w.scientific || w.localHi})`,
-                    w.scientific
-                  );
+                  const leaf = hi
+                    ? weedCategoryLabelHi(category)
+                    : w.scientific || weedCategoryLabelHi(category);
                   return (
                     <li key={w.id} className="overflow-hidden rounded-2xl">
                       <FarmerSplitCard
-                        title={soft.primary}
-                        subtitle={
-                          soft.english ||
-                          (hi
-                            ? weedCategoryLabelHi(category)
-                            : w.scientific || weedCategoryLabelHi(category))
-                        }
-                        subtitleItalic={!soft.english && !hi && Boolean(w.scientific)}
+                        title={w.localHi}
+                        subtitle={[leaf, w.scientific].filter(Boolean).join(" • ")}
                         image={w.thumb}
                         threatCategory="weed"
                         openHint={
@@ -777,6 +769,7 @@ function LegacyWeedSection({ crop }: { crop: Crop }) {
       return {
         id: `${crop.slug}-weed-${i}`,
         weedName: w.weedName,
+        type: w.type,
         scientificName: match?.scientificName || sci || w.scientificName,
         criticalPeriod: w.criticalPeriod,
         preEmergenceHerbicide: w.preEmergenceHerbicide,
@@ -855,16 +848,24 @@ function LegacyWeedSection({ crop }: { crop: Crop }) {
         <ul className="space-y-2.5">
           {enrichedProfileWeeds.map((w) => {
             const open = openId === w.id;
-            const soft = farmerThreatDisplayName(w.weedName, w.scientificName);
+            const localTitle = w.weedName.replace(/\s*\([^)]*\)/g, "").trim();
+            const leaf =
+              /broad|चौड़ी/i.test(w.type)
+                ? hi
+                  ? "चौड़ी पत्ती"
+                  : "Broadleaf"
+                : /sedge|मोथा/i.test(w.type)
+                  ? hi
+                    ? "मोथा"
+                    : "Sedge"
+                  : hi
+                    ? "संकरी पत्ती"
+                    : "Narrow leaf";
             return (
               <li key={w.id} className="overflow-hidden rounded-2xl">
                 <FarmerSplitCard
-                  title={soft.primary}
-                  subtitle={
-                    soft.english
-                      ? `${soft.english} · ${w.criticalPeriod}`
-                      : `${w.scientificName} · ${w.criticalPeriod}`
-                  }
+                  title={localTitle}
+                  subtitle={[leaf, w.scientificName].filter(Boolean).join(" • ")}
                   image={w.image}
                   threatCategory="weed"
                   openHint={

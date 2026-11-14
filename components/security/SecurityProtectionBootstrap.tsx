@@ -70,6 +70,9 @@ export default function SecurityProtectionBootstrap() {
     // 2. Disable Context Menu (Right Click & Long Press)
     const handleContextMenu = (e: MouseEvent) => {
       if (isEditable(e.target)) return;
+      const touch =
+        isCapacitorNative() || window.matchMedia("(pointer: coarse)").matches;
+      if (touch) return;
       e.preventDefault();
       showWarning("सुरक्षा नीति: सामग्री कॉपी या डाउनलोड करना प्रतिबंधित है।");
     };
@@ -188,7 +191,7 @@ export default function SecurityProtectionBootstrap() {
       {toastMessage && (
         <div
           role="alert"
-          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[999998] flex items-center gap-2.5 rounded-full bg-stone-900/95 border border-emerald-500/50 px-4 py-2.5 text-xs font-semibold text-emerald-300 shadow-2xl backdrop-blur-md animate-fade-in pointer-events-none"
+          className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-1/2 z-[60] flex max-w-[90vw] -translate-x-1/2 items-center gap-2.5 rounded-full bg-stone-900/95 px-4 py-2 text-xs font-semibold text-emerald-200 shadow-2xl pointer-events-none"
         >
           <span className="text-sm">🛡️</span>
           <span>{toastMessage}</span>

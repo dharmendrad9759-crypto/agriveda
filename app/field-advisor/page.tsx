@@ -1,51 +1,109 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import AppLink from "@/components/ui/AppLink";
-import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
-import DarkCard from "@/components/shell/DarkCard";
-import Badge from "@/components/design-system/Badge";
-import { AV } from "@/lib/design/tokens";
+import AppShell from "@/components/shell/AppShell";
+import { useToast } from "@/components/ui/Toast";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useDashboardAlerts } from "@/hooks/useDashboardAlerts";
 import { useFarmData } from "@/hooks/useFarmData";
 import { useActiveField } from "@/hooks/useActiveField";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useLiveWeather } from "@/hooks/useLiveWeather";
 import { daysAfterSowingISO } from "@/lib/farm/fieldStatus";
-import { getStageAdvisory } from "@/lib/field-advisor/stageAdvisories";
-import {
-  AlertTriangle,
-  Calendar,
-  ChevronRight,
-  Droplets,
-  FlaskConical,
-  MessageCircle,
-  RefreshCw,
-  Sprout,
-  Stethoscope,
-} from "lucide-react";
-import { FieldAdviceSparkleIcon } from "@/components/brand/icons";
+import { fieldAcresValue } from "@/lib/farm/fieldLinks";
+import { getStageAdvisory, type StageActionItem } from "@/lib/field-advisor/stageAdvisories";
+import { scaleAdvisoryLine } from "@/lib/field-advisor/scaleAdvice";
+import { preferredFarmerPlace } from "@/lib/farmerPlaceName";
+import type { FarmField } from "@/lib/farm/types";
+import type { WeatherViewModel } from "@/lib/weatherApi";
+import { Camera, Mic } from "lucide-react";
 
-const COMMON_CROPS = [
-  { slug: "paddy", nameHi: "धान", emoji: "🌾" },
-  { slug: "wheat", nameHi: "गेहूं", emoji: "🌾" },
-  { slug: "mustard", nameHi: "सरसों", emoji: "🌼" },
-  { slug: "tomato", nameHi: "टमाटर", emoji: "🍅" },
-  { slug: "maize", nameHi: "मक्का", emoji: "🌽" },
-  { slug: "cotton", nameHi: "कपास", emoji: "🌱" },
-  { slug: "soybean", nameHi: "सोयाबीन", emoji: "🫘" },
-  { slug: "potato", nameHi: "आलू", emoji: "🥔" },
-];
+function todayKey(): string {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
+function areaLabel(field: FarmField | null, acres: number | null): string {
+  if (field?.bighaDisplay?.trim()) return field.bighaDisplay.trim();
+  if (acres != null && acres > 0) {
+    const n = Number.isInteger(acres) ? String(acres) : String(Number(acres.toFixed(2)));
+    return `${n} एकड़`;
+  }
+  return "";
+}
+
+function stageLabel(name: string, das: number | null): string {
+  const short = name.replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s+/g, " ").trim();
+  return das != null ? `${short} (${das} दिन)` : short;
+}
+
+function placesOverlap(a: string, b: string): boolean {
+  const parts = (s: string) =>
+    s
+      .toLowerCase()
+      .split(/[^a-z\u0900-\u097F]+/i)
+      .filter((p) => p.length > 3);
+  const left = parts(a);
+  const right = new Set(parts(b));
+  return left.some((p) => right.has(p));
+}
+
+function forecastLine(weather: WeatherViewModel): string {
+  if (weather.isDemo) {
+    return "मौसम का नमूना दिख रहा है। छिड़काव से पहले आज का मौसम देख लें।";
+  }
+  const days = weather.dailyForecast.slice(0, 3);
+  if (!days.length) return "छिड़काव से पहले आज का मौसम देख लें।";
+  const maxRain = Math.max(...days.map((d) => d.rainChance));
+  if (maxRain >= 50) return "अगले दिनों में बारिश का अंदेशा है। छिड़काव से पहले मौसम देख लें।";
+  if (maxRain >= 30) return "हल्की बारिश हो सकती है। पानी देने से पहले खेत की नमी देखें।";
+  return "अगले 3 दिन बारिश कम दिख रही है। सिंचाई या छिड़काव से पहले एक बार मौसम देख लें।";
+}
+
+function careTitle(action: string): string {
+  if (/खरपतवार|डंडा|WP|EC|SL|SC|छिड़क|स्प्रे|दवा|ग्राम|किग्रा|ml/i.test(action)) return "खरपतवार";
+  return "देखभाल";
+}
+
+function AdviceCard({
+  title,
+  forArea,
+  item,
+  acres,
+  action,
+}: {
+  title: string;
+  forArea?: string;
+  item: StageActionItem;
+  acres: number | null;
+  action?: ReactNode;
+}) {
+  return (
+    <article className="rounded-2xl border border-[#E5E7EB] bg-white p-4">
+      <p className="text-[18px] font-bold leading-snug text-[#14532D]">{title}</p>
+      {forArea ? <p className="mt-0.5 text-sm font-semibold text-[#15803D]">{forArea}</p> : null}
+      <p className="mt-2 text-sm leading-relaxed text-[#1F2937]">{scaleAdvisoryLine(item.action, acres)}</p>
+      {item.tip ? <p className="mt-2 text-sm leading-relaxed text-[#1F2937]">{item.tip}</p> : null}
+      {action}
+    </article>
+  );
+}
 
 function FieldAdvisorContent() {
   const searchParams = useSearchParams();
   const qCrop = searchParams.get("crop");
   const qSowing = searchParams.get("sowing");
-  const qName = searchParams.get("name");
   const qFieldId = searchParams.get("fieldId");
+  const { showToast } = useToast();
 
   const alerts = useDashboardAlerts(4);
-  const { data: farmData, hydrated: farmHydrated } = useFarmData();
+  const { data: farmData, hydrated: farmHydrated, addActivity } = useFarmData();
+  const { profile } = useFarmerProfile();
+  const { weather } = useLiveWeather();
   const fields = farmData.fields;
   const { activeField, setActiveField } = useActiveField(fields, farmHydrated);
   const appliedQueryRef = useRef<string | null>(null);
@@ -58,252 +116,179 @@ function FieldAdvisorContent() {
     }
   }, [farmHydrated, qFieldId, fields, setActiveField]);
 
-  const [customCropSlug, setCustomCropSlug] = useState<string>(qCrop || "wheat");
-  const customDays = 20;
-
-  const selectedFieldId = activeField?.id ?? "custom";
-  const activeCropSlug = activeField ? activeField.cropSlug : customCropSlug;
-  const activeCropName = activeField ? activeField.crop : (COMMON_CROPS.find((c) => c.slug === activeCropSlug)?.nameHi || activeCropSlug);
-  const activeFieldName = activeField ? activeField.name : (qName || "मेरा खेत");
+  const cropSlug = activeField?.cropSlug || qCrop || "";
+  const cropName = activeField?.crop || qCrop || "फसल";
+  const acres = activeField ? fieldAcresValue(activeField) ?? null : null;
+  const area = areaLabel(activeField, acres);
+  const forField = area ? `आपके ${area} के लिए` : "प्रति एकड़";
 
   const das = useMemo(() => {
     const fromField =
-      daysAfterSowingISO(activeField?.sowingDateIso) ??
-      daysAfterSowingISO(activeField?.sowingDate);
+      daysAfterSowingISO(activeField?.sowingDateIso) ?? daysAfterSowingISO(activeField?.sowingDate);
     if (fromField != null) return fromField;
-    if (!activeField) {
-      const fromQuery = daysAfterSowingISO(qSowing);
-      if (fromQuery != null) return fromQuery;
-      return customDays;
-    }
+    if (!activeField) return daysAfterSowingISO(qSowing);
     return null;
-  }, [activeField, qSowing, customDays]);
+  }, [activeField, qSowing]);
 
   const advisory = useMemo(() => {
-    return getStageAdvisory(activeCropSlug || "paddy", das);
-  }, [activeCropSlug, das]);
+    if (!cropSlug || das == null) return null;
+    return getStageAdvisory(cropSlug, das);
+  }, [cropSlug, das]);
+
+  const irrigatedToday = (farmData.activities ?? []).some(
+    (a) => a.task === "सिंचाई हो गई" && a.field === (activeField?.id ?? "") && a.date === todayKey()
+  );
+
+  const fieldPlace = preferredFarmerPlace(profile, activeField).full;
+  const weatherPlace = weather?.location?.trim() || "";
+  const splitPlaces = Boolean(fieldPlace && weatherPlace && !placesOverlap(fieldPlace, weatherPlace));
+
+  const irrig = advisory?.checklist.find((item) => item.category === "सिंचाई");
+  const fert = advisory?.checklist.find((item) => item.category === "खाद");
+  const weed = advisory?.checklist.find((item) => item.category === "निराई / देखभाल");
+
+  const safeAlerts = alerts.filter((a) => {
+    if (/NDVI|कमजोर|Mixed Pixel/i.test(`${a.title} ${a.body}`)) return false;
+    if (cropSlug && a.cropSlug && a.cropSlug !== cropSlug) return false;
+    if (irrig && /सिंचाई|पानी/.test(a.title)) return false;
+    return true;
+  });
+
+  if (!farmHydrated) {
+    return <p className="px-1 py-6 text-sm font-semibold text-[#14532D]">सलाह खुल रही है…</p>;
+  }
 
   return (
-    <div className="space-y-4 pb-6">
-      {/* Field / Crop Tabs */}
+    <div className="space-y-3 pb-44">
       {fields.length > 0 ? (
-        <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {fields.map((f) => {
-            const isSel = f.id === selectedFieldId;
-            const fDas =
-              daysAfterSowingISO(f.sowingDateIso) ?? daysAfterSowingISO(f.sowingDate);
-            return (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => setActiveField(f.id)}
-                className={`flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                  isSel
-                    ? "bg-emerald-600 text-white shadow-sm"
-                    : "border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text-secondary)] hover:bg-[var(--av-surface-inset)]"
-                }`}
-              >
-                <Sprout className="h-3.5 w-3.5" />
-                <span>{f.name} ({f.crop})</span>
-                {fDas != null && (
-                  <span className={`rounded-md px-1.5 py-0.5 text-[10px] ${isSel ? "bg-emerald-700 text-white" : "bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"}`}>
-                    {fDas} दिन
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5">
-          <p className="text-xs font-bold text-[var(--av-text-primary)]">फसल चुनें — अवस्था के अनुसार सलाह देखें:</p>
-          <div className="mt-2.5 flex flex-wrap gap-1.5">
-            {COMMON_CROPS.map((c) => (
-              <button
-                key={c.slug}
-                type="button"
-                onClick={() => {
-                  setCustomCropSlug(c.slug);
-                }}
-                className={`rounded-xl px-2.5 py-1.5 text-xs font-semibold transition ${
-                  customCropSlug === c.slug
-                    ? "bg-emerald-600 text-white"
-                    : "border border-[var(--av-border)] bg-[var(--av-surface-inset)] text-[var(--av-text-secondary)]"
-                }`}
-              >
-                {c.emoji} {c.nameHi}
-              </button>
+        <label className="block">
+          <span className="sr-only">खेत बदलें</span>
+          <select
+            value={activeField?.id ?? ""}
+            onChange={(e) => setActiveField(e.target.value)}
+            className="w-full rounded-2xl border border-[#E5E7EB] bg-white px-3 py-3 text-base font-bold text-[#14532D]"
+          >
+            {fields.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.crop} · {areaLabel(f, fieldAcresValue(f) ?? null) || f.name}
+              </option>
             ))}
-          </div>
+          </select>
+        </label>
+      ) : (
+        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4">
+          <p className="text-[18px] font-bold text-[#14532D]">पहले खेत जोड़ें</p>
+          <p className="mt-1 text-sm leading-relaxed text-[#1F2937]">
+            फसल और बुवाई की तारीख के बिना सलाह नहीं बनती।
+          </p>
+          <AppLink
+            href="/my-farm"
+            className="mt-3 inline-flex rounded-xl bg-[#14532D] px-4 py-2.5 text-sm font-bold text-white"
+          >
+            खेत जोड़ो
+          </AppLink>
         </div>
       )}
 
-      {/* Hero stage banner */}
       {activeField && das == null ? (
-        <div className="rounded-[22px] border border-amber-500/30 bg-amber-500/10 p-4 text-center">
-          <p className="text-sm font-extrabold text-[var(--av-text-primary)]">
-            बुवाई की तारीख डालें
-          </p>
-          <p className="mt-1 text-xs font-semibold text-[var(--av-text-secondary)]">
-            सही अवस्था की सलाह के लिए {activeFieldName} की बुवाई तारीख जोड़ें।
+        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4">
+          <p className="text-[18px] font-bold text-[#14532D]">बुवाई की तारीख डालें</p>
+          <p className="mt-1 text-sm leading-relaxed text-[#1F2937]">
+            {cropName} की सही सलाह के लिए बुवाई का दिन चाहिए।
           </p>
           <AppLink
             href={`/my-farm/${activeField.id}`}
-            className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-black text-white"
+            className="mt-3 inline-flex rounded-xl bg-[#14532D] px-4 py-2.5 text-sm font-bold text-white"
           >
-            खेत में तारीख डालें
-            <ChevronRight className="h-3.5 w-3.5" />
+            तारीख डालें
           </AppLink>
         </div>
-      ) : (
-      <div className="relative overflow-hidden rounded-[22px] border border-emerald-500/30 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 p-4 text-white shadow-md">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-300">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>{activeFieldName} · {activeCropName}</span>
-              {das != null && <span className="rounded-full bg-emerald-500/25 px-2 py-0.5 text-[10px] text-white">बुवाई के {das} दिन</span>}
+      ) : advisory ? (
+        <section className="rounded-2xl border border-[#E5E7EB] bg-white p-4">
+          <p className="text-sm font-bold text-[#15803D]">फसल की स्थिति</p>
+          <h2 className="mt-1 text-[18px] font-bold leading-snug text-[#14532D]">
+            {stageLabel(advisory.stageNameHi, das)}
+          </h2>
+          {weather ? <p className="mt-2 text-sm leading-relaxed text-[#1F2937]">{forecastLine(weather)}</p> : null}
+          {splitPlaces ? (
+            <div className="mt-2 space-y-0.5 text-sm text-[#1F2937]">
+              <p>खेत: {fieldPlace}</p>
+              <p>मौसम: {weatherPlace}</p>
             </div>
-            <h2 className="mt-1 text-lg font-black tracking-tight text-white sm:text-xl">
-              अवस्था: {advisory.stageNameHi}
-            </h2>
-          </div>
-          <span className="rounded-xl bg-white/10 px-2.5 py-1 text-[11px] font-bold text-emerald-200 backdrop-blur-sm">
-            {advisory.minDas}-{advisory.maxDas} दिन
-          </span>
-        </div>
+          ) : fieldPlace ? (
+            <p className="mt-2 text-sm text-[#1F2937]">जगह: {fieldPlace}</p>
+          ) : weatherPlace ? (
+            <p className="mt-2 text-sm text-[#1F2937]">मौसम: {weatherPlace}</p>
+          ) : null}
+        </section>
+      ) : null}
 
-        {/* Today's key task */}
-        <div className="mt-3.5 rounded-xl border border-emerald-400/30 bg-white/10 p-3.5 backdrop-blur-md">
-          <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-300">
-            <FieldAdviceSparkleIcon className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
-            आज क्या काम करना है?
-          </p>
-          <p className="mt-1.5 text-sm font-semibold leading-relaxed text-white">
-            {advisory.todayTaskHi}
-          </p>
-        </div>
-      </div>
-      )}
+      {advisory && irrig ? (
+        <AdviceCard
+          title="सिंचाई"
+          item={irrig}
+          acres={acres}
+          action={
+            activeField ? (
+              <button
+                type="button"
+                disabled={irrigatedToday}
+                onClick={() => {
+                  addActivity({
+                    task: "सिंचाई हो गई",
+                    field: activeField.id,
+                    date: todayKey(),
+                    category: "सिंचाई",
+                  });
+                  showToast("सिंचाई दर्ज हो गई");
+                }}
+                className="mt-3 w-full rounded-xl bg-[#F4FBF7] px-3 py-2.5 text-sm font-bold text-[#14532D] disabled:opacity-70"
+              >
+                {irrigatedToday ? "आज की सिंचाई दर्ज है" : "सिंचाई हो गई"}
+              </button>
+            ) : null
+          }
+        />
+      ) : null}
 
-      {/* This week's checklist */}
-      {!(activeField && das == null) && (
-      <div className="space-y-2.5">
-        <div className="flex items-center justify-between px-0.5">
-          <h3 className="text-sm font-extrabold text-[var(--av-text-primary)]">
-            📅 इस हफ्ते के मुख्य काम
-          </h3>
-        </div>
+      {advisory && fert ? (
+        <AdviceCard title="खाद" forArea={forField} item={fert} acres={acres} />
+      ) : null}
 
-        <div className="grid gap-2.5">
-          {advisory.checklist.map((item, idx) => (
-            <div
-              key={idx}
-              className="rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3.5 shadow-sm transition active:scale-[0.99]"
-            >
-              <div className="flex items-start gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-lg">
-                  {item.icon}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold leading-snug text-[var(--av-text-primary)]">
-                    {item.action}
-                  </p>
-                  {item.tip && (
-                    <p className="mt-1 text-[11px] text-amber-800 dark:text-amber-300">
-                      💡 {item.tip}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      )}
+      {advisory && weed ? (
+        <AdviceCard
+          title={careTitle(weed.action)}
+          forArea={/ग्राम|किग्रा|kg|ml|लीटर/i.test(weed.action) ? forField : undefined}
+          item={weed}
+          acres={acres}
+        />
+      ) : null}
 
-      {/* Quick Action Farm Tools (Non-duplicate, purposeful) */}
-      <div className="space-y-2.5 pt-2">
-        <h3 className="text-sm font-extrabold text-[var(--av-text-primary)]">
-          ⚡ इस हफ्ते के ज़रूरी टूल्स
-        </h3>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <AppLink
-            href="/mix-advisor"
-            className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 text-center active:scale-[0.98]"
-          >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-700 dark:text-purple-300">
-              <FlaskConical className="h-5 w-5" />
-            </span>
-            <span className="text-xs font-bold text-[var(--av-text-primary)]">दवा घोल जांच</span>
-            <span className="text-[10px] text-[var(--av-text-muted)]">घोल सुरक्षा चेक</span>
-          </AppLink>
+      {safeAlerts[0] ? (
+        <AppLink href={safeAlerts[0].actionHref ?? "/alerts"} className="block rounded-2xl border border-[#E5E7EB] bg-white px-4 py-3">
+          <p className="text-sm font-bold text-[#14532D]">{safeAlerts[0].title}</p>
+          <p className="mt-0.5 text-sm text-[#1F2937]">{safeAlerts[0].body}</p>
+        </AppLink>
+      ) : null}
 
-          <AppLink
-            href="/spray-rotation"
-            className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 text-center active:scale-[0.98]"
-          >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-700 dark:text-blue-300">
-              <RefreshCw className="h-5 w-5" />
-            </span>
-            <span className="text-xs font-bold text-[var(--av-text-primary)]">स्प्रे चक्र</span>
-            <span className="text-[10px] text-[var(--av-text-muted)]">दवा बदलें व डायरी</span>
-          </AppLink>
-
+      <div className="fixed inset-x-0 bottom-[7.25rem] z-40 px-3 lg:bottom-4">
+        <div className="mx-auto grid max-w-lg grid-cols-2 gap-2">
           <AppLink
             href="/ai-doctor"
-            className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 text-center active:scale-[0.98]"
+            className="flex min-h-[52px] items-center justify-center gap-1.5 rounded-2xl bg-[#14532D] px-2 text-center text-sm font-bold text-white"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-700 dark:text-rose-300">
-              <Stethoscope className="h-5 w-5" />
-            </span>
-            <span className="text-xs font-bold text-[var(--av-text-primary)]">बीमारी जांचें</span>
-            <span className="text-[10px] text-[var(--av-text-muted)]">फोटो से पहचान</span>
+            <Camera className="h-4 w-4 shrink-0" />
+            फोटो से पहचानें
           </AppLink>
-
           <AppLink
-            href="/weather"
-            className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-3 text-center active:scale-[0.98]"
+            href="/ask-query?voice=1"
+            className="flex min-h-[52px] items-center justify-center gap-1.5 rounded-2xl border border-[#14532D] bg-white px-2 text-center text-sm font-bold text-[#14532D]"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-700 dark:text-sky-300">
-              <Droplets className="h-5 w-5" />
-            </span>
-            <span className="text-xs font-bold text-[var(--av-text-primary)]">मौसम व स्प्रे</span>
-            <span className="text-[10px] text-[var(--av-text-muted)]">छिड़काव अनुकूलता</span>
+            <Mic className="h-4 w-4 shrink-0" />
+            बोलकर पूछें
           </AppLink>
         </div>
       </div>
-
-      {/* Critical Alerts */}
-      {alerts.length > 0 && (
-        <DarkCard className="mt-2 border-amber-500/20">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-bold text-[var(--av-text-primary)]">खेत के सक्रिय अलर्ट</h3>
-            <Badge variant="warning">{alerts.length} अलर्ट</Badge>
-          </div>
-          <ul className="mt-3 space-y-2">
-            {alerts.slice(0, 3).map((a) => (
-              <li key={a.id} className="rounded-xl border border-amber-500/25 bg-amber-500/8 p-2.5">
-                <AppLink href={a.actionHref ?? "/alerts"} className="block">
-                  <p className="flex items-center gap-1.5 text-xs font-bold text-[var(--av-text-primary)]">
-                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
-                    {a.title}
-                  </p>
-                  <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">{a.body}</p>
-                </AppLink>
-              </li>
-            ))}
-          </ul>
-        </DarkCard>
-      )}
-
-      {/* Expert CTA banner */}
-      <ShellCtaBanner
-        title="कोई विशेष समस्या या रोग दिख रहा है?"
-        description="कृषि विशेषज्ञ से पूछें — 15 मिनट में समाधान पाएं।"
-        buttonLabel="विशेषज्ञ से पूछें"
-        href="/ask-query"
-      />
     </div>
   );
 }
@@ -314,18 +299,10 @@ export default function FieldAdvisorPage() {
   return (
     <AppShell
       className="!bg-transparent"
-      title="खेत सलाह (आज और इस हफ्ते का काम)"
-      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: "खेत सलाह" }]}
+      title="फसल सलाह"
+      breadcrumbs={[{ label: t("navHome"), href: "/" }, { label: "फसल सलाह" }]}
     >
-      <Suspense
-        fallback={
-          <div className="flex flex-col items-center gap-3 p-8 text-center text-sm text-[var(--av-text-muted)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/logo-mark.png" alt="" className="h-12 w-12 object-contain" />
-            लोड हो रहा है…
-          </div>
-        }
-      >
+      <Suspense fallback={<p className="px-1 py-6 text-sm font-semibold text-[#14532D]">सलाह खुल रही है…</p>}>
         <FieldAdvisorContent />
       </Suspense>
     </AppShell>

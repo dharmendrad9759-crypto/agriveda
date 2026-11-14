@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Filter, TrendingUp } from "lucide-react";
 import AppShell, { ShellCtaBanner } from "@/components/shell/AppShell";
 import DarkCard from "@/components/shell/DarkCard";
@@ -30,20 +31,25 @@ export default function MarketTrendsPage() {
   const { t } = useLocale();
   const { showToast } = useToast();
   const { profile } = useFarmerProfile();
+  const searchParams = useSearchParams();
+  const stateFromUrl = searchParams.get("state")?.trim() || "";
+  const cropFromUrl = searchParams.get("crop")?.trim() || "";
   const { data, loading, refresh } = useMandiPrices({
-    state: profile.state.trim() || "Madhya Pradesh",
-    district: profile.district.trim() || undefined,
+    state: stateFromUrl || profile.state.trim() || "Haryana",
+    district: stateFromUrl ? undefined : profile.district.trim() || undefined,
   });
 
   const rows = data?.rows ?? [];
   const crops = useMemo(() => uniqueCrops(rows), [rows]);
   const markets = useMemo(() => ["All Markets", ...uniqueMarkets(rows)], [rows]);
 
-  const [commodity, setCommodity] = useState("Paddy");
+  const [commodity, setCommodity] = useState(cropFromUrl || "Wheat");
   const [market, setMarket] = useState("All Markets");
   const [range, setRange] = useState("7d");
 
-  const activeCrop = crops.includes(commodity) ? commodity : crops[0] ?? "Paddy";
+  const activeCrop = crops.includes(commodity)
+    ? commodity
+    : crops.find((c) => c.toLowerCase() === "wheat") ?? crops[0] ?? "Wheat";
   const filtered = useMemo(
     () => filterMandiRows(rows, activeCrop, market),
     [rows, activeCrop, market]
@@ -59,13 +65,13 @@ export default function MarketTrendsPage() {
 
   const history = useMemo(
     () =>
-      historicalSeriesForCrop(
-        profile.state.trim() || "Madhya Pradesh",
-        profile.district.trim() || undefined,
+        historicalSeriesForCrop(
+        stateFromUrl || profile.state.trim() || "Haryana",
+        stateFromUrl ? undefined : profile.district.trim() || undefined,
         activeCrop,
         range
       ),
-    [profile.state, profile.district, activeCrop, range]
+    [stateFromUrl, profile.state, profile.district, activeCrop, range]
   );
 
   const chartData = chartSeriesForRange(history, summary?.trend ?? [0], range);
@@ -92,26 +98,26 @@ export default function MarketTrendsPage() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
           icon={BarChart3}
-          label="Tracked Commodities"
-          value={`${stats.tracked} Crops`}
-          action={{ label: "View Mandi", href: "/mandi" }}
+          label="ट्रैक फसलें"
+          value={`${stats.tracked} फसल`}
+          action={{ label: "मंडी खोलें", href: "/mandi" }}
         />
         <StatCard
           icon={TrendingUp}
-          label="Market Trend"
-          value={stats.trend}
+          label="बाज़ार रुझान"
+          value={stats.trend === "Bullish" ? "तेजी" : stats.trend === "Bearish" ? "मंदी" : "मिश्रित"}
           sub="लाइव मंडी डेटा"
-          action={{ label: "View Details", href: "/mandi" }}
+          action={{ label: "मंडी देखें", href: "/mandi" }}
         />
         <StatCard
           icon={Activity}
-          label="Avg. Price Change"
+          label="औसत बदलाव"
           value={stats.avgChange !== 0 ? `${stats.avgChange > 0 ? "+" : ""}${stats.avgChange}%` : "—"}
-          sub="Across listed commodities"
+          sub="सूची की फसलों पर"
         />
         <StatCard
           icon={RefreshCw}
-          label="Last Updated"
+          label="आखिरी अपडेट"
           value={data?.lastUpdated?.split(",")[0] ?? "—"}
           sub={data?.lastUpdated?.split(",")[1]?.trim() ?? ""}
         />
@@ -286,12 +292,11 @@ export default function MarketTrendsPage() {
             ))}
           </ul>
         </DarkCard>
+        {history.length >= 2 ? (
         <DarkCard hover delay={3}>
-          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">Price Forecast — {activeCrop}</h3>
+          <h3 className="text-sm font-bold text-[var(--av-text-primary)]">आगे का भाव — {activeCrop}</h3>
           <p className={`mt-1 ${AV.micro}`}>
-            {history.length >= 2
-              ? "Based on saved mandi snapshots in your region"
-              : "Visit mandi page daily — trend builds as snapshots save"}
+            आपके इलाके के सहेजे भाव से
           </p>
           <div className="mt-3 flex h-24 items-end justify-between gap-1">
             {chartData.map((v, i) => (
@@ -309,6 +314,7 @@ export default function MarketTrendsPage() {
             ))}
           </div>
         </DarkCard>
+        ) : null}
       </div>
 
       <ShellCtaBanner

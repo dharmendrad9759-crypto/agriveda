@@ -131,7 +131,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
 
   return (
     <div className="space-y-3">
-      <section className="overflow-hidden rounded-[1.35rem] border border-[rgba(168,132,62,0.28)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]">
+      <section className="overflow-hidden rounded-[1.35rem] border border-[#d5eadc] bg-[#f4fbf7] dark:border-white/10 dark:bg-[var(--av-surface)]">
         <div className="flex items-center gap-3 px-3.5 py-3">
           <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl">
             <Image src={cropImg} alt="" fill className="object-cover" sizes="56px" />
@@ -154,7 +154,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
               "flex items-center justify-between gap-3 border-t px-3.5 py-2.5 text-[13px] font-medium",
               rainAlert?.postpone
                 ? "border-[#7a4510]/20 bg-[#7a4510] text-[#fff4df]"
-                : "border-[rgba(168,132,62,0.18)] text-[var(--av-text-secondary)]"
+                : "border-[#d5eadc] text-[var(--av-text-secondary)]"
             )}
           >
             <span className="min-w-0">{weatherText}</span>
@@ -163,7 +163,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
         ) : null}
 
         {principle ? (
-          <p className="border-t border-[rgba(168,132,62,0.18)] px-3.5 py-2.5 text-[13px] font-medium leading-snug text-[var(--av-text-primary)]">
+          <p className="border-t border-[#d5eadc] px-3.5 py-2.5 text-[13px] font-medium leading-snug text-[var(--av-text-primary)]">
             {principle}
           </p>
         ) : null}
@@ -177,7 +177,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
 
       {showAwd ? <AwdIrrigationCard hi={hi} /> : null}
 
-      <div className="overflow-hidden rounded-[1.35rem] border border-[rgba(168,132,62,0.28)] bg-[#fbf8f1] dark:border-white/10 dark:bg-[var(--av-surface)]">
+      <div className="overflow-hidden rounded-[1.35rem] border border-[#d5eadc] bg-[#f4fbf7] dark:border-white/10 dark:bg-[var(--av-surface)]">
         {guide.stages.map((stage, i) => {
           const isOpen = openStageIdx === i;
           const titleLabel = hi ? farmerIrrigationHi(stage.titleHi) : stage.titleEn;
@@ -198,7 +198,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
           return (
             <div
               key={`${stage.titleHi}-${i}`}
-              className={cn(i > 0 && "border-t border-[rgba(168,132,62,0.18)]")}
+              className={cn(i > 0 && "border-t border-[#d5eadc]")}
             >
               <button
                 type="button"
@@ -250,7 +250,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
       </div>
 
       {waterPriority ? (
-        <details className="rounded-[1.35rem] border border-[rgba(168,132,62,0.28)] bg-[#fbf8f1] px-3.5 py-3 dark:border-white/10 dark:bg-[var(--av-surface)]">
+        <details className="rounded-[1.35rem] border border-[#d5eadc] bg-[#f4fbf7] px-3.5 py-3 dark:border-white/10 dark:bg-[var(--av-surface)]">
           <summary className="cursor-pointer text-[15px] font-semibold text-[var(--av-text-primary)]">
             {hi ? "पानी कम हो तो" : "If water is short"}
           </summary>
@@ -266,7 +266,7 @@ export default function CropIrrigationSection({ crop }: CropIrrigationSectionPro
       ) : null}
 
       {guide.experiences && guide.experiences.length > 0 ? (
-        <details className="rounded-[1.35rem] border border-[rgba(168,132,62,0.28)] bg-[#fbf8f1] px-3.5 py-3 dark:border-white/10 dark:bg-[var(--av-surface)]">
+        <details className="rounded-[1.35rem] border border-[#d5eadc] bg-[#f4fbf7] px-3.5 py-3 dark:border-white/10 dark:bg-[var(--av-surface)]">
           <summary className="cursor-pointer text-[15px] font-semibold text-[var(--av-text-primary)]">
             {hi ? "खेत में ध्यान" : "In the field"}
           </summary>

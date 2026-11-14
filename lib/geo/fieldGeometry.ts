@@ -198,7 +198,7 @@ export function validateFieldPolygon(coords: LatLng[]): { valid: boolean; error?
   if (isPolygonSelfIntersecting(coords)) {
     return {
       valid: false,
-      error: "खेत की सीमा रेखाएं आपस में कट (Self-intersect) रही हैं। कृपया सीधी सीमा बनाएं।",
+        error: "कोने गलत क्रम में दब गए, इसलिए रेखा अपने आप को काट रही है। आखिरी कोना खिसकाकर सीधी मेड़ बनाएँ।",
     };
   }
 

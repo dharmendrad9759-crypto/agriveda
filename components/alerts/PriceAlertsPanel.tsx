@@ -22,13 +22,13 @@ export default function PriceAlertsPanel({ rows = [], compact = false, className
   const handleAddAlert = () => {
     const target = parseInt(newTarget, 10);
     if (!newCrop.trim() || !Number.isFinite(target) || target <= 0) {
-      showToast("Crop name aur valid target price bharein", "error");
+      showToast("फसल और सही लक्ष्य भाव भरें", "error");
       return;
     }
     addAlert({ crop: newCrop.trim(), target });
     setNewCrop("");
     setNewTarget("");
-    showToast("Price alert created ✓");
+    showToast("भाव अलर्ट जुड़ गया ✓");
   };
 
   return (
@@ -44,24 +44,33 @@ export default function PriceAlertsPanel({ rows = [], compact = false, className
         <input
           value={newCrop}
           onChange={(e) => setNewCrop(e.target.value)}
-          placeholder="Crop (Paddy)"
-          className="av-input min-w-[120px] flex-1 text-xs"
+          placeholder="फसल चुनें"
+          list="price-alert-crops"
+          className="av-input min-w-[120px] flex-1 text-base"
         />
+        <datalist id="price-alert-crops">
+          {(rows.length
+            ? [...new Set(rows.map((r) => r.cropHi || r.crop))]
+            : ["गेहूँ", "धान", "सरसों", "चना", "आलू", "टमाटर"]
+          ).map((name) => (
+            <option key={name} value={name} />
+          ))}
+        </datalist>
         <input
           value={newTarget}
           onChange={(e) => setNewTarget(e.target.value)}
-          placeholder="₹ Target"
+          placeholder="लक्ष्य भाव (₹ प्रति क्विंटल)"
           inputMode="numeric"
-          className="av-input w-24 text-xs"
+          className="av-input w-28 text-base"
         />
         <button type="button" onClick={handleAddAlert} className={AV.btnPrimarySm}>
-          Add
+          अलर्ट जोड़ें
         </button>
       </div>
       <ul className="mt-3 space-y-2">
         {settings.alerts.length === 0 ? (
           <li className={`rounded-lg border border-[var(--av-border)] bg-[var(--av-surface-inset)] px-3 py-3 text-center ${AV.micro}`}>
-            No price alerts yet
+            अभी कोई भाव अलर्ट सेट नहीं है
           </li>
         ) : (
           settings.alerts.map((a) => {
@@ -77,11 +86,11 @@ export default function PriceAlertsPanel({ rows = [], compact = false, className
                   <span className="text-[var(--av-text-secondary)]">
                     {a.crop} {a.direction === "above" ? "≥" : "≤"} ₹{a.target.toLocaleString("en-IN")}
                     {match && (
-                      <span className="text-[var(--av-text-muted)]"> · now ₹{match.modal.toLocaleString("en-IN")}</span>
+                      <span className="text-[var(--av-text-muted)]"> · अभी ₹{match.modal.toLocaleString("en-IN")}</span>
                     )}
                   </span>
                   {hit && (
-                    <span className="ml-1 text-[10px] font-bold text-emerald-400">Target hit!</span>
+                    <span className="ml-1 text-[10px] font-bold text-emerald-400">भाव पहुँच गया</span>
                   )}
                 </button>
                 <span

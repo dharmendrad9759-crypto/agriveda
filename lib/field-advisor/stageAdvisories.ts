@@ -146,18 +146,60 @@ export const CROP_STAGE_ADVISORIES: Record<string, CropStageAdvisory[]> = {
   ],
   wheat: [
     {
-      stageId: "crown_root",
-      stageNameHi: "जड़ विकास (CRI अवस्था, 18-25 दिन)",
-      stageNameEn: "Crown Root Initiation",
+      stageId: "germination",
+      stageNameHi: "अंकुरण व जमाव (0-10 दिन)",
+      stageNameEn: "Germination",
       minDas: 0,
+      maxDas: 10,
+      todayTaskHi: "अभी पानी न दें। जमाव देखें। पहली सिंचाई 20-22 दिन पर होगी।",
+      urgency: "normal",
+      checklist: [
+        {
+          category: "सिंचाई",
+          icon: "💧",
+          action: "अभी सिंचाई न करें। बुवाई के तुरंत बाद पानी देने से मिट्टी पर पपड़ी जमती है।",
+        },
+        {
+          category: "निराई / देखभाल",
+          icon: "🌿",
+          action: "जहाँ बीज न जमा हो, वहाँ खाली जगह में बीज डालें। पक्षी और चूहे से अंकुर बचाएँ।",
+        },
+      ],
+    },
+    {
+      stageId: "establishing",
+      stageNameHi: "पौधा जम रहा है (11-17 दिन)",
+      stageNameEn: "Seedling establishing",
+      minDas: 11,
+      maxDas: 17,
+      todayTaskHi: "पौधा जम चुका है। यह सामान्य है। पहली सिंचाई अभी नहीं — 20-22 दिन पर दें।",
+      urgency: "normal",
+      checklist: [
+        {
+          category: "सिंचाई",
+          icon: "💧",
+          action: "अभी पानी न लगाएँ। पहली हल्की सिंचाई 20-22 दिन पर, जब नई जड़ें फूटें।",
+        },
+        {
+          category: "निराई / देखभाल",
+          icon: "🌿",
+          action: "कतारें दिख रही हों तो खरपतवार पर नज़र रखें। दवा अभी न डालें।",
+        },
+      ],
+    },
+    {
+      stageId: "crown_root",
+      stageNameHi: "जड़ विकास (18-25 दिन)",
+      stageNameEn: "Crown Root Initiation",
+      minDas: 18,
       maxDas: 25,
-      todayTaskHi: "गेहूं की सबसे महत्वपूर्ण पहली सिंचाई (CRI स्टेज पर 21 दिन) करें। सिंचाई के 2 दिन बाद यूरिया की पहली खुराक दें।",
+      todayTaskHi: "पहली सिंचाई 20-22 दिन पर दें। उसके 2 दिन बाद यूरिया की पहली खुराक दें।",
       urgency: "high",
       checklist: [
         {
           category: "सिंचाई",
           icon: "💧",
-          action: "बुवाई के 20-22 दिन बाद पहली हल्की सिंचाई अवश्य करें। इसे टालने पर कल्ले कम फूटते हैं।",
+          action: "बुवाई के 20-22 दिन बाद पहली हल्की सिंचाई करें। 20 दिन से पहले पानी न दें।",
         },
         {
           category: "खाद",
@@ -167,7 +209,7 @@ export const CROP_STAGE_ADVISORIES: Record<string, CropStageAdvisory[]> = {
         {
           category: "निराई / देखभाल",
           icon: "🌿",
-          action: "गुल्ली डंडा (मंडूसी) के लिए पहली सिंचाई के बाद क्लोडिनाफॉप 15% WP @ 160 ग्राम/एकड़ का छिड़काव करें।",
+          action: "गुल्ली डंडा (मंडूसी) के लिए पहली सिंचाई के बाद क्लोडिनाफॉप 15% WP @ 160 ग्राम/एकड़ को 150 लीटर पानी में घोलकर छिड़कें।",
         },
         {
           category: "सुरक्षा",

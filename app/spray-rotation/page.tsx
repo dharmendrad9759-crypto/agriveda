@@ -111,7 +111,7 @@ export default function SprayRotationPage() {
         </p>
       )}
 
-      <div className="mt-3 space-y-2">
+      <div className="sticky top-14 z-20 mt-3 space-y-2 bg-[var(--av-surface)] py-2">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide py-0.5">
           <button
             type="button"

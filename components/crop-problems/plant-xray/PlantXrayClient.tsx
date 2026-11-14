@@ -87,8 +87,8 @@ export default function PlantXrayClient({ cropSlug }: { cropSlug: string }) {
         </span>
       }
     >
-      <div className="relative overflow-hidden rounded-[32px] bg-[#07110e] shadow-[0_40px_90px_-42px_rgba(0,0,0,0.85)] ring-1 ring-white/10">
-        <div className="relative aspect-[3/4] w-full">
+      <div className="sticky top-[4.75rem] z-20 overflow-hidden rounded-[32px] bg-[#07110e] shadow-[0_40px_90px_-42px_rgba(0,0,0,0.85)] ring-1 ring-white/10">
+        <div className="relative h-[38vh] min-h-[220px] max-h-[360px] w-full">
           <CropPlantPlate
             cropId={crop.slug}
             selected={part}
@@ -239,18 +239,6 @@ export default function PlantXrayClient({ cropSlug }: { cropSlug: string }) {
               संभावित कारण देखें
             </AppLink>
             )}
-            <button
-              type="button"
-              onClick={() => {
-                setPart(null);
-                setSymptoms([]);
-                setCheck(null);
-                router.replace(`/crop-problems/${crop.slug}/xray`, { scroll: false });
-              }}
-              className="mt-1 flex min-h-11 w-full items-center justify-center text-[12px] font-bold text-[#14382c]/70"
-            >
-              अंग बदलें
-            </button>
           </div>
         ) : (
           <p className="px-4 pb-4 text-[13px] font-semibold text-[#14382c]/70">

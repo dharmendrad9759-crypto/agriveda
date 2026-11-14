@@ -11,6 +11,7 @@ import {
   Play,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { wheatFarmerWindow } from "@/lib/farm/wheatZadoksStages";
 import WheatStageVideoPlayer, {
   STAGE_VIDEO_MAP,
   type WheatStageVideoPlayerProps,
@@ -45,6 +46,10 @@ export default function WheatStageVisualizer(props: WheatStageVideoPlayerProps) 
 
   const meta = STAGE_VIDEO_MAP[selectedStage.stageId] || STAGE_VIDEO_MAP.germination;
   const isCurrent = selectedStage.stageId === currentStage.stageId;
+  const dayWindow = isCurrent ? wheatFarmerWindow(das) : null;
+  const titleHi = dayWindow?.titleHi ?? selectedStage.stageNameHi;
+  const dayMin = dayWindow?.min ?? selectedStage.typicalDaysRange[0];
+  const dayMax = dayWindow?.max ?? selectedStage.typicalDaysRange[1];
   const progress = Math.min(100, Math.max(0, Math.round((das / Math.max(1, totalDays)) * 100)));
   const work = selectedStage.importantActivitiesHi?.[0];
 
@@ -58,10 +63,10 @@ export default function WheatStageVisualizer(props: WheatStageVideoPlayerProps) 
       <div className="flex items-start justify-between gap-3 px-4 pt-4">
         <div className="min-w-0">
           <h2 className="text-[17px] font-semibold text-[var(--av-text-primary)]">
-            {selectedStage.stageNameHi}
+            {titleHi}
           </h2>
           <p className="mt-0.5 text-[11px] text-[var(--av-text-muted)]">
-            बुवाई के {selectedStage.typicalDaysRange[0]}–{selectedStage.typicalDaysRange[1]} दिन
+            बुवाई के {dayMin}–{dayMax} दिन
             {isCurrent ? " · अभी आपकी फसल यहीं है" : ""}
           </p>
         </div>

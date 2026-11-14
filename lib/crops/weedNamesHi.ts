@@ -2,14 +2,13 @@
  * Weed display — field/market famous name on top (often English), Hindi below.
  */
 
-import { farmerThreatDisplayName } from "@/lib/crops/farmerThreatTitle";
-
 const WEED_NAME_HI: Record<string, string> = {
   "barnyard grass": "सांवा",
   "echinochloa crus-galli": "सांवा",
   "echinochloa colona": "सांवा",
   "wild oat": "जंगली जई",
   "avena fatua": "जंगली जई",
+  "avena ludoviciana": "जंगली जई",
   "phalaris minor": "गुल्ली डंडा",
   phalaris: "गुल्ली डंडा",
   "digitaria sanguinalis": "काकरा घास",
@@ -22,8 +21,11 @@ const WEED_NAME_HI: Record<string, string> = {
   cyperus: "मोठा",
   "cyperus rotundus": "मोठा",
   "cyperus esculentus": "मोठा",
-  "monochoria (broadleaf)": "कुंदरू",
-  "monochoria vaginalis": "कुंदरू",
+  "monochoria (broadleaf)": "मोनोकोरिया",
+  "monochoria vaginalis": "मोनोकोरिया",
+  "anagallis arvensis": "कृष्णनील",
+  "convolvulus arvensis": "हिरनखुरी",
+  "rumex dentatus": "जंगली पालक",
   chenopodium: "बथुआ",
   bathua: "बथुआ",
   "chenopodium album": "बथुआ",
@@ -58,28 +60,18 @@ export function getWeedNameHi(name: string, scientificName?: string): string | u
   return undefined;
 }
 
-/** Famous field name first; Hindi as secondary when available. */
+/** Local Hindi on top. Second line is the scientific name only. */
 export function weedDisplayName(
   name: string,
   scientificName: string | undefined,
   _locale: string
 ): { primary: string; secondary?: string } {
-  const soft = farmerThreatDisplayName(name, scientificName);
-  if (soft.primary && soft.primary !== name.trim()) {
-    return { primary: soft.primary, secondary: soft.english };
-  }
-  // Prefer English common name on top when name is "हिंदी (English)"
-  const m = name.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
-  if (m?.[1] && m[2] && /^[A-Za-z]/.test(m[2].trim())) {
-    const hi = getWeedNameHi(m[2], scientificName) || m[1].trim();
-    return { primary: m[2].trim(), secondary: hi };
-  }
-  const hi = getWeedNameHi(name, scientificName);
-  if (/^[A-Za-z]/.test(name.trim())) {
-    return { primary: name.trim(), secondary: hi || scientificName };
-  }
-  return {
-    primary: hi || name,
-    secondary: scientificName || undefined,
-  };
+  const fromMap = getWeedNameHi(name, scientificName);
+  const stripped = name.replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s+/g, " ").trim();
+  const primary = fromMap || (/[अ-ह]/.test(stripped) ? stripped : stripped);
+  const secondary =
+    scientificName && scientificName.trim().toLowerCase() !== primary.trim().toLowerCase()
+      ? scientificName
+      : undefined;
+  return { primary, secondary };
 }

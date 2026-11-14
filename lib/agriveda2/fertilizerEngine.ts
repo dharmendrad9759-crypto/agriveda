@@ -177,7 +177,8 @@ function scaleApplyLine(
  */
 export function scaleScheduleLineForAcres(line: string, acres: number): string {
   if (acres === 1) return line;
-  return line.replace(
+  const normalized = line.replace(/[–—]/g, "-");
+  return normalized.replace(
     /(\d+(?:\.\d+)?)(?:-(\d+(?:\.\d+)?))?\s*(किग्रा|kg|ग्राम|g|मि\.?ली|ml|टन)(?!\s*\/|[a-zA-Z])/gi,
     (match, n1Str: string, n2Str: string | undefined, unitRaw: string) => {
       const u = unitRaw.toLowerCase();
@@ -213,14 +214,20 @@ export function scaleScheduleLineForAcres(line: string, acres: number): string {
  * Scales spray water volume in `method` (e.g. `फोलियर स्प्रे (150L पानी)` → `फोलियर स्प्रे (300L पानी)` for 2 acres)
  * per Golden Rule 3 ("स्प्रे की मात्रा को प्रति एकड़ पानी के हिसाब से गुणा करें").
  */
+function sprayWaterLabel(liters: number): string {
+  const tanks = Math.max(1, Math.round(liters / 15));
+  return `${liters} लीटर पानी (लगभग ${tanks} टंकी · 15 लीटर)`;
+}
+
 export function scaleMethodForAcres(method: string | undefined, acres: number): string | undefined {
-  if (!method || acres === 1) return method;
+  if (!method) return method;
   return method.replace(
     /(\d+)(?:-(\d+))?\s*L\s*पानी/gi,
     (_, w1: string, w2: string | undefined) => {
-      const s1 = Math.round(parseFloat(w1) * acres);
-      const s2 = w2 ? Math.round(parseFloat(w2) * acres) : undefined;
-      return s2 ? `${s1}-${s2}L पानी` : `${s1}L पानी`;
+      const s1 = Math.round(parseFloat(w1) * (acres === 1 ? 1 : acres));
+      const s2 = w2 ? Math.round(parseFloat(w2) * (acres === 1 ? 1 : acres)) : undefined;
+      if (s2) return `${sprayWaterLabel(s1)} से ${sprayWaterLabel(s2)}`;
+      return sprayWaterLabel(s1);
     }
   );
 }

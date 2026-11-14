@@ -66,7 +66,7 @@ describe("Field Geometry & Area Calculation", () => {
     expect(isPolygonSelfIntersecting(figure8)).toBe(true);
     const validation = validateFieldPolygon(figure8);
     expect(validation.valid).toBe(false);
-    expect(validation.error).toContain("आपस में कट");
+    expect(validation.error).toContain("काट रही");
   });
 
   it("converts to and from GeoJSON Polygon format correctly", () => {

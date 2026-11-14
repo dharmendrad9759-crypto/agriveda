@@ -54,7 +54,13 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    document.documentElement.lang = locale === "en" ? "en" : "hi";
+    const hindi = locale !== "en";
+    document.documentElement.lang = hindi ? "hi" : "en";
+    document.documentElement.classList.toggle("notranslate", hindi);
+    document.documentElement.setAttribute("translate", hindi ? "no" : "yes");
+    if (hindi) {
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+    }
   }, [locale, hydrated]);
 
   const setLocale = useCallback((next: AppLocale | string) => {

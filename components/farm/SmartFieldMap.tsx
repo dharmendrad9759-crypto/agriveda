@@ -29,6 +29,8 @@ import {
   RotateCcw,
   AlertTriangle,
   ZoomIn,
+  ZoomOut,
+  Scan,
   Loader2,
   PlusCircle,
   MapPin,
@@ -161,6 +163,17 @@ function MapController({
   return null;
 }
 
+function MapBinder({ mapRef }: { mapRef: { current: L.Map | null } }) {
+  const map = useMap();
+  useEffect(() => {
+    mapRef.current = map;
+    return () => {
+      mapRef.current = null;
+    };
+  }, [map, mapRef]);
+  return null;
+}
+
 /** One-finger pan must move the map, not the page/sheet behind it. Pinch zoom stays on. */
 function EnableMapPan() {
   const map = useMap();
@@ -176,10 +189,13 @@ function EnableMapPan() {
     map.keyboard.enable();
     L.DomEvent.disableScrollPropagation(el);
 
-    const blockParentScroll = (event: TouchEvent) => {
-      event.stopPropagation();
+    const keepTilesInteractive = () => {
+      el.querySelectorAll<HTMLElement>(".leaflet-tile").forEach((tile) => {
+        tile.style.pointerEvents = "auto";
+      });
     };
-    el.addEventListener("touchmove", blockParentScroll, { passive: true });
+    keepTilesInteractive();
+    map.on("tileload", keepTilesInteractive);
 
     const resize = () => map.invalidateSize({ animate: false });
     const t1 = window.setTimeout(resize, 80);
@@ -188,7 +204,7 @@ function EnableMapPan() {
     window.addEventListener("orientationchange", resize);
 
     return () => {
-      el.removeEventListener("touchmove", blockParentScroll);
+      map.off("tileload", keepTilesInteractive);
       window.removeEventListener("resize", resize);
       window.removeEventListener("orientationchange", resize);
       window.clearTimeout(t1);
@@ -285,6 +301,7 @@ export default function SmartFieldMap({
   const lastRecordedTimeRef = useRef<number>(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
   const onViewCenterRef = useRef(onViewCenter);
   onViewCenterRef.current = onViewCenter;
   const onCoordsChangeRef = useRef(onCoordsChange);
@@ -669,17 +686,14 @@ export default function SmartFieldMap({
       }`}
       style={{ height: isFullscreen ? "100vh" : height }}
     >
-      {/* Top Floating Control Bar: Search & Modes — below Android status / network icons */}
+      {/* Search and modes sit above the map so a finger drag always moves the satellite. */}
       <div
-        className="absolute left-3 right-3 z-[1000] flex flex-wrap items-start justify-between gap-2 pointer-events-none"
-        style={{
-          top: isFullscreen
-            ? "max(12px, calc(env(safe-area-inset-top, 0px) + 10px))"
-            : "12px",
-        }}
+        className={`relative z-[1000] flex shrink-0 flex-col gap-1.5 border-b border-gray-200 bg-white p-2 ${
+          isFullscreen ? "pt-[max(0.5rem,env(safe-area-inset-top))]" : ""
+        }`}
       >
         {/* Search Bar */}
-        <div className="pointer-events-auto relative w-full sm:w-80 max-w-full">
+        <div className="relative w-full">
         <form
           onSubmit={handleSearch}
           className="flex items-center bg-white rounded-xl shadow-lg border border-gray-200 px-3 py-2 text-xs"
@@ -727,7 +741,22 @@ export default function SmartFieldMap({
         </div>
 
         {/* Mode Switcher Buttons */}
-        <div className="pointer-events-auto flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1 rounded-xl shadow-lg border border-gray-200 text-xs font-semibold">
+        <div className="flex items-center gap-1.5 overflow-x-auto rounded-xl border border-gray-200 bg-gray-50 p-1 text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => {
+              if (walkingState === "idle") startGpsWalking();
+              else setMode("walk");
+            }}
+            className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+              mode === "walk"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "bg-blue-50 text-blue-800 hover:bg-blue-100"
+            }`}
+          >
+            <Footprints className="w-3.5 h-3.5" />
+            मेड़ पर चलकर नापें
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -741,22 +770,7 @@ export default function SmartFieldMap({
             }`}
           >
             <PlusCircle className="w-3.5 h-3.5" />
-            सीमा बनाएं
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              if (walkingState === "idle") startGpsWalking();
-              else setMode("walk");
-            }}
-            className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
-              mode === "walk"
-                ? "bg-blue-600 text-white shadow-sm"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-            }`}
-          >
-            <Footprints className="w-3.5 h-3.5" />
-            चलकर नापें
+            नक्शे पर कोने
           </button>
           {onSaveLocationPin && (
             <button
@@ -782,15 +796,11 @@ export default function SmartFieldMap({
         </div>
       </div>
 
+      <div className="relative min-h-0 flex-1">
       {/* Search notification pill */}
       {searchMessage && (
         <div
-          className="absolute left-3 right-3 sm:left-4 sm:w-auto z-[1000] pointer-events-none"
-          style={{
-            top: isFullscreen
-              ? "max(4.75rem, calc(env(safe-area-inset-top, 0px) + 4.25rem))"
-              : "4.75rem",
-          }}
+          className="absolute left-3 top-3 z-[1000] pointer-events-none sm:w-auto"
         >
           <div className="bg-emerald-900/90 text-white px-3.5 py-1.5 rounded-xl shadow-lg text-xs font-medium backdrop-blur-sm border border-emerald-500/30">
             {searchMessage}
@@ -800,12 +810,7 @@ export default function SmartFieldMap({
 
       {/* Right Floating Map Toolbar */}
       <div
-        className="absolute right-3 z-[1000] flex flex-col gap-2"
-        style={{
-          top: isFullscreen
-            ? "max(5.5rem, calc(env(safe-area-inset-top, 0px) + 5rem))"
-            : "5.5rem",
-        }}
+        className="absolute right-3 top-3 z-[1000] flex flex-col gap-2"
       >
         {/* Layer Selector */}
         <div className="relative group">
@@ -846,15 +851,36 @@ export default function SmartFieldMap({
           )}
         </button>
 
-        {/* Zoom to Field */}
+        <div className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white/95 shadow-lg">
+          <button
+            type="button"
+            onClick={() => mapRef.current?.zoomIn()}
+            title="बड़ा करें"
+            aria-label="नक्शा बड़ा करें"
+            className="flex h-9 w-9 items-center justify-center text-gray-700 transition hover:bg-emerald-50 active:scale-95"
+          >
+            <ZoomIn className="h-4 w-4 text-emerald-700" />
+          </button>
+          <button
+            type="button"
+            onClick={() => mapRef.current?.zoomOut()}
+            title="छोटा करें"
+            aria-label="नक्शा छोटा करें"
+            className="flex h-9 w-9 items-center justify-center border-t border-gray-200 text-gray-700 transition hover:bg-emerald-50 active:scale-95"
+          >
+            <ZoomOut className="h-4 w-4 text-emerald-700" />
+          </button>
+        </div>
+
         {coords.length >= 2 && (
           <button
             type="button"
             onClick={() => setTriggerFitBounds((v) => v + 1)}
-            title="पूरा खेत देखें (Zoom to Field)"
-            className="w-9 h-9 bg-white/95 hover:bg-white text-gray-700 rounded-xl shadow-lg border border-gray-200 flex items-center justify-center transition active:scale-95"
+            title="पूरा खेत देखें"
+            aria-label="पूरा खेत देखें"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white/95 text-gray-700 shadow-lg transition hover:bg-white active:scale-95"
           >
-            <ZoomIn className="w-4 h-4 text-emerald-700" />
+            <Scan className="h-4 w-4 text-emerald-700" />
           </button>
         )}
 
@@ -1008,13 +1034,15 @@ export default function SmartFieldMap({
       <MapContainer
         center={defaultCenter}
         zoom={defaultZoom}
+        minZoom={3}
+        maxZoom={20}
         zoomControl={false}
         attributionControl={false}
         dragging
         touchZoom
         scrollWheelZoom
         doubleClickZoom
-        className="h-full w-full z-0"
+        className="absolute inset-0 z-0 h-full w-full"
       >
         <style>{`
           .leaflet-control-attribution { display: none !important; }
@@ -1026,15 +1054,18 @@ export default function SmartFieldMap({
             -ms-touch-action: none !important;
             overscroll-behavior: none;
             cursor: grab;
+            background: #d7e6dc;
           }
           .leaflet-container:active { cursor: grabbing; }
+          .leaflet-container .leaflet-map-pane,
+          .leaflet-container .leaflet-tile-pane,
           .leaflet-container .leaflet-tile {
-            pointer-events: none;
+            pointer-events: auto !important;
             -webkit-user-drag: none !important;
-            user-drag: none;
           }
         `}</style>
 
+        <MapBinder mapRef={mapRef} />
         <EnableMapPan />
 
         <MapController
@@ -1182,7 +1213,7 @@ export default function SmartFieldMap({
             key={`vertex-${index}`}
             position={[c.lat, c.lng]}
             icon={createVertexIcon(index, index === 0)}
-            draggable={!readOnly && mode === "draw"}
+            draggable={!readOnly}
             autoPanOnFocus={false}
             eventHandlers={{
               click: (e) => {
@@ -1208,6 +1239,7 @@ export default function SmartFieldMap({
           />
         ))}
       </MapContainer>
+      </div>
     </div>
   );
 }

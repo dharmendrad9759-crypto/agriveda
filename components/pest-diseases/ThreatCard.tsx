@@ -27,30 +27,58 @@ export default function ThreatCard({ threat }: ThreatCardProps) {
       : threat.scientificName || "";
 
   if (isWeed) {
-    const weedImg =
-      getWeedCardImage(threat.scientificName) ||
-      threat.image ||
-      "/images/threats/threat-weed.jpg";
+    const local = (threat.nameHi || threat.name)
+      .replace(/\s*[—–].*$/, "")
+      .replace(/\s*\([^)]*\)/g, "")
+      .trim();
+    const blob = `${threat.name} ${threat.nameHi || ""} ${threat.scientificName || ""}`;
+    const kind = /broad|चौड़ी|monochoria/i.test(blob)
+      ? "चौड़ी पत्ती"
+      : /sedge|cyperus|मोथा/i.test(blob)
+        ? "मोथा"
+        : "संकरी पत्ती";
+    const line = [kind, threat.scientificName].filter(Boolean).join(" • ");
+    const weedImg = /monochoria/i.test(blob)
+      ? null
+      : getWeedCardImage(threat.scientificName, threat.nameHi) || threat.image || null;
     return (
       <AppLink
         href={href}
         className="relative flex min-h-[88px] overflow-hidden rounded-2xl border border-lime-500/20 shadow-[var(--av-shadow-sm)] active:scale-[0.99]"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={weedImg}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/25" />
+        {weedImg ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={weedImg}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/25" />
+          </>
+        ) : (
+          <span className="absolute inset-0 bg-[#e7f6ee]" />
+        )}
         <div className="relative z-10 flex flex-1 flex-col justify-end p-3.5">
-          <p className="text-[15px] font-extrabold leading-snug text-white">{primary}</p>
-          {secondary ? (
-            <p className="mt-0.5 line-clamp-1 text-[11px] text-white/75">{secondary}</p>
+          <p className={weedImg ? "text-[15px] font-extrabold leading-snug text-white" : "text-[15px] font-extrabold leading-snug text-[#143028]"}>
+            {local}
+          </p>
+          {line ? (
+            <p className={weedImg ? "mt-0.5 line-clamp-1 text-[11px] text-white/75" : "mt-0.5 line-clamp-1 text-[11px] text-[#3d6b56]"}>
+              {line}
+            </p>
           ) : null}
-          <p className="mt-1 text-[10px] font-semibold text-lime-200">{threat.cropName}</p>
+          <p className={weedImg ? "mt-1 text-[10px] font-semibold text-lime-200" : "mt-1 text-[10px] font-semibold text-[#0f6b45]"}>
+            {threat.cropName}
+          </p>
         </div>
-        <ChevronRight className="relative z-10 m-3 h-5 w-5 shrink-0 self-center text-white/80" />
+        <ChevronRight
+          className={
+            weedImg
+              ? "relative z-10 m-3 h-5 w-5 shrink-0 self-center text-white/80"
+              : "relative z-10 m-3 h-5 w-5 shrink-0 self-center text-[#0f6b45]"
+          }
+        />
       </AppLink>
     );
   }

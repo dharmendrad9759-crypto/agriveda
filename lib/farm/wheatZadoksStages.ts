@@ -391,7 +391,15 @@ export function getWheatStageById(stageId: string): CropStageDefinition | undefi
   return WHEAT_ZADOKS_STAGES.find((s) => s.stageId === stageId);
 }
 
+/** Days 11–17 sit between germination (0–10) and CRI (18–25). Same plant, not a new Zadoks stage. */
+export function wheatFarmerWindow(das: number): { titleHi: string; min: number; max: number } | null {
+  if (das >= 0 && das <= 10) return { titleHi: "अंकुरण व जमाव", min: 0, max: 10 };
+  if (das >= 11 && das <= 17) return { titleHi: "पौधा जम रहा है", min: 11, max: 17 };
+  return null;
+}
+
 export function getWheatStageByDays(das: number): CropStageDefinition {
+  if (das >= 11 && das <= 17) return WHEAT_ZADOKS_STAGES[0];
   for (const stage of WHEAT_ZADOKS_STAGES) {
     if (das >= stage.typicalDaysRange[0] && das <= stage.typicalDaysRange[1]) {
       return stage;

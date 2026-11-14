@@ -126,7 +126,13 @@ export default function BottomNav() {
     pathname.startsWith("/schemes/") ||
     pathname === "/ask-query" ||
     pathname === "/ask" ||
-    pathname === "/expert-chat"
+    pathname === "/expert-chat" ||
+    pathname.startsWith("/services/fertilizer-calculator") ||
+    pathname.startsWith("/mix-advisor") ||
+    pathname.startsWith("/spray-rotation/log") ||
+    pathname.startsWith("/pest-diseases/") ||
+    pathname.startsWith("/crop-problems/") ||
+    pathname.startsWith("/market-trends")
   ) {
     return null;
   }

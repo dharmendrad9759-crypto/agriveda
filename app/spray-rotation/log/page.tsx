@@ -18,6 +18,7 @@ import type { SprayProduct } from "@/types/spray-rotation";
 import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { clearSprayDraft, readSprayDraft } from "@/lib/sprayDraft";
 
 const SPRAY_CROPS = cropCatalog;
 
@@ -36,32 +37,38 @@ function LogSprayForm() {
   const paramMed = searchParams?.get("med");
   const paramDose = searchParams?.get("dose");
   const fromMixAdvisor = searchParams?.get("from") === "mix-advisor";
+  const draft = fromMixAdvisor ? readSprayDraft() : null;
 
   const initialCrop = useMemo(() => {
-    if (!paramCrop) return SPRAY_CROPS[0]?.slug ?? "paddy";
+    const asked = draft?.crop || paramCrop;
+    if (!asked) return SPRAY_CROPS[0]?.slug ?? "paddy";
     const found = SPRAY_CROPS.find(
       (c) =>
-        c.slug.toLowerCase() === paramCrop.toLowerCase() ||
-        (c.nameHi && c.nameHi.toLowerCase() === paramCrop.toLowerCase()) ||
-        c.name.toLowerCase() === paramCrop.toLowerCase()
+        c.slug.toLowerCase() === asked.toLowerCase() ||
+        (c.nameHi && c.nameHi.toLowerCase() === asked.toLowerCase()) ||
+        c.name.toLowerCase() === asked.toLowerCase()
     );
-    return found ? found.slug : paramCrop;
-  }, [paramCrop]);
+    return found ? found.slug : asked;
+  }, [draft?.crop, paramCrop]);
 
   const [cropId, setCropId] = useState(initialCrop);
-  const [fieldId, setFieldId] = useState(fields[0]?.id ?? "");
-  const [productQuery, setProductQuery] = useState(paramMed || "");
+  const [fieldId, setFieldId] = useState("");
+  const [productQuery, setProductQuery] = useState(draft?.med || paramMed || "");
   const [selectedProduct, setSelectedProduct] = useState<SprayProduct | null>(null);
   const [sprayDate, setSprayDate] = useState(new Date().toISOString().slice(0, 10));
-  const [dose, setDose] = useState(paramDose || "");
-  const [growthStage, setGrowthStage] = useState(paramStage || "");
+  const [dose, setDose] = useState(draft?.dose || paramDose || "");
+  const [growthStage, setGrowthStage] = useState(draft?.stage || paramStage || "");
   const [pestId, setPestId] = useState("");
   const [diseaseId, setDiseaseId] = useState("");
   const [showAddField, setShowAddField] = useState(false);
   const [newFieldName, setNewFieldName] = useState("");
 
   const cropFields = fields.filter((f) => f.cropSlug === cropId);
-  const activeFieldId = fieldId || cropFields[0]?.id || fields[0]?.id || "";
+  const activeFieldId = cropFields.some((f) => f.id === fieldId)
+    ? fieldId
+    : (cropFields[0]?.id ?? "");
+  const cropLabel =
+    SPRAY_CROPS.find((c) => c.slug === cropId)?.nameHi || cropId;
 
   const productResults = useMemo(() => {
     const res = searchProducts(productQuery, cropId === "moongfali" ? "moongfali" : cropId);
@@ -73,35 +80,48 @@ function LogSprayForm() {
 
   // Auto-fill parameters if arriving via query params
   useEffect(() => {
-    if (paramCrop) {
+    const askedCrop = draft?.crop || paramCrop;
+    const askedStage = draft?.stage || paramStage;
+    const askedDose = draft?.dose || paramDose;
+    const askedMed = draft?.med || paramMed;
+    if (askedCrop) {
       const found = SPRAY_CROPS.find(
         (c) =>
-          c.slug.toLowerCase() === paramCrop.toLowerCase() ||
-          (c.nameHi && c.nameHi.toLowerCase() === paramCrop.toLowerCase()) ||
-          c.name.toLowerCase() === paramCrop.toLowerCase()
+          c.slug.toLowerCase() === askedCrop.toLowerCase() ||
+          (c.nameHi && c.nameHi.toLowerCase() === askedCrop.toLowerCase()) ||
+          c.name.toLowerCase() === askedCrop.toLowerCase()
       );
       if (found) setCropId(found.slug);
     }
-    if (paramStage) setGrowthStage(paramStage);
-    if (paramDose) setDose(paramDose);
-    if (paramMed) {
-      setProductQuery(paramMed);
-      const matches = searchProducts(paramMed);
+    if (askedStage) setGrowthStage(askedStage);
+    if (askedDose) setDose(askedDose);
+    if (askedMed) {
+      setProductQuery(askedMed);
+      const matches = searchProducts(askedMed);
       if (matches.length > 0) {
         setSelectedProduct(matches[0]);
       }
     }
-  }, [paramCrop, paramStage, paramDose, paramMed]);
+  }, [draft?.crop, draft?.dose, draft?.med, draft?.stage, paramCrop, paramStage, paramDose, paramMed]);
+
+  useEffect(() => {
+    const matching = fields.filter((f) => f.cropSlug === cropId);
+    setFieldId((current) => {
+      if (current && matching.some((f) => f.id === current)) return current;
+      return matching[0]?.id ?? "";
+    });
+  }, [cropId, fields]);
 
   // Try matching pest/disease
   useEffect(() => {
-    if (!paramProblem) return;
-    const norm = paramProblem.toLowerCase();
+    const askedProblem = draft?.problem || paramProblem;
+    if (!askedProblem) return;
+    const norm = askedProblem.toLowerCase();
     const foundPest = pd.pests.find(
       (p) =>
         p.name.toLowerCase().includes(norm) ||
         norm.includes(p.name.toLowerCase()) ||
-        p.id === paramProblem
+        p.id === askedProblem
     );
     if (foundPest) {
       setPestId(foundPest.id);
@@ -112,19 +132,26 @@ function LogSprayForm() {
       (d) =>
         d.name.toLowerCase().includes(norm) ||
         norm.includes(d.name.toLowerCase()) ||
-        d.id === paramProblem
+        d.id === askedProblem
     );
     if (foundDisease) {
       setDiseaseId(foundDisease.id);
       setPestId("");
     }
-  }, [paramProblem, pd]);
+  }, [draft?.problem, paramProblem, pd]);
 
   const handleSave = () => {
-    let field = activeFieldId;
+    const field = activeFieldId;
     if (!field) {
-      const f = addField("खेत 1 (Main Field)", cropId);
-      field = f.id;
+      setShowAddField(true);
+      if (!newFieldName.trim()) setNewFieldName(`${cropLabel} का खेत`);
+      showToast(
+        locale === "hi"
+          ? `${cropLabel} का खेत चुनें या नया जोड़ें`
+          : `Add a ${cropLabel} field first`,
+        "error"
+      );
+      return;
     }
 
     const prod =
@@ -161,6 +188,7 @@ function LogSprayForm() {
         ? prod.moaGroup.split("+").map((g) => g.trim()).filter(Boolean)
         : undefined,
     });
+    clearSprayDraft();
     showToast(t(locale, "saved"));
     if (!isOnline) showToast(t(locale, "offlineNote"), "info");
     navigate("/spray-rotation");
@@ -229,18 +257,23 @@ function LogSprayForm() {
 
         <DarkCard delay={2}>
           <span className={AV.label}>{t(locale, "selectField")}</span>
-          <select
-            value={activeFieldId}
-            onChange={(e) => setFieldId(e.target.value)}
-            className="av-input mt-2 w-full"
-          >
-            {fields.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.name} ({f.cropSlug})
-              </option>
-            ))}
-            {fields.length === 0 && <option value="">खेत 1 (Main Field)</option>}
-          </select>
+          {cropFields.length === 0 ? (
+            <p className="mt-2 text-[13px] font-semibold text-[var(--av-text-secondary)]">
+              {cropLabel} का कोई खेत नहीं है। नया {cropLabel} का खेत जोड़ें।
+            </p>
+          ) : (
+            <select
+              value={activeFieldId}
+              onChange={(e) => setFieldId(e.target.value)}
+              className="av-input mt-2 w-full"
+            >
+              {cropFields.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.name} ({cropLabel})
+                </option>
+              ))}
+            </select>
+          )}
           {showAddField ? (
             <div className="mt-2 flex gap-2">
               <input
@@ -366,11 +399,12 @@ function LogSprayForm() {
 
           <label className="mt-3 block">
             <span className={AV.label}>{t(locale, "dose")}</span>
-            <input
+            <textarea
               value={dose}
               onChange={(e) => setDose(e.target.value)}
+              rows={Math.min(6, Math.max(2, dose.split("\n").length))}
               placeholder={selectedProduct?.doseHint ?? "उदा. 15L टंकी में 35 ग्राम"}
-              className="av-input mt-2 w-full"
+              className="av-input mt-2 w-full min-h-[4.5rem] whitespace-pre-wrap"
             />
           </label>
         </DarkCard>
