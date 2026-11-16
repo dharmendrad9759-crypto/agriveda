@@ -428,7 +428,7 @@ export default function LandAreaConverterClient() {
           <button
             type="button"
             onClick={swapUnits}
-            className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/40 hover:bg-emerald-900/50 px-4 py-1.5 text-xs font-bold text-emerald-400 transition shadow-sm"
+            className="flex items-center gap-1.5 rounded-full bg-emerald-700 px-4 py-2 text-sm font-black text-white shadow-sm"
           >
             <ArrowRightLeft className="h-3.5 w-3.5" />
             <span>इकाई आपस में बदलें (Swap)</span>

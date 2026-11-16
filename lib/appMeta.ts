@@ -8,6 +8,10 @@ export const APP_NAME = "Agriveda";
 
 /** Public farmer support — verify inbox receives mail before Play listing */
 export const SUPPORT_EMAIL = "support@agriveda.in";
+export const PUBLIC_APP_URL = "https://agriveda.in";
+export const PLAY_STORE_URL =
+  process.env.NEXT_PUBLIC_PLAY_STORE_URL?.trim() ||
+  "https://play.google.com/store/apps/details?id=com.agriveda.app";
 export const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}`;
 export const PRIVACY_PATH = "/privacy";
 export const TERMS_PATH = "/terms";

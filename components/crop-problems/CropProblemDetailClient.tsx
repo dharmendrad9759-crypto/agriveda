@@ -18,8 +18,15 @@ import {
   recentSprayMayScorch,
 } from "@/lib/crops/intelligenceHub";
 import ShopCounterCard, { shareSlipPng } from "@/components/crop-problems/ShopCounterCard";
+import { ADVICE_DISCLAIMER_HI, vegetablePhiLine } from "@/lib/crops/safetyCopy";
 import { useSprayLogs } from "@/hooks/useSprayLogs";
 import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useFarmData } from "@/hooks/useFarmData";
+import { useLiveWeather } from "@/hooks/useLiveWeather";
+import SprayLightCard from "@/components/spray/SprayLightCard";
+import { useActiveField } from "@/hooks/useActiveField";
+import { fieldAcresValue } from "@/lib/farm/fieldLinks";
+import { scaleAdvisoryLine } from "@/lib/field-advisor/scaleAdvice";
 import AppLink from "@/components/ui/AppLink";
 import { speakFarmerText, stopFarmerSpeech } from "@/lib/speech/farmerVoice";
 import { galleryHref, xrayHref } from "@/lib/crops/plantAnatomy";
@@ -27,17 +34,12 @@ import { useToast } from "@/components/ui/Toast";
 import { readStorage, writeStorage } from "@/lib/storage";
 import {
   Check,
-  VolumeX,
   Share2,
   FlaskConical,
-  ShieldAlert,
   ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { CropDoctorSparkleIcon } from "@/components/brand/icons";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import ThreatPhotoGallery from "@/components/crops/ThreatPhotoGallery";
 
@@ -224,9 +226,17 @@ export default function CropProblemDetailClient({
     : `/crop-problems/${crop.slug}`;
   const hub = assembleHubProblem(crop.slug, p.id);
   const overlay = hub?.overlay ?? {};
+  const phiLine = vegetablePhiLine(crop.slug, overlay.phiNoteHi);
   const { showToast } = useToast();
   const { addLog, logs } = useSprayLogs();
   const { profile } = useFarmerProfile();
+  const farm = useFarmData();
+  const { weather } = useLiveWeather();
+  const { activeField } = useActiveField(farm.data.fields, farm.hydrated);
+  const fieldAcres = activeField ? fieldAcresValue(activeField) ?? null : null;
+  const fieldLabel =
+    activeField?.bighaDisplay?.trim() ||
+    (fieldAcres ? `${Number.isInteger(fieldAcres) ? fieldAcres : fieldAcres.toFixed(2)} एकड़` : "");
 
   const [saved, setSaved] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -268,6 +278,25 @@ export default function CropProblemDetailClient({
     [cropSlug, problemId, p.cureChemicalHi]
   );
   const shortName = getCleanHindiTitle(p.nameHi);
+  const [offline, setOffline] = useState(false);
+  useEffect(() => {
+    const sync = () => setOffline(!navigator.onLine);
+    sync();
+    window.addEventListener("offline", sync);
+    window.addEventListener("online", sync);
+    return () => {
+      window.removeEventListener("offline", sync);
+      window.removeEventListener("online", sync);
+    };
+  }, []);
+  useEffect(() => {
+    writeStorage("agriveda-last-slip", {
+      crop: crop.nameHi,
+      problem: shortName,
+      technical: chemItems[0]?.technical || "",
+      at: new Date().toISOString(),
+    });
+  }, [crop.nameHi, shortName, chemItems]);
 
   // Primary doctor medicine info
   const primaryChem = chemItems[0];
@@ -367,7 +396,8 @@ export default function CropProblemDetailClient({
     const chemListText = chemItems
       .map((c, i) => {
         const d = parseFarmerDose(c.dose, { tankLitres, technical: c.technical });
-        return `*विकल्प ${i + 1}: ${c.technical}*\n  • तकनीकी नाम: ${cleanTechnicalName(c.nameHi || c.technical)}\n  • ${d.pill1.label}: ${d.pill1.value}\n  • ${d.pill2.label}: ${d.pill2.value}\n  • ${d.pill3.label}: ${d.pill3.value}\n  • सलाह: खाद-बीज दुकान पर केवल यह टेक्निकल नाम बताएं।`;
+        const fieldLine = scaleAdvisoryLine(d.acreDose || c.dose, fieldAcres);
+        return `*विकल्प ${i + 1}: ${c.technical}*\n  • किसी भी कंपनी का यही साल्ट\n  • ${fieldLabel ? `आपके ${fieldLabel}` : "प्रति एकड़"}: ${fieldLine}\n  • ${d.pill2.label}: ${d.pill2.value}`;
       })
       .join("\n\n");
 
@@ -375,7 +405,7 @@ export default function CropProblemDetailClient({
       ? "• 5 मिली सिलिकॉन स्टीकर (चिपको) प्रति टंकी ज़रूर मिलाएँ।\n• साफ़ पानी (150–200L/एकड़) का प्रयोग करें।"
       : `• ${primaryDose?.doctorTip || "दवा को बताई गई विधि अनुसार खेत में डालें।"}`;
 
-    const text = `🌾 *AgriVeda — फसल डॉक्टर पर्ची (Prescription)*\n\n*फसल:* ${crop.nameHi}\n*रोग/कीट:* ${shortName}\n\n*अनुशंसित दवा व सही मात्रा (दुकानदार को दिखाएं):*\n${chemListText}\n\n*विशेष डॉक्टर निर्देश:*\n${specialInstructions}\n• 3–4 दिन में पूरा असर दिखेगा।\n\n_AgriVeda किसान सहायता ऐप से सत्यापित_`;
+    const text = `🌾 *AgriVeda पर्ची*\n\n*फसल:* ${crop.nameHi}\n*समस्या:* ${shortName}\n\n${chemListText}\n\n${specialInstructions}\n${ADVICE_DISCLAIMER_HI}\nऐप: https://agriveda.in`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -394,6 +424,11 @@ export default function CropProblemDetailClient({
       }
     >
       <div className="space-y-4 pb-24">
+        {offline ? (
+          <p className="rounded-xl bg-amber-50 px-3 py-2 text-[12px] font-bold text-amber-950">
+            नेट नहीं है। यह पर्ची फोन में सेव है।
+          </p>
+        ) : null}
         <div className="grid grid-cols-3 gap-1 rounded-2xl bg-emerald-950/90 p-1">
           {(
             [
@@ -421,6 +456,32 @@ export default function CropProblemDetailClient({
           </div>
         ) : null}
 
+        {mode === "field" && overlay.fieldCheckHi ? (
+          <p className="text-[16px] font-bold leading-snug text-[#143028] dark:text-white">{overlay.fieldCheckHi}</p>
+        ) : null}
+
+        {mode === "field" && overlay.lookAlikes && overlay.lookAlikes.length > 0 ? (
+          <div>
+            {overlay.lookAlikes.map((a) => (
+              <AppLink
+                key={a.id}
+                href={`/crop-problems/${crop.slug}/${a.id}`}
+                className="mt-1 block text-[14px] font-bold leading-snug text-amber-950"
+              >
+                {a.similarHi}. {a.differHi}
+              </AppLink>
+            ))}
+          </div>
+        ) : null}
+
+        {mode === "field" && overlay.dontDoHi?.length ? (
+          <div className="text-[14px] font-bold leading-snug text-rose-800">
+            {overlay.dontDoHi.map((d) => (
+              <p key={d}>{d}</p>
+            ))}
+          </div>
+        ) : null}
+
         {mode === "field" ? (
         <ThreatPhotoGallery
           primaryImage={p.image}
@@ -432,29 +493,6 @@ export default function CropProblemDetailClient({
           threatId={p.id}
           hi={true}
         />
-        ) : null}
-
-        {mode === "field" && overlay.lookAlikes && overlay.lookAlikes.length > 0 ? (
-          <div className="rounded-2xl border border-amber-400/70 bg-amber-50 px-3 py-2.5">
-            <p className="text-[11px] font-black uppercase tracking-wide text-amber-800">ध्यान दें — मिलती-जुलती समस्या</p>
-            {overlay.lookAlikes.map((a) => (
-              <AppLink
-                key={a.id}
-                href={`/crop-problems/${crop.slug}/${a.id}`}
-                className="mt-1 block text-[13px] font-bold text-amber-950"
-              >
-                {a.similarHi}. {a.differHi}
-              </AppLink>
-            ))}
-          </div>
-        ) : null}
-
-        {mode === "field" && overlay.dontDoHi?.length ? (
-          <div className="rounded-2xl bg-rose-600 px-3 py-2.5 text-[13px] font-black text-white">
-            {overlay.dontDoHi.map((d) => (
-              <p key={d}>यह मत करना: {d}</p>
-            ))}
-          </div>
         ) : null}
 
         {mode === "expert" && primaryDose?.isSpray ? (
@@ -485,77 +523,36 @@ export default function CropProblemDetailClient({
           </p>
         ) : null}
 
+        {mode === "expert" ? <SprayLightCard weather={weather} /> : null}
+
         {profile.sprayWater === "hard_tubewell" && mode === "expert" ? (
-          <p className="rounded-xl bg-sky-50 px-3 py-2 text-[12px] font-bold text-sky-950">
-            आपका पानी खारा है — घोलकर तुरंत स्प्रे करें, टंकी भरकर न छोड़ें।
+          <p className="text-[14px] font-bold leading-snug text-sky-950">
+            पानी खारा है। दवा से पहले कंडीशनर या नींबू का सत डालें।
+          </p>
+        ) : null}
+
+        {mode === "expert" && fieldLabel && primaryChem ? (
+          <p className="text-[16px] font-black leading-snug text-[#143028] dark:text-white">
+            {fieldLabel} · {scaleAdvisoryLine(primaryDose?.acreDose || primaryChem.dose, fieldAcres)}
           </p>
         ) : null}
 
         {mode === "expert" ? (
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 p-3.5 text-white shadow-md">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-400/30">
-                <CropDoctorSparkleIcon className="h-5 w-5" />
-              </span>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[12px] font-black uppercase tracking-wider text-emerald-400">
-                    मात्रा सुनो
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={toggleDoctorAudio}
-              className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs font-black transition active:scale-95 shadow-md ${
-                isPlayingAudio
-                  ? "bg-rose-600 text-white animate-pulse"
-                  : "bg-emerald-600 text-white hover:bg-emerald-500"
-              }`}
-            >
-              {isPlayingAudio ? (
-                <>
-                  <VolumeX className="h-4 w-4" />
-                  <span>रोकें</span>
-                </>
-              ) : (
-                <span>सुनो 🔊</span>
-              )}
-            </button>
-          </div>
-
-          {/* Soundwave animation when playing */}
-          {isPlayingAudio && (
-            <div className="mt-2.5 flex items-center gap-1 border-t border-emerald-500/20 pt-2 text-[10.5px] font-bold text-emerald-300">
-              <span className="inline-block h-2 w-1 animate-bounce rounded bg-emerald-400" />
-              <span className="inline-block h-3.5 w-1 animate-bounce rounded bg-emerald-400 [animation-delay:0.15s]" />
-              <span className="inline-block h-2 w-1 animate-bounce rounded bg-emerald-400 [animation-delay:0.3s]" />
-              <span className="ml-1.5">डॉक्टर बोल रहे हैं... ध्यान से सुनें</span>
-            </div>
-          )}
-        </div>
+          <button
+            type="button"
+            onClick={toggleDoctorAudio}
+            className={`h-11 rounded-xl px-4 text-[14px] font-bold text-white ${
+              isPlayingAudio ? "bg-rose-700" : "bg-[#0f6b45]"
+            }`}
+          >
+            {isPlayingAudio ? "रोकें" : "सुनो"}
+          </button>
         ) : null}
 
         {mode === "expert" ? (
         <>
         <MockCard className="!border-emerald-500/35 !bg-gradient-to-b !from-emerald-50/60 !to-white dark:!from-slate-900 dark:!to-slate-900/95 !p-3 sm:!p-3.5 shadow-sm">
-          <div className="flex items-center justify-between mb-1.5">
-            <div className="flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-700 text-white text-[11px] font-black shadow-xs">
-                1
-              </span>
-              <div>
-                <h2 className="text-[13.5px] font-black text-emerald-950 dark:text-emerald-100">
-                  दवा और मात्रा
-                </h2>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2.5 mt-2">
+          <div className="space-y-2.5">
             {chemItems.length === 0 ? (
               <p className="rounded-xl bg-amber-50 px-3 py-3 text-[14px] font-bold leading-relaxed text-amber-950">
                 इस समस्या की पक्की दवा यहाँ नहीं लिखी। डिब्बे का लेबल और स्थानीय सलाह देखें।
@@ -579,18 +576,7 @@ export default function CropProblemDetailClient({
                   >
                     <div className="flex items-start gap-2.5 min-w-0 flex-1">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`inline-block rounded-md px-1.5 py-0.5 text-[9px] font-black text-white shadow-2xs ${
-                              i === 0 ? "bg-emerald-700" : "bg-slate-700 dark:bg-slate-800"
-                            }`}
-                          >
-                            {i === 0 ? "पहली पसंद" : `विकल्प ${i + 1}`}
-                          </span>
-                        </div>
-
-                        {/* Prominent Technical Name */}
-                        <h3 className="text-[14.5px] sm:text-[15.5px] font-black tracking-tight text-slate-950 dark:text-white leading-snug mt-0.5 font-mono sm:font-sans">
+                        <h3 className="text-[15px] font-black tracking-tight text-slate-950 dark:text-white leading-snug font-mono sm:font-sans">
                           {c.technical}
                         </h3>
 
@@ -735,6 +721,9 @@ export default function CropProblemDetailClient({
                               tank: parsed.tankDose,
                               cropHi: crop.nameHi,
                               problemHi: shortName,
+                              fieldLine: fieldLabel
+                                ? `${fieldLabel}: ${scaleAdvisoryLine(parsed.acreDose || c.dose, fieldAcres)}`
+                                : parsed.acreDose,
                             });
                           }}
                           className="rounded-xl border border-emerald-700 px-3 py-2.5 text-[12px] font-black text-emerald-900"
@@ -833,14 +822,7 @@ export default function CropProblemDetailClient({
             onClick={() => toggleSection("symptoms")}
             className="flex cursor-pointer items-center justify-between gap-2"
           >
-            <div className="flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-800 dark:text-emerald-300 text-[11px] font-black">
-                2
-              </span>
-              <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
-                खेत में लक्षण व पहचान (लक्षण)
-              </h2>
-            </div>
+            <h2 className="text-[16px] font-bold text-[#0B3D28] dark:text-emerald-200">लक्षण</h2>
             <button
               type="button"
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 transition hover:bg-emerald-500/20 active:scale-95"
@@ -855,9 +837,6 @@ export default function CropProblemDetailClient({
           </div>
           {openSections.symptoms && (
             <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 animate-in fade-in duration-200">
-              <p className="text-[10.5px] font-medium text-slate-600 dark:text-slate-300">
-                खेत में पौधे को ध्यान से देखें — ये प्रमुख संकेत दिखाई देंगे:
-              </p>
               <MiniPoints items={symptomsList} />
             </div>
           )}
@@ -869,14 +848,7 @@ export default function CropProblemDetailClient({
             onClick={() => toggleSection("causes")}
             className="flex cursor-pointer items-center justify-between gap-2"
           >
-            <div className="flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-amber-600/10 text-amber-800 dark:text-amber-300 text-[11px] font-black">
-                3
-              </span>
-              <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
-                यह क्यों हुआ और नुकसान का समय (कारण)
-              </h2>
-            </div>
+            <h2 className="text-[16px] font-bold text-[#0B3D28] dark:text-emerald-200">कारण</h2>
             <button
               type="button"
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-800 dark:text-amber-300 transition hover:bg-amber-500/20 active:scale-95"
@@ -891,18 +863,8 @@ export default function CropProblemDetailClient({
           </div>
           {openSections.causes && (
             <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2 animate-in fade-in duration-200">
-              <div>
-                <p className="text-[10.5px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                  फैलाव के मुख्य कारण:
-                </p>
-                <MiniPoints items={causesList} />
-              </div>
-              <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800">
-                <p className="text-[10.5px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-300">
-                  तुरंत कदम उठाएँ:
-                </p>
-                <MiniPoints items={timingList} />
-              </div>
+              <MiniPoints items={causesList} />
+              <MiniPoints items={timingList} />
             </div>
           )}
         </MockCard>
@@ -914,14 +876,7 @@ export default function CropProblemDetailClient({
               onClick={() => toggleSection("organic")}
               className="flex cursor-pointer items-center justify-between gap-2"
             >
-              <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-teal-600/10 text-teal-800 dark:text-teal-300 text-[11px] font-black">
-                  4
-                </span>
-                <h2 className="text-[13.5px] font-black text-[#0B3D28] dark:text-emerald-200">
-                  जैविक व देसी उपाय (Organic Alternative)
-                </h2>
-              </div>
+              <h2 className="text-[16px] font-bold text-[#0B3D28] dark:text-emerald-200">देसी उपाय</h2>
               <button
                 type="button"
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-800 dark:text-teal-300 transition hover:bg-teal-500/20 active:scale-95"
@@ -1021,8 +976,8 @@ export default function CropProblemDetailClient({
               स्रोत: {overlay.sourceLabel || "Agriveda फसल डॉक्टर सूची"}
               {overlay.reviewedOn ? ` · जाँच ${overlay.reviewedOn}` : " · जाँच बाकी"}
             </p>
-            <p className="mt-2 text-[12px] font-bold text-amber-800">
-              कटाई से पहले का अंतर: {overlay.phiNoteHi || "डिब्बे पर दिया गया सुरक्षा अंतराल देखें।"}
+            <p className={`mt-2 text-[12px] font-bold ${phiLine ? "text-rose-700" : "text-amber-800"}`}>
+              कटाई से पहले का अंतर: {phiLine || overlay.phiNoteHi || "डिब्बे पर दिया गया सुरक्षा अंतराल देखें।"}
             </p>
           </MockCard>
         ) : null}
@@ -1038,11 +993,7 @@ export default function CropProblemDetailClient({
                 डॉक्टर पर्ची सुरक्षित हो गई ✓
               </p>
             </div>
-          ) : (
-            <p className="mb-3 text-xs font-black text-emerald-950 dark:text-emerald-100">
-              यह पर्ची खाद-बीज दुकानदार को WhatsApp करें या सुरक्षित रखें
-            </p>
-          )}
+          ) : null}
 
           <div className="grid grid-cols-2 gap-2.5">
             <button
@@ -1074,6 +1025,13 @@ export default function CropProblemDetailClient({
               <span>📒 छिड़काव डायरी में रिकॉर्ड करें</span>
             </AppLink>
           </div>
+
+          {phiLine ? (
+            <p className="mt-3 rounded-xl bg-rose-50 px-3 py-2 text-[13px] font-black text-rose-800">
+              तुड़ाई से पहले: {phiLine}
+            </p>
+          ) : null}
+          <p className="mt-2 text-[11px] font-semibold leading-snug text-slate-500">{ADVICE_DISCLAIMER_HI}</p>
 
           <div className="mt-2.5 grid grid-cols-2 gap-2.5">
             <AppLink
@@ -1111,6 +1069,8 @@ export default function CropProblemDetailClient({
             problemKind={hub?.kind ?? "pest"}
             lastMoaGroups={lastGroupsForProblem}
             tankLitres={tankLitres}
+            fieldAcres={fieldAcres}
+            fieldLabel={fieldLabel}
           />
         ) : null}
       </div>

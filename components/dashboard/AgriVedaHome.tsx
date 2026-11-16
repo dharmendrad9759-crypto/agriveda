@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import AppLink from "@/components/ui/AppLink";
 import { motion } from "framer-motion";
 import {
-  ArrowRight,
   Bell,
   CalendarDays,
-  Camera,
   ChevronRight,
   CloudSun,
   Droplets,
@@ -41,6 +39,10 @@ import { EASE_OUT, MOTION } from "@/lib/motion/variants";
 import type { FarmField } from "@/lib/farm/types";
 import { track } from "@/lib/analytics";
 import { HomeWeatherButton } from "@/components/weather/HomeWeatherChip";
+import { CROP_STAGE_ADVISORIES } from "@/lib/field-advisor/stageAdvisories";
+import { sprayLightFromWeather } from "@/lib/spray/sprayLight";
+import { useMandiPrices } from "@/hooks/useMandiPrices";
+import { readStorage } from "@/lib/storage";
 import HomeCropStatusCard from "@/components/dashboard/HomeCropStatusCard";
 import HomeAddCropHero from "@/components/dashboard/HomeAddCropHero";
 import MeasureAfterAddPrompt from "@/components/farm/MeasureAfterAddPrompt";
@@ -88,15 +90,9 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
           {/* Lower Content & High-Affordance CTA */}
           <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1.5">
             <div>
-              <h3 className="text-[13px] font-bold leading-tight text-white">
+              <h3 className="text-[15px] font-bold leading-tight text-white">
                 {isHi ? "पत्ती की फोटो लें" : "Take Leaf Photo"}
               </h3>
-            </div>
-
-            {/* Clickable Action Pill Button */}
-            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 px-2.5 py-1.5 text-[11px] font-black text-emerald-950 shadow-sm transition-all group-hover:from-emerald-300 group-hover:to-teal-200">
-              <span>{isHi ? "फोटो खींचें" : "Take Photo"}</span>
-              <Camera className="h-3.5 w-3.5 stroke-[2.5]" />
             </div>
           </div>
         </AppLink>
@@ -124,15 +120,9 @@ function UnifiedDiseaseDoctorCard({ isHi }: { isHi: boolean }) {
           {/* Lower Content & High-Affordance CTA */}
           <div className="flex flex-1 flex-col justify-between p-2.5 sm:p-3 pt-1.5">
             <div>
-              <h3 className="text-[13px] font-bold leading-tight text-white">
+              <h3 className="text-[15px] font-bold leading-tight text-white">
                 {isHi ? "लक्षणों से पहचानें" : "Identify by Symptoms"}
               </h3>
-            </div>
-
-            {/* Clickable Action Pill Button */}
-            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-gradient-to-r from-teal-400 to-cyan-300 px-2.5 py-1.5 text-[11px] font-black text-teal-950 shadow-sm transition-all group-hover:from-teal-300 group-hover:to-cyan-200">
-              <span>{isHi ? "रोग देखें" : "View Diseases"}</span>
-              <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
             </div>
           </div>
         </AppLink>
@@ -366,11 +356,8 @@ function FarmToolSuites({ isHi }: { isHi: boolean }) {
                   />
                 </span>
                 <span className="min-w-0 flex-1 py-1">
-                  <span className="block text-[14px] font-bold leading-tight text-[var(--av-text-primary)]">
+                  <span className="block text-[15px] font-bold leading-tight text-[var(--av-text-primary)]">
                     {isHi ? job.hi : job.en}
-                  </span>
-                  <span className="mt-0.5 block text-[12px] leading-snug text-[var(--av-text-secondary)]">
-                    {isHi ? job.subHi : job.subEn}
                   </span>
                 </span>
               </AppLink>
@@ -400,9 +387,6 @@ function FarmToolSuites({ isHi }: { isHi: boolean }) {
             <span>
               <span className="block text-[15px] font-bold leading-tight text-[var(--av-text-primary)]">
                 {isHi ? measure.hi : measure.en}
-              </span>
-              <span className="mt-1 block text-[12px] leading-snug text-[var(--av-text-secondary)]">
-                {isHi ? measure.subHi : measure.subEn}
               </span>
             </span>
           </span>
@@ -450,9 +434,9 @@ function FarmToolSuites({ isHi }: { isHi: boolean }) {
         <div className="mt-2.5 grid grid-cols-3 gap-2">
           {(
             [
-              ["/services/land-area-converter", "ज़मीन नाप", "Land"],
-              ["/services/seed-calculator", "बीज दर", "Seed"],
-              ["/services/tractor-hp-calculator", "ट्रैक्टर HP", "Tractor"],
+              ["/services/land-area-converter", "ज़मीन नाप", "Land unit"],
+              ["/services/seed-calculator", "बीज दर", "Seed rate"],
+              ["/services/tractor-hp-calculator", "ट्रैक्टर HP", "Tractor HP"],
             ] as const
           ).map(([href, hi, en]) => (
             <AppLink
@@ -613,6 +597,37 @@ export default function AgriVedaHome() {
   const name = profile.name.trim() || (isHi ? "किसान भाई" : "Kisan");
 
   const weatherIsSample = Boolean(weather?.isDemo || weatherError);
+  const { data: mandiData, loading: mandiLoading } = useMandiPrices({
+    state: profile.state.trim() || "Haryana",
+    district: profile.district.trim() || undefined,
+  });
+  const liveMandi =
+    !mandiLoading && mandiData?.source === "live"
+      ? mandiData.rows.find((row) => row.modal > 0)
+      : undefined;
+  const sprayLine = sprayLightFromWeather(weather).lineHi;
+  const todayTask = (() => {
+    const slug = activeField?.cropSlug?.toLowerCase() || "";
+    const rows = slug ? CROP_STAGE_ADVISORIES[slug] : undefined;
+    if (!rows?.length) return "";
+    const das = daysSince(activeField?.sowingDateIso || activeField?.sowingDate || "");
+    const hit =
+      das == null ? rows[0] : rows.find((row) => das >= row.minDas && das <= row.maxDas) || rows[0];
+    return hit?.todayTaskHi || "";
+  })();
+  const [offline, setOffline] = useState(false);
+  const [lastSlip, setLastSlip] = useState<{ crop?: string; problem?: string; technical?: string } | null>(null);
+  useEffect(() => {
+    const sync = () => setOffline(!navigator.onLine);
+    sync();
+    setLastSlip(readStorage("agriveda-last-slip", null));
+    window.addEventListener("offline", sync);
+    window.addEventListener("online", sync);
+    return () => {
+      window.removeEventListener("offline", sync);
+      window.removeEventListener("online", sync);
+    };
+  }, []);
 
   const extraFields = farm.fields.filter((f) => f.id !== activeField?.id).slice(0, 2);
   const primary = activeField ? fieldCard(activeField, 0) : null;
@@ -648,9 +663,6 @@ export default function AgriVedaHome() {
               <p className="text-[13px] font-medium text-[var(--av-text-secondary)]">
                 {isHi ? `नमस्ते, ${greetName} जी 🙏` : `Namaste, ${greetName} 🙏`}
               </p>
-              <h1 className="mt-0.5 font-display text-[1.15rem] font-bold leading-tight text-[var(--av-text-primary)]">
-                {isHi ? "आज क्या करना है?" : "What do you need today?"}
-              </h1>
               {todayLabel ? (
                 <div className="mt-1 flex flex-wrap items-center gap-2">
                   <span className="text-[12px] font-semibold text-[var(--av-text-muted)]" suppressHydrationWarning>
@@ -676,6 +688,39 @@ export default function AgriVedaHome() {
               )}
             </div>
             <HomeWeatherButton weather={weather} loading={weatherLoading} isSample={weatherIsSample} />
+          </div>
+          <div className="mt-3 rounded-2xl bg-white px-3 py-3 text-[#143028] shadow-sm dark:bg-[var(--av-surface)] dark:text-white">
+            {offline && lastSlip?.technical ? (
+              <p className="mb-2 text-[14px] font-bold leading-snug">
+                {lastSlip.crop} · {lastSlip.problem}
+                <span className="mt-0.5 block font-mono text-[13px] font-semibold">{lastSlip.technical}</span>
+              </p>
+            ) : null}
+            <p className="text-[14px] font-bold leading-snug">{sprayLine}</p>
+            {todayTask ? (
+              <p className="mt-1 line-clamp-2 text-[13px] font-semibold leading-snug text-[#14532d] dark:text-emerald-50">
+                {todayTask}
+              </p>
+            ) : null}
+            {liveMandi ? (
+              <p className="mt-1 text-[14px] font-black">
+                {liveMandi.cropHi || liveMandi.crop} ₹{liveMandi.modal}
+              </p>
+            ) : null}
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <AppLink
+                href="/crop-problems"
+                className="flex h-11 items-center justify-center rounded-xl bg-[#0f6b45] text-[14px] font-bold text-white"
+              >
+                बीमारी देखो
+              </AppLink>
+              <AppLink
+                href="/khata"
+                className="flex h-11 items-center justify-center rounded-xl border border-[#0f6b45] text-[14px] font-bold text-[#0f6b45] dark:text-emerald-200"
+              >
+                खर्च लिखो
+              </AppLink>
+            </div>
           </div>
         </motion.section>
 
@@ -729,11 +774,8 @@ export default function AgriVedaHome() {
                   <span className="mb-auto ml-auto flex h-7 w-7 items-center justify-center rounded-lg bg-black/35 text-white shadow-sm backdrop-blur-md border border-white/20">
                     <Icon className="h-4 w-4" strokeWidth={2.25} />
                   </span>
-                  <p className="mt-3 text-[14px] font-bold leading-snug text-white drop-shadow-sm">
+                  <p className="mt-3 text-[15px] font-bold leading-snug text-white drop-shadow-sm">
                     {isHi ? job.hi : job.en}
-                  </p>
-                  <p className="mt-0.5 text-[11px] font-medium text-white/85">
-                    {isHi ? job.hintHi : job.hintEn}
                   </p>
                 </div>
               </AppLink>
@@ -759,13 +801,8 @@ export default function AgriVedaHome() {
                   <CropDoctorSparkleIcon className="h-4 w-4" />
                 </span>
               )}
-              <span className="min-w-0 flex-1">
-                <span className="block text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
-                  {isHi ? "पिछला स्कैन" : "Last scan"}
-                </span>
-                <span className="block truncate text-[15px] font-bold text-[var(--av-text-primary)]">
-                  {lastScan.result.diseaseName}
-                </span>
+              <span className="min-w-0 flex-1 truncate text-[15px] font-bold text-[var(--av-text-primary)]">
+                {lastScan.result.diseaseName}
               </span>
               <ChevronRight className="h-4 w-4 text-[var(--av-text-muted)]" />
             </AppLink>

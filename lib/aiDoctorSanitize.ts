@@ -14,7 +14,7 @@ export type DiagnosisProblemType =
 const MEDICINE_LINE =
   /(?:ml\/|g\/|लीटर|\/\s*l\b|ppm|%|स्प्रे|छिड़क|दवा|कीटनाशक|फफूंदनाशक|fungicide|insecticide|herbicide|mancozeb|propiconazole|azoxystrobin|imidacloprid|chlorantraniliprole|emamectin|copper|bordeaux|carbendazim|metalaxyl|thiamethoxam|\bwp\b|\bec\b|\bsc\b|\bwg\b)/i;
 
-const RECOVERY_OK: DiagnosisProblemType[] = ["fungal", "bacterial", "viral"];
+const RECOVERY_OK: DiagnosisProblemType[] = ["bacterial", "viral"];
 
 /** Infer problem type when model omits it. */
 export function inferProblemType(result: Pick<

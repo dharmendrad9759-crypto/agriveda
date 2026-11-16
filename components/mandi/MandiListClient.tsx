@@ -10,7 +10,6 @@ import {
   Navigation,
   RefreshCw,
   Scale,
-  Sparkles,
   TrendingDown,
   TrendingUp,
   Warehouse,
@@ -221,6 +220,7 @@ export default function MandiListClient() {
   const [tab, setTab] = useState<"rates" | "alerts">("rates");
   const [gpsBusy, setGpsBusy] = useState(false);
   const [placeSheet, setPlaceSheet] = useState<"state" | "district" | null>(null);
+  const [pocketQtl, setPocketQtl] = useState("10");
 
   const { data, loading, districtLoading, refresh, enrichDistrict } = useMandiPrices({
     state: fetchState,
@@ -362,7 +362,21 @@ export default function MandiListClient() {
     setDistrict(null);
     setMandi(null);
     setVariety("");
+    try {
+      sessionStorage.setItem("agriveda-mandi-state", next);
+    } catch {
+      /* private mode */
+    }
   };
+
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("agriveda-mandi-state");
+      if (saved) setFetchState(saved);
+    } catch {
+      /* private mode */
+    }
+  }, []);
 
   const pickCrop = (next: string) => {
     setCrop(next);
@@ -484,20 +498,45 @@ export default function MandiListClient() {
           </div>
         ) : (
           <>
+            {!loading && data?.source === "live" && liveRows.some((row) => row.modal > 0) ? (
+            <section className="rounded-2xl border border-amber-200/80 bg-[var(--av-surface)] p-3 dark:border-emerald-800">
+              <label className="block text-[14px] font-bold text-[var(--av-text-primary)]">
+                {isHi ? "कितने क्विंटल" : "Quintals"}
+              </label>
+              <input
+                type="number"
+                min="0"
+                inputMode="decimal"
+                value={pocketQtl}
+                onChange={(e) => setPocketQtl(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-base font-bold text-slate-900 dark:border-emerald-800 dark:bg-slate-900 dark:text-white"
+              />
+              <ul className="mt-2 space-y-1">
+                {liveRows
+                  .filter((row) => row.modal > 0)
+                  .slice(0, 3)
+                  .map((row) => {
+                    const qtl = parseFloat(pocketQtl);
+                    return (
+                      <li key={row.id} className="text-[14px] font-bold text-[var(--av-text-primary)]">
+                        {row.mandi} ₹{row.modal}
+                        {qtl > 0 ? ` · ₹${Math.round(row.modal * qtl)}` : ""}
+                      </li>
+                    );
+                  })}
+              </ul>
+            </section>
+            ) : null}
             {showToday ? (
               <section className="overflow-hidden rounded-[22px] bg-gradient-to-br from-emerald-800 via-emerald-700 to-amber-700 p-4 text-white shadow-[0_16px_40px_-18px_rgba(6,78,59,0.7)]">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold tracking-wide">
-                      <Sparkles className="h-3 w-3" />
-                      {isHi ? "आज मंडी खुली है" : "Mandi is open"}
-                    </p>
-                    <h2 className="mt-2 text-[22px] font-black leading-tight">
+                    <h2 className="text-[22px] font-black leading-tight">
                       {isHi ? "आपकी मंडी का आज का भाव" : "Today's mandi rates"}
                     </h2>
-                    <p className="mt-1 flex items-center gap-1 text-[12px] text-emerald-50">
+                    <p className="mt-1 flex items-center gap-1 text-[14px] text-emerald-50">
                       <MapPin className="h-3.5 w-3.5" />
-                      {profileDistrict || fetchState} · {isHi ? "₹ / क्विंटल" : "₹ / quintal"}
+                      {profileDistrict || fetchState}
                     </p>
                   </div>
                   <span className="text-4xl" aria-hidden>

@@ -7,6 +7,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { getCropFieldPrepGuide, getNurseryProcess } from "@/lib/crops/cropFieldPrepGuide";
 import { getPracticalSeedRate } from "@/lib/crops/practicalSeedRates";
 import { farmerSpeak } from "@/lib/crops/farmerSpeak";
+import { filterAdviceLine } from "@/lib/crops/safetyCopy";
 import type { Crop } from "@/types/crop";
 import { Droplets, LayoutGrid, Shield, Shovel, Sprout, Tractor, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -109,12 +110,15 @@ export default function CropFieldPrepSection({ crop }: { crop: Crop }) {
               : "Clear field, deep plough and level.",
           ];
 
-  const seedTreatmentLines =
+  const seedTreatmentLines = (
     guide?.seedTreatment?.length
       ? guide.seedTreatment
       : sow.seedTreatment
         ? [sow.seedTreatment]
-        : profile?.seedTreatment?.filter(Boolean) ?? [];
+        : profile?.seedTreatment?.filter(Boolean) ?? []
+  )
+    .map((line) => filterAdviceLine(line, crop.slug))
+    .filter((line): line is string => Boolean(line));
 
   const spacing = guide?.spacing || sow.spacing || crop.spacing;
   const sowingTimeLines =

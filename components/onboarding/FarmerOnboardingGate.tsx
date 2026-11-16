@@ -512,7 +512,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
 
             <div className="flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-bold text-emerald-100 backdrop-blur-xs">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
-              <span>100% मुफ़्त</span>
+              <span>लॉगिन ज़रूरी नहीं</span>
             </div>
           </div>
 
@@ -638,7 +638,7 @@ export default function FarmerOnboardingGate({ children }: { children: React.Rea
                         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-600/40 bg-emerald-600/10 py-3 text-xs font-bold text-emerald-800 transition hover:bg-emerald-600/15 active:scale-[0.99] dark:text-emerald-300"
                       >
                         <FarmerTourSparkleIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                        <span>सीधे ऐप देखें (Explore Demo Mode)</span>
+                        <span>बिना लॉगिन के ऐप चलाएं</span>
                       </button>
                     )}
               </div>

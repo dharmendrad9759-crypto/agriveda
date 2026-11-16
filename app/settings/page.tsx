@@ -13,6 +13,7 @@ import { shareAgriveda, softTap } from "@/lib/appEssentials";
 import { registerFarmerPush } from "@/lib/push/farmerPush";
 import { ShareAgrivedaModal } from "@/components/share/ShareAgrivedaModal";
 import { SUPPORT_MAILTO } from "@/lib/appMeta";
+import { writeStorage } from "@/lib/storage";
 import { farmerPlaceLine } from "@/lib/farmerPlaceName";
 import { BRAND } from "@/lib/brand";
 import { deleteAccountAndReload, logoutAndReload } from "@/lib/appReset";
@@ -533,6 +534,34 @@ export default function SettingsPage() {
               {isHi ? "ईमेल लिखें" : "Email us"}
             </a>
           </div>
+          <button
+            type="button"
+            className="mt-3 w-full rounded-2xl bg-emerald-800 py-3 text-[13px] font-black text-white"
+            onClick={() => {
+              writeStorage("agriveda-morning-consent", true);
+              void registerFarmerPush();
+              showToast(
+                isHi
+                  ? "सहमति बच गई। सुबह 6:30 की सूचना तभी जाएगी जब मंडी, हवा या आज का काम फोन पर हो।"
+                  : "Saved. A 6:30 note is sent only when mandi, wind, or today's task is on the phone."
+              );
+            }}
+          >
+            {isHi ? "सुबह 6:30 सूचना की सहमति" : "Morning 6:30 consent"}
+          </button>
+          <div className="mt-3 space-y-1 text-[12px] font-semibold leading-snug text-[var(--av-text-secondary)]">
+            <p>क्या लेते हैं: नाम, गाँव, फसल, खेत और फोटो जो आप खुद दें।</p>
+            <p>क्यों: सलाह, मंडी और खेत का हिसाब आपके फोन पर रखने के लिए।</p>
+            <p>बेचते नहीं: आपका डेटा किसी को बेचा नहीं जाता।</p>
+            <p>सलाह की सीमा: सामान्य सलाह है। डिब्बे का लेबल देखें।</p>
+            <p>योजना सरकारी ऐप नहीं है।</p>
+            <p>खाता हटा सकते हैं: सेटिंग में “खाता हटाएँ”।</p>
+            <p>सहायता: support@agriveda.in</p>
+            <p>नंबर तभी माँगा जाता है जब खेत क्लाउड पर सेव हो या भाव अलर्ट लगे। फोन OTP बंद है। लॉगिन Google से है।</p>
+          </div>
+          <AppLink href="/khata" className="mt-3 block text-[13px] font-black text-emerald-800">
+            खर्च खाता
+          </AppLink>
           <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
             <AppLink href="/privacy">{isHi ? "गोपनीयता" : "Privacy"}</AppLink>
             <AppLink href="/terms">{isHi ? "नियम" : "Terms"}</AppLink>

@@ -54,7 +54,7 @@ const SLIDES: Slide[] = [
     floatingTag: "🛰️ डिजिटल खेत रिकॉर्ड",
     titleHi: "स्मार्ट खेत प्रबंधन",
     titleEn: "Smart Farm Management",
-    bodyHi: "फसल, खर्च और उपज का एक-एक हिसाब रखें। हर फसल चक्र पर मुनाफा बढ़ाएं।",
+    bodyHi: "फसल, बीमारी, खाद और मंडी एक जगह देखें।",
     features: [
       {
         icon: <TrendingUp className="h-4.5 w-4.5" strokeWidth={2.4} />,
@@ -64,8 +64,8 @@ const SLIDES: Slide[] = [
       },
       {
         icon: <IndianRupee className="h-4.5 w-4.5" strokeWidth={2.4} />,
-        title: "खर्च और मुनाफा",
-        sub: "सटीक बैलेंस व बचत रिपोर्ट",
+        title: "मंडी भाव",
+        sub: "पास की मंडी का आज का रेट",
         accent: "amber",
       },
       {
@@ -87,10 +87,10 @@ const SLIDES: Slide[] = [
     hero: "/onboarding/02-ai-doctor-v2.jpg",
     badge: "24x7 एआई फसल डॉक्टर",
     badgeIcon: <CropDoctorSparkleIcon className="h-3.5 w-3.5" />,
-    floatingTag: "⚡ 10 सेकंड में रोग पहचान",
+    floatingTag: "पत्ते की फोटो से जाँच",
     titleHi: "एआई फसल डॉक्टर",
     titleEn: "AI Crop Doctor & Diagnosis",
-    bodyHi: "पत्ते की एक फोटो खींचें और तुरंत कीट-रोग की सटीक पहचान व रासायनिक छिड़काव सलाह पाएं।",
+    bodyHi: "पत्ते की फोटो से बीमारी देखें। सलाह सामान्य है — डिब्बे का लेबल ज़रूर पढ़ें।",
     features: [
       {
         icon: <Camera className="h-4.5 w-4.5" strokeWidth={2.4} />,
@@ -100,14 +100,14 @@ const SLIDES: Slide[] = [
       },
       {
         icon: <FileSearch className="h-4.5 w-4.5" strokeWidth={2.4} />,
-        title: "AI स्कैनिंग",
-        sub: "99% सटीक वैज्ञानिक विश्लेषण",
+        title: "फोटो जाँच",
+        sub: "संभावित बीमारी की सूची",
         accent: "emerald",
       },
       {
         icon: <ShieldCheck className="h-4.5 w-4.5" strokeWidth={2.4} />,
-        title: "सही दवा व डोज़",
-        sub: "वैज्ञानिक रूप से सुरक्षित सलाह",
+        title: "दवा का नाम",
+        sub: "डिब्बे का लेबल और अंतराल देखें",
         accent: "amber",
       },
     ],

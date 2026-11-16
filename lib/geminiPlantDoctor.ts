@@ -164,7 +164,7 @@ D. Set problemType exactly: pest | fungal | bacterial | viral | nutrient | abiot
 SEPARATION (farmer UI):
 1. treatments = ONLY cultural/field steps in simple Hindi (पत्ती काटना, दूरी, पानी, जाल, उखाड़ना). NEVER medicine names, brands, or ml/L.
 2. activeIngredients = ALL दवा with practical Indian doses. name MUST be full technical + %.formulation (e.g. "Hexaconazole 5% SC"). brands = 2-3 real Indian shop names (Contaf Plus, Folicur, Tilt…) so farmer can ask in bazaar.
-3. recoveryTonics = ONLY if problemType is fungal, bacterial, or viral (seaweed/humic/micronutrient/plant tonics). EMPTY for pest-only, healthy, nutrient, abiotic.
+3. recoveryTonics = ONLY if problemType is bacterial or viral. EMPTY for fungal, pest-only, healthy, nutrient, abiotic.
 4. Virus: NO direct chemical cure. treatments = rogue + hygiene; activeIngredients = VECTOR control; recoveryTonics OK for vigor — never claim virus cure.
 5. Pest-only: recoveryTonics MUST be [].
 
@@ -295,7 +295,7 @@ RULES:
 2. confidence: 0-100; typically 40-70 without a photo. Below 50 if vague.
 3. problemType: pest | fungal | bacterial | viral | nutrient | abiotic | healthy | unknown.
 4. treatments = cultural steps ONLY (no medicine names). activeIngredients = medicines with full name+formulation, dose, and 2-3 bazaar brand names.
-5. recoveryTonics ONLY for fungal/bacterial/viral; empty for pest-only.
+5. recoveryTonics ONLY for bacterial or viral; empty for fungal and pest-only.
 6. Virus: no direct cure; vector control in activeIngredients; rogue plants in treatments.
 7. All farmer advice in SIMPLE HINDI. Chemical names OK in activeIngredients.name.
 8. If too vague: diseaseName="अधिक जानकारी चाहिए", ask for photo in treatments.

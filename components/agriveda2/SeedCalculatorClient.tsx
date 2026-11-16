@@ -30,6 +30,7 @@ export default function SeedCalculatorClient() {
     getDefaultMethodId(defaultSlug)
   );
   const [area, setArea] = useState("2");
+  const [germination, setGermination] = useState("100");
   const [voiceText, setVoiceText] = useState("");
 
   useEffect(() => {
@@ -42,8 +43,19 @@ export default function SeedCalculatorClient() {
   const result = useMemo(() => {
     const n = parseFloat(area);
     if (!n || n <= 0) return null;
-    return buildSeedCalculatorResult(cropSlug, n, "acre", activeMethodId);
-  }, [cropSlug, area, activeMethodId]);
+    const base = buildSeedCalculatorResult(cropSlug, n, "acre", activeMethodId);
+    if (!base) return null;
+    const germinated = Math.min(100, Math.max(1, parseFloat(germination) || 100));
+    if (germinated >= 100) return base;
+    const factor = 100 / germinated;
+    const bump = (v: number) => Math.round(v * factor * 10) / 10;
+    return {
+      ...base,
+      totalSeedMin: bump(base.totalSeedMin),
+      totalSeedMax: bump(base.totalSeedMax),
+      totalSeedMid: bump(base.totalSeedMid),
+    };
+  }, [cropSlug, area, activeMethodId, germination]);
 
   const applyVoice = () => {
     const parsed = parseVoiceArea(voiceText);
@@ -101,12 +113,23 @@ export default function SeedCalculatorClient() {
               {entry.methods.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.label}
-                  {m.note ? ` — ${m.note}` : ""}
                 </option>
               ))}
             </select>
           </>
         )}
+
+        <div className="mt-4">
+          <label className="text-xs font-bold theme-text-muted">100 में कितने उगे</label>
+          <input
+            type="number"
+            min="1"
+            max="100"
+            value={germination}
+            onChange={(e) => setGermination(e.target.value)}
+            className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-base"
+          />
+        </div>
 
         <div className="mt-4">
           <label className="text-xs font-bold theme-text-muted">खेत का क्षेत्र (एकड़)</label>
@@ -119,16 +142,6 @@ export default function SeedCalculatorClient() {
             className="theme-input mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
           />
         </div>
-
-        <input
-          type="range"
-          min="0.5"
-          max="15"
-          step="0.1"
-          value={Math.min(15, parseFloat(area) || 1)}
-          onChange={(e) => setArea(e.target.value)}
-          className="mt-4 w-full accent-emerald-600"
-        />
 
         <div className="mt-4 flex gap-2">
           <input
@@ -169,7 +182,7 @@ export default function SeedCalculatorClient() {
               <span className="text-lg font-black text-emerald-600">
                 {result.totalSeedMin}–{result.totalSeedMax}
               </span>{" "}
-              ({result.unit.split(" ")[0]})
+              ({(result.unit || "किग्रा").split(/[\s/]/)[0]})
             </li>
             {result.spacing && (
               <li>
@@ -183,10 +196,7 @@ export default function SeedCalculatorClient() {
               <Info className="h-4 w-4" />
               इकाई
             </p>
-            <p className="mt-1 theme-text-muted">{result.unitExplanation}</p>
-            {result.proTip && (
-              <p className="mt-2 font-semibold text-sky-900 dark:text-sky-200">💡 {result.proTip}</p>
-            )}
+            <p className="mt-1 theme-text-muted">{(result.unit || "किग्रा").split(/[\s/]/)[0]}</p>
           </div>
 
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
@@ -194,7 +204,7 @@ export default function SeedCalculatorClient() {
               <Sprout className="h-4 w-4" />
               बीज उपचार
             </p>
-            <p className="mt-1 text-xs theme-text-muted">{result.seedTreatment}</p>
+            <p className="mt-1 text-xs theme-text-muted">बीज उपचार डिब्बे के लेबल के हिसाब से करें।</p>
           </div>
         </DarkCard>
       ) : (

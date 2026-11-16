@@ -7,7 +7,7 @@ import AppLink from "@/components/ui/AppLink";
 import ProblemFlowShell from "@/components/crop-problems/ProblemFlowShell";
 import CropPlantPlate from "@/components/crop-problems/plant-xray/CropPlantPlate";
 import { getCropProblemCrop } from "@/data/crop-curative-problems";
-import { dxForPart, type PartDx } from "@/data/partDiagnostics";
+import { dxForPart } from "@/data/partDiagnostics";
 import { useSafeReducedMotion } from "@/hooks/useClientReady";
 import { cn } from "@/lib/cn";
 import {
@@ -37,7 +37,6 @@ export default function PlantXrayClient({ cropSlug }: { cropSlug: string }) {
 
   const [part, setPart] = useState<PlantPart | null>(partFromUrl);
   const [symptoms, setSymptoms] = useState<HubSymptomChip[]>(() => parseSymptoms(params.get("symptoms")));
-  const [check, setCheck] = useState<PartDx | null>(null);
 
   const cropId = crop?.slug ?? cropSlug;
   const partSymptoms = useMemo(
@@ -56,7 +55,6 @@ export default function PlantXrayClient({ cropSlug }: { cropSlug: string }) {
   const choosePart = (next: PlantPart) => {
     setPart(next);
     setSymptoms([]);
-    setCheck(null);
     router.replace(`/crop-problems/${cropId}/xray?part=${next}`, { scroll: false });
   };
 
@@ -161,36 +159,16 @@ export default function PlantXrayClient({ cropSlug }: { cropSlug: string }) {
 
         {part ? (
           <div className="px-3 pb-3">
-            <h2 className="px-1 text-[1.15rem] font-black tracking-tight text-[#10281c]">
-              {check ? "एक बार खेत में देखो" : `${partLabel(crop.slug, part)} पर क्या दिख रहा है?`}
+            <h2 className="px-1 text-[1.15rem] font-black tracking-tight text-[#10281c] dark:text-emerald-50">
+              {`${partLabel(crop.slug, part)} पर क्या दिख रहा है?`}
             </h2>
-            {check ? (
-              <div className="mt-3 space-y-2">
-                <p className="rounded-2xl bg-white/80 px-3 py-3 text-[14px] font-bold leading-snug text-[#10281c]">
-                  {check.checkHi}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => openProblem(check.yesProblemId ?? check.problemId)}
-                  className="flex min-h-12 w-full items-center justify-center rounded-full bg-[#14382c] px-3 text-[14px] font-black text-[#f6f1e6]"
-                >
-                  {check.yesHi ?? "हाँ, ऐसा ही है"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => (check.noProblemId ? openProblem(check.noProblemId) : setCheck(null))}
-                  className="flex min-h-12 w-full items-center justify-center rounded-full bg-white px-3 text-[14px] font-bold text-[#14382c] ring-1 ring-[#14382c]/15"
-                >
-                  {check.noHi ?? "नहीं"}
-                </button>
-              </div>
-            ) : guide.length > 0 ? (
+            {guide.length > 0 ? (
               <div className="mt-3 space-y-1.5">
                 {guide.map((row) => (
                   <button
                     key={row.id}
                     type="button"
-                    onClick={() => setCheck(row)}
+                    onClick={() => openProblem(row.yesProblemId ?? row.problemId)}
                     className="flex min-h-12 w-full items-center rounded-2xl bg-white/75 px-3 py-2.5 text-left text-[14px] font-bold leading-snug text-[#10281c]"
                   >
                     {row.symptomHi}
@@ -231,7 +209,7 @@ export default function PlantXrayClient({ cropSlug }: { cropSlug: string }) {
               </div>
             )}
 
-            {guide.length > 0 || check ? null : (
+            {guide.length > 0 ? null : (
             <AppLink
               href={galleryHref(crop.slug, part, symptoms)}
               className="mt-3 flex min-h-12 items-center justify-center rounded-full bg-[#14382c] px-3 text-[14px] font-black text-[#f6f1e6]"

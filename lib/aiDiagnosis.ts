@@ -64,7 +64,7 @@ async function compressImageIfNeeded(file: File): Promise<File> {
       el.src = dataUrl;
     });
 
-    const maxSide = 1280;
+    const maxSide = 800;
     const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
     const w = Math.max(1, Math.round(img.width * scale));
     const h = Math.max(1, Math.round(img.height * scale));
@@ -77,7 +77,7 @@ async function compressImageIfNeeded(file: File): Promise<File> {
     ctx.drawImage(img, 0, 0, w, h);
 
     const tryWebp = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, "image/webp", 0.82)
+      canvas.toBlob(resolve, "image/webp", 0.72)
     );
     const blob =
       tryWebp && tryWebp.size > 0

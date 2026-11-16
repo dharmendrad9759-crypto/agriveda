@@ -13,7 +13,6 @@ import { buildOutbreakRadarPayload, toPublicOutbreakReport } from "@/lib/outbrea
 import { detectOutbreakCluster } from "@/lib/outbreakCluster";
 import { requireSession } from "@/lib/session";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
-import { OUTBREAK_SEED_REPORTS } from "@/data/outbreak-seed";
 import { sanitizePhotoDataUrl } from "@/lib/expertQueries";
 import { isAllowedHttpsPhotoUrl } from "@/lib/privacyMask";
 
@@ -39,16 +38,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
-  // Graceful degrade: seed demo map when Supabase is not wired (same idea as mandi mock).
+  // No fake village counts. Empty until real reports exist.
   if (!hasSupabaseServiceRole()) {
-    const payload = buildOutbreakRadarPayload(
-      OUTBREAK_SEED_REPORTS,
-      lat,
-      lon,
-      radiusKm,
-      days
-    );
-    return NextResponse.json({ ...payload, source: "seed" });
+    return NextResponse.json({
+      reports: [],
+      clusters: [],
+      summaries: [],
+      source: "none",
+    });
   }
 
   const client = createSupabaseServiceClient();

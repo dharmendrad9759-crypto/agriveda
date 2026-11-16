@@ -8,6 +8,7 @@ import {
   type ParsedMedicineItem,
 } from "@/lib/crops/medicineParser";
 import ChemBottleThumb from "@/components/crops/ChemBottleThumb";
+import { filterAdviceLine } from "@/lib/crops/safetyCopy";
 import {
   Check,
   ChevronDown,
@@ -132,7 +133,9 @@ export default function FieldMedicinePanel({
 
         // Process all lines in this tier into items
         const parsedItems: ParsedMedicineItem[] = [];
-        for (const line of tier.lines) {
+        for (const rawLine of tier.lines) {
+          const line = filterAdviceLine(rawLine, guide.cropSlug);
+          if (!line) continue;
           const splitParts = splitMedicineLine(line);
           if (splitParts.length > 1) {
             for (const part of splitParts) {
@@ -147,6 +150,8 @@ export default function FieldMedicinePanel({
         const mixCount = parsedItems.filter((i) => i.kind === "mix").length;
         const chemCount = parsedItems.filter((i) => i.kind === "chemical").length;
         const adviceCount = parsedItems.filter((i) => i.kind === "advice").length;
+
+        if (parsedItems.length === 0) return null;
 
         const optionBadgeText =
           trapCount > 0 && chemCount === 0 && mixCount === 0

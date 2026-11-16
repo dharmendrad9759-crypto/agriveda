@@ -5,6 +5,7 @@ import { MODERN_TECHNICALS, type ModernKind, type ModernTechnical } from "@/data
 import { normalizeCropSlug } from "@/lib/crops/cropImages";
 import { pickFarmerStages } from "@/lib/pest/farmerSpray";
 import { stripMoaCodes } from "@/lib/crops/farmerSprayDose";
+import { isHiddenMedicineText } from "@/lib/crops/safetyCopy";
 import {
   classifyChemText,
   distinctiveNameOverlap,
@@ -210,7 +211,8 @@ export function spraysForThreatFromProfile(
 
 export function productsFromStageSprays(
   stages: StageSprayRecommendation[] | undefined,
-  hi: boolean
+  hi: boolean,
+  cropSlug?: string
 ): CropSprayProduct[] {
   const farmer = pickFarmerStages(stages ?? []);
   const out: CropSprayProduct[] = [];
@@ -218,7 +220,7 @@ export function productsFromStageSprays(
     const parts = stripMoaCodes(s.chemistry)
       .split(/\s*(?:या|\bor\b|,|\/)\s*/i)
       .map((t) => t.trim())
-      .filter((t) => t.length > 3);
+      .filter((t) => t.length > 3 && !isHiddenMedicineText(t, cropSlug));
     const isAdvanced = s.stage === "advanced";
     const dose = stripMoaCodes(s.dose);
     const useWhen = hi
@@ -228,7 +230,9 @@ export function productsFromStageSprays(
       : isAdvanced
         ? "If spreading fast"
         : "Start here (early)";
-    for (const chem of parts.length ? parts : [stripMoaCodes(s.chemistry)]) {
+    const fallback = stripMoaCodes(s.chemistry);
+    const chems = parts.length ? parts : isHiddenMedicineText(fallback, cropSlug) ? [] : [fallback];
+    for (const chem of chems) {
       out.push({
         technical: chem,
         doseAcre: dose,
@@ -255,7 +259,10 @@ export function buildThreatSprayList(opts: {
     opts.name,
     opts.scientific
   );
-  if (opts.type === "weed") return fromProfile;
-  const fromStages = productsFromStageSprays(opts.stageSprays, opts.hi);
-  return mergeSprayProducts(fromProfile, fromStages);
+  const slug = opts.profile?.slug;
+  const keep = (list: CropSprayProduct[]) =>
+    list.filter((p) => !isHiddenMedicineText(`${p.technical} ${p.doseAcre ?? ""}`, slug));
+  if (opts.type === "weed") return keep(fromProfile);
+  const fromStages = productsFromStageSprays(opts.stageSprays, opts.hi, slug);
+  return keep(mergeSprayProducts(fromProfile, fromStages));
 }

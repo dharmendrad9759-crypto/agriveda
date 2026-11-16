@@ -221,19 +221,19 @@ export function checkShopSwap(opts: {
     if (opts.lastMoaGroups?.length && groupsOverlap(offeredGroups.length ? offeredGroups : recGroups, opts.lastMoaGroups)) {
       return {
         tone: "yellow",
-        messageHi: "यह काम तो कर सकती है, पर पिछली बार आपने यही ग्रुप डाला था — असर कम हो सकता है। नीचे वाली दूसरी दवा लें।",
+        messageHi: "यही ग्रुप है, पर पिछली बार भी यही ग्रुप था। नीचे वाली दूसरी दवा लें।",
       };
     }
-    return { tone: "green", messageHi: "हाँ, यह उसी काम की दवा है — ले सकते हैं।" };
+    return { tone: "green", messageHi: "यही ग्रुप है।" };
   }
 
   if (offeredGroups.length === 0 && recCats.length > 0) {
-    return { tone: "unknown", messageHi: "नाम पक्का नहीं मिला। बोतल पर अंग्रेज़ी टेक्निकल नाम देखकर फिर लिखें।" };
+    return { tone: "unknown", messageHi: "सूची में नहीं।" };
   }
 
   return {
     tone: "red",
-    messageHi: "यह ऐप वाली दवा से मेल नहीं खाती। दुकानदार से उसी टेक्निकल नाम की माँगें।",
+    messageHi: "दूसरा ग्रुप है।",
   };
 }
 

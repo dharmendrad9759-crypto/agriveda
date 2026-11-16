@@ -1,3 +1,5 @@
+import { brandsForTechnical, filterAdviceLine, isHiddenMedicineText } from "@/lib/crops/safetyCopy";
+
 /**
  * Master Authoritative Curative Medicine Knowledge Base for Crop Problems
  * 29 Crops with Strict 1 ➔ 2 ➔ 3 Technical Progression Sequence:
@@ -1006,7 +1008,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "OneStep (Adama)"
                 ],
-                "safety": "IGR + सिस्टेमिक किलर — अंडे, बच्चे और उड़ने वाली मक्खी का 100% खात्मा।",
+                "safety": "IGR + सिस्टेमिक किलर — अंडे, बच्चे और उड़ने वाली मक्खी का असर।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "400 मिली / एकड़",
@@ -1275,8 +1277,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
                 "safety": "मक्का झुलसा पर दोहरा सिस्टेमिक नियंत्रण; पत्तियां अंत तक हरी रहती हैं।",
                 "level": 3,
@@ -1696,7 +1697,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "Vertimec + Maiden"
                 ],
-                "safety": "अंडे, निम्फ और वयस्क तीनों अवस्थाओं का 100% खात्मा; पत्ते तुरंत सीधे व चमकदार।",
+                "safety": "अंडे, निम्फ और वयस्क तीनों अवस्थाओं का असर; पत्ते तुरंत सीधे व चमकदार।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "150 ml + 200 ml / एकड़",
@@ -1722,8 +1723,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
                 "safety": "सिस्टेमिक उपचार — सफेद पाउडर को तुरंत सुखा देता है।",
                 "level": 2,
@@ -1955,7 +1955,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "Vertimec + Maiden"
                 ],
-                "safety": "अंडे, निम्फ और वयस्क तीनों अवस्थाओं का 100% खात्मा; पत्ते तुरंत सीधे व चमकदार।",
+                "safety": "अंडे, निम्फ और वयस्क तीनों अवस्थाओं का असर; पत्ते तुरंत सीधे व चमकदार।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "150 ml + 200 ml / एकड़",
@@ -1981,8 +1981,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
                 "safety": "सिस्टेमिक उपचार — सफेद पाउडर को तुरंत सुखा देता है।",
                 "level": 2,
@@ -2815,7 +2814,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "Pegasus + Lano"
                 ],
-                "safety": "सफेद मक्खी, तेला और उनके अंडों का 100% खात्मा; लिटिल लीफ का फैलाव रुकता है।",
+                "safety": "सफेद मक्खी, तेला और उनके अंडों का असर; लिटिल लीफ का फैलाव रुकता है।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "200 g + 200 ml / एकड़",
@@ -3016,7 +3015,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "Lesenta (Bayer)"
                 ],
-                "safety": "दीमक और सफेद लट दोनों का 100% खात्मा; अंकुरण 95%+ होता है।",
+                "safety": "दीमक और सफेद लट के लिए मिट्टी में डालें। पत्ती पर स्प्रे नहीं।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "150-200 ग्राम / एकड़",
@@ -3161,7 +3160,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "Alika (Syngenta)"
                 ],
-                "safety": "पायरिला व वूली एफिड दोनों का 100% खात्मा; पत्तियां फिर से साफ व हरी।",
+                "safety": "पायरिला व वूली एफिड दोनों का असर; पत्तियां फिर से साफ व हरी।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "100 मिली / एकड़",
@@ -3564,7 +3563,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "brands": [
                       "Actara + Regent"
                 ],
-                "safety": "दीमक और जड़ माहू दोनों का 100% खात्मा; जड़ों का शानदार विकास।",
+                "safety": "दीमक और जड़ माहू दोनों का असर; जड़ों का शानदार विकास।",
                 "level": 3,
                 "levelLabelHi": "स्तर 3 · उच्चतम स्तर / बेस्ट ट्रायल 🔥",
                 "dosePerAcre": "100 g + 300 ml / एकड़",
@@ -3907,8 +3906,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
                 "safety": "सिस्टेमिक क्रिया — बैंगनी धब्बों को तुरंत बढ़ने से रोकता है।",
                 "level": 2,
@@ -4070,8 +4068,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
                 "safety": "सिस्टेमिक क्रिया — बैंगनी धब्बों को तुरंत बढ़ने से रोकता है।",
                 "level": 2,
@@ -5537,8 +5534,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
                 "safety": "सफेद रतुआ और अल्टरनेरिया दोनों का एक साथ संपूर्ण इलाज, पत्तियां अंत तक हरी।",
                 "level": 3,
@@ -5907,8 +5903,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
                 "safety": "चूर्ण रोग और पत्ती धब्बों का संपूर्ण निवारण, पत्तियों में लंबे समय तक चमक।",
                 "level": 3,
@@ -6097,8 +6092,7 @@ export const CROP_PROBLEM_MEDICINES: Record<string, Record<string, CurativeMedic
                 "technical": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
                 "dose": "1 मिली / लीटर पानी (200 मिली प्रति एकड़)",
                 "brands": [
-                      "Amistar Top (Syngenta)",
-                      "Custodia"
+                      "Amistar Top (Syngenta)"
                 ],
                 "safety": "पत्ती धब्बे का संपूर्ण इलाज, पत्तियों को अंत तक हरा और सक्रिय रखता है।",
                 "level": 3,
@@ -6605,10 +6599,8 @@ function mappedCuratives(cropSlug: string, problemId: string): CurativeMedicine[
   );
 }
 
-const UNLISTED_MEDICINE = /streptocycline|streptomycin|bismerthiazol|स्ट्रेप्टोसाइक्लिन|स्ट्रेप्टोमाइसिन|बिस्मर्थिया/i;
-
-function isListedMedicine(med: CurativeMedicine): boolean {
-  return !UNLISTED_MEDICINE.test(`${med.technical} ${med.nameHi} ${med.dose}`);
+function isListedMedicine(med: CurativeMedicine, cropSlug?: string): boolean {
+  return !isHiddenMedicineText(`${med.technical} ${med.nameHi} ${med.dose}`, cropSlug);
 }
 
 function sanitizeCurative(med: CurativeMedicine): CurativeMedicine {
@@ -6637,7 +6629,7 @@ export function getShopBrandExamples(
   const hit =
     mapped.find((m) => m.technical.toLowerCase() === tech) ||
     mapped.find((m) => m.technical.toLowerCase().includes(tech.slice(0, 12)));
-  return (hit?.brands ?? []).filter(Boolean).slice(0, 3);
+  return brandsForTechnical(hit?.technical || technical, hit?.brands ?? []).slice(0, 3);
 }
 
 export function getCurativeMedicines(
@@ -6648,24 +6640,25 @@ export function getCurativeMedicines(
   const mapped = mappedCuratives(cropSlug, problemId);
 
   if (mapped && mapped.length > 0) {
-    return mapped.map(sanitizeCurative).filter(isListedMedicine);
+    return mapped.map(sanitizeCurative).filter((med) => isListedMedicine(med, cropSlug));
   }
 
   if (!rawLines || rawLines.length === 0) return [];
   return rawLines
     .slice(0, 3)
-    .map((line, i) => {
-      const raw = line.split("—")[0]?.trim() || line;
-      return sanitizeCurative({
+    .map((line) => filterAdviceLine(line.split("—")[0]?.trim() || line, cropSlug))
+    .filter((line): line is string => Boolean(line))
+    .map((raw, i) =>
+      sanitizeCurative({
         nameHi: raw,
         technical: raw,
         dose: "बोतल का लेबल देखो",
         brands: [],
         level: (i + 1) as 1 | 2 | 3,
         levelLabelHi: `स्तर ${i + 1}`,
-      });
-    })
-    .filter(isListedMedicine);
+      })
+    )
+    .filter((med) => isListedMedicine(med, cropSlug));
 }
 
 

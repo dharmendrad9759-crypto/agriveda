@@ -28,6 +28,8 @@ import {
   listFertilizerCrops,
   type SoilTestLevels,
 } from "@/lib/agriveda2/fertilizerEngine";
+import { withFertilizerBags } from "@/lib/agriveda2/fertilizerBags";
+import { writeStorage } from "@/lib/storage";
 import {
   fertilizerAmountParts,
   fertilizerBagPurposeHi,
@@ -131,6 +133,15 @@ function FertilizerCalculatorInner() {
     if (!slug || !acres) return null;
     return buildFertilizerPlan(slug, acres, soilTest);
   }, [slug, acres, soilTest]);
+
+  useEffect(() => {
+    if (!plan || !slug) return;
+    writeStorage("agriveda-last-fertilizer", {
+      crop: slug,
+      acres,
+      lines: plan.schedule.map((row) => withFertilizerBags(row.apply)),
+    });
+  }, [plan, slug, acres]);
 
   const cropHi =
     (slug && getCropHindiName(slug)) ||
@@ -435,23 +446,13 @@ function FertilizerCalculatorInner() {
                                   </div>
 
                                   <p className="mt-2 text-sm font-black leading-snug text-[var(--av-text-primary)]">
-                                    {s.apply}
+                                    {withFertilizerBags(s.apply)}
                                   </p>
-
-                                  {s.benefit ? (
-                                    <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1.5">
-                                      <span className="text-xs leading-none">🎯</span>
-                                      <p className="text-[11px] font-bold leading-snug text-emerald-900 dark:text-emerald-200">
-                                        मुख्य फायदा: {s.benefit}
-                                      </p>
-                                    </div>
-                                  ) : (
-                                    <p className="mt-1.5 text-[11px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
-                                      {isFirst
-                                        ? "बुवाई के समय खाद को बीज से 4-5 सेमी नीचे या कतारों में डालें ताकि पौधे की जड़ें मजबूत हों।"
-                                        : "सिंचाई के बाद खेत में पैर टिकने पर छिड़कें। पत्तों पर ओस या पानी सूखा होना चाहिए।"}
-                                    </p>
-                                  )}
+                                  <p className="mt-1.5 text-[12px] font-medium leading-relaxed text-[var(--av-text-secondary)]">
+                                    {isFirst
+                                      ? "बुवाई पर खाद बीज से अलग कतार में डालें।"
+                                      : "सिंचाई के बाद, पैर टिकने पर डालें।"}
+                                  </p>
                                 </div>
                               </div>
                             );
@@ -557,7 +558,7 @@ function FertilizerCalculatorInner() {
                   </div>
 
                   <p className="text-center text-[10.5px] font-medium text-[var(--av-text-muted)]">
-                    यह शेड्यूल ICAR/SAU वैज्ञानिक संस्तुतियों और प्रैक्टिकल हाई-यील्ड फील्ड परीक्षणों पर आधारित है।
+                    यह आम खेत की खाद तालिका है। मिट्टी रिपोर्ट हो तो उसी से मिलाएँ।
                   </p>
                 </>
               )}

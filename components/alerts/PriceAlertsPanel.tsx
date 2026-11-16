@@ -5,6 +5,7 @@ import DarkCard from "@/components/shell/DarkCard";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { useToast } from "@/components/ui/Toast";
 import type { MandiRow } from "@/lib/mandi/types";
+import { CROP_HI } from "@/lib/mandi/constants";
 import { AV } from "@/lib/design/tokens";
 
 interface Props {
@@ -38,7 +39,7 @@ export default function PriceAlertsPanel({ rows = [], compact = false, className
         आपके ज़िले की मंडी के भाव आने पर फोन पर सूचना मिलेगी — ऐप बंद हो तब भी।
       </p>
       {!settings.masterEnabled && (
-        <p className={`mt-1 ${AV.micro}`}>Master toggle OFF — Settings में चालू करें।</p>
+        <p className={`mt-1 ${AV.micro}`}>सेटिंग में भाव अलर्ट बंद है।</p>
       )}
       <div className="mt-3 flex flex-wrap gap-2">
         <input
@@ -50,7 +51,10 @@ export default function PriceAlertsPanel({ rows = [], compact = false, className
         />
         <datalist id="price-alert-crops">
           {(rows.length
-            ? [...new Set(rows.map((r) => r.cropHi || r.crop))]
+            ? [...new Set(rows.map((r) => {
+                if (r.cropHi && /[\u0900-\u097F]/.test(r.cropHi)) return r.cropHi;
+                return CROP_HI[r.crop] || CROP_HI[r.crop.trim()] || "फसल";
+              }))]
             : ["गेहूँ", "धान", "सरसों", "चना", "आलू", "टमाटर"]
           ).map((name) => (
             <option key={name} value={name} />
@@ -95,10 +99,10 @@ export default function PriceAlertsPanel({ rows = [], compact = false, className
                 </button>
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                    a.enabled ? "bg-emerald-500/20 text-emerald-400" : "bg-[#1f2937] text-[var(--av-text-muted)]"
+                    a.enabled ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700"
                   }`}
                 >
-                  {a.enabled ? "ON" : "OFF"}
+                  {a.enabled ? "चालू" : "बंद"}
                 </span>
                 <button type="button" onClick={() => removeAlert(a.id)} className="text-[10px] text-red-400">
                   ×

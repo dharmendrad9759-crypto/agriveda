@@ -32,6 +32,9 @@ import { cn } from "@/lib/cn";
 import { AV } from "@/lib/design/tokens";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useFarmData } from "@/hooks/useFarmData";
+import { useFarmerProfile } from "@/hooks/useFarmerProfile";
+import { useLiveWeather } from "@/hooks/useLiveWeather";
+import SprayLightCard from "@/components/spray/SprayLightCard";
 import { useActiveField } from "@/hooks/useActiveField";
 import { writeSprayDraft } from "@/lib/sprayDraft";
 import { CROP_PROBLEM_CROPS, type CropProblemItem } from "@/data/crop-curative-problems";
@@ -129,6 +132,8 @@ function MixAdvisorInner() {
   const { showToast } = useToast();
   const [step, setStep] = useState<StepId>("problem");
   const farm = useFarmData();
+  const { profile } = useFarmerProfile();
+  const { weather } = useLiveWeather();
   const { activeField } = useActiveField(farm.data.fields, farm.hydrated);
   const [cropSlug, setCropSlug] = useState("");
   const [stage, setStage] = useState<GrowthStageId | "">("");
@@ -1370,6 +1375,12 @@ function MixAdvisorInner() {
               </div>
 
               {/* Complete Spray & Dose Summary Table */}
+              <SprayLightCard weather={weather} />
+              {profile.sprayWater === "hard_tubewell" ? (
+                <p className="rounded-xl bg-sky-50 px-3 py-2 text-[13px] font-bold text-sky-950">
+                  पानी खारा है। दवा से पहले कंडीशनर या नींबू का सत डालें, वरना असर घटता है।
+                </p>
+              ) : null}
               <div className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-sm">
                 <div className="bg-emerald-600 px-3.5 py-2.5 text-white">
                   <p className="text-[13px] font-black">

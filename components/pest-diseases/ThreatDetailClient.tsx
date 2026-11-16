@@ -40,6 +40,7 @@ import { technicalFromSprayLine } from "@/lib/crops/chemBottle";
 import { getCropManagementProfile } from "@/data/crop-management";
 import { buildThreatSprayList } from "@/lib/crops/modernTechnicalBridge";
 import { findFieldMedicine } from "@/lib/crops/fieldMedicine";
+import { isSulfosulfuronText, SULFOSULFURON_NEXT_CROP_HI } from "@/lib/crops/safetyCopy";
 import { ALL_FIELD_MEDICINE } from "@/data/field-medicine-all";
 import FieldMedicinePanel from "@/components/crops/FieldMedicinePanel";
 import ImageLightbox from "@/components/ui/ImageLightbox";
@@ -1121,6 +1122,11 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                             <p className="mt-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300">
                               {hi ? "खुराक" : "Dose"}: {card.dose}
                             </p>
+                            {isSulfosulfuronText(card.technical) ? (
+                              <p className="mt-1.5 rounded-lg bg-amber-50 px-2 py-1.5 text-[12px] font-bold leading-snug text-amber-950">
+                                {SULFOSULFURON_NEXT_CROP_HI}
+                              </p>
+                            ) : null}
                             <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
                               {hi ? "अवस्था" : "Stage"}: {card.stage}
                             </p>
@@ -1168,6 +1174,11 @@ export default function ThreatDetailClient({ threat }: { threat: EnrichedThreat 
                             <p className="mt-1.5 text-[12px] font-bold text-emerald-800 dark:text-emerald-300">
                               {hi ? "खुराक" : "Dose"}: {card.dose}
                             </p>
+                            {isSulfosulfuronText(card.technical) ? (
+                              <p className="mt-1.5 rounded-lg bg-amber-50 px-2 py-1.5 text-[12px] font-bold leading-snug text-amber-950">
+                                {SULFOSULFURON_NEXT_CROP_HI}
+                              </p>
+                            ) : null}
                             <p className="mt-0.5 text-[11px] font-semibold text-[var(--av-text-secondary)]">
                               {hi ? "अवस्था" : "Stage"}: {card.stage}
                             </p>

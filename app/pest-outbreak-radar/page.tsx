@@ -109,7 +109,7 @@ export default function PestOutbreakRadarPage() {
 
       {!isSupabaseConfigured() && (
         <p className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-center text-[11px] font-semibold text-amber-900 dark:text-amber-200">
-          नज़दीकी प्रकोप का नक्शा तब भरेगा जब लाइव रिपोर्ट जुड़ें। अपनी खेत रिपोर्ट अभी भी भेज सकते हैं — बैकएंड तैयार होने पर सिंक होगी।
+          अभी असली गिनती नहीं है। नकली अलर्ट नहीं दिखाए गए।
         </p>
       )}
 
